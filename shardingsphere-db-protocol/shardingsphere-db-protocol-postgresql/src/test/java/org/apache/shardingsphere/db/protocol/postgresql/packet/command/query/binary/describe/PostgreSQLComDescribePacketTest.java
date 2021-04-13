@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe;
 
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,7 @@ public final class PostgreSQLComDescribePacketTest {
     public void assertNewInstance() {
         PostgreSQLComDescribePacket actual = new PostgreSQLComDescribePacket(payload);
         actual.write(payload);
-        assertThat(actual.getIdentifier(), is('D'));
+        assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.DESCRIBE_COMMAND));
         verify(payload).readInt4();
         verify(payload).readInt1();
         verify(payload).readStringNul();

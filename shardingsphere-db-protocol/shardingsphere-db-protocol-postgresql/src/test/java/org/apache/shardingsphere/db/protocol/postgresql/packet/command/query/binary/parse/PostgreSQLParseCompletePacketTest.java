@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse;
 
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
@@ -30,6 +31,6 @@ public final class PostgreSQLParseCompletePacketTest {
     public void assertNewInstance() {
         PostgreSQLParseCompletePacket actual = new PostgreSQLParseCompletePacket();
         actual.write(mock(PostgreSQLPacketPayload.class));
-        assertThat(actual.getIdentifier(), is('1'));
+        assertThat(actual.getIdentifier(), is(PostgreSQLMessagePacketType.PARSE_COMPLETE));
     }
 }

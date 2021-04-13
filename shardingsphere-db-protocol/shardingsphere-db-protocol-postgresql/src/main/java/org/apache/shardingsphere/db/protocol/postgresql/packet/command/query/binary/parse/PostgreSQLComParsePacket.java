@@ -22,6 +22,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinar
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public char getIdentifier() {
-        return PostgreSQLCommandPacketType.PARSE_COMMAND.getValue();
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLCommandPacketType.PARSE_COMMAND;
     }
 }

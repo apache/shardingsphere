@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -40,7 +41,7 @@ public final class PostgreSQLPasswordMessagePacket implements PostgreSQLIdentifi
     }
     
     @Override
-    public char getIdentifier() {
-        return PostgreSQLMessagePacketType.PASSWORD_MESSAGE.getValue();
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.PASSWORD_MESSAGE;
     }
 }

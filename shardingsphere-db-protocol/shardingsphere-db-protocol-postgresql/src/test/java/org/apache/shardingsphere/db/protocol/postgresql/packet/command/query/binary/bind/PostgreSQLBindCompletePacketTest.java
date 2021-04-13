@@ -47,6 +47,6 @@ public final class PostgreSQLBindCompletePacketTest {
     @Test
     public void assertGetMessageType() {
         PostgreSQLBindCompletePacket rowPacket = new PostgreSQLBindCompletePacket();
-        assertThat(rowPacket.getIdentifier(), is(PostgreSQLMessagePacketType.BIND_COMPLETE.getValue()));
+        assertThat(rowPacket.getIdentifier(), is(PostgreSQLMessagePacketType.BIND_COMPLETE));
     }
 }

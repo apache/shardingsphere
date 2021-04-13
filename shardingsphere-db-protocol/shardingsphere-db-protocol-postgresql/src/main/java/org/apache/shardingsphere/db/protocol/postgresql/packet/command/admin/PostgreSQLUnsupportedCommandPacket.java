@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.admin;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 public final class PostgreSQLUnsupportedCommandPacket extends PostgreSQLCommandPacket {
     
     @Getter
-    private final char identifier;
+    private final PostgreSQLIdentifierTag identifier;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {

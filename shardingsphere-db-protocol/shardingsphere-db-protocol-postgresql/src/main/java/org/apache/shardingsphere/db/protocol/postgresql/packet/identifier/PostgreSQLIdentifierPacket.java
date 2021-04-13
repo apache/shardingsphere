@@ -29,5 +29,5 @@ public interface PostgreSQLIdentifierPacket extends PostgreSQLPacket {
      *
      * @return identifier
      */
-    char getIdentifier();
+    PostgreSQLIdentifierTag getIdentifier();
 }

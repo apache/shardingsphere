@@ -35,7 +35,7 @@ public final class PostgreSQLCommandCompletePacketTest {
         int expectedStringLength = expectedString.length();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1));
         PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
-        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.COMMAND_COMPLETE.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.COMMAND_COMPLETE));
         packet.write(payload);
         assertThat(payload.readStringNul(), is(expectedString));
     }
@@ -48,7 +48,7 @@ public final class PostgreSQLCommandCompletePacketTest {
         int expectedStringLength = expectedString.length();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1));
         PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
-        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.COMMAND_COMPLETE.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.COMMAND_COMPLETE));
         packet.write(payload);
         assertThat(payload.readStringNul(), is(expectedString));
     }
