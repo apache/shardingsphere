@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -24,6 +25,8 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -33,6 +36,7 @@ import org.apache.shardingsphere.proxy.converter.AddResourcesStatementConverter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,6 +56,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     @Override
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
+        check(schemaName, sqlStatement);
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
         Collection<String> invalidDataSourceNames = new ArrayList<>();
@@ -65,6 +70,21 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         }
         post(schemaName, dataSources);
         return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    private void check(final String schemaName, final AddResourceStatement sqlStatement) {
+        List<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
+        for (DataSourceSegment dataSourceSegment : sqlStatement.getDataSources()) {
+            if (dataSourceNames.contains(dataSourceSegment.getName())) {
+                throw new DuplicateResourceException(dataSourceSegment.getName());
+            }
+            dataSourceNames.add(dataSourceSegment.getName());
+        }
+        for (String dataSourceName : dataSourceNames) {
+            if (ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(dataSourceName)) {
+                throw new DuplicateResourceException(dataSourceName);
+            }
+        }
     }
     
     private void post(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
