@@ -41,7 +41,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -64,17 +63,15 @@ public final class SQLServerPrivilegeLoaderTest {
 
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
         assertThat(actual.size(), is(1));
-        ShardingSphereUser user = new ShardingSphereUser("dbo", "", "");
-        assertThat(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
-        assertThat(actual.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(2));
+        ShardingSphereUser dbo = new ShardingSphereUser("dbo", "", "");
+        assertThat(actual.get(dbo).getAdministrativePrivileges().getPrivileges().size(), is(2));
+        Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.CONNECT, PrivilegeType.SHUTDOWN));
+        assertThat(actual.get(dbo).getAdministrativePrivileges().getPrivileges(), is(expectedAdminPrivileges));
+
         Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE,
                 PrivilegeType.DELETE));
-        SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("db0");
+        SchemaPrivileges schemaPrivileges = actual.get(dbo).getDatabasePrivileges().getSpecificPrivileges().get("db0");
         assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
-
-        assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges().size(), is(1));
-        Collection<PrivilegeType> expectedAdministrativePrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.CONNECT));
-        assertEquals(actual.get(user).getAdministrativePrivileges().getPrivileges(), expectedAdministrativePrivilege);
     }
 
     private Collection<ShardingSphereUser> createUsers() {
@@ -108,10 +105,10 @@ public final class SQLServerPrivilegeLoaderTest {
 
     private ResultSet mockGlobalPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("STATE")).thenReturn("GRANT");
-        when(result.getString("GRANTEE")).thenReturn("dbo");
-        when(result.getString("PRIVILEGE_TYPE")).thenReturn("CONNECT");
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("STATE")).thenReturn("GRANT", "GRANT");
+        when(result.getString("GRANTEE")).thenReturn("dbo", "dbo");
+        when(result.getString("PRIVILEGE_TYPE")).thenReturn("CONNECT", "SHUTDOWN");
         return result;
     }
 
