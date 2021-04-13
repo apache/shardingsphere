@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -43,7 +44,7 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifi
     }
     
     @Override
-    public char getIdentifier() {
-        return PostgreSQLMessagePacketType.COMMAND_COMPLETE.getValue();
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.COMMAND_COMPLETE;
     }
 }

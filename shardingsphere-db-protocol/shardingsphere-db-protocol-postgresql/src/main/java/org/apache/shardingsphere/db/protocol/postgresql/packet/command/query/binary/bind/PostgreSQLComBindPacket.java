@@ -25,6 +25,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.ArrayList;
@@ -83,7 +84,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public char getIdentifier() {
-        return PostgreSQLCommandPacketType.BIND_COMMAND.getValue();
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLCommandPacketType.BIND_COMMAND;
     }
 }

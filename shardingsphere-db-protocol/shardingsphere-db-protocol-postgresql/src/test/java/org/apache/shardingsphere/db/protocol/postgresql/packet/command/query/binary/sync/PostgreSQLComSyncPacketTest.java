@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.sync;
 
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,6 @@ public final class PostgreSQLComSyncPacketTest {
         PostgreSQLComSyncPacket actual = new PostgreSQLComSyncPacket(payload);
         actual.write(payload);
         verify(payload).readInt4();
-        assertThat(actual.getIdentifier(), is('S'));
+        assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.SYNC_COMMAND));
     }
 }

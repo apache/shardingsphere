@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -69,7 +70,7 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket
     }
     
     @Override
-    public char getIdentifier() {
-        return PostgreSQLMessagePacketType.DATA_ROW.getValue();
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.DATA_ROW;
     }
 }

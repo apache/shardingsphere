@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
@@ -35,7 +36,7 @@ public final class PostgreSQLComSyncPacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public char getIdentifier() {
-        return PostgreSQLCommandPacketType.SYNC_COMMAND.getValue();
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLCommandPacketType.SYNC_COMMAND;
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
@@ -35,7 +36,7 @@ public final class PostgreSQLComTerminationPacket extends PostgreSQLCommandPacke
     }
     
     @Override
-    public char getIdentifier() {
-        return PostgreSQLCommandPacketType.TERMINATE.getValue();
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLCommandPacketType.TERMINATE;
     }
 }

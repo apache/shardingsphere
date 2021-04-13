@@ -36,7 +36,7 @@ public final class PostgreSQLAuthenticationMD5PasswordPacketTest {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
         PostgreSQLAuthenticationMD5PasswordPacket packet = new PostgreSQLAuthenticationMD5PasswordPacket(md5Salt);
-        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(expectedLength));
         assertThat(byteBuf.readInt(), is(5));

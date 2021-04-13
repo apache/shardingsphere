@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.execute;
 
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +41,6 @@ public final class PostgreSQLComExecutePacketTest {
         verify(payload, atLeast(2)).readInt4();
         verify(payload).readStringNul();
         actual.write(payload);
-        assertThat(actual.getIdentifier(), is('E'));
+        assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.EXECUTE_COMMAND));
     }
 }

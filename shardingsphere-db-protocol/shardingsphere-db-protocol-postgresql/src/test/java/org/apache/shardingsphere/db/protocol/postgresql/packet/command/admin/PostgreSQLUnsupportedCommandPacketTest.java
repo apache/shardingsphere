@@ -36,14 +36,14 @@ public final class PostgreSQLUnsupportedCommandPacketTest {
     
     @Test
     public void assertWrite() {
-        PostgreSQLUnsupportedCommandPacket rowPacket = new PostgreSQLUnsupportedCommandPacket(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST.getValue());
+        PostgreSQLUnsupportedCommandPacket rowPacket = new PostgreSQLUnsupportedCommandPacket(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST);
         rowPacket.write(new PostgreSQLPacketPayload(byteBuf));
         assertThat(byteBuf.writerIndex(), is(0));
     }
     
     @Test
     public void assertGetMessageType() {
-        PostgreSQLUnsupportedCommandPacket rowPacket = new PostgreSQLUnsupportedCommandPacket(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST.getValue());
-        assertThat(rowPacket.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST.getValue()));
+        PostgreSQLUnsupportedCommandPacket rowPacket = new PostgreSQLUnsupportedCommandPacket(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST);
+        assertThat(rowPacket.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
     }
 }

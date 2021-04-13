@@ -76,6 +76,6 @@ public final class PostgreSQLComBindPacketTest {
     @Test
     public void getMessageType() {
         PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
-        assertThat(bindPacket.getIdentifier(), is(PostgreSQLCommandPacketType.BIND_COMMAND.getValue()));
+        assertThat(bindPacket.getIdentifier(), is(PostgreSQLCommandPacketType.BIND_COMMAND));
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -90,7 +91,7 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
     }
     
     @Override
-    public char getIdentifier() {
-        return PostgreSQLMessagePacketType.ERROR_RESPONSE.getValue();
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.ERROR_RESPONSE;
     }
 }
