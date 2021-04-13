@@ -24,8 +24,4 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Database packet for PostgreSQL.
  */
 public interface PostgreSQLPacket extends DatabasePacket<PostgreSQLPacketPayload> {
-    
-    int MESSAGE_TYPE_LENGTH = 1;
-    
-    int PAYLOAD_LENGTH = 4;
 }

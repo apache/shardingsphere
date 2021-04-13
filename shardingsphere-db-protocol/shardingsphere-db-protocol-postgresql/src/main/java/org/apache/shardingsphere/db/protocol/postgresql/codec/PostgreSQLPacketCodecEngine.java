@@ -32,9 +32,13 @@ import java.util.List;
  */
 public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEngine<PostgreSQLPacket> {
     
+    private static final int MESSAGE_TYPE_LENGTH = 1;
+    
+    private static final int PAYLOAD_LENGTH = 4;
+    
     @Override
     public boolean isValidHeader(final int readableBytes) {
-        return readableBytes >= PostgreSQLPacket.MESSAGE_TYPE_LENGTH + PostgreSQLPacket.PAYLOAD_LENGTH;
+        return readableBytes >= MESSAGE_TYPE_LENGTH + PAYLOAD_LENGTH;
     }
     
     @Override
@@ -43,7 +47,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
         if ('\0' == in.markReaderIndex().readByte()) {
             in.resetReaderIndex();
         } else {
-            messageTypeLength = PostgreSQLPacket.MESSAGE_TYPE_LENGTH;
+            messageTypeLength = MESSAGE_TYPE_LENGTH;
         }
         int payloadLength = in.readInt();
         int realPacketLength = payloadLength + messageTypeLength;
@@ -70,7 +74,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
         } finally {
             if (message instanceof PostgreSQLIdentifierPacket) {
                 out.writeByte(((PostgreSQLIdentifierPacket) message).getMessageType());
-                out.writeInt(payload.getByteBuf().readableBytes() + PostgreSQLPacket.PAYLOAD_LENGTH);
+                out.writeInt(payload.getByteBuf().readableBytes() + PAYLOAD_LENGTH);
             }
             out.writeBytes(payload.getByteBuf());
             payload.close();

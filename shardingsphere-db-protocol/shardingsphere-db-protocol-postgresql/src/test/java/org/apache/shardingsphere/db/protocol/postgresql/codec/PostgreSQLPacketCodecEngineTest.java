@@ -21,7 +21,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +55,7 @@ public final class PostgreSQLPacketCodecEngineTest {
     
     @Test
     public void assertIsInvalidHeader() {
-        assertFalse(new PostgreSQLPacketCodecEngine().isValidHeader(PostgreSQLPacket.PAYLOAD_LENGTH));
+        assertFalse(new PostgreSQLPacketCodecEngine().isValidHeader(4));
     }
     
     @Test
@@ -89,7 +88,7 @@ public final class PostgreSQLPacketCodecEngineTest {
         new PostgreSQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
         verify(actualMessage).write(ArgumentMatchers.any());
         verify(byteBuf).writeByte(PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue());
-        verify(byteBuf).writeInt(50 + PostgreSQLPacket.PAYLOAD_LENGTH);
+        verify(byteBuf).writeInt(54);
         verify(byteBuf).writeBytes(payloadByteBuf);
     }
     
