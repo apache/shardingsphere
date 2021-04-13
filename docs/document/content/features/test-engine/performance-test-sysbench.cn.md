@@ -192,6 +192,104 @@ Index page[s]: 01_sharding.html
 Report title: HTML Report
 ```
 
+## sysbench测试用例分析
+
+#### oltp_point_select
+
+```
+Prepare Statement (ID = 1): SELECT c FROM sbtest1 WHERE id=?
+Execute Statement: ID = 1
+```
+
+#### oltp_read_only
+
+```
+Prepare Statement (ID = 1): 'COMMIT'
+Prepare Statement (ID = 2): SELECT c FROM sbtest1 WHERE id=?
+
+Statement: 'BEGIN'
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 1
+```
+
+#### oltp_write_only
+
+```
+Prepare Statement (ID = 1): 'COMMIT'
+Prepare Statement (ID = 2): UPDATE sbtest1 SET k=k+1 WHERE id=?
+Prepare Statement (ID = 3): UPDATE sbtest6 SET c=? WHERE id=?
+Prepare Statement (ID = 4): DELETE FROM sbtest1 WHERE id=?
+Prepare Statement (ID = 5): INSERT INTO sbtest1 (id, k, c, pad) VALUES (?, ?, ?, ?)
+
+Statement: 'BEGIN'
+Execute Statement: ID = 2
+Execute Statement: ID = 3
+Execute Statement: ID = 4
+Execute Statement: ID = 5
+Execute Statement: ID = 1
+```
+
+#### oltp_read_write
+
+```
+Prepare Statement (ID = 1): 'COMMIT'
+Prepare Statement (ID = 2): SELECT c FROM sbtest1 WHERE id=?
+Prepare Statement (ID = 3): UPDATE sbtest3 SET k=k+1 WHERE id=?
+Prepare Statement (ID = 4): UPDATE sbtest10 SET c=? WHERE id=?
+Prepare Statement (ID = 5): DELETE FROM sbtest8 WHERE id=?
+Prepare Statement (ID = 6): INSERT INTO sbtest8 (id, k, c, pad) VALUES (?, ?, ?, ?)
+
+Statement: 'BEGIN'
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 2
+Execute Statement: ID = 3
+Execute Statement: ID = 4
+Execute Statement: ID = 5
+Execute Statement: ID = 6
+Execute Statement: ID = 1
+```
+
+#### oltp_update_index
+
+```
+Prepare Statement (ID = 1): UPDATE sbtest1 SET k=k+1 WHERE id=?
+
+Execute Statement: ID = 1
+```
+
+#### oltp_update_non_index
+
+```
+Prepare Statement (ID = 1): UPDATE sbtest1 SET c=? WHERE id=?
+
+Execute Statement: ID = 1
+```
+
+#### oltp_delete
+
+```
+Prepare Statement (ID = 1): DELETE FROM sbtest1 WHERE id=?
+
+Execute Statement: ID = 1
+```
+
 ## 附录1
 
 #### Master branch version
