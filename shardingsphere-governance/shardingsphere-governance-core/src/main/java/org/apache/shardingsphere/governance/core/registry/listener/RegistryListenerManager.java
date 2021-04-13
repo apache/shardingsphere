@@ -38,7 +38,7 @@ public final class RegistryListenerManager {
 
     private final PropertiesChangedListener propertiesChangedListener;
 
-    private final AuthenticationChangedListener authenticationChangedListener;
+    private final UserChangedListener authenticationChangedListener;
     
     private final PrivilegeNodeChangedListener privilegeNodeChangedListener;
     
@@ -48,7 +48,7 @@ public final class RegistryListenerManager {
         lockChangedListener = new LockChangedListener(registryRepository);
         metaDataListener = new MetaDataListener(registryRepository, schemaNames);
         propertiesChangedListener = new PropertiesChangedListener(registryRepository);
-        authenticationChangedListener = new AuthenticationChangedListener(registryRepository);
+        authenticationChangedListener = new UserChangedListener(registryRepository);
         privilegeNodeChangedListener = new PrivilegeNodeChangedListener(registryRepository);
     }
     

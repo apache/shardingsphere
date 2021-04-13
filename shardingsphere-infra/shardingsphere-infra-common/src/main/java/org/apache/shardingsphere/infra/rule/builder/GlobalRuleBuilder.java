@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.infra.rule.builder;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
@@ -39,12 +37,10 @@ public interface GlobalRuleBuilder<R extends GlobalRule, T extends RuleConfigura
     /**
      * Build global rule.
      *
-     * @param mataDataMap mata data map
-     * @param databaseType database type
      * @param ruleConfig rule configuration
+     * @param mataDataMap mata data map
      * @param users users
-     * @param builtRules built rules
      * @return global rule
      */
-    R build(Map<String, ShardingSphereMetaData> mataDataMap, DatabaseType databaseType, T ruleConfig, Collection<ShardingSphereUser> users, Collection<ShardingSphereRule> builtRules);
+    R build(T ruleConfig, Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users);
 }

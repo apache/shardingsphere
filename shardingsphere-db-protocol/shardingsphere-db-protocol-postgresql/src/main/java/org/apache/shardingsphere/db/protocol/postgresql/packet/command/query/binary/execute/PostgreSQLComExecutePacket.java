@@ -38,6 +38,6 @@ public final class PostgreSQLComExecutePacket extends PostgreSQLCommandPacket {
     
     @Override
     public char getMessageType() {
-        return PostgreSQLCommandPacketType.EXECUTE.getValue();
+        return PostgreSQLCommandPacketType.EXECUTE_COMMAND.getValue();
     }
 }

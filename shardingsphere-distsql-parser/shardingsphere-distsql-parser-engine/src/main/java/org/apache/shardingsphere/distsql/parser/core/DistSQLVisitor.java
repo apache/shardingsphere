@@ -31,7 +31,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.C
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropScalingJobContext;
@@ -96,8 +95,13 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitDataSource(final DataSourceContext ctx) {
-        DataSourceSegment result = (DataSourceSegment) visit(ctx.dataSourceDefinition());
+        DataSourceSegment result = new DataSourceSegment();
         result.setName(ctx.dataSourceName().getText());
+        result.setHostName(ctx.hostName().getText());
+        result.setPort(ctx.port().getText());
+        result.setDb(ctx.dbName().getText());
+        result.setUser(ctx.user().getText());
+        result.setPassword(null == ctx.password() ? "" : ctx.password().getText());
         return result;
     }
     
@@ -107,17 +111,6 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         for (TerminalNode each : ctx.IDENTIFIER()) {
             result.getResourceNames().add(each.getText());
         }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitDataSourceDefinition(final DataSourceDefinitionContext ctx) {
-        DataSourceSegment result = new DataSourceSegment();
-        result.setHostName(ctx.hostName().getText());
-        result.setPort(ctx.port().getText());
-        result.setDb(ctx.dbName().getText());
-        result.setUser(null == ctx.user() ? "" : ctx.user().getText());
-        result.setPassword(null == ctx.password() ? "" : ctx.password().getText());
         return result;
     }
     

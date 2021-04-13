@@ -32,9 +32,6 @@ import java.util.Collection;
 public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {
     
     @Getter
-    private final char messageType = PostgreSQLCommandPacketType.ROW_DESCRIPTION.getValue();
-    
-    @Getter
     private final int fieldCount;
     
     private final Collection<PostgreSQLColumnDescription> columnDescriptions;
@@ -51,5 +48,10 @@ public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {
             payload.writeInt4(each.getTypeModifier());
             payload.writeInt2(each.getDataFormat());
         }
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.ROW_DESCRIPTION.getValue();
     }
 }

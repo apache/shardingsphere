@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.context.metadata;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -125,6 +126,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public ShardingSphereMetaData getDefaultMetaData() {
         return metaDataContexts.getDefaultMetaData();
+    }
+    
+    @Override
+    public ShardingSphereRuleMetaData getGlobalRuleMetaData() {
+        return metaDataContexts.getGlobalRuleMetaData();
     }
     
     @Override
@@ -209,10 +215,10 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     /**
      * Renew authority.
      *
-     * @param event user rule changed event
+     * @param event authority changed event
      */
     @Subscribe
-    public synchronized void renew(final UserRuleChangedEvent event) {
+    public synchronized void renew(final AuthorityChangedEvent event) {
         Collection<ShardingSphereUser> users = new HashSet<>(getNewUsers(event.getUsers()));
         users.addAll(getModifiedUsers(event.getUsers()));
         metaDataContexts = new StandardMetaDataContexts(

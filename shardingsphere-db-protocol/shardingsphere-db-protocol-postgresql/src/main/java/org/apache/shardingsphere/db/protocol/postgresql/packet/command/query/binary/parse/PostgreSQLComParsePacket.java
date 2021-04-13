@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -33,7 +32,6 @@ import java.util.List;
  * Command parse packet for PostgreSQL.
  */
 @Getter
-@ToString
 public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
     private final String statementId;
@@ -68,6 +66,6 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
     @Override
     public char getMessageType() {
-        return PostgreSQLCommandPacketType.PARSE.getValue();
+        return PostgreSQLCommandPacketType.PARSE_COMMAND.getValue();
     }
 }

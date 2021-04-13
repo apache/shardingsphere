@@ -60,14 +60,20 @@ public final class MySQLComStmtExecuteExecutorTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        metaDataContexts.setAccessible(true);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
+        field.setAccessible(true);
+        ShardingSphereMetaData metaData = mockShardingSphereMetaData();
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap("logic_db", metaData);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(metaDataMap, 
-                        mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.emptyList()), new ConfigurationProperties(new Properties())));
+        StandardMetaDataContexts metaDataContexts = new StandardMetaDataContexts(metaDataMap,
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        field.set(ProxyContext.getInstance(), metaDataContexts);
+    }
+    
+    private ShardingSphereMetaData mockShardingSphereMetaData() {
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        return result;
     }
     
     @Test

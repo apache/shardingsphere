@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * PostgreSQL error code.
  *
  * @see <a href="https://www.postgresql.org/docs/12/errcodes-appendix.html">Appendix A. PostgreSQL Error Codes</a>
  */
+@RequiredArgsConstructor
+@Getter
 public enum PostgreSQLErrorCode {
     
     SUCCESSFUL_COMPLETION("00000", "successful_completion"),
@@ -48,27 +53,4 @@ public enum PostgreSQLErrorCode {
     private final String errorCode;
     
     private final String conditionName;
-    
-    PostgreSQLErrorCode(final String errorCode, final String conditionName) {
-        this.errorCode = errorCode;
-        this.conditionName = conditionName;
-    }
-    
-    /**
-     * Get error code.
-     *
-     * @return error code
-     */
-    public String getErrorCode() {
-        return errorCode;
-    }
-    
-    /**
-     * Get condition name.
-     *
-     * @return condition name
-     */
-    public String getConditionName() {
-        return conditionName;
-    }
 }
