@@ -28,47 +28,47 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class OwnerTokenTest {
-
+    
     @Test
     public void assertOwnerTokenWithOwnerNameEqualsTableName() {
         OwnerToken ownerToken = new OwnerToken(0, 1, "t_user", "t_user", QuoteCharacter.NONE);
         assertThat(ownerToken.toString(buildRouteUnit()), is("t_user_0."));
         assertTokenGrid(ownerToken);
     }
-
+    
     @Test
     public void assertOwnerTokenWithOwnerNameNotEqualsTableName() {
         OwnerToken ownerToken = new OwnerToken(0, 1, "u", "t_user", QuoteCharacter.NONE);
         assertThat(ownerToken.toString(buildRouteUnit()), is("u."));
         assertTokenGrid(ownerToken);
     }
-
+    
     @Test
     public void assertOwnerTokenWithNoRouteUnitAndOwnerNameEqualsTableName() {
         OwnerToken ownerToken = new OwnerToken(0, 1, "t_user_detail", "t_user_detail", QuoteCharacter.NONE);
         assertThat(ownerToken.toString(), is("t_user_detail."));
         assertTokenGrid(ownerToken);
     }
-
+    
     @Test
     public void assertOwnerTokenWithNoRouteUnitAndOwnerNameNotEqualsTableName() {
         OwnerToken ownerToken = new OwnerToken(0, 1, "ud", "t_user_detail", QuoteCharacter.NONE);
         assertThat(ownerToken.toString(), is("ud."));
         assertTokenGrid(ownerToken);
     }
-
+    
     @Test
     public void assertOwnerTokenWithNoRouteUnitAndOwnerNameIsEmpty() {
         OwnerToken ownerToken = new OwnerToken(0, 1, null, "t_user_detail", QuoteCharacter.NONE);
         assertThat(ownerToken.toString(), is(""));
         assertTokenGrid(ownerToken);
     }
-
+    
     private void assertTokenGrid(final OwnerToken ownerToken) {
         assertThat(ownerToken.getStartIndex(), is(0));
         assertThat(ownerToken.getStopIndex(), is(1));
     }
-
+    
     private RouteUnit buildRouteUnit() {
         return new RouteUnit(new RouteMapper("logic_db", "logic_db"), Collections.singletonList(new RouteMapper("t_user", "t_user_0")));
     }
