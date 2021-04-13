@@ -21,4 +21,11 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.identifier;
  * PostgreSQL identifier tag.
  */
 public interface PostgreSQLIdentifierTag {
+    
+    /**
+     * Get identifier tag value.
+     * 
+     * @return identifier tag value
+     */
+    char getValue();
 }
