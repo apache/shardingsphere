@@ -27,8 +27,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -41,9 +43,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class MySQLPrivilegeLoaderTest {
+public final class MySQLPrivilegeHandlerTest {
     
     @BeforeClass
     public static void setUp() {
@@ -51,9 +54,33 @@ public final class MySQLPrivilegeLoaderTest {
     }
     
     @Test
+    public void assertDiff() throws SQLException {
+        Collection<ShardingSphereUser> newUsers = createUsers();
+        newUsers.add(new ShardingSphereUser("root", "", "127.0.0.2"));
+        DataSource dataSource = mockDataSourceForUsers(newUsers);
+        assertDiffUsers(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "MySQL", new Properties()).diff(newUsers, dataSource));
+    }
+    
+    @Test
+    public void assertCreate() throws SQLException {
+        Collection<ShardingSphereUser> users = createUsers();
+        DataSource dataSource = mockDataSourceForUsers(users);
+        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "MySQL", new Properties()).create(users, dataSource);
+        assertCreateUsers(users, dataSource.getConnection().createStatement());
+    }
+    
+    @Test
+    public void assertGrantAll() throws SQLException {
+        Collection<ShardingSphereUser> users = createUsers();
+        DataSource dataSource = mockDataSourceForUsers(users);
+        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "MySQL", new Properties()).grantAll(users, dataSource);
+        assertGrantUsersAll(users, dataSource.getConnection().createStatement());
+    }
+    
+    @Test
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
-        DataSource dataSource = mockDataSource(users);
+        DataSource dataSource = mockDataSourceForPrivileges(users);
         assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "MySQL", new Properties()).load(users, dataSource));
     }
     
@@ -64,7 +91,20 @@ public final class MySQLPrivilegeLoaderTest {
         return result;
     }
     
-    private DataSource mockDataSource(final Collection<ShardingSphereUser> users) throws SQLException {
+    private DataSource mockDataSourceForUsers(final Collection<ShardingSphereUser> users) throws SQLException {
+        ResultSet usersResultSet = mockUsersResultSet();
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        Statement statement = mock(Statement.class);
+        Connection connection = mock(Connection.class);
+        String diffUsersSQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
+        String useHostTuples = users.stream().map(item -> String.format("('%s', '%s')", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
+        when(statement.executeQuery(String.format(diffUsersSQL, useHostTuples))).thenReturn(usersResultSet);
+        when(connection.createStatement()).thenReturn(statement);
+        when(result.getConnection()).thenReturn(connection);
+        return result;
+    }
+    
+    private DataSource mockDataSourceForPrivileges(final Collection<ShardingSphereUser> users) throws SQLException {
         ResultSet globalPrivilegeResultSet = mockGlobalPrivilegeResultSet();
         ResultSet schemaPrivilegeResultSet = mockSchemaPrivilegeResultSet();
         ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
@@ -72,10 +112,18 @@ public final class MySQLPrivilegeLoaderTest {
         String globalPrivilegeSQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
         String schemaPrivilegeSQL = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
         String tablePrivilegeSQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
-        String useHostTuples = users.stream().map(item -> String.format("('%s', '%s')", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(","));
+        String useHostTuples = users.stream().map(item -> String.format("('%s', '%s')", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
         when(result.getConnection().createStatement().executeQuery(String.format(globalPrivilegeSQL, useHostTuples))).thenReturn(globalPrivilegeResultSet);
         when(result.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSQL, useHostTuples))).thenReturn(schemaPrivilegeResultSet);
         when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSQL, useHostTuples))).thenReturn(tablePrivilegeResultSet);
+        return result;
+    }
+    
+    private ResultSet mockUsersResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("user")).thenReturn("root", "mysql.sys");
+        when(result.getString("host")).thenReturn("localhost", "localhost");
         return result;
     }
     
@@ -153,6 +201,24 @@ public final class MySQLPrivilegeLoaderTest {
         when(result.getString("user")).thenReturn("mysql.sys");
         when(result.getString("host")).thenReturn("localhost");
         return result;
+    }
+    
+    private void assertDiffUsers(final Collection<ShardingSphereUser> users) {
+        assertThat(users.size(), is(1));
+        assertThat(users.iterator().next().getGrantee().getUsername(), is("root"));
+        assertThat(users.iterator().next().getGrantee().getHostname(), is("127.0.0.2"));
+    }
+    
+    private void assertCreateUsers(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
+        String createUsers = users.stream().map(each -> String.format("'%s'@'%s' IDENTIFIED BY '%s'",
+                each.getGrantee().getUsername(), each.getGrantee().getHostname(), each.getPassword())).collect(Collectors.joining(", "));
+        verify(statement).execute(String.format("CREATE USER %s", createUsers));
+    }
+    
+    private void assertGrantUsersAll(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
+        String grantUsers = users.stream().map(each -> String.format("'%s'@'%s'",
+                each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
+        verify(statement).execute(String.format("GRANT ALL ON *.* TO %s", grantUsers));
     }
     
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {

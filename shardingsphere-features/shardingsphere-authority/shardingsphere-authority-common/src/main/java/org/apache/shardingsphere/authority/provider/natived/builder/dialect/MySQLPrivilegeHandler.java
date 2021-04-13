@@ -76,7 +76,7 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
     
     private String getCreateUsersSQL(final Collection<ShardingSphereUser> users) {
         String createUsers = users.stream().map(each -> String.format("'%s'@'%s' IDENTIFIED BY '%s'",
-                each.getGrantee().getUsername(), each.getGrantee().getHostname(), each.getPassword())).collect(Collectors.joining(","));
+                each.getGrantee().getUsername(), each.getGrantee().getHostname(), each.getPassword())).collect(Collectors.joining(", "));
         return String.format(CREATE_USER_SQL, createUsers);
     }
     
@@ -89,7 +89,7 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
     
     private String getGrantAllSQL(final Collection<ShardingSphereUser> users) {
         String grantUsers = users.stream().map(each -> String.format("'%s'@'%s'",
-                each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(","));
+                each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
         return String.format(GRANT_ALL_SQL, grantUsers);
     }
     
@@ -172,19 +172,19 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
     }
     
     private String getGlobalPrivilegesSQL(final Collection<ShardingSphereUser> users) {
-        String userHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(","));
+        String userHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
         return String.format(GLOBAL_PRIVILEGE_SQL, userHostTuples);
     }
     
     private String getSchemaPrivilegesSQL(final Collection<ShardingSphereUser> users) {
         String userHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(", "));
         return String.format(SCHEMA_PRIVILEGE_SQL, userHostTuples);
     }
     
     private String getTablePrivilegesSQL(final Collection<ShardingSphereUser> users) {
         String userHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(", "));
         return String.format(TABLE_PRIVILEGE_SQL, userHostTuples);
     }
     
