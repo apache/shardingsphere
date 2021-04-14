@@ -82,7 +82,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             return AuthenticationResultBuilder.continued();
         }
         String user = comStartupPacket.getUser();
-        if (null == user || user.isEmpty()) {
+        if (Strings.isNullOrEmpty(user)) {
             context.writeAndFlush(createErrorPacket(PostgreSQLErrorCode.SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION, "user not set in StartupMessage"));
             context.close();
             return AuthenticationResultBuilder.continued();
