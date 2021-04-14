@@ -18,20 +18,17 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 
 /**
  * PostgreSQL login result.
  */
+@RequiredArgsConstructor
 @Getter
 public final class PostgreSQLLoginResult {
     
     private final PostgreSQLErrorCode errorCode;
     
     private final String errorMessage;
-    
-    public PostgreSQLLoginResult(final PostgreSQLErrorCode errorCode, final String errorMessage) {
-        this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
-    }
 }
