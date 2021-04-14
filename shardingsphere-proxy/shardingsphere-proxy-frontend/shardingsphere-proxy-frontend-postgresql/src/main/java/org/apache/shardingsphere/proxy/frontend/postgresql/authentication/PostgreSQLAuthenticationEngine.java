@@ -77,15 +77,13 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         startupMessageReceived.set(true);
         String database = comStartupPacket.getDatabase();
         if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().schemaExists(database)) {
-            PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", database));
-            context.writeAndFlush(responsePacket);
+            context.writeAndFlush(createErrorPacket(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", database)));
             context.close();
             return AuthenticationResultBuilder.continued();
         }
         String user = comStartupPacket.getUser();
         if (null == user || user.isEmpty()) {
-            PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(PostgreSQLErrorCode.SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION, "user not set in StartupMessage");
-            context.writeAndFlush(responsePacket);
+            context.writeAndFlush(createErrorPacket(PostgreSQLErrorCode.SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION, "user not set in StartupMessage"));
             context.close();
             return AuthenticationResultBuilder.continued();
         }
