@@ -208,7 +208,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1102));
         assertThat(actual.getSqlState(), is("C1102"));
-        assertThat(actual.getErrorMessage(), is("Can not drop rule, tables [tbl] in the rule are still in used."));
+        assertThat(actual.getErrorMessage(), is("Tables [tbl] in the rule are still in used."));
     }
 
     @Test
