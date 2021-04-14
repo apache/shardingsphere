@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
-import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -27,8 +26,11 @@ import java.util.Map;
 /**
  * Startup packet for PostgreSQL.
  */
-@Getter
 public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
+    
+    private static final String DATABASE_NAME_KEY = "database";
+    
+    private static final String USER_NAME_KEY = "user";
     
     private final Map<String, String> parametersMap = new HashMap<>();
     
@@ -37,6 +39,24 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
         while (payload.bytesBeforeZero() > 0) {
             parametersMap.put(payload.readStringNul(), payload.readStringNul());
         }
+    }
+    
+    /**
+     * Get database.
+     * 
+     * @return database
+     */
+    public String getDatabase() {
+        return parametersMap.get(DATABASE_NAME_KEY);
+    }
+    
+    /**
+     * Get user.
+     * 
+     * @return user
+     */
+    public String getUser() {
+        return parametersMap.get(USER_NAME_KEY);
     }
     
     @Override

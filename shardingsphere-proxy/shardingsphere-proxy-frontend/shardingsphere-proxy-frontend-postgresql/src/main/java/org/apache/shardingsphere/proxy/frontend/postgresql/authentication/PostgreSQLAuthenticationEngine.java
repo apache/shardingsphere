@@ -49,10 +49,6 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     
     private static final int SSL_REQUEST_CODE = 80877103;
     
-    private static final String USER_NAME_KEYWORD = "user";
-    
-    private static final String DATABASE_NAME_KEYWORD = "database";
-    
     private final AtomicBoolean startupMessageReceived = new AtomicBoolean(false);
     
     private volatile byte[] md5Salt;
@@ -79,15 +75,15 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     private AuthenticationResult beforeStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
         PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
         startupMessageReceived.set(true);
-        String databaseName = comStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
-        if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().schemaExists(databaseName)) {
-            PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
+        String database = comStartupPacket.getDatabase();
+        if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().schemaExists(database)) {
+            PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", database));
             context.writeAndFlush(responsePacket);
             context.close();
             return AuthenticationResultBuilder.continued();
         }
-        String username = comStartupPacket.getParametersMap().get(USER_NAME_KEYWORD);
-        if (null == username || username.isEmpty()) {
+        String user = comStartupPacket.getUser();
+        if (null == user || user.isEmpty()) {
             PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(PostgreSQLErrorCode.SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION, "user not set in StartupMessage");
             context.writeAndFlush(responsePacket);
             context.close();
@@ -95,7 +91,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         }
         md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
         context.writeAndFlush(new PostgreSQLAuthenticationMD5PasswordPacket(md5Salt));
-        currentAuthResult = AuthenticationResultBuilder.continued(username, "", databaseName);
+        currentAuthResult = AuthenticationResultBuilder.continued(user, "", database);
         return currentAuthResult;
     }
     
