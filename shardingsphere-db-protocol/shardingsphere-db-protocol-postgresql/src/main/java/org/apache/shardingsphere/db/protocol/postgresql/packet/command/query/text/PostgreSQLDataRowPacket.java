@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.te
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -34,7 +33,6 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-@Slf4j
 public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket {
     
     private final Collection<Object> data;
@@ -65,7 +63,7 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket
             payload.writeInt4(((SQLXML) data).getString().getBytes().length);
             payload.writeStringEOF(((SQLXML) data).getString());
         } catch (final SQLException ex) {
-            log.error("PostgreSQL DataRowPacket write SQLXML type exception", ex);
+            throw new RuntimeException(ex.getMessage());
         }
     }
     

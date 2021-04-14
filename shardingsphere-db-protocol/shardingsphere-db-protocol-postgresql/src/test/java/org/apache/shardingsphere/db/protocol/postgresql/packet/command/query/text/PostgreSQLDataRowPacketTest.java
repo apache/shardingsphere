@@ -76,7 +76,7 @@ public final class PostgreSQLDataRowPacketTest {
         verify(payload).writeStringEOF("value");
     }
     
-    @Test
+    @Test(expected = RuntimeException.class)
     public void assertWriteWithSQLXML4Error() throws SQLException {
         when(sqlxml.getString()).thenThrow(new SQLException("mock"));
         PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(sqlxml));
