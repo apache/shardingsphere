@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import io.netty.buffer.ByteBuf;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLComStartupPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -49,7 +50,6 @@ public final class PostgreSQLComStartupPacketTest {
             payload.writeStringNul(each.getValue());
         }
         PostgreSQLComStartupPacket packet = new PostgreSQLComStartupPacket(payload);
-        assertThat(packet.getMessageType(), is('\0'));
         Map<String, String> actualParametersMap = packet.getParametersMap();
         assertThat(actualParametersMap, is(expectedParametersMap));
         packet.write(payload);

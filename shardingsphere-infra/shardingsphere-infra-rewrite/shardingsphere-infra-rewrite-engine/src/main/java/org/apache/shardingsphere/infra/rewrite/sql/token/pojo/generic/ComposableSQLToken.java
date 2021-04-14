@@ -15,29 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.builder;
+package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
-import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
+import java.util.LinkedList;
 
 /**
- * Storage privilege loader.
+ * Composable SQL token.
  */
-public interface StoragePrivilegeLoader extends TypedSPI {
+@Getter
+public final class ComposableSQLToken extends SQLToken implements Substitutable {
+    
+    private final Collection<SQLToken> sqlTokens = new LinkedList<>();
+    
+    private final int stopIndex;
+    
+    public ComposableSQLToken(final int startIndex, final int stopIndex) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+    }
     
     /**
-     * Load privileges from storage.
-     *
-     * @param users users to be loaded
-     * @param dataSource target data source to be loaded
-     * @return map of user and  privilege
-     * @throws SQLException SQL exception
+     * Add SQL token.
+     * 
+     * @param sqlToken SQL token
      */
-    Map<ShardingSphereUser, NativePrivileges> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
+    public void addSQLToken(final SQLToken sqlToken) {
+        sqlTokens.add(sqlToken);
+    }
 }

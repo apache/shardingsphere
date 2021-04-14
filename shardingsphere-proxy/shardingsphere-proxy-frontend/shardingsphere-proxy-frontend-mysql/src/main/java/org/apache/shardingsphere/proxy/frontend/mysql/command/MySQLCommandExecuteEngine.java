@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
+import org.apache.shardingsphere.proxy.frontend.mysql.err.MySQLErrPacketFactory;
 
 import java.sql.SQLException;
 import java.util.Optional;

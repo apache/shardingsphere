@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.provider.natived.builder.dialect;
 
-import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeLoader;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandler;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,13 +42,26 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Oracle privilege loader.
+ * Oracle privilege handler.
  */
-public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
+public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
     
     private static final String SYS_PRIVILEGE_SQL = "SELECT GRANTEE, PRIVILEGE, ADMIN_OPTION, INHERITED FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";
     
     private static final String TABLE_PRIVILEGE_SQL = "SELECT GRANTEE, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE, GRANTABLE, INHERITED FROM ALL_TAB_PRIVS WHERE GRANTEE IN (%s)";
+    
+    @Override
+    public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public void create(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+    }
+    
+    @Override
+    public void grantAll(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+    }
     
     @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
