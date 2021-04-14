@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text;
 
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -76,7 +77,7 @@ public final class PostgreSQLDataRowPacketTest {
         verify(payload).writeStringEOF("value");
     }
     
-    @Test
+    @Test(expected = ShardingSphereException.class)
     public void assertWriteWithSQLXML4Error() throws SQLException {
         when(sqlxml.getString()).thenThrow(new SQLException("mock"));
         PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(sqlxml));
