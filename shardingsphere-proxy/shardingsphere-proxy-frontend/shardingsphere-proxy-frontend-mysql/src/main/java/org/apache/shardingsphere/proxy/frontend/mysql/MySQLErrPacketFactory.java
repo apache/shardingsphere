@@ -139,7 +139,7 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.INVALID_RESOURCE, ((InvalidResourceException) cause).getResourceNames());
         }
         if (cause instanceof DuplicateResourceException) {
-            return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_RESOURCE, ((DuplicateResourceException) cause).getResourceName());
+            return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_RESOURCE, ((DuplicateResourceException) cause).getResourceNames());
         }
         if (cause instanceof ShardingRuleNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_RULE_NOT_EXIST);

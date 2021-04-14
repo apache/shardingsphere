@@ -36,8 +36,10 @@ import org.apache.shardingsphere.proxy.converter.AddResourcesStatementConverter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Add resource backend handler.
@@ -74,16 +76,17 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     private void check(final String schemaName, final AddResourceStatement sqlStatement) {
         List<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
+        Set<String> duplicateDataSourceNames = new HashSet<>();
         for (DataSourceSegment dataSourceSegment : sqlStatement.getDataSources()) {
-            if (dataSourceNames.contains(dataSourceSegment.getName())) {
-                throw new DuplicateResourceException(dataSourceSegment.getName());
+            if (dataSourceNames.contains(dataSourceSegment.getName()) 
+                    || ProxyContext.getInstance().getMetaData(schemaName)
+                    .getResource().getDataSources().containsKey(dataSourceSegment.getName())) {
+                duplicateDataSourceNames.add(dataSourceSegment.getName());
             }
             dataSourceNames.add(dataSourceSegment.getName());
         }
-        for (String dataSourceName : dataSourceNames) {
-            if (ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(dataSourceName)) {
-                throw new DuplicateResourceException(dataSourceName);
-            }
+        if (!duplicateDataSourceNames.isEmpty()) {
+            throw new DuplicateResourceException(duplicateDataSourceNames);
         }
     }
     

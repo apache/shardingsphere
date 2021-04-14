@@ -20,11 +20,13 @@ package org.apache.shardingsphere.proxy.backend.exception;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 @RequiredArgsConstructor
 @Getter
 public final class DuplicateResourceException extends BackendException {
     
     private static final long serialVersionUID = 2103793827572264148L;
     
-    private final String resourceName;
+    private final Collection<String> resourceNames;
 }
