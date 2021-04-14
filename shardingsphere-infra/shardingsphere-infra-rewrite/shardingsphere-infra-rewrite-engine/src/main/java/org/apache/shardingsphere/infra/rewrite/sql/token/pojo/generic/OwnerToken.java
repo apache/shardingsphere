@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Objects;
 import java.util.Set;
@@ -35,42 +36,29 @@ public final class OwnerToken extends SQLToken implements Substitutable, RouteUn
     @Getter
     private final int stopIndex;
     
-    private final String ownerName;
+    private final IdentifierValue ownerName;
     
-    private final String tableName;
+    private final IdentifierValue tableName;
     
-    // TODO need to clear the quoteCharacter's owner 
-    private final QuoteCharacter quoteCharacter;
-    
-    public OwnerToken(final int startIndex, final int stopIndex, final String ownerName, final String tableName, final QuoteCharacter quoteCharacter) {
+    public OwnerToken(final int startIndex, final int stopIndex, final IdentifierValue ownerName, final IdentifierValue tableName) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.ownerName = ownerName;
         this.tableName = tableName;
-        this.quoteCharacter = quoteCharacter;
-    }
-    
-    /**
-     * Get quote character.
-     *
-     * @return quote character
-     */
-    public QuoteCharacter getQuoteCharacter() {
-        return Objects.nonNull(quoteCharacter) ? quoteCharacter : QuoteCharacter.NONE;
     }
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        if (Objects.nonNull(ownerName) && tableName.equals(ownerName)) {
-            Set<String> actualTableNames = routeUnit.getActualTableNames(tableName);
-            String actualTableName = actualTableNames.isEmpty() ? tableName.toLowerCase() : actualTableNames.iterator().next();
-            return getQuoteCharacter().wrap(actualTableName) + ".";
+        if (Objects.nonNull(ownerName) && !Strings.isNullOrEmpty(ownerName.getValue()) && tableName.getValue().equals(ownerName.getValue())) {
+            Set<String> actualTableNames = routeUnit.getActualTableNames(tableName.getValue());
+            String actualTableName = actualTableNames.isEmpty() ? tableName.getValue().toLowerCase() : actualTableNames.iterator().next();
+            return tableName.getQuoteCharacter().wrap(actualTableName) + ".";
         }
         return toString();
     }
     
     @Override
     public String toString() {
-        return Objects.isNull(ownerName) ? "" : getQuoteCharacter().wrap(ownerName) + ".";
+        return Objects.isNull(ownerName) || Strings.isNullOrEmpty(ownerName.getValue()) ? "" : ownerName.getValueWithQuoteCharacters() + ".";
     }
 }

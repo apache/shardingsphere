@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -31,39 +31,46 @@ public final class OwnerTokenTest {
     
     @Test
     public void assertOwnerTokenWithOwnerNameEqualsTableName() {
-        OwnerToken ownerToken = new OwnerToken(0, 1, "t_user", "t_user", QuoteCharacter.NONE);
+        OwnerToken ownerToken = new OwnerToken(0, 1, new IdentifierValue("t_user"), new IdentifierValue("t_user"));
         assertThat(ownerToken.toString(buildRouteUnit()), is("t_user_0."));
         assertTokenGrid(ownerToken);
     }
     
     @Test
     public void assertOwnerTokenWithOwnerNameNotEqualsTableName() {
-        OwnerToken ownerToken = new OwnerToken(0, 1, "u", "t_user", QuoteCharacter.NONE);
+        OwnerToken ownerToken = new OwnerToken(0, 1, new IdentifierValue("u"), new IdentifierValue("t_user"));
         assertThat(ownerToken.toString(buildRouteUnit()), is("u."));
         assertTokenGrid(ownerToken);
     }
     
     @Test
     public void assertOwnerTokenWithNoRouteUnitAndOwnerNameEqualsTableName() {
-        OwnerToken ownerToken = new OwnerToken(0, 1, "t_user_detail", "t_user_detail", QuoteCharacter.NONE);
+        OwnerToken ownerToken = new OwnerToken(0, 1, new IdentifierValue("t_user_detail"), new IdentifierValue("t_user_detail"));
         assertThat(ownerToken.toString(), is("t_user_detail."));
         assertTokenGrid(ownerToken);
     }
     
     @Test
     public void assertOwnerTokenWithNoRouteUnitAndOwnerNameNotEqualsTableName() {
-        OwnerToken ownerToken = new OwnerToken(0, 1, "ud", "t_user_detail", QuoteCharacter.NONE);
+        OwnerToken ownerToken = new OwnerToken(0, 1, new IdentifierValue("ud"), new IdentifierValue("t_user_detail"));
         assertThat(ownerToken.toString(), is("ud."));
         assertTokenGrid(ownerToken);
     }
     
     @Test
-    public void assertOwnerTokenWithNoRouteUnitAndOwnerNameIsEmpty() {
-        OwnerToken ownerToken = new OwnerToken(0, 1, null, "t_user_detail", QuoteCharacter.NONE);
+    public void assertOwnerTokenWithNoRouteUnitAndOwnerNameValueIsEmpty() {
+        OwnerToken ownerToken = new OwnerToken(0, 1, new IdentifierValue(""), new IdentifierValue("t_user_detail"));
         assertThat(ownerToken.toString(), is(""));
         assertTokenGrid(ownerToken);
     }
-    
+
+    @Test
+    public void assertOwnerTokenWithNoRouteUnitAndOwnerNameIsEmpty() {
+        OwnerToken ownerToken = new OwnerToken(0, 1, null, new IdentifierValue("t_user_detail"));
+        assertThat(ownerToken.toString(), is(""));
+        assertTokenGrid(ownerToken);
+    }
+
     private void assertTokenGrid(final OwnerToken ownerToken) {
         assertThat(ownerToken.getStartIndex(), is(0));
         assertThat(ownerToken.getStopIndex(), is(1));
