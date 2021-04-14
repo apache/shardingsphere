@@ -1005,7 +1005,7 @@ updateGlobalIndexClause
 
 updateAllIndexesClause
     : UPDATE INDEXES
-    (LP_ indexName LP_ (updateIndexPartition | updateIndexSubpartition)
+    (LP_ indexName LP_ (updateIndexPartition | updateIndexSubpartition) RP_
     (COMMA_ indexName LP_ (updateIndexPartition | updateIndexSubpartition) RP_)* RP_)?
     ;
 
