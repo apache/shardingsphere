@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.test.integration.junit.container.governance;
 
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
-
-import java.util.Properties;
 
 public class ZookeeperContainer extends ShardingSphereContainer {
     
@@ -32,38 +28,4 @@ public class ZookeeperContainer extends ShardingSphereContainer {
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
     }
     
-    /**
-     * Get server lists.
-     *
-     * @return server lists
-     */
-    public String getServerLists() {
-        return getHost() + ":" + getMappedPort(2181);
-    }
-    
-    /**
-     * Get governance configuration.
-     *
-     * @return governance configuration
-     */
-    public YamlGovernanceConfiguration getGovernanceConfiguration() {
-        YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
-        result.setName("governance_ds");
-        result.setOverwrite(true);
-        result.setRegistryCenter(createGovernanceCenterConfiguration());
-        return result;
-    }
-    
-    private YamlGovernanceCenterConfiguration createGovernanceCenterConfiguration() {
-        YamlGovernanceCenterConfiguration configuration = new YamlGovernanceCenterConfiguration();
-        configuration.setServerLists(getServerLists());
-        configuration.setType("zookeeper");
-        Properties props = new Properties();
-        props.setProperty("retryIntervalMilliseconds", "500");
-        props.setProperty("timeToLiveSeconds", "60");
-        props.setProperty("maxRetries", "3");
-        props.setProperty("operationTimeoutMilliseconds", "500");
-        configuration.setProps(props);
-        return configuration;
-    }
 }
