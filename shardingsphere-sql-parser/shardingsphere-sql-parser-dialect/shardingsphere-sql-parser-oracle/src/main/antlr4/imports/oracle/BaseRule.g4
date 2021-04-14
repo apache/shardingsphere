@@ -239,6 +239,10 @@ password
     : identifier
     ;
 
+logGroupName
+    : identifier
+    ;
+
 columnNames
     : LP_? columnName (COMMA_ columnName)* RP_?
     ;
