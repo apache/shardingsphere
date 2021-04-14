@@ -25,34 +25,55 @@ import org.junit.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class PostgreSQLComStartupPacketTest {
     
     @Test
-    public void assertReadWrite() {
-        Map<String, String> expectedParametersMap = new LinkedHashMap<>();
-        expectedParametersMap.put("user", "postgres");
-        expectedParametersMap.put("database", "postgres");
-        int expectedLength = 4 + 4;
-        for (Map.Entry<String, String> each : expectedParametersMap.entrySet()) {
-            expectedLength += each.getKey().length() + 1;
-            expectedLength += each.getValue().length() + 1;
+    public void assertNewPostgreSQLComStartupPacket() {
+        Map<String, String> parametersMap = createParametersMap();
+        int packetMessageLength = getPacketMessageLength(parametersMap);
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(packetMessageLength);
+        PostgreSQLPacketPayload payload = createPayload(parametersMap, packetMessageLength, byteBuf);
+        PostgreSQLComStartupPacket actual = new PostgreSQLComStartupPacket(payload);
+        assertThat(actual.getDatabase(), is("test_db"));
+        assertThat(actual.getUser(), is("postgres"));
+        assertThat(byteBuf.writerIndex(), is(packetMessageLength));
+    }
+    
+    private Map<String, String> createParametersMap() {
+        Map<String, String> result = new LinkedHashMap<>(2, 1);
+        result.put("database", "test_db");
+        result.put("user", "postgres");
+        return result;
+    }
+    
+    private int getPacketMessageLength(final Map<String, String> parametersMap) {
+        int result = 4 + 4;
+        for (Entry<String, String> entry : parametersMap.entrySet()) {
+            result += entry.getKey().length() + 1;
+            result += entry.getValue().length() + 1;
         }
-        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
-        payload.writeInt4(expectedLength);
-        payload.writeInt4(196608);
-        for (Map.Entry<String, String> each : expectedParametersMap.entrySet()) {
-            payload.writeStringNul(each.getKey());
-            payload.writeStringNul(each.getValue());
+        return result;
+    }
+    
+    private PostgreSQLPacketPayload createPayload(final Map<String, String> actualParametersMap, final int actualMessageLength, final ByteBuf byteBuf) {
+        PostgreSQLPacketPayload result = new PostgreSQLPacketPayload(byteBuf);
+        result.writeInt4(actualMessageLength);
+        result.writeInt4(196608);
+        for (Entry<String, String> entry : actualParametersMap.entrySet()) {
+            result.writeStringNul(entry.getKey());
+            result.writeStringNul(entry.getValue());
         }
-        PostgreSQLComStartupPacket packet = new PostgreSQLComStartupPacket(payload);
-        Map<String, String> actualParametersMap = packet.getParametersMap();
-        assertThat(actualParametersMap, is(expectedParametersMap));
-        packet.write(payload);
-        assertThat(byteBuf.writerIndex(), is(expectedLength));
+        return result;
+    }
+    
+    @Test
+    public void assertWrite() {
+        new PostgreSQLComStartupPacket(mock(PostgreSQLPacketPayload.class)).write(mock(PostgreSQLPacketPayload.class));
     }
 }
