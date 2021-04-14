@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.Collection;
@@ -29,12 +29,8 @@ import java.util.Collection;
  * Row description packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {
+public final class PostgreSQLRowDescriptionPacket implements PostgreSQLIdentifierPacket {
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.ROW_DESCRIPTION.getValue();
-    
-    @Getter
     private final int fieldCount;
     
     private final Collection<PostgreSQLColumnDescription> columnDescriptions;
@@ -51,5 +47,10 @@ public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {
             payload.writeInt4(each.getTypeModifier());
             payload.writeInt2(each.getDataFormat());
         }
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.ROW_DESCRIPTION;
     }
 }

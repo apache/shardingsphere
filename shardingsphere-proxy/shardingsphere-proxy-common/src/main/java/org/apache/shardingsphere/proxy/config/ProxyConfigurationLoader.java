@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.config;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.engine.AuthorityEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
@@ -72,8 +71,7 @@ public final class ProxyConfigurationLoader {
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
         Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
-        Preconditions.checkState(
-                AuthorityEngine.findSPIAuthority().isPresent() || !result.getUsers().isEmpty() || null != result.getGovernance(), "Authority configuration is invalid.");
+        Preconditions.checkState(!result.getUsers().isEmpty() || null != result.getGovernance(), "Authority configuration is invalid.");
         return result;
     }
     

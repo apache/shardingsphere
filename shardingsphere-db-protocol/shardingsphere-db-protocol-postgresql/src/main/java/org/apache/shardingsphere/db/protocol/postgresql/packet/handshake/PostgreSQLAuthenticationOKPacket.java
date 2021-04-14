@@ -17,27 +17,27 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
-import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Authentication OK packet for PostgreSQL.
  */
-public final class PostgreSQLAuthenticationOKPacket implements PostgreSQLPacket {
+@RequiredArgsConstructor
+public final class PostgreSQLAuthenticationOKPacket implements PostgreSQLIdentifierPacket {
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue();
-    
-    private final int success;
-    
-    public PostgreSQLAuthenticationOKPacket(final boolean isSuccess) {
-        success = isSuccess ? 0 : 1;
-    }
+    private final boolean success;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt4(success);
+        payload.writeInt4(success ? 0 : 1);
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST;
     }
 }

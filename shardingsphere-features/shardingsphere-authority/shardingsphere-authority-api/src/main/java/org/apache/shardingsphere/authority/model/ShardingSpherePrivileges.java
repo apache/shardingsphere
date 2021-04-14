@@ -17,81 +17,40 @@
 
 package org.apache.shardingsphere.authority.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import org.apache.shardingsphere.authority.model.admin.AdministrativePrivileges;
-import org.apache.shardingsphere.authority.model.database.DatabasePrivileges;
-
 import java.util.Collection;
 
 /**
  * ShardingSphere Privileges.
  */
-@Getter
-@EqualsAndHashCode
-public final class ShardingSpherePrivileges {
-    
-    private final AdministrativePrivileges administrativePrivileges = new AdministrativePrivileges();
-    
-    private final DatabasePrivileges databasePrivileges = new DatabasePrivileges();
+public interface ShardingSpherePrivileges {
     
     /**
      * Set super privilege.
      */
-    public void setSuperPrivilege() {
-        administrativePrivileges.getPrivileges().add(PrivilegeType.SUPER);
-    }
-    
-    /**
-     * Is empty.
-     *
-     * @return is empty or not
-     */
-    public boolean isEmpty() {
-        return administrativePrivileges.getPrivileges().isEmpty() && databasePrivileges.getGlobalPrivileges().isEmpty() && databasePrivileges.getSpecificPrivileges().isEmpty();
-    }
+    void setSuperPrivilege();
     
     /**
      * Has privileges.
-     *
-     * @param privileges privileges
-     * @return has privileges or not
-     */
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return administrativePrivileges.hasPrivileges(privileges);
-    }
-    
-    /**
-     * Has privileges.
-     *
-     * @param schema schema
-     * @param privileges privileges
-     * @return has privileges or not
-     */
-    public boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
-        return hasPrivileges(privileges) || databasePrivileges.hasPrivileges(schema, privileges);
-    }
-    
-    /**
-     * Has privilege for login and use db.
      *
      * @param schema schema
      * @return has or not
      */
-    public boolean hasPrivileges(final String schema) {
-        return administrativePrivileges.getPrivileges().contains(PrivilegeType.SUPER) || !databasePrivileges.getGlobalPrivileges().isEmpty()
-                || databasePrivileges.getSpecificPrivileges().containsKey(schema);
-    }
+    boolean hasPrivileges(String schema);
     
     /**
      * Has privileges.
      *
-     * @param schema schema
-     * @param table table
      * @param privileges privileges
      * @return has privileges or not
      */
-    public boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
-        return hasPrivileges(privileges) || databasePrivileges.hasPrivileges(schema, table, privileges);
-    }
+    boolean hasPrivileges(Collection<PrivilegeType> privileges);
+    
+    /**
+     * Has privileges.
+     *
+     * @param accessSubject access subject
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    boolean hasPrivileges(AccessSubject accessSubject, Collection<PrivilegeType> privileges);
 }

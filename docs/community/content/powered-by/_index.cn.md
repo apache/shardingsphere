@@ -192,7 +192,8 @@ chapter = true
 <ul>
     <li><a href="https://www.hikvision.com/" rel="nofollow">海康威视</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">思创理德</a></li>
-    <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司</a></li>
+    <li><a href="http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司</a></li>
+    <li><a href="https://sunwuu.com/" rel="nofollow">商物云</a></li>
 </ul>
 
 ### 制造业

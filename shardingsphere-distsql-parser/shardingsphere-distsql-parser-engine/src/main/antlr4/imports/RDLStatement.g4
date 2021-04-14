@@ -20,23 +20,19 @@ grammar RDLStatement;
 import Keyword, Literals, Symbol;
 
 addResource
-    : ADD RESOURCE LP dataSource (COMMA dataSource)* RP
+    : ADD RESOURCE dataSource (COMMA dataSource)*
     ;
 
 dropResource
-    : DROP RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)*
     ;
 
 dataSource
-    : dataSourceName EQ dataSourceDefinition
+    : dataSourceName LP HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName COMMA USER EQ user (COMMA PASSWORD EQ password)? RP
     ;
 
 dataSourceName
     : IDENTIFIER
-    ;
-
-dataSourceDefinition
-    : hostName COLON port COLON dbName (COLON user (COLON password)?)?
     ;
 
 hostName

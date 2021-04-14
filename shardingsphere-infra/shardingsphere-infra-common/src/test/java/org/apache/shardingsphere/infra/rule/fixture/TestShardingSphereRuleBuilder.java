@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 
-import java.util.Collection;
 import java.util.Map;
 
 public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder {
@@ -32,8 +31,7 @@ public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder {
     private static final SchemaRule RULE = new TestShardingSphereRule();
     
     @Override
-    public SchemaRule build(final String schemaName, final Map dataSourceMap,
-                                    final DatabaseType databaseType, final RuleConfiguration ruleConfig, final Collection users, final Collection builtRules) {
+    public SchemaRule build(final String schemaName, final Map dataSourceMap, final DatabaseType databaseType, final RuleConfiguration ruleConfig) {
         return RULE;
     }
     

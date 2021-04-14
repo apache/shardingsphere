@@ -33,7 +33,6 @@ public final class PostgreSQLSSLNegativePacketTest {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(1);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
         PostgreSQLSSLNegativePacket packet = new PostgreSQLSSLNegativePacket();
-        assertThat(packet.getMessageType(), is('\0'));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(1));
         assertThat(payload.readInt1(), is((int) 'N'));

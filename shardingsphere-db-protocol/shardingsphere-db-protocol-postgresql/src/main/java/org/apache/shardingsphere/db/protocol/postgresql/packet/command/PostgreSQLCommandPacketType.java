@@ -20,109 +20,32 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 
 /**
  * Command packet type for PostgreSQL.
+ * 
+ * @see <a href="https://www.postgresql.org/docs/13/protocol-message-formats.html">Message Formats</a>
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLCommandPacketType implements CommandPacketType {
+public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQLIdentifierTag {
     
-    AUTHENTICATION_OK('R'),
+    SIMPLE_QUERY('Q'),
     
-    AUTHENTICATION_KERBEROS_V5('R'),
+    PARSE_COMMAND('P'),
     
-    AUTHENTICATION_CLEARTEXT_PASSWORD('R'),
+    BIND_COMMAND('B'),
     
-    AUTHENTICATION_MD5_PASSWORD('R'),
+    DESCRIBE_COMMAND('D'),
     
-    AUTHENTICATION_SCM_CREDENTIAL('R'),
+    EXECUTE_COMMAND('E'),
     
-    AUTHENTICATION_GSS('R'),
+    SYNC_COMMAND('S'),
     
-    AUTHENTICATION_SSPI('R'),
+    CLOSE_COMMAND('C'),
     
-    AUTHENTICATION_GSS_CONTINUE('R'),
-    
-    AUTHENTICATION_SASL('R'),
-    
-    AUTHENTICATION_SASL_CONTINUE('R'),
-    
-    AUTHENTICATION_SASL_FINAL('R'),
-    
-    QUERY('Q'),
-    
-    PARSE('P'),
-    
-    BIND('B'),
-    
-    DESCRIBE('D'),
-    
-    EXECUTE('E'),
-    
-    SYNC('S'),
-    
-    PARSE_COMPLETE('1'),
-    
-    BIND_COMPLETE('2'),
-    
-    ROW_DESCRIPTION('T'),
-    
-    DATA_ROW('D'),
-    
-    COMMAND_COMPLETE('C'),
-    
-    READY_FOR_QUERY('Z'),
-    
-    CLOSE('C'),
-    
-    CLOSE_COMPLETE('3'),
-    
-    BACKEND_KEY_DATA('K'),
-    
-    COPY_DATA('d'),
-    
-    COPY_DONE('c'),
-    
-    COPY_FAIL('f'),
-    
-    COPY_IN_RESPONSE('G'),
-    
-    COPY_OUT_RESPONSE('H'),
-    
-    COPY_BOTH_RESPONSE('W'),
-    
-    EMPTY_QUERY_RESPONSE('I'),
-    
-    ERROR_RESPONSE('E'),
-    
-    FLUSH('H'),
-    
-    FUNCTION_CALL('F'),
-    
-    FUNCTION_CALL_RESPONSE('V'),
-    
-    GSS_RESPONSE('p'),
-    
-    NEGOTIATE_PROTOCOL_VERSION('v'),
-    
-    NO_DATA('n'),
-    
-    NOTICE_RESPONSE('N'),
-    
-    NOTIFICATION_RESPONSE('A'),
-    
-    PARAMETER_DESCRIPTION('t'),
-    
-    PARAMETER_STATUS('S'),
-    
-    PASSWORD_MESSAGE('p'),
-    
-    PORTAL_SUSPENDED('s'),
-
-    SASL_INITIAL_RESPONSE('p'),
-    
-    SASL_RESPONSE('p'),
+    FLUSH_COMMAND('H'),
     
     TERMINATE('X');
     

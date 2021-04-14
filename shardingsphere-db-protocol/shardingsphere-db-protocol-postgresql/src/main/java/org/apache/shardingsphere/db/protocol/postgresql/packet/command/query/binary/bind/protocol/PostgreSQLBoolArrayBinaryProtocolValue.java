@@ -28,7 +28,7 @@ public final class PostgreSQLBoolArrayBinaryProtocolValue implements PostgreSQLB
     
     @Override
     public int getColumnLength(final Object value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("PostgreSQLBoolArrayBinaryProtocolValue.getColumnLength()");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class PostgreSQLBoolArrayBinaryProtocolValue implements PostgreSQLB
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("PostgreSQLBoolArrayBinaryProtocolValue.write()");
     }
 }

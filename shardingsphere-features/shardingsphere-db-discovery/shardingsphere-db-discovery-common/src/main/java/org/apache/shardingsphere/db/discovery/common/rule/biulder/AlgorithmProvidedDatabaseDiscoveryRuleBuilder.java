@@ -21,12 +21,9 @@ import org.apache.shardingsphere.db.discovery.common.algorithm.config.AlgorithmP
 import org.apache.shardingsphere.db.discovery.common.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.db.discovery.common.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.SchemaRuleBuilder;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -36,8 +33,7 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements Sche
     
     @Override
     public DatabaseDiscoveryRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
-                                       final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration ruleConfig, 
-                                       final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
+                                       final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration ruleConfig) {
         return new DatabaseDiscoveryRule(ruleConfig, databaseType, dataSourceMap, schemaName);
     }
     

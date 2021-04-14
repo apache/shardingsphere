@@ -19,7 +19,7 @@ SQL 中如果无分片字段，将执行全路由，性能较差。
 
 - 标准分片算法
 
-对应 StandardShardingAlgorithm，用于处理使用单一键作为分片键的 `=`、`IN`、`BETWEEN AND`、`>`、`<`、`>=`、`<=`进行分片的场景。需要配合 StandardShardingStrategy 使用。
+对应 StandardShardingAlgorithm，用于处理使用单一键作为分片键的 `=`、`IN`、`BETWEEN AND`、`>`、`<`、`>=`、`<=` 进行分片的场景。需要配合 StandardShardingStrategy 使用。
 
 - 复合分片算法
 
@@ -38,7 +38,7 @@ SQL 中如果无分片字段，将执行全路由，性能较差。
 对应 StandardShardingStrategy。提供对 SQL 语句中的 `=`, `>`, `<`, `>=`, `<=`, `IN` 和 `BETWEEN AND` 的分片操作支持。
 StandardShardingStrategy 只支持单分片键，提供 PreciseShardingAlgorithm 和 RangeShardingAlgorithm 两个分片算法。
 PreciseShardingAlgorithm 是必选的，用于处理 `=` 和 `IN` 的分片。
-RangeShardingAlgorithm 是可选的，用于处理 `BETWEEN AND`, `>`, `<`, `>=`, `<=`分片，如果不配置 RangeShardingAlgorithm，SQL 中的 `BETWEEN AND` 将按照全库路由处理。
+RangeShardingAlgorithm 是可选的，用于处理 `BETWEEN AND`, `>`, `<`, `>=`, `<=` 分片，如果不配置 RangeShardingAlgorithm，SQL 中的 `BETWEEN AND` 将按照全库路由处理。
 
 - 复合分片策略
 

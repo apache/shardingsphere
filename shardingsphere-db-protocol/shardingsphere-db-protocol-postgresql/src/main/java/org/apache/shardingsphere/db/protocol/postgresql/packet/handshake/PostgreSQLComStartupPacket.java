@@ -30,8 +30,6 @@ import java.util.Map;
 @Getter
 public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     
-    private final char messageType = '\0';
-    
     private final Map<String, String> parametersMap = new HashMap<>(16, 1);
     
     public PostgreSQLComStartupPacket(final PostgreSQLPacketPayload payload) {
