@@ -1017,7 +1017,7 @@ updateIndexPartition
 indexPartitionDesc
     : PARTITION
     (partitionName
-    ((segmentAttributesClause | indexCompression) | PARAMETERS LP_ SQ_ odciParameters SQ_ RP_ )?
+    ((segmentAttributesClause | indexCompression)+ | PARAMETERS LP_ SQ_ odciParameters SQ_ RP_ )?
     usableSpecification?
     )?
     ;
