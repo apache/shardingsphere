@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.sql.SQLException;
 import java.sql.SQLXML;
@@ -64,7 +65,7 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
             payload.writeInt4(((SQLXML) data).getString().getBytes().length);
             payload.writeStringEOF(((SQLXML) data).getString());
         } catch (final SQLException ex) {
-            log.error("PostgreSQL DataRowPacket write SQLXML type exception", ex);
+            throw new ShardingSphereException(ex.getMessage());
         }
     }
     
