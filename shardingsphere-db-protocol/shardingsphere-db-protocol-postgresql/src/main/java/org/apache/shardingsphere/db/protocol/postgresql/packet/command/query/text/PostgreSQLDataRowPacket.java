@@ -34,7 +34,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket {
-
+    
     private final Collection<Object> data;
     
     @Override
