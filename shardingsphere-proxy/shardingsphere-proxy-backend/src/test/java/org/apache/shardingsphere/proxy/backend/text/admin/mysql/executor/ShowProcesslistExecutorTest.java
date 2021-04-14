@@ -20,12 +20,21 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
-import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Before;
@@ -51,23 +60,30 @@ public final class ShowProcesslistExecutorTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         showProcesslistExecutor = new ShowProcesslistExecutor();
         setupMetaDataContexts();
+        setupChildrenValues();
     }
     
     private void setupMetaDataContexts() throws NoSuchFieldException, IllegalAccessException {
         Field metaDataContextsField = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContextsField.setAccessible(true);
-        GovernanceMetaDataContexts metaDataContexts = mock(GovernanceMetaDataContexts.class);
-        RegistryRepository registryRepository = getRegistryRepository();
-        when(metaDataContexts.getRegistryRepository()).thenReturn(registryRepository);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton(SCHEMA_NAME));
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.isComplete()).thenReturn(true);
-        when(metaDataContexts.getMetaData(SCHEMA_NAME)).thenReturn(metaData);
+        Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
+        MetaDataContexts metaDataContexts = new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
+            new ShardingSphereUsers(Collections.singleton(new ShardingSphereUser("root", "root", ""))), new ConfigurationProperties(new Properties()));
         metaDataContextsField.set(ProxyContext.getInstance(), metaDataContexts);
     }
     
-    private RegistryRepository getRegistryRepository() {
-        RegistryRepository registryRepository = mock(RegistryRepository.class);
+    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(2);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.isComplete()).thenReturn(true);
+        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        result.put(SCHEMA_NAME, metaData);
+        return result;
+    }
+    
+    private void setupChildrenValues() throws NoSuchFieldException, IllegalAccessException {
+        Field childrenValuesField = showProcesslistExecutor.getClass().getDeclaredField("childrenValues");
+        childrenValuesField.setAccessible(true);
         String executionNodeValue = "executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
             + "startTimeMillis: 1617939785160\n"
             + "unitStatuses:\n"
@@ -75,9 +91,7 @@ public final class ShowProcesslistExecutorTest {
             + "  unitID: unitID1\n"
             + "- status: EXECUTE_STATUS_DONE\n"
             + "  unitID: unitID2\n";
-        when(registryRepository.getChildrenKeys(REGISTRY_CENTER_NODE.getExecutionNodesPath())).thenReturn(Collections.singletonList(executionId));
-        when(registryRepository.get(REGISTRY_CENTER_NODE.getExecutionPath(executionId))).thenReturn(executionNodeValue);
-        return registryRepository;
+        childrenValuesField.set(showProcesslistExecutor, Collections.singleton(executionNodeValue));
     }
     
     @Test

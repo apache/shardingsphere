@@ -369,12 +369,13 @@ public final class RegistryCenterNode {
     }
     
     /**
-     * Get execution path.
+     * Get child path.
      *
-     * @param executionId execution id
-     * @return execution path
+     * @param parentPath parent path
+     * @param childNodeName child node name
+     * @return child path
      */
-    public String getExecutionPath(final String executionId) {
-        return Joiner.on("/").join("", EXECUTION_NODES_NAME, executionId);
+    public String getChildPath(final String parentPath, final String childNodeName) {
+        return Joiner.on("/").join(parentPath, childNodeName);
     }
 }

@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
+import com.google.common.eventbus.Subscribe;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
+import org.apache.shardingsphere.governance.core.event.model.invocation.GetChildrenRequestEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.GetChildrenResponseEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -51,11 +53,27 @@ public final class ShowProcesslistExecutor implements DatabaseAdminQueryExecutor
     
     private static final RegistryCenterNode REGISTRY_CENTER_NODE = new RegistryCenterNode();
     
+    private Collection<String> childrenValues;
+    
     @Getter
     private QueryResultMetaData queryResultMetaData;
     
     @Getter
     private MergedResult mergedResult;
+    
+    public ShowProcesslistExecutor() {
+        ShardingSphereEventBus.getInstance().register(this);
+    }
+    
+    /**
+     * Receive and handle response event.
+     *
+     * @param event get children response event
+     */
+    @Subscribe
+    public void receiveChildrenValues(final GetChildrenResponseEvent event) {
+        childrenValues = event.getChildrenValues();
+    }
     
     @Override
     public void execute(final BackendConnection backendConnection) {
@@ -67,14 +85,12 @@ public final class ShowProcesslistExecutor implements DatabaseAdminQueryExecutor
         if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
-        if (!(metaDataContexts instanceof GovernanceMetaDataContexts)) {
+        ShardingSphereEventBus.getInstance().post(new GetChildrenRequestEvent(REGISTRY_CENTER_NODE.getExecutionNodesPath()));
+        if (null == childrenValues || childrenValues.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        RegistryRepository registryRepository = ((GovernanceMetaDataContexts) metaDataContexts).getRegistryRepository();
-        List<String> executionNodeKeys = registryRepository.getChildrenKeys(REGISTRY_CENTER_NODE.getExecutionNodesPath());
-        List<YamlExecuteProcessContext> executionNodeValues = executionNodeKeys.stream()
-            .map(executionId -> YamlEngine.unmarshal(registryRepository.get(REGISTRY_CENTER_NODE.getExecutionPath(executionId)), YamlExecuteProcessContext.class)).collect(Collectors.toList());
+        Collection<YamlExecuteProcessContext> executionNodeValues = childrenValues.stream()
+            .map(value -> YamlEngine.unmarshal(value, YamlExecuteProcessContext.class)).collect(Collectors.toList());
         Grantee grantee = backendConnection.getGrantee();
         List<MemoryQueryResultDataRow> rows = executionNodeValues.stream().map(processContext -> {
             List<Object> rowValues = new ArrayList<>(8);

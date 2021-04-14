@@ -69,11 +69,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-governance-context</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sharding-route</artifactId>
             <version>${project.version}</version>
         </dependency>

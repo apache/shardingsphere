@@ -23,6 +23,8 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.GetChildrenRequestEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.GetChildrenResponseEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationCachedEvent;
@@ -478,6 +480,19 @@ public final class RegistryCenter {
     @Subscribe
     public synchronized void renew(final GrantStatementEvent event) {
         persistChangedPrivilege(event.getUsers());
+    }
+    
+    /**
+     * Load children values.
+     *
+     * @param event get children request event.
+     */
+    @Subscribe
+    public void loadChildrenValues(final GetChildrenRequestEvent event) {
+        String nodePath = event.getNodePath();
+        List<String> childrenKeys = repository.getChildrenKeys(nodePath);
+        Collection<String> childrenValues = childrenKeys.stream().map(key -> repository.get(node.getChildPath(nodePath, key))).collect(Collectors.toList());
+        ShardingSphereEventBus.getInstance().post(new GetChildrenResponseEvent(childrenValues));
     }
     
     /**
