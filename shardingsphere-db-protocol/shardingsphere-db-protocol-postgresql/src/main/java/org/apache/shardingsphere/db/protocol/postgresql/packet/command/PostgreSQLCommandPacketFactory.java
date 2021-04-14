@@ -60,7 +60,7 @@ public final class PostgreSQLCommandPacketFactory {
             case TERMINATE:
                 return new PostgreSQLComTerminationPacket(payload);
             default:
-                return new PostgreSQLUnsupportedCommandPacket(commandPacketType.getValue());
+                return new PostgreSQLUnsupportedCommandPacket(commandPacketType);
         }
     }
 }

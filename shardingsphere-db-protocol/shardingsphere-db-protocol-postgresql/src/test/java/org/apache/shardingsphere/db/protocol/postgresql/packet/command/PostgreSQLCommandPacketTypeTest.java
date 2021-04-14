@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,11 +27,11 @@ public final class PostgreSQLCommandPacketTypeTest {
     
     @Test
     public void assertValueOf() {
-        assertThat(PostgreSQLCommandPacketType.valueOf(PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue()), is(PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST));
+        assertThat(PostgreSQLMessagePacketType.valueOf(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST.getValue()), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertGetValueWithIllegalArgument() {
-        PostgreSQLCommandPacketType.valueOf(-1);
+        PostgreSQLMessagePacketType.valueOf(-1);
     }
 }

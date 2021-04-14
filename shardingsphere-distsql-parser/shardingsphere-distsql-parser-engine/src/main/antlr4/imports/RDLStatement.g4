@@ -24,7 +24,7 @@ addResource
     ;
 
 dropResource
-    : DROP RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)*
     ;
 
 dataSource

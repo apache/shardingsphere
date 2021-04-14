@@ -92,11 +92,15 @@
     <sql-case id="create_table_with_out_of_line_constraints_oracle" value="CREATE TABLE t_order_item (item_id NUMBER(10), order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10), PRIMARY KEY (item_id), UNIQUE (item_id), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE), CHECK (item_id > 0))" db-types="Oracle" />
     <sql-case id="create_table_with_exist_index" value="CREATE TABLE t_order (order_id NUMBER(10) PRIMARY KEY USING INDEX order_index, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
     <sql-case id="create_table_with_create_index" value="CREATE TABLE t_order (order_id NUMBER(10) PRIMARY KEY USING INDEX (CREATE INDEX order_index ON t_order (order_id)), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
-    <sql-case id="create_table_with_partition_oracle" value="CREATE TABLE t_order (order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10)) PARTITION BY HASH (order_id) PARTITIONS 2" db-types="Oracle" />
     <sql-case id="create_table_with_double_quota" value="CREATE TABLE &quot;t_order&quot; (&quot;order_id&quot; INTEGER, &quot;user_id&quot; INTEGER, &quot;status&quot; VARCHAR(10), &quot;column1&quot; VARCHAR(10), &quot;column2&quot; VARCHAR(10), &quot;column3&quot; VARCHAR(10))" db-types="PostgreSQL" />
     <sql-case id="create_local_temporary_table" value="CREATE LOCAL TEMPORARY TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="PostgreSQL" />
     <sql-case id="create_table_with_range_partition" value="CREATE TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY RANGE (order_id)" db-types="PostgreSQL" />
-<!--    TODO support create table with like and inherits on PostgreSQL-->
+    <sql-case id="create_table_with_partition_oracle" value="CREATE TABLE t_order (order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10)) PARTITION BY HASH (order_id) PARTITIONS 2" db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_table_oracle" value="CREATE TABLE xwarehouses OF XMLTYPE XMLSCHEMA &quot;http://www.example.com/xwarehouses.xsd&quot; ELEMENT &quot;Warehouse&quot; ;"  db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_column_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS CLOB (TABLESPACE example STORAGE (INITIAL 6144) CHUNK 4000 NOCACHE LOGGING);"  db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_column_clob_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS SECUREFILE CLOB (TABLESPACE auto_seg_ts STORAGE (INITIAL 6144) CACHE);"  db-types="Oracle" />
+    
+    <!--    TODO support create table with like and inherits on PostgreSQL-->
 <!--    <sql-case id="create_table_like" value="CREATE TABLE t_order_bak (LIKE t_order)" db-types="PostgreSQL" />-->
 <!--    <sql-case id="create_table_inherits" value="CREATE TABLE t_order_bak() inherits (t_order)" db-types="PostgreSQL" />-->
     <sql-case id="create_table_with_bracket" value="CREATE TABLE [t_order] ([order_id] INT, [user_id] INT, [status] VARCHAR(10), [column1] VARCHAR(10), [column2] VARCHAR(10), [column3] VARCHAR(10))" db-types="SQLServer" />
@@ -117,6 +121,7 @@
     <sql-case id="create_table_in_tablespace" value="CREATE TABLE t_order (id serial,name text,location text) TABLESPACE diskvol1" db-types="PostgreSQL" />
     <sql-case id="create_table_with_sign_column" value="CREATE TABLE t_order(id INT PRIMARY KEY, order_id BIGINT(20) SIGNED)" db-types="MySQL" />
     <sql-case id="create_table_with_unsigned_column" value="CREATE TABLE t_order(id INT PRIMARY KEY, order_id BIGINT(20) UNSIGNED)" db-types="MySQL" />
+    
 <!--    create index test-->
     <sql-case id="create_index" value="CREATE INDEX t_log_index ON t_log (id)" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
     <sql-case id="create_index_with_space" value="    CREATE INDEX

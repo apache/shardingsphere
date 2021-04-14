@@ -68,7 +68,45 @@ createSharingClause
     ;
 
 createDefinitionClause
-    : createRelationalTableClause | createObjectTableClause
+    : createRelationalTableClause | createObjectTableClause | createXMLTypeTableClause
+    ;
+
+createXMLTypeTableClause
+    : OF? XMLTYPE
+      (LP_ (objectProperties) RP_)?
+      (XMLTYPE xmlTypeStorageClause)?
+      (xmlSchemaSpecClause)?
+      (xmlTypeVirtualColumnsClause)?
+      (ON COMMIT (DELETE | PRESERVE) ROWS)?
+      (oidClause)?
+      (oidIndexClause)?
+      (physicalProperties)?
+      (tableProperties)?
+    ;
+
+xmlTypeStorageClause
+    : STORE
+      (AS ( OBJECT RELATIONAL | ((SECUREFILE | BASICFILE)? (CLOB | BINARY XML) (lobSegname (LP_ lobParameters RP_)? | (LP_ lobParameters RP_))?)))
+      | (ALL VARRAYS AS (LOBS | TABLES ))
+    ;
+
+xmlSchemaSpecClause
+    : (XMLSCHEMA xmlSchemaURLName)? ELEMENT (elementName | xmlSchemaURLName POUND_ elementName)? 
+      (STORE ALL VARRAYS AS (LOBS | TABLES))? 
+      ((ALLOW | DISALLOW) NONSCHEMA)?
+      ((ALLOW | DISALLOW) ANYSCHEMA)?
+    ;
+
+xmlTypeVirtualColumnsClause
+    : VIRTUAL COLUMNS LP_ (columnName AS LP_ expr RP_ (COMMA_ columnName AS LP_ expr RP_)+) RP_
+    ;
+
+oidClause
+    : OBJECT IDENTIFIER IS (SYSTEM GENERATED | PRIMARY KEY)
+    ;
+
+oidIndexClause
+    : OIDINDEX indexName? LP_ (physicalAttributesClause | TABLESPACE tablespaceName)+ RP_
     ;
 
 createRelationalTableClause
@@ -84,7 +122,9 @@ createParentClause
     ;
 
 createObjectTableClause
-    : OF objectName objectTableSubstitution? (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    : OF objectName objectTableSubstitution? 
+    (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    oidClause? oidIndexClause? physicalProperties? tableProperties?
     ;
 
 relationalProperties
@@ -363,11 +403,10 @@ alterExternalTable
     ;
 
 objectProperties
-    : objectProperty (COMMA_ objectProperty)*
-    ;
-
-objectProperty
-    : (columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
+    : ((columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint)?)
+    | outOfLineConstraint
+    | outOfLineRefConstraint
+    | supplementalLoggingProps
     ;
 
 alterIndexInformationClause
@@ -464,7 +503,7 @@ segmentAttributesClause
     ;
 
 physicalAttributesClause
-    : (PCTFREE NUMBER_ | PCTUSED NUMBER_ | INITRANS NUMBER_ | storageClause)*
+    : (PCTFREE NUMBER_ | PCTUSED NUMBER_ | INITRANS NUMBER_ | storageClause)+
     ;
 
 loggingClause
@@ -946,4 +985,16 @@ dropTablePartition
 
 partitionExtendedNames
     : (PARTITION | PARTITIONS) partition
+    ;
+
+supplementalLoggingProps
+    : SUPPLEMENTAL LOG supplementalLogGrpClause|supplementalIdKeyClause
+    ;
+
+supplementalLogGrpClause
+    : GROUP logGroupName LP_ columnName (NO LOG)? (COMMA columnName (NO LOG)?)* RP_ ALWAYS?
+    ;
+
+supplementalIdKeyClause
+    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY) (COMMA (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY))* RP_ COLUMNS
     ;

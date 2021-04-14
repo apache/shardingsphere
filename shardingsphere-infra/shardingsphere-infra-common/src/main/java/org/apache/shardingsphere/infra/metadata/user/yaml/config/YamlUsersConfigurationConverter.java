@@ -28,10 +28,10 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Configuration converter for YAML User content.
+ * Configuration converter for YAML Users content.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class YamlUserConfigurationConverter {
+public final class YamlUsersConfigurationConverter {
 
     private static final UserYamlSwapper USER_YAML_SWAPPER = new UserYamlSwapper();
 
@@ -43,7 +43,7 @@ public final class YamlUserConfigurationConverter {
      */
     public static Collection<String> convertYamlUserConfigurations(final Collection<ShardingSphereUser> users) {
         Collection<String> result = new LinkedList<>();
-        users.stream().map(user -> USER_YAML_SWAPPER.swapToYamlConfiguration(user)).forEach(user -> result.add(user.toString()));
+        users.stream().map(USER_YAML_SWAPPER::swapToYamlConfiguration).forEach(user -> result.add(user.toString()));
         return result;
     }
 
@@ -55,7 +55,7 @@ public final class YamlUserConfigurationConverter {
      */
     public static Collection<ShardingSphereUser> convertShardingSphereUser(final Collection<String> users) {
         Collection<YamlUserConfiguration> yamlUsers = convertYamlUserConfiguration(users);
-        return yamlUsers.stream().map(yamlUser -> USER_YAML_SWAPPER.swapToObject(yamlUser)).collect(Collectors.toList());
+        return yamlUsers.stream().map(USER_YAML_SWAPPER::swapToObject).collect(Collectors.toList());
     }
 
     /**
@@ -65,7 +65,7 @@ public final class YamlUserConfigurationConverter {
      * @return yaml user configurations
      */
     public static Collection<YamlUserConfiguration> convertYamlUserConfiguration(final Collection<String> users) {
-        return users.stream().map(user -> convertYamlUserConfiguration(user)).collect(Collectors.toList());
+        return users.stream().map(YamlUsersConfigurationConverter::convertYamlUserConfiguration).collect(Collectors.toList());
     }
 
     /**
