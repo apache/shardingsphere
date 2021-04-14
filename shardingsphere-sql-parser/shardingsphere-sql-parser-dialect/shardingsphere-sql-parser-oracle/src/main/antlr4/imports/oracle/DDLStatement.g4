@@ -122,7 +122,9 @@ createParentClause
     ;
 
 createObjectTableClause
-    : OF objectName objectTableSubstitution? (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    : OF objectName objectTableSubstitution? 
+    (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    oidClause? oidIndexClause? physicalProperties? tableProperties?
     ;
 
 relationalProperties
@@ -401,11 +403,10 @@ alterExternalTable
     ;
 
 objectProperties
-    : objectProperty (COMMA_ objectProperty)*
-    ;
-
-objectProperty
-    : (columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
+    : ((columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint)?)
+    | outOfLineConstraint
+    | outOfLineRefConstraint
+    | supplementalLoggingProps
     ;
 
 alterIndexInformationClause
@@ -984,4 +985,16 @@ dropTablePartition
 
 partitionExtendedNames
     : (PARTITION | PARTITIONS) partition
+    ;
+
+supplementalLoggingProps
+    : SUPPLEMENTAL LOG supplementalLogGrpClause|supplementalIdKeyClause
+    ;
+
+supplementalLogGrpClause
+    : GROUP logGroupName LP_ columnName (NO LOG)? (COMMA columnName (NO LOG)?)* RP_ ALWAYS?
+    ;
+
+supplementalIdKeyClause
+    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY) (COMMA (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY))* RP_ COLUMNS
     ;
