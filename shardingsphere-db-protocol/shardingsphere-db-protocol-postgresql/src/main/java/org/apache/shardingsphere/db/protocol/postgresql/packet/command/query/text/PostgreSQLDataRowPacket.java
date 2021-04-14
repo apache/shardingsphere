@@ -19,9 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.te
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -36,8 +33,6 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
-@Slf4j
 public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket {
 
     private final Collection<Object> data;
