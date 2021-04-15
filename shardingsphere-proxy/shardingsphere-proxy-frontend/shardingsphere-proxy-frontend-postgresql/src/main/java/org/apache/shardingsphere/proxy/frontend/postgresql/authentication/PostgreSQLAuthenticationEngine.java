@@ -38,8 +38,6 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationRes
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Authentication engine for PostgreSQL.
  */
@@ -49,9 +47,9 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     
     private static final int SSL_REQUEST_CODE = 80877103;
     
-    private final AtomicBoolean startupMessageReceived = new AtomicBoolean(false);
+    private boolean startupMessageReceived;
     
-    private volatile byte[] md5Salt;
+    private byte[] md5Salt;
     
     private AuthenticationResult currentAuthResult;
     
@@ -69,12 +67,12 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             return AuthenticationResultBuilder.continued();
         }
         payload.getByteBuf().resetReaderIndex();
-        return startupMessageReceived.get() ? afterStartupMessage(context, (PostgreSQLPacketPayload) payload) : beforeStartupMessage(context, (PostgreSQLPacketPayload) payload);
+        return startupMessageReceived ? afterStartupMessage(context, (PostgreSQLPacketPayload) payload) : beforeStartupMessage(context, (PostgreSQLPacketPayload) payload);
     }
     
     private AuthenticationResult beforeStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
         PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
-        startupMessageReceived.set(true);
+        startupMessageReceived = true;
         String database = comStartupPacket.getDatabase();
         if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().schemaExists(database)) {
             context.writeAndFlush(createErrorPacket(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", database)));
