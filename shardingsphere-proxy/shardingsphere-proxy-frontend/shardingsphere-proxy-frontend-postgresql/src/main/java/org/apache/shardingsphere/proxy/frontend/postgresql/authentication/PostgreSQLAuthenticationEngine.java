@@ -31,6 +31,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.Postgre
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
@@ -67,12 +68,12 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             return AuthenticationResultBuilder.continued();
         }
         payload.getByteBuf().resetReaderIndex();
-        return startupMessageReceived ? afterStartupMessage(context, (PostgreSQLPacketPayload) payload) : beforeStartupMessage(context, (PostgreSQLPacketPayload) payload);
+        return startupMessageReceived ? processPasswordMessage(context, (PostgreSQLPacketPayload) payload) : processStartupMessage(context, (PostgreSQLPacketPayload) payload);
     }
     
-    private AuthenticationResult beforeStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
-        PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
+    private AuthenticationResult processStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
         startupMessageReceived = true;
+        PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
         String database = comStartupPacket.getDatabase();
         if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().schemaExists(database)) {
             context.writeAndFlush(createErrorPacket(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", database)));
@@ -91,9 +92,9 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         return currentAuthResult;
     }
     
-    private AuthenticationResult afterStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
+    private AuthenticationResult processPasswordMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
         char messageType = (char) payload.readInt1();
-        if ('p' != messageType) {
+        if (PostgreSQLMessagePacketType.PASSWORD_MESSAGE.getValue() != messageType) {
             PostgreSQLErrorResponsePacket responsePacket = createErrorPacket(
                     PostgreSQLErrorCode.SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION, String.format("PasswordMessage is expected, message type 'p', but not '%s'", messageType));
             context.writeAndFlush(responsePacket);
