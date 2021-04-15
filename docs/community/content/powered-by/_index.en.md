@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 165 companies.
+Total: 166 companies.
 
 ### Financial Industry
 <ul>
