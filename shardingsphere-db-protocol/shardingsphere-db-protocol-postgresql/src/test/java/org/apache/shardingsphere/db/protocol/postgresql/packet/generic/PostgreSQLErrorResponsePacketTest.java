@@ -23,20 +23,25 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLErrorResponsePacketTest {
-
+    
     @Mock
     private PostgreSQLPacketPayload payload;
-
+    
+    @Test
+    public void assertToServerErrorMessage() {
+        PostgreSQLErrorResponsePacket responsePacket = createErrorResponsePacket();
+        assertThat(responsePacket.toServerErrorMessage(), is("SFATAL\0C3D000\0Mdatabase \"test\" does not exist"));
+    }
+    
     @Test
     public void assertWrite() {
-        PostgreSQLErrorResponsePacket responsePacket = new PostgreSQLErrorResponsePacket();
-        responsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, "FATAL");
-        responsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, "3D000");
-        responsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, "database \"test\" does not exist");
+        PostgreSQLErrorResponsePacket responsePacket = createErrorResponsePacket();
         responsePacket.write(payload);
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY);
         verify(payload).writeStringNul("FATAL");
@@ -45,5 +50,13 @@ public final class PostgreSQLErrorResponsePacketTest {
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE);
         verify(payload).writeStringNul("database \"test\" does not exist");
         verify(payload).writeInt1(0);
+    }
+    
+    private PostgreSQLErrorResponsePacket createErrorResponsePacket() {
+        PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, "FATAL");
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, "3D000");
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, "database \"test\" does not exist");
+        return result;
     }
 }

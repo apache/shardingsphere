@@ -23,6 +23,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 
+import java.sql.SQLException;
+
 /**
  * ERR packet factory for PostgreSQL.
  */
@@ -36,33 +38,35 @@ public final class PostgreSQLErrPacketFactory {
      * @return instance of PostgreSQL ERR packet
      */
     public static PostgreSQLErrorResponsePacket newInstance(final Exception cause) {
-        return cause instanceof PSQLException ? createErrorResponsePacket((PSQLException) cause) : createErrorResponsePacket(cause);
+        if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
+            return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
+        }
+        if (cause instanceof SQLException) {
+            return createErrorResponsePacket((SQLException) cause);
+        }
+        return createErrorResponsePacket(cause);
     }
     
-    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final Exception cause) {
+    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
         PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
-        // TODO add common error code
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, serverErrorMessage.getSQLState());
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, serverErrorMessage.getMessage());
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, serverErrorMessage.getSeverity());
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_POSITION, Integer.toString(serverErrorMessage.getPosition()));
         return result;
     }
     
-    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final PSQLException cause) {
-        return null == cause.getServerErrorMessage() ? createErrorResponsePacketWithoutServerErrorMessage(cause) : createErrorResponsePacketByServerErrorMessage(cause.getServerErrorMessage());
-    }
-    
-    private static PostgreSQLErrorResponsePacket createErrorResponsePacketWithoutServerErrorMessage(final PSQLException cause) {
+    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
         PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
         result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, cause.getSQLState());
         result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
         return result;
     }
     
-    private static PostgreSQLErrorResponsePacket createErrorResponsePacketByServerErrorMessage(final ServerErrorMessage serverErrorMessage) {
+    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final Exception cause) {
         PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, serverErrorMessage.getSeverity());
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, serverErrorMessage.getSQLState());
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, serverErrorMessage.getMessage());
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_POSITION, Integer.toString(serverErrorMessage.getPosition()));
+        // TODO add FIELD_TYPE_CODE for common error
+        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
         return result;
     }
 }
