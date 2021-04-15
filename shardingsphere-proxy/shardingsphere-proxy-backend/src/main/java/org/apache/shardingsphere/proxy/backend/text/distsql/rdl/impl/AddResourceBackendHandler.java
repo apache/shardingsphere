@@ -59,23 +59,11 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     @Override
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
-        check(schemaName, sqlStatement);
-        Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
-                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
-        Collection<String> invalidDataSourceNames = new ArrayList<>();
-        for (Entry<String, DataSourceConfiguration> entry : dataSources.entrySet()) {
-            if (!dataSourceValidator.validate(entry.getValue())) {
-                invalidDataSourceNames.add(entry.getKey());
-            }
-        }
-        if (!invalidDataSourceNames.isEmpty()) {
-            throw new InvalidResourceException(invalidDataSourceNames);
-        }
-        post(schemaName, dataSources);
+        post(schemaName, check(schemaName, sqlStatement));
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final String schemaName, final AddResourceStatement sqlStatement) {
+    private Map<String, DataSourceConfiguration> check(final String schemaName, final AddResourceStatement sqlStatement) {
         List<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
         Set<String> duplicateDataSourceNames = new HashSet<>();
         for (DataSourceSegment dataSourceSegment : sqlStatement.getDataSources()) {
@@ -89,6 +77,18 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         if (!duplicateDataSourceNames.isEmpty()) {
             throw new DuplicateResourceException(duplicateDataSourceNames);
         }
+        Map<String, DataSourceConfiguration> result = DataSourceParameterConverter.getDataSourceConfigurationMap(
+                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
+        Collection<String> invalidDataSourceNames = new ArrayList<>();
+        for (Entry<String, DataSourceConfiguration> entry : result.entrySet()) {
+            if (!dataSourceValidator.validate(entry.getValue())) {
+                invalidDataSourceNames.add(entry.getKey());
+            }
+        }
+        if (!invalidDataSourceNames.isEmpty()) {
+            throw new InvalidResourceException(invalidDataSourceNames);
+        }
+        return result;
     }
     
     private void post(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
