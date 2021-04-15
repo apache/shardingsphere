@@ -22,9 +22,10 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Error response packet for PostgreSQL.
@@ -69,16 +70,7 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
     
     public static final char FIELD_TYPE_ROUTINE = 'R';
     
-    private final Map<Character, String> fields = new HashMap<>();
-    
-    @Override
-    public void write(final PostgreSQLPacketPayload payload) {
-        for (Entry<Character, String> each : fields.entrySet()) {
-            payload.writeInt1(each.getKey());
-            payload.writeStringNul(each.getValue());
-        }
-        payload.writeInt1(0);
-    }
+    private final Map<Character, String> fields = new LinkedHashMap<>();
     
     /**
      * Add field.
@@ -88,6 +80,24 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
      */
     public void addField(final char fieldType, final String fieldValue) {
         fields.put(fieldType, fieldValue);
+    }
+    
+    /**
+     * To server error message.
+     * 
+     * @return server error message
+     */
+    public String toServerErrorMessage() {
+        return fields.entrySet().stream().map(entry -> entry.getKey() + entry.getValue()).collect(Collectors.joining("\0"));
+    }
+    
+    @Override
+    public void write(final PostgreSQLPacketPayload payload) {
+        for (Entry<Character, String> each : fields.entrySet()) {
+            payload.writeInt1(each.getKey());
+            payload.writeStringNul(each.getValue());
+        }
+        payload.writeInt1(0);
     }
     
     @Override

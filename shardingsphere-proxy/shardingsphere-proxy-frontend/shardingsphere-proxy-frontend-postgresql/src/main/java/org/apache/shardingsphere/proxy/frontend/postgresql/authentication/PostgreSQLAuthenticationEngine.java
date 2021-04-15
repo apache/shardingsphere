@@ -38,6 +38,9 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.postgresql.err.PostgreSQLErrPacketFactory;
+import org.postgresql.util.PSQLException;
+import org.postgresql.util.ServerErrorMessage;
 
 /**
  * Authentication engine for PostgreSQL.
@@ -121,10 +124,10 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final PostgreSQLErrorCode errorCode, final String errorMessage) {
-        PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, "FATAL");
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, errorCode.getErrorCode());
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, Strings.isNullOrEmpty(errorMessage) ? errorCode.getConditionName() : errorMessage);
-        return result;
+        PostgreSQLErrorResponsePacket packet = new PostgreSQLErrorResponsePacket();
+        packet.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, "FATAL");
+        packet.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, errorCode.getErrorCode());
+        packet.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, Strings.isNullOrEmpty(errorMessage) ? errorCode.getConditionName() : errorMessage);
+        return PostgreSQLErrPacketFactory.newInstance(new PSQLException(new ServerErrorMessage(packet.toServerErrorMessage())));
     }
 }
