@@ -21,11 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Get children request event.
+ * Show process list request event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class GetChildrenRequestEvent {
-    
-    private final String nodePath;
+public final class ShowProcessListRequestEvent {
 }

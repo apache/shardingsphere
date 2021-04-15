@@ -26,9 +26,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.event.model.invocation.GetChildrenRequestEvent;
-import org.apache.shardingsphere.governance.core.event.model.invocation.GetChildrenResponseEvent;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -47,13 +46,11 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdmin
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.model.YamlExecuteProcessContext;
 
 /**
- * Show processlist executor.
+ * Show process list executor.
  */
-public final class ShowProcesslistExecutor implements DatabaseAdminQueryExecutor {
+public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
-    private static final RegistryCenterNode REGISTRY_CENTER_NODE = new RegistryCenterNode();
-    
-    private Collection<String> childrenValues;
+    private Collection<String> processListData;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -61,18 +58,18 @@ public final class ShowProcesslistExecutor implements DatabaseAdminQueryExecutor
     @Getter
     private MergedResult mergedResult;
     
-    public ShowProcesslistExecutor() {
+    public ShowProcessListExecutor() {
         ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**
      * Receive and handle response event.
      *
-     * @param event get children response event
+     * @param event show process list response event
      */
     @Subscribe
-    public void receiveChildrenValues(final GetChildrenResponseEvent event) {
-        childrenValues = event.getChildrenValues();
+    public void receiveProcessListData(final ShowProcessListResponseEvent event) {
+        processListData = event.getProcessListData();
     }
     
     @Override
@@ -85,14 +82,14 @@ public final class ShowProcesslistExecutor implements DatabaseAdminQueryExecutor
         if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        ShardingSphereEventBus.getInstance().post(new GetChildrenRequestEvent(REGISTRY_CENTER_NODE.getExecutionNodesPath()));
-        if (null == childrenValues || childrenValues.isEmpty()) {
+        ShardingSphereEventBus.getInstance().post(new ShowProcessListRequestEvent());
+        if (null == processListData || processListData.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<YamlExecuteProcessContext> executionNodeValues = childrenValues.stream()
+        Collection<YamlExecuteProcessContext> processContexts = processListData.stream()
             .map(value -> YamlEngine.unmarshal(value, YamlExecuteProcessContext.class)).collect(Collectors.toList());
         Grantee grantee = backendConnection.getGrantee();
-        List<MemoryQueryResultDataRow> rows = executionNodeValues.stream().map(processContext -> {
+        List<MemoryQueryResultDataRow> rows = processContexts.stream().map(processContext -> {
             List<Object> rowValues = new ArrayList<>(8);
             rowValues.add(processContext.getExecutionID());
             rowValues.add(grantee.getUsername());

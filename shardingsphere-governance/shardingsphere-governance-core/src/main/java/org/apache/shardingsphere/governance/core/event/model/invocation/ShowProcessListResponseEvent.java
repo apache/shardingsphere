@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.governance.core.event.model.invocation;
 
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * MySQL show processlist statement.
+ * Show process list response event.
  */
-@ToString
-public final class MySQLShowProcesslistStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class ShowProcessListResponseEvent {
+    
+    private final Collection<String> processListData;
 }

@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -46,19 +45,15 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowProcesslistExecutorTest {
+public final class ShowProcessListExecutorTest {
     
     private static final String SCHEMA_NAME = "sharding_db";
     
-    private static final RegistryCenterNode REGISTRY_CENTER_NODE = new RegistryCenterNode();
-    
-    private final String executionId = "f6c2336a-63ba-41bf-941e-2e3504eb2c80";
-    
-    private ShowProcesslistExecutor showProcesslistExecutor;
+    private ShowProcessListExecutor showProcessListExecutor;
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        showProcesslistExecutor = new ShowProcesslistExecutor();
+        showProcessListExecutor = new ShowProcessListExecutor();
         setupMetaDataContexts();
         setupChildrenValues();
     }
@@ -82,7 +77,7 @@ public final class ShowProcesslistExecutorTest {
     }
     
     private void setupChildrenValues() throws NoSuchFieldException, IllegalAccessException {
-        Field childrenValuesField = showProcesslistExecutor.getClass().getDeclaredField("childrenValues");
+        Field childrenValuesField = showProcessListExecutor.getClass().getDeclaredField("processListData");
         childrenValuesField.setAccessible(true);
         String executionNodeValue = "executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
             + "startTimeMillis: 1617939785160\n"
@@ -91,16 +86,16 @@ public final class ShowProcesslistExecutorTest {
             + "  unitID: unitID1\n"
             + "- status: EXECUTE_STATUS_DONE\n"
             + "  unitID: unitID2\n";
-        childrenValuesField.set(showProcesslistExecutor, Collections.singleton(executionNodeValue));
+        childrenValuesField.set(showProcessListExecutor, Collections.singleton(executionNodeValue));
     }
     
     @Test
     public void assertExecute() throws SQLException {
-        showProcesslistExecutor.execute(mockBackendConnection());
-        assertThat(showProcesslistExecutor.getQueryResultMetaData().getColumnCount(), is(8));
-        MergedResult mergedResult = showProcesslistExecutor.getMergedResult();
+        showProcessListExecutor.execute(mockBackendConnection());
+        assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
+        MergedResult mergedResult = showProcessListExecutor.getMergedResult();
         while (mergedResult.next()) {
-            assertThat(mergedResult.getValue(1, String.class), is(executionId));
+            assertThat(mergedResult.getValue(1, String.class), is("f6c2336a-63ba-41bf-941e-2e3504eb2c80"));
             assertThat(mergedResult.getValue(2, String.class), is("root"));
             assertThat(mergedResult.getValue(3, String.class), is("localhost:30000"));
             assertThat(mergedResult.getValue(4, String.class), is(SCHEMA_NAME));
