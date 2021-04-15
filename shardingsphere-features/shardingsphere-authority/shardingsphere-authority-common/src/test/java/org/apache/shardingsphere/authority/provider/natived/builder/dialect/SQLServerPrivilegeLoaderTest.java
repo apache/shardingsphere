@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -46,21 +44,20 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class SQLServerPrivilegeLoaderTest {
-
+    
     @BeforeClass
     public static void setUp() {
         ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
     }
-
+    
     @Test
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
         assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer", new Properties()).load(users, dataSource));
     }
-
+    
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
         assertThat(actual.size(), is(1));
         ShardingSphereUser dbo = new ShardingSphereUser("dbo", "", "");
@@ -73,36 +70,33 @@ public final class SQLServerPrivilegeLoaderTest {
         SchemaPrivileges schemaPrivileges = actual.get(dbo).getDatabasePrivileges().getSpecificPrivileges().get("db0");
         assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
     }
-
+    
     private Collection<ShardingSphereUser> createUsers() {
         LinkedList<ShardingSphereUser> result = new LinkedList<>();
         result.add(new ShardingSphereUser("dbo", "", ""));
         return result;
     }
-
+    
     private DataSource mockDataSource(final Collection<ShardingSphereUser> users) throws SQLException {
         ResultSet globalPrivilegeResultSet = mockGlobalPrivilegeResultSet();
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
-
         String globalPrivilegeSql = "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE"
                 + "FROM sys.server_principals AS pr JOIN sys.server_permissions AS pe"
                 + "ON pe.grantee_principal_id = pr.principal_id WHERE pr.name IN (%s) GROUP BY pr.name, pe.state_desc, pe.permission_name";
         when(result.getConnection().createStatement().executeQuery(String.format(globalPrivilegeSql, userList))).thenReturn(globalPrivilegeResultSet);
-
         ResultSet schemaPrivilegeResultSet = mockSchemaPrivilegeResultSet();
         String schemaPrivilegeSql = "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE, o.name AS DB"
                 + "FROM sys.database_principals AS pr JOIN sys.database_permissions AS pe"
                 + "ON pe.grantee_principal_id = pr.principal_id JOIN sys.objects AS o"
                 + "ON pe.major_id = o.object_id WHERE pr.name IN (%s) GROUP BY pr.name, pe.state_desc, pe.permission_name, o.name";
         when(result.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSql, userList))).thenReturn(schemaPrivilegeResultSet);
-
         ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
         String tablePrivilegeSql = "SELECT GRANTOR, GRANTEE, TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE_TYPE, IS_GRANTABLE from INFORMATION_SCHEMA.TABLE_PRIVILEGES WHERE GRANTEE IN (%s)";
         when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
         return result;
     }
-
+    
     private ResultSet mockGlobalPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, true, false);
@@ -111,7 +105,7 @@ public final class SQLServerPrivilegeLoaderTest {
         when(result.getString("PRIVILEGE_TYPE")).thenReturn("CONNECT", "SHUTDOWN");
         return result;
     }
-
+    
     private ResultSet mockTablePrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, true, true, true, true, true, true, false);
@@ -122,7 +116,7 @@ public final class SQLServerPrivilegeLoaderTest {
         when(result.getString("GRANTEE")).thenReturn("dbo");
         return result;
     }
-
+    
     private ResultSet mockSchemaPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, false);

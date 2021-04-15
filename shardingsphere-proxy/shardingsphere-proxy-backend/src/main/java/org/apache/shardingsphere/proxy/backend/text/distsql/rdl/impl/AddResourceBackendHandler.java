@@ -37,6 +37,7 @@ import org.apache.shardingsphere.proxy.converter.AddResourcesStatementConverter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,21 +66,19 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     private Map<String, DataSourceConfiguration> check(final String schemaName, final AddResourceStatement sqlStatement) {
         List<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
-        Set<String> duplicateDataSourceNames = new HashSet<>();
-        for (DataSourceSegment dataSourceSegment : sqlStatement.getDataSources()) {
-            if (dataSourceNames.contains(dataSourceSegment.getName()) 
-                    || ProxyContext.getInstance().getMetaData(schemaName)
-                    .getResource().getDataSources().containsKey(dataSourceSegment.getName())) {
-                duplicateDataSourceNames.add(dataSourceSegment.getName());
+        Set<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
+        for (DataSourceSegment each : sqlStatement.getDataSources()) {
+            if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(each.getName())) {
+                duplicateDataSourceNames.add(each.getName());
             }
-            dataSourceNames.add(dataSourceSegment.getName());
+            dataSourceNames.add(each.getName());
         }
         if (!duplicateDataSourceNames.isEmpty()) {
             throw new DuplicateResourceException(duplicateDataSourceNames);
         }
         Map<String, DataSourceConfiguration> result = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
-        Collection<String> invalidDataSourceNames = new ArrayList<>();
+        Collection<String> invalidDataSourceNames = new LinkedList<>();
         for (Entry<String, DataSourceConfiguration> entry : result.entrySet()) {
             if (!dataSourceValidator.validate(entry.getValue())) {
                 invalidDataSourceNames.add(entry.getKey());
