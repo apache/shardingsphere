@@ -18,3 +18,4 @@
 org.apache.shardingsphere.authority.provider.natived.builder.dialect.MySQLPrivilegeHandler
 org.apache.shardingsphere.authority.provider.natived.builder.dialect.PostgreSQLPrivilegeHandler
 org.apache.shardingsphere.authority.provider.natived.builder.dialect.OraclePrivilegeHandler
+org.apache.shardingsphere.authority.provider.natived.builder.dialect.SQLServerPrivilegeHandler
