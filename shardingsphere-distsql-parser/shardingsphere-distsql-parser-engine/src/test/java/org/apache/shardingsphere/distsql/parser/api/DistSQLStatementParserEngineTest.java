@@ -118,7 +118,10 @@ public final class DistSQLStatementParserEngineTest {
         assertThat(tableRuleSegment.getLogicTable(), is("t_order"));
         assertTrue(tableRuleSegment.getDataSources().containsAll(Arrays.asList("ms_group_0", "ms_group_1")));
         assertThat(tableRuleSegment.getTableStrategyColumn(), is("order_id"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategy().getAlgorithmName(), is("snowflake"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategy().getAlgorithmProps().getProperty("worker-id"), is("123"));
         assertThat(tableRuleSegment.getKeyGenerateStrategyColumn(), is("another_id"));
         assertThat(tableRuleSegment.getTableStrategy().getAlgorithmName(), is("hash_mod"));
+        assertThat(tableRuleSegment.getTableStrategy().getAlgorithmProps().getProperty("sharding-count"), is("4"));
     }
 }

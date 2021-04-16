@@ -75,7 +75,6 @@ public final class ShardingRuleStatementConverter {
         return result;
     }
     
-    
     /**
      * Convert function segment to YAML algorithm configuration.
      *
