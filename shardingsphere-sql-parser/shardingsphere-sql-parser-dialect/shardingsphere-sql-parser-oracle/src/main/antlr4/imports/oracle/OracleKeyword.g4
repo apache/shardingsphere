@@ -795,6 +795,10 @@ SHARDED
     : S H A R D E D
     ;
 
+SHARD
+    : S H A R D
+    ;
+
 DUPLICATED
     : D U P L I C A T E D
     ;
@@ -1037,6 +1041,10 @@ FREELISTS
 
 DML
     : D M L
+    ;
+
+DDL
+    : D D L
     ;
 
 CAPACITY
@@ -1409,4 +1417,32 @@ EDITIONABLE
 
 NONEDITIONABLE
     : N O N E D I T I O N A B L E
+    ;
+
+ADVISE
+    : A D V I S E
+    ;
+
+NOTHING
+    : N O T H I N G
+    ;
+
+GUARD
+    : G U A R D
+    ;
+
+SYNC
+    : S Y N C
+    ;
+
+VISIBILITY
+    : V I S I B I L I T Y
+    ;
+
+ACTIVE
+    : A C T I V E
+    ;
+
+DEFAULT_COLLATION
+    : D E F A U L T UL_ C O L L A T I O N
     ;
