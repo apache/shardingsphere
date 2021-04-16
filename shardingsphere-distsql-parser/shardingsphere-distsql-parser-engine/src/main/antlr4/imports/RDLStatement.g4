@@ -59,6 +59,10 @@ password
     : IDENTIFIER | INT | STRING
     ;
 
+createShardingTableRule
+    : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
+    ;
+
 createShardingRule
     : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* bindingTables? defaultTableStrategy? broadcastTables? RP
     ;
@@ -88,11 +92,15 @@ alterShardingTableRuleDefinition
     ;
 
 shardingTableRuleDefinition
-    : tableName resources? (columnName functionDefinition)? keyGenerateStrategy?
+    : tableName LP resources (COMMA shardingColumn)? (COMMA functionDefinition)? (COMMA keyGenerateStrategy)? RP
     ;
 
 resources
-    : RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
+shardingColumn
+    : SHARDING_COLUMN EQ columnName
     ;
 
 alterBindingTables
@@ -120,7 +128,7 @@ broadcastTables
     ;
 
 keyGenerateStrategy
-    : GENERATED_KEY columnName functionDefinition
+    : GENERATED_KEY LP COLUMN EQ columnName COMMA functionDefinition RP
     ;
 
 actualDataNodes
@@ -160,7 +168,11 @@ schemaName
     ;
 
 functionDefinition
-    : functionName=IDENTIFIER LP algorithmProperties? RP
+    : TYPE LP NAME EQ functionName COMMA PROPERTIES LP algorithmProperties? RP RP
+    ;
+
+functionName
+    : IDENTIFIER
     ;
 
 algorithmProperties

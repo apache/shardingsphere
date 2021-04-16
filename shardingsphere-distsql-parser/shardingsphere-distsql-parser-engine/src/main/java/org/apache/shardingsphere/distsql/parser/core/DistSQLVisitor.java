@@ -30,6 +30,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.B
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CheckScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropResourceContext;
@@ -64,6 +65,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleS
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadWriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
@@ -102,6 +104,15 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setDb(ctx.dbName().getText());
         result.setUser(ctx.user().getText());
         result.setPassword(null == ctx.password() ? "" : ctx.password().getText());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateShardingTableRule(final CreateShardingTableRuleContext ctx) {
+        CreateShardingTableRuleStatement result = new CreateShardingTableRuleStatement();
+        for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
+            result.getTables().add((TableRuleSegment) visit(each));
+        }
         return result;
     }
     
@@ -200,7 +211,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setName(ctx.ruleName.getText());
         result.setWriteDataSource(ctx.primary.getText());
         result.setReadDataSources(replicaDatasources);
-        result.setLoadBalancer(ctx.functionDefinition().functionName.getText());
+        result.setLoadBalancer(ctx.functionDefinition().functionName().getText());
         result.setProps(props);
         return result;
     }
@@ -245,7 +256,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
                     props.setProperty(each.key.getText(), each.value.getText());
                 }
             }
-            result.setLoadBalancer(ctx.functionDefinition().functionName.getText());
+            result.setLoadBalancer(ctx.functionDefinition().functionName().getText());
             result.setProps(props);
         }
         return result;
@@ -264,7 +275,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setDataSources(dataSources);
         if (null != ctx.functionDefinition()) {
             result.setTableStrategy((FunctionSegment) visit(ctx.functionDefinition()));
-            result.setTableStrategyColumn(ctx.columnName().getText());
+            result.setTableStrategyColumn(ctx.shardingColumn().columnName().getText());
         }
         if (null != ctx.keyGenerateStrategy()) {
             result.setKeyGenerateStrategy((FunctionSegment) visit(ctx.keyGenerateStrategy().functionDefinition()));
@@ -276,7 +287,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitFunctionDefinition(final FunctionDefinitionContext ctx) {
         FunctionSegment result = new FunctionSegment();
-        result.setAlgorithmName(ctx.functionName.getText());
+        result.setAlgorithmName(ctx.functionName().getText());
         Properties algorithmProps = new Properties();
         if (null != ctx.algorithmProperties()) {
             for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {

@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.distsql.parser.api;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
@@ -41,6 +43,12 @@ public final class DistSQLStatementParserEngineTest {
             + "ds_1(HOST=127.0.0.1,PORT=3306,DB=test1,USER=ROOT,PASSWORD=123456);";
     
     private static final String RDL_DROP_RESOURCE = "DROP RESOURCE ds_0,ds_1";
+    
+    private static final String RDL_CREATE_SHARDING_TABLE_RULE = "CREATE SHARDING TABLE RULE t_order (" 
+            + "RESOURCES(ms_group_0,ms_group_1)," 
+            + "SHARDING_COLUMN=order_id," 
+            + "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4))," 
+            + "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123)))" + ")";
     
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -99,5 +107,21 @@ public final class DistSQLStatementParserEngineTest {
         assertTrue(sqlStatement instanceof DropResourceStatement);
         assertThat(((DropResourceStatement) sqlStatement).getResourceNames().size(), is(2));
         assertTrue(((DropResourceStatement) sqlStatement).getResourceNames().containsAll(Arrays.asList("ds_0", "ds_1")));
+    }
+    
+    @Test
+    public void assertParseCreateShardingTableRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_CREATE_SHARDING_TABLE_RULE);
+        assertTrue(sqlStatement instanceof CreateShardingTableRuleStatement);
+        assertThat(((CreateShardingTableRuleStatement) sqlStatement).getTables().size(), is(1));
+        TableRuleSegment tableRuleSegment = ((CreateShardingTableRuleStatement) sqlStatement).getTables().iterator().next();
+        assertThat(tableRuleSegment.getLogicTable(), is("t_order"));
+        assertTrue(tableRuleSegment.getDataSources().containsAll(Arrays.asList("ms_group_0", "ms_group_1")));
+        assertThat(tableRuleSegment.getTableStrategyColumn(), is("order_id"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategy().getAlgorithmName(), is("snowflake"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategy().getAlgorithmProps().getProperty("worker-id"), is("123"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategyColumn(), is("another_id"));
+        assertThat(tableRuleSegment.getTableStrategy().getAlgorithmName(), is("hash_mod"));
+        assertThat(tableRuleSegment.getTableStrategy().getAlgorithmProps().getProperty("sharding-count"), is("4"));
     }
 }
