@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleS
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadWriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AlterShardi
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateReadWriteSplittingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingRuleBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingTableRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropReadWriteSplittingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropResourceBackendHandler;
@@ -90,6 +92,9 @@ public final class RDLBackendHandlerFactory {
         }
         if (sqlStatement instanceof CreateShardingRuleStatement) {
             return Optional.of(new CreateShardingRuleBackendHandler((CreateShardingRuleStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof CreateShardingTableRuleStatement) {
+            return Optional.of(new CreateShardingTableRuleBackendHandler((CreateShardingTableRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof AlterShardingRuleStatement) {
             return Optional.of(new AlterShardingRuleBackendHandler((AlterShardingRuleStatement) sqlStatement, backendConnection));
