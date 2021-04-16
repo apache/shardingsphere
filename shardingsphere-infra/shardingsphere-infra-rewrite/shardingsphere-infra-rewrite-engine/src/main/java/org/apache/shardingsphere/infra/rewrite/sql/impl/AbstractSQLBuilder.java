@@ -31,11 +31,11 @@ import java.util.List;
  * Abstract SQL builder.
  */
 public abstract class AbstractSQLBuilder implements SQLBuilder {
-
+    
     private final SQLRewriteContext context;
-
+    
     private final List<SQLToken> sqlTokens = new LinkedList<>();
-
+    
     public AbstractSQLBuilder(final SQLRewriteContext context) {
         this.context = context;
         context.getSqlTokens().forEach(each -> {
@@ -46,7 +46,7 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
             }
         });
     }
-
+    
     @Override
     public final String toSQL() {
         if (sqlTokens.isEmpty()) {
@@ -61,18 +61,18 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         }
         return result.toString();
     }
-
+    
     protected abstract String getSQLTokenText(SQLToken sqlToken);
 
     private String getConjunctionText(final SQLToken sqlToken) {
         return context.getSql().substring(getStartIndex(sqlToken), getStopIndex(sqlToken));
     }
-
+    
     private int getStartIndex(final SQLToken sqlToken) {
         int startIndex = sqlToken instanceof Substitutable ? ((Substitutable) sqlToken).getStopIndex() + 1 : sqlToken.getStartIndex();
         return Math.min(startIndex, context.getSql().length());
     }
-
+    
     private int getStopIndex(final SQLToken sqlToken) {
         int currentSQLTokenIndex = sqlTokens.indexOf(sqlToken);
         return sqlTokens.size() - 1 == currentSQLTokenIndex ? context.getSql().length() : sqlTokens.get(currentSQLTokenIndex + 1).getStartIndex();
