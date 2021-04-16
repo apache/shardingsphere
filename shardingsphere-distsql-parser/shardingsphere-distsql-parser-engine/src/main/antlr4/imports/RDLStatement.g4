@@ -180,5 +180,5 @@ algorithmProperties
     ;
 
 algorithmProperty
-    : key=IDENTIFIER EQ value=(NUMBER | INT | STRING)
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
     ;
