@@ -47,7 +47,7 @@ public final class DistSQLStatementParserEngineTest {
     private static final String RDL_CREATE_SHARDING_TABLE_RULE = "CREATE SHARDING TABLE RULE t_order (" 
             + "RESOURCES(ms_group_0,ms_group_1)," 
             + "SHARDING_COLUMN=order_id," 
-            + "TYPE(NAME=hash_mod,PROPERTIES(\"sharding-count\"=4))," 
+            + "TYPE(NAME=hash_mod,PROPERTIES('sharding-count'=4))," 
             + "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123)))" + ")";
     
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
