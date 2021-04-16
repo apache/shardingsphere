@@ -35,6 +35,8 @@ public final class ExecuteProcessContext {
     
     private final Collection<ExecuteProcessUnit> unitStatuses;
     
+    private final long startTimeMillis = System.currentTimeMillis();
+    
     public ExecuteProcessContext(final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
         this.executionID = executionGroupContext.getExecutionID();
         unitStatuses = createExecutionUnitStatuses(executionGroupContext);

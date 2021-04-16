@@ -23,6 +23,8 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationCachedEvent;
@@ -476,6 +478,18 @@ public final class RegistryCenter {
     @Subscribe
     public synchronized void renew(final GrantStatementEvent event) {
         persistChangedPrivilege(event.getUsers());
+    }
+    
+    /**
+     * Load show process list data.
+     *
+     * @param event get children request event.
+     */
+    @Subscribe
+    public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
+        List<String> childrenKeys = repository.getChildrenKeys(node.getExecutionNodesPath());
+        Collection<String> processListData = childrenKeys.stream().map(key -> repository.get(node.getExecutionPath(key))).collect(Collectors.toList());
+        ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(processListData));
     }
     
     /**

@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.model;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import lombok.Getter;
-
-import java.util.Collection;
-import java.util.UUID;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Execution group context.
- *
- * @param <T> type of execution input value
+ * MySQL show process list statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ExecutionGroupContext<T> {
-    
-    private final Collection<ExecutionGroup<T>> inputGroups;
-    
-    private final String executionID = UUID.randomUUID().toString();
+@ToString
+public final class MySQLShowProcessListStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

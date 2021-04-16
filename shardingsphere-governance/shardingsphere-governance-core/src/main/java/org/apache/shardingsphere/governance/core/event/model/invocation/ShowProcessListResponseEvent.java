@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.model;
-
-import lombok.Getter;
+package org.apache.shardingsphere.governance.core.event.model.invocation;
 
 import java.util.Collection;
-import java.util.UUID;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Execution group context.
- *
- * @param <T> type of execution input value
+ * Show process list response event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecutionGroupContext<T> {
+public final class ShowProcessListResponseEvent {
     
-    private final Collection<ExecutionGroup<T>> inputGroups;
-    
-    private final String executionID = UUID.randomUUID().toString();
+    private final Collection<String> processListData;
 }

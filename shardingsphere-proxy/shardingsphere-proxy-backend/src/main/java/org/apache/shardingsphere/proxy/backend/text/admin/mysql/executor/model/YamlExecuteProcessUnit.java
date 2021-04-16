@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.model;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.Collection;
-import java.util.UUID;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 
 /**
- * Execution group context.
- *
- * @param <T> type of execution input value
+ * Execute process unit for YAML.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public final class ExecutionGroupContext<T> {
+@Setter
+public final class YamlExecuteProcessUnit {
     
-    private final Collection<ExecutionGroup<T>> inputGroups;
+    private String unitID;
     
-    private final String executionID = UUID.randomUUID().toString();
+    private ExecuteProcessConstants status;
 }

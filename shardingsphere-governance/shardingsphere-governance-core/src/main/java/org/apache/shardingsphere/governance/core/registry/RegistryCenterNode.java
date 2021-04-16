@@ -45,6 +45,8 @@ public final class RegistryCenterNode {
     
     private static final String PRIMARY_NODES_NAME = "primarynodes";
     
+    private static final String EXECUTION_NODES_NAME = "executionnodes";
+    
     private static final String METADATA_NODE = "metadata";
     
     private static final String DATA_SOURCE_NODE = "datasource";
@@ -355,5 +357,24 @@ public final class RegistryCenterNode {
      */
     public Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
         return schemaNames.stream().map(this::getMetadataDataSourcePath).collect(Collectors.toList());
+    }
+    
+    /**
+     * Get execution nodes path.
+     *
+     * @return execution nodes path
+     */
+    public String getExecutionNodesPath() {
+        return Joiner.on("/").join("", EXECUTION_NODES_NAME);
+    }
+    
+    /**
+     * Get execution path.
+     *
+     * @param executionId execution id
+     * @return execution path
+     */
+    public String getExecutionPath(final String executionId) {
+        return Joiner.on("/").join("", EXECUTION_NODES_NAME, executionId);
     }
 }
