@@ -19,23 +19,19 @@ package org.apache.shardingsphere.authority.rule.builder;
 
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * Authority rule builder.
+ * Default authority rule configuration builder.
  */
-public final class AuthorityRuleBuilder implements KernelRuleBuilder, GlobalRuleBuilder<AuthorityRule, AuthorityRuleConfiguration> {
+public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultKernelRuleConfigurationBuilder<AuthorityRuleConfiguration, AuthorityRuleBuilder> {
     
     @Override
-    public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        return new AuthorityRule(ruleConfig, mataDataMap, users);
+    public AuthorityRuleConfiguration build() {
+        return new AuthorityRuleConfiguration(new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
     }
     
     @Override
@@ -44,7 +40,7 @@ public final class AuthorityRuleBuilder implements KernelRuleBuilder, GlobalRule
     }
     
     @Override
-    public Class<AuthorityRuleConfiguration> getTypeClass() {
-        return AuthorityRuleConfiguration.class;
+    public Class<AuthorityRuleBuilder> getTypeClass() {
+        return AuthorityRuleBuilder.class;
     }
 }
