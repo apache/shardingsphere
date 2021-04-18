@@ -54,5 +54,4 @@ public final class DatabaseDiscoveryRuleBuilder implements FeatureRuleBuilder, S
     public Class<DatabaseDiscoveryRuleConfiguration> getTypeClass() {
         return DatabaseDiscoveryRuleConfiguration.class;
     }
-    
 }
