@@ -17,10 +17,16 @@
 
 package org.apache.shardingsphere.governance.context.process;
 
+import org.apache.shardingsphere.governance.core.event.model.invocation.ReportExecuteProcessSummaryEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ReportExecuteProcessUnitEvent;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 
 /**
@@ -29,12 +35,14 @@ import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessRe
 public final class GovernanceExecuteProcessReporter implements ExecuteProcessReporter {
     
     @Override
-    public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
-        // TODO :Call API of configCenter
+    public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(executionGroupContext);
+        ShardingSphereEventBus.getInstance().post(new ReportExecuteProcessSummaryEvent(new YamlExecuteProcessContext(executeProcessContext)));
     }
     
     @Override
     public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants) {
-        // TODO :Call API of configCenter
+        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
+        ShardingSphereEventBus.getInstance().post(new ReportExecuteProcessUnitEvent(executionID, executeProcessUnit));
     }
 }

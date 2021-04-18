@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.model;
+package org.apache.shardingsphere.governance.core.event.model.invocation;
 
-import java.util.Collection;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
 /**
- * Execute process context for YAML.
+ * Report execute process unit event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlExecuteProcessContext {
+public final class ReportExecuteProcessUnitEvent {
     
-    private String executionID;
+    private final String executionID;
     
-    private Collection<YamlExecuteProcessUnit> unitStatuses;
-    
-    private Long startTimeMillis;
+    private final ExecuteProcessUnit executeProcessUnit;
 }

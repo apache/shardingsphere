@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.Connection;
@@ -67,6 +68,7 @@ public final class CalciteRowExecutor {
     public Collection<QueryResult> execute(final ExecutionContext context) {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(context);
+            ExecuteProcessEngine.initialize(context.getSqlStatementContext(), executionGroupContext);
             return jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
