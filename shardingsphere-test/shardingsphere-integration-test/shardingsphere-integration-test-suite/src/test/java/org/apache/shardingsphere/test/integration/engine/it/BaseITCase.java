@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.engine.it;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
@@ -83,9 +84,12 @@ public abstract class BaseITCase {
     }
     
     @After
-    public final void tearDown() {
+    public final void tearDown() throws Exception {
         if (targetDataSource instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
+            ((ShardingSphereDataSource) targetDataSource).close();
+        }
+        if (targetDataSource instanceof GovernanceShardingSphereDataSource) {
+            ((GovernanceShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
         }
     }
     

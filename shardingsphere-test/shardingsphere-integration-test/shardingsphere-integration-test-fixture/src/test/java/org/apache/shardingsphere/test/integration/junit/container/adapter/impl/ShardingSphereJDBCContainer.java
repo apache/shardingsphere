@@ -17,24 +17,24 @@
 
 package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.junit.container.governance.ShardingSphereGovernanceContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
-import org.testcontainers.lifecycle.Startable;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere JDBC container.
@@ -43,35 +43,76 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
     
     private final AtomicBoolean isHealthy = new AtomicBoolean();
     
-    private Map<String, DataSource> dataSourceMap;
+    private ShardingSphereGovernanceContainer governance;
+    
+    private ShardingSphereStorageContainer storageContainer;
     
     public ShardingSphereJDBCContainer(final ParameterizedArray parameterizedArray) {
         super("ShardingSphere-JDBC", "ShardingSphere-JDBC", true, parameterizedArray);
     }
     
+    @SneakyThrows
     @Override
     public void start() {
         super.start();
-        List<Startable> startables = getDependencies().stream()
-                .filter(e -> e instanceof ShardingSphereStorageContainer)
-                .collect(Collectors.toList());
-        dataSourceMap = ((ShardingSphereStorageContainer) startables.get(0)).getDataSourceMap();
+        governance = getDependencies().stream()
+                .filter(x -> x instanceof ShardingSphereGovernanceContainer)
+                .map(x -> (ShardingSphereGovernanceContainer) x)
+                .findFirst()
+                .orElse(null);
+        storageContainer = getDependencies().stream()
+                .filter(x -> x instanceof ShardingSphereStorageContainer)
+                .map(x -> (ShardingSphereStorageContainer) x)
+                .findFirst()
+                .orElseThrow(Exception::new);
         isHealthy.set(true);
     }
     
+    private DataSource dataSource;
+    
     /**
-     * Get data source.
+     * Create and get data source.
      *
      * @return data source
      */
     public DataSource getDataSource() {
+        if (Objects.isNull(dataSource)) {
+        }
+        return createDataSource();
+    }
+    
+    private DataSource createDataSource() {
+        Map<String, DataSource> dataSourceMap = storageContainer.getDataSourceMap();
         try {
             if ("sharding_governance".equals(getParameterizedArray().getScenario())) {
-                return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())));
+                return createDataSource(dataSourceMap, 0);
+            } else {
+                return YamlShardingSphereDataSourceFactory.createDataSource(
+                        dataSourceMap,
+                        new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()))
+                );
             }
-            return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())));
         } catch (SQLException | IOException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+    
+    @SneakyThrows
+    private DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final int retry) {
+        if (Objects.isNull(governance)) {
+            throw new NullPointerException("Governance Container cannot be null.");
+        }
+        try {
+            return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(
+                    dataSourceMap,
+                    governance.getGovernanceConfiguration(),
+                    new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario()))
+            );
+        } catch (NullPointerException ex) {
+            if (retry == 0) {
+                return createDataSource(dataSourceMap, 1);
+            }
+            throw ex;
         }
     }
     

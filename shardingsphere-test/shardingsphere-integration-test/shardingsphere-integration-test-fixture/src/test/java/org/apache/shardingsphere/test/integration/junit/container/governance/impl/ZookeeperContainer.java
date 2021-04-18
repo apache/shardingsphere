@@ -15,17 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.container.governance;
+package org.apache.shardingsphere.test.integration.junit.container.governance.impl;
 
-import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
+import org.apache.shardingsphere.test.integration.junit.container.governance.ShardingSphereGovernanceContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
-public class ZookeeperContainer extends ShardingSphereContainer {
+import java.util.Properties;
+
+public class ZookeeperContainer extends ShardingSphereGovernanceContainer {
     
     public ZookeeperContainer(final ParameterizedArray parameterizedArray) {
         super("zookeeper", "zookeeper:3.6.2", false, parameterizedArray);
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
     }
     
+    /**
+     * Get server lists.
+     *
+     * @return server lists
+     */
+    public String getServerLists() {
+        return getHost() + ":" + getMappedPort(2181);
+    }
+    
+    protected YamlGovernanceCenterConfiguration createGovernanceCenterConfiguration() {
+        YamlGovernanceCenterConfiguration configuration = new YamlGovernanceCenterConfiguration();
+        configuration.setServerLists(getServerLists());
+        configuration.setType("zookeeper");
+        Properties props = new Properties();
+        props.setProperty("retryIntervalMilliseconds", "500");
+        props.setProperty("timeToLiveSeconds", "60");
+        props.setProperty("maxRetries", "3");
+        props.setProperty("operationTimeoutMilliseconds", "500");
+        configuration.setProps(props);
+        return configuration;
+    }
 }

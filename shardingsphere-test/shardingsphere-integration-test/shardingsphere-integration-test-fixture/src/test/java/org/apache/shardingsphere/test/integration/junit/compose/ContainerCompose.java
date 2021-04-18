@@ -189,6 +189,10 @@ public abstract class ContainerCompose extends ExternalResource implements Close
     
     @Override
     public void close() {
-        containers.forEach(Startable::close);
+        if (started) {
+            containers.forEach(Startable::close);
+            started = false;
+        }
     }
+    
 }

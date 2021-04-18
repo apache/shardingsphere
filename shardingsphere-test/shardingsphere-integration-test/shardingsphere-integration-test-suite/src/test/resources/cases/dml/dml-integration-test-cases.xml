@@ -16,34 +16,7 @@
   -->
 
 <integration-test-cases>
-   <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,sharding_governance">
-       <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
-       <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
-    </test-case>
-    
-    <test-case sql="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_read_write_splitting,read_write_splitting">
-        <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_now_function.xml" />
-    </test-case>
-    
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,sharding_governance">
-        <assertion expected-data-file="insert_multiple_values_for_order_1_2.xml" />
-    </test-case>
-    
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,sharding_governance">
-        <assertion parameters="1000:int, 10:int, update:String" expected-data-file="insert_on_duplicate_key_update.xml" />
-    </test-case>
-    
-    <!-- TODO fixme -->
-    <!--<test-case sql="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,sharding_governance">-->
-        <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
-        <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
-    <!--</test-case>-->
-    
-    <test-case sql="INSERT INTO t_order VALUES (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,sharding_governance">
-        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
-        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
-    </test-case>
-    
+
     <test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,sharding_governance">
         <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
