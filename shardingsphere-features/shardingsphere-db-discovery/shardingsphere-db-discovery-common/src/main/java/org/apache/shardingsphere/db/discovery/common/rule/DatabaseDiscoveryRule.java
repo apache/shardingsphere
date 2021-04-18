@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
+import org.apache.shardingsphere.infra.rule.level.FeatureRule;
 import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
@@ -50,7 +51,7 @@ import java.util.Optional;
 /**
  * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule {
+public final class DatabaseDiscoveryRule implements FeatureRule, SchemaRule, DataSourceContainedRule, StatusContainedRule {
     
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
