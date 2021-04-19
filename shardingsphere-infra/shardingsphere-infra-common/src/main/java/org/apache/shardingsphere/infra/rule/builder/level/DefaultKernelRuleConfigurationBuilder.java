@@ -15,33 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.fixture;
+package org.apache.shardingsphere.infra.rule.builder.level;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
-import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.builder.scope.RuleBuilder;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
-import java.util.Map;
-
-public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder {
+/**
+ * Kernel rule builder.
+ * 
+ * @param <T> type of rule configuration
+ * @param <B> type of rule builder
+ */
+public interface DefaultKernelRuleConfigurationBuilder<T extends RuleConfiguration, B extends RuleBuilder> extends OrderedSPI<B> {
     
-    @Getter
-    private static final SchemaRule RULE = new TestShardingSphereRule();
-    
-    @Override
-    public SchemaRule build(final String schemaName, final Map dataSourceMap, final DatabaseType databaseType, final RuleConfiguration ruleConfig) {
-        return RULE;
-    }
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class<TestRuleConfiguration> getTypeClass() {
-        return TestRuleConfiguration.class;
-    }
+    /**
+     * Build default kernel rule configuration.
+     *
+     * @return kernel rule configuration
+     */
+    T build();
 }

@@ -15,32 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder;
+package org.apache.shardingsphere.infra.rule.builder.scope;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 
-import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
- * Schema rule builder.
+ * Global rule builder.
  * 
- * @param <R> type of schema rule
+ * @param <R> type of global rule
  * @param <T> type of rule configuration
  */
-public interface SchemaRuleBuilder<R extends SchemaRule, T extends RuleConfiguration> extends OrderedSPI<T> {
+public interface GlobalRuleBuilder<R extends GlobalRule, T extends RuleConfiguration> extends RuleBuilder<T> {
     
     /**
-     * Build Schema rule.
+     * Build global rule.
      *
-     * @param schemaName schema name
-     * @param dataSourceMap dataSource map
-     * @param databaseType database type
      * @param ruleConfig rule configuration
-     * @return schema rule
+     * @param mataDataMap mata data map
+     * @param users users
+     * @return global rule
      */
-    R build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T ruleConfig);
+    R build(T ruleConfig, Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users);
 }

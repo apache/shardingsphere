@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.fixture;
+package org.apache.shardingsphere.infra.rule.level;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import javax.sql.DataSource;
-import java.util.Map;
-
-public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRule, FixtureRuleConfiguration> {
-    
-    @Override
-    public FixtureRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final FixtureRuleConfiguration ruleConfig) {
-        return new FixtureRule();
-    }
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
-    }
+/**
+ * Kernel rule which for level-1 of pluggable platform..
+ */
+public interface KernelRule extends ShardingSphereRule {
 }
