@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -39,20 +38,6 @@ import java.util.Collection;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingRuleStatementConverter {
-    
-    /**
-     * Convert create sharding rule statement context to YAML sharding rule configuration.
-     *
-     * @param sqlStatement create sharding rule statement
-     * @return YAML sharding rule configuration
-     */
-    public static YamlShardingRuleConfiguration convert(final CreateShardingRuleStatement sqlStatement) {
-        YamlShardingRuleConfiguration result = convertTableRuleSegments(sqlStatement.getTables());
-        for (Collection<String> each : sqlStatement.getBindingTables()) {
-            result.getBindingTables().add(Joiner.on(",").join(each));
-        }
-        return result;
-    }
     
     /**
      * Convert create sharding table rule statement context to YAML sharding rule configuration.
