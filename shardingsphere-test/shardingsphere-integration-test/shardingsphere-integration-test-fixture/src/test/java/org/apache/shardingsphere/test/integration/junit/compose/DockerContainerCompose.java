@@ -19,17 +19,15 @@ package org.apache.shardingsphere.test.integration.junit.compose;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.impl.ShardingSphereJDBCContainer;
+import org.apache.shardingsphere.test.integration.junit.container.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.impl.H2Container;
 import org.apache.shardingsphere.test.integration.junit.container.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.integration.junit.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
-import org.junit.After;
 import org.junit.rules.ExternalResource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -49,7 +47,7 @@ import java.util.function.Supplier;
  * Container compose.
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class ContainerCompose extends ExternalResource implements Closeable {
+public abstract class DockerContainerCompose extends ExternalResource implements Closeable {
     
     private final Network network = Network.newNetwork();
     
@@ -63,13 +61,23 @@ public abstract class ContainerCompose extends ExternalResource implements Close
     
     private volatile boolean executed;
     
-    public ContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
+    public DockerContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
         this.clusterName = clusterName;
         this.parameterizedArray = parameterizedArray;
     }
     
     protected ShardingSphereAdapterContainer createAdapterContainer() {
-        Supplier<ShardingSphereAdapterContainer> supplier = () -> new ShardingSphereJDBCContainer(parameterizedArray);
+        Supplier<ShardingSphereAdapterContainer> supplier = () -> {
+            switch (parameterizedArray.getAdapter()) {
+                case "proxy":
+                    return new ShardingSphereProxyContainer(parameterizedArray);
+                case "jdbc":
+                    return new ShardingSphereJDBCContainer(parameterizedArray);
+                default:
+                    throw new RuntimeException(String.format("Adapter[%s] is unknown.", parameterizedArray.getAdapter()));
+                
+            }
+        };
         return createContainer(supplier, "adapter");
     }
     
@@ -148,18 +156,19 @@ public abstract class ContainerCompose extends ExternalResource implements Close
      * @return datasource map
      */
     public Map<String, DataSource> getDataSourceMap() {
-        return Collections.singletonMap("adapterForWriter", null);
+        return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource());
     }
     
     @Override
     protected void before() {
-        start();
-        waitUntilReady();
-    }
-    
-    @After
-    public void after() {
-        close();
+        if (!started) {
+            synchronized (this) {
+                if (!started) {
+                    start();
+                    waitUntilReady();
+                }
+            }
+        }
     }
     
     /**
@@ -167,7 +176,7 @@ public abstract class ContainerCompose extends ExternalResource implements Close
      *
      * @param consumer initializer
      */
-    public final void executeOnStarted(final Consumer<ContainerCompose> consumer) {
+    public final void executeOnStarted(final Consumer<DockerContainerCompose> consumer) {
         if (!executed) {
             synchronized (this) {
                 if (!executed) {

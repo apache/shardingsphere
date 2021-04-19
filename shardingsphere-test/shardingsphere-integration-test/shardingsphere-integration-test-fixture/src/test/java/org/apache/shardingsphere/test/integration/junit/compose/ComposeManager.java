@@ -45,7 +45,6 @@ public final class ComposeManager extends ExternalResource {
             return composeMap.get(key);
         }
         ContainerCompose result;
-        // TODO fix sharding_governance
         if ("sharding_governance".equals(parameterizedArray.getScenario())) {
             result = new GovernanceContainerCompose(suiteName, parameterizedArray);
         } else {
@@ -56,7 +55,7 @@ public final class ComposeManager extends ExternalResource {
     }
     
     private String generateKey(final ParameterizedArray parameter) {
-        return String.join("-", suiteName, parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName());
+        return String.join("-", suiteName, parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName(), "" + System.nanoTime());
     }
     
     @Override

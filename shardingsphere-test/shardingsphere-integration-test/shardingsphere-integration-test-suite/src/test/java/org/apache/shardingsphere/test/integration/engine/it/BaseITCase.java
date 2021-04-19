@@ -80,17 +80,18 @@ public abstract class BaseITCase {
     
     @Before
     public final void createDataSource() {
-        targetDataSource = compose.getDataSourceMap().get("adapterForWriter");
+        targetDataSource = getAdapterContainer().getDataSource();
+        System.out.println(targetDataSource.hashCode() + ", " + hashCode());
     }
     
     @After
     public final void tearDown() throws Exception {
-        if (targetDataSource instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) targetDataSource).close();
-        }
-        if (targetDataSource instanceof GovernanceShardingSphereDataSource) {
-            ((GovernanceShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
-        }
+//        if (targetDataSource instanceof ShardingSphereDataSource) {
+//            ((ShardingSphereDataSource) targetDataSource).close();
+//        }
+//        if (targetDataSource instanceof GovernanceShardingSphereDataSource) {
+//            ((GovernanceShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
+//        }
     }
     
     protected abstract String getSQL() throws ParseException;

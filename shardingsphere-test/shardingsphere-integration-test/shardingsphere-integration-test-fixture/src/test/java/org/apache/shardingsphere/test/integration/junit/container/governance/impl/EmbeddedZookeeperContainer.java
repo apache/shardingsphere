@@ -15,7 +15,7 @@ public class EmbeddedZookeeperContainer extends ShardingSphereGovernanceContaine
     @SneakyThrows
     public EmbeddedZookeeperContainer(ParameterizedArray parameterizedArray) {
         super("zooKeeperServer", "zooKeeperServer", true, parameterizedArray);
-        this.server = new TestingServer(true);
+        this.server = new TestingServer(false);
     }
     
     @SneakyThrows
@@ -46,6 +46,7 @@ public class EmbeddedZookeeperContainer extends ShardingSphereGovernanceContaine
         props.setProperty("maxRetries", "3");
         props.setProperty("operationTimeoutMilliseconds", "500");
         configuration.setProps(props);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + this.hashCode());
         return configuration;
     }
     

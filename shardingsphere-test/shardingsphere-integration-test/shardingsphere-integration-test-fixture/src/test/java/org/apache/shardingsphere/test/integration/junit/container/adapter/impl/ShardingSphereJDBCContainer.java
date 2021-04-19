@@ -68,16 +68,12 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
         isHealthy.set(true);
     }
     
-    private DataSource dataSource;
-    
     /**
      * Create and get data source.
      *
      * @return data source
      */
     public DataSource getDataSource() {
-        if (Objects.isNull(dataSource)) {
-        }
         return createDataSource();
     }
     
@@ -103,6 +99,7 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
             throw new NullPointerException("Governance Container cannot be null.");
         }
         try {
+            System.out.println("create " + hashCode());
             return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(
                     dataSourceMap,
                     governance.getGovernanceConfiguration(),

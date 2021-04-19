@@ -35,6 +35,8 @@ import java.io.IOException;
  */
 public abstract class ShardingSphereAdapterContainer extends ShardingSphereContainer {
     
+    private static final String DEFAULT_USER = "root";
+    
     @Getter
     private final YamlUserConfiguration authentication;
     
@@ -55,7 +57,7 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
         );
         return YamlUsersConfigurationConverter.convertYamlUserConfiguration(configuration.getUsers())
                 .stream()
-                .filter(each -> "root".equals(each.getUsername()))
+                .filter(each -> DEFAULT_USER.equals(each.getUsername()))
                 .findFirst()
                 .orElse(new YamlUserConfiguration());
     }

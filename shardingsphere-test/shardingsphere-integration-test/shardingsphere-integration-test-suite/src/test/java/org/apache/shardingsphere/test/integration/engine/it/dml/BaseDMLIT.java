@@ -76,8 +76,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             try (
-                    Connection connection = getCompose() instanceof GovernanceContainerCompose
-                            ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                    Connection connection = getTargetDataSource().getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
                 assertDataSet(preparedStatement, expectedDataSetMetadata, getDataSet().findRows(dataNode));
             }
