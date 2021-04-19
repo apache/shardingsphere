@@ -45,6 +45,8 @@ public final class GovernanceContainerCompose extends ContainerCompose {
 
     private final ShardingSphereAdapterContainer adapterContainerForReader;
     
+    private final Map<String, DataSource> dataSourceMap = new HashMap<>(2);
+    
     public GovernanceContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
         super(clusterName, parameterizedArray);
         this.storageContainer = createStorageContainer();
@@ -71,23 +73,22 @@ public final class GovernanceContainerCompose extends ContainerCompose {
         }, "zk");
     }
     
-    Map<String, DataSource> result = new HashMap<>(2);
-    
     @Override
     public void before() {
         start();
         waitUntilReady();
-        result.put("adapterForWriter", adapterContainer.getDataSource());
-        result.put("adapterForReader", adapterContainerForReader.getDataSource());
+        dataSourceMap.put("adapterForWriter", adapterContainer.getDataSource());
+        dataSourceMap.put("adapterForReader", adapterContainerForReader.getDataSource());
     }
     
     @Override
     public void after() {
+        dataSourceMap.clear();
         close();
     }
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
-        return result;
+        return dataSourceMap;
     }
 }

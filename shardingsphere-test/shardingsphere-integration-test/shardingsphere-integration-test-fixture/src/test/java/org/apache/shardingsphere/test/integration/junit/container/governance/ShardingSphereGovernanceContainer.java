@@ -7,7 +7,7 @@ import org.apache.shardingsphere.test.integration.junit.param.model.Parameterize
 
 public abstract class ShardingSphereGovernanceContainer extends ShardingSphereContainer {
     
-    public ShardingSphereGovernanceContainer(String dockerName, String dockerImageName, boolean isFakeContainer, ParameterizedArray parameterizedArray) {
+    public ShardingSphereGovernanceContainer(final String dockerName, final String dockerImageName, final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
         super(dockerName, dockerImageName, isFakeContainer, parameterizedArray);
     }
 

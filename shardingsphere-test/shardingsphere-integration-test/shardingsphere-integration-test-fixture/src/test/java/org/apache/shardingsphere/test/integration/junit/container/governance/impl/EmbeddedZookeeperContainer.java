@@ -10,10 +10,10 @@ import java.util.Properties;
 
 public class EmbeddedZookeeperContainer extends ShardingSphereGovernanceContainer {
     
-    private TestingServer server;
+    private final TestingServer server;
     
     @SneakyThrows
-    public EmbeddedZookeeperContainer(ParameterizedArray parameterizedArray) {
+    public EmbeddedZookeeperContainer(final ParameterizedArray parameterizedArray) {
         super("zooKeeperServer", "zooKeeperServer", true, parameterizedArray);
         this.server = new TestingServer(false);
     }
