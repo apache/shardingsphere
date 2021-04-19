@@ -178,3 +178,11 @@ PROPERTIES
 COLUMN
     : C O L U M N
     ;
+
+BINDING
+    : B I N D I N G
+    ;
+
+RULES
+    : R U L E S
+    ;

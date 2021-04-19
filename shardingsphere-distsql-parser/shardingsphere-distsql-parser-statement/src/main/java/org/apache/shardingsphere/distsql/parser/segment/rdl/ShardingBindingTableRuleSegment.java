@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.segment.rdl;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-execute
-    : (addResource
-    | dropResource
-    | createShardingTableRule
-    | createShardingBindingTableRules
-    | alterShardingRule
-    | dropShardingRule
-    | createReplicaQueryRule
-    | alterReplicaQueryRule
-    | dropReplicaQueryRule
-    | showResources
-    | showRule
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * Sharding binding table rule segment.
+ */
+@Getter
+@Setter
+public final class ShardingBindingTableRuleSegment implements ASTNode {
+    
+    private String ruleName;
+    
+    private String tables;
+}
