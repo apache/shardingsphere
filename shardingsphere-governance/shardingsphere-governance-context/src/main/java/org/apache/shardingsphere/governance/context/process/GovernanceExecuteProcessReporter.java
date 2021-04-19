@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.governance.context.process;
 
-import org.apache.shardingsphere.governance.core.event.model.invocation.ReportExecuteProcessSummaryEvent;
-import org.apache.shardingsphere.governance.core.event.model.invocation.ReportExecuteProcessUnitEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ExecuteProcessSummaryReportEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -37,12 +37,12 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     @Override
     public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(executionGroupContext);
-        ShardingSphereEventBus.getInstance().post(new ReportExecuteProcessSummaryEvent(new YamlExecuteProcessContext(executeProcessContext)));
+        ShardingSphereEventBus.getInstance().post(new ExecuteProcessSummaryReportEvent(new YamlExecuteProcessContext(executeProcessContext)));
     }
     
     @Override
     public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
-        ShardingSphereEventBus.getInstance().post(new ReportExecuteProcessUnitEvent(executionID, executeProcessUnit));
+        ShardingSphereEventBus.getInstance().post(new ExecuteProcessUnitReportEvent(executionID, executeProcessUnit));
     }
 }

@@ -23,8 +23,8 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
-import org.apache.shardingsphere.governance.core.event.model.invocation.ReportExecuteProcessSummaryEvent;
-import org.apache.shardingsphere.governance.core.event.model.invocation.ReportExecuteProcessUnitEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ExecuteProcessSummaryReportEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.governance.core.event.model.invocation.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.governance.core.event.model.invocation.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
@@ -500,10 +500,10 @@ public final class RegistryCenter {
     /**
      * Report execute process summary.
      *
-     * @param event report execute process summary event.
+     * @param event execute process summary report event.
      */
     @Subscribe
-    public void reportExecuteProcessSummary(final ReportExecuteProcessSummaryEvent event) {
+    public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
         YamlExecuteProcessContext yamlExecuteProcessContext = event.getYamlExecuteProcessContext();
         repository.persist(node.getExecutionPath(yamlExecuteProcessContext.getExecutionID()), YamlEngine.marshal(yamlExecuteProcessContext));
     }
@@ -511,10 +511,10 @@ public final class RegistryCenter {
     /**
      * Report execute process unit.
      *
-     * @param event report execute process unit event.
+     * @param event execute process unit report event.
      */
     @Subscribe
-    public void reportExecuteProcessUnit(final ReportExecuteProcessUnitEvent event) {
+    public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
         // TODO lock on the same jvm
         event.getExecutionID().intern();
         String executionPath = node.getExecutionPath(event.getExecutionID());

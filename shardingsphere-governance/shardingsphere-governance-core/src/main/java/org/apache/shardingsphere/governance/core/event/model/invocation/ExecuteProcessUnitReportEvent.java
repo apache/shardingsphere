@@ -19,14 +19,16 @@ package org.apache.shardingsphere.governance.core.event.model.invocation;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
 /**
- * Report execute process summary event.
+ * Execute process unit report event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReportExecuteProcessSummaryEvent {
+public final class ExecuteProcessUnitReportEvent {
     
-    private final YamlExecuteProcessContext yamlExecuteProcessContext;
+    private final String executionID;
+    
+    private final ExecuteProcessUnit executeProcessUnit;
 }
