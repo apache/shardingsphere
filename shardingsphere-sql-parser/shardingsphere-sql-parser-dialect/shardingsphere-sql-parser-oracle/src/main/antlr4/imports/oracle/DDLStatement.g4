@@ -106,7 +106,7 @@ oidClause
     ;
 
 oidIndexClause
-    : OIDINDEX indexName? LP_ (physicalAttributesClause | TABLESPACE tablespaceName)+ RP_
+    : OIDINDEX indexName? LP_ ((physicalAttributesClause | TABLESPACE tablespaceName)+ | ) RP_
     ;
 
 createRelationalTableClause
@@ -491,7 +491,7 @@ commitClause
     ;
 
 physicalProperties
-    : deferredSegmentCreation? segmentAttributesClause tableCompression? inmemoryTableClause? ilmClause?
+    : deferredSegmentCreation? segmentAttributesClause? tableCompression? inmemoryTableClause? ilmClause?
     | deferredSegmentCreation? (organizationClause?|externalPartitionClause?)
     | clusterClause
     ;
@@ -501,9 +501,9 @@ deferredSegmentCreation
     ;
 
 segmentAttributesClause
-    : physicalAttributesClause
+    : ( physicalAttributesClause
     | (TABLESPACE tablespaceName | TABLESPACE SET tablespaceSetName)
-    | loggingClause
+    | loggingClause)+
     ;
 
 physicalAttributesClause
