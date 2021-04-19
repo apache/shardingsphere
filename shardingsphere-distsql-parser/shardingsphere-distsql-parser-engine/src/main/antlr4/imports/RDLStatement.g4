@@ -63,6 +63,14 @@ createShardingTableRule
     : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
     ;
 
+createShardingBindingTableRules
+    : CREATE SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    ;
+
+bindTableRulesDefinition
+    : ruleName LP tableName (COMMA tableName)* RP
+    ;
+
 alterShardingRule
     : ALTER SHARDING RULE LP alterShardingTableRuleDefinition (COMMA alterShardingTableRuleDefinition)* alterBindingTables? defaultTableStrategy? broadcastTables? RP
     ;
@@ -72,7 +80,7 @@ createReplicaQueryRule
     ;
 
 replicaQueryRuleDefinition
-    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition
+    : ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition
     ;
 
 alterReplicaQueryRule
@@ -80,7 +88,7 @@ alterReplicaQueryRule
     ;
 
 alterReplicaQueryRuleDefinition
-    : (MODIFY | ADD) ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition?
+    : (MODIFY | ADD) ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition?
     ;
 
 alterShardingTableRuleDefinition
@@ -129,6 +137,10 @@ keyGenerateStrategy
 
 actualDataNodes
     : STRING (COMMA STRING)*
+    ;
+
+ruleName
+    : IDENTIFIER
     ;
 
 tableName
