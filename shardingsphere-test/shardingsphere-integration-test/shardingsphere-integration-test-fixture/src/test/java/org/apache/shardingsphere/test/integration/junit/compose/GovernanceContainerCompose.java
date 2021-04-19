@@ -19,9 +19,13 @@ package org.apache.shardingsphere.test.integration.junit.compose;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.env.EnvironmentType;
+import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.impl.ShardingSphereProxyContainer;
-import org.apache.shardingsphere.test.integration.junit.container.governance.ZookeeperContainer;
+import org.apache.shardingsphere.test.integration.junit.container.governance.ShardingSphereGovernanceContainer;
+import org.apache.shardingsphere.test.integration.junit.container.governance.impl.EmbeddedZookeeperContainer;
+import org.apache.shardingsphere.test.integration.junit.container.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
@@ -47,26 +51,43 @@ public final class GovernanceContainerCompose extends ContainerCompose {
         this.adapterContainer = createAdapterContainer();
         this.storageContainer.setNetworkAliases(Collections.singletonList("mysql.sharding-governance.host"));
         // TODO support other types of governance
-        ZookeeperContainer zookeeperContainer = createZookeeperContainer();
+        ShardingSphereGovernanceContainer governanceContainer = createZookeeperContainer();
         if ("proxy".equals(parameterizedArray.getAdapter())) {
             adapterContainerForReader = createContainer(() -> new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
-            adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
+            adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
         } else {
             adapterContainerForReader = createAdapterContainer();
-            adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
+            adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
         }
-        adapterContainer.dependsOn(storageContainer, zookeeperContainer);
+        adapterContainer.dependsOn(storageContainer, governanceContainer);
     }
     
-    private ZookeeperContainer createZookeeperContainer() {
-        return createContainer(() -> new ZookeeperContainer(getParameterizedArray()), "zk");
+    private ShardingSphereGovernanceContainer createZookeeperContainer() {
+        return createContainer(() -> {
+            if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
+                return new ZookeeperContainer(getParameterizedArray());
+            }
+            return new EmbeddedZookeeperContainer(getParameterizedArray());
+        }, "zk");
+    }
+    
+    Map<String, DataSource> result = new HashMap<>(2);
+    
+    @Override
+    public void before() {
+        start();
+        waitUntilReady();
+        result.put("adapterForWriter", adapterContainer.getDataSource());
+        result.put("adapterForReader", adapterContainerForReader.getDataSource());
+    }
+    
+    @Override
+    public void after() {
+        close();
     }
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2);
-        result.put("adapterForWriter", adapterContainer.getDataSource());
-        result.put("adapterForReader", adapterContainerForReader.getDataSource());
         return result;
     }
 }

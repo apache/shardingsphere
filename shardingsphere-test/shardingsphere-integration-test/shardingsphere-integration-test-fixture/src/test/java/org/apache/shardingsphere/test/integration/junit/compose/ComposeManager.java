@@ -25,6 +25,7 @@ import org.junit.rules.ExternalResource;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public final class ComposeManager extends ExternalResource {
@@ -56,7 +57,9 @@ public final class ComposeManager extends ExternalResource {
     }
     
     private String generateKey(final ParameterizedArray parameter) {
-        return String.join("-", suiteName, parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName());
+        return EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()
+                ? String.join("-", suiteName, parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName())
+                : UUID.randomUUID().toString();
     }
     
     @Override
