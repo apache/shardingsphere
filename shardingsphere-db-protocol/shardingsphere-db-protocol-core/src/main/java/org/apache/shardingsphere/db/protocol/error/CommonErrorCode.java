@@ -53,6 +53,8 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     DUPLICATE_RESOURCE(1112, "C1112", "Duplicate resource name %s."),
     
+    DUPLICATE_TABLE(1113, "C1113", "Duplicate table name %s."),
+    
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     
     SCALING_OPERATE_FAILED(1209, "C1209", "Scaling Operate Failed: [%s]"),
