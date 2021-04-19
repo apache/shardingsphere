@@ -31,8 +31,9 @@ public interface ExecuteProcessReporter {
      * Report the summary of this task.
      * @param context context
      * @param executionGroupContext execution group context
+     * @param constants constants
      */
-    void report(SQLStatementContext<?> context, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext);
+    void report(SQLStatementContext<?> context, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, ExecuteProcessConstants constants);
     
     /**
      * Report a unit of this task.

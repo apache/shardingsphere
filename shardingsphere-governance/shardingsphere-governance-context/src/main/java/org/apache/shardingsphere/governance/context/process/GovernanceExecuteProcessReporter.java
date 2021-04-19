@@ -34,8 +34,8 @@ import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessRe
 public final class GovernanceExecuteProcessReporter implements ExecuteProcessReporter {
     
     @Override
-    public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(executionGroupContext);
+    public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(executionGroupContext, constants);
         ShardingSphereEventBus.getInstance().post(new ExecuteProcessSummaryReportEvent(executeProcessContext));
     }
     

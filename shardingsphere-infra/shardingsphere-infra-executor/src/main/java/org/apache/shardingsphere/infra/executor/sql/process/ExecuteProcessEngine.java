@@ -51,7 +51,7 @@ public final class ExecuteProcessEngine {
     public static void initialize(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext)) {
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
-            HANDLERS.iterator().next().report(context, executionGroupContext);
+            HANDLERS.iterator().next().report(context, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
         }
     }
     
