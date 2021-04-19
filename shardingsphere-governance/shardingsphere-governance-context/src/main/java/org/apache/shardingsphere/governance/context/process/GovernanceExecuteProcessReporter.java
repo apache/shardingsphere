@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionU
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 
 /**
@@ -37,7 +36,7 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     @Override
     public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(executionGroupContext);
-        ShardingSphereEventBus.getInstance().post(new ExecuteProcessSummaryReportEvent(new YamlExecuteProcessContext(executeProcessContext)));
+        ShardingSphereEventBus.getInstance().post(new ExecuteProcessSummaryReportEvent(executeProcessContext));
     }
     
     @Override

@@ -46,6 +46,7 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
@@ -504,8 +505,8 @@ public final class RegistryCenter {
      */
     @Subscribe
     public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
-        YamlExecuteProcessContext yamlExecuteProcessContext = event.getYamlExecuteProcessContext();
-        repository.persist(node.getExecutionPath(yamlExecuteProcessContext.getExecutionID()), YamlEngine.marshal(yamlExecuteProcessContext));
+        ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
+        repository.persist(node.getExecutionPath(executeProcessContext.getExecutionID()), YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
     }
     
     /**
