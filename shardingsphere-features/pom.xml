@@ -35,6 +35,5 @@
         <module>shardingsphere-db-discovery</module>
         <module>shardingsphere-encrypt</module>
         <module>shardingsphere-shadow</module>
-        <module>shardingsphere-authority</module>
     </modules>
 </project>
