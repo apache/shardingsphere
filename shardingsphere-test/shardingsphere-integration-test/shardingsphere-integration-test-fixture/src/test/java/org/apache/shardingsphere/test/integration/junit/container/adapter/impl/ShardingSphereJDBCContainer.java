@@ -78,7 +78,7 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
      * @return data source
      */
     public DataSource getDataSource() {
-        Map<String, DataSource> dataSourceMap = storageContainer.newDataSourceMap();
+        Map<String, DataSource> dataSourceMap = storageContainer.getDataSourceMap();
         try {
             if ("sharding_governance".equals(getParameterizedArray().getScenario())) {
                 return createDataSource(dataSourceMap, 0);

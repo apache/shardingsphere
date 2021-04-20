@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.junit.compose;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
@@ -75,20 +76,35 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     
     @Override
     public void before() {
-        start();
-        waitUntilReady();
+        if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
+            super.before();
+        } else {
+            start();
+            waitUntilReady();
+        }
         dataSourceMap.put("adapterForWriter", adapterContainer.getDataSource());
         dataSourceMap.put("adapterForReader", adapterContainerForReader.getDataSource());
     }
     
     @Override
     public void after() {
-        dataSourceMap.clear();
-        close();
+        if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {
+            dataSourceMap.clear();
+            close();
+        }
     }
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
         return dataSourceMap;
+    }
+    
+    @Override
+    public void closeDataSource() {
+        dataSourceMap.forEach((key, value) -> {
+            if (value instanceof GovernanceShardingSphereDataSource) {
+                ((GovernanceShardingSphereDataSource) value).getMetaDataContexts().getExecutorEngine().close();
+            }
+        });
     }
 }
