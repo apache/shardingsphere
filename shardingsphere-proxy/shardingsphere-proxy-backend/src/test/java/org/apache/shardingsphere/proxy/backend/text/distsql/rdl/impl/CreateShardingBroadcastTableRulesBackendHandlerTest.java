@@ -34,8 +34,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -70,7 +70,7 @@ public final class CreateShardingBroadcastTableRulesBackendHandlerTest {
     
     @Test
     public void assertExecuteWithoutShardingRuleConfiguration() {
-        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.EMPTY_LIST);
+        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(new ArrayList<>());
         CreateShardingBroadcastTableRulesStatement statement = new CreateShardingBroadcastTableRulesStatement();
         statement.getTables().add("t_1");
         CreateShardingBroadcastTableRulesBackendHandler handler = new CreateShardingBroadcastTableRulesBackendHandler(statement, backendConnection);
