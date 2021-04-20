@@ -37,16 +37,16 @@ public final class ExecuteProcessContext {
     
     private final long startTimeMillis = System.currentTimeMillis();
     
-    public ExecuteProcessContext(final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
+    public ExecuteProcessContext(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
         this.executionID = executionGroupContext.getExecutionID();
-        unitStatuses = createExecutionUnitStatuses(executionGroupContext);
+        unitStatuses = createExecutionUnitStatuses(executionGroupContext, constants);
     }
     
-    private Collection<ExecuteProcessUnit> createExecutionUnitStatuses(final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
+    private Collection<ExecuteProcessUnit> createExecutionUnitStatuses(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
         Collection<ExecuteProcessUnit> result = new LinkedList<>();
-        for (ExecutionGroup<SQLExecutionUnit> group : executionGroupContext.getInputGroups()) {
+        for (ExecutionGroup<? extends SQLExecutionUnit> group : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit each : group.getInputs()) {
-                result.add(new ExecuteProcessUnit(String.valueOf(each.getExecutionUnit().hashCode()), ExecuteProcessConstants.EXECUTE_STATUS_START));
+                result.add(new ExecuteProcessUnit(each.getExecutionUnit(), constants));
             }
         }
         return result;

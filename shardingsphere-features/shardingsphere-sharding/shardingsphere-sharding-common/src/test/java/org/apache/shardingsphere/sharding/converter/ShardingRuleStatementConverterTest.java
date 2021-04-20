@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -37,7 +37,7 @@ public final class ShardingRuleStatementConverterTest {
     
     private TableRuleSegment segment;
     
-    private CreateShardingRuleStatement sqlStatement;
+    private CreateShardingTableRuleStatement sqlStatement;
     
     @Before
     public void setUp() {
@@ -52,7 +52,7 @@ public final class ShardingRuleStatementConverterTest {
         props.setProperty("sharding_count", "2");
         functionSegment.setAlgorithmProps(props);
         segment.setTableStrategy(functionSegment);
-        sqlStatement = new CreateShardingRuleStatement(null, functionSegment);
+        sqlStatement = new CreateShardingTableRuleStatement();
         sqlStatement.getTables().add(segment);
     }
     

@@ -23,6 +23,8 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ExecuteProcessSummaryReportEvent;
+import org.apache.shardingsphere.governance.core.event.model.invocation.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.governance.core.event.model.invocation.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.governance.core.event.model.invocation.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
@@ -44,6 +46,10 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
@@ -490,6 +496,37 @@ public final class RegistryCenter {
         List<String> childrenKeys = repository.getChildrenKeys(node.getExecutionNodesPath());
         Collection<String> processListData = childrenKeys.stream().map(key -> repository.get(node.getExecutionPath(key))).collect(Collectors.toList());
         ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(processListData));
+    }
+    
+    /**
+     * Report execute process summary.
+     *
+     * @param event execute process summary report event.
+     */
+    @Subscribe
+    public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
+        ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
+        repository.persist(node.getExecutionPath(executeProcessContext.getExecutionID()), YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
+    }
+    
+    /**
+     * Report execute process unit.
+     *
+     * @param event execute process unit report event.
+     */
+    @Subscribe
+    public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
+        // TODO lock on the same jvm
+        event.getExecutionID().intern();
+        String executionPath = node.getExecutionPath(event.getExecutionID());
+        YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
+        ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
+        for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
+            if (unit.getUnitID().equals(executeProcessUnit.getUnitID())) {
+                unit.setStatus(executeProcessUnit.getStatus());
+            }
+        }
+        repository.persist(executionPath, YamlEngine.marshal(yamlExecuteProcessContext));
     }
     
     /**

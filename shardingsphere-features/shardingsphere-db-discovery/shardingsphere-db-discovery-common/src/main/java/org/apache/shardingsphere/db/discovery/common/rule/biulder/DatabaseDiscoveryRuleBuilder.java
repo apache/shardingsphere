@@ -22,7 +22,8 @@ import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryD
 import org.apache.shardingsphere.db.discovery.common.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.db.discovery.common.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ import java.util.Map;
 /**
  * Database discovery rule builder.
  */
-public final class DatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<DatabaseDiscoveryRule, DatabaseDiscoveryRuleConfiguration> {
+public final class DatabaseDiscoveryRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<DatabaseDiscoveryRule, DatabaseDiscoveryRuleConfiguration> {
     
     @Override
     public DatabaseDiscoveryRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final DatabaseDiscoveryRuleConfiguration ruleConfig) {
@@ -53,5 +54,4 @@ public final class DatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<Dat
     public Class<DatabaseDiscoveryRuleConfiguration> getTypeClass() {
         return DatabaseDiscoveryRuleConfiguration.class;
     }
-    
 }
