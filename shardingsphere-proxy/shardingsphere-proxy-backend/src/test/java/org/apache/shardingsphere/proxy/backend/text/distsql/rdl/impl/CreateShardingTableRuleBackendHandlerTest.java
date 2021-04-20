@@ -19,14 +19,17 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DuplicateTableException;
+import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,10 +38,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +65,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
-    private ShardingSphereSchema shardingSphereSchema;
+    private ShardingSphereRuleMetaData ruleMetaData;
     
     private CreateShardingTableRuleBackendHandler handler = new CreateShardingTableRuleBackendHandler(sqlStatement, backendConnection);
     
@@ -70,7 +74,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Arrays.asList("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
-        when(shardingSphereMetaData.getSchema()).thenReturn(shardingSphereSchema);
+        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
     @Test
@@ -80,20 +84,27 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    @Test(expected = DuplicateTableException.class)
+    @Test(expected = DuplicateTablesException.class)
     public void assertExecuteWithDuplicateTablesInRDL() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.EMPTY_LIST);
         when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
-    @Test(expected = DuplicateTableException.class)
+    @Test(expected = DuplicateTablesException.class)
     public void assertExecuteWithDuplicateTables() {
-        when(shardingSphereSchema.containsTable(anyString())).thenReturn(true);
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
+        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
         handler.execute("test", sqlStatement);
+    }
+    
+    private Collection<RuleConfiguration> buildShardingConfigurations() {
+        ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
+        configuration.getTables().add(new ShardingTableRuleConfiguration("t_order"));
+        return Arrays.asList(configuration);
     }
 }

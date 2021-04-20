@@ -24,7 +24,7 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 @Getter
-public final class DuplicateTableException extends BackendException {
+public final class DuplicateTablesException extends BackendException {
     
     private static final long serialVersionUID = 3539438597135687601L;
     
