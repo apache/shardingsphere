@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceException;
+import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleCreateExistsException;
@@ -140,6 +141,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof DuplicateResourceException) {
             return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_RESOURCE, ((DuplicateResourceException) cause).getResourceNames());
+        }
+        if (cause instanceof DuplicateTablesException) {
+            return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_TABLE, ((DuplicateTablesException) cause).getTableNames());
         }
         if (cause instanceof ShardingRuleNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_RULE_NOT_EXIST);

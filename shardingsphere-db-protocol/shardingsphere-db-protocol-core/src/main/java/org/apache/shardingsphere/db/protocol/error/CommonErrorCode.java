@@ -51,7 +51,9 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     INVALID_RESOURCE(1111, "C1111", "Can not add invalid resources %s."),
     
-    DUPLICATE_RESOURCE(1112, "C1112", "Duplicate resource name %s."),
+    DUPLICATE_RESOURCE(1112, "C1112", "Duplicate resource names %s."),
+    
+    DUPLICATE_TABLE(1113, "C1113", "Duplicate table names %s."),
     
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     
