@@ -106,7 +106,7 @@ oidClause
     ;
 
 oidIndexClause
-    : OIDINDEX indexName? LP_ ((physicalAttributesClause | TABLESPACE tablespaceName)+ | ) RP_
+    : OIDINDEX indexName? LP_ (physicalAttributesClause | TABLESPACE tablespaceName)* RP_
     ;
 
 createRelationalTableClause
