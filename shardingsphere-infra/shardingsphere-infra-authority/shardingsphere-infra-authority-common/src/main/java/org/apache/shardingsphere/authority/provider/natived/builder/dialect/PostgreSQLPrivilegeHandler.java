@@ -45,16 +45,15 @@ import java.util.stream.Collectors;
  * PostgreSQL privilege handler.
  */
 public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler {
-
+    
     private static final String CREATE_USER_SQL = "CREATE USER %s WITH PASSWORD '%s'";
-
+    
     private static final String GRANT_ALL_SQL = "GRANT ALL ON ALL TABLES IN SCHEMA public TO %s";
-
+    
     private static final String ROLES_SQL = "select * from pg_roles WHERE rolname IN (%s)";
-
-    private static final String TABLE_PRIVILEGE_SQL =
-            "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
-
+    
+    private static final String TABLE_PRIVILEGE_SQL = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
+    
     @Override
     public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Collection<Grantee> grantees = new LinkedList<>();
@@ -68,7 +67,7 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
         }
         return users.stream().filter(each -> !grantees.contains(each.getGrantee())).collect(Collectors.toList());
     }
-
+    
     @Override
     public void create(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
@@ -77,24 +76,24 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
             }
         }
     }
-
+    
     private String getCreateUsersSQL(final ShardingSphereUser users) {
         return String.format(CREATE_USER_SQL, users.getGrantee(), users.getPassword());
     }
-
+    
     @Override
     public void grantAll(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute(getGrantAllSQL(users));
         }
     }
-
+    
     private String getGrantAllSQL(final Collection<ShardingSphereUser> users) {
         String grantUsers = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
                 .collect(Collectors.joining(", "));
         return String.format(GRANT_ALL_SQL, grantUsers);
     }
-
+    
     @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>();
@@ -133,12 +132,12 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
             }
         }
     }
-
+    
     private void collectPrivileges(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, final ResultSet resultSet) throws SQLException {
         String db = resultSet.getString("table_catalog");
         String tableName = resultSet.getString("table_name");
         String privilegeType = resultSet.getString("privilege_type");
-        boolean hasPrivilege = resultSet.getString("is_grantable").equalsIgnoreCase("TRUE");
+        boolean hasPrivilege = "TRUE".equalsIgnoreCase(resultSet.getString("is_grantable"));
         String grantee = resultSet.getString("grantee");
         if (hasPrivilege) {
             privilegeCache
@@ -160,19 +159,19 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
             }
         }
     }
-
+    
     private void fillRolePrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, final ResultSet resultSet) throws SQLException {
         Optional<ShardingSphereUser> user = findShardingSphereUser(userPrivilegeMap, resultSet);
         if (user.isPresent()) {
             userPrivilegeMap.get(user.get()).getAdministrativePrivileges().getPrivileges().addAll(loadRolePrivileges(resultSet));
         }
     }
-
+    
     private Optional<ShardingSphereUser> findShardingSphereUser(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, final ResultSet resultSet) throws SQLException {
         Grantee grantee = new Grantee(resultSet.getString("rolname"), "");
         return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
     }
-
+    
     private Collection<PrivilegeType> loadRolePrivileges(final ResultSet resultSet) throws SQLException {
         Collection<PrivilegeType> result = new LinkedList<>();
         addToPrivilegeTypesIfPresent(resultSet.getBoolean("rolsuper"), PrivilegeType.SUPER, result);
@@ -183,17 +182,17 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
         addToPrivilegeTypesIfPresent(resultSet.getBoolean("rolcanlogin"), PrivilegeType.CAN_LOGIN, result);
         return result;
     }
-
+    
     private String getTablePrivilegesSQL(final Collection<ShardingSphereUser> users) {
         String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         return String.format(TABLE_PRIVILEGE_SQL, userList);
     }
-
+    
     private String getRolePrivilegesSQL(final Collection<ShardingSphereUser> users) {
         String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         return String.format(ROLES_SQL, userList);
     }
-
+    
     private PrivilegeType getPrivilegeType(final String privilege) {
         switch (privilege) {
             case "SELECT":
@@ -224,13 +223,13 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
                 throw new UnsupportedOperationException(privilege);
         }
     }
-
+    
     private void addToPrivilegeTypesIfPresent(final boolean hasPrivilege, final PrivilegeType privilegeType, final Collection<PrivilegeType> target) {
         if (hasPrivilege) {
             target.add(privilegeType);
         }
     }
-
+    
     @Override
     public String getType() {
         return "PostgreSQL";
