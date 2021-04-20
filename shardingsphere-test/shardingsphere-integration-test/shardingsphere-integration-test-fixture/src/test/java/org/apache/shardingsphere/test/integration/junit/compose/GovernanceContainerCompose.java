@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.junit.container.adapter.impl.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.junit.container.governance.ShardingSphereGovernanceContainer;
 import org.apache.shardingsphere.test.integration.junit.container.governance.impl.EmbeddedZookeeperContainer;
@@ -56,11 +57,10 @@ public final class GovernanceContainerCompose extends ContainerCompose {
         ShardingSphereGovernanceContainer governanceContainer = createZookeeperContainer();
         if ("proxy".equals(parameterizedArray.getAdapter())) {
             adapterContainerForReader = createContainer(() -> new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
-            adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
         } else {
-            adapterContainerForReader = createAdapterContainer();
-            adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
+            adapterContainerForReader = createContainer(() -> new ShardingSphereJDBCContainer("ShardingSphere-JDBC-1", parameterizedArray), "ShardingSphere-JDBC-1");
         }
+        adapterContainerForReader.dependsOn(storageContainer, governanceContainer);
         adapterContainer.dependsOn(storageContainer, governanceContainer);
     }
     

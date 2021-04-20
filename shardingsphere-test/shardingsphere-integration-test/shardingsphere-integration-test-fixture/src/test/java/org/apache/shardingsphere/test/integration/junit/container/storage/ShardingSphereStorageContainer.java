@@ -93,6 +93,17 @@ public abstract class ShardingSphereStorageContainer extends ShardingSphereConta
         return dataSourceMap;
     }
     
+    /**
+     * Get a new DataSource Map every time.
+     *
+     * @return DatabaseName and DataSource Map
+     */
+    public Map<String, DataSource> newDataSourceMap() {
+        Builder<String, DataSource> builder = ImmutableMap.builder();
+        databases.forEach(e -> builder.put(e, createDataSource(e)));
+        return builder.build();
+    }
+    
     protected Optional<String> getConnectionInitSQL() {
         return Optional.empty();
     }

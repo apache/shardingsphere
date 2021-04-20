@@ -51,6 +51,10 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
         super("ShardingSphere-JDBC", "ShardingSphere-JDBC", true, parameterizedArray);
     }
     
+    public ShardingSphereJDBCContainer(final String dockerName, final ParameterizedArray parameterizedArray) {
+        super(dockerName, "ShardingSphere-JDBC", true, parameterizedArray);
+    }
+    
     @SneakyThrows
     @Override
     public void start() {
@@ -74,11 +78,7 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
      * @return data source
      */
     public DataSource getDataSource() {
-        return createDataSource();
-    }
-    
-    private DataSource createDataSource() {
-        Map<String, DataSource> dataSourceMap = storageContainer.getDataSourceMap();
+        Map<String, DataSource> dataSourceMap = storageContainer.newDataSourceMap();
         try {
             if ("sharding_governance".equals(getParameterizedArray().getScenario())) {
                 return createDataSource(dataSourceMap, 0);
