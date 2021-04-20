@@ -114,7 +114,7 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult1.getValue(6, Object.class)).thenReturn(20);
         QueryResult queryResult2 = mockQueryResult();
         when(queryResult2.next()).thenReturn(true, true, true, false);
-        when(queryResult2.getValue(1, Object.class)).thenReturn(20, 30, 30, 40);
+        when(queryResult2.getValue(1, Object.class)).thenReturn(20, 30, 40);
         when(queryResult2.getValue(2, Object.class)).thenReturn(0);
         when(queryResult2.getValue(3, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
         when(queryResult2.getValue(5, Object.class)).thenReturn(2, 2, 3, 3, 3, 4);
