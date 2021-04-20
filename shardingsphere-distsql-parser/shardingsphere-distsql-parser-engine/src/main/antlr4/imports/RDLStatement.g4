@@ -71,6 +71,10 @@ bindTableRulesDefinition
     : ruleName LP tableName (COMMA tableName)* RP
     ;
 
+createShardingBroadcastTableRules
+    : CREATE SHARDING BROADCAST TABLE RULES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
 alterShardingRule
     : ALTER SHARDING RULE LP alterShardingTableRuleDefinition (COMMA alterShardingTableRuleDefinition)* alterBindingTables? defaultTableStrategy? broadcastTables? RP
     ;

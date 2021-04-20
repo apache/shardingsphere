@@ -31,6 +31,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.B
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CheckScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingBindingTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReplicaQueryRuleContext;
@@ -67,6 +68,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleS
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadWriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
@@ -182,6 +184,13 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             replicaQueryRules.add((ReadWriteSplittingRuleSegment) visit(each));
         }
         return new CreateReadWriteSplittingRuleStatement(replicaQueryRules);
+    }
+    
+    @Override
+    public ASTNode visitCreateShardingBroadcastTableRules(final CreateShardingBroadcastTableRulesContext ctx) {
+        CreateShardingBroadcastTableRulesStatement result = new CreateShardingBroadcastTableRulesStatement();
+        result.getTables().addAll(ctx.IDENTIFIER().stream().map(each -> each.getText()).collect(Collectors.toList()));
+        return result;
     }
     
     @Override

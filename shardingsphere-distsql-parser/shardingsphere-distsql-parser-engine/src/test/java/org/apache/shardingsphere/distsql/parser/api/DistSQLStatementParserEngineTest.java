@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -54,6 +55,8 @@ public final class DistSQLStatementParserEngineTest {
     
     private static final String RDL_CREATE_SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING BINDING TABLE RULES (" 
             + "binding_rule_1(t_order,t_order_item)," + "binding_rule_2(t_1,t_2))";
+    
+    private static final String RDL_CREATE_SHARDING_BROADCAST_TABLE_RULES = "CREATE SHARDING BROADCAST TABLE RULES(t_1,t_2)";
     
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -142,5 +145,12 @@ public final class DistSQLStatementParserEngineTest {
         segment = shardingBindingTableRuleSegments.get(1);
         assertThat(segment.getRuleName(), is("binding_rule_2"));
         assertThat(segment.getTables(), is("t_1,t_2"));
+    }
+    
+    @Test
+    public void assertParseCreateShardingBroadcastTableRules() {
+        SQLStatement sqlStatement = engine.parse(RDL_CREATE_SHARDING_BROADCAST_TABLE_RULES);
+        assertTrue(sqlStatement instanceof CreateShardingBroadcastTableRulesStatement);
+        assertThat(((CreateShardingBroadcastTableRulesStatement) sqlStatement).getTables(), is(Arrays.asList("t_1", "t_2")));
     }
 }
