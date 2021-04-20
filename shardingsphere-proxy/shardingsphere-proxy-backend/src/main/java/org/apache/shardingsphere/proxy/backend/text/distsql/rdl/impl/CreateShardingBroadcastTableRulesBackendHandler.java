@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -49,14 +48,14 @@ public final class CreateShardingBroadcastTableRulesBackendHandler extends Schem
         if (!shardingRuleConfig.isPresent()) {
             ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
             shardingRuleConfiguration.setBroadcastTables(sqlStatement.getTables());
-            post(schemaName, Arrays.asList(shardingRuleConfiguration));
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(shardingRuleConfiguration);
         } else {
             if (!shardingRuleConfig.get().getBroadcastTables().isEmpty()) {
                 throw new ShardingBroadcastTableRulesExistsException(schemaName);
             }
             shardingRuleConfig.get().getBroadcastTables().addAll(sqlStatement.getTables());
-            post(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations());
         }
+        post(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations());
         return new UpdateResponseHeader(sqlStatement);
     }
     
