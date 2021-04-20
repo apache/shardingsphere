@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.model;
+package org.apache.shardingsphere.infra.executor.sql.process.model.yaml;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
 /**
- * Execute process unit.
+ * Execute process unit for YAML.
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public final class ExecuteProcessUnit {
+@Setter
+public final class YamlExecuteProcessUnit {
     
-    private final String unitID;
+    private String unitID;
     
-    private final ExecuteProcessConstants status;
+    private ExecuteProcessConstants status;
     
-    public ExecuteProcessUnit(final ExecutionUnit executionUnit, final ExecuteProcessConstants status) {
-        this.unitID = String.valueOf(executionUnit.hashCode());
-        this.status = status;
+    public YamlExecuteProcessUnit(final ExecuteProcessUnit executeProcessUnit) {
+        unitID = executeProcessUnit.getUnitID();
+        status = executeProcessUnit.getStatus();
     }
 }

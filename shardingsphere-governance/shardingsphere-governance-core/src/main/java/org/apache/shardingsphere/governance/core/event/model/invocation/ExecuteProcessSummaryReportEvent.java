@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.model;
+package org.apache.shardingsphere.governance.core.event.model.invocation;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 
 /**
- * Execute process unit.
+ * Execute process summary report event.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ExecuteProcessUnit {
+public final class ExecuteProcessSummaryReportEvent {
     
-    private final String unitID;
-    
-    private final ExecuteProcessConstants status;
-    
-    public ExecuteProcessUnit(final ExecutionUnit executionUnit, final ExecuteProcessConstants status) {
-        this.unitID = String.valueOf(executionUnit.hashCode());
-        this.status = status;
-    }
+    private final ExecuteProcessContext executeProcessContext;
 }

@@ -15,24 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.model;
+package org.apache.shardingsphere.infra.executor.sql.process.model.yaml;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 
 /**
- * Execute process unit for YAML.
+ * Execute process context for YAML.
  */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public final class YamlExecuteProcessUnit {
+public final class YamlExecuteProcessContext {
     
-    private String unitID;
+    private String executionID;
     
-    private ExecuteProcessConstants status;
+    private Collection<YamlExecuteProcessUnit> unitStatuses;
+    
+    private Long startTimeMillis;
+    
+    public YamlExecuteProcessContext(final ExecuteProcessContext executeProcessContext) {
+        executionID = executeProcessContext.getExecutionID();
+        unitStatuses = executeProcessContext.getUnitStatuses().stream().map(YamlExecuteProcessUnit::new).collect(Collectors.toList());
+        startTimeMillis = executeProcessContext.getStartTimeMillis();
+    }
 }
