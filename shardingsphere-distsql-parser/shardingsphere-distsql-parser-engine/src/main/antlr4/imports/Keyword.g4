@@ -186,3 +186,7 @@ BINDING
 RULES
     : R U L E S
     ;
+
+BROADCAST
+    : B R O A D C A S T
+    ;
