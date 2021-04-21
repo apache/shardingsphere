@@ -1057,7 +1057,7 @@ alterSessionOption
     | parallelExecutionClause
     | resumableClause
     | shardDdlClause
-    | SYNC WITH PRIMARY
+    | syncWithPrimaryClause
     | alterSessionSetClause
     ;
 
@@ -1097,6 +1097,10 @@ shardDdlClause
     : (ENABLE | DISABLE) SHARD DDL
     ;
 
+syncWithPrimaryClause
+    : SYNC WITH PRIMARY
+    ;
+
 alterSessionSetClause
     : SET alterSessionSetClauseOption
     ;
@@ -1111,10 +1115,6 @@ alterSessionSetClauseOption
 
 parameterClause
     : (parameterName EQ_ parameterValue)+
-    ;
-
-parameterValue
-    : literals | identifier
     ;
 
 editionClause

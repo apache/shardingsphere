@@ -167,6 +167,10 @@ dbLink
     : identifier
     ;
 
+parameterValue
+    : literals | identifier
+    ;
+
 directoryName
     : identifier
     ;
