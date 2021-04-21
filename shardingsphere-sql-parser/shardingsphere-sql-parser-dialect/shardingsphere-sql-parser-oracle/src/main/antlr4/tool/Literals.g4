@@ -20,11 +20,11 @@ lexer grammar Literals;
 import Alphabet;
 
 IDENTIFIER_
-    : [a-z_ ]+
+    : [a-z_]+
     ;
     
 KEYWORD_
     : [A-Z_]+
     ;
     
-WS: (' ' |'\n' |'\r' )+ {skip();} ;
+WS: (' ' |'\n' |'\r')+ {skip();} ;
