@@ -24,9 +24,11 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,16 +67,35 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Arrays.asList("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
-        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Arrays.asList(new ShardingRuleConfiguration()));
     }
     
     @Test
     public void assertExecute() {
+        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Arrays.asList(buildShardingRuleConfiguration()));
         CreateShardingBindingTableRulesStatement statement = buildShardingTableRuleStatement();
         CreateShardingBindingTableRulesBackendHandler handler = new CreateShardingBindingTableRulesBackendHandler(statement, backendConnection);
         ResponseHeader responseHeader = handler.execute("test", statement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
+    }
+    
+    @Test(expected = ShardingTableRuleNotExistedException.class)
+    public void assertExecuteWithNotExistTableRule() {
+        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Arrays.asList(new ShardingRuleConfiguration()));
+        CreateShardingBindingTableRulesStatement statement = buildShardingTableRuleStatement();
+        CreateShardingBindingTableRulesBackendHandler handler = new CreateShardingBindingTableRulesBackendHandler(statement, backendConnection);
+        ResponseHeader responseHeader = handler.execute("test", statement);
+        assertNotNull(responseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
+    }
+    
+    private ShardingRuleConfiguration buildShardingRuleConfiguration() {
+        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
+        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order"));
+        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
+        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_1"));
+        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_2"));
+        return shardingRuleConfiguration;
     }
     
     private CreateShardingBindingTableRulesStatement buildShardingTableRuleStatement() {
@@ -85,7 +106,7 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
         result.getRules().add(segment);
         ShardingBindingTableRuleSegment segmentAnother = new ShardingBindingTableRuleSegment();
         segmentAnother.setRuleName("binding_rule_2");
-        segmentAnother.setTables("t_1, t_2");
+        segmentAnother.setTables("t_1,t_2");
         result.getRules().add(segmentAnother);
         return result;
     }
