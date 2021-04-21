@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -47,22 +46,52 @@ import java.util.stream.Collectors;
  */
 public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler {
     
+    private static final String CREATE_USER_SQL = "CREATE USER %s WITH PASSWORD '%s'";
+    
+    private static final String GRANT_ALL_SQL = "GRANT ALL ON ALL TABLES IN SCHEMA public TO %s";
+    
     private static final String ROLES_SQL = "select * from pg_roles WHERE rolname IN (%s)";
     
-    private static final String TABLE_PRIVILEGE_SQL = 
-            "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
+    private static final String TABLE_PRIVILEGE_SQL = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
     
     @Override
     public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
-        return Collections.emptyList();
+        Collection<Grantee> grantees = new LinkedList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            try (ResultSet resultSet = statement.executeQuery(getRolePrivilegesSQL(users))) {
+                while (resultSet.next()) {
+                    grantees.add(new Grantee(resultSet.getString("rolname"), ""));
+                }
+            }
+        }
+        return users.stream().filter(each -> !grantees.contains(each.getGrantee())).collect(Collectors.toList());
     }
     
     @Override
     public void create(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            for (ShardingSphereUser each : users) {
+                statement.execute(getCreateUsersSQL(each));
+            }
+        }
+    }
+    
+    private String getCreateUsersSQL(final ShardingSphereUser users) {
+        return String.format(CREATE_USER_SQL, users.getGrantee(), users.getPassword());
     }
     
     @Override
     public void grantAll(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute(getGrantAllSQL(users));
+        }
+    }
+    
+    private String getGrantAllSQL(final Collection<ShardingSphereUser> users) {
+        String grantUsers = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
+                .collect(Collectors.joining(", "));
+        return String.format(GRANT_ALL_SQL, grantUsers);
     }
     
     @Override
@@ -74,7 +103,7 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
         return result;
     }
     
-    private void fillTablePrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, 
+    private void fillTablePrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap,
                                      final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache = new HashMap<>();
         try (Connection connection = dataSource.getConnection()) {
@@ -108,7 +137,7 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
         String db = resultSet.getString("table_catalog");
         String tableName = resultSet.getString("table_name");
         String privilegeType = resultSet.getString("privilege_type");
-        boolean hasPrivilege = resultSet.getString("is_grantable").equalsIgnoreCase("TRUE");
+        boolean hasPrivilege = "TRUE".equalsIgnoreCase(resultSet.getString("is_grantable"));
         String grantee = resultSet.getString("grantee");
         if (hasPrivilege) {
             privilegeCache

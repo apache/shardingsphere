@@ -42,7 +42,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * SQLServer privilege loader.
+ * SQLServer privilege handler.
  */
 public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler {
     
