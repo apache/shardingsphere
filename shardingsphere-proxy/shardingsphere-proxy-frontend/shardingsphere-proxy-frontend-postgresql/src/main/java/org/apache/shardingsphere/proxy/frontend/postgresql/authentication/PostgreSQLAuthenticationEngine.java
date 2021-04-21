@@ -124,10 +124,8 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final PostgreSQLErrorCode errorCode, final String errorMessage) {
-        PostgreSQLErrorResponsePacket packet = new PostgreSQLErrorResponsePacket();
-        packet.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, "FATAL");
-        packet.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, errorCode.getErrorCode());
-        packet.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, Strings.isNullOrEmpty(errorMessage) ? errorCode.getConditionName() : errorMessage);
+        String message = Strings.isNullOrEmpty(errorMessage) ? errorCode.getConditionName() : errorMessage;
+        PostgreSQLErrorResponsePacket packet = PostgreSQLErrorResponsePacket.newBuilder("FATAL", errorCode.getErrorCode(), message).build();
         return PostgreSQLErrPacketFactory.newInstance(new PSQLException(new ServerErrorMessage(packet.toServerErrorMessage())));
     }
 }

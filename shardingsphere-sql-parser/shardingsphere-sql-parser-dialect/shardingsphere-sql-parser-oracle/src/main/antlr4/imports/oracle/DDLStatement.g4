@@ -106,7 +106,7 @@ oidClause
     ;
 
 oidIndexClause
-    : OIDINDEX indexName? LP_ (physicalAttributesClause | TABLESPACE tablespaceName)+ RP_
+    : OIDINDEX indexName? LP_ (physicalAttributesClause | TABLESPACE tablespaceName)* RP_
     ;
 
 createRelationalTableClause
@@ -280,7 +280,11 @@ tableAlias
     ;
 
 alterDefinitionClause
-    : (alterTableProperties | columnClauses | constraintClauses | alterExternalTable | alterTablePartition)?
+    : (alterTableProperties
+    | columnClauses
+    | constraintClauses
+    | alterTablePartitioning ((DEFERRED| IMMEDIATE) INVALIDATION)?
+    | alterExternalTable)?
     ;
 
 alterTableProperties
@@ -459,7 +463,7 @@ rebuildClause
     ;
 
 parallelClause
-    : PARALLEL
+    : NOPARALLEL | PARALLEL NUMBER_?
     ;
 
 usableSpecification
@@ -487,7 +491,7 @@ commitClause
     ;
 
 physicalProperties
-    : deferredSegmentCreation? segmentAttributesClause tableCompression? inmemoryTableClause? ilmClause?
+    : deferredSegmentCreation? segmentAttributesClause? tableCompression? inmemoryTableClause? ilmClause?
     | deferredSegmentCreation? (organizationClause?|externalPartitionClause?)
     | clusterClause
     ;
@@ -497,9 +501,9 @@ deferredSegmentCreation
     ;
 
 segmentAttributesClause
-    : physicalAttributesClause
+    : ( physicalAttributesClause
     | (TABLESPACE tablespaceName | TABLESPACE SET tablespaceSetName)
-    | loggingClause
+    | loggingClause)+
     ;
 
 physicalAttributesClause
@@ -959,7 +963,7 @@ alterSynonym
     : ALTER PUBLIC? SYNONYM (schemaName DOT_)? synonymName (COMPILE | EDITIONABLE | NONEDITIONABLE)
     ;
 
-alterTablePartition
+alterTablePartitioning
     : addTablePartition | dropTablePartition
     ;
 
@@ -980,11 +984,53 @@ addListPartitionClause
     ;
 
 dropTablePartition
-    : DROP partitionExtendedNames
+    : DROP partitionExtendedNames (updateIndexClauses parallelClause?)?
     ;
 
 partitionExtendedNames
-    : (PARTITION | PARTITIONS) partition
+    : (PARTITION | PARTITIONS) (partitionName | partitionForClauses) (COMMA_ (partitionName | partitionForClauses))*
+    ;
+
+partitionForClauses
+    : FOR LP_ partitionKeyValue (COMMA_ partitionKeyValue)* RP_
+    ;
+
+updateIndexClauses
+    : updateGlobalIndexClause | updateAllIndexesClause
+    ;
+
+updateGlobalIndexClause
+    : (UPDATE | INVALIDATE) GLOBAL INDEXES
+    ;
+
+updateAllIndexesClause
+    : UPDATE INDEXES
+    (LP_ indexName LP_ (updateIndexPartition | updateIndexSubpartition) RP_
+    (COMMA_ indexName LP_ (updateIndexPartition | updateIndexSubpartition) RP_)* RP_)?
+    ;
+
+updateIndexPartition
+    : indexPartitionDesc indexSubpartitionClause?
+    (COMMA_ indexPartitionDesc indexSubpartitionClause?)*
+    ;
+
+indexPartitionDesc
+    : PARTITION
+    (partitionName
+    ((segmentAttributesClause | indexCompression)+ | PARAMETERS LP_ SQ_ odciParameters SQ_ RP_ )?
+    usableSpecification?
+    )?
+    ;
+
+indexSubpartitionClause
+    : STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_
+    | LP_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)? indexCompression? usableSpecification?
+    (COMMA_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)? indexCompression? usableSpecification?)* RP_
+    ;
+
+updateIndexSubpartition
+    : SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)?
+    (COMMA_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)?)*
     ;
 
 supplementalLoggingProps

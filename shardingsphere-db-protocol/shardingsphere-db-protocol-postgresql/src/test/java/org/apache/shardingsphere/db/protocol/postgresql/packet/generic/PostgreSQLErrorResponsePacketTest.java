@@ -36,7 +36,9 @@ public final class PostgreSQLErrorResponsePacketTest {
     @Test
     public void assertToServerErrorMessage() {
         PostgreSQLErrorResponsePacket responsePacket = createErrorResponsePacket();
-        assertThat(responsePacket.toServerErrorMessage(), is("SFATAL\0C3D000\0Mdatabase \"test\" does not exist"));
+        String expectedMessage = "SFATAL\0C3D000\0Mdatabase \"test\" does not exist\0VERROR\0Ddetail\0Hhint\0P1\0p2\0qinternal query\0"
+                + "Wwhere\0stest\0ttable\0ccolumn\0ddata type\0nconstraint\0Ffile\0L3\0Rroutine";
+        assertThat(responsePacket.toServerErrorMessage(), is(expectedMessage));
     }
     
     @Test
@@ -49,14 +51,42 @@ public final class PostgreSQLErrorResponsePacketTest {
         verify(payload).writeStringNul("3D000");
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE);
         verify(payload).writeStringNul("database \"test\" does not exist");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY_NON_LOCALIZED);
+        verify(payload).writeStringNul("ERROR");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_DETAIL);
+        verify(payload).writeStringNul("detail");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_HINT);
+        verify(payload).writeStringNul("hint");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_POSITION);
+        verify(payload).writeStringNul("1");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_INTERNAL_POSITION);
+        verify(payload).writeStringNul("2");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_INTERNAL_QUERY);
+        verify(payload).writeStringNul("internal query");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_WHERE);
+        verify(payload).writeStringNul("where");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_SCHEMA_NAME);
+        verify(payload).writeStringNul("test");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_TABLE_NAME);
+        verify(payload).writeStringNul("table");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_COLUMN_NAME);
+        verify(payload).writeStringNul("column");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_DATA_TYPE_NAME);
+        verify(payload).writeStringNul("data type");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_CONSTRAINT_NAME);
+        verify(payload).writeStringNul("constraint");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_FILE);
+        verify(payload).writeStringNul("file");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_LINE);
+        verify(payload).writeStringNul("3");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_ROUTINE);
+        verify(payload).writeStringNul("routine");
         verify(payload).writeInt1(0);
     }
     
     private PostgreSQLErrorResponsePacket createErrorResponsePacket() {
-        PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, "FATAL");
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, "3D000");
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, "database \"test\" does not exist");
-        return result;
+        return PostgreSQLErrorResponsePacket.newBuilder("FATAL", "3D000", "database \"test\" does not exist").severityNonLocalized("ERROR").detail("detail").hint("hint").position(1)
+                .internalQueryAndInternalPosition("internal query", 2).where("where").schemaName("test").tableName("table").columnName("column").dataTypeName("data type")
+                .constraintName("constraint").file("file").line(3).routine("routine").build();
     }
 }

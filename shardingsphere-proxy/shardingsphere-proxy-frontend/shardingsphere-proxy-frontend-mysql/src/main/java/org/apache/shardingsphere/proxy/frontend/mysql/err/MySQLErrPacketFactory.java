@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceException;
+import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleCreateExistsException;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleN
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
@@ -140,6 +142,12 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof DuplicateResourceException) {
             return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_RESOURCE, ((DuplicateResourceException) cause).getResourceNames());
+        }
+        if (cause instanceof DuplicateTablesException) {
+            return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_TABLE, ((DuplicateTablesException) cause).getTableNames());
+        }
+        if (cause instanceof ShardingBroadcastTableRulesExistsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_EXIST, ((ShardingBroadcastTableRulesExistsException) cause).getSchemaName());
         }
         if (cause instanceof ShardingRuleNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_RULE_NOT_EXIST);

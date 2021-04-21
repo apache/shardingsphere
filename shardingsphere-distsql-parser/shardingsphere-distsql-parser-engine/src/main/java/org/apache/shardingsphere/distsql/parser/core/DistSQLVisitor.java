@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.parser.core;
 
+import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
@@ -26,10 +27,11 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.A
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingTableRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.BindingTableContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.BindTableRulesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CheckScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingBindingTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReplicaQueryRuleContext;
@@ -53,6 +55,7 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadWriteSplittingRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.CheckScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.DropScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ResetScalingJobStatement;
@@ -64,7 +67,8 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadWriteSpli
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadWriteSplittingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
@@ -117,36 +121,23 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
-    public ASTNode visitDropResource(final DropResourceContext ctx) {
-        DropResourceStatement result = new DropResourceStatement();
-        for (TerminalNode each : ctx.IDENTIFIER()) {
-            result.getResourceNames().add(each.getText());
+    public ASTNode visitCreateShardingBindingTableRules(final CreateShardingBindingTableRulesContext ctx) {
+        CreateShardingBindingTableRulesStatement result = new CreateShardingBindingTableRulesStatement();
+        for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
+            ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
+            segment.setRuleName(each.ruleName().getText());
+            segment.setTables(Joiner.on(",")
+                    .join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
+            result.getRules().add(segment);
         }
         return result;
     }
     
     @Override
-    public ASTNode visitCreateShardingRule(final CreateShardingRuleContext ctx) {
-        CreateShardingRuleStatement result;
-        if (null != ctx.defaultTableStrategy()) {
-            String defaultTableStrategyColumn = null != ctx.defaultTableStrategy().columnName() ? ctx.defaultTableStrategy().columnName().getText() : null;
-            result = new CreateShardingRuleStatement(defaultTableStrategyColumn, (FunctionSegment) visit(ctx.defaultTableStrategy()));
-        } else {
-            result = new CreateShardingRuleStatement(null, null);
-        }
-        for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
-            result.getTables().add((TableRuleSegment) visit(each));
-        }
-        if (null != ctx.bindingTables()) {
-            for (BindingTableContext each : ctx.bindingTables().bindingTable()) {
-                Collection<String> tables = each.tableNames().IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
-                result.getBindingTables().add(tables);
-            }
-        }
-        if (null != ctx.broadcastTables()) {
-            for (TerminalNode each : ctx.broadcastTables().IDENTIFIER()) {
-                result.getBroadcastTables().add(new IdentifierValue(each.getText()).getValue());
-            }
+    public ASTNode visitDropResource(final DropResourceContext ctx) {
+        DropResourceStatement result = new DropResourceStatement();
+        for (TerminalNode each : ctx.IDENTIFIER()) {
+            result.getResourceNames().add(each.getText());
         }
         return result;
     }
@@ -196,6 +187,13 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
+    public ASTNode visitCreateShardingBroadcastTableRules(final CreateShardingBroadcastTableRulesContext ctx) {
+        CreateShardingBroadcastTableRulesStatement result = new CreateShardingBroadcastTableRulesStatement();
+        result.getTables().addAll(ctx.IDENTIFIER().stream().map(each -> each.getText()).collect(Collectors.toList()));
+        return result;
+    }
+    
+    @Override
     public ASTNode visitReplicaQueryRuleDefinition(final ReplicaQueryRuleDefinitionContext ctx) {
         ReadWriteSplittingRuleSegment result = new ReadWriteSplittingRuleSegment();
         Collection<String> replicaDatasources = new LinkedList<>();
@@ -208,7 +206,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
                 props.setProperty(each.key.getText(), each.value.getText());
             }
         }
-        result.setName(ctx.ruleName.getText());
+        result.setName(ctx.ruleName().getText());
         result.setWriteDataSource(ctx.primary.getText());
         result.setReadDataSources(replicaDatasources);
         result.setLoadBalancer(ctx.functionDefinition().functionName().getText());
@@ -246,7 +244,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
             replicaDatasources.add(each.getText());
         }
-        result.setName(ctx.ruleName.getText());
+        result.setName(ctx.ruleName().getText());
         result.setWriteDataSource(ctx.primary.getText());
         result.setReadDataSources(replicaDatasources);
         if (null != ctx.functionDefinition()) {

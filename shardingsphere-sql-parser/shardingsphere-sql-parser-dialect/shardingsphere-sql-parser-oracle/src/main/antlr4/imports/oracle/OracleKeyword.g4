@@ -907,6 +907,10 @@ PARALLEL
     : P A R A L L E L
     ;
 
+NOPARALLEL
+    : N O P A R A L L E L
+    ;
+
 LOG
     : L O G
     ;
@@ -1188,7 +1192,7 @@ PCTTHRESHOLD
     ;
 
 PARAMETERS
-    : P A R A M E  T E R S
+    : P A R A M E T E R S
     ;
 
 LOCATION
@@ -1417,6 +1421,10 @@ EDITIONABLE
 
 NONEDITIONABLE
     : N O N E D I T I O N A B L E
+    ;
+
+INDEXES
+    : I N D E X E S
     ;
 
 ADVISE
