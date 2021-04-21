@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.err;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
@@ -48,25 +49,20 @@ public final class PostgreSQLErrPacketFactory {
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
-        PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, serverErrorMessage.getSQLState());
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, serverErrorMessage.getMessage());
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, serverErrorMessage.getSeverity());
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_POSITION, Integer.toString(serverErrorMessage.getPosition()));
-        return result;
+        return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
+                .severityNonLocalized(serverErrorMessage.getSeverity()).detail(serverErrorMessage.getDetail()).hint(serverErrorMessage.getHint()).position(serverErrorMessage.getPosition())
+                .internalQueryAndInternalPosition(serverErrorMessage.getInternalQuery(), serverErrorMessage.getInternalPosition()).where(serverErrorMessage.getWhere())
+                .schemaName(serverErrorMessage.getSchema()).tableName(serverErrorMessage.getTable()).columnName(serverErrorMessage.getColumn()).dataTypeName(serverErrorMessage.getDatatype())
+                .constraintName(serverErrorMessage.getConstraint()).file(serverErrorMessage.getFile()).line(serverErrorMessage.getLine()).routine(serverErrorMessage.getRoutine()).build();
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
-        PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, cause.getSQLState());
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
-        return result;
+        // TODO consider what severity to use
+        return PostgreSQLErrorResponsePacket.newBuilder("ERROR", cause.getSQLState(), cause.getMessage()).build();
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final Exception cause) {
-        PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
-        // TODO add FIELD_TYPE_CODE for common error
-        result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
-        return result;
+        // TODO add FIELD_TYPE_CODE for common error and consider what severity to use
+        return PostgreSQLErrorResponsePacket.newBuilder("ERROR", PostgreSQLErrorCode.SYSTEM_ERROR.getErrorCode(), cause.getMessage()).build();
     }
 }
