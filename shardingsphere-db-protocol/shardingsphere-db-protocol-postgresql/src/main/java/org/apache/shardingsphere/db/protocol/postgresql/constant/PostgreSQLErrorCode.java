@@ -45,10 +45,12 @@ public enum PostgreSQLErrorCode {
     SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION("08004", "sqlserver_rejected_establishment_of_sqlconnection"),
     TRANSACTION_RESOLUTION_UNKNOWN("08007", "transaction_resolution_unknown"),
     PROTOCOL_VIOLATION("08P01", "protocol_violation"),
+    FEATURE_NOT_SUPPORTED("0A000", "feature_not_supported"),
     INVALID_AUTHORIZATION_SPECIFICATION("28000", "invalid_authorization_specification"),
     INVALID_PASSWORD("28P01", "invalid_password"),
     INVALID_CATALOG_NAME("3D000", "invalid_catalog_name"),
-    INVALID_SCHEMA_NAME("3F000", "invalid_schema_name"),;
+    INVALID_SCHEMA_NAME("3F000", "invalid_schema_name"),
+    SYSTEM_ERROR("58000", "system_error");
     
     private final String errorCode;
     
