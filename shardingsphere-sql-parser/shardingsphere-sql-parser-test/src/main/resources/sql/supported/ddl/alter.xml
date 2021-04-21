@@ -125,6 +125,12 @@
     <sql-case id="alter_table_add_range_partition" value="ALTER TABLE t_order ADD PARTITION range_p_order VALUES LESS THAN(100)" db-types="Oracle" />
     <sql-case id="alter_table_add_list_partition" value="ALTER TABLE t_order ADD PARTITION list_p_order VALUES(100, 200, 300)" db-types="Oracle" />
     <sql-case id="alter_table_drop_partition" value="ALTER TABLE t_order DROP PARTITION list_p_order" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_global_index" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE GLOBAL INDEXES" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index_partition" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES (order_index (PARTITION))" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index_subpartition" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES (order_index (SUBPARTITION))" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_global_index_parallel" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE GLOBAL INDEXES PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index_noparallel" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES NOPARALLEL" db-types="Oracle" />
 <!--    alter index test-->
     <sql-case id="alter_index" value="ALTER INDEX order_index REBUILD PARALLEL" db-types="Oracle" />
     <sql-case id="alter_index_with_space" value="    ALTER INDEX

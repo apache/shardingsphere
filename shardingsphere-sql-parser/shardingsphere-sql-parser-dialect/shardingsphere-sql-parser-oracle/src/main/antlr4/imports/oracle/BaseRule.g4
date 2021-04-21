@@ -223,6 +223,10 @@ partitionSetName
     : identifier
     ;
 
+partitionKeyValue
+    : NUMBER_ | dateTimeLiterals
+    ;
+
 zonemapName
     : identifier
     ;
@@ -257,6 +261,10 @@ oracleId
 
 collationName
     : STRING_ | IDENTIFIER_
+    ;
+
+columnCollationName
+    : identifier
     ;
 
 alias
@@ -497,4 +505,8 @@ matchNone
 
 hashSubpartitionQuantity
     : NUMBER
+    ;
+
+odciParameters
+    : identifier
     ;
