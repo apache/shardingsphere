@@ -31,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConverter;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,9 +52,16 @@ public final class CreateShardingTableRuleBackendHandler extends SchemaRequiredB
     @Override
     public ResponseHeader execute(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
         check(schemaName, sqlStatement);
-        YamlShardingRuleConfiguration config = ShardingRuleStatementConverter.convert(sqlStatement);
-        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
-        post(schemaName, rules);
+        ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).iterator().next();
+        Optional<ShardingRuleConfiguration> existShardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
+        if (existShardingRuleConfiguration.isPresent()) {
+            existShardingRuleConfiguration.get().getAutoTables().addAll(shardingRuleConfiguration.getAutoTables());
+            existShardingRuleConfiguration.get().getShardingAlgorithms().putAll(shardingRuleConfiguration.getShardingAlgorithms());
+        } else {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(shardingRuleConfiguration);
+        }
+        post(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations());
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -76,12 +82,16 @@ public final class CreateShardingTableRuleBackendHandler extends SchemaRequiredB
     }
     
     private Collection<String> getLogicTables(final String schemaName) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-        if (!shardingRuleConfig.isPresent()) {
+        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
+        if (!shardingRuleConfiguration.isPresent()) {
             return Collections.EMPTY_LIST;
         }
-        return shardingRuleConfig.get().getTables().stream().map(each -> each.getLogicTable()).collect(Collectors.toList());
+        return shardingRuleConfiguration.get().getTables().stream().map(each -> each.getLogicTable()).collect(Collectors.toList());
+    }
+    
+    private Optional<ShardingRuleConfiguration> getShardingRuleConfiguration(final String schemaName) {
+        return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
+                .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
     }
     
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {

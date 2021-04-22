@@ -37,9 +37,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -88,7 +88,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     public void assertExecuteWithDuplicateTablesInRDL() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.EMPTY_LIST);
+        when(ruleMetaData.getConfigurations()).thenReturn(new ArrayList<>());
         when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
@@ -105,6 +105,6 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     private Collection<RuleConfiguration> buildShardingConfigurations() {
         ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
         configuration.getTables().add(new ShardingTableRuleConfiguration("t_order"));
-        return Arrays.asList(configuration);
+        return new ArrayList<>(Arrays.asList(configuration));
     }
 }
