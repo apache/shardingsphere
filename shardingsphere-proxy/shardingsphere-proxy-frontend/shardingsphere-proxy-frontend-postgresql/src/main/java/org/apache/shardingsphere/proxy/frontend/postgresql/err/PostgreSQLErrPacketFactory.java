@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.err;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
@@ -63,6 +64,7 @@ public final class PostgreSQLErrPacketFactory {
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final Exception cause) {
         // TODO add FIELD_TYPE_CODE for common error and consider what severity to use
-        return PostgreSQLErrorResponsePacket.newBuilder("ERROR", PostgreSQLErrorCode.SYSTEM_ERROR.getErrorCode(), cause.getMessage()).build();
+        String message = Strings.isNullOrEmpty(cause.getLocalizedMessage()) ? cause.toString() : cause.getLocalizedMessage();
+        return PostgreSQLErrorResponsePacket.newBuilder("ERROR", PostgreSQLErrorCode.SYSTEM_ERROR.getErrorCode(), message).build();
     }
 }
