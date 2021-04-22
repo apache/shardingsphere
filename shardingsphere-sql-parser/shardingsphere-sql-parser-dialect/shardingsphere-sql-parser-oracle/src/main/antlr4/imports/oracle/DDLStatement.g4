@@ -688,7 +688,7 @@ tablePartitioningClauses
 rangePartitions
     : PARTITION BY RANGE columnNames
       (INTERVAL LP_ expr RP_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)?)?
-      LP_ PARTITION partition? rangeValuesClause tablePartitionDescription (COMMA_ PARTITION partition? rangeValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+      LP_ PARTITION partitionName? rangeValuesClause tablePartitionDescription (COMMA_ PARTITION partitionName? rangeValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
     ;
 
 rangeValuesClause
@@ -770,7 +770,7 @@ externalPartSubpartDataProps
 listPartitions
     : PARTITION BY LIST columnNames
       (AUTOMATIC (STORE IN LP_? tablespaceName (COMMA_ tablespaceName)* RP_?))?
-      LP_ PARTITION partition? listValuesClause tablePartitionDescription (COMMA_ PARTITION partition? listValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+      LP_ PARTITION partitionName? listValuesClause tablePartitionDescription (COMMA_ PARTITION partitionName? listValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
     ;
 
 listValuesClause
@@ -799,7 +799,7 @@ advancedIndexCompression
     ;
 
 individualHashPartitions
-    : LP_? (PARTITION partition? readOnlyClause? indexingClause? partitioningStorageClause?) (COMMA_ PARTITION partition? readOnlyClause? indexingClause? partitioningStorageClause?)* RP_?
+    : LP_? (PARTITION partitionName? readOnlyClause? indexingClause? partitioningStorageClause?) (COMMA_ PARTITION partitionName? readOnlyClause? indexingClause? partitioningStorageClause?)* RP_?
     ;
 
 partitioningStorageClause
@@ -884,7 +884,7 @@ referencePartitioning
     ;
 
 referencePartitionDesc
-    : PARTITION partition? tablePartitionDescription?
+    : PARTITION partitionName? tablePartitionDescription?
     ;
 
 constraint
