@@ -28,8 +28,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,12 +45,37 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 public final class SQLServerPrivilegeLoaderTest {
     
     @BeforeClass
     public static void setUp() {
         ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
+    }
+    
+    @Test
+    public void assertDiff() throws SQLException {
+        Collection<ShardingSphereUser> newUsers = createUsers();
+        newUsers.add(new ShardingSphereUser("testUser", "", ""));
+        DataSource dataSource = mockDataSourceForUsers(newUsers);
+        assertDiffUsers(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer", new Properties()).diff(newUsers, dataSource));
+    }
+    
+    @Test
+    public void assertCreate() throws SQLException {
+        Collection<ShardingSphereUser> users = createUsers();
+        DataSource dataSource = mockDataSourceForUsers(users);
+        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer", new Properties()).create(users, dataSource);
+        assertCreateUsers(users, dataSource.getConnection().createStatement());
+    }
+    
+    @Test
+    public void assertGrantAll() throws SQLException {
+        Collection<ShardingSphereUser> users = createUsers();
+        DataSource dataSource = mockDataSourceForUsers(users);
+        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer", new Properties()).grantAll(users, dataSource);
+        assertGrantUsersAll(users, dataSource.getConnection().createStatement());
     }
     
     @Test
@@ -73,7 +100,7 @@ public final class SQLServerPrivilegeLoaderTest {
     
     private Collection<ShardingSphereUser> createUsers() {
         LinkedList<ShardingSphereUser> result = new LinkedList<>();
-        result.add(new ShardingSphereUser("dbo", "", ""));
+        result.add(new ShardingSphereUser("dbo", "password", ""));
         return result;
     }
     
@@ -94,6 +121,26 @@ public final class SQLServerPrivilegeLoaderTest {
         ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
         String tablePrivilegeSql = "SELECT GRANTOR, GRANTEE, TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE_TYPE, IS_GRANTABLE from INFORMATION_SCHEMA.TABLE_PRIVILEGES WHERE GRANTEE IN (%s)";
         when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
+        return result;
+    }
+    
+    private DataSource mockDataSourceForUsers(final Collection<ShardingSphereUser> users) throws SQLException {
+        ResultSet usersResultSet = mockUsersResultSet();
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        Statement statement = mock(Statement.class);
+        Connection connection = mock(Connection.class);
+        String diffUsersSQL = "SELECT * FROM sys.server_principals WHERE name in (%s)";
+        String userList = users.stream().map(item -> item.getGrantee().getUsername()).collect(Collectors.joining(", "));
+        when(statement.executeQuery(String.format(diffUsersSQL, userList))).thenReturn(usersResultSet);
+        when(connection.createStatement()).thenReturn(statement);
+        when(result.getConnection()).thenReturn(connection);
+        return result;
+    }
+    
+    private ResultSet mockUsersResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("rolname")).thenReturn("postgres1", "postgres");
         return result;
     }
     
@@ -125,5 +172,28 @@ public final class SQLServerPrivilegeLoaderTest {
         when(result.getString("PRIVILEGE_TYPE")).thenReturn("CONNECT");
         when(result.getString("DB")).thenReturn("t_order");
         return result;
+    }
+    
+    private void assertDiffUsers(final Collection<ShardingSphereUser> users) {
+        assertThat(users.size(), is(1));
+        assertThat(users.iterator().next().getGrantee().getUsername(), is("testUser"));
+    }
+    
+    private void assertCreateUsers(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
+        for (ShardingSphereUser each : users) {
+            StringBuilder result = new StringBuilder();
+            result.append(String.format("CREATE LOGIN %s WITH PASSWORD = '%s';", each.getGrantee().getUsername(), each.getPassword())).append("\n");
+            result.append("GO").append("\n");
+            result.append(String.format("CREATE USER %s FOR LOGIN %s;\n", each.getGrantee().getUsername(), each.getGrantee().getUsername()));
+            result.append("GO");
+            verify(statement).execute(result.toString());
+        }
+    }
+    
+    private void assertGrantUsersAll(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
+        String databaseName = "db_0";
+        for (ShardingSphereUser each : users) {
+            verify(statement).execute(String.format("GRANT CONTROL ON DATABASE::%s TO %s;", databaseName, each.getGrantee().getUsername()));
+        }
     }
 }
