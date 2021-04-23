@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
-import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
@@ -55,10 +54,6 @@ public final class PostgreSQLErrPacketFactory {
         if (cause instanceof InvalidAuthorizationSpecificationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL.name(), PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION.getErrorCode(), cause.getMessage())
                     .severityNonLocalized(PostgreSQLMessageSeverityLevel.FATAL.name()).build();
-        }
-        if (cause instanceof UnknownDatabaseException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL.name(), PostgreSQLErrorCode.INVALID_CATALOG_NAME.getErrorCode(),
-                    String.format("database \"%s\" does not exist", ((UnknownDatabaseException) cause).getDatabaseName())).build();
         }
         if (cause instanceof PostgreSQLProtocolViolationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL.name(), PostgreSQLErrorCode.PROTOCOL_VIOLATION.getErrorCode(),
