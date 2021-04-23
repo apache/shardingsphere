@@ -19,15 +19,15 @@ grammar TransferRule;
 
 import Literals, Symbol;
 
-sentence: rule+ SEMI_;
+sentences: rules+ SEMI_;
 
-rule: identifier
-    | keyWord
-    | LBE_  rule  RBE_
-    | LBT_  rule  RBT_
-    | LP_  rule  RP_ MLT_
+rules: identifiers
+    | keyWords
+    | LBE_  rules  RBE_
+    | LBT_  rules  RBT_
+    | LP_  rules RP_ MLT_
     ;
 
-identifier: IDENTIFIER_ DOT_? IDENTIFIER_?;
+identifiers: IDENTIFIER_ DOT_? IDENTIFIER_?;
 
-keyWord: KEYWORD_+;
+keyWords: KEYWORD_+;
