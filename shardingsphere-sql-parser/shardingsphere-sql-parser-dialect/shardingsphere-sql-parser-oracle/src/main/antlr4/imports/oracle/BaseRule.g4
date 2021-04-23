@@ -183,6 +183,10 @@ accessDriverType
     : identifier
     ;
 
+partition
+    : identifier
+    ;
+
 type
     : identifier
     ;
@@ -524,5 +528,57 @@ hashSubpartitionQuantity
     ;
 
 odciParameters
+    : identifier
+    ;
+
+database
+    : identifier
+    ;
+
+location
+    : identifier
+    ;
+
+fileName
+    : identifier
+    ;
+
+asmFileName
+    : identifier
+    ;
+
+fileNumber
+    : NUMBER_
+    ;
+
+instanceName
+    : identifier
+    ;
+
+logminerSessionName
+    : identifier
+    ;
+
+dblink
+    : identifier
+    ;
+
+tablespaceGroupName
+    : identifier
+    ;
+
+copyName
+    : identifier
+    ;
+
+mirrorName
+    : identifier
+    ;
+
+uriString
+    : identifier
+    ;
+
+qualifiedCredentialName
     : identifier
     ;
