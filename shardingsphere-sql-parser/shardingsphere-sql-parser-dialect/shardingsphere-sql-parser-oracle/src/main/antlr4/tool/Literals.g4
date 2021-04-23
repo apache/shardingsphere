@@ -27,4 +27,4 @@ KEYWORD_
     : [A-Z_]+
     ;
     
-WS: (' ' |'\n' |'\r')+ {skip();} ;
+WS  : [\t]+ ->skip;
