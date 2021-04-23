@@ -174,12 +174,12 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
     }
     
     private String getSysPrivilegesSQL(final Collection<ShardingSphereUser> users) {
-        String userList = users.stream().map(each -> String.format("%s", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         return String.format(SYS_PRIVILEGE_SQL, userList);
     }
     
     private String getTablePrivilegesSQL(final Collection<ShardingSphereUser> users) {
-        String userList = users.stream().map(each -> String.format("%s", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         return String.format(TABLE_PRIVILEGE_SQL, userList);
     }
     
