@@ -28,7 +28,5 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 @Setter
 public final class ShardingBindingTableRuleSegment implements ASTNode {
     
-    private String ruleName;
-    
     private String tables;
 }

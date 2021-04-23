@@ -54,7 +54,7 @@ public final class DistSQLStatementParserEngineTest {
             + "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123))))";
     
     private static final String RDL_CREATE_SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING BINDING TABLE RULES (" 
-            + "binding_rule_1(t_order,t_order_item)," + "binding_rule_2(t_1,t_2))";
+            + "(t_order,t_order_item), (t_1,t_2))";
     
     private static final String RDL_CREATE_SHARDING_BROADCAST_TABLE_RULES = "CREATE SHARDING BROADCAST TABLE RULES(t_1,t_2)";
     
@@ -140,10 +140,8 @@ public final class DistSQLStatementParserEngineTest {
         List<ShardingBindingTableRuleSegment> shardingBindingTableRuleSegments = new ArrayList<>(((CreateShardingBindingTableRulesStatement) sqlStatement).getRules());
         assertThat(shardingBindingTableRuleSegments.size(), is(2));
         ShardingBindingTableRuleSegment segment = shardingBindingTableRuleSegments.get(0);
-        assertThat(segment.getRuleName(), is("binding_rule_1"));
         assertThat(segment.getTables(), is("t_order,t_order_item"));
         segment = shardingBindingTableRuleSegments.get(1);
-        assertThat(segment.getRuleName(), is("binding_rule_2"));
         assertThat(segment.getTables(), is("t_1,t_2"));
     }
     

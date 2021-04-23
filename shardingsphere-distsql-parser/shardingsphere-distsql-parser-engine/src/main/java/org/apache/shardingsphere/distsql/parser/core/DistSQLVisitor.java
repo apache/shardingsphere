@@ -125,7 +125,6 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         CreateShardingBindingTableRulesStatement result = new CreateShardingBindingTableRulesStatement();
         for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
             ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
-            segment.setRuleName(each.ruleName().getText());
             segment.setTables(Joiner.on(",")
                     .join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
             result.getRules().add(segment);
