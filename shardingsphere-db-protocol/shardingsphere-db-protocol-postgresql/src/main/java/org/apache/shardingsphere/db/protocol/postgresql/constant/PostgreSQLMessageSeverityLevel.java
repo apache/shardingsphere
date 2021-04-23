@@ -24,8 +24,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
  */
 public enum PostgreSQLMessageSeverityLevel {
     
-    DEBUG0,
-    
     DEBUG1,
     
     DEBUG2,
