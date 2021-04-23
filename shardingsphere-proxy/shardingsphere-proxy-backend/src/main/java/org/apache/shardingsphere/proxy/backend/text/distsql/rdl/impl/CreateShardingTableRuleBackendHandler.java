@@ -83,10 +83,13 @@ public final class CreateShardingTableRuleBackendHandler extends SchemaRequiredB
     
     private Collection<String> getLogicTables(final String schemaName) {
         Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
+        Collection<String> result = new ArrayList<>();
         if (!shardingRuleConfiguration.isPresent()) {
-            return Collections.EMPTY_LIST;
+            return result;
         }
-        return shardingRuleConfiguration.get().getTables().stream().map(each -> each.getLogicTable()).collect(Collectors.toList());
+        result.addAll(shardingRuleConfiguration.get().getTables().stream().map(each -> each.getLogicTable()).collect(Collectors.toList()));
+        result.addAll(shardingRuleConfiguration.get().getAutoTables().stream().map(each -> each.getLogicTable()).collect(Collectors.toList()));
+        return result;
     }
     
     private Optional<ShardingRuleConfiguration> getShardingRuleConfiguration(final String schemaName) {

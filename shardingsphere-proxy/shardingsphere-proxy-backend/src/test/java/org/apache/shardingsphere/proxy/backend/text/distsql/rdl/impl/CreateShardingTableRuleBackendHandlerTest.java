@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesExceptio
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
@@ -105,6 +106,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     private Collection<RuleConfiguration> buildShardingConfigurations() {
         ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
         configuration.getTables().add(new ShardingTableRuleConfiguration("t_order"));
+        configuration.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
         return new ArrayList<>(Arrays.asList(configuration));
     }
 }
