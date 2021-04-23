@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
@@ -56,7 +57,7 @@ public final class PostgreSQLAuthenticationHandler {
         }
         String md5Digest = passwordMessagePacket.getMd5Digest();
         String expectedMd5Digest = md5Encode(username, user.get().getPassword(), md5Salt);
-        if (!expectedMd5Digest.equals(md5Digest)) {
+        if (!expectedMd5Digest.equals(md5Digest) || !Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().schemaExists(databaseName)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
         }
         return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), user.get().getGrantee())

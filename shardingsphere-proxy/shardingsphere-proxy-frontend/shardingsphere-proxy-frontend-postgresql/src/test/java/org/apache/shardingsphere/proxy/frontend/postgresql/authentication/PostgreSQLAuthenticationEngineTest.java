@@ -30,6 +30,8 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -82,13 +84,12 @@ public final class PostgreSQLAuthenticationEngineTest {
         assertThat(actual.isFinished(), is(false));
     }
     
-    @Test
+    @Test(expected = InvalidAuthorizationSpecificationException.class)
     public void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512));
         payload.writeInt4(64);
         payload.writeInt4(196608);
-        AuthenticationResult actual = new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
-        assertThat(actual.isFinished(), is(false));
+        new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
     }
     
     @Test
@@ -96,7 +97,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         assertLogin(password);
     }
     
-    @Test
+    @Test(expected = PostgreSQLAuthenticationException.class)
     public void assertLoginFailed() {
         assertLogin("wrong" + password);
     }

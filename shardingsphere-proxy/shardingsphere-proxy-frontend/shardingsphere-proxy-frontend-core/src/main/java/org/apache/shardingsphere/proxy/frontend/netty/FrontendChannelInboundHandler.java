@@ -78,7 +78,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             log.error("Exception occur: ", ex);
-            context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
+            context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
+            context.close();
         }
         return false;
     }
