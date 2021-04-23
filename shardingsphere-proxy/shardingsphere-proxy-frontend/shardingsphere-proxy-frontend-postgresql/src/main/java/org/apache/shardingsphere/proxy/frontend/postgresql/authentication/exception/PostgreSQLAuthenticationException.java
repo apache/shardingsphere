@@ -25,8 +25,8 @@ import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
 /**
  * PostgreSQL authentication exception.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class PostgreSQLAuthenticationException extends FrontendException {
     
     private static final long serialVersionUID = 1331782847269278560L;

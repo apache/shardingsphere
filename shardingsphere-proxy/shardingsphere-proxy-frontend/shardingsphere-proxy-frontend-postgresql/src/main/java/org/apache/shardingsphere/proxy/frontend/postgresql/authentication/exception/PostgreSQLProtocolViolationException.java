@@ -24,8 +24,8 @@ import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
 /**
  * PostgreSQL protocol violation exception.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class PostgreSQLProtocolViolationException extends FrontendException {
     
     private static final long serialVersionUID = 6784109729740919997L;

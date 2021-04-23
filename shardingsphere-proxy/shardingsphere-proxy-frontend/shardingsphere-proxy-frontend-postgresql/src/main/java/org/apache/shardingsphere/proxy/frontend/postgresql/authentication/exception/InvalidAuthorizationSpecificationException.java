@@ -24,8 +24,8 @@ import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
 /**
  * Invalid authorization specification exception.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class InvalidAuthorizationSpecificationException extends FrontendException {
     
     private static final long serialVersionUID = -7169979989631579431L;
