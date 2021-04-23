@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.DatabaseMetaData;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -47,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
-public final class SQLServerPrivilegeLoaderTest {
+public final class SQLServerPrivilegeHandlerTest {
     
     @BeforeClass
     public static void setUp() {
@@ -57,7 +58,7 @@ public final class SQLServerPrivilegeLoaderTest {
     @Test
     public void assertDiff() throws SQLException {
         Collection<ShardingSphereUser> newUsers = createUsers();
-        newUsers.add(new ShardingSphereUser("testUser", "", ""));
+        newUsers.add(new ShardingSphereUser("testUser2", "", ""));
         DataSource dataSource = mockDataSourceForUsers(newUsers);
         assertDiffUsers(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "SQLServer", new Properties()).diff(newUsers, dataSource));
     }
@@ -86,7 +87,7 @@ public final class SQLServerPrivilegeLoaderTest {
     }
     
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
-        assertThat(actual.size(), is(1));
+        assertThat(actual.size(), is(2));
         ShardingSphereUser dbo = new ShardingSphereUser("dbo", "", "");
         assertThat(actual.get(dbo).getAdministrativePrivileges().getPrivileges().size(), is(2));
         Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.CONNECT, PrivilegeType.SHUTDOWN));
@@ -96,11 +97,17 @@ public final class SQLServerPrivilegeLoaderTest {
                 PrivilegeType.DELETE));
         SchemaPrivileges schemaPrivileges = actual.get(dbo).getDatabasePrivileges().getSpecificPrivileges().get("db0");
         assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
+        
+        ShardingSphereUser testUser = new ShardingSphereUser("testUser", "", "");
+        assertThat(actual.get(testUser).getAdministrativePrivileges().getPrivileges().size(), is(0));
+        assertThat(actual.get(testUser).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
+        assertThat(actual.get(testUser).getDatabasePrivileges().getSpecificPrivileges().size(), is(0));
     }
     
     private Collection<ShardingSphereUser> createUsers() {
         LinkedList<ShardingSphereUser> result = new LinkedList<>();
         result.add(new ShardingSphereUser("dbo", "password", ""));
+        result.add(new ShardingSphereUser("testUser", "password", ""));
         return result;
     }
     
@@ -129,18 +136,24 @@ public final class SQLServerPrivilegeLoaderTest {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
-        String diffUsersSQL = "SELECT * FROM sys.server_principals WHERE name in (%s)";
-        String userList = users.stream().map(item -> item.getGrantee().getUsername()).collect(Collectors.joining(", "));
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        String diffUsersSQL = "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE"
+                + "FROM sys.server_principals AS pr JOIN sys.server_permissions AS pe"
+                + "ON pe.grantee_principal_id = pr.principal_id WHERE pr.name IN (%s) GROUP BY pr.name, pe.state_desc, pe.permission_name";
+        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
         when(statement.executeQuery(String.format(diffUsersSQL, userList))).thenReturn(usersResultSet);
         when(connection.createStatement()).thenReturn(statement);
         when(result.getConnection()).thenReturn(connection);
+        when(statement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(databaseMetaData.getURL()).thenReturn("jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0");
         return result;
     }
     
     private ResultSet mockUsersResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
-        when(result.getString("rolname")).thenReturn("postgres1", "postgres");
+        when(result.getString("GRANTEE")).thenReturn("dbo", "testUser");
         return result;
     }
     
@@ -176,7 +189,7 @@ public final class SQLServerPrivilegeLoaderTest {
     
     private void assertDiffUsers(final Collection<ShardingSphereUser> users) {
         assertThat(users.size(), is(1));
-        assertThat(users.iterator().next().getGrantee().getUsername(), is("testUser"));
+        assertThat(users.iterator().next().getGrantee().getUsername(), is("testUser2"));
     }
     
     private void assertCreateUsers(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
@@ -191,9 +204,16 @@ public final class SQLServerPrivilegeLoaderTest {
     }
     
     private void assertGrantUsersAll(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
-        String databaseName = "db_0";
+        String databaseName = getDatabaseName(statement.getConnection().getMetaData().getURL());
         for (ShardingSphereUser each : users) {
-            verify(statement).execute(String.format("GRANT CONTROL ON DATABASE::%s TO %s;", databaseName, each.getGrantee().getUsername()));
+            verify(statement).execute(String.format("GRANT CONTROL ON DATABASE::%s TO %s", databaseName, each.getGrantee().getUsername()));
         }
+    }
+    
+    private String getDatabaseName(final String url) {
+        if (url.contains("?")) {
+            return url.substring(url.indexOf("DatabaseName=") + 1, url.indexOf("?"));
+        }
+        return url.substring(url.indexOf("DatabaseName=") + 1);
     }
 }

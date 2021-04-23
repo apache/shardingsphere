@@ -223,13 +223,12 @@ public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler 
     }
     
     private String getGlobalPrivilegesSQL(final Collection<ShardingSphereUser> users) {
-        String userHostTuples = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(","));
-        return String.format(GLOBAL_PRIVILEGE_SQL, userHostTuples);
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
+        return String.format(GLOBAL_PRIVILEGE_SQL, userList);
     }
     
     private String getSchemaPrivilegesSQL(final Collection<ShardingSphereUser> users) {
-        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
-                .collect(Collectors.joining(","));
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         return String.format(SCHEMA_PRIVILEGE_SQL, userList);
     }
     
