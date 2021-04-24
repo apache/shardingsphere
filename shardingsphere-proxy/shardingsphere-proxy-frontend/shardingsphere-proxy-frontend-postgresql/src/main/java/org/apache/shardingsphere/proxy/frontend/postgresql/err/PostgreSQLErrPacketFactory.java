@@ -49,27 +49,25 @@ public final class PostgreSQLErrPacketFactory {
         }
         if (cause instanceof SQLException) {
             // TODO consider what severity to use
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR.name(), ((SQLException) cause).getSQLState(), cause.getMessage()).build();
+            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, ((SQLException) cause).getSQLState(), cause.getMessage()).build();
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL.name(), PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION.getErrorCode(), cause.getMessage())
-                    .severityNonLocalized(PostgreSQLMessageSeverityLevel.FATAL.name()).build();
+            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, cause.getMessage()).build();
         }
         if (cause instanceof PostgreSQLProtocolViolationException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL.name(), PostgreSQLErrorCode.PROTOCOL_VIOLATION.getErrorCode(),
+            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.PROTOCOL_VIOLATION,
                     String.format("expected %s response, got message type %s", ((PostgreSQLProtocolViolationException) cause).getExpectedMessageType(),
-                            ((PostgreSQLProtocolViolationException) cause).getActualMessageType())).severityNonLocalized(PostgreSQLMessageSeverityLevel.FATAL.name()).build();
+                            ((PostgreSQLProtocolViolationException) cause).getActualMessageType())).build();
         }
         if (cause instanceof PostgreSQLAuthenticationException) {
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL.name(), ((PostgreSQLAuthenticationException) cause).getErrorCode().getErrorCode(), cause.getMessage())
-                    .build();
+            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getErrorCode(), cause.getMessage()).build();
         }
         return createErrorResponsePacketForUnknownException(cause);
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
-        return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
-                .severityNonLocalized(serverErrorMessage.getSeverity()).detail(serverErrorMessage.getDetail()).hint(serverErrorMessage.getHint()).position(serverErrorMessage.getPosition())
+        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.valueOf(serverErrorMessage.getSeverity()), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
+                .detail(serverErrorMessage.getDetail()).hint(serverErrorMessage.getHint()).position(serverErrorMessage.getPosition())
                 .internalQueryAndInternalPosition(serverErrorMessage.getInternalQuery(), serverErrorMessage.getInternalPosition()).where(serverErrorMessage.getWhere())
                 .schemaName(serverErrorMessage.getSchema()).tableName(serverErrorMessage.getTable()).columnName(serverErrorMessage.getColumn()).dataTypeName(serverErrorMessage.getDatatype())
                 .constraintName(serverErrorMessage.getConstraint()).file(serverErrorMessage.getFile()).line(serverErrorMessage.getLine()).routine(serverErrorMessage.getRoutine()).build();
@@ -78,6 +76,6 @@ public final class PostgreSQLErrPacketFactory {
     private static PostgreSQLErrorResponsePacket createErrorResponsePacketForUnknownException(final Exception cause) {
         // TODO add FIELD_TYPE_CODE for common error and consider what severity to use
         String message = Strings.isNullOrEmpty(cause.getLocalizedMessage()) ? cause.toString() : cause.getLocalizedMessage();
-        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR.name(), PostgreSQLErrorCode.SYSTEM_ERROR.getErrorCode(), message).build();
+        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR, message).build();
     }
 }
