@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,7 +39,7 @@ public final class PostgreSQLErrorResponsePacketTest {
     @Test
     public void assertToServerErrorMessage() {
         PostgreSQLErrorResponsePacket responsePacket = createErrorResponsePacket();
-        String expectedMessage = "SFATAL\0C3D000\0Mdatabase \"test\" does not exist\0VERROR\0Ddetail\0Hhint\0P1\0p2\0qinternal query\0"
+        String expectedMessage = "SFATAL\0VFATAL\0C3D000\0Mdatabase \"test\" does not exist\0Ddetail\0Hhint\0P1\0p2\0qinternal query\0"
                 + "Wwhere\0stest\0ttable\0ccolumn\0ddata type\0nconstraint\0Ffile\0L3\0Rroutine";
         assertThat(responsePacket.toServerErrorMessage(), is(expectedMessage));
     }
@@ -48,13 +49,12 @@ public final class PostgreSQLErrorResponsePacketTest {
         PostgreSQLErrorResponsePacket responsePacket = createErrorResponsePacket();
         responsePacket.write(payload);
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY);
-        verify(payload).writeStringNul("FATAL");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY_NON_LOCALIZED);
+        verify(payload, times(2)).writeStringNul("FATAL");
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE);
         verify(payload).writeStringNul("3D000");
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE);
         verify(payload).writeStringNul("database \"test\" does not exist");
-        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY_NON_LOCALIZED);
-        verify(payload).writeStringNul("ERROR");
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_DETAIL);
         verify(payload).writeStringNul("detail");
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_HINT);
