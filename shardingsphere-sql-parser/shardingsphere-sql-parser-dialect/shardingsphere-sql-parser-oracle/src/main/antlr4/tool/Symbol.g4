@@ -26,3 +26,8 @@ RBT_:                ']';
 SEMI_:               ';';
 MLT_:                '...';
 DOT_:                '.';
+VERTICAL_BAR_:       '|';
+EQ_:                 '=';
+COMMA_:              ',';
+SQ_ :                '\'';
+AT_:                 '@';

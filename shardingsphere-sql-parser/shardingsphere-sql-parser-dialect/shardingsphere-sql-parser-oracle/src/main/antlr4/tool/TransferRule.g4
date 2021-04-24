@@ -19,15 +19,24 @@ grammar TransferRule;
 
 import Literals, Symbol;
 
-sentences: rules+ SEMI_;
+sentences: rules+ SEMI_?;
 
-rules: identifiers
+rules:identifiers
     | keyWords
-    | LBE_  rules  RBE_
-    | LBT_  rules  RBT_
-    | LP_  rules RP_ MLT_
+    | rules (EQ_? rules)+
+    | LBE_ COMMA_? rules (VERTICAL_BAR_ rules)* rbeMulti
+    | LBE_ COMMA_? rules (VERTICAL_BAR_ rules)* RBE_
+    | LBT_ COMMA_? rules (VERTICAL_BAR_ rules)* rbtMulti
+    | LBT_ COMMA_? rules (VERTICAL_BAR_ rules)* RBT_
+    | LP_ COMMA_? rules (VERTICAL_BAR_ rules)* RP_
+    | SQ_ rules SQ_
+    | AT_ rules
     ;
 
-identifiers: IDENTIFIER_ DOT_? IDENTIFIER_?;
+identifiers: (IDENTIFIER_ DOT_? IDENTIFIER_?)+;
 
 keyWords: KEYWORD_+;
+
+rbtMulti: RBT_ MLT_;
+
+rbeMulti: RBE_ MLT_;

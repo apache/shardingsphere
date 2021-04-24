@@ -18,13 +18,13 @@
 lexer grammar Literals;
 
 import Alphabet;
-
-IDENTIFIER_
-    : [a-z_]+
-    ;
     
 KEYWORD_
     : [A-Z_]+
     ;
     
-WS  : [\t]+ ->skip;
+IDENTIFIER_
+    : [A-Za-z_]+
+    ;
+    
+WS  : [\t\r\n]+ ->skip;
