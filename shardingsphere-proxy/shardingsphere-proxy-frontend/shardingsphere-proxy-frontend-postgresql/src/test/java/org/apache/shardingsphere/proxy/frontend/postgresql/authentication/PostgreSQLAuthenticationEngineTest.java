@@ -23,7 +23,7 @@ import io.netty.buffer.UnpooledHeapByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationMD5PasswordPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -55,7 +55,7 @@ public final class PostgreSQLAuthenticationEngineTest {
     @Test
     public void assertHandshake() {
         int connectionId = new PostgreSQLAuthenticationEngine().handshake(mock(ChannelHandlerContext.class));
-        assertNotNull(BinaryStatementRegistry.getInstance().get(connectionId));
+        assertNotNull(PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {
