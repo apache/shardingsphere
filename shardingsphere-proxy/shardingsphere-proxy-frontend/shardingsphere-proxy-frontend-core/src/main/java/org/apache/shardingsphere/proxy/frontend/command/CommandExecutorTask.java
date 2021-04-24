@@ -61,6 +61,7 @@ public final class CommandExecutorTask implements Runnable {
      */
     @Override
     public void run() {
+        backendConnection.setInUse(true);
         boolean isNeedFlush = false;
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
             ConnectionStatus connectionStatus = backendConnection.getConnectionStatus();
@@ -74,6 +75,7 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:ON
             processException(ex);
         } finally {
+            backendConnection.setInUse(false);
             Collection<SQLException> exceptions = closeExecutionResources();
             if (isNeedFlush) {
                 context.flush();
