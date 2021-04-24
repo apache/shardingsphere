@@ -30,7 +30,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.transaction.TransactionHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
@@ -69,19 +68,22 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public Optional<DatabasePacket<?>> getOtherPacket() {
-        return Optional.of(new PostgreSQLReadyForQueryPacket(TransactionHolder.isTransaction()));
+        // TODO judge is in transaction from context, not from TransactionHolder (because of thread local)
+        return Optional.of(new PostgreSQLReadyForQueryPacket(true));
     }
     
     @Override
     public void writeQueryData(final ChannelHandlerContext context,
                                final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+        // TODO judge is in transaction from context, not from TransactionHolder (because of thread local)
+        boolean inTransaction = true;
         if (ResponseType.QUERY == queryCommandExecutor.getResponseType() && !context.channel().isActive()) {
             context.write(new PostgreSQLCommandCompletePacket());
-            context.write(new PostgreSQLReadyForQueryPacket(TransactionHolder.isTransaction()));
+            context.write(new PostgreSQLReadyForQueryPacket(inTransaction));
             return;
         }
         if (ResponseType.UPDATE == queryCommandExecutor.getResponseType()) {
-            context.write(new PostgreSQLReadyForQueryPacket(TransactionHolder.isTransaction()));
+            context.write(new PostgreSQLReadyForQueryPacket(inTransaction));
             return;
         }
         int count = 0;
@@ -100,6 +102,6 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             }
         }
         context.write(new PostgreSQLCommandCompletePacket());
-        context.write(new PostgreSQLReadyForQueryPacket(TransactionHolder.isTransaction()));
+        context.write(new PostgreSQLReadyForQueryPacket(inTransaction));
     }
 }
