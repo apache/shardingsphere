@@ -375,6 +375,10 @@ TIME
     : T I M E
     ;
 
+TIMEOUT
+    : T I M E O U T
+    ;
+
 TIMESTAMP
     : T I M E S T A M P
     ;

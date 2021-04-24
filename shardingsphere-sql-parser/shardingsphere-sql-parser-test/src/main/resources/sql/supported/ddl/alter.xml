@@ -181,4 +181,12 @@
     <sql-case id="alter_synonym_compile" value="ALTER SYNONYM offices COMPILE" db-types="Oracle" />
     <sql-case id="alter_public_synonym_compile" value="ALTER PUBLIC SYNONYM emp_table COMPILE" db-types="Oracle" />
     <sql-case id="alter_synonym_noneditionable" value="ALTER SYNONYM offices NONEDITIONABLE" db-types="Oracle" />
+<!--alter session test-->
+    <sql-case id="alter_session_enable_parallel_dml" value="ALTER SESSION ENABLE PARALLEL DML" db-types="Oracle" />
+    <sql-case id="alter_session_advise_commit" value="ALTER SESSION ADVISE COMMIT" db-types="Oracle" />
+    <sql-case id="alter_session_advise_rollback" value="ALTER SESSION ADVISE ROLLBACK" db-types="Oracle" />
+    <sql-case id="alter_session_close_database_link" value="ALTER SESSION CLOSE DATABASE LINK private_link" db-types="Oracle" />
+    <sql-case id="alter_session_change_parameter" value="ALTER SESSION SET NLS_DATE_LANGUAGE = French" db-types="Oracle" />
+    <sql-case id="alter_session_set_container" value="ALTER SESSION SET CONTAINER = cdb$root" db-types="Oracle" />
+    <sql-case id="alter_session_set_container_service" value="ALTER SESSION SET CONTAINER = pdb1 SERVICE = my_new_service" db-types="Oracle" />
 </sql-cases>

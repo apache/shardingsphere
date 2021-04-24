@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
@@ -70,7 +71,8 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             // CHECKSTYLE:ON
             payload.getByteBuf().resetWriterIndex();
             // TODO consider what severity to use
-            PostgreSQLErrorResponsePacket errorResponsePacket = PostgreSQLErrorResponsePacket.newBuilder("ERROR", PostgreSQLErrorCode.SYSTEM_ERROR.getErrorCode(), ex.getMessage()).build();
+            PostgreSQLErrorResponsePacket errorResponsePacket = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR, ex.getMessage())
+                    .build();
             errorResponsePacket.write(payload);
         } finally {
             if (message instanceof PostgreSQLIdentifierPacket) {
