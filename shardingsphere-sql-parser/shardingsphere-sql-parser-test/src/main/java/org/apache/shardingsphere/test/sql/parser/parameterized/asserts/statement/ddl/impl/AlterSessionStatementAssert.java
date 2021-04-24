@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  * Alter session statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AlterSessionStatementAssert {
+public final class AlterSessionStatementAssert {
     
     /**
      * Assert alter session statement is correct with expected parser result.

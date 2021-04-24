@@ -41,6 +41,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -71,9 +72,9 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     private CreateShardingTableRuleBackendHandler handler = new CreateShardingTableRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Arrays.asList("test"));
+        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
@@ -99,7 +100,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getTables()).thenReturn(Collections.singletonList(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
@@ -107,6 +108,6 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
         configuration.getTables().add(new ShardingTableRuleConfiguration("t_order"));
         configuration.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
-        return new ArrayList<>(Arrays.asList(configuration));
+        return new ArrayList<>(Collections.singletonList(configuration));
     }
 }

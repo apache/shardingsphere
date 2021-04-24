@@ -30,12 +30,15 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConverter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -83,12 +86,12 @@ public final class CreateShardingTableRuleBackendHandler extends SchemaRequiredB
     
     private Collection<String> getLogicTables(final String schemaName) {
         Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
-        Collection<String> result = new ArrayList<>();
+        Collection<String> result = new LinkedList<>();
         if (!shardingRuleConfiguration.isPresent()) {
             return result;
         }
-        result.addAll(shardingRuleConfiguration.get().getTables().stream().map(each -> each.getLogicTable()).collect(Collectors.toList()));
-        result.addAll(shardingRuleConfiguration.get().getAutoTables().stream().map(each -> each.getLogicTable()).collect(Collectors.toList()));
+        result.addAll(shardingRuleConfiguration.get().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        result.addAll(shardingRuleConfiguration.get().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         return result;
     }
     

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.core;
 
 import com.google.common.base.Joiner;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
@@ -188,7 +189,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitCreateShardingBroadcastTableRules(final CreateShardingBroadcastTableRulesContext ctx) {
         CreateShardingBroadcastTableRulesStatement result = new CreateShardingBroadcastTableRulesStatement();
-        result.getTables().addAll(ctx.IDENTIFIER().stream().map(each -> each.getText()).collect(Collectors.toList()));
+        result.getTables().addAll(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
         return result;
     }
     

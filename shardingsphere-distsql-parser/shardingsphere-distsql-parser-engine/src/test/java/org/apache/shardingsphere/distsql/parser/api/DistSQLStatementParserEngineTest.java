@@ -92,7 +92,7 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_ADD_RESOURCE_MULTIPLE);
         assertTrue(sqlStatement instanceof AddResourceStatement);
         assertThat(((AddResourceStatement) sqlStatement).getDataSources().size(), is(2));
-        List<DataSourceSegment> dataSourceSegments = new ArrayList(((AddResourceStatement) sqlStatement).getDataSources());
+        List<DataSourceSegment> dataSourceSegments = new ArrayList<>(((AddResourceStatement) sqlStatement).getDataSources());
         DataSourceSegment dataSourceSegment = dataSourceSegments.get(0);
         assertThat(dataSourceSegment.getName(), is("ds_0"));
         assertThat(dataSourceSegment.getHostName(), is("127.0.0.1"));
