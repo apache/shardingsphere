@@ -24,7 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class BinaryStatementRegistryTest {
+public final class PostgreSQLBinaryStatementRegistryTest {
     
     private final String sql = "SELECT * FROM tbl WHERE id=?";
     
@@ -32,33 +32,32 @@ public final class BinaryStatementRegistryTest {
     
     @Before
     public void init() {
-        BinaryStatementRegistry.getInstance().register(1);
-        ConnectionScopeBinaryStatementRegistry statementRegistry = BinaryStatementRegistry.getInstance().get(1);
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
+        ConnectionScopeBinaryStatementRegistry statementRegistry = PostgreSQLBinaryStatementRegistry.getInstance().get(1);
         statementRegistry.register(statementId, sql, 1, null);
     }
     
     @Test
     public void assertRegisterIfAbsent() {
-        BinaryStatementRegistry.getInstance().register(2);
-        ConnectionScopeBinaryStatementRegistry actual = BinaryStatementRegistry.getInstance().get(2);
+        PostgreSQLBinaryStatementRegistry.getInstance().register(2);
+        ConnectionScopeBinaryStatementRegistry actual = PostgreSQLBinaryStatementRegistry.getInstance().get(2);
         assertNull(actual.getBinaryStatement("stat-no-exist"));
     }
     
     @Test
     public void assertRegisterIfPresent() {
-        ConnectionScopeBinaryStatementRegistry statementRegistry = BinaryStatementRegistry.getInstance().get(1);
+        ConnectionScopeBinaryStatementRegistry statementRegistry = PostgreSQLBinaryStatementRegistry.getInstance().get(1);
         PostgreSQLBinaryStatement statement = statementRegistry.getBinaryStatement(statementId);
         assertThat(statement.getSql(), is(sql));
         assertThat(statement.getParameterCount(), is(1));
-        BinaryStatementRegistry.getInstance().register(1);
-        statement = BinaryStatementRegistry.getInstance().get(1).getBinaryStatement(statementId);
-        assertNull(statement);
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
+        assertNull(PostgreSQLBinaryStatementRegistry.getInstance().get(1).getBinaryStatement(statementId));
     }
     
     @Test
     public void assertUnregister() {
-        BinaryStatementRegistry.getInstance().unregister(1);
-        ConnectionScopeBinaryStatementRegistry actual = BinaryStatementRegistry.getInstance().get(1);
+        PostgreSQLBinaryStatementRegistry.getInstance().unregister(1);
+        ConnectionScopeBinaryStatementRegistry actual = PostgreSQLBinaryStatementRegistry.getInstance().get(1);
         assertNull(actual);
     }
 }

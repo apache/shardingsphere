@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.parse;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -64,7 +64,7 @@ public final class PostgreSQLComParseExecutorTest {
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), 
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.emptyList()), new ConfigurationProperties(new Properties())));
-        BinaryStatementRegistry.getInstance().register(1);
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
         PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(parsePacket, backendConnection);
         assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));
     }

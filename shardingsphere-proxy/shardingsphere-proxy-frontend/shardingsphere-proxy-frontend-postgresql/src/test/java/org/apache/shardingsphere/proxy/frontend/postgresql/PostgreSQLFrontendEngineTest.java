@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.junit.Test;
@@ -42,7 +42,7 @@ public final class PostgreSQLFrontendEngineTest {
         BackendConnection backendConnection = mock(BackendConnection.class);
         int connectionId = 1;
         when(backendConnection.getConnectionId()).thenReturn(connectionId);
-        BinaryStatementRegistry registry = BinaryStatementRegistry.getInstance();
+        PostgreSQLBinaryStatementRegistry registry = PostgreSQLBinaryStatementRegistry.getInstance();
         registry.register(connectionId);
         assertNotNull(registry.get(connectionId));
         PostgreSQLFrontendEngine frontendEngine = new PostgreSQLFrontendEngine();

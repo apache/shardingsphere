@@ -24,12 +24,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Binary statement registry.
+ * PostgreSQL binary prepared statement registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BinaryStatementRegistry {
+public final class PostgreSQLBinaryStatementRegistry {
     
-    private static final BinaryStatementRegistry INSTANCE = new BinaryStatementRegistry();
+    private static final PostgreSQLBinaryStatementRegistry INSTANCE = new PostgreSQLBinaryStatementRegistry();
     
     private final ConcurrentMap<Integer, ConnectionScopeBinaryStatementRegistry> registries = new ConcurrentHashMap<>();
     
@@ -38,7 +38,7 @@ public final class BinaryStatementRegistry {
      *
      * @return instance of binary statement registry.
      */
-    public static BinaryStatementRegistry getInstance() {
+    public static PostgreSQLBinaryStatementRegistry getInstance() {
         return INSTANCE;
     }
     
