@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.err;
 
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.junit.Test;
 import org.postgresql.util.PSQLException;
@@ -36,7 +37,7 @@ public final class PostgreSQLErrPacketFactoryTest {
     @Test
     public void assertPSQLExceptionWithServerErrorMessageNotNull() throws NoSuchFieldException, IllegalAccessException {
         ServerErrorMessage serverErrorMessage = mock(ServerErrorMessage.class);
-        when(serverErrorMessage.getSeverity()).thenReturn("severity");
+        when(serverErrorMessage.getSeverity()).thenReturn(PostgreSQLMessageSeverityLevel.FATAL.name());
         when(serverErrorMessage.getSQLState()).thenReturn("sqlState");
         when(serverErrorMessage.getMessage()).thenReturn("message");
         when(serverErrorMessage.getPosition()).thenReturn(1);
@@ -44,7 +45,7 @@ public final class PostgreSQLErrPacketFactoryTest {
         Field packetField = PostgreSQLErrorResponsePacket.class.getDeclaredField("fields");
         packetField.setAccessible(true);
         Map<Character, String> fields = (Map<Character, String>) packetField.get(actual);
-        assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY), is("severity"));
+        assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY), is(PostgreSQLMessageSeverityLevel.FATAL.name()));
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE), is("sqlState"));
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("message"));
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_POSITION), is("1"));

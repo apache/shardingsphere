@@ -163,6 +163,14 @@ functionName
     : identifier
     ;
 
+dbLink
+    : identifier
+    ;
+
+parameterValue
+    : literals | identifier
+    ;
+
 directoryName
     : identifier
     ;
@@ -172,10 +180,6 @@ opaqueFormatSpec
     ;
 
 accessDriverType
-    : identifier
-    ;
-
-partition
     : identifier
     ;
 
@@ -212,6 +216,18 @@ elementName
     ;
 
 subpartitionName
+    : identifier
+    ;
+
+parameterName
+    : identifier
+    ;
+
+editionName
+    : identifier
+    ;
+
+containerName
     : identifier
     ;
 

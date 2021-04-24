@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
 
 /**
- * Sharding binding table rule segment.
+ * PostgreSQL authentication exception.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ShardingBindingTableRuleSegment implements ASTNode {
+public final class PostgreSQLAuthenticationException extends FrontendException {
     
-    private String tables;
+    private static final long serialVersionUID = 1331782847269278560L;
+    
+    private final PostgreSQLErrorCode errorCode;
+    
+    private final String message;
 }

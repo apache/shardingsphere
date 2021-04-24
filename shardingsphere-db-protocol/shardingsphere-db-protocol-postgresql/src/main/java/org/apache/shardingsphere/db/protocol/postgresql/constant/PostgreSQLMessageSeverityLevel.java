@@ -15,18 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 /**
- * Sharding binding table rule segment.
+ * PostgreSQL message severity level.
+ *
+ * @see <a href="https://www.postgresql.org/docs/12/runtime-config-logging.html#RUNTIME-CONFIG-SEVERITY-LEVELS">Table 19.2. Message Severity Levels</a>
  */
-@Getter
-@Setter
-public final class ShardingBindingTableRuleSegment implements ASTNode {
+public enum PostgreSQLMessageSeverityLevel {
     
-    private String tables;
+    DEBUG1,
+    
+    DEBUG2,
+    
+    DEBUG3,
+    
+    DEBUG4,
+    
+    DEBUG5,
+    
+    INFO,
+    
+    NOTICE,
+    
+    WARNING,
+    
+    ERROR,
+    
+    LOG,
+    
+    FATAL,
+    
+    PANIC
 }

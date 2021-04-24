@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Sharding binding table rule segment.
+ * Alter session statement test case.
  */
-@Getter
-@Setter
-public final class ShardingBindingTableRuleSegment implements ASTNode {
-    
-    private String tables;
+public class AlterSessionStatementTestCase extends SQLParserTestCase {
 }

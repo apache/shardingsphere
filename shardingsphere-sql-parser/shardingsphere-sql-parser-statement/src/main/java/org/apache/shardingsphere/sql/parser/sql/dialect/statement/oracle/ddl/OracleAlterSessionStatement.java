@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Sharding binding table rule segment.
+ * Oracle alter session statement.
  */
-@Getter
-@Setter
-public final class ShardingBindingTableRuleSegment implements ASTNode {
-    
-    private String tables;
+@ToString
+public class OracleAlterSessionStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }
