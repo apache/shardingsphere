@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -71,25 +72,30 @@ public final class PostgreSQLAuthenticationEngineTest {
         assertThat(actual.isFinished(), is(false));
     }
     
-    @Test
-    public void assertDatabaseNotExist() {
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(32, 512));
-        payload.writeInt4(64);
-        payload.writeInt4(196608);
-        payload.writeStringNul("user");
-        payload.writeStringNul(username);
-        payload.writeStringNul("database");
-        payload.writeStringNul("sharding_db");
-        AuthenticationResult actual = new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
-        assertThat(actual.isFinished(), is(false));
-    }
-    
     @Test(expected = InvalidAuthorizationSpecificationException.class)
     public void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512));
         payload.writeInt4(64);
         payload.writeInt4(196608);
         new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
+    }
+    
+    @Test(expected = PostgreSQLProtocolViolationException.class)
+    public void assertAuthenticateWithNonPasswordMessage() {
+        PostgreSQLAuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
+        setAlreadyReceivedStartupMessage(authenticationEngine);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 16));
+        payload.writeInt1('F');
+        payload.writeInt8(0);
+        authenticationEngine.authenticate(mock(ChannelHandlerContext.class), payload);
+    }
+    
+    @SneakyThrows
+    private void setAlreadyReceivedStartupMessage(final PostgreSQLAuthenticationEngine target) {
+        Field field = PostgreSQLAuthenticationEngine.class.getDeclaredField("startupMessageReceived");
+        field.setAccessible(true);
+        field.set(target, true);
+        field.setAccessible(false);
     }
     
     @Test

@@ -57,8 +57,11 @@ public final class PostgreSQLAuthenticationHandler {
         }
         String md5Digest = passwordMessagePacket.getMd5Digest();
         String expectedMd5Digest = md5Encode(username, user.get().getPassword(), md5Salt);
-        if (!expectedMd5Digest.equals(md5Digest) || !Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().schemaExists(databaseName)) {
+        if (!expectedMd5Digest.equals(md5Digest)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
+        }
+        if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().schemaExists(databaseName)) {
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
         }
         return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), user.get().getGrantee())
                 ? new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null)
