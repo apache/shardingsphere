@@ -30,10 +30,10 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,6 +102,14 @@ public final class PostgreSQLAuthenticationHandlerTest {
         initProxyContext(new ShardingSphereUser(username, null, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
+    }
+    
+    @Test
+    public void assertLoginWithNonExistDatabase() {
+        initProxyContext(new ShardingSphereUser(username, password, "%"));
+        String database = "non_exist_database";
+        PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
+        assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_CATALOG_NAME));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
