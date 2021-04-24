@@ -1044,3 +1044,91 @@ supplementalLogGrpClause
 supplementalIdKeyClause
     : DATA LP_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY) (COMMA (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY))* RP_ COLUMNS
     ;
+
+alterSession
+    : ALTER SESSION alterSessionOption
+    ;
+
+alterSessionOption
+    : adviseClause
+    | closeDatabaseLinkClause
+    | commitInProcedureClause
+    | securiyClause
+    | parallelExecutionClause
+    | resumableClause
+    | shardDdlClause
+    | syncWithPrimaryClause
+    | alterSessionSetClause
+    ;
+
+adviseClause
+    : ADVISE (COMMIT | ROLLBACK | NOTHING)
+    ;
+
+closeDatabaseLinkClause
+    : CLOSE DATABASE LINK dbLink
+    ;
+
+commitInProcedureClause
+    : (ENABLE | DISABLE) COMMIT IN PROCEDURE
+    ;
+
+securiyClause
+    : (ENABLE | DISABLE) GUARD
+    ;
+
+parallelExecutionClause
+    : (ENABLE | DISABLE | FORCE) PARALLEL (DML | DDL | QUERY) (PARALLEL numberLiterals)?
+    ;
+
+resumableClause
+    : enableResumableClause | disableResumableClause
+    ;
+
+enableResumableClause
+    : ENABLE RESUMABLE (TIMEOUT numberLiterals)? (NAME stringLiterals)?
+    ;
+
+disableResumableClause
+    : DISABLE RESUMABLE
+    ;
+
+shardDdlClause
+    : (ENABLE | DISABLE) SHARD DDL
+    ;
+
+syncWithPrimaryClause
+    : SYNC WITH PRIMARY
+    ;
+
+alterSessionSetClause
+    : SET alterSessionSetClauseOption
+    ;
+
+alterSessionSetClauseOption
+    : parameterClause
+    | editionClause
+    | containerClause
+    | rowArchivalVisibilityClause
+    | defaultCollationClause
+    ;
+
+parameterClause
+    : (parameterName EQ_ parameterValue)+
+    ;
+
+editionClause
+    : EDITION EQ_ editionName
+    ;
+
+containerClause
+    : CONTAINER EQ_ containerName (SERVICE EQ_ serviceName)?
+    ;
+
+rowArchivalVisibilityClause
+    : ROW ARCHIVAL VISIBILITY EQ_ (ACTIVE | ALL)
+    ;
+
+defaultCollationClause
+    : DEFAULT_COLLATION EQ_ (collationName | NONE)
+    ;

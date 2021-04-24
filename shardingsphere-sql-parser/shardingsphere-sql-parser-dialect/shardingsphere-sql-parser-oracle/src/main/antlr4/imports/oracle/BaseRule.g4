@@ -163,6 +163,14 @@ functionName
     : identifier
     ;
 
+dbLink
+    : identifier
+    ;
+
+parameterValue
+    : literals | identifier
+    ;
+
 directoryName
     : identifier
     ;
@@ -212,6 +220,18 @@ elementName
     ;
 
 subpartitionName
+    : identifier
+    ;
+
+parameterName
+    : identifier
+    ;
+
+editionName
+    : identifier
+    ;
+
+containerName
     : identifier
     ;
 
