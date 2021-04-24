@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.generic;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
@@ -33,7 +34,7 @@ public final class PostgreSQLUnsupportedCommandExecutor implements CommandExecut
     @Override
     public Collection<DatabasePacket<?>> execute() {
         // TODO consider what severity and error code to use
-        PostgreSQLErrorResponsePacket packet = PostgreSQLErrorResponsePacket.newBuilder("ERROR", PostgreSQLErrorCode.FEATURE_NOT_SUPPORTED.getErrorCode(),
+        PostgreSQLErrorResponsePacket packet = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.FEATURE_NOT_SUPPORTED,
                 PostgreSQLErrorCode.FEATURE_NOT_SUPPORTED.getConditionName()).build();
         return Collections.singletonList(packet);
     }
