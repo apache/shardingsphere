@@ -56,7 +56,8 @@ public final class PostgreSQLComBindPacketTest {
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt8()).thenReturn(11L);
         String sql = "select * from order where id = ? ";
-        PostgreSQLBinaryStatementRegistry.getInstance().get(1).register("sts-id", sql, 1, Collections.singletonList(new PostgreSQLBinaryStatementParameterType(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8)));
+        PostgreSQLBinaryStatementRegistry.getInstance().get(1).register(
+                "sts-id", sql, 1, Collections.singletonList(new PostgreSQLBinaryStatementParameterType(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8)));
         PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
         bindPacket.write(payload);
         assertThat(bindPacket.getSql(), is(sql));
