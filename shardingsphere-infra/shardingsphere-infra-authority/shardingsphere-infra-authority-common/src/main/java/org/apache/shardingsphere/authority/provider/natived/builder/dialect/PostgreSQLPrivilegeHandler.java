@@ -77,8 +77,8 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
         }
     }
     
-    private String getCreateUsersSQL(final ShardingSphereUser users) {
-        return String.format(CREATE_USER_SQL, users.getGrantee(), users.getPassword());
+    private String getCreateUsersSQL(final ShardingSphereUser user) {
+        return String.format(CREATE_USER_SQL, user.getGrantee(), user.getPassword());
     }
     
     @Override
