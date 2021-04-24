@@ -67,6 +67,9 @@ public final class BackendConnection implements ExecutorJDBCManager {
     private volatile int connectionId;
     
     @Setter
+    private volatile boolean inUse;
+    
+    @Setter
     private volatile Grantee grantee;
     
     @Setter
