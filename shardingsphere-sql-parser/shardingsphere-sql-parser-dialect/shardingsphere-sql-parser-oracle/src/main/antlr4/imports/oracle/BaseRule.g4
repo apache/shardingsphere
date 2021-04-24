@@ -183,10 +183,6 @@ accessDriverType
     : identifier
     ;
 
-partition
-    : identifier
-    ;
-
 type
     : identifier
     ;
