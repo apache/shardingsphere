@@ -67,5 +67,6 @@ execute
     | dropTrigger
     | dropView
     | dropSequence
+    | vacuum
     ) SEMI_?
     ;
