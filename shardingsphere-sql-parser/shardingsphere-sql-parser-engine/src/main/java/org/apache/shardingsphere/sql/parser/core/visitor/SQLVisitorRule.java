@@ -202,6 +202,8 @@ public enum SQLVisitorRule {
     
     RESET_PARAMETER("ResetParameter", SQLStatementType.DAL),
     
+    VACUUM("Vacuum", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
