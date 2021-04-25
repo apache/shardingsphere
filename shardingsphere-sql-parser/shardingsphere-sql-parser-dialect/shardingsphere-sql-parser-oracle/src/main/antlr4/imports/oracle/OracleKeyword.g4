@@ -1427,6 +1427,10 @@ INDEXES
     : I N D E X E S
     ;
 
+SUPPLEMENTAL
+    : S U P P L E M E N T A L
+    ;
+    
 ADVISE
     : A D V I S E
     ;
