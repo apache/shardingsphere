@@ -51,7 +51,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     }
     
     private void waitingForFinish(final BackendConnection backendConnection) {
-        while (backendConnection.getRunningTaskCount().get() > 0) {
+        while (backendConnection.getSubmittedTaskCount().get() > 0) {
             try {
                 Thread.sleep(500L);
             } catch (final InterruptedException ex) {

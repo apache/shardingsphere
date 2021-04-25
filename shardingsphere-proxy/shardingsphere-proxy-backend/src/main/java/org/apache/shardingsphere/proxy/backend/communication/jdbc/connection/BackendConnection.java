@@ -73,7 +73,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     @Setter
     private volatile CalciteExecutor calciteExecutor;
     
-    private final AtomicInteger runningTaskCount = new AtomicInteger(0);
+    private final AtomicInteger submittedTaskCount = new AtomicInteger(0);
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     

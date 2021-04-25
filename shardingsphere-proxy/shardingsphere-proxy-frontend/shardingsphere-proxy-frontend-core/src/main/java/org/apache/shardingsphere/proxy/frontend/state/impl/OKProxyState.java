@@ -40,5 +40,6 @@ public final class OKProxyState implements ProxyState {
         ExecutorService executorService = CommandExecutorSelector.getExecutorService(
                 isOccupyThreadForPerConnection, supportHint, backendConnection.getTransactionStatus().getTransactionType(), context.channel().id());
         executorService.execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
+        backendConnection.getSubmittedTaskCount().incrementAndGet();
     }
 }
