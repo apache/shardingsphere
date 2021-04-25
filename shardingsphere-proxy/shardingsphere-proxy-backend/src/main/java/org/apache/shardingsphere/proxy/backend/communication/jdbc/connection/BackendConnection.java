@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Backend connection.
@@ -67,13 +68,12 @@ public final class BackendConnection implements ExecutorJDBCManager {
     private volatile int connectionId;
     
     @Setter
-    private volatile boolean inUse;
-    
-    @Setter
     private volatile Grantee grantee;
     
     @Setter
     private volatile CalciteExecutor calciteExecutor;
+    
+    private final AtomicInteger runningTaskCount = new AtomicInteger(0);
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
