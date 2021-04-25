@@ -26,6 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +40,7 @@ public final class PostgreSQLFrontendEngineTest {
     
     @Test
     public void assertRelease() {
-        BackendConnection backendConnection = mock(BackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         int connectionId = 1;
         when(backendConnection.getConnectionId()).thenReturn(connectionId);
         PostgreSQLBinaryStatementRegistry registry = PostgreSQLBinaryStatementRegistry.getInstance();
