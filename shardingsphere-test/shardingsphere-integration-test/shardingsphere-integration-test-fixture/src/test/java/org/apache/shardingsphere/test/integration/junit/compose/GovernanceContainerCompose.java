@@ -87,14 +87,6 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     }
     
     @Override
-    public void after() {
-        if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {
-            dataSourceMap.clear();
-            close();
-        }
-    }
-    
-    @Override
     public Map<String, DataSource> getDataSourceMap() {
         return dataSourceMap;
     }
