@@ -62,10 +62,10 @@ public final class JDBCLockEngine {
      * Execute.
      *
      * @param executionGroupContext execution group context
-     * @param sqlStatementContext   sql statement context
-     * @param routeUnits            route units
-     * @param callback              callback
-     * @param <T>                   the type of return value
+     * @param sqlStatementContext sql statement context
+     * @param routeUnits route units
+     * @param callback callback
+     * @param <T> the type of return value
      * @return result
      * @throws SQLException SQL exception
      */
@@ -107,7 +107,7 @@ public final class JDBCLockEngine {
             }
         }
     }
-    
+
     private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback, final SQLStatement sqlStatement) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
