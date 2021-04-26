@@ -1,0 +1,78 @@
+DROP TABLE [ schema. ] table [ CASCADE CONSTRAINTS ] [ PURGE ] ;
+UPDATE [ hint ] { dml_table_expression_clause | ONLY (dml_table_expression_clause) } [ t_alias ] update_set_clause [ where_clause ] [ returning_clause ] [error_logging_clause] ;
+SET TRANSACTION { { READ { ONLY | WRITE } | ISOLATION LEVEL { SERIALIZABLE | READ COMMITTED } | USE ROLLBACK SEGMENT rollback_segment } [ NAME string ] | NAME string } ;
+[ with_clause ] SELECT [ hint ] [ { { DISTINCT | UNIQUE } | ALL } ] select_list FROM { table_reference | join_clause | ( join_clause ) | inline_analytic_view } [ , { table_reference | join_clause | (join_clause) | inline_analytic_view} ] ... [ where_clause ] [ hierarchical_query_clause ] [ group_by_clause ] [ model_clause ]
+
+ALTER TABLE [ schema. ] table
+  [ memoptimize_read_clause ]
+  [ memoptimize_write_clause ]
+  [ alter_table_properties
+  | column_clauses
+  | constraint_clauses
+  | alter_table_partitioning
+  | alter_external_table
+  | move_table_clause
+  | modify_to_partitioned
+  | modify_opaque_type
+  | immutable_table_clauses
+  | blockchain_table_clauses
+  ]
+  [ enable_disable_clause
+  | { ENABLE | DISABLE }
+    { TABLE LOCK | ALL TRIGGERS | CONTAINER_MAP | CONTAINERS_DEFAULT }
+  ] ...
+  ;
+  
+CREATE USER user
+   { { 
+       IDENTIFIED       
+    
+        {
+           BY password [ [HTTP] DIGEST { ENABLE | DISABLE } ]
+           | EXTERNALLY [ AS 'certificate_DN'  |  AS 'kerberos_principal_name' ]
+           | GLOBALLY [ AS '[ directory_DN ]' ]
+           }
+
+        }               
+          | NO AUTHENTICATION
+   }
+   [ DEFAULT COLLATION collation_name ]
+   [ DEFAULT TABLESPACE tablespace
+   | [ LOCAL ] TEMPORARY TABLESPACE { tablespace | tablespace_group_name }
+   | { QUOTA { size_clause | UNLIMITED } ON tablespace }...
+   | PROFILE profile
+   | PASSWORD EXPIRE
+   | ACCOUNT { LOCK | UNLOCK }
+     [ DEFAULT TABLESPACE tablespace
+     | TEMPORARY TABLESPACE
+          { tablespace | tablespace_group_name }
+     | { QUOTA { size_clause | UNLIMITED } ON tablespace }...
+     | PROFILE profile
+     | PASSWORD EXPIRE
+     | ACCOUNT { LOCK | UNLOCK }
+     | ENABLE EDITIONS
+     | CONTAINER = { CURRENT | ALL }
+     ]...
+  ] ;
+    
+SET
+{ { (column [, column ]...) = (subquery)
+  | column = { expr | (subquery) | DEFAULT }
+  }
+     [, { (column [, column]...) = (subquery)
+        | column = { expr | (subquery) | DEFAULT }
+        }
+     ]...
+| VALUE (t_alias) = { expr | (subquery) }
+}};
+
+{ [ schema. ]
+  { table
+    [ partition_extension_clause
+    | @ dblink
+    ]
+  | { view | materialized view } [ @ dblink ]
+  }
+| ( subquery [ subquery_restriction_clause ] )
+| table_collection_expression
+}

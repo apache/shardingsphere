@@ -21,16 +21,16 @@ import Literals, Symbol;
 
 sentences: rules+ SEMI_?;
 
-rules:identifiers
-    | keyWords
-    | rules (EQ_? rules)+
-    | LBE_ COMMA_? rules (VERTICAL_BAR_ rules)* rbeMulti
-    | LBE_ COMMA_? rules (VERTICAL_BAR_ rules)* RBE_
-    | LBT_ COMMA_? rules (VERTICAL_BAR_ rules)* rbtMulti
-    | LBT_ COMMA_? rules (VERTICAL_BAR_ rules)* RBT_
-    | LP_ COMMA_? rules (VERTICAL_BAR_ rules)* RP_
-    | SQ_ rules SQ_
-    | AT_ rules
+rules:identifiers                                       # IdentifierRule
+    | keyWords                                          # KeywordsRule
+    | rules (EQ_? rules)+                               # EqualRule
+    | LBE_ COMMA_? rules (VERTICAL_BAR_ rules)* rbeMulti  # LBEMultiRule
+    | LBE_ COMMA_? rules (VERTICAL_BAR_ rules)* RBE_      # LBERule
+    | LBT_ COMMA_? rules (VERTICAL_BAR_ rules)* rbtMulti  # LBTMultiRule
+    | LBT_ COMMA_? rules (VERTICAL_BAR_ rules)* RBT_      # LBTRule
+    | LP_ COMMA_? rules (VERTICAL_BAR_ rules)* RP_        # LPRule
+    | SQ_ rules SQ_                                       # SQRule
+    | AT_ rules                                           # ATRule
     ;
 
 identifiers: (IDENTIFIER_ DOT_? IDENTIFIER_?)+;

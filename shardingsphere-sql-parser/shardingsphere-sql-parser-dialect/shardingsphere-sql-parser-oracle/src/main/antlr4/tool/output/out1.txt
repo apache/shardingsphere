@@ -1,0 +1,1 @@
+SET ( ( LP_(column (,column)* )RP_  EQ_  LP_(subquery)RP_  | column EQ_  (expr |  LP_(subquery)RP_  | DEFAULT) )  (, ( LP_(column (,column)* )RP_  EQ_  LP_(subquery)RP_  | column EQ_  (expr |  LP_(subquery)RP_  | DEFAULT) ) )*  | VALUE LP_(tAlias)RP_  EQ_  (expr |  LP_(subquery)RP_ ) ) 
