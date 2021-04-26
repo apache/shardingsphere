@@ -304,7 +304,7 @@ operateColumnClause
     ;
 
 addColumnSpecification
-    : ADD LP_ columnOrVirtualDefinitions RP_ columnProperties? 
+    : ADD LP_ columnOrVirtualDefinitions RP_ columnProperties?
     ;
 
 columnOrVirtualDefinitions
