@@ -36,8 +36,16 @@ public class TransferRuleImplListener extends TransferRuleBaseListener{
     }
 
     @Override public void exitIdentifierRule(final TransferRuleParser.IdentifierRuleContext ctx) {
-        String camelText = underline2Camel(ctx.getRuleContext().getText());
-        setProperty(ctx, camelText);
+        StringBuilder buf = new StringBuilder();
+        for(int i = 0; i< ctx.identifiers().getChildCount(); i++) {
+            String temp = ctx.identifiers().getChild(i).getText();
+            if (".".equals(temp)) {
+                buf.append(" DOT_ ");
+            } else {
+                buf.append(underline2Camel(temp));
+            }
+        }
+        setProperty(ctx, buf.toString());
     }
 
     @Override public void exitKeywordsRule(final TransferRuleParser.KeywordsRuleContext ctx) {
@@ -66,7 +74,7 @@ public class TransferRuleImplListener extends TransferRuleBaseListener{
         StringBuilder buf = new StringBuilder();
         buf.append(" (");
         if (ctx.COMMA_()!=null && !Strings.isNullOrEmpty(ctx.COMMA_().getText())) {
-            buf.append(ctx.COMMA_().getText());
+            buf.append("COMMA_");
         }
         buf.append(getProperty(ctx.rules().get(0)));
         for (TransferRuleParser.RulesContext rulesContext : ctx.rules().subList(1,ctx.rules().size())) {
@@ -81,7 +89,7 @@ public class TransferRuleImplListener extends TransferRuleBaseListener{
         StringBuilder buf = new StringBuilder();
         buf.append(" (");
         if (ctx.COMMA_()!=null && !Strings.isNullOrEmpty(ctx.COMMA_().getText())) {
-            buf.append(ctx.COMMA_().getText());
+            buf.append("COMMA_");
         }
         buf.append(getProperty(ctx.rules().get(0)));
         for (TransferRuleParser.RulesContext rulesContext : ctx.rules().subList(1,ctx.rules().size())) {
@@ -96,7 +104,7 @@ public class TransferRuleImplListener extends TransferRuleBaseListener{
         StringBuilder buf = new StringBuilder();
         buf.append(" (");
         if (ctx.COMMA_()!=null && !Strings.isNullOrEmpty(ctx.COMMA_().getText())) {
-            buf.append(ctx.COMMA_().getText());
+            buf.append("COMMA_");
         }
         buf.append(getProperty(ctx.rules().get(0)));
         for (TransferRuleParser.RulesContext rulesContext : ctx.rules().subList(1,ctx.rules().size())) {
@@ -110,7 +118,7 @@ public class TransferRuleImplListener extends TransferRuleBaseListener{
         StringBuilder buf = new StringBuilder();
         buf.append(" (");
         if (ctx.COMMA_()!=null && !Strings.isNullOrEmpty(ctx.COMMA_().getText())) {
-            buf.append(ctx.COMMA_().getText());
+            buf.append("COMMA_");
         }
         buf.append(getProperty(ctx.rules().get(0)));
         for (TransferRuleParser.RulesContext rulesContext : ctx.rules().subList(1,ctx.rules().size())) {
@@ -125,7 +133,7 @@ public class TransferRuleImplListener extends TransferRuleBaseListener{
         StringBuilder buf = new StringBuilder();
         buf.append(" LP_(");
         if (ctx.COMMA_()!=null && !Strings.isNullOrEmpty(ctx.COMMA_().getText())) {
-            buf.append(ctx.COMMA_().getText());
+            buf.append("COMMA_");
         }
         buf.append(getProperty(ctx.rules().get(0)));
         for (TransferRuleParser.RulesContext rulesContext : ctx.rules().subList(1,ctx.rules().size())) {
