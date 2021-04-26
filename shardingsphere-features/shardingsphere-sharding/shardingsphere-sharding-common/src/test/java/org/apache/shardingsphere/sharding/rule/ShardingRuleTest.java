@@ -145,6 +145,19 @@ public final class ShardingRuleTest {
     }
     
     @Test
+    public void assertIsNotAllSingleDataNodeTable() {
+        assertFalse(createMaximumShardingRule().isAllSingleDataNodeTables(Collections.singletonList("logic_table")));
+        assertFalse(createMaximumShardingRule().isAllSingleDataNodeTables(Arrays.asList("logic_table", "sub_logic_table")));
+    }
+    
+    @Test
+    public void assertIsAllSingleDataNodeTable() {
+        assertTrue(createSingleDataNodeShardingRule().isAllSingleDataNodeTables(Collections.singletonList("logic_table")));
+        assertTrue(createSingleDataNodeShardingRule().isAllSingleDataNodeTables(Collections.singletonList("sub_logic_table")));
+        assertTrue(createSingleDataNodeShardingRule().isAllSingleDataNodeTables(Arrays.asList("logic_table", "sub_logic_table")));
+    }
+    
+    @Test
     public void assertGetBindingTableRuleForNotConfig() {
         assertFalse(createMinimumShardingRule().findBindingTableRule("logic_Table").isPresent());
     }
@@ -344,6 +357,17 @@ public final class ShardingRuleTest {
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
         return new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
+    }
+    
+    private ShardingRule createSingleDataNodeShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_0.table_0");
+        ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_0.sub_table_0");
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.getTables().add(subTableRuleConfig);
+        Map<String, DataSource> result = new HashMap<>(1, 1);
+        result.put("ds_0", mock(DataSource.class, RETURNS_DEEP_STUBS));
+        return new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), result);
     }
     
     private ShardingTableRuleConfiguration createTableRuleConfiguration(final String logicTableName, final String actualDataNodes) {

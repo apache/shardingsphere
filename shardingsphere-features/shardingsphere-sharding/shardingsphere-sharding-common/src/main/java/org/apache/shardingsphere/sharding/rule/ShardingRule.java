@@ -520,4 +520,15 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     private Optional<String> findActualTableFromActualDataNode(final String catalog, final List<DataNode> actualDataNodes) {
         return actualDataNodes.stream().filter(each -> each.getDataSourceName().equalsIgnoreCase(catalog)).findFirst().map(DataNode::getTableName);
     }
+
+    /**
+     * Judge logic tables is all single data node tables.
+     *
+     * @param logicTableNames logic table names
+     * @return logic tables is all single data node tables
+     */
+    public boolean isAllSingleDataNodeTables(final Collection<String> logicTableNames) {
+        List<TableRule> tableRules = logicTableNames.stream().map(this::getTableRule).collect(Collectors.toList());
+        return tableRules.stream().allMatch(each -> 1 == each.getActualDataNodes().size());
+    }
 }
