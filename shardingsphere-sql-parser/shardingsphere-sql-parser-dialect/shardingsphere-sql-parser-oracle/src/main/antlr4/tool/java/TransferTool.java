@@ -8,13 +8,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Scanner;
 
 public class TransferTool {
     public static void main(String[] args) throws Exception {
-        Scanner scan = new Scanner(System.in);
-        String in = scan.next();
-        String out = scan.next();
+        String in = "shardingsphere-sql-parser/shardingsphere-sql-parser-dialect/shardingsphere-sql-parser-oracle/src/main/antlr4/tool/files/oracle.rule";
+        String out = "shardingsphere-sql-parser/shardingsphere-sql-parser-dialect/shardingsphere-sql-parser-oracle/src/main/antlr4/tool/files/g4.rule";
         Path inputPath = new File(in).toPath();
         CharStream input = CharStreams.fromPath(inputPath);
         TransferRuleLexer lexer = new TransferRuleLexer(input);
@@ -23,7 +21,6 @@ public class TransferTool {
         ParseTree tree = parser.sentences();
         ParseTreeWalker walker = new ParseTreeWalker();
         File outputFile = new File(out);
-        scan.close();
         try {
             FileWriter writer = new FileWriter(outputFile, true);
             TransferRuleImplListener listener = new TransferRuleImplListener(writer);

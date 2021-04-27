@@ -1,5 +1,4 @@
-SET
-{ { (column [, column ]...) = (subquery)
+SET { { (column [, column ]...) = (subquery)
   | column = { expr | (subquery) | DEFAULT }
   }
      [, { (column [, column]...) = (subquery)
