@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -50,10 +51,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
         String dataSourceName = getRandomDataSourceName(shardingRule.getDataSourceNames());
         RouteMapper dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
         if (shardingRule.isAllBroadcastTables(logicTables)) {
-            List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
-            for (String each : logicTables) {
-                tableMappers.add(new RouteMapper(each, each));
-            }
+            List<RouteMapper> tableMappers = logicTables.stream().map(each -> new RouteMapper(each, each)).collect(Collectors.toCollection(() -> new ArrayList<>(logicTables.size())));
             routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, tableMappers));
         } else if (logicTables.isEmpty()) {
             routeContext.getRouteUnits().add(new RouteUnit(dataSourceMapper, Collections.emptyList()));
