@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
@@ -44,7 +45,7 @@ public final class CreateTableStatementSchemaRefresher implements SchemaRefreshe
         if (containsInTableContainedRule(tableName, materials)) {
             tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElse(new TableMetaData());
         } else {
-            tableMetaData = new TableMetaData();
+            tableMetaData = TableMetaDataLoader.load(materials.getDataSourceMap().get(routeDataSourceNames.iterator().next()), tableName, materials.getDatabaseType()).orElse(new TableMetaData());
         }
         schema.put(tableName, tableMetaData);
         ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), tableName, tableMetaData));
