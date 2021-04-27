@@ -85,6 +85,7 @@ public final class AlterTableStatementSchemaRefresherTest {
         refresh(new SQLServerAlterTableStatement());
     }
     
+    // TODO add more tests for tables with table rule
     private void refresh(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
