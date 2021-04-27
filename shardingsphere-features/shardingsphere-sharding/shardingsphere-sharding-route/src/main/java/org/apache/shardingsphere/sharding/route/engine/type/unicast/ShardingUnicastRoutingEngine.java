@@ -77,10 +77,8 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
             TableRule tableRule = shardingRule.getTableRule(each);
             DataNode dataNode = tableRule.getActualDataNodes().get(0);
             tableMappers.add(new RouteMapper(each, dataNode.getTableName()));
-            Set<String> currentDataSourceNames = new HashSet<>(tableRule.getActualDatasourceNames().size());
-            for (DataNode eachDataNode : tableRule.getActualDataNodes()) {
-                currentDataSourceNames.add(eachDataNode.getDataSourceName());
-            }
+            Set<String> currentDataSourceNames = tableRule.getActualDataNodes().stream().map(DataNode::getDataSourceName).collect(
+                    Collectors.toCollection(() -> new HashSet<>(tableRule.getActualDatasourceNames().size())));
             if (first) {
                 availableDatasourceNames = currentDataSourceNames;
                 first = false;
