@@ -631,11 +631,20 @@ public final class RegistryCenter {
     }
     
     /**
-     * ack unlock.
+     * Ack unlock.
      * 
      * @param lockName lock name
      */
     public void ackUnlock(final String lockName) {
+        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)), LockAck.UNLOCKED.getValue());
+    }
+    
+    /**
+     * Delete lock ack.
+     * 
+     * @param lockName lock name
+     */
+    public void deleteLockAck(final String lockName) {
         repository.delete(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)));
     }
     

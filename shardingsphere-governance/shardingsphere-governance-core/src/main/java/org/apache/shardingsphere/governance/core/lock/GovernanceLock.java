@@ -132,7 +132,7 @@ public final class GovernanceLock implements ShardingSphereLock {
      */
     @Subscribe
     public void renew(final LockReleasedEvent event) {
-        releaseInnerLock(event.getLockName());
+        registryCenter.deleteLockAck(event.getLockName());
     }
     
     /**
