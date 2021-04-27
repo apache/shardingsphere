@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseTy
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -41,6 +43,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,9 +96,69 @@ public final class CreateTableStatementSchemaRefresherTest {
         refresh(createTableStatement);
     }
     
+    @Test
+    public void refreshWithTableRuleForMySQL() throws SQLException {
+        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
+        createTableStatement.setNotExisted(false);
+        when(materials.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        refreshWithTableRule(createTableStatement);
+    }
+    
+    @Test
+    public void refreshWithTableRuleForOracle() throws SQLException {
+        OracleCreateTableStatement createTableStatement = new OracleCreateTableStatement();
+        when(materials.getDatabaseType()).thenReturn(new OracleDatabaseType());
+        refreshWithTableRule(createTableStatement);
+    }
+    
+    @Test
+    public void refreshWithTableRuleForPostgreSQL() throws SQLException {
+        PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
+        createTableStatement.setNotExisted(false);
+        when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        refreshWithTableRule(createTableStatement);
+    }
+    
+    @Test
+    public void refreshWithTableRuleForSQL92() throws SQLException {
+        SQL92CreateTableStatement createTableStatement = new SQL92CreateTableStatement();
+        when(materials.getDatabaseType()).thenReturn(new SQL92DatabaseType());
+        refreshWithTableRule(createTableStatement);
+    }
+    
+    @Test
+    public void refreshWithTableRuleForSQLServer() throws SQLException {
+        SQLServerCreateTableStatement createTableStatement = new SQLServerCreateTableStatement();
+        when(materials.getDatabaseType()).thenReturn(new SQLServerDatabaseType());
+        refreshWithTableRule(createTableStatement);
+    }
+    
     // TODO add more tests for tables with table rule
     private void refresh(final CreateTableStatement createTableStatement) throws SQLException {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
+        Map<String, DataSource> dataSourceMap = mock(HashMap.class);
+        when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSourceMap.get(eq("ds"))).thenReturn(dataSource);
+        Connection connection = mock(Connection.class);
+        when(dataSource.getConnection()).thenReturn(connection);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        when(connection.getMetaData()).thenReturn(metaData);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(metaData.getTables(any(), any(), any(), any())).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
+        SchemaRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
+        schemaRefresher.refresh(schema, Collections.singleton("ds"), createTableStatement, materials);
+        assertTrue(schema.containsTable("t_order_0"));
+    }
+    
+    private void refreshWithTableRule(final CreateTableStatement createTableStatement) throws SQLException {
+        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
+        ShardingSphereRule rule = mock(TableContainedRule.class);
+        Collection<ShardingSphereRule> rules = Arrays.asList(rule);
+        when(materials.getRules()).thenReturn(rules);
+        when(((TableContainedRule) rule).getTables()).thenReturn(Arrays.asList("t_order_0"));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
         DataSource dataSource = mock(DataSource.class);
