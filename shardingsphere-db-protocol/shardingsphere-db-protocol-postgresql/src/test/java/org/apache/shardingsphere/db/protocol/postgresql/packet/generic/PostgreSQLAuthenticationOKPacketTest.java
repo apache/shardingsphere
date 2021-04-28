@@ -19,8 +19,8 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
@@ -30,22 +30,17 @@ import static org.junit.Assert.assertThat;
 public final class PostgreSQLAuthenticationOKPacketTest {
     
     @Test
-    public void assertSuccessTrue() {
-        assertReadWrite(true);
+    public void assertAuthenticationOK() {
+        assertReadWrite();
     }
     
-    @Test
-    public void assertSuccessFalse() {
-        assertReadWrite(false);
-    }
-    
-    private void assertReadWrite(final boolean isSuccess) {
+    private void assertReadWrite() {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(4);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
-        PostgreSQLAuthenticationOKPacket packet = new PostgreSQLAuthenticationOKPacket(isSuccess);
+        PostgreSQLAuthenticationOKPacket packet = new PostgreSQLAuthenticationOKPacket();
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(4));
-        assertThat(byteBuf.readInt(), is(isSuccess ? 0 : 1));
+        assertThat(byteBuf.readInt(), is(0));
     }
 }
