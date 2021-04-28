@@ -21,13 +21,16 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * ShardingSphere schema refresher for alter table statement.
@@ -39,8 +42,11 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
                         final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (!containsInTableContainedRule(tableName, materials)) {
-            TableMetaDataLoader.load(materials.getDataSourceMap().get(routeDataSourceNames.iterator().next()), 
-                    tableName, materials.getDatabaseType()).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
+            DataSource dataSource = materials.getDataSourceMap().get(routeDataSourceNames.iterator().next());
+            TableMetaData tableMetaData = Objects.isNull(dataSource) ? new TableMetaData()
+                    : TableMetaDataLoader.load(materials.getDataSourceMap().get(routeDataSourceNames.iterator().next()),
+                    tableName, materials.getDatabaseType()).orElse(new TableMetaData());
+            schema.put(tableName, tableMetaData);
         } else if (null != schema && schema.containsTable(tableName)) {
             TableMetaDataBuilder.build(tableName, materials).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
         }
