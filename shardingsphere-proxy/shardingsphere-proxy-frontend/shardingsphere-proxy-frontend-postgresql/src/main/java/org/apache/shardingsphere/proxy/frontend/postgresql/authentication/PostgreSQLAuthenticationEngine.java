@@ -96,7 +96,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             throw new PostgreSQLAuthenticationException(loginResult.getErrorCode(), loginResult.getErrorMessage());
         }
         // TODO implement PostgreSQLServerInfo like MySQLServerInfo
-        context.write(new PostgreSQLAuthenticationOKPacket(true));
+        context.write(new PostgreSQLAuthenticationOKPacket());
         context.write(new PostgreSQLParameterStatusPacket("server_version", "12.3"));
         context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
         context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
