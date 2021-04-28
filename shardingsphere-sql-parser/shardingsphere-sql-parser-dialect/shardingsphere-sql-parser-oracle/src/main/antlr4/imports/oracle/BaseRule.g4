@@ -531,16 +531,16 @@ odciParameters
     : identifier
     ;
 
-database
+databaseName
     : identifier
     ;
 
-location
-    : identifier
+locationName
+    : STRING_
     ;
 
 fileName
-    : identifier
+    : STRING_
     ;
 
 asmFileName
@@ -552,14 +552,10 @@ fileNumber
     ;
 
 instanceName
-    : identifier
+    : STRING_
     ;
 
 logminerSessionName
-    : identifier
-    ;
-
-dblink
     : identifier
     ;
 

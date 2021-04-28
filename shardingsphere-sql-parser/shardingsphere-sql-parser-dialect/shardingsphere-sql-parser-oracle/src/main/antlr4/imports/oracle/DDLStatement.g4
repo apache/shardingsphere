@@ -1134,7 +1134,7 @@ defaultCollationClause
     ;
 
 alterDatabase
-    : ALTER DATABASE database?
+    : ALTER DATABASE databaseName?
     ( startupClauses
     | recoveryClauses
     | databaseFileClauses
@@ -1161,8 +1161,8 @@ recoveryClauses
     ;
 
 generalRecovery
-    : RECOVER (AUTOMATIC)? (FROM SQ_ location SQ_)? (
-      (fullDatabaseRecovery | partialDatabaseRecovery | LOGFILE SQ_ fileName SQ_)
+    : RECOVER (AUTOMATIC)? (FROM locationName)? (
+      (fullDatabaseRecovery | partialDatabaseRecovery | LOGFILE fileName)
       ((TEST | ALLOW NUMBER_ CORRUPTION | parallelClause)+)?
     | CONTINUE DEFAULT?
     | CANCEL
@@ -1183,7 +1183,7 @@ dateValue
 
 partialDatabaseRecovery
     : TABLESPACE tablespaceName (COMMA_ tablespaceName)*
-    | DATAFILE (SQ_ fileName SQ_ | fileNumber) (COMMA_ (SQ_ fileName SQ_ | fileNumber))*
+    | DATAFILE (fileName | fileNumber) (COMMA_ (fileName | fileNumber))*
     ;
 
 managedStandbyRecovery
@@ -1193,11 +1193,11 @@ managedStandbyRecovery
     | UNTIL CHANGE NUMBER_
     | UNTIL CONSISTENT | USING INSTANCES (ALL | NUMBER_) | parallelClause)+
     | FINISH | CANCEL)?
-    | TO LOGICAL STANDBY (database | KEEP IDENTITY))
+    | TO LOGICAL STANDBY (databaseName | KEEP IDENTITY))
     ;
 
 databaseFileClauses
-    : RENAME FILE SQ_ fileName SQ_ (COMMA_ SQ_ fileName SQ_)* TO SQ_ fileName SQ_
+    : RENAME FILE fileName (COMMA_ fileName)* TO fileName
     | createDatafileClause
     | alterDatafileClause
     | alterTempfileClause
@@ -1205,7 +1205,7 @@ databaseFileClauses
     ;
 
 createDatafileClause
-    : CREATE DATAFILE (SQ_ fileName SQ_ | fileNumber) (COMMA_ (SQ_ fileName SQ_ | fileNumber))*
+    : CREATE DATAFILE (fileName | fileNumber) (COMMA_ (fileName | fileNumber))*
     ( AS (fileSpecification (COMMA_ fileSpecification)* | NEW))?
     ;
 
@@ -1214,7 +1214,7 @@ fileSpecification
     ;
 
 datafileTempfileSpec
-    : (SQ_ fileName SQ_ | SQ_ asmFileName SQ_ )? (SIZE sizeClause)? REUSE? autoextendClause?
+    : (fileName | asmFileName )? (SIZE sizeClause)? REUSE? autoextendClause?
     ;
 
 autoextendClause
@@ -1222,18 +1222,18 @@ autoextendClause
     ;
 
 redoLogFileSpec
-    : ((SQ_ (fileName | asmFileName) SQ_)
-    | LP_ SQ_ (fileName | asmFileName) SQ_ (COMMA_ SQ_ (fileName | asmFileName) SQ_)* RP_)?
+    : ((fileName | asmFileName)
+    | LP_ (fileName | asmFileName) (COMMA_ (fileName | asmFileName))* RP_)?
     (SIZE sizeClause)? (BLOCKSIZE sizeClause)? REUSE?
     ;
 
 alterDatafileClause
-    : DATAFILE (SQ_ fileName SQ_ | NUMBER_) (COMMA_ (SQ_ fileName SQ_ | NUMBER_))*
+    : DATAFILE (fileName | NUMBER_) (COMMA_ (fileName | NUMBER_))*
     (ONLINE | OFFLINE (FOR DROP)? | RESIZE sizeClause | autoextendClause | END BACKUP | ENCRYPT | DECRYPT)
     ;
 
 alterTempfileClause
-    : TEMPFILE SQ_ fileName SQ_ (COMMA_ SQ_ fileName SQ_ )*
+    : TEMPFILE fileName (COMMA_ fileName )*
     (RESIZE sizeClause | autoextendClause | DROP (INCLUDING DATAFILES)? | ONLINE | OFFLINE)
     ;
 
@@ -1241,7 +1241,7 @@ logfileClauses
     : ((ARCHIVELOG MANUAL? | NOARCHIVELOG )
     | NO? FORCE LOGGING
     | SET STANDBY NOLOGGING FOR (DATA AVAILABILITY | LOAD PERFORMANCE)
-    | RENAME FILE SQ_ fileName SQ_ (COMMA_ SQ_ fileName SQ_)* TO SQ_ fileName SQ_
+    | RENAME FILE fileName (COMMA_ fileName)* TO fileName
     | CLEAR UNARCHIVED? LOGFILE logfileDescriptor (COMMA_ logfileDescriptor)* (UNRECOVERABLE DATAFILE)?
     | addLogfileClauses
     | dropLogfileClauses
@@ -1250,29 +1250,29 @@ logfileClauses
     ;
 
 logfileDescriptor
-    : GROUP NUMBER_ | LP_ SQ_ fileName SQ_ (COMMA_ SQ_ fileName SQ_)* RP_ | SQ_ fileName SQ_
+    : GROUP NUMBER_ | LP_ fileName (COMMA_ fileName)* RP_ | fileName
     ;
 
 addLogfileClauses
     : ADD STANDBY? LOGFILE
-    (((INSTANCE SQ_ instanceName SQ_)? | (THREAD SQ_ NUMBER_ SQ_)?)
+    (((INSTANCE instanceName)? | (THREAD SQ_ NUMBER_ SQ_)?)
     (GROUP NUMBER_)? redoLogFileSpec (COMMA_ (GROUP NUMBER_)? redoLogFileSpec)*
-    | MEMBER SQ_ fileName SQ_ REUSE? (COMMA_ SQ_ fileName SQ_ REUSE?)* TO logfileDescriptor (COMMA_ logfileDescriptor)*)
+    | MEMBER fileName REUSE? (COMMA_ fileName REUSE?)* TO logfileDescriptor (COMMA_ logfileDescriptor)*)
     ;
 
 controlfileClauses
-    : CREATE ((LOGICAL | PHYSICAL)? STANDBY | FAR SYNC INSTANCE) CONTROLFILE AS SQ_ fileName SQ_ REUSE?
-    | BACKUP CONTROLFILE TO (SQ_ fileName SQ_ REUSE? | traceFileClause)
+    : CREATE ((LOGICAL | PHYSICAL)? STANDBY | FAR SYNC INSTANCE) CONTROLFILE AS fileName REUSE?
+    | BACKUP CONTROLFILE TO (fileName REUSE? | traceFileClause)
     ;
 
 traceFileClause
-    : TRACE (AS SQ_ fileName SQ_ REUSE?)? (RESETLOGS | NORESETLOGS)?
+    : TRACE (AS fileName REUSE?)? (RESETLOGS | NORESETLOGS)?
     ;
 
 dropLogfileClauses
     : DROP STANDBY? LOGFILE
     (logfileDescriptor (COMMA_ logfileDescriptor)*
-    | MEMBER SQ_ fileName SQ_ (COMMA_ SQ_ fileName SQ_)*)
+    | MEMBER fileName (COMMA_ fileName)*)
     ;
 
 switchLogfileClause
@@ -1327,7 +1327,7 @@ commitSwitchoverClause
     ;
 
 startStandbyClause
-    : START LOGICAL STANDBY APPLY IMMEDIATE? NODELAY? (NEW PRIMARY dblink | (SKIP_SYMBOL FAILED TRANSACTION | FINISH))?
+    : START LOGICAL STANDBY APPLY IMMEDIATE? NODELAY? (NEW PRIMARY dbLink | (SKIP_SYMBOL FAILED TRANSACTION | FINISH))?
     ;
 
 stopStandbyClause
@@ -1335,7 +1335,7 @@ stopStandbyClause
     ;
 
 switchoverClause
-    : SWITCHOVER TO database (VERIFY | FORCE)?
+    : SWITCHOVER TO databaseName (VERIFY | FORCE)?
     ;
 
 convertDatabaseClause
@@ -1343,7 +1343,7 @@ convertDatabaseClause
     ;
 
 failoverClause
-    : FAILOVER TO database FORCE?
+    : FAILOVER TO databaseName FORCE?
     ;
 
 defaultSettingsClauses
@@ -1351,7 +1351,7 @@ defaultSettingsClauses
     | SET DEFAULT (BIGFILE | SMALLFILE) TABLESPACE
     | DEFAULT TABLESPACE tablespaceName
     | DEFAULT LOCAL? TEMPORARY TABLESPACE (tablespaceName | tablespaceGroupName)
-    | ENABLE BLOCK CHANGE TRACKING (USING FILE SQ_ fileName SQ_ REUSE?)?
+    | ENABLE BLOCK CHANGE TRACKING (USING FILE fileName REUSE?)?
     | DISABLE BLOCK CHANGE TRACKING
     | NO? FORCE FULL DATABASE CACHING
     | CONTAINERS DEFAULT TARGET EQ_ (LP_ containerName RP_ | NONE)
@@ -1368,12 +1368,12 @@ undoModeClause
     ;
 
 moveDatafileClause
-    : MOVE DATAFILE LP_ (SQ_ fileName SQ_ | SQ_ asmFileName SQ_ | fileNumber) RP_
-    (TO LP_ (SQ_ fileName SQ_ | SQ_ asmFileName SQ_) RP_ )? REUSE? KEEP?
+    : MOVE DATAFILE LP_ (fileName | asmFileName | fileNumber) RP_
+    (TO LP_ (fileName | asmFileName) RP_ )? REUSE? KEEP?
     ;
 
 instanceClauses
-    : (ENABLE | DISABLE) INSTANCE SQ_ instanceName SQ_
+    : (ENABLE | DISABLE) INSTANCE instanceName
     ;
 
 securityClause
