@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * ShardingSphere schema refresher for alter table statement.
@@ -42,11 +43,7 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
                         final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (!containsInTableContainedRule(tableName, materials)) {
-            DataSource dataSource = materials.getDataSourceMap().get(routeDataSourceNames.iterator().next());
-            TableMetaData tableMetaData = Objects.isNull(dataSource) ? new TableMetaData()
-                    : TableMetaDataLoader.load(materials.getDataSourceMap().get(routeDataSourceNames.iterator().next()),
-                    tableName, materials.getDatabaseType()).orElse(new TableMetaData());
-            schema.put(tableName, tableMetaData);
+            schema.put(tableName, loadTableMetaData(tableName, routeDataSourceNames, materials));
         } else if (null != schema && schema.containsTable(tableName)) {
             TableMetaDataBuilder.build(tableName, materials).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
         }
@@ -59,5 +56,19 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
             }
         }
         return false;
+    }
+    
+    private TableMetaData loadTableMetaData(final String tableName, final Collection<String> routeDataSourceNames,
+                                            final SchemaBuilderMaterials materials) throws SQLException {
+        for (String routeDataSourceName : routeDataSourceNames) {
+            DataSource dataSource = materials.getDataSourceMap().get(routeDataSourceName);
+            Optional<TableMetaData> tableMetaDataOptional = Objects.isNull(dataSource) ? Optional.empty()
+                    : TableMetaDataLoader.load(dataSource, tableName, materials.getDatabaseType());
+            if (!tableMetaDataOptional.isPresent()) {
+                continue;
+            }
+            return tableMetaDataOptional.get();
+        }
+        return new TableMetaData();
     }
 }

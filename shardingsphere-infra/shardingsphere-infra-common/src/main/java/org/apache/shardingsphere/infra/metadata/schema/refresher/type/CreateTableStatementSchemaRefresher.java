@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * ShardingSphere schema refresher for create table statement.
@@ -47,9 +48,7 @@ public final class CreateTableStatementSchemaRefresher implements SchemaRefreshe
         if (containsInTableContainedRule(tableName, materials)) {
             tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElse(new TableMetaData());
         } else {
-            DataSource dataSource = materials.getDataSourceMap().get(routeDataSourceNames.iterator().next());
-            tableMetaData = Objects.isNull(dataSource) ? new TableMetaData() 
-                    : TableMetaDataLoader.load(dataSource, tableName, materials.getDatabaseType()).orElse(new TableMetaData());
+            tableMetaData = loadTableMetaData(tableName, routeDataSourceNames, materials);
         }
         schema.put(tableName, tableMetaData);
         ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), tableName, tableMetaData));
@@ -62,5 +61,19 @@ public final class CreateTableStatementSchemaRefresher implements SchemaRefreshe
             }
         }
         return false;
+    }
+    
+    private TableMetaData loadTableMetaData(final String tableName, final Collection<String> routeDataSourceNames, 
+                                            final SchemaBuilderMaterials materials) throws SQLException {
+        for (String routeDataSourceName : routeDataSourceNames) {
+            DataSource dataSource = materials.getDataSourceMap().get(routeDataSourceName);
+            Optional<TableMetaData> tableMetaDataOptional = Objects.isNull(dataSource) ? Optional.empty()
+                    : TableMetaDataLoader.load(dataSource, tableName, materials.getDatabaseType());
+            if (!tableMetaDataOptional.isPresent()) {
+                continue;
+            }
+            return tableMetaDataOptional.get();
+        }
+        return new TableMetaData();
     }
 }
