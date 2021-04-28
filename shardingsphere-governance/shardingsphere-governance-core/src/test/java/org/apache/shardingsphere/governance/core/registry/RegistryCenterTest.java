@@ -684,4 +684,11 @@ public final class RegistryCenterTest {
         registryCenter.renew(event);
         verify(registryRepository).persist(startsWith("/metadata/sharding_db/datasource"), anyString());
     }
+    
+    @Test
+    public void assertDeleteLockAck() {
+        RegistryCenter registryCenter = new RegistryCenter(registryRepository);
+        registryCenter.deleteLockAck("test");
+        verify(registryRepository).delete(anyString());
+    }
 }
