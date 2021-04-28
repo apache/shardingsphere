@@ -47,7 +47,8 @@ rules:
       actualDataNodes: db.t_order_item_0 
   bindingTables:
     - t_account, t_account_detail
-  
+  broadcastTables:
+    - t_config
   shardingAlgorithms:
     t_account_inline:
       type: INLINE
