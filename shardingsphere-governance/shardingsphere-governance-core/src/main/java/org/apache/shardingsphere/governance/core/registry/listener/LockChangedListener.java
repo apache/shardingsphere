@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.governance.core.registry.listener;
 
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.LockNotificationEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.LockReleasedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.lock.LockNotificationEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.lock.LockReleasedEvent;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.listener.metadata;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
