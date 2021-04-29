@@ -21,8 +21,8 @@ import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRe
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
-import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.event.PrimaryStateChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.readwritesplitting.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.readwritesplitting.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
