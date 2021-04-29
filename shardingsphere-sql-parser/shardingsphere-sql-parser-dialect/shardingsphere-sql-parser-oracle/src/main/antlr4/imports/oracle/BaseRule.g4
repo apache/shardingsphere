@@ -574,3 +574,7 @@ uriString
 qualifiedCredentialName
     : identifier
     ;
+
+pdbName
+    : identifier
+    ;

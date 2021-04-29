@@ -1134,7 +1134,7 @@ defaultCollationClause
     ;
 
 alterDatabase
-    : ALTER DATABASE databaseName?
+    : ALTER databaseClauses
     ( startupClauses
     | recoveryClauses
     | databaseFileClauses
@@ -1149,6 +1149,10 @@ alterDatabase
     | lostWriteProtection
     | cdbFleetClauses
     | propertyClause )
+    ;
+
+databaseClauses
+    : DATABASE databaseName | PLUGGABLE DATABASE pdbName
     ;
 
 startupClauses
