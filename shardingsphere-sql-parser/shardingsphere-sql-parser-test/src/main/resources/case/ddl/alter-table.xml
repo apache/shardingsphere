@@ -26,6 +26,15 @@
         </add-column>
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_oracle">
+        <table name="t_log" start-index="12" stop-index="16" />
+        <add-column>
+            <column-definition type="varchar" start-index="23" stop-index="38">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_if_exists_only">
         <table name="t_log" start-index="27" stop-index="31" />
         <add-column>
@@ -715,17 +724,17 @@
     <alter-table sql-case-id="alter_table_add_columns_oracle">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
-            <column-definition type="VARCHAR2" start-index="24" stop-index="43">
+            <column-definition type="VARCHAR2" start-index="25" stop-index="44">
                 <column name="column4" />
             </column-definition>
         </add-column>
         <add-column>
-            <column-definition type="VARCHAR2" start-index="49" stop-index="68">
+            <column-definition type="VARCHAR2" start-index="47" stop-index="66">
                 <column name="column5" />
             </column-definition>
         </add-column>
         <add-column>
-            <column-definition type="VARCHAR2" start-index="74" stop-index="93">
+            <column-definition type="VARCHAR2" start-index="69" stop-index="88">
                 <column name="column6" />
             </column-definition>
         </add-column>
@@ -919,7 +928,7 @@
     <alter-table sql-case-id="alter_table_with_optimize_memory_read">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="43" stop-index="58">
+            <column-definition type="VARCHAR" start-index="44" stop-index="59">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -928,7 +937,7 @@
     <alter-table sql-case-id="alter_table_with_no_optimize_memory_write">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="47" stop-index="62">
+            <column-definition type="VARCHAR" start-index="48" stop-index="63">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -937,7 +946,7 @@
     <alter-table sql-case-id="alter_table_with_enable_validate">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -946,7 +955,7 @@
     <alter-table sql-case-id="alter_table_with_primary_key">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -955,7 +964,7 @@
     <alter-table sql-case-id="alter_table_with_index_clause">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -964,7 +973,7 @@
     <alter-table sql-case-id="alter_table_with_exception_clause">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -973,7 +982,7 @@
     <alter-table sql-case-id="alter_table_with_cascade">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -982,7 +991,7 @@
     <alter-table sql-case-id="alter_table_with_keep_index">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -991,7 +1000,7 @@
     <alter-table sql-case-id="alter_table_with_enable_table_lock">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -1000,7 +1009,7 @@
     <alter-table sql-case-id="alter_table_with_enable_all_triggers">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -1009,7 +1018,7 @@
     <alter-table sql-case-id="alter_table_with_disable_container_map">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -1018,7 +1027,7 @@
     <alter-table sql-case-id="alter_table_with_disable_containers_default">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
