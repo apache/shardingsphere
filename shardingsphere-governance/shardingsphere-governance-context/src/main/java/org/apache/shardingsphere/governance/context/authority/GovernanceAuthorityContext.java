@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.governance.core.event.model.authority.AuthorityChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadWriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadWriteSplittingRuleStatement;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;

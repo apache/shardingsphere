@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
-import org.apache.shardingsphere.governance.core.event.model.authority.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataPersistedEvent;
-import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.authority.AuthorityChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.governance.core.registry.listener.metadata;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
+import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;

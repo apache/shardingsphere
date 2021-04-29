@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
