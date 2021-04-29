@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener;
+package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.authority.AuthorityChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
@@ -34,26 +35,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class PrivilegeNodeChangedListenerTest {
+@RunWith(MockitoJUnitRunner.class)
+public final class PropertiesChangedListenerTest {
     
-    private static final String AUTHENTICATION_YAML = "- root1@:root1\n" + "- root2@:root2\n";
+    private static final String PROPERTIES_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": true";
     
-    private PrivilegeNodeChangedListener privilegeNodeChangedListener;
+    private PropertiesChangedListener propertiesChangedListener;
     
     @Mock
     private RegistryRepository registryRepository;
     
     @Before
     public void setUp() {
-        privilegeNodeChangedListener = new PrivilegeNodeChangedListener(registryRepository);
+        propertiesChangedListener = new PropertiesChangedListener(registryRepository);
     }
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = privilegeNodeChangedListener.createEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
+        Optional<GovernanceEvent> actual = propertiesChangedListener.createEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
-        Optional<ShardingSphereUser> user = ((AuthorityChangedEvent) actual.get()).getUsers().stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
-        assertTrue(user.isPresent());
-        assertThat(user.get().getPassword(), is("root1"));
+        assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
     }
 }

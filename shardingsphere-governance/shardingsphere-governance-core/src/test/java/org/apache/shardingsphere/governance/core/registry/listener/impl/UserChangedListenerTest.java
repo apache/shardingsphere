@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener;
+package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,24 +37,26 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PropertiesChangedListenerTest {
+public final class UserChangedListenerTest {
     
-    private static final String PROPERTIES_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": true";
+    private static final String AUTHENTICATION_YAML = "- root1@:root1\n" + "- root2@:root2\n";
     
-    private PropertiesChangedListener propertiesChangedListener;
+    private UserChangedListener userChangedListener;
     
     @Mock
     private RegistryRepository registryRepository;
     
     @Before
     public void setUp() {
-        propertiesChangedListener = new PropertiesChangedListener(registryRepository);
+        userChangedListener = new UserChangedListener(registryRepository);
     }
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = propertiesChangedListener.createEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
+        Optional<GovernanceEvent> actual = userChangedListener.createEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
+        Optional<ShardingSphereUser> user = ((AuthorityChangedEvent) actual.get()).getUsers().stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
+        assertTrue(user.isPresent());
+        assertThat(user.get().getPassword(), is("root1"));
     }
 }

@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener;
+package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
-import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
- * Properties changed listener.
+ * Terminal state changed listener.
  */
-public final class PropertiesChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
+public final class TerminalStateChangedListener extends PostGovernanceRepositoryEventListener<StateEvent> {
     
-    public PropertiesChangedListener(final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singletonList(new RegistryCenterNode().getPropsPath()));
+    public TerminalStateChangedListener(final RegistryRepository registryRepository) {
+        super(registryRepository, Collections.singleton(new RegistryCenterNode().getProxyNodePath(GovernanceInstance.getInstance().getInstanceId())));
     }
     
     @Override
-    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class)));
+    protected Optional<StateEvent> createEvent(final DataChangedEvent event) {
+        return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

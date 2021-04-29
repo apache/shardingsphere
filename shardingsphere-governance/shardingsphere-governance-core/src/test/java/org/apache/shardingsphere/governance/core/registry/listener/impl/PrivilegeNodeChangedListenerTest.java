@@ -15,48 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener;
+package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class TerminalStateChangedListenerTest {
+public final class PrivilegeNodeChangedListenerTest {
     
-    private TerminalStateChangedListener terminalStateChangedListener;
+    private static final String AUTHENTICATION_YAML = "- root1@:root1\n" + "- root2@:root2\n";
+    
+    private PrivilegeNodeChangedListener privilegeNodeChangedListener;
     
     @Mock
     private RegistryRepository registryRepository;
     
     @Before
     public void setUp() {
-        terminalStateChangedListener = new TerminalStateChangedListener(registryRepository);
+        privilegeNodeChangedListener = new PrivilegeNodeChangedListener(registryRepository);
     }
     
     @Test
-    public void assertCreateEventWhenEnabled() {
-        Optional<StateEvent> actual = terminalStateChangedListener.createEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
+    public void assertCreateEvent() {
+        Optional<GovernanceEvent> actual = privilegeNodeChangedListener.createEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertFalse(actual.get().isOn());
-    }
-    
-    @Test
-    public void assertCreateEventWhenDisabled() {
-        Optional<StateEvent> actual = terminalStateChangedListener.createEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertTrue(actual.get().isOn());
+        Optional<ShardingSphereUser> user = ((AuthorityChangedEvent) actual.get()).getUsers().stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
+        assertTrue(user.isPresent());
+        assertThat(user.get().getPassword(), is("root1"));
     }
 }
