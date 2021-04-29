@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
+import org.apache.shardingsphere.governance.core.event.listener.GovernanceListenerFactory;
 import org.apache.shardingsphere.governance.core.registry.listener.metadata.MetaDataListener;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 
@@ -28,40 +30,32 @@ import java.util.Collection;
  */
 public final class RegistryListenerManager {
     
-    private final TerminalStateChangedListener terminalStateChangedListener;
+    static {
+        ShardingSphereServiceLoader.register(GovernanceListenerFactory.class);
+    }
     
-    private final DataSourceStateChangedListener dataSourceStateChangedListener;
+    private final RegistryRepository registryRepository;
     
-    private final LockChangedListener lockChangedListener;
-
+    private final Collection<String> schemaNames;
+    
     private final MetaDataListener metaDataListener;
-
-    private final PropertiesChangedListener propertiesChangedListener;
-
-    private final UserChangedListener userChangedListener;
     
-    private final PrivilegeNodeChangedListener privilegeNodeChangedListener;
+    private final Collection<GovernanceListenerFactory> governanceListenerFactories;
     
     public RegistryListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        terminalStateChangedListener = new TerminalStateChangedListener(registryRepository);
-        dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, schemaNames);
-        lockChangedListener = new LockChangedListener(registryRepository);
+        this.registryRepository = registryRepository;
+        this.schemaNames = schemaNames;
         metaDataListener = new MetaDataListener(registryRepository, schemaNames);
-        propertiesChangedListener = new PropertiesChangedListener(registryRepository);
-        userChangedListener = new UserChangedListener(registryRepository);
-        privilegeNodeChangedListener = new PrivilegeNodeChangedListener(registryRepository);
+        governanceListenerFactories = ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceListenerFactory.class);
     }
     
     /**
      * Initialize all state changed listeners.
      */
     public void initListeners() {
-        terminalStateChangedListener.watch(Type.UPDATED);
-        dataSourceStateChangedListener.watch(Type.UPDATED, Type.DELETED, Type.ADDED);
-        lockChangedListener.watch(Type.ADDED, Type.DELETED);
         metaDataListener.watch();
-        propertiesChangedListener.watch(Type.UPDATED);
-        userChangedListener.watch(Type.UPDATED);
-        privilegeNodeChangedListener.watch(Type.UPDATED);
+        for (GovernanceListenerFactory each : governanceListenerFactories) {
+            each.create(registryRepository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
+        }
     }
 }
