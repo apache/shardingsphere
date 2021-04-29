@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener.metadata;
 
-import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
+import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;

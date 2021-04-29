@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.listener;
+package org.apache.shardingsphere.governance.core.registry.listener;
 
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
