@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationMD5PasswordPacket;
@@ -97,7 +98,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         }
         // TODO implement PostgreSQLServerInfo like MySQLServerInfo
         context.write(new PostgreSQLAuthenticationOKPacket());
-        context.write(new PostgreSQLParameterStatusPacket("server_version", "12.3"));
+        context.write(new PostgreSQLParameterStatusPacket("server_version", PostgreSQLServerInfo.getServerVersion()));
         context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
         context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
         context.writeAndFlush(new PostgreSQLReadyForQueryPacket(true));
