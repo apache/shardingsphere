@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
+import org.apache.shardingsphere.governance.core.event.listener.GovernanceListenerFactory;
 import org.apache.shardingsphere.governance.core.registry.listener.metadata.MetaDataListener;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 
@@ -27,6 +29,10 @@ import java.util.Collection;
  * Registry listener manager.
  */
 public final class RegistryListenerManager {
+    
+    static {
+        ShardingSphereServiceLoader.register(GovernanceListenerFactory.class);
+    }
     
     private final TerminalStateChangedListener terminalStateChangedListener;
     
@@ -42,6 +48,12 @@ public final class RegistryListenerManager {
     
     private final PrivilegeNodeChangedListener privilegeNodeChangedListener;
     
+    private final RegistryRepository registryRepository;
+
+    private final Collection<String> schemaNames;
+    
+    private final Collection<GovernanceListenerFactory> governanceListenerFactories;
+    
     public RegistryListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
         terminalStateChangedListener = new TerminalStateChangedListener(registryRepository);
         dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, schemaNames);
@@ -50,6 +62,9 @@ public final class RegistryListenerManager {
         propertiesChangedListener = new PropertiesChangedListener(registryRepository);
         userChangedListener = new UserChangedListener(registryRepository);
         privilegeNodeChangedListener = new PrivilegeNodeChangedListener(registryRepository);
+        this.registryRepository = registryRepository;
+        this.schemaNames = schemaNames;
+        governanceListenerFactories = ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceListenerFactory.class);
     }
     
     /**
@@ -63,5 +78,8 @@ public final class RegistryListenerManager {
         propertiesChangedListener.watch(Type.UPDATED);
         userChangedListener.watch(Type.UPDATED);
         privilegeNodeChangedListener.watch(Type.UPDATED);
+        for (GovernanceListenerFactory each : governanceListenerFactories) {
+            each.create(registryRepository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
+        }
     }
 }
