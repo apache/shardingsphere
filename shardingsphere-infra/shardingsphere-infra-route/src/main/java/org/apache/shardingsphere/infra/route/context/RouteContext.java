@@ -83,7 +83,7 @@ public final class RouteContext {
     }
     
     private Set<String> getActualTableNames(final String actualDataSourceName, final String logicTableName) {
-        Set<String> result = new HashSet<>();
+        Set<String> result = new LinkedHashSet<>();
         for (RouteUnit each : routeUnits) {
             if (actualDataSourceName.equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 result.addAll(each.getActualTableNames(logicTableName));

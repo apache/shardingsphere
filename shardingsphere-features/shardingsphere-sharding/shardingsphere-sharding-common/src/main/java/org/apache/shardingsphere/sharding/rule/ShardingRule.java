@@ -312,7 +312,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         if (!singleTableRules.keySet().containsAll(logicTableNames)) {
             return false;
         }
-        return 1 == singleTableRules.values().stream().filter(each -> logicTableNames.contains(each.getTableName())).collect(Collectors.toSet()).size();
+        return 1 == singleTableRules.values().stream().filter(each -> logicTableNames.contains(each.getTableName())).map(SingleTableRule::getDataSourceName).collect(Collectors.toSet()).size();
     }
     
     /**
