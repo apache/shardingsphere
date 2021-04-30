@@ -60,6 +60,15 @@ public interface StoragePrivilegeHandler extends TypedSPI {
     void grantAll(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
     
     /**
+     * Create super users in storage.
+     *
+     * @param users users to be created and granted with super privilege
+     * @param dataSource target data source
+     * @throws SQLException SQL exception
+     */
+    void save(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
+    
+    /**
      * Load privileges from storage.
      *
      * @param users users to be loaded

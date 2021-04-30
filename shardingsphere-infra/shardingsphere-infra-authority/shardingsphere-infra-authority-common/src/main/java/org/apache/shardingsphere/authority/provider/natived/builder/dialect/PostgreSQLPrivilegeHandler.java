@@ -88,6 +88,10 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
         }
     }
     
+    @Override
+    public void save(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+    }
+    
     private String getGrantAllSQL(final Collection<ShardingSphereUser> users) {
         String grantUsers = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
                 .collect(Collectors.joining(", "));
