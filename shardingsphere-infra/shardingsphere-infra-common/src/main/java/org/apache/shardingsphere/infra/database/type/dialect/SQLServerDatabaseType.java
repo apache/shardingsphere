@@ -21,8 +21,9 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSo
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Database type of SQLServer.
