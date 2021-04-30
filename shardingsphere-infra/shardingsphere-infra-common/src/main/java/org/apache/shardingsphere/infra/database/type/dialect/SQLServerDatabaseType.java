@@ -41,7 +41,7 @@ public final class SQLServerDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList("jdbc:sqlserver:");
+        return new ArrayList<String>(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:"));
     }
     
     @Override
