@@ -78,7 +78,6 @@ public class RelNodeConverter {
                 rootSchema.path(schemaName),
                 new JavaTypeFactoryImpl(),
                 new CalciteConnectionConfigImpl(new Properties()));
-
         validator = SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalog, TYPE_FACTORY, SqlValidator.Config.DEFAULT
                 .withLenientOperatorLookup(false)
                 .withSqlConformance(SqlConformanceEnum.DEFAULT)
@@ -94,7 +93,6 @@ public class RelNodeConverter {
         final RelOptCluster cluster = createRelOptCluster();
         final SqlToRelConverter sqlToRelConverter = new SqlToRelConverter(null, validator, catalog, cluster,
                 StandardConvertletTable.INSTANCE, converterConfig);
-
         // validate and convert
         RelRoot root = sqlToRelConverter.convertQuery(sqlNode, true, true);
         return root.rel;
