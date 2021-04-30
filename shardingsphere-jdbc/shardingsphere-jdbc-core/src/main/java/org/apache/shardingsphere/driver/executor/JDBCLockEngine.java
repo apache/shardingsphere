@@ -43,24 +43,24 @@ import java.util.stream.Collectors;
  * JDBC lock engine.
  */
 public final class JDBCLockEngine {
-
+    
     private final MetaDataContexts metaDataContexts;
-
+    
     private final JDBCExecutor jdbcExecutor;
-
+    
     private final MetadataRefreshEngine metadataRefreshEngine;
-
+    
     private final Collection<String> lockNames = new ArrayList<>();
-
+    
     public JDBCLockEngine(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
         metadataRefreshEngine = new MetadataRefreshEngine(metaDataContexts.getDefaultMetaData(), metaDataContexts.getProps(), metaDataContexts.getLock().orElse(null));
     }
-
+    
     /**
      * Execute.
-     *
+     * 
      * @param executionGroupContext execution group context
      * @param sqlStatementContext sql statement context
      * @param routeUnits route units
@@ -89,7 +89,7 @@ public final class JDBCLockEngine {
         }
         return doExecute(executionGroupContext, routeUnits, callback, sqlStatement);
     }
-
+    
     private void tryTableLock(final ShardingSphereLock lock, final Collection<String> tableNames) throws SQLException {
         for (String tableName : tableNames) {
             String lockName = LockNameUtil.getTableLockName(DefaultSchema.LOGIC_NAME, tableName);
@@ -99,7 +99,7 @@ public final class JDBCLockEngine {
             lockNames.add(lockName);
         }
     }
-
+    
     private void checkTableLock(final ShardingSphereLock lock, final Collection<String> tableNames) throws SQLException {
         for (String tableName : tableNames) {
             if (lock.isLocked(LockNameUtil.getTableLockName(DefaultSchema.LOGIC_NAME, tableName))) {
@@ -107,14 +107,14 @@ public final class JDBCLockEngine {
             }
         }
     }
-
+    
     private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback, final SQLStatement sqlStatement) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
         refreshMetadata(sqlStatement, routeUnits);
         return results;
     }
-
+    
     private void refreshMetadata(final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         metadataRefreshEngine.refresh(sqlStatement, routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
     }
