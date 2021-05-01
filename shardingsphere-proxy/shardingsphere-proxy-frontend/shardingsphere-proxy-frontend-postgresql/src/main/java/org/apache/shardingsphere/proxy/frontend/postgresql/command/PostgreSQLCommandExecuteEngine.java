@@ -67,16 +67,16 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
-    public Optional<DatabasePacket<?>> getOtherPacket() {
+    public Optional<DatabasePacket<?>> getOtherPacket(final BackendConnection backendConnection) {
         // TODO judge is in transaction from context, not from TransactionHolder (because of thread local)
-        return Optional.of(new PostgreSQLReadyForQueryPacket(true));
+        return Optional.of(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
     }
     
     @Override
     public void writeQueryData(final ChannelHandlerContext context,
                                final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         // TODO judge is in transaction from context, not from TransactionHolder (because of thread local)
-        boolean inTransaction = true;
+        boolean inTransaction = backendConnection.getTransactionStatus().isInTransaction();
         if (ResponseType.QUERY == queryCommandExecutor.getResponseType() && !context.channel().isActive()) {
             context.write(new PostgreSQLCommandCompletePacket());
             context.write(new PostgreSQLReadyForQueryPacket(inTransaction));

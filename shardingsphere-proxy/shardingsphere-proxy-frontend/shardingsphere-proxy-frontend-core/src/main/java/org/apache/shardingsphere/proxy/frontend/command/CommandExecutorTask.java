@@ -108,7 +108,7 @@ public final class CommandExecutorTask implements Runnable {
             log.error("Exception occur: ", cause);
         }
         context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause));
-        Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
+        Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket(backendConnection);
         databasePacket.ifPresent(context::writeAndFlush);
     }
     
