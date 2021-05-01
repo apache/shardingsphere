@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.impl;
+package org.apache.shardingsphere.governance.context.authority.listener;
 
+import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
@@ -26,9 +26,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
@@ -36,24 +34,23 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class UserChangedListenerTest {
+public final class PrivilegeNodeChangedListenerTest {
     
     private static final String AUTHENTICATION_YAML = "- root1@:root1\n" + "- root2@:root2\n";
     
-    private UserChangedListener userChangedListener;
+    private PrivilegeNodeChangedListener privilegeNodeChangedListener;
     
     @Mock
     private RegistryRepository registryRepository;
     
     @Before
     public void setUp() {
-        userChangedListener = new UserChangedListener(registryRepository);
+        privilegeNodeChangedListener = new PrivilegeNodeChangedListener(registryRepository);
     }
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = userChangedListener.createEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
+        Optional<GovernanceEvent> actual = privilegeNodeChangedListener.createEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
         Optional<ShardingSphereUser> user = ((AuthorityChangedEvent) actual.get()).getUsers().stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
         assertTrue(user.isPresent());

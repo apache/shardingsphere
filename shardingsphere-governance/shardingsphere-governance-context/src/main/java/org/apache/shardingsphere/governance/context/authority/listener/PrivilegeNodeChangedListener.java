@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.impl;
+package org.apache.shardingsphere.governance.context.authority.listener;
 
+import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;

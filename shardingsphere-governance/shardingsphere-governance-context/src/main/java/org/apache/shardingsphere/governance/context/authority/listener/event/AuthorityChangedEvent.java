@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.event.authority;
+package org.apache.shardingsphere.governance.context.authority.listener.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

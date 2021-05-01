@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
-import org.apache.shardingsphere.governance.core.registry.listener.event.authority.AuthorityChangedEvent;
+import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
