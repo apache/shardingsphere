@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwrite.splitting.route.engine.ReadWriteSplittingSQLRouter
+org.apache.shardingsphere.readwritesplitting.route.engine.ReadWriteSplittingSQLRouter

@@ -16,4 +16,4 @@
 #
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.apache.shardingsphere.readwrite.splitting.spring.boot.ReadWriteSplittingRuleSpringbootConfiguration
+org.apache.shardingsphere.readwritesplitting.spring.boot.ReadWriteSplittingRuleSpringbootConfiguration
