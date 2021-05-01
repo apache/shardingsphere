@@ -30,8 +30,15 @@ public final class PostgreSQLInt2BinaryProtocolValue implements PostgreSQLBinary
     }
     
     @Override
-    public Object read(final PostgreSQLPacketPayload payload) {
-        return payload.readInt2();
+    public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
+        switch (parameterValueLength) {
+            case 1:
+                return payload.readInt1();
+            case 2:
+                return payload.readInt2();
+            default:
+                throw new UnsupportedOperationException(String.format("paramValueLength %s", parameterValueLength));
+        }
     }
     
     @Override
