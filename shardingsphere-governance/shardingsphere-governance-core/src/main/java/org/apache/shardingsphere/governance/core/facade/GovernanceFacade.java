@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.facade;
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.listener.RegistryListenerManager;
+import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerManager;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -45,7 +45,7 @@ public final class GovernanceFacade implements AutoCloseable {
     @Getter
     private RegistryCenter registryCenter;
     
-    private RegistryListenerManager listenerManager;
+    private GovernanceListenerManager listenerManager;
     
     /**
      * Initialize governance facade.
@@ -57,7 +57,7 @@ public final class GovernanceFacade implements AutoCloseable {
         isOverwrite = config.isOverwrite();
         repositoryFacade = new GovernanceRepositoryFacade(config);
         registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
-        listenerManager = new RegistryListenerManager(repositoryFacade.getRegistryRepository(), schemaNames.isEmpty()
+        listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(), schemaNames.isEmpty()
                 ? registryCenter.getAllSchemaNames() : Stream.of(registryCenter.getAllSchemaNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
     }
     

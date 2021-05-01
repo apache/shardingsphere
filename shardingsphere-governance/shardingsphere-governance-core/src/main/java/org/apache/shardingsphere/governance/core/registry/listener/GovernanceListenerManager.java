@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import java.util.Collection;
 
 /**
- * Registry listener manager.
+ * Governance listener manager.
  */
-public final class RegistryListenerManager {
+public final class GovernanceListenerManager {
     
     static {
         ShardingSphereServiceLoader.register(GovernanceListenerFactory.class);
@@ -41,7 +41,7 @@ public final class RegistryListenerManager {
     
     private final Collection<GovernanceListenerFactory> governanceListenerFactories;
     
-    public RegistryListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
+    public GovernanceListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
         this.registryRepository = registryRepository;
         this.schemaNames = schemaNames;
         metaDataListener = new MetaDataListener(registryRepository, schemaNames);
