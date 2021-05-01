@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-read-write-splitting-common</artifactId>
+            <artifactId>shardingsphere-readwrite-splitting-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

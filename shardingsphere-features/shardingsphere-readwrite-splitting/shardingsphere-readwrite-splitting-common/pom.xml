@@ -22,10 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-read-write-splitting</artifactId>
+        <artifactId>shardingsphere-readwrite-splitting</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-read-write-splitting-common</artifactId>
+    <artifactId>shardingsphere-readwrite-splitting-common</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -37,7 +37,7 @@
 
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-read-write-splitting-api</artifactId>
+            <artifactId>shardingsphere-readwrite-splitting-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         
