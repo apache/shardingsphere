@@ -16,4 +16,4 @@
 #
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.apache.shardingsphere.db.discovery.spring.boot.DatabaseDiscoveryRuleSpringbootConfiguration
+org.apache.shardingsphere.dbdiscovery.spring.boot.DatabaseDiscoveryRuleSpringbootConfiguration

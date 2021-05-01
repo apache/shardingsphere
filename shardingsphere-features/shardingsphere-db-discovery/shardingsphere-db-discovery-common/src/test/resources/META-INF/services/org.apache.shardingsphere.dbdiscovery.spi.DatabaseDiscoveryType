@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/database-discovery=org.apache.shardingsphere.dbdiscovery.spring.namespace.handler.DatabaseDiscoveryNamespaceHandler
+org.apache.shardingsphere.dbdiscovery.common.fixture.TestDatabaseDiscoveryTypeFixture

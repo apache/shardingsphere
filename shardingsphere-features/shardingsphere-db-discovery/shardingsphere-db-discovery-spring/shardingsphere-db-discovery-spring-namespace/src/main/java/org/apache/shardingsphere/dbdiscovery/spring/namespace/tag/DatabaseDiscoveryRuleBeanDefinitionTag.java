@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.dbdiscovery.spring.namespace.tag;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Database discovery rule configuration checker.
+ * Database discovery rule bean definition tag.
  */
-public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConfigurationChecker<DatabaseDiscoveryRuleConfiguration> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseDiscoveryRuleBeanDefinitionTag {
     
-    @Override
-    public void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration ruleConfiguration) {
-        ruleConfiguration.getDataSources().forEach(each -> Preconditions.checkState(
-                !each.getDiscoveryTypeName().isEmpty(), "No available DatabaseDiscovery rule configuration in `%s` for governance.", schemaName));
-    }
+    public static final String ROOT_TAG = "rule";
+    
+    public static final String DATA_SOURCE_TAG = "data-source-rule";
+    
+    public static final String DB_DISCOVERY_DATA_SOURCE_ID_ATTRIBUTE = "id";
 }
