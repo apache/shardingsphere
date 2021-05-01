@@ -28,9 +28,9 @@ import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleC
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.readwrite.splitting.api.ReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwrite.splitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwrite.splitting.common.yaml.converter.CreateReadWriteSplittingRuleStatementConverter;
+import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.CreateReadWriteSplittingRuleStatementConverter;
 
 import java.util.Collection;
 import java.util.Collections;

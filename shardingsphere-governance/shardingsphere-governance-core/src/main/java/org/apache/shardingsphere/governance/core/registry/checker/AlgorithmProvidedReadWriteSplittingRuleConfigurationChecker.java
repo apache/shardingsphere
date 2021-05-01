@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.checker;
 
-import org.apache.shardingsphere.readwrite.splitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
 
 /**
  * Algorithm provided read write splitting ruleConfiguration checker.

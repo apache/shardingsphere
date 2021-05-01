@@ -21,11 +21,11 @@ import org.apache.shardingsphere.driver.governance.internal.datasource.Governanc
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.readwrite.splitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwrite.splitting.common.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwrite.splitting.common.rule.ReadWriteSplittingDataSourceRule;
-import org.apache.shardingsphere.readwrite.splitting.common.rule.ReadWriteSplittingRule;
-import org.apache.shardingsphere.readwrite.splitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.governance.util.FieldValueUtil;
 import org.junit.BeforeClass;

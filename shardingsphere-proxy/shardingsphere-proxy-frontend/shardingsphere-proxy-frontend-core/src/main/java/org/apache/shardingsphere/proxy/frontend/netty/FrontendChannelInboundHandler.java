@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationRes
 import org.apache.shardingsphere.proxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
-import org.apache.shardingsphere.readwrite.splitting.route.engine.impl.PrimaryVisitedManager;
+import org.apache.shardingsphere.readwritesplitting.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**

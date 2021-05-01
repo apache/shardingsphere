@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.readwrite.splitting.common.rule.ReadWriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
