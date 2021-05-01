@@ -43,7 +43,7 @@ public final class LocalReadWriteSplittingConfiguration implements ExampleConfig
     @Override
     public DataSource getDataSource() throws SQLException {
         ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadWriteSplittingDataSourceRuleConfiguration(
-                "demo_read_write_splitting_ds", "", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), null);
+                "demo_readwrite_splitting_ds", "", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), null);
         ReadWriteSplittingRuleConfiguration ruleConfig = new ReadWriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
         return GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), new Properties(), governanceConfig);
     }

@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = GovernanceSpringBootReadWriteSplittingTest.class)
 @SpringBootApplication
-@ActiveProfiles("read-write-splitting")
+@ActiveProfiles("readwrite-splitting")
 public class GovernanceSpringBootReadWriteSplittingTest {
     
     @Resource

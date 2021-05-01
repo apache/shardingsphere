@@ -36,7 +36,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Read write splitting data source rule.
+ * Readwrite-splitting data source rule.
  */
 @Getter
 public final class ReadWriteSplittingDataSourceRule {

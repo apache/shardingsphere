@@ -41,7 +41,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Read write splitting rule.
+ * Readwrite-splitting rule.
  */
 public final class ReadWriteSplittingRule implements FeatureRule, SchemaRule, DataSourceContainedRule, StatusContainedRule {
     

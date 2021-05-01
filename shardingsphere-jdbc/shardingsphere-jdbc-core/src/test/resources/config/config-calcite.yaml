@@ -70,7 +70,7 @@ rules:
             plainColumn: plain_pwd
             cipherColumn: cipher_pwd
             encryptorName: test
-  - !READ_WRITE_SPLITTING
+  - !READWRITE_SPLITTING
     dataSources:
       calcite_ds:
         name: calcite_ds

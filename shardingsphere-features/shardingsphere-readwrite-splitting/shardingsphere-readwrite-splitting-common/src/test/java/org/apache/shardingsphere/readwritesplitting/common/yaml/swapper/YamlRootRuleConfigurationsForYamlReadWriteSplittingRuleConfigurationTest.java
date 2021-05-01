@@ -37,7 +37,7 @@ public final class YamlRootRuleConfigurationsForYamlReadWriteSplittingRuleConfig
     
     @Test
     public void assertUnmarshalWithYamlFile() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/read-write-splitting-rule.yaml");
+        URL url = getClass().getClassLoader().getResource("yaml/readwrite-splitting-rule.yaml");
         assertNotNull(url);
         YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
         assertThat(rootRuleConfigs.getRules().size(), is(1));
@@ -46,7 +46,7 @@ public final class YamlRootRuleConfigurationsForYamlReadWriteSplittingRuleConfig
     
     @Test
     public void assertUnmarshalWithYamlBytes() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/read-write-splitting-rule.yaml");
+        URL url = getClass().getClassLoader().getResource("yaml/readwrite-splitting-rule.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
         try (

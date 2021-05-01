@@ -36,7 +36,7 @@ dataSources:
     password:
 
 rules:
-- !READ_WRITE_SPLITTING
+- !READWRITE_SPLITTING
   dataSources:
     pr_ds:
       name: pr_ds

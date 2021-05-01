@@ -47,12 +47,12 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = GovernanceSpringBootRegistryReadWriteSplittingTest.class)
 @SpringBootApplication
-@ActiveProfiles("registry-read-write-splitting")
+@ActiveProfiles("registry-readwrite-splitting")
 public class GovernanceSpringBootRegistryReadWriteSplittingTest {
     
-    private static final String DATA_SOURCE_FILE = "yaml/read-write-splitting-databases.yaml";
+    private static final String DATA_SOURCE_FILE = "yaml/readwrite-splitting-databases.yaml";
     
-    private static final String RULE_FILE = "yaml/read-write-splitting-rule.yaml";
+    private static final String RULE_FILE = "yaml/readwrite-splitting-rule.yaml";
     
     @Resource
     private DataSource dataSource;

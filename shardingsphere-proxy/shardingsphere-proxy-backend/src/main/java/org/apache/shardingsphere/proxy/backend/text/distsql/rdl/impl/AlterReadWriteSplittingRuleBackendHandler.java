@@ -50,7 +50,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Alter read write splitting rule backend handler.
+ * Alter readwrite-splitting rule backend handler.
  */
 public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<AlterReadWriteSplittingRuleStatement> {
 

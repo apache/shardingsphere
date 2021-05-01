@@ -24,7 +24,7 @@ rules:
   - !SHARDING # Configure data sharding rules.
     tables:
       t_user:
-        actualDataNodes: ds.t_user_${0..1} # Data source name 'ds' uses the logical data source name of the read-write separation configuration.
+        actualDataNodes: ds.t_user_${0..1} # Data source name 'ds' uses the logical data source name of the readwrite-splitting configuration.
         tableStrategy:
           standard:
             shardingColumn: user_id
@@ -49,10 +49,10 @@ rules:
         props:
           aes-key-value: 123456abc
   
-  - !READ_WRITE_SPLITTING # Configure read-write separation rules.
+  - !READWRITE_SPLITTING # Configure readwrite-splitting rules.
     dataSources:
       ds:
-        name: ds # The logical data source name 'ds' for read-write separation is used in data sharding.
+        name: ds # The logical data source name 'ds' for readwrite-splitting is used in data sharding.
         writeDataSourceName: write_ds # Use the real data source name 'write_ds'.
         readDataSourceNames:
           - read_ds_0 # Use the real data source name 'read_ds_0'.

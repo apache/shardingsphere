@@ -28,7 +28,7 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Algorithm provided read write splitting rule builder.
+ * Algorithm provided readwrite-splitting rule builder.
  */
 public final class AlgorithmProvidedReadWriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadWriteSplittingRule, AlgorithmProvidedReadWriteSplittingRuleConfiguration> {
     

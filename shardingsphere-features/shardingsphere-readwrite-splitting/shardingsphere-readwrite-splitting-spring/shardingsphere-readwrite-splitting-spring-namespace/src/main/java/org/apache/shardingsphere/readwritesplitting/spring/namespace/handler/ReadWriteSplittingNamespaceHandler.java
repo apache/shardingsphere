@@ -25,7 +25,7 @@ import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithm
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Spring namespace handler for read write splitting.
+ * Spring namespace handler for readwrite-splitting.
  */
 public final class ReadWriteSplittingNamespaceHandler extends NamespaceHandlerSupport {
     

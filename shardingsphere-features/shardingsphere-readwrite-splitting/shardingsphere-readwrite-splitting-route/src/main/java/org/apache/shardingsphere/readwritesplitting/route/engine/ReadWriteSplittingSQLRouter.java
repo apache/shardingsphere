@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Read write splitting SQL router.
+ * Readwrite-splitting SQL router.
  */
 public final class ReadWriteSplittingSQLRouter implements SQLRouter<ReadWriteSplittingRule> {
     

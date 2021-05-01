@@ -46,7 +46,7 @@ public final class RuleChangedListenerTest extends MetaDataListenerTest {
     
     private static final String SHARDING_RULE_FILE = "yaml/sharding-rule.yaml";
     
-    private static final String READ_WRITE_SPLITTING_RULE_FILE = "yaml/read-write-splitting-rule.yaml";
+    private static final String READWRITE_SPLITTING_RULE_FILE = "yaml/readwrite-splitting-rule.yaml";
     
     private static final String ENCRYPT_RULE_FILE = "yaml/encrypt-rule.yaml";
     
@@ -99,11 +99,11 @@ public final class RuleChangedListenerTest extends MetaDataListenerTest {
     
     @Test
     public void assertCreateEventWithReadWriteSplittingRule() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/read_write_splitting_db/rule", readYAML(READ_WRITE_SPLITTING_RULE_FILE), Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/readwrite_splitting_db/rule", readYAML(READWRITE_SPLITTING_RULE_FILE), Type.UPDATED);
         Optional<GovernanceEvent> actual = ruleChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual.get();
-        assertThat(event.getSchemaName(), is("read_write_splitting_db"));
+        assertThat(event.getSchemaName(), is("readwrite_splitting_db"));
         assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(ReadWriteSplittingRuleConfiguration.class));
         ReadWriteSplittingRuleConfiguration ruleConfig = (ReadWriteSplittingRuleConfiguration) event.getRuleConfigurations().iterator().next();
         assertThat(ruleConfig.getDataSources().iterator().next().getWriteDataSourceName(), is("write_ds"));

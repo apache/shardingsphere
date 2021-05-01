@@ -43,7 +43,7 @@ public final class MetaDataChangedListenerTest extends MetaDataListenerTest {
     
     @Before
     public void setUp() {
-        metaDataChangedListener = new MetaDataChangedListener(getRegistryRepository(), Arrays.asList("sharding_db", "read_write_splitting_db"));
+        metaDataChangedListener = new MetaDataChangedListener(getRegistryRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db"));
     }
     
     @Test
@@ -55,7 +55,7 @@ public final class MetaDataChangedListenerTest extends MetaDataListenerTest {
     
     @Test
     public void assertCreateAddedEvent() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata", "sharding_db,read_write_splitting_db,encrypt_db", Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata", "sharding_db,readwrite_splitting_db,encrypt_db", Type.UPDATED);
         Optional<GovernanceEvent> actual = metaDataChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MetaDataPersistedEvent.class));
@@ -68,6 +68,6 @@ public final class MetaDataChangedListenerTest extends MetaDataListenerTest {
         Optional<GovernanceEvent> actual = metaDataChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MetaDataDeletedEvent.class));
-        assertThat(((MetaDataDeletedEvent) actual.get()).getSchemaName(), is("read_write_splitting_db"));
+        assertThat(((MetaDataDeletedEvent) actual.get()).getSchemaName(), is("readwrite_splitting_db"));
     }
 }

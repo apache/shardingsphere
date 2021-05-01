@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-provides: shardingsphere-read-write-splitting-spring-boot-starter
+provides: shardingsphere-readwrite-splitting-spring-boot-starter

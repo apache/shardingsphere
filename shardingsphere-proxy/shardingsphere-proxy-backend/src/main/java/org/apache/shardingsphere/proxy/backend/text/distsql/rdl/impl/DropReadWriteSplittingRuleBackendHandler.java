@@ -39,7 +39,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Drop read write splitting rule backend handler.
+ * Drop readwrite-splitting rule backend handler.
  */
 public final class DropReadWriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<DropReplicaQueryRuleStatement> {
 

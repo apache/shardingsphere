@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Read write splitting rule configuration for YAML.
+ * Readwrite-splitting rule configuration for YAML.
  */
 @Getter
 @Setter

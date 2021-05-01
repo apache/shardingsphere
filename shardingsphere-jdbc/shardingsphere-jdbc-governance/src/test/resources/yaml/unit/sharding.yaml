@@ -94,7 +94,7 @@ rules:
       props:
           worker-id: 123
 
-- !READ_WRITE_SPLITTING
+- !READWRITE_SPLITTING
   dataSources:
     pr_ds:
       writeDataSourceName: write_ds

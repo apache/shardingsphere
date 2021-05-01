@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Read write splitting rule segment.
+ * Readwrite-splitting rule segment.
  */
 @Getter
 @Setter

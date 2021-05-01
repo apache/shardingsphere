@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Read write splitting data source rule configuration for YAML.
+ * Readwrite-splitting data source rule configuration for YAML.
  */
 @Getter
 @Setter

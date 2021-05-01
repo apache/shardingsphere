@@ -26,16 +26,16 @@ import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereA
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
 
 /**
- * Create read write splitting rule statement converter.
+ * Create readwrite-splitting rule statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateReadWriteSplittingRuleStatementConverter {
     
     /**
-     * Convert create read write splitting rule statement context to YAML read write splitting rule configuration.
+     * Convert create readwrite-splitting rule statement context to YAML readwrite-splitting rule configuration.
      *
-     * @param sqlStatement create read write splitting rule statement
-     * @return YAML read write splitting rule configuration
+     * @param sqlStatement create readwrite-splitting rule statement
+     * @return YAML readwrite-splitting rule configuration
      */
     public static YamlReadWriteSplittingRuleConfiguration convert(final CreateReadWriteSplittingRuleStatement sqlStatement) {
         YamlReadWriteSplittingRuleConfiguration result = new YamlReadWriteSplittingRuleConfiguration();
