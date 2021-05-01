@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.factory;
+package org.apache.shardingsphere.governance.context.authority.listener;
 
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerFactory;
-import org.apache.shardingsphere.governance.core.registry.listener.impl.UserChangedListener;
+import org.apache.shardingsphere.governance.core.registry.listener.impl.PrivilegeNodeChangedListener;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
@@ -27,13 +27,13 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * User changed listener factory.
+ * Privilege changed listener factory.
  */
-public final class UserChangedListenerFactory implements GovernanceListenerFactory {
+public final class PrivilegeNodeChangedListenerFactory implements GovernanceListenerFactory {
     
     @Override
     public GovernanceListener create(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        return new UserChangedListener(registryRepository);
+        return new PrivilegeNodeChangedListener(registryRepository);
     }
     
     @Override
