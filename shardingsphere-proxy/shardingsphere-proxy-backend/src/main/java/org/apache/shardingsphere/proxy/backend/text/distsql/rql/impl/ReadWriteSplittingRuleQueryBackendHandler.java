@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Backend handler for show read write splitting rule.
+ * Backend handler for show readwrite-splitting rule.
  */
 public final class ReadWriteSplittingRuleQueryBackendHandler extends SchemaRequiredBackendHandler<ShowRuleStatement> {
     

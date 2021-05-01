@@ -24,15 +24,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Spring boot condition for read write splitting.
+ * Spring boot condition for readwrite-splitting.
  */
 public final class ReadWriteSplittingSpringBootCondition extends SpringBootCondition {
     
-    private static final String PREFIX = "spring.shardingsphere.rules.read-write-splitting";
+    private static final String PREFIX = "spring.shardingsphere.rules.readwrite-splitting";
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
         return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), PREFIX)
-                ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere read-write-splitting rule configuration in local file.");
+                ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere readwrite-splitting rule configuration in local file.");
     }
 }

@@ -23,12 +23,12 @@ import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadW
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * YAML read write splitting rule spring boot configuration.
+ * YAML readwrite-splitting rule spring boot configuration.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
 public final class YamlReadWriteSplittingRuleSpringBootConfiguration {
     
-    private YamlReadWriteSplittingRuleConfiguration readWriteSplitting;
+    private YamlReadWriteSplittingRuleConfiguration readwriteSplitting;
 }

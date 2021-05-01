@@ -75,7 +75,7 @@ public final class ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     
     @Test
     public void assertGetRuleTagName() {
-        assertThat(swapper.getRuleTagName(), is("READ_WRITE_SPLITTING"));
+        assertThat(swapper.getRuleTagName(), is("READWRITE_SPLITTING"));
     }
     
     @Test

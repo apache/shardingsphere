@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.checker;
 import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
 
 /**
- * Read write splitting rule configuration checker.
+ * Readwrite-splitting rule configuration checker.
  */
 public final class ReadWriteSplittingRuleConfigurationChecker extends AbstractReadWriteSplittingRuleConfigurationChecker<ReadWriteSplittingRuleConfiguration> {
     

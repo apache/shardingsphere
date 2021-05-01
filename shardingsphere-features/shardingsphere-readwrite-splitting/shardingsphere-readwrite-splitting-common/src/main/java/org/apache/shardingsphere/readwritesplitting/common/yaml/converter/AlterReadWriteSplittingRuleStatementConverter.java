@@ -27,16 +27,16 @@ import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.Yaml
 import java.util.Collection;
 
 /**
- * Alter read write splitting rule statement converter.
+ * Alter readwrite-splitting rule statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterReadWriteSplittingRuleStatementConverter {
     
     /**
-     * Convert alter read write splitting rule statement context to YAML read write splitting rule configuration.
+     * Convert alter readwrite-splitting rule statement context to YAML readwrite-splitting rule configuration.
      *
-     * @param rules alter read write splitting rules
-     * @return YAML read write splitting rule configuration
+     * @param rules alter readwrite-splitting rules
+     * @return YAML readwrite-splitting rule configuration
      */
     public static YamlReadWriteSplittingRuleConfiguration convert(final Collection<ReadWriteSplittingRuleSegment> rules) {
         YamlReadWriteSplittingRuleConfiguration result = new YamlReadWriteSplittingRuleConfiguration();

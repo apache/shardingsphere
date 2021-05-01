@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Read write splitting rule bean definition tag.
+ * Readwrite-splitting rule bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadWriteSplittingRuleBeanDefinitionTag {
@@ -30,7 +30,7 @@ public final class ReadWriteSplittingRuleBeanDefinitionTag {
     
     public static final String DATA_SOURCE_TAG = "data-source-rule";
     
-    public static final String READ_WRITE_SPLITTING_DATA_SOURCE_ID_ATTRIBUTE = "id";
+    public static final String READWRITE_SPLITTING_DATA_SOURCE_ID_ATTRIBUTE = "id";
     
     public static final String AUTO_AWARE_DATA_SOURCE_NAME = "auto-aware-data-source-name";
     

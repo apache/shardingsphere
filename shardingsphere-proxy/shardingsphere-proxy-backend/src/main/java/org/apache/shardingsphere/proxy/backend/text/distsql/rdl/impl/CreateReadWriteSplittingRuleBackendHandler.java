@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Create read write splitting rule backend handler.
+ * Create readwrite-splitting rule backend handler.
  */
 public final class CreateReadWriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<CreateReadWriteSplittingRuleStatement> {
     

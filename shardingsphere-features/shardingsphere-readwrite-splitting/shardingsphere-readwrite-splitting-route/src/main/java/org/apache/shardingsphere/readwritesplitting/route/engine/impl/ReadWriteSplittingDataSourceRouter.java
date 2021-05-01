@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Data source router for read write splitting.
+ * Data source router for readwrite-splitting.
  */
 @RequiredArgsConstructor
 public final class ReadWriteSplittingDataSourceRouter {

@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Rule spring boot configuration for read write splitting.
+ * Rule spring boot configuration for readwrite-splitting.
  */
 @Configuration
 @EnableConfigurationProperties(YamlReadWriteSplittingRuleSpringBootConfiguration.class)
@@ -53,24 +53,24 @@ public class ReadWriteSplittingRuleSpringbootConfiguration {
     private final YamlReadWriteSplittingRuleSpringBootConfiguration yamlConfig;
     
     /**
-     * Read write splitting rule configuration for spring boot.
+     * Readwrite-splitting rule configuration for spring boot.
      *
      * @param loadBalanceAlgorithms load balance algorithms
-     * @return read write splitting rule configuration
+     * @return readwrite-splitting rule configuration
      */
     @Bean
     public RuleConfiguration readWriteSplittingRuleConfiguration(final ObjectProvider<Map<String, ReplicaLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
-        AlgorithmProvidedReadWriteSplittingRuleConfiguration result = swapper.swapToObject(yamlConfig.getReadWriteSplitting());
+        AlgorithmProvidedReadWriteSplittingRuleConfiguration result = swapper.swapToObject(yamlConfig.getReadwriteSplitting());
         Map<String, ReplicaLoadBalanceAlgorithm> balanceAlgorithmMap = Optional.ofNullable(loadBalanceAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
         result.setLoadBalanceAlgorithms(balanceAlgorithmMap);
         return result;
     }
     
     /**
-     * Read write splitting algorithm provided bean registry.
+     * Readwrite-splitting algorithm provided bean registry.
      *
      * @param environment environment
-     * @return read write splitting algorithm provided bean registry
+     * @return readwrite-splitting algorithm provided bean registry
      */
     @Bean
     public static ReadWriteSplittingAlgorithmProvidedBeanRegistry readWriteSplittingAlgorithmProvidedBeanRegistry(final Environment environment) {

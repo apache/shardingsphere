@@ -21,18 +21,18 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Read write splitting order.
+ * Readwrite-splitting order.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadWriteSplittingOrder {
     
     /**
-     * Replica query order.
+     * Readwrite-splitting order.
      */
     public static final int ORDER = 10;
     
     /**
-     * Algorithm provider read write splitting order.
+     * Algorithm provider readwrite-splitting order.
      */
     public static final int ALGORITHM_PROVIDER_ORDER = 11;
 }

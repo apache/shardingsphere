@@ -42,7 +42,7 @@ public final class SchemaChangedListenerTest extends MetaDataListenerTest {
     
     @Before
     public void setUp() {
-        schemaChangedListener = new SchemaChangedListener(getRegistryRepository(), Arrays.asList("sharding_db", "read_write_splitting_db", "encrypt_db"));
+        schemaChangedListener = new SchemaChangedListener(getRegistryRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db", "encrypt_db"));
     }
     
     @Test

@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/read-write-splitting-governance.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/readwrite-splitting-governance.xml")
 public class GovernanceReadWriteSplittingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass

@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@ContextConfiguration(locations = "classpath:META-INF/spring/read-write-splitting-application-context.xml")
+@ContextConfiguration(locations = "classpath:META-INF/spring/readwrite-splitting-application-context.xml")
 public final class ReadWriteSplittingSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Resource

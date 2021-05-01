@@ -34,7 +34,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Read write splitting rule configuration YAML swapper.
+ * Readwrite-splitting rule configuration YAML swapper.
  */
 public final class ReadWriteSplittingRuleConfigurationYamlSwapper 
         implements YamlRuleConfigurationSwapper<YamlReadWriteSplittingRuleConfiguration, ReadWriteSplittingRuleConfiguration> {
@@ -87,7 +87,7 @@ public final class ReadWriteSplittingRuleConfigurationYamlSwapper
     
     @Override
     public String getRuleTagName() {
-        return "READ_WRITE_SPLITTING";
+        return "READWRITE_SPLITTING";
     }
     
     @Override

@@ -97,14 +97,14 @@ dataSources:
 
 ### /metadata/${schemeName}/rule
 
-Rule configurations, including sharding, read write splitting, data encryption, shadow DB configurations.
+Rule configurations, including sharding, readwrite-splitting, data encryption, shadow DB configurations.
 
 ```yaml
 rules:
 - !SHARDING
   xxx
   
-- !READ_WRITE_SPLITTING
+- !READWRITE_SPLITTING
   xxx
   
 - !ENCRYPT

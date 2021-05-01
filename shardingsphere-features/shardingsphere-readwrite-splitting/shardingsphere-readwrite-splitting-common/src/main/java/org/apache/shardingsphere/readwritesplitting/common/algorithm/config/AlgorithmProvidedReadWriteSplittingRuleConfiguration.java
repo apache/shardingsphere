@@ -31,10 +31,10 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Algorithm provided read write splitting rule configuration.
+ * Algorithm provided readwrite-splitting rule configuration.
  */
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public final class AlgorithmProvidedReadWriteSplittingRuleConfiguration implements RuleConfiguration {

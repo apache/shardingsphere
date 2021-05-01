@@ -104,7 +104,7 @@ rules:
 - !SHARDING
   xxx
   
-- !READ_WRITE_SPLITTING
+- !READWRITE_SPLITTING
   xxx
   
 - !ENCRYPT

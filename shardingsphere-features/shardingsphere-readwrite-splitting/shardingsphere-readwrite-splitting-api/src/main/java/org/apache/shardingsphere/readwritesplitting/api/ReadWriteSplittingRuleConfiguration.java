@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Read write splitting rule configuration.
+ * Readwrite-splitting rule configuration.
  */
 @RequiredArgsConstructor
 @Getter

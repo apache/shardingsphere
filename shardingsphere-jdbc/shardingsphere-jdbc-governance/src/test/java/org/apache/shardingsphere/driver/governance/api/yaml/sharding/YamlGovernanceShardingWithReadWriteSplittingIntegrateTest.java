@@ -49,10 +49,10 @@ public final class YamlGovernanceShardingWithReadWriteSplittingIntegrateTest ext
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection<?> init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/sharding_read_write_splitting/configWithDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/sharding_read_write_splitting/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/sharding_read_write_splitting/configWithDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/sharding_read_write_splitting/configWithoutDataSourceWithProps.yaml", false},
+                {"/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/sharding_readwrite_splitting/configWithoutDataSourceWithoutProps.yaml", false},
+                {"/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/sharding_readwrite_splitting/configWithoutDataSourceWithProps.yaml", false},
         });
     }
     
