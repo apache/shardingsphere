@@ -15,19 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.dbdiscovery.common.yaml.config.rule;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
- * Database discovery rule configuration checker.
+ * Database discovery data source rule configuration for YAML.
  */
-public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConfigurationChecker<DatabaseDiscoveryRuleConfiguration> {
+@Getter
+@Setter
+public final class YamlDatabaseDiscoveryDataSourceRuleConfiguration implements YamlConfiguration {
     
-    @Override
-    public void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration ruleConfiguration) {
-        ruleConfiguration.getDataSources().forEach(each -> Preconditions.checkState(
-                !each.getDiscoveryTypeName().isEmpty(), "No available DatabaseDiscovery rule configuration in `%s` for governance.", schemaName));
-    }
+    private String name;
+    
+    private List<String> dataSourceNames = new ArrayList<>();
+    
+    private String discoveryTypeName;
+    
+    private Properties props = new Properties();
 }

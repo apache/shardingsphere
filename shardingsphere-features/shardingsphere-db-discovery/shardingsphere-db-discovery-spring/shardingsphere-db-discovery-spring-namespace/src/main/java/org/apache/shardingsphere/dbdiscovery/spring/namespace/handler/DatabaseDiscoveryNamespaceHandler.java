@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.dbdiscovery.spring.namespace.handler;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.spring.namespace.parser.DatabaseDiscoveryRuleBeanDefinitionParser;
+import org.apache.shardingsphere.dbdiscovery.spring.namespace.tag.DatabaseDiscoveryRuleBeanDefinitionTag;
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Database discovery rule configuration checker.
+ * Spring namespace handler for data base discovery.
  */
-public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConfigurationChecker<DatabaseDiscoveryRuleConfiguration> {
+public final class DatabaseDiscoveryNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
-    public void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration ruleConfiguration) {
-        ruleConfiguration.getDataSources().forEach(each -> Preconditions.checkState(
-                !each.getDiscoveryTypeName().isEmpty(), "No available DatabaseDiscovery rule configuration in `%s` for governance.", schemaName));
+    public void init() {
+        registerBeanDefinitionParser(DatabaseDiscoveryRuleBeanDefinitionTag.ROOT_TAG, new DatabaseDiscoveryRuleBeanDefinitionParser());
     }
 }

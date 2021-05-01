@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.dbdiscovery.api.config.rule;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 /**
- * Database discovery rule configuration checker.
+ * Database discovery data source rule configuration.
  */
-public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConfigurationChecker<DatabaseDiscoveryRuleConfiguration> {
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseDiscoveryDataSourceRuleConfiguration {
     
-    @Override
-    public void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration ruleConfiguration) {
-        ruleConfiguration.getDataSources().forEach(each -> Preconditions.checkState(
-                !each.getDiscoveryTypeName().isEmpty(), "No available DatabaseDiscovery rule configuration in `%s` for governance.", schemaName));
-    }
+    private final String name;
+    
+    private final List<String> dataSourceNames;
+    
+    private final String discoveryTypeName;
 }

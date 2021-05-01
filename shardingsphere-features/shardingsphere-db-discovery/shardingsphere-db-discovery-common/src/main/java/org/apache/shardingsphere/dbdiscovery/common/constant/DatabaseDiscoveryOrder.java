@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.dbdiscovery.common.constant;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Database discovery rule configuration checker.
+ * Database discovery order.
  */
-public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConfigurationChecker<DatabaseDiscoveryRuleConfiguration> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseDiscoveryOrder {
     
-    @Override
-    public void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration ruleConfiguration) {
-        ruleConfiguration.getDataSources().forEach(each -> Preconditions.checkState(
-                !each.getDiscoveryTypeName().isEmpty(), "No available DatabaseDiscovery rule configuration in `%s` for governance.", schemaName));
-    }
+    /**
+     * Database discovery order.
+     */
+    public static final int ORDER = 20;
+    
+    /**
+     * Algorithm provider database discovery order.
+     */
+    public static final int ALGORITHM_PROVIDER_DB_DISCOVERY_ORDER = 21;
 }
