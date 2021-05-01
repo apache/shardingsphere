@@ -5,16 +5,16 @@ weight = 2
 
 ## Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting/read-write-splitting-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting/read-write-splitting-5.0.0.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.0.0.xsd)
 
-\<read-write-splitting:rule />
+\<readwrite-splitting:rule />
 
 | *Name*               | *Type*    | *Description*                                |
 | -------------------- | --------- | -------------------------------------------- |
 | id                   | Attribute | Spring Bean Id                               |
 | data-source-rule (+) | Tag       | Read write splitting data source rule configuration |
 
-\<read-write-splitting:data-source-rule />
+\<readwrite-splitting:data-source-rule />
 
 | *Name*                     | *Type*     | *Description*                                                              |
 | -------------------------- | ---------- | -------------------------------------------------------------------------- |
@@ -23,7 +23,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/read-write-sp
 | read-data-source-names     | Attribute  | Read data source names, multiple data source names separated with comma |
 | load-balance-algorithm-ref | Attribute  | Load balance algorithm name                                                |
 
-\<read-write-splitting:load-balance-algorithm />
+\<readwrite-splitting:load-balance-algorithm />
 
 | *Name*    | *Type*     | *Description*                     |
 | --------- | ---------- | --------------------------------- |

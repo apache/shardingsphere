@@ -10,7 +10,7 @@ weight = 6
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xmlns:read-write-splitting="http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting"
+       xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
@@ -20,8 +20,8 @@ weight = 6
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting
-                           http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting/read-write-splitting.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting
+                           http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
@@ -53,14 +53,14 @@ weight = 6
         <!-- ...Omit specific configuration. -->
     </bean>
 	
-	<!-- load balance algorithm configuration for read-write-splitting -->
-    <read-write-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+	<!-- load balance algorithm configuration for readwrite-splitting -->
+    <readwrite-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
-	<!-- read-write-splitting rule configuration -->
-    <read-write-splitting:rule id="readWriteSplittingRule">
-        <read-write-splitting:data-source-rule id="ds_0" write-data-source-name="write_ds0" read-data-source-names="read_ds0_0, read_ds0_1" load-balance-algorithm-ref="randomStrategy" />
-		<read-write-splitting:data-source-rule id="ds_1" write-data-source-name="write_ds1" read-data-source-names="read_ds1_0, read_ds1_1" load-balance-algorithm-ref="randomStrategy" />
-    </read-write-splitting:rule>
+	<!-- readwrite-splitting rule configuration -->
+    <readwrite-splitting:rule id="readWriteSplittingRule">
+        <readwrite-splitting:data-source-rule id="ds_0" write-data-source-name="write_ds0" read-data-source-names="read_ds0_0, read_ds0_1" load-balance-algorithm-ref="randomStrategy" />
+		<readwrite-splitting:data-source-rule id="ds_1" write-data-source-name="write_ds1" read-data-source-names="read_ds1_0, read_ds1_1" load-balance-algorithm-ref="randomStrategy" />
+    </readwrite-splitting:rule>
     
 	<!-- sharding strategy configuration -->
 	<sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="inlineDatabaseStrategyAlgorithm" />
@@ -69,7 +69,7 @@ weight = 6
 
     <sharding:sharding-algorithm id="inlineDatabaseStrategyAlgorithm" type="INLINE">
         <props>
-            <!-- the expression enumeration is the logical data source name of the read-write-splitting configuration -->
+            <!-- the expression enumeration is the logical data source name of the readwrite-splitting configuration -->
             <prop key="algorithm-expression">ds_${user_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
@@ -87,7 +87,7 @@ weight = 6
 	<!-- sharding rule configuration -->	
 	<sharding:rule id="shardingRule">
         <sharding:table-rules>
-            <!-- the expression 'ds_${0..1}' enumeration is the logical data source name of the read-write-splitting configuration  -->
+            <!-- the expression 'ds_${0..1}' enumeration is the logical data source name of the readwrite-splitting configuration  -->
             <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator"/>
             <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator"/>
         </sharding:table-rules>

@@ -5,16 +5,16 @@ weight = 2
 
 ## 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting/read-write-splitting-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting/read-write-splitting-5.0.0.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.0.0.xsd)
 
-\<read-write-splitting:rule />
+\<readwrite-splitting:rule />
 
 | *名称*                | *类型* | *说明*           |
 | -------------------- | ------ | --------------- |
 | id                   | 属性   | Spring Bean Id   |
 | data-source-rule (+) | 标签   | 读写分离数据源规则配置 |
 
-\<read-write-splitting:data-source-rule />
+\<readwrite-splitting:data-source-rule />
 
 | *名称*                     | *类型* | *说明*                          |
 | -------------------------- | ----- | ------------------------------- |
@@ -24,7 +24,7 @@ weight = 2
 | load-balance-algorithm-ref | 属性  | 负载均衡算法名称                   |
 
 
-\<read-write-splitting:load-balance-algorithm />
+\<readwrite-splitting:load-balance-algorithm />
 
 | *名称*    | *类型* | *说明*            |
 | --------- | ----- | ----------------- |
