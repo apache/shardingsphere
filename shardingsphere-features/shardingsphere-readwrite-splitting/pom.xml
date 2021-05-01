@@ -22,22 +22,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-read-write-splitting</artifactId>
+        <artifactId>shardingsphere-features</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-read-write-splitting-route</artifactId>
+    <artifactId>shardingsphere-readwrite-splitting</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-route</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-read-write-splitting-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>shardingsphere-readwrite-splitting-api</module>
+        <module>shardingsphere-readwrite-splitting-common</module>
+        <module>shardingsphere-readwrite-splitting-route</module>
+        <module>shardingsphere-readwrite-splitting-spring</module>
+    </modules>
 </project>

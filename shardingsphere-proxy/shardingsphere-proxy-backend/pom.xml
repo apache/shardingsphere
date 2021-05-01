@@ -74,7 +74,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-read-write-splitting-route</artifactId>
+            <artifactId>shardingsphere-readwrite-splitting-route</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
