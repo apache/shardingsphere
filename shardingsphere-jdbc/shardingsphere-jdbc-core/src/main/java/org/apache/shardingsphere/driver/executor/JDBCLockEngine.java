@@ -70,7 +70,7 @@ public final class JDBCLockEngine {
      * @throws SQLException SQL exception
      */
     public <T> List<T> execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatementContext<?> sqlStatementContext,
-                                  final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<T> callback) throws SQLException {
+                               final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<T> callback) throws SQLException {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (metaDataContexts.getLock().isPresent()) {
             ShardingSphereLock lock = metaDataContexts.getLock().get();
@@ -103,12 +103,12 @@ public final class JDBCLockEngine {
     private void checkTableLock(final ShardingSphereLock lock, final Collection<String> tableNames) throws SQLException {
         for (String tableName : tableNames) {
             if (lock.isLocked(LockNameUtil.getTableLockName(DefaultSchema.LOGIC_NAME, tableName))) {
-                throw new SQLException("Table %s is locked");
+                throw new SQLException(String.format("Table %s is locked", tableName));
             }
         }
     }
     
-    private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final Collection<RouteUnit> routeUnits, 
+    private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback, final SQLStatement sqlStatement) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
         refreshMetadata(sqlStatement, routeUnits);
