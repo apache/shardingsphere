@@ -75,9 +75,10 @@ public interface CommandExecuteEngine {
     /**
      * Get other packet.
      *
+     * @param backendConnection backend connection
      * @return other packet
      */
-    Optional<DatabasePacket<?>> getOtherPacket();
+    Optional<DatabasePacket<?>> getOtherPacket(BackendConnection backendConnection);
     
     /**
      * Write query data.

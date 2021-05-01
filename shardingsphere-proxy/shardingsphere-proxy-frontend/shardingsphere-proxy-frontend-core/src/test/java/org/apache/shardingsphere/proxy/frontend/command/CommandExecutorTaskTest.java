@@ -164,7 +164,7 @@ public final class CommandExecutorTaskTest {
         when(codecEngine.createPacketPayload(message)).thenReturn(payload);
         when(engine.getCodecEngine()).thenReturn(codecEngine);
         when(executeEngine.getErrorPacket(eq(mockException))).thenReturn(databasePacket);
-        when(executeEngine.getOtherPacket()).thenReturn(Optional.of(databasePacket));
+        when(executeEngine.getOtherPacket(backendConnection)).thenReturn(Optional.of(databasePacket));
         when(engine.getCommandExecuteEngine()).thenReturn(executeEngine);
         when(backendConnection.closeResultSets()).thenReturn(Collections.emptyList());
         when(backendConnection.closeStatements()).thenReturn(Collections.emptyList());

@@ -24,10 +24,12 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ResourceLock;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutor;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,13 +64,14 @@ public final class PostgreSQLCommandExecuteEngineTest {
     @Before
     public void setUp() {
         when(channelHandlerContext.channel()).thenReturn(channel);
+        when(backendConnection.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
     }
     
     @Test
     public void assertWriteQueryDataWithUpdate() throws SQLException {
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
-        commandExecuteEngine.writeQueryData(channelHandlerContext, null, queryCommandExecutor, 0);
+        commandExecuteEngine.writeQueryData(channelHandlerContext, backendConnection, queryCommandExecutor, 0);
         verify(channelHandlerContext, times(1)).write(isA(PostgreSQLReadyForQueryPacket.class));
     }
     
