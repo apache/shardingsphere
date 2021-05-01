@@ -91,19 +91,19 @@ public final class JDBCLockEngine {
     }
     
     private void tryTableLock(final ShardingSphereLock lock, final Collection<String> tableNames) throws SQLException {
-        for (String tableName : tableNames) {
-            String lockName = LockNameUtil.getTableLockName(DefaultSchema.LOGIC_NAME, tableName);
+        for (String each : tableNames) {
+            String lockName = LockNameUtil.getTableLockName(DefaultSchema.LOGIC_NAME, each);
             if (!lock.tryLock(lockName)) {
-                throw new SQLException(String.format("Table %s lock wait timeout of %s ms exceeded", tableName, lock.getDefaultTimeOut()));
+                throw new SQLException(String.format("Table %s lock wait timeout of %s ms exceeded", each, lock.getDefaultTimeOut()));
             }
             lockNames.add(lockName);
         }
     }
     
     private void checkTableLock(final ShardingSphereLock lock, final Collection<String> tableNames) throws SQLException {
-        for (String tableName : tableNames) {
-            if (lock.isLocked(LockNameUtil.getTableLockName(DefaultSchema.LOGIC_NAME, tableName))) {
-                throw new SQLException(String.format("Table %s is locked", tableName));
+        for (String each : tableNames) {
+            if (lock.isLocked(LockNameUtil.getTableLockName(DefaultSchema.LOGIC_NAME, each))) {
+                throw new SQLException(String.format("Table %s is locked", each));
             }
         }
     }
