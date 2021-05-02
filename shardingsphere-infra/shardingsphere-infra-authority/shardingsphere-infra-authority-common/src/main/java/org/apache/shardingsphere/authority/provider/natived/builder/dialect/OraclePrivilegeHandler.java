@@ -87,10 +87,6 @@ public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
     }
     
     @Override
-    public void save(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
-    }
-    
-    @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>();
         users.forEach(user -> result.put(user, new NativePrivileges()));

@@ -113,10 +113,6 @@ public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler 
         }
     }
     
-    @Override
-    public void save(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
-    }
-    
     private String getDatabaseName(final String url) {
         if (url.contains(QUESTION_MARK)) {
             return url.substring(url.indexOf("DatabaseName=") + 1, url.indexOf("?"));
