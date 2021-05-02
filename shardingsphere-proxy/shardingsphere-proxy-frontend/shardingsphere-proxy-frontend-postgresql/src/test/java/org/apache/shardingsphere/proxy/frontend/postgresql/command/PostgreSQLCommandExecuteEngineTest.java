@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * TODO Complete testcases
+ * TODO Complete testcases.
  */
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLCommandExecuteEngineTest {
