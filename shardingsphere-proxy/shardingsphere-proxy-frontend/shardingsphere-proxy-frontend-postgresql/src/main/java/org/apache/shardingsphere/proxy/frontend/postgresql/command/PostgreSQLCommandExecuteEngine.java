@@ -75,15 +75,11 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     @Override
     public void writeQueryData(final ChannelHandlerContext context,
                                final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
-        // TODO judge is in transaction from context, not from TransactionHolder (because of thread local)
-        boolean inTransaction = true;
         if (ResponseType.QUERY == queryCommandExecutor.getResponseType() && !context.channel().isActive()) {
             context.write(new PostgreSQLCommandCompletePacket());
-            context.write(new PostgreSQLReadyForQueryPacket(inTransaction));
             return;
         }
         if (ResponseType.UPDATE == queryCommandExecutor.getResponseType()) {
-            context.write(new PostgreSQLReadyForQueryPacket(inTransaction));
             return;
         }
         int count = 0;
@@ -102,6 +98,5 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             }
         }
         context.write(new PostgreSQLCommandCompletePacket());
-        context.write(new PostgreSQLReadyForQueryPacket(inTransaction));
     }
 }
