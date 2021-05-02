@@ -44,7 +44,7 @@ public final class PostgreSQLDateBinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(payload.readInt8()).thenReturn(1L);
-        assertThat(new PostgreSQLDateBinaryProtocolValue().read(payload), is(1L));
+        assertThat(new PostgreSQLDateBinaryProtocolValue().read(payload, 8), is(1L));
     }
     
     @Test

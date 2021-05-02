@@ -795,6 +795,10 @@ SHARDED
     : S H A R D E D
     ;
 
+SHARD
+    : S H A R D
+    ;
+
 DUPLICATED
     : D U P L I C A T E D
     ;
@@ -901,6 +905,10 @@ CLEANUP
 
 PARALLEL
     : P A R A L L E L
+    ;
+
+NOPARALLEL
+    : N O P A R A L L E L
     ;
 
 LOG
@@ -1037,6 +1045,10 @@ FREELISTS
 
 DML
     : D M L
+    ;
+
+DDL
+    : D D L
     ;
 
 CAPACITY
@@ -1180,7 +1192,7 @@ PCTTHRESHOLD
     ;
 
 PARAMETERS
-    : P A R A M E  T E R S
+    : P A R A M E T E R S
     ;
 
 LOCATION
@@ -1351,10 +1363,98 @@ WITHOUT
     : W I T H O U T
     ;
 
+XMLTYPE
+    : X M L T Y P E
+    ;
+
+RELATIONAL
+    : R E L A T I O N A L
+    ;
+
+XML
+    : X M L
+    ;
+
+VARRAYS
+    : V A R R A Y S
+    ;
+
+LOBS
+    : L O B S
+    ;
+
+TABLES
+    : T A B L E S
+    ;
+
+ALLOW
+    : A L L O W
+    ;
+
+DISALLOW
+    : D I S A L L O W
+    ;
+
+NONSCHEMA
+    : N O N S C H E M A
+    ;
+
+ANYSCHEMA
+    : A N Y S C H E M A
+    ;
+
+XMLSCHEMA
+    : X M L S C H E M A
+    ;
+
+COLUMNS
+    : C O L U M N S
+    ;
+
+OIDINDEX
+    : O I D I N D E X
+    ;
+
 EDITIONABLE
     : E D I T I O N A B L E
     ;
 
 NONEDITIONABLE
     : N O N E D I T I O N A B L E
+    ;
+
+INDEXES
+    : I N D E X E S
+    ;
+
+SUPPLEMENTAL
+    : S U P P L E M E N T A L
+    ;
+    
+ADVISE
+    : A D V I S E
+    ;
+
+NOTHING
+    : N O T H I N G
+    ;
+
+GUARD
+    : G U A R D
+    ;
+
+SYNC
+    : S Y N C
+    ;
+
+VISIBILITY
+    : V I S I B I L I T Y
+    ;
+
+ACTIVE
+    : A C T I V E
+    ;
+
+DEFAULT_COLLATION
+    : D E F A U L T UL_ C O L L A T I O N
     ;

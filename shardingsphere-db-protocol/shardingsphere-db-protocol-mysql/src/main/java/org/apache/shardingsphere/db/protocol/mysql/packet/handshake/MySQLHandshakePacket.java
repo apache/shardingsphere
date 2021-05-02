@@ -97,7 +97,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     }
     
     /**
-     * Set auth plugin name.
+     * Set authentication plugin name.
      *
      * @param mysqlAuthenticationMethod MySQL authentication method
      */
@@ -116,7 +116,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         payload.writeInt1(characterSet);
         payload.writeInt2(statusFlag.getValue());
         payload.writeInt2(capabilityFlagsUpper);
-        payload.writeInt1(isClientPluginAuth() ? authPluginData.getAuthPluginData().length + 1 : 0);
+        payload.writeInt1(isClientPluginAuth() ? authPluginData.getAuthenticationPluginData().length + 1 : 0);
         payload.writeReserved(10);
         writeAuthPluginDataPart2(payload);
         writeAuthPluginName(payload);

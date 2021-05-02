@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.db.discovery.common.aware.DatabaseDiscoveryDataSourceNameAware
+org.apache.shardingsphere.dbdiscovery.common.aware.DatabaseDiscoveryDataSourceNameAware

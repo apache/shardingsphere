@@ -132,7 +132,7 @@ public final class ProxySQLExecutor {
             return getSaneExecuteResults(executionContext, ex);
         }
         // TODO handle query header
-        return rawExecutor.execute(executionGroupContext, new RawSQLExecutorCallback());
+        return rawExecutor.execute(executionGroupContext, executionContext.getSqlStatementContext(), new RawSQLExecutorCallback());
     }
     
     private Collection<ExecuteResult> useCalciteToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,

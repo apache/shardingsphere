@@ -28,19 +28,18 @@ public final class PostgreSQLInt8ArrayBinaryProtocolValue implements PostgreSQLB
     
     @Override
     public int getColumnLength(final Object value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("PostgreSQLInt8ArrayBinaryProtocolValue.getColumnLength()");
     }
     
     @Override
-    public Object read(final PostgreSQLPacketPayload payload) {
-        payload.getByteBuf().readerIndex(payload.getByteBuf().readerIndex() - 4);
-        byte[] bytes = new byte[payload.readInt4()];
+    public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
+        byte[] bytes = new byte[parameterValueLength];
         payload.getByteBuf().readBytes(bytes);
         return ARRAY_PARAMETER_DECODER.decodeInt8Array(bytes, '{' != bytes[0]);
     }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("PostgreSQLInt8ArrayBinaryProtocolValue.write()");
     }
 }

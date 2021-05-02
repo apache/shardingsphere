@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLSt
 import java.util.Collection;
 
 /**
- * Create read write splitting rule statement.
+ * Create readwrite-splitting rule statement.
  */
 @RequiredArgsConstructor
 @Getter

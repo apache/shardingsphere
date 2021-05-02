@@ -79,7 +79,7 @@ public abstract class BaseITCase {
     
     @Before
     public final void createDataSource() {
-        targetDataSource = adapterContainer.getDataSource();
+        targetDataSource = compose.getDataSourceMap().get("adapterForWriter");
     }
     
     @After

@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
@@ -35,18 +35,15 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.readwrite.splitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
@@ -93,7 +90,7 @@ public final class RegistryCenterTest {
     
     private static final String SHARDING_AND_ENCRYPT_RULE_YAML = "yaml/registryCenter/data-sharding-encrypt-rule.yaml";
 
-    private static final String READ_WRITE_SPLITTING_RULE_YAML = "yaml/registryCenter/data-read-write-splitting-rule.yaml";
+    private static final String READWRITE_SPLITTING_RULE_YAML = "yaml/registryCenter/data-readwrite-splitting-rule.yaml";
     
     private static final String DB_DISCOVERY_RULE_YAML = "yaml/registryCenter/data-database-discovery-rule.yaml";
     
@@ -101,7 +98,7 @@ public final class RegistryCenterTest {
     
     private static final String SHADOW_RULE_YAML = "yaml/registryCenter/data-shadow-rule.yaml";
     
-    private static final String AUTHENTICATION_YAML = "yaml/registryCenter/data-authentication.yaml";
+    private static final String USERS_YAML = "yaml/registryCenter/data-users.yaml";
     
     private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
@@ -229,7 +226,7 @@ public final class RegistryCenterTest {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), true);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
-        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(READ_WRITE_SPLITTING_RULE_YAML));
+        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(READWRITE_SPLITTING_RULE_YAML));
     }
     
     @Test
@@ -285,7 +282,7 @@ public final class RegistryCenterTest {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), true);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
-        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(READ_WRITE_SPLITTING_RULE_YAML));
+        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(READWRITE_SPLITTING_RULE_YAML));
     }
     
     @Test
@@ -321,8 +318,8 @@ public final class RegistryCenterTest {
     @Test
     public void assertPersistGlobalConfiguration() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistGlobalConfiguration(createAuthentication().getAllUsers(), createProperties(), true);
-        verify(registryRepository, times(0)).persist("/authentication", readYAML(AUTHENTICATION_YAML));
+        registryCenter.persistGlobalConfiguration(YamlUsersConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(readYAML(USERS_YAML), Collection.class)), createProperties(), true);
+        verify(registryRepository, times(0)).persist("/users", readYAML(USERS_YAML));
         verify(registryRepository).persist("/props", PROPS_YAML);
     }
     
@@ -356,7 +353,7 @@ public final class RegistryCenterTest {
     }
     
     private Collection<RuleConfiguration> createReadWriteSplittingRuleConfiguration() {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(READ_WRITE_SPLITTING_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(READWRITE_SPLITTING_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
     
     private Collection<RuleConfiguration> createDatabaseDiscoveryRuleConfiguration() {
@@ -370,17 +367,7 @@ public final class RegistryCenterTest {
     private Collection<RuleConfiguration> createShadowRuleConfiguration() {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHADOW_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
-    
-    private DefaultAuthentication createAuthentication() {
-        Collection<ShardingSphereUser> users =
-                new UserRuleYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(AUTHENTICATION_YAML), YamlUserRuleConfiguration.class));
-        DefaultAuthentication result = new DefaultAuthentication();
-        for (ShardingSphereUser each : users) {
-            result.getAuthentication().put(each, new ShardingSpherePrivilege());
-        }
-        return result;
-    }
-    
+
     private Properties createProperties() {
         Properties result = new Properties();
         result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE);
@@ -446,7 +433,7 @@ public final class RegistryCenterTest {
     
     @Test
     public void assertLoadReadWriteSplittingRuleConfiguration() {
-        when(registryRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(READ_WRITE_SPLITTING_RULE_YAML));
+        when(registryRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(READWRITE_SPLITTING_RULE_YAML));
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         Collection<RuleConfiguration> actual = registryCenter.loadRuleConfigurations("sharding_db");
         ReadWriteSplittingRuleConfiguration config = (ReadWriteSplittingRuleConfiguration) actual.iterator().next();
@@ -487,10 +474,10 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertLoadAuthentication() {
-        when(registryRepository.get("/authentication")).thenReturn(readYAML(AUTHENTICATION_YAML));
+    public void assertLoadUsers() {
+        when(registryRepository.get("/users")).thenReturn(readYAML(USERS_YAML));
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        Collection<ShardingSphereUser> actual = registryCenter.loadUserRule();
+        Collection<ShardingSphereUser> actual = registryCenter.loadUsers();
         Optional<ShardingSphereUser> user = actual.stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("root1"));
@@ -696,5 +683,12 @@ public final class RegistryCenterTest {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.renew(event);
         verify(registryRepository).persist(startsWith("/metadata/sharding_db/datasource"), anyString());
+    }
+    
+    @Test
+    public void assertDeleteLockAck() {
+        RegistryCenter registryCenter = new RegistryCenter(registryRepository);
+        registryCenter.deleteLockAck("test");
+        verify(registryRepository).delete(anyString());
     }
 }

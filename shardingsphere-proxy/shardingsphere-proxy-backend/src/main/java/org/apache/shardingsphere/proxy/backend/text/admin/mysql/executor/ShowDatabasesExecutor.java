@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.check.SQLCheckEngine;
-import org.apache.shardingsphere.infra.check.SQLCheckException;
+import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
+import org.apache.shardingsphere.infra.executor.check.SQLCheckException;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
@@ -50,19 +52,27 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
-        // TODO make sure metadata is necessary
         try {
-            SQLCheckEngine.check(new MySQLShowDatabasesStatement(), Collections.emptyList(), null, backendConnection.getGrantee());
+            MetaDataContexts contexts = ProxyContext.getInstance().getMetaDataContexts();
+            SQLCheckEngine.check(new MySQLShowDatabasesStatement(), Collections.emptyList(), 
+                    contexts.getGlobalRuleMetaData().getRules(), backendConnection.getSchemaName(), contexts.getMetaDataMap(), backendConnection.getGrantee());
             return new ArrayList<>(ProxyContext.getInstance().getAllSchemaNames());
         } catch (final SQLCheckException ex) {
             Collection<Object> result = new LinkedList<>();
             for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-                if (SQLCheckEngine.check(each, backendConnection.getGrantee())) {
+                if (SQLCheckEngine.check(each, getRules(each), backendConnection.getGrantee())) {
                     result.add(each);
                 }
             }
             return result;
         }
+    }
+    
+    private Collection<ShardingSphereRule> getRules(final String schemaName) {
+        Collection<ShardingSphereRule> result;
+        result = new LinkedList<>(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        return result;
     }
     
     @Override

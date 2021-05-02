@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.scaling.mysql.client.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
@@ -30,11 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
-
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -65,7 +64,7 @@ public final class MySQLCommandPacketDecoderTest {
     @Test
     public void assertDecodeHandshakePacket() {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
-        List<Object> actual = new ArrayList<>();
+        List<Object> actual = new LinkedList<>();
         commandPacketDecoder.decode(null, mockHandshakePacket(), actual);
         assertHandshakePacket(actual);
     }
@@ -96,8 +95,8 @@ public final class MySQLCommandPacketDecoderTest {
     @Test
     public void assertDecodeOkPacket() throws NoSuchFieldException, IllegalAccessException {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
-        List<Object> actual = new ArrayList<>();
-        ReflectionUtil.setFieldValue(commandPacketDecoder, "auth", true);
+        List<Object> actual = new LinkedList<>();
+        ReflectionUtil.setFieldValue(commandPacketDecoder, "authenticated", true);
         commandPacketDecoder.decode(null, mockOkPacket(), actual);
         assertPacketByType(actual, MySQLOKPacket.class);
     }
@@ -111,8 +110,8 @@ public final class MySQLCommandPacketDecoderTest {
     @Test
     public void assertDecodeErrPacket() throws NoSuchFieldException, IllegalAccessException {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
-        List<Object> actual = new ArrayList<>();
-        ReflectionUtil.setFieldValue(commandPacketDecoder, "auth", true);
+        List<Object> actual = new LinkedList<>();
+        ReflectionUtil.setFieldValue(commandPacketDecoder, "authenticated", true);
         commandPacketDecoder.decode(null, mockErrPacket(), actual);
         assertPacketByType(actual, MySQLErrPacket.class);
     }
@@ -126,8 +125,8 @@ public final class MySQLCommandPacketDecoderTest {
     @Test
     public void assertDecodeQueryCommPacket() throws NoSuchFieldException, IllegalAccessException {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
-        List<Object> actual = new ArrayList<>();
-        ReflectionUtil.setFieldValue(commandPacketDecoder, "auth", true);
+        List<Object> actual = new LinkedList<>();
+        ReflectionUtil.setFieldValue(commandPacketDecoder, "authenticated", true);
         commandPacketDecoder.decode(null, mockEmptyResultSetPacket(), actual);
         commandPacketDecoder.decode(null, mockFieldDefinition41Packet(), actual);
         commandPacketDecoder.decode(null, mockEofPacket(), actual);

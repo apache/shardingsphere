@@ -22,7 +22,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
@@ -40,21 +42,36 @@ import java.util.Collection;
 public final class ShardingRuleStatementConverter {
     
     /**
-     * Convert create sharding rule statement context to YAML sharding rule configuration.
-     *
-     * @param sqlStatement create sharding rule statement
+     * Convert create sharding table rule statement context to YAML sharding rule configuration.
+     * 
+     * @param sqlStatement create sharding table rule statement
      * @return YAML sharding rule configuration
      */
-    public static YamlShardingRuleConfiguration convert(final CreateShardingRuleStatement sqlStatement) {
+    public static YamlShardingRuleConfiguration convert(final CreateShardingTableRuleStatement sqlStatement) {
+        return convertTableRuleSegments(sqlStatement.getTables());
+    }
+    
+    /**
+     * Convert create sharding binding table rule statement context to YAML sharding rule configuration.
+     *
+     * @param sqlStatement create sharding binding table rule statement
+     * @return YAML sharding rule configuration
+     */
+    public static YamlShardingRuleConfiguration convert(final CreateShardingBindingTableRulesStatement sqlStatement) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        for (TableRuleSegment each : sqlStatement.getTables()) {
+        for (ShardingBindingTableRuleSegment each : sqlStatement.getRules()) {
+            result.getBindingTables().add(each.getTables());
+        }
+        return result;
+    }
+    
+    private static YamlShardingRuleConfiguration convertTableRuleSegments(final Collection<TableRuleSegment> tableRuleSegments) {
+        YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
+        for (TableRuleSegment each : tableRuleSegments) {
             if (null != each.getTableStrategy()) {
                 result.getShardingAlgorithms().put(getAlgorithmName(each.getLogicTable(), each.getTableStrategy().getAlgorithmName()), createAlgorithmConfiguration(each.getTableStrategy()));
                 result.getAutoTables().put(each.getLogicTable(), createAutoTableRuleConfiguration(each));
             }
-        }
-        for (Collection<String> each : sqlStatement.getBindingTables()) {
-            result.getBindingTables().add(Joiner.on(",").join(each));
         }
         return result;
     }

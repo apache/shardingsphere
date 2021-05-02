@@ -29,7 +29,7 @@ import java.sql.SQLException;
 public final class ExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.SHARDING_READ_WRITE_SPLITTING;
+//    private static ShardingType shardingType = ShardingType.SHARDING_READWRITE_SPLITTING;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
 //    private static ShardingType shardingType = ShardingType.SHADOW;
     
@@ -48,8 +48,8 @@ public final class ExampleMain {
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return String.format("META-INF/%s/%s/application-sharding-databases-tables.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
-            case SHARDING_READ_WRITE_SPLITTING:
-                return String.format("META-INF/%s/%s/application-read-write-splitting.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
+            case SHARDING_READWRITE_SPLITTING:
+                return String.format("META-INF/%s/%s/application-readwrite-splitting.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
             case ENCRYPT:
                 return String.format("META-INF/%s/%s/application-encrypt.xml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
             case SHADOW:

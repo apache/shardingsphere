@@ -32,8 +32,8 @@ public final class GovernanceRepositoryConfigurationUtil {
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new GovernanceConfiguration("governance-sharding-data-source", governanceCenterConfig, overwrite);
-            case READ_WRITE_SPLITTING:
-                return new GovernanceConfiguration("governance-read-write-splitting-data-source", governanceCenterConfig, overwrite);
+            case READWRITE_SPLITTING:
+                return new GovernanceConfiguration("governance-readwrite-splitting-data-source", governanceCenterConfig, overwrite);
             case ENCRYPT:
                 return new GovernanceConfiguration("governance-encrypt-data-source", governanceCenterConfig, overwrite);
             case SHADOW:
@@ -49,8 +49,8 @@ public final class GovernanceRepositoryConfigurationUtil {
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new GovernanceConfiguration("governance-zookeeper-sharding-data-source", zookeeperConfig, overwrite);
-            case READ_WRITE_SPLITTING:
-                return new GovernanceConfiguration("governance-zookeeper-read-write-splitting-data-source", zookeeperConfig, overwrite);
+            case READWRITE_SPLITTING:
+                return new GovernanceConfiguration("governance-zookeeper-readwrite-splitting-data-source", zookeeperConfig, overwrite);
             case ENCRYPT:
                 return new GovernanceConfiguration("governance-zookeeper-encrypt-data-source", zookeeperConfig, overwrite);
             case SHADOW:

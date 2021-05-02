@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -29,6 +30,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 
 /**
  * Raw executor.
@@ -44,13 +46,17 @@ public final class RawExecutor {
      * Execute.
      *
      * @param executionGroupContext execution group context
+     * @param sqlStatementContext SQL statement context
      * @param callback raw SQL executor callback
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public Collection<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext, final RawSQLExecutorCallback callback) throws SQLException {
+    public Collection<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext,
+                                             final SQLStatementContext<?> sqlStatementContext,
+                                             final RawSQLExecutorCallback callback) throws SQLException {
+        ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
         // TODO Load query header for first query
-        List<ExecuteResult> results = execute(executionGroupContext, null, callback);
+        List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
         if (null == results || results.isEmpty() || null == results.get(0)) {
             return Collections.singleton(new UpdateResult(0, 0L));
         }

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.infra.executor.kernel.model;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Execution group context.
@@ -34,12 +34,5 @@ public final class ExecutionGroupContext<T> {
     
     private final Collection<ExecutionGroup<T>> inputGroups;
     
-    /**
-     * Get execution ID.
-     *
-     * @return execution ID
-     */
-    public String getExecutionID() {
-        return UUID.randomUUID().toString();
-    }
+    private final String executionID = UUID.randomUUID().toString();
 }

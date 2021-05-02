@@ -17,23 +17,34 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
-import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Ready for query packet for PostgreSQL.
  */
-public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
+@RequiredArgsConstructor
+public final class PostgreSQLReadyForQueryPacket implements PostgreSQLIdentifierPacket {
     
-    private static final char STATUS = 'I';
+    private static final char IN_TRANSACTION = 'T';
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.READY_FOR_QUERY.getValue();
+    private static final char NOT_IN_TRANSACTION = 'I';
+    
+    // TODO consider about TRANSACTION_FAILED
+    private static final char TRANSACTION_FAILED = 'E';
+    
+    private final boolean isInTransaction;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt1(STATUS);
+        payload.writeInt1(isInTransaction ? IN_TRANSACTION : NOT_IN_TRANSACTION);
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.READY_FOR_QUERY;
     }
 }

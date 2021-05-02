@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.junit.Test;
@@ -26,6 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,10 +40,10 @@ public final class PostgreSQLFrontendEngineTest {
     
     @Test
     public void assertRelease() {
-        BackendConnection backendConnection = mock(BackendConnection.class);
+        BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         int connectionId = 1;
         when(backendConnection.getConnectionId()).thenReturn(connectionId);
-        BinaryStatementRegistry registry = BinaryStatementRegistry.getInstance();
+        PostgreSQLBinaryStatementRegistry registry = PostgreSQLBinaryStatementRegistry.getInstance();
         registry.register(connectionId);
         assertNotNull(registry.get(connectionId));
         PostgreSQLFrontendEngine frontendEngine = new PostgreSQLFrontendEngine();

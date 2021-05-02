@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadWriteSplittingRu
 import java.util.Collection;
 
 /**
- * Alter read write splitting rule statement.
+ * Alter readwrite-splitting rule statement.
  */
 @RequiredArgsConstructor
 @Getter

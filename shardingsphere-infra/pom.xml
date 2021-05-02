@@ -41,5 +41,6 @@
         <module>shardingsphere-infra-datetime</module>
         <module>shardingsphere-infra-optimize</module>
         <module>shardingsphere-infra-optimizer</module>
+        <module>shardingsphere-infra-authority</module>
     </modules>
 </project>

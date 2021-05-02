@@ -14,7 +14,7 @@ weight = 1
 </dependency>
 ```
 
-Notice: Please change `${latest.release.version}` to the actual version.
+> Notice: Please change `${latest.release.version}` to the actual version.
 
 ## 2. Rules Configuration
 

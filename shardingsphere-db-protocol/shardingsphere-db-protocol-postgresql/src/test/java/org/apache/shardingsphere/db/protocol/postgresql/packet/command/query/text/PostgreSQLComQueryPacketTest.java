@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text;
 
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +42,6 @@ public final class PostgreSQLComQueryPacketTest {
         actual.write(payload);
         verify(payload).readInt4();
         assertThat(actual.getSql(), is("sql"));
-        assertThat(actual.getMessageType(), is('Q'));
-        assertThat(actual.toString(), is("PostgreSQLComQueryPacket(sql=sql)"));
+        assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.SIMPLE_QUERY));
     }
 }

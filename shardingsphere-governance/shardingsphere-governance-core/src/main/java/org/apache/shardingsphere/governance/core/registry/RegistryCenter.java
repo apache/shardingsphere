@@ -21,14 +21,18 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationCachedEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.core.event.model.scaling.StartScalingEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessSummaryReportEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessUnitReportEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ShowProcessListResponseEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationCachedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.lock.node.LockAck;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
@@ -42,13 +46,16 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
@@ -122,7 +129,7 @@ public final class RegistryCenter {
      * @param isOverwrite is overwrite config center's configuration
      */
     public void persistGlobalConfiguration(final Collection<ShardingSphereUser> users, final Properties props, final boolean isOverwrite) {
-        persistAuthentication(users, isOverwrite);
+        persistUsers(users, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
@@ -190,24 +197,25 @@ public final class RegistryCenter {
         result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs));
         return result;
     }
-    
-    private void persistAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
-        if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
-            repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+
+    private void persistUsers(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
+        if (!users.isEmpty() && (isOverwrite || !hasUsers())) {
+            repository.persist(node.getUsersNode(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
         }
     }
-    
+
     private void persistNewUsers(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
-            YamlUserRuleConfiguration yamlUserConfig = YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlUserRuleConfiguration.class);
-            yamlUserConfig.getUsers().putAll(new UserRuleYamlSwapper().swapToYamlConfiguration(users).getUsers());
-            repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(yamlUserConfig));
+            Collection<String> yamlUsers = YamlEngine.unmarshal(repository.get(node.getUsersNode()), Collection.class);
+            Collection<String> newUsers = new LinkedHashSet<>(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users));
+            newUsers.addAll(yamlUsers);
+            repository.persist(node.getUsersNode(), YamlEngine.marshal(newUsers));
         }
     }
     
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
-            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
         }
     }
 
@@ -235,7 +243,7 @@ public final class RegistryCenter {
         newArrayList.add(schemaName);
         repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(newArrayList));
     }
-    
+
     /**
      * Load data source configurations.
      *
@@ -253,19 +261,16 @@ public final class RegistryCenter {
      * @return rule configurations
      */
     public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
-        return hasRuleConfiguration(schemaName)
-                ? YamlConfigurationConverter.convertRuleConfigurations(repository.get(node.getRulePath(schemaName))) : new LinkedList<>();
+        return hasRuleConfiguration(schemaName) ? YamlConfigurationConverter.convertRuleConfigurations(repository.get(node.getRulePath(schemaName))) : new LinkedList<>();
     }
     
     /**
-     * Load user rule.
+     * Load users.
      *
-     * @return authentication
+     * @return users
      */
-    public Collection<ShardingSphereUser> loadUserRule() {
-        return hasAuthentication()
-                ? YamlConfigurationConverter.convertUserRule(repository.get(node.getAuthenticationPath()))
-                : Collections.emptyList();
+    public Collection<ShardingSphereUser> loadUsers() {
+        return hasUsers() ? YamlConfigurationConverter.convertUsers(repository.get(node.getUsersNode())) : Collections.emptyList();
     }
     
     /**
@@ -339,9 +344,9 @@ public final class RegistryCenter {
     public void deleteSchema(final String schemaName) {
         repository.delete(node.getSchemaNamePath(schemaName));
     }
-    
-    private boolean hasAuthentication() {
-        return !Strings.isNullOrEmpty(repository.get(node.getAuthenticationPath()));
+
+    private boolean hasUsers() {
+        return !Strings.isNullOrEmpty(repository.get(node.getUsersNode()));
     }
     
     /**
@@ -462,9 +467,9 @@ public final class RegistryCenter {
     }
     
     /**
-     * User configuration cached event.
+     * User configuration event.
      *
-     * @param event user configuration cached event
+     * @param event user configuration event
      */
     @Subscribe
     public synchronized void renew(final CreateUserStatementEvent event) {
@@ -472,13 +477,56 @@ public final class RegistryCenter {
     }
     
     /**
-     * User with changed privilege cached event.
+     * User with changed privilege event.
      *
      * @param event grant event
      */
     @Subscribe
     public synchronized void renew(final GrantStatementEvent event) {
         persistChangedPrivilege(event.getUsers());
+    }
+    
+    /**
+     * Load show process list data.
+     *
+     * @param event get children request event.
+     */
+    @Subscribe
+    public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
+        List<String> childrenKeys = repository.getChildrenKeys(node.getExecutionNodesPath());
+        Collection<String> processListData = childrenKeys.stream().map(key -> repository.get(node.getExecutionPath(key))).collect(Collectors.toList());
+        ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(processListData));
+    }
+    
+    /**
+     * Report execute process summary.
+     *
+     * @param event execute process summary report event.
+     */
+    @Subscribe
+    public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
+        ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
+        repository.persist(node.getExecutionPath(executeProcessContext.getExecutionID()), YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
+    }
+    
+    /**
+     * Report execute process unit.
+     *
+     * @param event execute process unit report event.
+     */
+    @Subscribe
+    public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
+        // TODO lock on the same jvm
+        event.getExecutionID().intern();
+        String executionPath = node.getExecutionPath(event.getExecutionID());
+        YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
+        ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
+        for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
+            if (unit.getUnitID().equals(executeProcessUnit.getUnitID())) {
+                unit.setStatus(executeProcessUnit.getStatus());
+            }
+        }
+        repository.persist(executionPath, YamlEngine.marshal(yamlExecuteProcessContext));
     }
     
     /**
@@ -583,11 +631,20 @@ public final class RegistryCenter {
     }
     
     /**
-     * ack unlock.
+     * Ack unlock.
      * 
      * @param lockName lock name
      */
     public void ackUnlock(final String lockName) {
+        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)), LockAck.UNLOCKED.getValue());
+    }
+    
+    /**
+     * Delete lock ack.
+     * 
+     * @param lockName lock name
+     */
+    public void deleteLockAck(final String lockName) {
         repository.delete(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)));
     }
     

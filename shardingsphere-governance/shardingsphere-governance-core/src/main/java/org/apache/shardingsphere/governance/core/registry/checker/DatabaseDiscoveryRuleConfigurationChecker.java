@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.checker;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 
 /**
  * Database discovery rule configuration checker.

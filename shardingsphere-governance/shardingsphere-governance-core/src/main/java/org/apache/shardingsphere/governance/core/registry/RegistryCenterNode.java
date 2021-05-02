@@ -45,6 +45,8 @@ public final class RegistryCenterNode {
     
     private static final String PRIMARY_NODES_NAME = "primarynodes";
     
+    private static final String EXECUTION_NODES_NAME = "executionnodes";
+    
     private static final String METADATA_NODE = "metadata";
     
     private static final String DATA_SOURCE_NODE = "datasource";
@@ -53,7 +55,7 @@ public final class RegistryCenterNode {
     
     private static final String SCHEMA_NODE = "schema";
     
-    private static final String AUTHENTICATION_NODE = "authentication";
+    private static final String USERS_NODE = "users";
     
     private static final String PRIVILEGE_NODE = "privilegenode";
     
@@ -243,16 +245,16 @@ public final class RegistryCenterNode {
     public String getMetadataSchemaPath(final String schemaName) {
         return getFullMetadataPath(schemaName, SCHEMA_NODE);
     }
-    
+
     /**
-     * Get authentication path.
+     * Get users path.
      *
-     * @return authentication path
+     * @return users path
      */
-    public String getAuthenticationPath() {
-        return getFullPath(AUTHENTICATION_NODE);
+    public String getUsersNode() {
+        return getFullPath(USERS_NODE);
     }
-    
+
     /**
      * Get privilege node path.
      *
@@ -355,5 +357,24 @@ public final class RegistryCenterNode {
      */
     public Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
         return schemaNames.stream().map(this::getMetadataDataSourcePath).collect(Collectors.toList());
+    }
+    
+    /**
+     * Get execution nodes path.
+     *
+     * @return execution nodes path
+     */
+    public String getExecutionNodesPath() {
+        return Joiner.on("/").join("", EXECUTION_NODES_NAME);
+    }
+    
+    /**
+     * Get execution path.
+     *
+     * @param executionId execution id
+     * @return execution path
+     */
+    public String getExecutionPath(final String executionId) {
+        return Joiner.on("/").join("", EXECUTION_NODES_NAME, executionId);
     }
 }

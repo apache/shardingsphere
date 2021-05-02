@@ -31,23 +31,31 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     SHARDING_TABLE_RULES_NOT_EXISTED(1101, "C1101", "Sharding table rule %s is not exist."),
     
-    TABLES_IN_USED(1102, "C1102", "Can not drop rule, tables %s in the rule are still in used."),
+    TABLES_IN_USED(1102, "C1102", "Tables %s in the rule are still in used."),
 
-    RESOURCE_IN_USED(1103, "C1103", "Can not drop resources, resources %s in the rule are still in used."),
+    RESOURCE_IN_USED(1103, "C1103", "Resources %s in the rule are still in used."),
     
-    RESOURCE_NOT_EXIST(1104, "C1104", "Can not drop resources, resources %s do not exist."),
+    RESOURCE_NOT_EXIST(1104, "C1104", "Resources %s do not exist."),
     
     REPLICA_QUERY_RULE_NOT_EXIST(1105, "C1105", "Replica query rule does not exist."),
     
     REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST(1106, "C1106", "Data sources %s in replica query rule do not exist."),
     
-    ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST(1107, "C1107", "Can not add replica query rule, data sources %s in replica query rule already exists."),
+    ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST(1107, "C1107", "Data sources %s in replica query rule already exists."),
     
     REPLICA_QUERY_RULE_EXIST(1108, "C1108", "Replica query rule already exists."),
     
     SHARDING_RULE_NOT_EXIST(1109, "C1109", "Sharding rule does not exist."),
     
     SHARDING_TABLE_RULE_EXIST(1110, "C1110", "Sharding table rules: [%s] already exists."),
+    
+    INVALID_RESOURCE(1111, "C1111", "Can not add invalid resources %s."),
+    
+    DUPLICATE_RESOURCE(1112, "C1112", "Duplicate resource names %s."),
+    
+    DUPLICATE_TABLE(1113, "C1113", "Duplicate table names %s."),
+    
+    SHARDING_BROADCAST_EXIST(1114, "C1114", "Sharding broadcast table rules already exist in schema %s."),
     
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     

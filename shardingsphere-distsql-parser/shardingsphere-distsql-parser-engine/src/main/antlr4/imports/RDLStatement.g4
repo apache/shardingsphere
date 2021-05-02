@@ -20,23 +20,19 @@ grammar RDLStatement;
 import Keyword, Literals, Symbol;
 
 addResource
-    : ADD RESOURCE LP dataSource (COMMA dataSource)* RP
+    : ADD RESOURCE dataSource (COMMA dataSource)*
     ;
 
 dropResource
-    : DROP RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)*
     ;
 
 dataSource
-    : dataSourceName EQ dataSourceDefinition
+    : dataSourceName LP HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName COMMA USER EQ user (COMMA PASSWORD EQ password)? RP
     ;
 
 dataSourceName
     : IDENTIFIER
-    ;
-
-dataSourceDefinition
-    : hostName COLON port COLON dbName (COLON user (COLON password)?)?
     ;
 
 hostName
@@ -63,8 +59,20 @@ password
     : IDENTIFIER | INT | STRING
     ;
 
-createShardingRule
-    : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* bindingTables? defaultTableStrategy? broadcastTables? RP
+createShardingTableRule
+    : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
+    ;
+
+createShardingBindingTableRules
+    : CREATE SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    ;
+
+bindTableRulesDefinition
+    : LP tableName (COMMA tableName)* RP
+    ;
+
+createShardingBroadcastTableRules
+    : CREATE SHARDING BROADCAST TABLE RULES LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
 alterShardingRule
@@ -76,7 +84,7 @@ createReplicaQueryRule
     ;
 
 replicaQueryRuleDefinition
-    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition
+    : ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition
     ;
 
 alterReplicaQueryRule
@@ -84,7 +92,7 @@ alterReplicaQueryRule
     ;
 
 alterReplicaQueryRuleDefinition
-    : (MODIFY | ADD) ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition?
+    : (MODIFY | ADD) ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition?
     ;
 
 alterShardingTableRuleDefinition
@@ -92,11 +100,15 @@ alterShardingTableRuleDefinition
     ;
 
 shardingTableRuleDefinition
-    : tableName resources? (columnName functionDefinition)? keyGenerateStrategy?
+    : tableName LP resources (COMMA shardingColumn)? (COMMA functionDefinition)? (COMMA keyGenerateStrategy)? RP
     ;
 
 resources
-    : RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
+shardingColumn
+    : SHARDING_COLUMN EQ columnName
     ;
 
 alterBindingTables
@@ -124,11 +136,15 @@ broadcastTables
     ;
 
 keyGenerateStrategy
-    : GENERATED_KEY columnName functionDefinition
+    : GENERATED_KEY LP COLUMN EQ columnName COMMA functionDefinition RP
     ;
 
 actualDataNodes
     : STRING (COMMA STRING)*
+    ;
+
+ruleName
+    : IDENTIFIER
     ;
 
 tableName
@@ -164,7 +180,11 @@ schemaName
     ;
 
 functionDefinition
-    : functionName=IDENTIFIER LP algorithmProperties? RP
+    : TYPE LP NAME EQ functionName COMMA PROPERTIES LP algorithmProperties? RP RP
+    ;
+
+functionName
+    : IDENTIFIER
     ;
 
 algorithmProperties
@@ -172,5 +192,5 @@ algorithmProperties
     ;
 
 algorithmProperty
-    : key=IDENTIFIER EQ value=(NUMBER | INT | STRING)
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
     ;

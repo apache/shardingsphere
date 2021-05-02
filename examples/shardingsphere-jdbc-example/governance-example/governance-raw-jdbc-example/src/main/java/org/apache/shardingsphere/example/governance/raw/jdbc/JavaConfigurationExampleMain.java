@@ -44,7 +44,7 @@ import java.sql.SQLException;
 public final class JavaConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.READ_WRITE_SPLITTING;
+//    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
 //    private static ShardingType shardingType = ShardingType.SHADOW;
     
@@ -68,7 +68,7 @@ public final class JavaConfigurationExampleMain {
                 config = loadConfigFromRegCenter 
                         ? new CloudShardingDatabasesAndTablesConfiguration(governanceConfig) : new LocalShardingDatabasesAndTablesConfiguration(governanceConfig);
                 break;
-            case READ_WRITE_SPLITTING:
+            case READWRITE_SPLITTING:
                 config = loadConfigFromRegCenter ? new CloudReadWriteSplittingConfiguration(governanceConfig) : new LocalReadWriteSplittingConfiguration(governanceConfig);
                 break;
             case ENCRYPT:

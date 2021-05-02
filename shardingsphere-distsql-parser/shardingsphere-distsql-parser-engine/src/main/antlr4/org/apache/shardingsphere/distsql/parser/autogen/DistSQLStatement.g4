@@ -22,7 +22,9 @@ import Symbol, RDLStatement, RQLStatement, RALStatement;
 execute
     : (addResource
     | dropResource
-    | createShardingRule
+    | createShardingTableRule
+    | createShardingBindingTableRules
+    | createShardingBroadcastTableRules
     | alterShardingRule
     | dropShardingRule
     | createReplicaQueryRule

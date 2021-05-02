@@ -79,7 +79,7 @@ unreservedWord
     | ROLE | VISIBLE | INVISIBLE | EXECUTE | USE | DEBUG | UNDER
     | FLASHBACK | ARCHIVE | REFRESH | QUERY | REWRITE | KEEP | SEQUENCE
     | INHERIT | TRANSLATE | SQL | MERGE | AT | BITMAP | CACHE | CHECKPOINT
-    | CONNECT | CONSTRAINTS | CYCLE | DBTIMEZONE | ENCRYPT | DECRYPT | DEFERRABLE
+    | CONSTRAINTS | CYCLE | DBTIMEZONE | ENCRYPT | DECRYPT | DEFERRABLE
     | DEFERRED | EDITION | ELEMENT | END | EXCEPTIONS | FORCE | GLOBAL
     | IDENTITY | INITIALLY | INVALIDATE | JAVA | LEVELS | LOCAL | MAXVALUE
     | MINVALUE | NOMAXVALUE | NOMINVALUE | MINING | MODEL | NATIONAL | NEW
@@ -87,16 +87,16 @@ unreservedWord
     | PROFILE | REF | REKEY | RELY | REPLACE | SOURCE | SALT
     | SCOPE | SORT | SUBSTITUTABLE | TABLESPACE | TEMPORARY | TRANSLATION | TREAT
     | NO | TYPE | UNUSED | VALUE | VARYING | VIRTUAL | ZONE
-    | ADVISOR | ADMINISTER | TUNING | MANAGE | MANAGEMENT | OBJECT | CLUSTER
-    | CONTEXT | EXEMPT | REDACTION | POLICY | DATABASE | SYSTEM | AUDIT
+    | ADVISOR | ADMINISTER | TUNING | MANAGE | MANAGEMENT | OBJECT
+    | CONTEXT | EXEMPT | REDACTION | POLICY | DATABASE | SYSTEM
     | LINK | ANALYZE | DICTIONARY | DIMENSION | INDEXTYPE | EXTERNAL | JOB
     | CLASS | PROGRAM | SCHEDULER | LIBRARY | LOGMINING | MATERIALIZED | CUBE
     | MEASURE | FOLDER | BUILD | PROCESS | OPERATOR | OUTLINE | PLUGGABLE
-    | CONTAINER | SEGMENT | RESTRICTED | COST | SYNONYM | BACKUP | UNLIMITED
-    | BECOME | CHANGE | NOTIFICATION | ACCESS | PRIVILEGE | PURGE | RESUMABLE
+    | CONTAINER | SEGMENT | RESTRICTED | COST | BACKUP | UNLIMITED
+    | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | INTEGER | COLLATION | REAL | DECIMAL | TYPE | FIRST
+    | COLLATION | REAL | TYPE | FIRST
     ;
 
 schemaName
@@ -163,6 +163,14 @@ functionName
     : identifier
     ;
 
+dbLink
+    : identifier
+    ;
+
+parameterValue
+    : literals | identifier
+    ;
+
 directoryName
     : identifier
     ;
@@ -172,10 +180,6 @@ opaqueFormatSpec
     ;
 
 accessDriverType
-    : identifier
-    ;
-
-partition
     : identifier
     ;
 
@@ -203,7 +207,27 @@ locationSpecifier
     : identifier
     ;
 
+xmlSchemaURLName
+    : identifier
+    ;
+
+elementName
+    : identifier
+    ;
+
 subpartitionName
+    : identifier
+    ;
+
+parameterName
+    : identifier
+    ;
+
+editionName
+    : identifier
+    ;
+
+containerName
     : identifier
     ;
 
@@ -213,6 +237,10 @@ partitionName
 
 partitionSetName
     : identifier
+    ;
+
+partitionKeyValue
+    : NUMBER_ | dateTimeLiterals
     ;
 
 zonemapName
@@ -231,6 +259,10 @@ password
     : identifier
     ;
 
+logGroupName
+    : identifier
+    ;
+
 columnNames
     : LP_? columnName (COMMA_ columnName)* RP_?
     ;
@@ -245,6 +277,10 @@ oracleId
 
 collationName
     : STRING_ | IDENTIFIER_
+    ;
+
+columnCollationName
+    : identifier
     ;
 
 alias
@@ -428,7 +464,7 @@ dataTypeName
     | BOOLEAN | PLS_INTEGER | BINARY_INTEGER | INTEGER | NUMBER | NATURAL | NATURALN | POSITIVE | POSITIVEN | SIGNTYPE
     | SIMPLE_INTEGER | BFILE | MLSLABEL | UROWID | DATE | TIMESTAMP | TIMESTAMP WITH TIME ZONE | TIMESTAMP WITH LOCAL TIME ZONE
     | INTERVAL DAY TO SECOND | INTERVAL YEAR TO MONTH | JSON | FLOAT | REAL | DOUBLE PRECISION | INT | SMALLINT
-    | DECIMAL | NUMERIC | DEC | IDENTIFIER_
+    | DECIMAL | NUMERIC | DEC | IDENTIFIER_ | XMLTYPE
     ;
 
 datetimeTypeSuffix
@@ -485,4 +521,8 @@ matchNone
 
 hashSubpartitionQuantity
     : NUMBER
+    ;
+
+odciParameters
+    : identifier
     ;
