@@ -87,10 +87,6 @@ public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
         }
     }
     
-    @Override
-    public void save(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
-    }
-    
     private String getGrantAllSQL(final Collection<ShardingSphereUser> users) {
         String grantUsers = users.stream().map(each -> String.format("'%s'@'%s'",
                 each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
