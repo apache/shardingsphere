@@ -20,9 +20,9 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -50,9 +50,10 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         payload.readInt4();
         payload.readStringNul();
         statementId = payload.readStringNul();
-        int parameterFormatsLength = payload.readInt2();
-        for (int i = 0; i < parameterFormatsLength; i++) {
-            payload.readInt2();
+        int parameterFormatCount = payload.readInt2();
+        List<Integer> parameterFormats = new ArrayList<>(parameterFormatCount);
+        for (int i = 0; i < parameterFormatCount; i++) {
+            parameterFormats.add(payload.readInt2());
         }
         PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
         sql = null == binaryStatement ? null : binaryStatement.getSql();
@@ -68,13 +69,13 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         int parameterCount = payload.readInt2();
         List<Object> result = new ArrayList<>(parameterCount);
         for (int parameterIndex = 0; parameterIndex < parameterCount; parameterIndex++) {
-            int paramValueLen = payload.readInt4();
-            if (-1 == paramValueLen) {
+            int parameterValueLength = payload.readInt4();
+            if (-1 == parameterValueLength) {
                 result.add(null);
                 continue;
             }
             PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(parameterIndex).getColumnType());
-            result.add(binaryProtocolValue.read(payload));
+            result.add(binaryProtocolValue.read(payload, parameterValueLength));
         }
         return result;
     }
