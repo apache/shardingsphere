@@ -2771,5 +2771,158 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_json_extract">
+        <from>
+            <simple-table name="tb_content_json" start-index="70" stop-index="84" />
+        </from>
+        <projections start-index="7" stop-index="63">
+            <expression-projection text="content_json::json->'title'" start-index="7" stop-index="33" />
+            <expression-projection text="content_json::json->'nation'" start-index="36" stop-index="63" />
+        </projections>
+        <where start-index="86" stop-index="105">
+            <expr>
+                <binary-operation-expression start-index="92" stop-index="105">
+                    <left>
+                        <column name="content_id" start-index="92" stop-index="101" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="105" stop-index="105" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_json_extract_text">
+        <from>
+            <simple-table name="tb_content_json" start-index="14" stop-index="28" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="30" stop-index="72">
+            <expr>
+                <binary-operation-expression start-index="36" stop-index="72">
+                    <left>
+                        <common-expression literal-text="content_json::json->>'nation'" start-index="36" stop-index="64" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="CHINA" start-index="66" stop-index="72" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_json_path_extract">
+        <from>
+            <simple-table name="tb_content_json" start-index="46" stop-index="60" />
+        </from>
+        <projections start-index="7" stop-index="39">
+            <expression-projection text="content_json::json#>'{keyword,1}'" start-index="7" stop-index="39" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_json_path_extract_text">
+        <from>
+            <simple-table name="tb_content_json" start-index="47" stop-index="61" />
+        </from>
+        <projections start-index="7" stop-index="40">
+            <expression-projection text="content_json::json#>>'{keyword,1}'" start-index="7" stop-index="40" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_contain_right">
+        <from>
+            <simple-table name="tb_content_json" start-index="58" stop-index="72" />
+        </from>
+        <projections start-index="7" stop-index="51">
+            <expression-projection text="content_json::jsonb@>'{&amp;title&amp;:&amp;abc&amp;}'::jsonb" start-index="7" stop-index="51" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_contain_left">
+        <from>
+            <simple-table name="tb_content_json" start-index="58" stop-index="72" />
+        </from>
+        <projections start-index="7" stop-index="51">
+            <expression-projection text="'{&amp;title&amp;:&amp;abc&amp;}'::jsonb&lt;@content_json::jsonb" start-index="7" stop-index="51" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_contain_top_key">
+        <from>
+            <simple-table name="tb_content_json" start-index="40" stop-index="54" />
+        </from>
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="content_json::jsonb?'title'" start-index="7" stop-index="33" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_contain_any_top_key">
+        <from>
+            <simple-table name="tb_content_json" start-index="57" stop-index="71" />
+        </from>
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="content_json::jsonb?|array['title','nation']" start-index="7" stop-index="50" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_contain_all_top_key">
+        <from>
+            <simple-table name="tb_content_json" start-index="57" stop-index="71" />
+        </from>
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="content_json::jsonb?&amp;array['title','nation']" start-index="7" stop-index="50" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_concat">
+        <from>
+            <simple-table name="tb_content_json" start-index="56" stop-index="70" />
+        </from>
+        <projections start-index="7" stop-index="49">
+            <expression-projection text="content_json::jsonb||'{&quot;price&quot;:999}'::jsonb" start-index="7" stop-index="49" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_delete">
+        <from>
+            <simple-table name="tb_content_json" start-index="40" stop-index="54" />
+        </from>
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="content_json::jsonb-'title'" start-index="7" stop-index="33" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_path_delete">
+        <from>
+            <simple-table name="tb_content_json" start-index="43" stop-index="57" />
+        </from>
+        <projections start-index="7" stop-index="36">
+            <expression-projection text="content_json::jsonb#-'{title}'" start-index="7" stop-index="36" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_path_contain_any_value">
+        <from>
+            <simple-table name="tb_content_json" start-index="59" stop-index="73" />
+        </from>
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="content_json::jsonb@?'$.keyword[*]?(@==&quot;ss&quot;)'" start-index="7" stop-index="52" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_path_predicate_check">
+        <from>
+            <simple-table name="tb_content_json" start-index="54" stop-index="68" />
+        </from>
+        <projections start-index="7" stop-index="47">
+            <expression-projection text="content_json::jsonb@@'$.keyword[*]==&quot;ss&quot;'" start-index="7" stop-index="47" />
+        </projections>
+    </select>
 </sql-parser-test-cases>
 
