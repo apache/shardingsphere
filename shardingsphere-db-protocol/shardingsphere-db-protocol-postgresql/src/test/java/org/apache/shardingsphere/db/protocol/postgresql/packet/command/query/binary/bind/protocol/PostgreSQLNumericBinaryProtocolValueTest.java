@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol;
 
 import io.netty.buffer.ByteBuf;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -50,7 +51,7 @@ public final class PostgreSQLNumericBinaryProtocolValueTest {
         byteBuf.writeBytes(decimalText.getBytes(StandardCharsets.UTF_8));
         byteBuf.readInt();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
-        Object result = binaryProtocolValue.read(payload);
+        Object result = binaryProtocolValue.read(payload, columnLength);
         assertNotNull(result);
         assertTrue(result instanceof BigDecimal);
         assertThat(result, is(expectedDecimal));
