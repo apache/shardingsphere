@@ -26,9 +26,9 @@ import lombok.RequiredArgsConstructor;
  * Grantee.
  */
 @RequiredArgsConstructor
-@Getter
 public final class Grantee {
     
+    @Getter
     private final String username;
     
     private final String hostname;
@@ -48,6 +48,14 @@ public final class Grantee {
     
     private boolean isUnlimitedHost() {
         return Strings.isNullOrEmpty(hostname) || "%".equals(hostname);
+    }
+    
+    /**
+     * Get host name.
+     * @return host name
+     */
+    public String getHostname() {
+        return Strings.isNullOrEmpty(hostname) ? "%" : hostname;
     }
     
     @Override
