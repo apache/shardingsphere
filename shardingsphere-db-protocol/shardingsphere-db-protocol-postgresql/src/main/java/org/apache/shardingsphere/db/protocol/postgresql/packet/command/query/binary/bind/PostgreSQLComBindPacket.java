@@ -59,7 +59,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         sql = null == binaryStatement ? null : binaryStatement.getSql();
         parameters = null == sql ? Collections.emptyList() : getParameters(payload, parameterFormats, binaryStatement.getParameterTypes());
         int resultFormatsLength = payload.readInt2();
-        binaryRowData = resultFormatsLength > 0;
+        binaryRowData = resultFormatsLength > 0 && parameterFormats.contains(1);
         for (int i = 0; i < resultFormatsLength; i++) {
             payload.readInt2();
         }
