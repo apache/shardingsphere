@@ -29,6 +29,4 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinar
 public final class PostgreSQLBinaryStatementParameterType {
     
     private final PostgreSQLBinaryColumnType columnType;
-    
-    private final int format = 1;
 }
