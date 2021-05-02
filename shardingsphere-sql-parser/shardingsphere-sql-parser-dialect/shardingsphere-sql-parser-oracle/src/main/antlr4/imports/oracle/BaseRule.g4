@@ -540,7 +540,7 @@ fileName
     ;
 
 asmFileName
-    : identifier
+    : STRING_
     ;
 
 fileNumber
@@ -577,4 +577,24 @@ qualifiedCredentialName
 
 pdbName
     : identifier
+    ;
+
+diskgroupName
+    : identifier
+    ;
+
+templateName
+    : identifier
+    ;
+
+aliasName
+    : identifier
+    ;
+
+domain
+    : identifier
+    ;
+
+dateValue
+    : dateTimeLiterals | stringLiterals | numberLiterals | expr
     ;

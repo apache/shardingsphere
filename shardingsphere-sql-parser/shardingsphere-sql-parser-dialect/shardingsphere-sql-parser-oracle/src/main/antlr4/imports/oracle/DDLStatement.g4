@@ -1181,10 +1181,6 @@ fullDatabaseRecovery
     )+)?
     ;
 
-dateValue
-    : dateTimeLiterals | stringLiterals | numberLiterals | expr
-    ;
-
 partialDatabaseRecovery
     : TABLESPACE tablespaceName (COMMA_ tablespaceName)*
     | DATAFILE (fileName | fileNumber) (COMMA_ (fileName | fileNumber))*
@@ -1237,7 +1233,7 @@ alterDatafileClause
     ;
 
 alterTempfileClause
-    : TEMPFILE fileName (COMMA_ fileName )*
+    : TEMPFILE (fileName | NUMBER_) (COMMA_ (fileName | NUMBER_))*
     (RESIZE sizeClause | autoextendClause | DROP (INCLUDING DATAFILES)? | ONLINE | OFFLINE)
     ;
 
@@ -1306,8 +1302,8 @@ standbyDatabaseClauses
     | commitSwitchoverClause
     | startStandbyClause
     | stopStandbyClause
-    | convertDatabaseClause parallelClause?)
-    | (switchoverClause | failoverClause))
+    | convertDatabaseClause) parallelClause?)
+    | (switchoverClause | failoverClause)
     ;
 
 activateStandbyDbClause
@@ -1331,7 +1327,11 @@ commitSwitchoverClause
     ;
 
 startStandbyClause
-    : START LOGICAL STANDBY APPLY IMMEDIATE? NODELAY? (NEW PRIMARY dbLink | (SKIP_SYMBOL FAILED TRANSACTION | FINISH))?
+    : START LOGICAL STANDBY APPLY IMMEDIATE? NODELAY? (NEW PRIMARY dbLink | INITIAL scnValue? | (SKIP_SYMBOL FAILED TRANSACTION | FINISH))?
+    ;
+
+scnValue
+    : literals
     ;
 
 stopStandbyClause
@@ -1343,7 +1343,7 @@ switchoverClause
     ;
 
 convertDatabaseClause
-    : CONVERT TO LP_ (PHYSICAL | SNAPSHOT) RP_ STANDBY
+    : CONVERT TO (PHYSICAL | SNAPSHOT) STANDBY
     ;
 
 failoverClause
@@ -1355,12 +1355,22 @@ defaultSettingsClauses
     | SET DEFAULT (BIGFILE | SMALLFILE) TABLESPACE
     | DEFAULT TABLESPACE tablespaceName
     | DEFAULT LOCAL? TEMPORARY TABLESPACE (tablespaceName | tablespaceGroupName)
+    | RENAME GLOBAL_NAME TO databaseName DO_ domain (DQ_ domain)*
     | ENABLE BLOCK CHANGE TRACKING (USING FILE fileName REUSE?)?
     | DISABLE BLOCK CHANGE TRACKING
     | NO? FORCE FULL DATABASE CACHING
     | CONTAINERS DEFAULT TARGET EQ_ (LP_ containerName RP_ | NONE)
     | flashbackModeClause
     | undoModeClause
+    | setTimeZoneClause
+    ;
+
+setTimeZoneClause
+    : SET TIME_ZONE EQ_ SQ_ ( (PLUS_ | MINUS_) dateValue  | timeZoneRegion ) SQ_
+    ;
+
+timeZoneRegion
+    : STRING_
     ;
 
 flashbackModeClause
@@ -1385,7 +1395,7 @@ securityClause
     ;
 
 prepareClause
-    : PREPARE MIRROR COPY copyName WITH (UNPROTECTED | MIRROR | HIGH) REDUNDANCY
+    : PREPARE MIRROR COPY copyName (WITH (UNPROTECTED | MIRROR | HIGH) REDUNDANCY)?
     ;
 
 dropMirrorCopy

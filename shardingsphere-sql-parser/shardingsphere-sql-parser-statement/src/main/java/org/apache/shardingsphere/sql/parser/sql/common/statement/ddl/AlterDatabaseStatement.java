@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Oracle alter database statement.
+ * Alter Database statement.
  */
+@Getter
+@Setter
 @ToString
-public class OracleAlterDatabaseStatement extends AlterDatabaseStatement implements OracleStatement {
+public abstract class AlterDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
 }
