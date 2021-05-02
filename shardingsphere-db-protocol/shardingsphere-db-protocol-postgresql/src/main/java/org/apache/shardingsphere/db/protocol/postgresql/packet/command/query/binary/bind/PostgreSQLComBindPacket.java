@@ -57,7 +57,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         }
         PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
         sql = null == binaryStatement ? null : binaryStatement.getSql();
-        parameters = null == sql ? Collections.emptyList() : getParameters(payload, binaryStatement.getParameterTypes());
+        parameters = null == sql ? Collections.emptyList() : getParameters(payload, parameterFormats, binaryStatement.getParameterTypes());
         int resultFormatsLength = payload.readInt2();
         binaryRowData = resultFormatsLength > 0;
         for (int i = 0; i < resultFormatsLength; i++) {
@@ -65,7 +65,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         }
     }
     
-    private List<Object> getParameters(final PostgreSQLPacketPayload payload, final List<PostgreSQLBinaryStatementParameterType> parameterTypes) {
+    private List<Object> getParameters(final PostgreSQLPacketPayload payload, final List<Integer> parameterFormats, final List<PostgreSQLBinaryStatementParameterType> parameterTypes) {
         int parameterCount = payload.readInt2();
         List<Object> result = new ArrayList<>(parameterCount);
         for (int parameterIndex = 0; parameterIndex < parameterCount; parameterIndex++) {
@@ -74,10 +74,22 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
                 result.add(null);
                 continue;
             }
-            PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(parameterIndex).getColumnType());
-            result.add(binaryProtocolValue.read(payload, parameterValueLength));
+            Object parameterValue = 0 == parameterFormats.get(parameterIndex)
+                    ? getTextParameters(payload, parameterValueLength) : getBinaryParameters(payload, parameterValueLength, parameterTypes.get(parameterIndex));
+            result.add(parameterValue);
         }
         return result;
+    }
+    
+    private String getTextParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
+        byte[] bytes = new byte[parameterValueLength];
+        payload.getByteBuf().readBytes(bytes);
+        return new String(bytes);
+    }
+    
+    private Object getBinaryParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLBinaryStatementParameterType parameterType) {
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterType.getColumnType());
+        return binaryProtocolValue.read(payload, parameterValueLength);
     }
     
     @Override
