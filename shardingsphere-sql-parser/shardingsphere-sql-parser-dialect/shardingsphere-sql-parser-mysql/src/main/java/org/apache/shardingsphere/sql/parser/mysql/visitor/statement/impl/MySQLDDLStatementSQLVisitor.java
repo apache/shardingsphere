@@ -293,7 +293,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                 if (null == alterTableDrop.KEY() && null == alterTableDrop.CHECK() && null == alterTableDrop.CONSTRAINT() && null == alterTableDrop.keyOrIndex()) {
                     ColumnSegment column = new ColumnSegment(alterTableDrop.columnInternalRef.start.getStartIndex(), alterTableDrop.columnInternalRef.stop.getStopIndex(),
                             (IdentifierValue) visit(alterTableDrop.columnInternalRef));
-                    result.getValue().add(new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(column)));
+                    result.getValue().add(new DropColumnDefinitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), Collections.singletonList(column)));
                 }
             }
         }

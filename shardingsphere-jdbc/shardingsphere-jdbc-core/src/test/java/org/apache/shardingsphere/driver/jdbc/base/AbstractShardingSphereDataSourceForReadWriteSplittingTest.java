@@ -36,7 +36,7 @@ public abstract class AbstractShardingSphereDataSourceForReadWriteSplittingTest 
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final String CONFIG = "config/config-read-write-splitting.yaml";
+    private static final String CONFIG = "config/config-readwrite-splitting.yaml";
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("test_write_ds", "test_read_ds");
     

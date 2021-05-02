@@ -46,10 +46,10 @@ public final class YamlGovernanceReadWriteSplittingIntegrateTest extends Abstrac
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection<?> init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/read_write_splitting/configWithReadWriteSplittingDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/read_write_splitting/configWithReadWriteSplittingDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/read_write_splitting/configWithReadWriteSplittingDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/read_write_splitting/configWithReadWriteSplittingDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadWriteSplittingDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadWriteSplittingDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadWriteSplittingDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadWriteSplittingDataSourceWithProps.yaml", true},
         });
     }
     

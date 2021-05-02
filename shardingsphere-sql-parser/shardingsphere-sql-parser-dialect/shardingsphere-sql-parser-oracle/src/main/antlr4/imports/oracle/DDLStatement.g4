@@ -304,11 +304,11 @@ operateColumnClause
     ;
 
 addColumnSpecification
-    : ADD columnOrVirtualDefinitions columnProperties?
+    : ADD LP_ columnOrVirtualDefinitions RP_ columnProperties?
     ;
 
 columnOrVirtualDefinitions
-    : LP_? columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* RP_? | columnOrVirtualDefinition
+    : columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* 
     ;
 
 columnOrVirtualDefinition
@@ -688,7 +688,7 @@ tablePartitioningClauses
 rangePartitions
     : PARTITION BY RANGE columnNames
       (INTERVAL LP_ expr RP_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)?)?
-      LP_ PARTITION partition? rangeValuesClause tablePartitionDescription (COMMA_ PARTITION partition? rangeValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+      LP_ PARTITION partitionName? rangeValuesClause tablePartitionDescription (COMMA_ PARTITION partitionName? rangeValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
     ;
 
 rangeValuesClause
@@ -770,7 +770,7 @@ externalPartSubpartDataProps
 listPartitions
     : PARTITION BY LIST columnNames
       (AUTOMATIC (STORE IN LP_? tablespaceName (COMMA_ tablespaceName)* RP_?))?
-      LP_ PARTITION partition? listValuesClause tablePartitionDescription (COMMA_ PARTITION partition? listValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+      LP_ PARTITION partitionName? listValuesClause tablePartitionDescription (COMMA_ PARTITION partitionName? listValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
     ;
 
 listValuesClause
@@ -799,7 +799,7 @@ advancedIndexCompression
     ;
 
 individualHashPartitions
-    : LP_? (PARTITION partition? readOnlyClause? indexingClause? partitioningStorageClause?) (COMMA_ PARTITION partition? readOnlyClause? indexingClause? partitioningStorageClause?)* RP_?
+    : LP_? (PARTITION partitionName? readOnlyClause? indexingClause? partitioningStorageClause?) (COMMA_ PARTITION partitionName? readOnlyClause? indexingClause? partitioningStorageClause?)* RP_?
     ;
 
 partitioningStorageClause
@@ -884,7 +884,7 @@ referencePartitioning
     ;
 
 referencePartitionDesc
-    : PARTITION partition? tablePartitionDescription?
+    : PARTITION partitionName? tablePartitionDescription?
     ;
 
 constraint
@@ -1038,9 +1038,97 @@ supplementalLoggingProps
     ;
 
 supplementalLogGrpClause
-    : GROUP logGroupName LP_ columnName (NO LOG)? (COMMA columnName (NO LOG)?)* RP_ ALWAYS?
+    : GROUP logGroupName LP_ columnName (NO LOG)? (COMMA_ columnName (NO LOG)?)* RP_ ALWAYS?
     ;
 
 supplementalIdKeyClause
-    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY) (COMMA (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY))* RP_ COLUMNS
+    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY) (COMMA_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY))* RP_ COLUMNS
+    ;
+
+alterSession
+    : ALTER SESSION alterSessionOption
+    ;
+
+alterSessionOption
+    : adviseClause
+    | closeDatabaseLinkClause
+    | commitInProcedureClause
+    | securiyClause
+    | parallelExecutionClause
+    | resumableClause
+    | shardDdlClause
+    | syncWithPrimaryClause
+    | alterSessionSetClause
+    ;
+
+adviseClause
+    : ADVISE (COMMIT | ROLLBACK | NOTHING)
+    ;
+
+closeDatabaseLinkClause
+    : CLOSE DATABASE LINK dbLink
+    ;
+
+commitInProcedureClause
+    : (ENABLE | DISABLE) COMMIT IN PROCEDURE
+    ;
+
+securiyClause
+    : (ENABLE | DISABLE) GUARD
+    ;
+
+parallelExecutionClause
+    : (ENABLE | DISABLE | FORCE) PARALLEL (DML | DDL | QUERY) (PARALLEL numberLiterals)?
+    ;
+
+resumableClause
+    : enableResumableClause | disableResumableClause
+    ;
+
+enableResumableClause
+    : ENABLE RESUMABLE (TIMEOUT numberLiterals)? (NAME stringLiterals)?
+    ;
+
+disableResumableClause
+    : DISABLE RESUMABLE
+    ;
+
+shardDdlClause
+    : (ENABLE | DISABLE) SHARD DDL
+    ;
+
+syncWithPrimaryClause
+    : SYNC WITH PRIMARY
+    ;
+
+alterSessionSetClause
+    : SET alterSessionSetClauseOption
+    ;
+
+alterSessionSetClauseOption
+    : parameterClause
+    | editionClause
+    | containerClause
+    | rowArchivalVisibilityClause
+    | defaultCollationClause
+    ;
+
+parameterClause
+    : (parameterName EQ_ parameterValue)+
+    ;
+
+editionClause
+    : EDITION EQ_ editionName
+    ;
+
+containerClause
+    : CONTAINER EQ_ containerName (SERVICE EQ_ serviceName)?
+    ;
+
+rowArchivalVisibilityClause
+    : ROW ARCHIVAL VISIBILITY EQ_ (ACTIVE | ALL)
+    ;
+
+defaultCollationClause
+    : DEFAULT_COLLATION EQ_ (collationName | NONE)
     ;

@@ -101,11 +101,9 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     private CreateShardingBindingTableRulesStatement buildShardingTableRuleStatement() {
         CreateShardingBindingTableRulesStatement result = new CreateShardingBindingTableRulesStatement();
         ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
-        segment.setRuleName("binding_rule_1");
         segment.setTables("t_order,t_order_item");
         result.getRules().add(segment);
         ShardingBindingTableRuleSegment segmentAnother = new ShardingBindingTableRuleSegment();
-        segmentAnother.setRuleName("binding_rule_2");
         segmentAnother.setTables("t_1,t_2");
         result.getRules().add(segmentAnother);
         return result;

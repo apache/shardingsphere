@@ -35,7 +35,7 @@ Please refer to [Built-in Load Balance Algorithm List](/docs/document/content/us
 
 ## ShardingSphere-4.x
 
-### Read-Write Split
+### Readwrite-splitting
 
 #### MasterSlaveDataSourceFactory
 
@@ -47,12 +47,12 @@ Please refer to [Built-in Load Balance Algorithm List](/docs/document/content/us
 
 #### MasterSlaveRuleConfiguration
 
-| *Name*                   | *DataType*                      | *Explanation*                     |
-| :----------------------- | :------------------------------ | :-------------------------------- |
-| name                     | String                          | Read-write split data source name |
-| masterDataSourceName     | String                          | Master database source name       |
-| slaveDataSourceNames     | Collection<String>              | Slave database source name list   |
-| loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | Slave database load balance       |
+| *Name*                   | *DataType*                      | *Explanation*                        |
+| :----------------------- | :------------------------------ | :----------------------------------- |
+| name                     | String                          | Readwrite-splitting data source name |
+| masterDataSourceName     | String                          | Master database source name          |
+| slaveDataSourceNames     | Collection<String>              | Slave database source name list      |
+| loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | Slave database load balance          |
 
 #### Properties
 
@@ -67,7 +67,7 @@ Property configuration items, can be of the following properties.
 
 ## ShardingSphere-3.x
 
-### Read-Write Split
+### Readwrite-splitting
 
 #### MasterSlaveDataSourceFactory
 
@@ -104,7 +104,7 @@ Enumeration of properties.
 
 ## ShardingSphere-2.x
 
-### Read-Write Split
+### Readwrite-splitting
 
 #### concept
 
@@ -112,8 +112,8 @@ In order to relieve the pressure on the database, the write and read operations 
 
 #### Support item
 
-1. Provides a read-write separation configuration with one master and multiple slaves, which can be used independently or with sub-databases and sub-meters.
-2. Independent use of read-write separation to support SQL transparent transmission.
+1. Provides a readwrite-splitting configuration with one master and multiple slaves, which can be used independently or with sub-databases and sub-meters.
+2. Independent use of readwrite-splitting to support SQL transparent transmission.
 3. In the same thread and the same database connection, if there is a write operation, subsequent read operations will be read from the main library to ensure data consistency.
 4. Spring namespace.
 5. Hint-based mandatory main library routing.
@@ -126,16 +126,16 @@ In order to relieve the pressure on the database, the write and read operations 
 
 #### Code development example
 
-##### only read-write split
+##### only readwrite-splitting
 
 ```java
-// Constructing a read-write separation data source, the read-write separation data source implements the DataSource interface, which can be directly processed as a data source. masterDataSource, slaveDataSource0, slaveDataSource1, etc. are real data sources configured using connection pools such as DBCP
+// Constructing a readwrite-splitting data source, the readwrite-splitting data source implements the DataSource interface, which can be directly processed as a data source. masterDataSource, slaveDataSource0, slaveDataSource1, etc. are real data sources configured using connection pools such as DBCP
 Map<String, DataSource> dataSourceMap = new HashMap<>();
 dataSourceMap.put("masterDataSource", masterDataSource);
 dataSourceMap.put("slaveDataSource0", slaveDataSource0);
 dataSourceMap.put("slaveDataSource1", slaveDataSource1);
 
-// Constructing read-write separation configuration
+// Constructing readwrite-splitting configuration
 MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
 masterSlaveRuleConfig.setName("ms_ds");
 masterSlaveRuleConfig.setMasterDataSourceName("masterDataSource");
@@ -145,10 +145,10 @@ masterSlaveRuleConfig.getSlaveDataSourceNames().add("slaveDataSource1");
 DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
 ```
 
-##### sharding table and database + read-write split
+##### sharding table and database + readwrite-splitting
 
 ```java
-// Constructing a read-write separation data source, the read-write separation data source implements the DataSource interface, which can be directly processed as a data source. masterDataSource, slaveDataSource0, slaveDataSource1, etc. are real data sources configured using connection pools such as DBCP
+// Constructing a readwrite-splitting data source, the readwrite-splitting data source implements the DataSource interface, which can be directly processed as a data source. masterDataSource, slaveDataSource0, slaveDataSource1, etc. are real data sources configured using connection pools such as DBCP
 Map<String, DataSource> dataSourceMap = new HashMap<>();
 dataSourceMap.put("masterDataSource0", masterDataSource0);
 dataSourceMap.put("slaveDataSource00", slaveDataSource00);
@@ -158,7 +158,7 @@ dataSourceMap.put("masterDataSource1", masterDataSource1);
 dataSourceMap.put("slaveDataSource10", slaveDataSource10);
 dataSourceMap.put("slaveDataSource11", slaveDataSource11);
 
-// Constructing read-write separation configuration
+// Constructing readwrite-splitting configuration
 MasterSlaveRuleConfiguration masterSlaveRuleConfig0 = new MasterSlaveRuleConfiguration();
 masterSlaveRuleConfig0.setName("ds_0");
 masterSlaveRuleConfig0.setMasterDataSourceName("masterDataSource0");
@@ -181,7 +181,7 @@ DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap
 
 ## ShardingSphere-1.x
 
-### Read-Write Split
+### Readwrite-splitting
 
 #### concept
 
@@ -189,7 +189,7 @@ In order to relieve the pressure on the database, the write and read operations 
 
 #### Support item
 
-1. Provides a read-write separation configuration with one master and multiple slaves, which can be used independently or with sub-databases and sub-meters.
+1. Provides a readwrite-splitting configuration with one master and multiple slaves, which can be used independently or with sub-databases and sub-meters.
 2. In the same thread and the same database connection, if there is a write operation, subsequent read operations will be read from the main library to ensure data consistency.
 3. Spring namespace.
 4. Hint-based mandatory main library routing.
@@ -203,7 +203,7 @@ In order to relieve the pressure on the database, the write and read operations 
 #### Code development example
 
 ```java
-// Constructing a read-write separation data source, the read-write separation data source implements the DataSource interface, which can be directly processed as a data source. masterDataSource, slaveDataSource0, slaveDataSource1, etc. are real data sources configured using connection pools such as DBCP
+// Constructing a readwrite-splitting data source, the readwrite-splitting data source implements the DataSource interface, which can be directly processed as a data source. masterDataSource, slaveDataSource0, slaveDataSource1, etc. are real data sources configured using connection pools such as DBCP
 Map<String, DataSource> slaveDataSourceMap0 = new HashMap<>();
 slaveDataSourceMap0.put("slaveDataSource00", slaveDataSource00);
 slaveDataSourceMap0.put("slaveDataSource01", slaveDataSource01);
@@ -215,7 +215,7 @@ slaveDataSourceMap1.put("slaveDataSource10", slaveDataSource10);
 slaveDataSourceMap1.put("slaveDataSource11", slaveDataSource11);
 DataSource masterSlaveDs1 = MasterSlaveDataSourceFactory.createDataSource("ms_1", "masterDataSource1", masterDataSource1, slaveDataSourceMap1, MasterSlaveLoadBalanceStrategyType.ROUND_ROBIN);
 
-// Constructing read-write separation configuration
+// Constructing readwrite-splitting configuration
 Map<String, DataSource> dataSourceMap = new HashMap<>();
 dataSourceMap.put("ms_0", masterSlaveDs0);
 dataSourceMap.put("ms_1", masterSlaveDs1);

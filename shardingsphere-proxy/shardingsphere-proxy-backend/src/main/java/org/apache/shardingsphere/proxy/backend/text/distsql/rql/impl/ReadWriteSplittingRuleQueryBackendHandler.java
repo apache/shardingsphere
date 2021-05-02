@@ -25,8 +25,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.readwrite.splitting.api.ReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwrite.splitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Backend handler for show read write splitting rule.
+ * Backend handler for show readwrite-splitting rule.
  */
 public final class ReadWriteSplittingRuleQueryBackendHandler extends SchemaRequiredBackendHandler<ShowRuleStatement> {
     

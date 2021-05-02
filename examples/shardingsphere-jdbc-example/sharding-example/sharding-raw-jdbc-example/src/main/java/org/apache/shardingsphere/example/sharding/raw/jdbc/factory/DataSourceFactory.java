@@ -37,9 +37,9 @@ public final class DataSourceFactory {
                 return new ShardingTablesConfigurationPrecise().getDataSource();
             case SHARDING_DATABASES_AND_TABLES:
                 return new ShardingDatabasesAndTablesConfigurationPrecise().getDataSource();
-            case READ_WRITE_SPLITTING:
+            case READWRITE_SPLITTING:
                 return new ReadWriteSplittingConfiguration().getDataSource();
-            case SHARDING_READ_WRITE_SPLITTING:
+            case SHARDING_READWRITE_SPLITTING:
                 return new ShardingReadWriteSplittingConfigurationPrecise().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());

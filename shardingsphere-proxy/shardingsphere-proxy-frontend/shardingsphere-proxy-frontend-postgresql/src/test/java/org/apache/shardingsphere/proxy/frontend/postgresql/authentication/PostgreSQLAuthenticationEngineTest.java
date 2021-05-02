@@ -23,13 +23,16 @@ import io.netty.buffer.UnpooledHeapByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationMD5PasswordPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.InvalidAuthorizationSpecificationException;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLAuthenticationException;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.exception.PostgreSQLProtocolViolationException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -52,7 +55,7 @@ public final class PostgreSQLAuthenticationEngineTest {
     @Test
     public void assertHandshake() {
         int connectionId = new PostgreSQLAuthenticationEngine().handshake(mock(ChannelHandlerContext.class));
-        assertNotNull(BinaryStatementRegistry.getInstance().get(connectionId));
+        assertNotNull(PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {
@@ -69,26 +72,30 @@ public final class PostgreSQLAuthenticationEngineTest {
         assertThat(actual.isFinished(), is(false));
     }
     
-    @Test
-    public void assertDatabaseNotExist() {
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(32, 512));
-        payload.writeInt4(64);
-        payload.writeInt4(196608);
-        payload.writeStringNul("user");
-        payload.writeStringNul(username);
-        payload.writeStringNul("database");
-        payload.writeStringNul("sharding_db");
-        AuthenticationResult actual = new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
-        assertThat(actual.isFinished(), is(false));
-    }
-    
-    @Test
+    @Test(expected = InvalidAuthorizationSpecificationException.class)
     public void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512));
         payload.writeInt4(64);
         payload.writeInt4(196608);
-        AuthenticationResult actual = new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
-        assertThat(actual.isFinished(), is(false));
+        new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
+    }
+    
+    @Test(expected = PostgreSQLProtocolViolationException.class)
+    public void assertAuthenticateWithNonPasswordMessage() {
+        PostgreSQLAuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
+        setAlreadyReceivedStartupMessage(authenticationEngine);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 16));
+        payload.writeInt1('F');
+        payload.writeInt8(0);
+        authenticationEngine.authenticate(mock(ChannelHandlerContext.class), payload);
+    }
+    
+    @SneakyThrows
+    private void setAlreadyReceivedStartupMessage(final PostgreSQLAuthenticationEngine target) {
+        Field field = PostgreSQLAuthenticationEngine.class.getDeclaredField("startupMessageReceived");
+        field.setAccessible(true);
+        field.set(target, true);
+        field.setAccessible(false);
     }
     
     @Test
@@ -96,7 +103,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         assertLogin(password);
     }
     
-    @Test
+    @Test(expected = PostgreSQLAuthenticationException.class)
     public void assertLoginFailed() {
         assertLogin("wrong" + password);
     }

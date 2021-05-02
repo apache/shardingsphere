@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener.metadata;
 
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Before;
@@ -42,7 +42,7 @@ public final class SchemaChangedListenerTest extends MetaDataListenerTest {
     
     @Before
     public void setUp() {
-        schemaChangedListener = new SchemaChangedListener(getRegistryRepository(), Arrays.asList("sharding_db", "read_write_splitting_db", "encrypt_db"));
+        schemaChangedListener = new SchemaChangedListener(getRegistryRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db", "encrypt_db"));
     }
     
     @Test

@@ -36,7 +36,7 @@ Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardings
 
 ## ShardingSphere-4.x
 
-### Read-Write Split
+### Readwrite-splitting
 
 #### Configuration Item Explanation
 
@@ -75,7 +75,7 @@ DataSource dataSource = YamlMasterSlaveDataSourceFactory.createDataSource(yamlFi
 
 ## ShardingSphere-3.x
 
-### Read-Write Split
+### Readwrite-splitting
 
 #### Configuration Item Explanation
 
@@ -115,7 +115,7 @@ DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
 
 ## ShardingSphere-2.x
 
-### Read-Write Split
+### Readwrite-splitting
 
 #### Concept
 
@@ -123,8 +123,8 @@ In order to relieve the pressure on the database, the write and read operations 
 
 #### Support item
 
-1. Provides a read-write separation configuration with one master and multiple slaves, which can be used independently or with sub-databases and sub-meters.
-2. Independent use of read-write separation to support SQL transparent transmission.
+1. Provides a readwrite-splitting configuration with one master and multiple slaves, which can be used independently or with sub-databases and sub-meters.
+2. Independent use of readwrite-splitting to support SQL transparent transmission.
 3. In the same thread and the same database connection, if there is a write operation, subsequent read operations will be read from the main library to ensure data consistency.
 4. Spring namespace.
 5. Hint-based mandatory main library routing.

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadWriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadWriteSplittingRuleStatement;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
@@ -33,11 +33,11 @@ import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedExcep
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.readwrite.splitting.api.ReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwrite.splitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwrite.splitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwrite.splitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwrite.splitting.common.yaml.converter.AlterReadWriteSplittingRuleStatementConverter;
+import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.AlterReadWriteSplittingRuleStatementConverter;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -50,7 +50,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Alter read write splitting rule backend handler.
+ * Alter readwrite-splitting rule backend handler.
  */
 public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<AlterReadWriteSplittingRuleStatement> {
 

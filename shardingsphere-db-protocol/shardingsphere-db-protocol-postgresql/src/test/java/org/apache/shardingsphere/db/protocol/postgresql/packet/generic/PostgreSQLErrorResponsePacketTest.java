@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +27,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,7 +39,7 @@ public final class PostgreSQLErrorResponsePacketTest {
     @Test
     public void assertToServerErrorMessage() {
         PostgreSQLErrorResponsePacket responsePacket = createErrorResponsePacket();
-        String expectedMessage = "SFATAL\0C3D000\0Mdatabase \"test\" does not exist\0VERROR\0Ddetail\0Hhint\0P1\0p2\0qinternal query\0"
+        String expectedMessage = "SFATAL\0VFATAL\0C3D000\0Mdatabase \"test\" does not exist\0Ddetail\0Hhint\0P1\0p2\0qinternal query\0"
                 + "Wwhere\0stest\0ttable\0ccolumn\0ddata type\0nconstraint\0Ffile\0L3\0Rroutine";
         assertThat(responsePacket.toServerErrorMessage(), is(expectedMessage));
     }
@@ -46,13 +49,12 @@ public final class PostgreSQLErrorResponsePacketTest {
         PostgreSQLErrorResponsePacket responsePacket = createErrorResponsePacket();
         responsePacket.write(payload);
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY);
-        verify(payload).writeStringNul("FATAL");
+        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY_NON_LOCALIZED);
+        verify(payload, times(2)).writeStringNul("FATAL");
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE);
         verify(payload).writeStringNul("3D000");
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE);
         verify(payload).writeStringNul("database \"test\" does not exist");
-        verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY_NON_LOCALIZED);
-        verify(payload).writeStringNul("ERROR");
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_DETAIL);
         verify(payload).writeStringNul("detail");
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_HINT);
@@ -85,8 +87,8 @@ public final class PostgreSQLErrorResponsePacketTest {
     }
     
     private PostgreSQLErrorResponsePacket createErrorResponsePacket() {
-        return PostgreSQLErrorResponsePacket.newBuilder("FATAL", "3D000", "database \"test\" does not exist").severityNonLocalized("ERROR").detail("detail").hint("hint").position(1)
-                .internalQueryAndInternalPosition("internal query", 2).where("where").schemaName("test").tableName("table").columnName("column").dataTypeName("data type")
+        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_CATALOG_NAME, "database \"test\" does not exist").detail("detail")
+                .hint("hint").position(1).internalQueryAndInternalPosition("internal query", 2).where("where").schemaName("test").tableName("table").columnName("column").dataTypeName("data type")
                 .constraintName("constraint").file("file").line(3).routine("routine").build();
     }
 }

@@ -25,7 +25,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Timestamp;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -40,9 +39,9 @@ public final class PostgreSQLTimeBinaryProtocolValueTest {
     @Test
     public void assertNewInstance() {
         PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
-        assertThat(actual.getColumnLength(null), equalTo(8));
+        assertThat(actual.getColumnLength(null), is(8));
         when(payload.readInt8()).thenReturn(1L);
-        assertThat(actual.read(payload), is(1L));
+        assertThat(actual.read(payload, 8), is(1L));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         actual.write(payload, timestamp);
         verify(payload).writeInt8(timestamp.getTime());

@@ -19,19 +19,19 @@ package org.apache.shardingsphere.governance.context.metadata;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.event.model.authority.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataPersistedEvent;
-import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
+import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangeCompletedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.lock.GovernanceLock;
-import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.event.PrimaryStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -43,6 +43,8 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.lock.InnerLockReleasedEvent;
+import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -86,8 +88,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
-        lock = new GovernanceLock(governanceFacade.getRegistryCenter(), 
-                metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+        lock = createShardingSphereLock();
     }
     
     private void disableDataSources() {
@@ -106,6 +107,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private void persistMetaData() {
         metaDataContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getRegistryCenter().persistSchema(key, value.getSchema()));
+    }
+    
+    private ShardingSphereLock createShardingSphereLock() {
+        return metaDataContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.LOCK_ENABLED) ? new GovernanceLock(governanceFacade.getRegistryCenter(),
+                metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS)) : null;
     }
     
     @Override
@@ -155,7 +161,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     @Override
     public Optional<ShardingSphereLock> getLock() {
-        return Optional.of(lock);
+        return Optional.ofNullable(lock);
     }
     
     @Override
@@ -232,15 +238,19 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
      */
     @Subscribe
     public synchronized void renew(final SchemaChangedEvent event) {
-        Map<String, ShardingSphereMetaData> newMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap().size(), 1);
-        for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
-            String schemaName = entry.getKey();
-            ShardingSphereMetaData oldMetaData = entry.getValue();
-            ShardingSphereMetaData newMetaData = event.getSchemaName().equals(schemaName) ? getChangedMetaData(oldMetaData, event.getSchema(), schemaName) : oldMetaData;
-            newMetaDataMap.put(schemaName, newMetaData);
+        try {
+            Map<String, ShardingSphereMetaData> newMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap().size(), 1);
+            for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
+                String schemaName = entry.getKey();
+                ShardingSphereMetaData oldMetaData = entry.getValue();
+                ShardingSphereMetaData newMetaData = event.getSchemaName().equals(schemaName) ? getChangedMetaData(oldMetaData, event.getSchema(), schemaName) : oldMetaData;
+                newMetaDataMap.put(schemaName, newMetaData);
+            }
+            metaDataContexts = new StandardMetaDataContexts(
+                    newMetaDataMap, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getUsers(), metaDataContexts.getProps());
+        } finally {
+            ShardingSphereEventBus.getInstance().post(new InnerLockReleasedEvent(LockNameUtil.getMetadataRefreshLockName()));
         }
-        metaDataContexts = new StandardMetaDataContexts(
-                newMetaDataMap, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getUsers(), metaDataContexts.getProps());
     }
     
     /**

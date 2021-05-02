@@ -43,4 +43,12 @@ public final class GranteeTest {
         assertThat(grantee.hashCode(), is(grantee1.hashCode()));
         assertThat(grantee1.hashCode(), not(grantee2.hashCode()));
     }
+    
+    @Test
+    public void assertHostname() {
+        Grantee grantee = new Grantee("name", "%");
+        Grantee grantee1 = new Grantee("name", "");
+        assertThat(grantee.getHostname(), is("%"));
+        assertThat(grantee1.getHostname(), is("%"));
+    }
 }

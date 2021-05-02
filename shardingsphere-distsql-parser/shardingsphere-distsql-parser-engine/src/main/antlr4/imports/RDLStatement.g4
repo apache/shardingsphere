@@ -68,7 +68,7 @@ createShardingBindingTableRules
     ;
 
 bindTableRulesDefinition
-    : ruleName LP tableName (COMMA tableName)* RP
+    : LP tableName (COMMA tableName)* RP
     ;
 
 createShardingBroadcastTableRules

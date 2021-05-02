@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.authority.provider.natived.builder.dialect;
 
-import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandler;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandler;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.TablePrivileges;
@@ -32,9 +32,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,22 +45,45 @@ import java.util.stream.Collectors;
  * Oracle privilege handler.
  */
 public final class OraclePrivilegeHandler implements StoragePrivilegeHandler {
+
+    private static final String CREATE_USER_SQL = "CREATE USER %s IDENTIFIED BY %s";
+
+    private static final String GRANT_ALL_SQL = "GRANT ALL PRIVILEGES TO %s";
     
-    private static final String SYS_PRIVILEGE_SQL = "SELECT GRANTEE, PRIVILEGE, ADMIN_OPTION, INHERITED FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";
+    private static final String SYS_PRIVILEGE_SQL = "SELECT * FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";
     
     private static final String TABLE_PRIVILEGE_SQL = "SELECT GRANTEE, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE, GRANTABLE, INHERITED FROM ALL_TAB_PRIVS WHERE GRANTEE IN (%s)";
     
     @Override
     public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
-        return Collections.emptyList();
+        Collection<Grantee> grantees = new LinkedList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            try (ResultSet resultSet = statement.executeQuery(getSysPrivilegesSQL(users))) {
+                while (resultSet.next()) {
+                    grantees.add(new Grantee(resultSet.getString("GRANTEE"), ""));
+                }
+            }
+        }
+        return users.stream().filter(each -> !grantees.contains(each.getGrantee())).collect(Collectors.toList());
     }
     
     @Override
     public void create(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            for (ShardingSphereUser each : users) {
+                statement.execute(String.format(CREATE_USER_SQL, each.getGrantee().getUsername(), each.getPassword()));
+            }
+        }
     }
     
     @Override
     public void grantAll(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            for (ShardingSphereUser each : users) {
+                statement.execute(String.format(GRANT_ALL_SQL, each.getGrantee().getUsername()));
+            }
+        }
     }
     
     @Override
