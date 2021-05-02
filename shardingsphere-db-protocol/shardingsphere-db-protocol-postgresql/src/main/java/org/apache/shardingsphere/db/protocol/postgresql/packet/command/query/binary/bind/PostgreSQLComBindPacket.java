@@ -82,7 +82,13 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     }
     
     private boolean isTextParameterValue(final List<Integer> parameterFormats, final int parameterIndex) {
-        return parameterFormats.isEmpty() || 0 == parameterFormats.get(parameterIndex);
+        if (parameterFormats.isEmpty()) {
+            return true;
+        }
+        if (1 == parameterFormats.size()) {
+            return 0 == parameterFormats.get(0);
+        }
+        return 0 == parameterFormats.get(parameterIndex);
     }
     
     private String getTextParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
