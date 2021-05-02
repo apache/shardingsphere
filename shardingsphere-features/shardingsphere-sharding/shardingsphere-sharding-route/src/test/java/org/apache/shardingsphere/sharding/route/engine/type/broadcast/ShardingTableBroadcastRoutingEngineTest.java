@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -106,9 +107,10 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         when(segment.getIdentifier().getValue()).thenReturn("t_order");
         DropIndexStatement dropIndexStatement = mock(DropIndexStatement.class, RETURNS_DEEP_STUBS);
         when(dropIndexStatement.getIndexes()).thenReturn(Collections.singletonList(segment));
-        SQLStatementContext<?> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dropIndexStatement);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
+        when(((TableAvailable) sqlStatementContext).getAllTables()).thenReturn(Collections.emptyList());
 
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext);
         
@@ -133,9 +135,10 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         when(segment.getIdentifier().getValue()).thenReturn("t_order");
         DropIndexStatement dropIndexStatement = mock(DropIndexStatement.class, RETURNS_DEEP_STUBS);
         when(dropIndexStatement.getIndexes()).thenReturn(Collections.singletonList(segment));
-        SQLStatementContext<?> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dropIndexStatement);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
+        when(((TableAvailable) sqlStatementContext).getAllTables()).thenReturn(Collections.emptyList());
 
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext);
 
