@@ -43,7 +43,7 @@ public final class PostgreSQLDoubleBinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(byteBuf.readDouble()).thenReturn(1D);
-        assertThat(new PostgreSQLDoubleBinaryProtocolValue().read(new PostgreSQLPacketPayload(byteBuf)), is(1D));
+        assertThat(new PostgreSQLDoubleBinaryProtocolValue().read(new PostgreSQLPacketPayload(byteBuf), 8), is(1D));
     }
     
     @Test

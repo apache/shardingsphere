@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public enum LockAck {
     
-    LOCKED("LOCKED"), UNLOCKED("");
+    LOCKED("LOCKED"), UNLOCKED("UNLOCKED");
     
     private String value;
 }

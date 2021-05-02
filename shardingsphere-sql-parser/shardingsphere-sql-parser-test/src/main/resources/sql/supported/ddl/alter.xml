@@ -17,7 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_table" value="ALTER TABLE t_log ADD name varchar(10)" />
+    <sql-case id="alter_table" value="ALTER TABLE t_log ADD name varchar(10)" db-types="MySQL, PostgreSQL" />
+    <sql-case id="alter_table_oracle" value="ALTER TABLE t_log ADD (name varchar(10))" db-types="Oracle" />
     <sql-case id="alter_table_not_null" value="alter table t1 add c2 real  not null" db-types="MySQL" />
     <sql-case id="alter_table_not_null_first" value="alter table t1 add c2 real  not null first" db-types="MySQL" />
     <sql-case id="alter_table_not_null_after" value="alter table t1 add c4 real  not null after c2" db-types="MySQL" />
@@ -32,7 +33,7 @@
     <sql-case id="alter_table_with_space" value="    ALTER TABLE
         t_order" db-types="MySQL,Oracle" />
     <sql-case id="alter_table_with_back_quota" value="ALTER TABLE `t_order` FORCE" db-types="MySQL" />
-    <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" />
+    <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" db-types="MySQL, PostgreSQL" />
     <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10)" db-types="MySQL,PostgreSQL" />
     <sql-case id="alter_table_add_columns_integer_type_mysql" value="ALTER TABLE t_order ADD column4 INTEGER, ADD column5 TINYINT, ADD column6 MEDIUMINT" db-types="MySQL" />
     <sql-case id="alter_table_add_columns_integer_type_oracle" value="ALTER TABLE t_order ADD (column4 INTEGER, column5 INT, column6 SMALLINT)" db-types="Oracle" />
@@ -80,7 +81,7 @@
     <sql-case id="alter_table_with_quota" value="ALTER TABLE &quot;t_order&quot; PARALLEL" db-types="Oracle" />
 <!--    TODO support PostgreSQL-->
     <sql-case id="alter_table_add_check" value="ALTER TABLE t_order ADD CONSTRAINT chk_order_id CHECK (order_id > 0)" db-types="Oracle,SQLServer" />
-    <sql-case id="alter_table_add_columns_oracle" value="ALTER TABLE t_order ADD column4 VARCHAR2(10) ADD column5 VARCHAR2(10) ADD column6 VARCHAR2(10)" db-types="Oracle" />
+    <sql-case id="alter_table_add_columns_oracle" value="ALTER TABLE t_order ADD (column4 VARCHAR2(10), column5 VARCHAR2(10), column6 VARCHAR2(10))" db-types="Oracle" />
     <sql-case id="alter_table_modify_columns_oracle" value="ALTER TABLE t_order MODIFY column4 VARCHAR2(20) MODIFY column5 VARCHAR2(20) MODIFY column6 VARCHAR2(20)" db-types="Oracle" />
     <sql-case id="alter_table_drop_columns_oracle" value="ALTER TABLE t_order DROP COLUMN user_id DROP COLUMN column5" db-types="Oracle" />
     <sql-case id="alter_table_add_primary_foreign_key" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id) UNIQUE (order_id) CHECK (order_id > 0) FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE CHECK (order_id > 0)" db-types="Oracle" />
@@ -110,18 +111,18 @@
     <sql-case id="alter_table_attach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL"/>
     <sql-case id="alter_table_detach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL"/>
     <sql-case id="alter_table_in_hash_partitioned_table" value="ALTER TABLE t_order ATTACH PARTITION orders_p4 FOR VALUES WITH (MODULUS 4, REMAINDER 3)" db-types="PostgreSQL" />
-    <sql-case id="alter_table_with_optimize_memory_read" value="ALTER TABLE t_log MEMOPTIMIZE FOR READ ADD name VARCHAR(10)" db-types="Oracle" />
-    <sql-case id="alter_table_with_no_optimize_memory_write" value="ALTER TABLE t_log NO MEMOPTIMIZE FOR WRITE ADD name VARCHAR(10)" db-types="Oracle" />
-    <sql-case id="alter_table_with_enable_validate" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE VALIDATE PRIMARY KEY" db-types="Oracle" />
-    <sql-case id="alter_table_with_primary_key" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE PRIMARY KEY" db-types="Oracle" />
-    <sql-case id="alter_table_with_index_clause" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE PRIMARY KEY USING INDEX t_log" db-types="Oracle" />
-    <sql-case id="alter_table_with_exception_clause" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE PRIMARY KEY EXCEPTIONS INTO t_log" db-types="Oracle" />
-    <sql-case id="alter_table_with_cascade" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE PRIMARY KEY CASCADE" db-types="Oracle" />
-    <sql-case id="alter_table_with_keep_index" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE PRIMARY KEY KEEP INDEX" db-types="Oracle" />
-    <sql-case id="alter_table_with_enable_table_lock" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE TABLE LOCK" db-types="Oracle" />
-    <sql-case id="alter_table_with_enable_all_triggers" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE ALL TRIGGERS" db-types="Oracle" />
-    <sql-case id="alter_table_with_disable_container_map" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE CONTAINER_MAP" db-types="Oracle" />
-    <sql-case id="alter_table_with_disable_containers_default" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE CONTAINERS_DEFAULT" db-types="Oracle" />
+    <sql-case id="alter_table_with_optimize_memory_read" value="ALTER TABLE t_log MEMOPTIMIZE FOR READ ADD (name VARCHAR(10))" db-types="Oracle" />
+    <sql-case id="alter_table_with_no_optimize_memory_write" value="ALTER TABLE t_log NO MEMOPTIMIZE FOR WRITE ADD (name VARCHAR(10))" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_validate" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE VALIDATE PRIMARY KEY" db-types="Oracle" />
+    <sql-case id="alter_table_with_primary_key" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE PRIMARY KEY" db-types="Oracle" />
+    <sql-case id="alter_table_with_index_clause" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE PRIMARY KEY USING INDEX t_log" db-types="Oracle" />
+    <sql-case id="alter_table_with_exception_clause" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE PRIMARY KEY EXCEPTIONS INTO t_log" db-types="Oracle" />
+    <sql-case id="alter_table_with_cascade" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE PRIMARY KEY CASCADE" db-types="Oracle" />
+    <sql-case id="alter_table_with_keep_index" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE PRIMARY KEY KEEP INDEX" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_table_lock" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE TABLE LOCK" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_all_triggers" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE ALL TRIGGERS" db-types="Oracle" />
+    <sql-case id="alter_table_with_disable_container_map" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE CONTAINER_MAP" db-types="Oracle" />
+    <sql-case id="alter_table_with_disable_containers_default" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE CONTAINERS_DEFAULT" db-types="Oracle" />
     <sql-case id="alter_table_add_range_partition" value="ALTER TABLE t_order ADD PARTITION range_p_order VALUES LESS THAN(100)" db-types="Oracle" />
     <sql-case id="alter_table_add_list_partition" value="ALTER TABLE t_order ADD PARTITION list_p_order VALUES(100, 200, 300)" db-types="Oracle" />
     <sql-case id="alter_table_drop_partition" value="ALTER TABLE t_order DROP PARTITION list_p_order" db-types="Oracle" />

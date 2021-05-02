@@ -304,11 +304,11 @@ operateColumnClause
     ;
 
 addColumnSpecification
-    : ADD columnOrVirtualDefinitions columnProperties?
+    : ADD LP_ columnOrVirtualDefinitions RP_ columnProperties?
     ;
 
 columnOrVirtualDefinitions
-    : LP_? columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* RP_? | columnOrVirtualDefinition
+    : columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* 
     ;
 
 columnOrVirtualDefinition
@@ -1038,11 +1038,11 @@ supplementalLoggingProps
     ;
 
 supplementalLogGrpClause
-    : GROUP logGroupName LP_ columnName (NO LOG)? (COMMA columnName (NO LOG)?)* RP_ ALWAYS?
+    : GROUP logGroupName LP_ columnName (NO LOG)? (COMMA_ columnName (NO LOG)?)* RP_ ALWAYS?
     ;
 
 supplementalIdKeyClause
-    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY) (COMMA (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY))* RP_ COLUMNS
+    : DATA LP_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY) (COMMA_ (ALL | PRIMARY KEY | UNIQUE | FOREIGN KEY))* RP_ COLUMNS
     ;
 
 alterSession

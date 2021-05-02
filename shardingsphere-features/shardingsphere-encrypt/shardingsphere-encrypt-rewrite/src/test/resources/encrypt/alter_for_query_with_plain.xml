@@ -31,4 +31,14 @@
         <input sql="ALTER TABLE t_account_bak DROP COLUMN password" />
         <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password  , DROP COLUMN assisted_query_password  , DROP COLUMN plain_password " />
     </rewrite-assertion>
+    
+    <rewrite-assertion id="drop_columns_for_plain">
+        <input sql="ALTER TABLE t_account_bak DROP COLUMN password , DROP COLUMN amount" />
+        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password  , DROP COLUMN assisted_query_password  , DROP COLUMN plain_password  , DROP COLUMN cipher_amount  , DROP COLUMN plain_amount " />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="drop_mix_columns_for_plain">
+        <input sql="ALTER TABLE t_account_bak DROP COLUMN password , DROP COLUMN id" />
+        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password  , DROP COLUMN assisted_query_password  , DROP COLUMN plain_password  , DROP COLUMN id" />
+    </rewrite-assertion>
 </rewrite-assertions>

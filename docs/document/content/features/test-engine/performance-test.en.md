@@ -124,7 +124,7 @@ rules:
         worker-id: 123
 ```
 
-#### Read Write Splitting Configuration
+#### Readwrite-splitting Configuration
 
 ```yaml
 schemaName: sharding_db
@@ -147,7 +147,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
 rules:
-- !READ_WRITE_SPLITTING
+- !READWRITE_SPLITTING
   dataSources:
     pr_ds:
       name: pr_ds
@@ -261,7 +261,7 @@ rules:
       type: SNOWFLAKE
       props:
           worker-id: 123
-- !READ_WRITE_SPLITTING
+- !READWRITE_SPLITTING
   dataSources:
     pr_ds_0:
       writeyDataSourceName: primary_ds_0

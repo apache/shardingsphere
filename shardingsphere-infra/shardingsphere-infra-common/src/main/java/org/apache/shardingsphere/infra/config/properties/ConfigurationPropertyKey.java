@@ -121,7 +121,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * The length of time in milliseconds an SQL waits for a global lock before giving up.
      */
-    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class);
+    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class),
+    
+    /**
+     * Whether enable lock.
+     */
+    LOCK_ENABLED("lock-enabled", String.valueOf(false), boolean.class);
     
     private final String key;
     

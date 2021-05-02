@@ -31,7 +31,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.ArrayList;
@@ -45,6 +44,18 @@ import java.util.stream.Collectors;
  * SQLServer privilege handler.
  */
 public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler {
+    
+    private static final String QUESTION_MARK = "?";
+    
+    private static final String LINE_BREAK = "\n";
+    
+    private static final String GO_SQL = "GO";
+    
+    private static final String CREATE_LOGIN_USER_SQL = "CREATE LOGIN %s WITH PASSWORD = '%s';";
+    
+    private static final String CREATE_DATABASE_USER_SQL = "CREATE USER %s FOR LOGIN %s;";
+    
+    private static final String GRANT_ALL_SQL = "GRANT CONTROL ON DATABASE::%s TO %s";
     
     private static final String GLOBAL_PRIVILEGE_SQL =
             "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE"
@@ -61,16 +72,56 @@ public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler 
             "SELECT GRANTOR, GRANTEE, TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE_TYPE, IS_GRANTABLE from INFORMATION_SCHEMA.TABLE_PRIVILEGES WHERE GRANTEE IN (%s)";
     
     @Override
-    public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) {
-        return Collections.emptyList();
+    public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        Collection<Grantee> grantees = new LinkedList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            try (ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))) {
+                while (resultSet.next()) {
+                    grantees.add(new Grantee(resultSet.getString("GRANTEE"), ""));
+                }
+            }
+        }
+        return users.stream().filter(each -> !grantees.contains(each.getGrantee())).collect(Collectors.toList());
     }
     
     @Override
-    public void create(final Collection<ShardingSphereUser> users, final DataSource dataSource) {
+    public void create(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            for (ShardingSphereUser each : users) {
+                statement.execute(getCreateUsersSQL(each));
+            }
+        }
+    }
+    
+    private String getCreateUsersSQL(final ShardingSphereUser user) {
+        StringBuilder result = new StringBuilder();
+        result.append(String.format(CREATE_LOGIN_USER_SQL, user.getGrantee().getUsername(), user.getPassword())).append(LINE_BREAK);
+        result.append(GO_SQL).append(LINE_BREAK);
+        result.append(String.format(CREATE_DATABASE_USER_SQL, user.getGrantee().getUsername(), user.getGrantee().getUsername())).append(LINE_BREAK);
+        result.append(GO_SQL);
+        return result.toString();
     }
     
     @Override
-    public void grantAll(final Collection<ShardingSphereUser> users, final DataSource dataSource) {
+    public void grantAll(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            String databaseName = getDatabaseName(connection.getMetaData().getURL());
+            for (ShardingSphereUser each : users) {
+                statement.execute(getGrantAllSQL(databaseName, each));
+            }
+        }
+    }
+    
+    private String getDatabaseName(final String url) {
+        if (url.contains(QUESTION_MARK)) {
+            return url.substring(url.indexOf("DatabaseName=") + 1, url.indexOf("?"));
+        }
+        return url.substring(url.indexOf("DatabaseName=") + 1);
+    }
+    
+    private String getGrantAllSQL(final String databaseName, final ShardingSphereUser user) {
+        return String.format(GRANT_ALL_SQL, databaseName, user.getGrantee().getUsername());
     }
     
     @Override
@@ -172,13 +223,12 @@ public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler 
     }
     
     private String getGlobalPrivilegesSQL(final Collection<ShardingSphereUser> users) {
-        String userHostTuples = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(","));
-        return String.format(GLOBAL_PRIVILEGE_SQL, userHostTuples);
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
+        return String.format(GLOBAL_PRIVILEGE_SQL, userList);
     }
     
     private String getSchemaPrivilegesSQL(final Collection<ShardingSphereUser> users) {
-        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
-                .collect(Collectors.joining(","));
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         return String.format(SCHEMA_PRIVILEGE_SQL, userList);
     }
     

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Read write splitting rule not existed exception.
+ * Readwrite-splitting rule not existed exception.
  */
 @RequiredArgsConstructor
 @Getter

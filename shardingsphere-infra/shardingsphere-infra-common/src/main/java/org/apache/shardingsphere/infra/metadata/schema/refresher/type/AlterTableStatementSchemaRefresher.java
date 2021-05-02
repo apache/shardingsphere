@@ -20,13 +20,18 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * ShardingSphere schema refresher for alter table statement.
@@ -38,9 +43,8 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
                         final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (!containsInTableContainedRule(tableName, materials)) {
-            return;
-        }
-        if (null != schema && schema.containsTable(tableName)) {
+            schema.put(tableName, loadTableMetaData(tableName, routeDataSourceNames, materials));
+        } else if (null != schema && schema.containsTable(tableName)) {
             TableMetaDataBuilder.build(tableName, materials).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
         }
     }
@@ -52,5 +56,19 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
             }
         }
         return false;
+    }
+    
+    private TableMetaData loadTableMetaData(final String tableName, final Collection<String> routeDataSourceNames,
+                                            final SchemaBuilderMaterials materials) throws SQLException {
+        for (String routeDataSourceName : routeDataSourceNames) {
+            DataSource dataSource = materials.getDataSourceMap().get(routeDataSourceName);
+            Optional<TableMetaData> tableMetaDataOptional = Objects.isNull(dataSource) ? Optional.empty()
+                    : TableMetaDataLoader.load(dataSource, tableName, materials.getDatabaseType());
+            if (!tableMetaDataOptional.isPresent()) {
+                continue;
+            }
+            return tableMetaDataOptional.get();
+        }
+        return new TableMetaData();
     }
 }

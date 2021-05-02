@@ -15,7 +15,7 @@ weight = 6
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xmlns:read-write-splitting="http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting"
+       xmlns:readwrite-splitting="http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
@@ -25,8 +25,8 @@ weight = 6
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting
-                           http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting/read-write-splitting.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting
+                           http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
@@ -59,13 +59,13 @@ weight = 6
     </bean>
 	
 	<!-- 主从配置负载均衡策略 -->
-    <read-write-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    <readwrite-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
 	<!-- 主从规则配置 -->
-    <read-write-splitting:rule id="readWriteSplittingRule">
-        <read-write-splitting:data-source-rule id="ds_0" write-data-source-name="write_ds0" read-data-source-names="read_ds0_0, read_ds0_1" load-balance-algorithm-ref="randomStrategy" />
-		<read-write-splitting:data-source-rule id="ds_1" write-data-source-name="write_ds1" read-data-source-names="read_ds1_0, read_ds1_1" load-balance-algorithm-ref="randomStrategy" />
-    </read-write-splitting:rule>
+    <readwrite-splitting:rule id="readWriteSplittingRule">
+        <readwrite-splitting:data-source-rule id="ds_0" write-data-source-name="write_ds0" read-data-source-names="read_ds0_0, read_ds0_1" load-balance-algorithm-ref="randomStrategy" />
+		<readwrite-splitting:data-source-rule id="ds_1" write-data-source-name="write_ds1" read-data-source-names="read_ds1_0, read_ds1_1" load-balance-algorithm-ref="randomStrategy" />
+    </readwrite-splitting:rule>
     
 	<!-- 分片策略配置 -->
 	<sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="inlineDatabaseStrategyAlgorithm" />
