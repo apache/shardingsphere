@@ -423,6 +423,7 @@ unreservedWord
     | YEAR
     | YES
     | ZONE
+    | JSON
     ;
 
 typeFuncNameKeyword
@@ -521,10 +522,10 @@ aExpr
     | aExpr SLASH_ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
-    | aExpr comparisonOperator aExpr
     | aExpr qualOp aExpr
     | qualOp aExpr
     | aExpr qualOp
+    | aExpr comparisonOperator aExpr
     | NOT aExpr
     | aExpr LIKE aExpr
     | aExpr LIKE aExpr ESCAPE aExpr
@@ -656,7 +657,7 @@ columnref
     ;
 
 qualOp
-    : mathOperator
+    : jsonOperator
     | TILDE_TILDE_
     | NOT_TILDE_TILDE_
     | OPERATOR LP_ anyOperator RP_
@@ -735,6 +736,23 @@ mathOperator
     | LTE_
     | GTE_
     | NEQ_
+    ;
+
+jsonOperator
+    : JSON_EXTRACT_ # jsonExtract
+    | JSON_EXTRACT_TEXT_ # jsonExtractText
+    | JSON_PATH_EXTRACT_ # jsonPathExtract
+    | JSON_PATH_EXTRACT_TEXT_ # jsonPathExtractText
+    | JSONB_CONTAIN_RIGHT_ # jsonbContainRight
+    | JSONB_CONTAIN_LEFT_ # jsonbContainLeft
+    | QUESTION_ # jsonbContainTopKey
+    | QUESTION_ VERTICAL_BAR_ # jsonbContainAnyTopKey
+    | JSONB_CONTAIN_ALL_TOP_KEY_ # jsonbContainAllTopKey
+    | OR_ # jsonbConcat
+    | MINUS_ # jsonbDelete
+    | JSONB_PATH_DELETE_ # jsonbPathDelete
+    | JSONB_PATH_CONTAIN_ANY_VALUE_ # jsonbPathContainAnyValue
+    | JSONB_PATH_PREDICATE_CHECK_ # jsonbPathPredicateCheck
     ;
 
 qualAllOp
