@@ -50,6 +50,6 @@ public final class PostgreSQLCommandExecuteEngineTest {
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
         commandExecuteEngine.writeQueryData(channelHandlerContext, null, queryCommandExecutor, 0);
-        verify(channelHandlerContext, times(0)).write(isA(PostgreSQLReadyForQueryPacket.class));
+        verify(channelHandlerContext, times(1)).write(isA(PostgreSQLReadyForQueryPacket.class));
     }
 }
