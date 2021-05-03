@@ -196,15 +196,16 @@ spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=12
 
 # read query configuration
 # ds_0,ds_1 is the logical data source name of the readwrite-splitting
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.write-data-source-name=write-ds0
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.read-data-source-names=write-ds0-read0
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.load-balancer-name=read-random
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.write-data-source-name=write-ds1
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.read-data-source-names=write-ds1-read0
-spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.load-balancer-name=read-random
+spring.shardingsphere.rules.replica-query.data-sources.ds_0.primary-data-source-name=write-ds0
+spring.shardingsphere.rules.replica-query.data-sources.ds_0.replica-data-source-names=write-ds0-read0
+spring.shardingsphere.rules.replica-query.data-sources.ds_0.load-balancer-name=read-random
+spring.shardingsphere.rules.replica-query.data-sources.ds_1.primary-data-source-name=write-ds1
+spring.shardingsphere.rules.replica-query.data-sources.ds_1.replica-data-source-names=write-ds1-read0
+spring.shardingsphere.rules.replica-query.data-sources.ds_1.load-balancer-name=read-random
 
 # Load balance algorithm configuration
-spring.shardingsphere.rules.readwrite-splitting.load-balancers.read-random.type=RANDOM
+spring.shardingsphere.rules.replica-query.data-sources.load-balancers.read-random.type=RANDOM
+spring.shardingsphere.rules.replica-query.load-balancers.read-random.props.xxx=xxx
 ```
 
 ## Shardingsphere-4.x
