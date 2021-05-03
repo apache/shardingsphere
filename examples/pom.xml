@@ -167,6 +167,11 @@
                 <artifactId>shardingsphere-infra-common</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-read-write-splitting-api</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
             
             <dependency>
                 <groupId>org.aspectj</groupId>

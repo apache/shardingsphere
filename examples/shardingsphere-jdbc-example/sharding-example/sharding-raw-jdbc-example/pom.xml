@@ -38,5 +38,9 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-read-write-splitting-api</artifactId>
+        </dependency>
     </dependencies>
 </project>
