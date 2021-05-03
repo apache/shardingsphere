@@ -105,15 +105,21 @@ Proxy运行在${host-proxy}机器
 
 #### 进入sysbench压测结果目录
 
+```bash
 cd /home/jenkins/sysbench_res/sharding
+```
 
 #### 创建本次构建的文件夹
 
+```bash
 mkdir $BUILD_NUMBER
+```
 
 #### 取最后14次构建，保存到隐藏文件中
 
+```bash
 ls -v | tail -n14 > .build_number.txt
+```
 
 #### 部署及压测
 
@@ -121,7 +127,7 @@ ls -v | tail -n14 > .build_number.txt
 
 ./deploy_sharding.sh
 
-```
+```bash
 #!/bin/sh
 
 rm -fr apache-shardingsphere-*-shardingsphere-proxy-bin
@@ -140,7 +146,7 @@ sleep 30
 
 步骤2 执行sysbench脚本
 
-```
+```bash
 # master
 
 cd /home/jenkins/sysbench_res/sharding
@@ -167,7 +173,7 @@ sysbench oltp_read_only --mysql-host=${host-proxy} --mysql-port=3307 --mysql-use
 
 ./stop_proxy.sh
 
-```
+```bash
 #!/bin/sh
 
 ./3.0.0_sharding-proxy/bin/stop.sh 
@@ -177,7 +183,7 @@ sysbench oltp_read_only --mysql-host=${host-proxy} --mysql-port=3307 --mysql-use
 
 #### 生成压测曲线图片
 
-```
+```bash
 # Generate graph
 
 cd /home/jenkins/sysbench_res/
@@ -297,12 +303,9 @@ Execute Statement: ID = 1
 server.yaml
 
 ```yaml
-authentication:
-  users:
-    root:
-      password: root
-    sharding:
-      password: sharding
+users:
+  - root@%:root
+  - sharding@:sharding
 
 props:
   max-connections-size-per-query: 10
