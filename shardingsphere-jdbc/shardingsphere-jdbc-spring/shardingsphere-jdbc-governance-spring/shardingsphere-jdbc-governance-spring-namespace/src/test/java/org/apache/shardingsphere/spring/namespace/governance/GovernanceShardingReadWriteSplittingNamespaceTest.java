@@ -34,7 +34,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-@ContextConfiguration(locations = "classpath:META-INF/rdb/sharding-read-write-splitting-governance.xml")
+@ContextConfiguration(locations = "classpath:META-INF/rdb/sharding-readwrite-splitting-governance.xml")
 public class GovernanceShardingReadWriteSplittingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @BeforeClass

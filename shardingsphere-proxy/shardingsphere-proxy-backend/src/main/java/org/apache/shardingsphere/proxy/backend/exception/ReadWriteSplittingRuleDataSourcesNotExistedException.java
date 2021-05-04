@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * Read write splitting rule data source not existed exception.
+ * Readwrite-splitting rule data source not existed exception.
  */
 @RequiredArgsConstructor
 @Getter

@@ -304,11 +304,11 @@ operateColumnClause
     ;
 
 addColumnSpecification
-    : ADD columnOrVirtualDefinitions columnProperties?
+    : ADD LP_ columnOrVirtualDefinitions RP_ columnProperties?
     ;
 
 columnOrVirtualDefinitions
-    : LP_? columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* RP_? | columnOrVirtualDefinition
+    : columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* 
     ;
 
 columnOrVirtualDefinition

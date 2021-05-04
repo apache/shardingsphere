@@ -161,7 +161,7 @@ spring.shardingsphere.rules.sharding.binding-tables[x]= # Binding table names,mu
 spring.shardingsphere.rules.sharding.broadcast-tables= # Broadcast table names,multiple table name are separated by commas
 
 # Table sharding strategy
-# The enumeration value of `ds_$->{0..1}` is the name of the logical data source configured with read-write-splitting
+# The enumeration value of `ds_$->{0..1}` is the name of the logical data source configured with readwrite-splitting
 spring.shardingsphere.rules.sharding.tables.t_user.actual-data-nodes=ds_$->{0..1}.t_user_$->{0..1}
 spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-column=user_id
 spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-algorithm-name=user-table-strategy-inline
@@ -185,7 +185,7 @@ spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.key-gen
 
 # Sharding algorithm configuration
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.type=INLINE
-# The enumeration value of `ds_$->{user_id % 2}` is the name of the logical data source configured with read-write-splitting
+# The enumeration value of `ds_$->{user_id % 2}` is the name of the logical data source configured with readwrite-splitting
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds$->{user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}
@@ -195,21 +195,21 @@ spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
 spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=123
 
 # read query configuration
-# ds_0,ds_1 is the logical data source name of the read-write-splitting
-spring.shardingsphere.rules.read-write-splitting.data-sources.ds_0.write-data-source-name=write-ds0
-spring.shardingsphere.rules.read-write-splitting.data-sources.ds_0.read-data-source-names=write-ds0-read0
-spring.shardingsphere.rules.read-write-splitting.data-sources.ds_0.load-balancer-name=read-random
-spring.shardingsphere.rules.read-write-splitting.data-sources.ds_1.write-data-source-name=write-ds1
-spring.shardingsphere.rules.read-write-splitting.data-sources.ds_1.read-data-source-names=write-ds1-read0
-spring.shardingsphere.rules.read-write-splitting.data-sources.ds_1.load-balancer-name=read-random
+# ds_0,ds_1 is the logical data source name of the readwrite-splitting
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.write-data-source-name=write-ds0
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.read-data-source-names=write-ds0-read0
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_0.load-balancer-name=read-random
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.write-data-source-name=write-ds1
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.read-data-source-names=write-ds1-read0
+spring.shardingsphere.rules.readwrite-splitting.data-sources.ds_1.load-balancer-name=read-random
 
 # Load balance algorithm configuration
-spring.shardingsphere.rules.read-write-splitting.load-balancers.read-random.type=RANDOM
+spring.shardingsphere.rules.readwrite-splitting.load-balancers.read-random.type=RANDOM
 ```
 
 ## Shardingsphere-4.x
 
-### Read-Write Split
+### Readwrite Split
 
 #### Configuration Item Explanation
 
@@ -283,12 +283,12 @@ spring.shardingsphere.sharding.default-table-strategy.xxx= #Default table shardi
 spring.shardingsphere.sharding.default-key-generator.type= #Default auto-increament key generator of type; it will use org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator in default; user defined generator or internal generator (SNOWFLAKE or UUID) can both be used
 spring.shardingsphere.sharding.default-key-generator.props.<property-name>= #Auto-increament key generator property configuration, such as worker.id and max.tolerate.time.difference.milliseconds of SNOWFLAKE algorithm
 
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #Refer to read-write split part for more details
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #Refer to read-write split part for more details
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= #Refer to read-write split part for more details
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #Refer to read-write split part for more details
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Refer to read-write split part for more details
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #Refer to read-write split part for more details
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #Refer to readwrite-splitting part for more details
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #Refer to readwrite-splitting part for more details
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= #Refer to readwrite-splitting part for more details
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #Refer to readwrite-splitting part for more details
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Refer to readwrite-splitting part for more details
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #Refer to readwrite-splitting part for more details
 
 spring.shardingsphere.props.sql.show= #Show SQL or not; default value: false
 spring.shardingsphere.props.executor.size= #Executing thread number; default value: CPU core number
@@ -314,7 +314,7 @@ spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.en
 #### Configuration Item Explanation
 
 ```properties
-#Omit data source, data sharding, read-write split and data masking configurations
+#Omit data source, data sharding, readwrite split and data masking configurations
 
 spring.shardingsphere.orchestration.name= #Orchestration instance name
 spring.shardingsphere.orchestration.overwrite= #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
@@ -386,15 +386,15 @@ sharding.jdbc.config.sharding.default-database-strategy.xxx= #Default strategy f
 sharding.jdbc.config.sharding.default-table-strategy.xxx= #Default strategy for sharding tables, same as tables sharding strategy
 sharding.jdbc.config.sharding.default-key-generator-class-name= #Default key generator class name, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator, and require a no argument constructor
 
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #more details can reference Read-write splitting part
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #more details can reference Read-write splitting part
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= #more details can reference Read-write splitting part
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #more details can reference Read-write splitting part
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #more details can reference Read-write splitting part
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #more details can reference Read-write splitting part
-sharding.jdbc.config.config.map.key1= #more details can reference Read-write splitting part
-sharding.jdbc.config.config.map.key2= #more details can reference Read-write splitting part
-sharding.jdbc.config.config.map.keyx= #more details can reference Read-write splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #more details can reference readwrite-splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #more details can reference readwrite-splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= #more details can reference readwrite-splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #more details can reference readwrite-splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #more details can reference readwrite-splitting part
+sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #more details can reference readwrite-splitting part
+sharding.jdbc.config.config.map.key1= #more details can reference Readwrite-splitting part
+sharding.jdbc.config.config.map.key2= #more details can reference Readwrite-splitting part
+sharding.jdbc.config.config.map.keyx= #more details can reference Readwrite-splitting part
 
 sharding.jdbc.config.props.sql.show= #To show SQLS or not, default value: false
 sharding.jdbc.config.props.executor.size= #The number of working threads, default value: CPU count
@@ -404,7 +404,7 @@ sharding.jdbc.config.config.map.key2= #User-defined arguments
 sharding.jdbc.config.config.map.keyx= #User-defined arguments
 ```
 
-### Read-write splitting
+### Readwrite-splitting
 
 #### Configuration Item Explanation
 
@@ -432,7 +432,7 @@ sharding.jdbc.config.props.check.table.metadata.enabled= #Check the metadata con
 #### Configuration Item Explanation
 
 ```properties
-#Ignore data sources, sharding and read-write splitting configuration
+#Ignore data sources, sharding and readwrite splitting configuration
 
 sharding.jdbc.config.sharding.orchestration.name= #Name of orchestration instance
 sharding.jdbc.config.sharding.orchestration.overwrite= #Use local configuration to overwrite registry center or not
@@ -447,7 +447,7 @@ sharding.jdbc.config.sharding.orchestration.registry.time-to-live-seconds= #Time
 
 ## Shardingsphere-2.x
 
-### Read-write splitting
+### Readwrite-splitting
 
 #### Configuration Item Explanation
 

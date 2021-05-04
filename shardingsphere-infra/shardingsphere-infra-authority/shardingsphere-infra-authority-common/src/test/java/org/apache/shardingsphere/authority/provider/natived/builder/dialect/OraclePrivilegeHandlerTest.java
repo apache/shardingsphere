@@ -28,8 +28,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,6 +45,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class OraclePrivilegeHandlerTest {
@@ -53,10 +56,52 @@ public final class OraclePrivilegeHandlerTest {
     }
     
     @Test
+    public void assertDiff() throws SQLException {
+        Collection<ShardingSphereUser> newUsers = createUsers();
+        newUsers.add(new ShardingSphereUser("user", "", ""));
+        DataSource dataSource = mockDataSourceForUsers(newUsers);
+        Collection<ShardingSphereUser> result = TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle", new Properties()).diff(newUsers, dataSource);
+        assertDiffUsers(result);
+    }
+    
+    @Test
+    public void assertCreate() throws SQLException {
+        Collection<ShardingSphereUser> users = createUsers();
+        DataSource dataSource = mockDataSourceForUsers(users);
+        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle", new Properties()).create(users, dataSource);
+        assertCreateUsers(users, dataSource.getConnection().createStatement());
+    }
+    
+    @Test
+    public void assertGrantAll() throws SQLException {
+        Collection<ShardingSphereUser> users = createUsers();
+        DataSource dataSource = mockDataSourceForUsers(users);
+        TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle", new Properties()).grantAll(users, dataSource);
+        assertGrantUsersAll(users, dataSource.getConnection().createStatement());
+    }
+    
+    @Test
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
         assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle", new Properties()).load(users, dataSource));
+    }
+
+    private void assertCreateUsers(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
+        for (ShardingSphereUser each : users) {
+            verify(statement).execute(String.format("CREATE USER %s IDENTIFIED BY %s", each.getGrantee().getUsername(), each.getPassword()));
+        }
+    }
+
+    private void assertDiffUsers(final Collection<ShardingSphereUser> users) {
+        assertThat(users.size(), is(1));
+        assertThat(users.iterator().next().getGrantee().getUsername(), is("user"));
+    }
+
+    private void assertGrantUsersAll(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
+        for (ShardingSphereUser each : users) {
+            verify(statement).execute(String.format("GRANT ALL PRIVILEGES TO %s", each.getGrantee().getUsername()));
+        }
     }
     
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
@@ -81,8 +126,8 @@ public final class OraclePrivilegeHandlerTest {
     private DataSource mockDataSource(final Collection<ShardingSphereUser> users) throws SQLException {
         ResultSet sysPrivilegeResultSet = mockSysPrivilegeResultSet();
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        String sysPrivilegeSql = "SELECT GRANTEE, PRIVILEGE, ADMIN_OPTION, INHERITED FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";
-        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
+        String sysPrivilegeSql = "SELECT * FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";
+        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
         when(result.getConnection().createStatement().executeQuery(String.format(sysPrivilegeSql, userList))).thenReturn(sysPrivilegeResultSet);
         ResultSet tabPrivilegeResultSet = mockTabPrivilegeResultSet();
         String tabPrivilegeSql = "SELECT GRANTEE, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE, GRANTABLE, INHERITED FROM ALL_TAB_PRIVS WHERE GRANTEE IN (%s)";
@@ -90,6 +135,19 @@ public final class OraclePrivilegeHandlerTest {
         return result;
     }
 
+    private DataSource mockDataSourceForUsers(final Collection<ShardingSphereUser> users) throws SQLException {
+        ResultSet usersResultSet = mockUsersResultSet();
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        Statement statement = mock(Statement.class);
+        Connection connection = mock(Connection.class);
+        String diffUsersSQL = "SELECT * FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";
+        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
+        when(statement.executeQuery(String.format(diffUsersSQL, userList))).thenReturn(usersResultSet);
+        when(connection.createStatement()).thenReturn(statement);
+        when(result.getConnection()).thenReturn(connection);
+        return result;
+    }
+    
     private ResultSet mockSysPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, true, true, false);
@@ -105,6 +163,13 @@ public final class OraclePrivilegeHandlerTest {
         when(result.getString("TABLE_NAME")).thenReturn("t_order");
         when(result.getString("PRIVILEGE")).thenReturn("SELECT", "INSERT", "DELETE", "UPDATE");
         when(result.getString("GRANTABLE")).thenReturn("YES", "YES", "FALSE", "YES");
+        when(result.getString("GRANTEE")).thenReturn("admin");
+        return result;
+    }
+
+    private ResultSet mockUsersResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
         when(result.getString("GRANTEE")).thenReturn("admin");
         return result;
     }

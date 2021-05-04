@@ -35,8 +35,8 @@ public final class YamlDataSourceFactory {
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/shadow-databases.yaml"));
             case ENCRYPT_SHADOW:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/encrypt-shadow-databases.yaml"));
-            case READ_WRITE_SPLITTING:
-                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/read-write-splitting-shadow-databases.yaml"));
+            case READWRITE_SPLITTING:
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/readwrite-splitting-shadow-databases.yaml"));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

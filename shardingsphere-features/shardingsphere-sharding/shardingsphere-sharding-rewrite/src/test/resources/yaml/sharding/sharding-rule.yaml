@@ -41,9 +41,18 @@ rules:
         standard:
           shardingColumn: account_id
           shardingAlgorithmName: t_account_detail_inline
+    t_order:
+      actualDataNodes: db.t_order_0
+    t_order_item:
+      actualDataNodes: db.t_order_item_0 
+    t_order_extend:
+      actualDataNodes: db.t_order_extend_0 
   bindingTables:
     - t_account, t_account_detail
-  
+    - t_order, t_order_item
+  broadcastTables:
+    - t_config
+    - t_order_type
   shardingAlgorithms:
     t_account_inline:
       type: INLINE

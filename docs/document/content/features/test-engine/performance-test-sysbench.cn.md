@@ -105,15 +105,21 @@ Proxy运行在${host-proxy}机器
 
 #### 进入sysbench压测结果目录
 
+```bash
 cd /home/jenkins/sysbench_res/sharding
+```
 
 #### 创建本次构建的文件夹
 
+```bash
 mkdir $BUILD_NUMBER
+```
 
 #### 取最后14次构建，保存到隐藏文件中
 
+```bash
 ls -v | tail -n14 > .build_number.txt
+```
 
 #### 部署及压测
 
@@ -121,7 +127,7 @@ ls -v | tail -n14 > .build_number.txt
 
 ./deploy_sharding.sh
 
-```
+```bash
 #!/bin/sh
 
 rm -fr apache-shardingsphere-*-shardingsphere-proxy-bin
@@ -140,7 +146,7 @@ sleep 30
 
 步骤2 执行sysbench脚本
 
-```
+```bash
 # master
 
 cd /home/jenkins/sysbench_res/sharding
@@ -152,7 +158,7 @@ sysbench oltp_read_only --mysql-host=${host-proxy} --mysql-port=3307 --mysql-use
 sysbench oltp_read_only        --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run
 sysbench oltp_read_only        --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_read_only.master.txt
 sysbench oltp_point_select     --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_point_select.master.txt
-sysbench oltp_read_write       --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_read_write.master.txt
+sysbench oltp_readwrite        --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_readwrite.master.txt
 sysbench oltp_write_only       --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_write_only.master.txt
 sysbench oltp_update_index     --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_update_index.master.txt
 sysbench oltp_update_non_index --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=30  --time=180 --threads=256 --max-requests=0 --percentile=99  --mysql-ignore-errors="all" --range_selects=off --rand-type=uniform --auto_inc=off run | tee oltp_update_non_index.master.txt
@@ -167,7 +173,7 @@ sysbench oltp_read_only --mysql-host=${host-proxy} --mysql-port=3307 --mysql-use
 
 ./stop_proxy.sh
 
-```
+```bash
 #!/bin/sh
 
 ./3.0.0_sharding-proxy/bin/stop.sh 
@@ -177,7 +183,7 @@ sysbench oltp_read_only --mysql-host=${host-proxy} --mysql-port=3307 --mysql-use
 
 #### 生成压测曲线图片
 
-```
+```bash
 # Generate graph
 
 cd /home/jenkins/sysbench_res/
@@ -238,7 +244,7 @@ Execute Statement: ID = 5
 Execute Statement: ID = 1
 ```
 
-#### oltp_read_write
+#### oltp_readwrite
 
 ```
 Prepare Statement (ID = 1): 'COMMIT'
@@ -297,12 +303,9 @@ Execute Statement: ID = 1
 server.yaml
 
 ```yaml
-authentication:
-  users:
-    root:
-      password: root
-    sharding:
-      password: sharding
+users:
+  - root@%:root
+  - sharding@:sharding
 
 props:
   max-connections-size-per-query: 10
@@ -1502,7 +1505,7 @@ if __name__ == '__main__':
     generate_graph(path, 'oltp_point_select')
     generate_graph(path, 'oltp_read_only')
     generate_graph(path, 'oltp_write_only')
-    generate_graph(path, 'oltp_read_write')
+    generate_graph(path, 'oltp_readwrite')
     generate_graph(path, 'oltp_update_index')
     generate_graph(path, 'oltp_update_non_index')
     generate_graph(path, 'oltp_delete')

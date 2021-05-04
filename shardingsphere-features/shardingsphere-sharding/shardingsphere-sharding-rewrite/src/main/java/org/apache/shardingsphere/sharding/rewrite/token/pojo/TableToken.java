@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 import com.google.common.base.Joiner;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Table token.
@@ -72,9 +70,7 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
-                : sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Map<String, String> result = new HashMap<>(tableNames.size(), 1);
         for (RouteMapper each : routeUnit.getTableMappers()) {
             result.put(each.getLogicName().toLowerCase(), each.getActualName());

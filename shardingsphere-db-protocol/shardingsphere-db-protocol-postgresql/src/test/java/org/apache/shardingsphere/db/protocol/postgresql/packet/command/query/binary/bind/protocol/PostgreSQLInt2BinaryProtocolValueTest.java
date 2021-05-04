@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -38,9 +37,9 @@ public final class PostgreSQLInt2BinaryProtocolValueTest {
     @Test
     public void assertNewInstance() {
         PostgreSQLInt2BinaryProtocolValue actual = new PostgreSQLInt2BinaryProtocolValue();
-        assertThat(actual.getColumnLength(null), equalTo(2));
+        assertThat(actual.getColumnLength(null), is(2));
         when(payload.readInt2()).thenReturn(1);
-        assertThat(actual.read(payload), is(1));
+        assertThat(actual.read(payload, 2), is(1));
         actual.write(payload, 1);
         verify(payload).writeInt2(1);
     }
