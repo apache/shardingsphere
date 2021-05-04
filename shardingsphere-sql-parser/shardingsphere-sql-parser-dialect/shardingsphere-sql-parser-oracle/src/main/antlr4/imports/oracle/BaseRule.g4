@@ -576,7 +576,7 @@ hsmAuthString
     ;
 
 targetDbName
-    : stringLiterals
+    : identifier
     ;
 
 certificateId
