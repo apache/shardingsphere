@@ -1458,3 +1458,171 @@ ACTIVE
 DEFAULT_COLLATION
     : D E F A U L T UL_ C O L L A T I O N
     ;
+
+DATAFILES
+    : D A T A F I L E S
+    ;
+
+DISTRIBUTED
+    : D I S T R I B U T E D
+    ;
+
+RECOVERY
+    : R E C O V E R Y
+    ;
+
+FLUSH
+    : F L U S H
+    ;
+
+NOREPLY
+    : N O R E P L Y
+    ;
+
+SWITCH
+    : S W I T C H
+    ;
+
+LOGFILE
+    : L O G F I L E
+    ;
+
+SUSPEND
+    : S U S P E N D
+    ;
+
+RESUME
+    : R E S U M E
+    ;
+
+QUIESCE
+    : Q U I E S C E
+    ;
+
+UNQUIESCE
+    : U N Q U I E S C E
+    ;
+
+SHUTDOWN
+    : S H U T D O W N
+    ;
+
+REGISTER
+    : R E G I S T E R
+    ;
+
+RESET
+    : R E S E T
+    ;
+
+RELOCATE
+    : R E L O C A T E
+    ;
+
+CLIENT
+    : C L I E N T
+    ;
+
+CANCEL
+    : C A N C E L
+    ;
+
+PASSWORDFILE_METADATA_CACHE
+    : P A S S W O R D F I L E UL_ M E T A D A T A UL_ C A C H E
+    ;
+
+NOSWITCH
+    : N O S W I T C H
+    ;
+
+CONTROLFILE
+    : C O N T R O L F I L E
+    ;
+
+DISCONNECT
+    : D I S C O N N E C T
+    ;
+
+POST_TRANSACTION
+    : P O S T UL_ T R A N S A C T I O N
+    ;
+
+KILL
+    : K I L L
+    ;
+
+ROLLING
+    : R O L L I N G
+    ;
+
+MIGRATION
+    : M I G R A T I O N
+    ;
+
+STOP
+    : S T O P
+    ;
+
+PATCH
+    : P A T C H
+    ;
+
+ENCRYPTION
+    : E N C R Y P T I O N
+    ;
+
+WALLET
+    : W A L L E T
+    ;
+
+AFFINITY
+    : A F F I N I T Y
+    ;
+
+MEMORY
+    : M E M O R Y
+    ;
+
+SPFILE
+    : S P F I L E
+    ;
+
+BOTH
+    : B O T H
+    ;
+
+SID
+    : S I D
+    ;
+
+SHARED_POOL
+    : S H A R E D UL_ P O O L
+    ;
+
+BUFFER_CACHE
+    : B U F F E R UL_ C A C H E
+    ;
+
+REDO
+    : R E D O
+    ;
+
+CONFIRM
+    : C O N F I R M
+    ;
+
+APPLY
+    : A P P L Y
+    ;
+
+MIGRATE
+    : M I G R A T E
+    ;
+
+USE_STORED_OUTLINES
+    : U S E UL_ S T O R E D UL_ O U T L I N E S
+    ;
+
+GLOBAL_TOPIC_ENABLED
+    : G L O B A L UL_ T O P I C UL_ E N A B L E D
+    ;

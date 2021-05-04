@@ -175,6 +175,14 @@ directoryName
     : identifier
     ;
 
+dispatcherName
+    : stringLiterals
+    ;
+
+clientId
+    : stringLiterals
+    ;
+
 opaqueFormatSpec
     : identifier
     ;
@@ -525,4 +533,56 @@ hashSubpartitionQuantity
 
 odciParameters
     : identifier
+    ;
+
+sessionId
+    : numberLiterals
+    ;
+
+serialNumber
+    : numberLiterals
+    ;
+
+instanceId
+    : AT_ numberLiterals
+    ;
+
+sqlId
+    : stringLiterals
+    ;
+
+instanceName
+    : stringLiterals
+    ;
+
+logFileName
+    : stringLiterals
+    ;
+
+logFileGroupsArchivedLocationName
+    : stringLiterals
+    ;
+
+asmVersion
+    : stringLiterals
+    ;
+
+walletPassword
+    : stringLiterals
+    ;
+
+hsmAuthString
+    : stringLiterals
+    ;
+
+targetDbName
+    : stringLiterals
+    ;
+
+certificateId
+    : stringLiterals
+    ;
+
+categoryName
+    : stringLiterals
     ;

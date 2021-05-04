@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSessionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSynonymContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
@@ -58,8 +59,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSessionStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSynonymStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSystemStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
@@ -300,5 +302,10 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitAlterSession(final AlterSessionContext ctx) {
         return new OracleAlterSessionStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterSystem(final AlterSystemContext ctx) {
+        return new OracleAlterSystemStatement();
     }
 }

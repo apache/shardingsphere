@@ -189,4 +189,8 @@
     <sql-case id="alter_session_change_parameter" value="ALTER SESSION SET NLS_DATE_LANGUAGE = French" db-types="Oracle" />
     <sql-case id="alter_session_set_container" value="ALTER SESSION SET CONTAINER = cdb$root" db-types="Oracle" />
     <sql-case id="alter_session_set_container_service" value="ALTER SESSION SET CONTAINER = pdb1 SERVICE = my_new_service" db-types="Oracle" />
+<!--alter system test-->
+    <sql-case id="alter_system_archive_log_change" value="ALTER SYSTEM ARCHIVE LOG CHANGE 9356083" db-types="Oracle" />
+    <sql-case id="alter_system_archive_log_logfile" value="ALTER SYSTEM ARCHIVE LOG LOGFILE 'diskl:log6.log' TO 'diska:[arch$]'" db-types="Oracle" />
+    <sql-case id="alter_system_set_parameter" value="ALTER SYSTEM SET QUERY_REWRITE_ENABLED = TRUE" db-types="Oracle" />
 </sql-cases>

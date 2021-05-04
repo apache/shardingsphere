@@ -1132,3 +1132,258 @@ rowArchivalVisibilityClause
 defaultCollationClause
     : DEFAULT_COLLATION EQ_ (collationName | NONE)
     ;
+
+alterSystem
+    : ALTER SYSTEM alterSystemOption
+    ;
+
+alterSystemOption
+    : archiveLogClause
+    | checkpointClause
+    | checkDatafilesClause
+    | distributedRecovClauses
+    | flushClause
+    | endSessionClauses
+    | switchLogfileClause
+    | suspendResumeClause
+    | quiesceClauses
+    | rollingMigrationClauses
+    | rollingPatchClauses
+    | alterSystemSecuriyClauses
+    | affinityClauses
+    | shutdownDispatcherClause
+    | registerClause
+    | setClause
+    | resetClause
+    | relocateClientClause
+    | cancelSqlClause
+    | flushPasswordfileMetadataCacheClause
+    ;
+
+archiveLogClause
+    : ARCHIVE LOG instanceClause? (sequenceClause | changeClause | currentClause | groupClause | logfileClause | nextClause | allClause) toLocationClause?
+    ;
+
+checkpointClause
+    : CHECKPOINT (GLOBAL | LOCAL)?
+    ;
+
+checkDatafilesClause
+    : CHECK DATAFILES (GLOBAL | LOCAL)?
+    ;
+
+distributedRecovClauses
+    : (ENABLE | DISABLE) DISTRIBUTED RECOVERY
+    ;
+
+flushClause
+    : FLUSH flushClauseOption
+    ;
+
+endSessionClauses
+    : (disconnectSessionClause | killSessionClause) (IMMEDIATE | NOREPLY)?
+    ;
+
+switchLogfileClause
+    : SWITCH LOGFILE
+    ;
+
+suspendResumeClause
+    : SUSPEND | RESUME
+    ;
+
+quiesceClauses
+    : QUIESCE RESTRICTED | UNQUIESCE
+    ;
+
+rollingMigrationClauses
+    : startRollingMigrationClause | stopRollingMigrationClause
+    ;
+
+rollingPatchClauses
+    : startRollingPatchClause | stopRollingPatchClause
+    ;
+
+alterSystemSecuriyClauses
+    : restrictedSessionClause | setEncryptionWalletOpenClause | setEncryptionWalletCloseClause | setEncryptionKeyClause
+    ;
+
+affinityClauses
+    : enableAffinityClause | disableAffinityClause
+    ;
+
+shutdownDispatcherClause
+    : SHUTDOWN IMMEDIATE? dispatcherName
+    ;
+
+registerClause
+    : REGISTER
+    ;
+
+setClause
+    : SET alterSystemSetClause+
+    ;
+
+resetClause
+    : RESET alterSystemResetClause+
+    ;
+
+relocateClientClause
+    : RELOCATE CLIENT clientId
+    ;
+
+cancelSqlClause
+    : CANCEL SQL SQ_ sessionId serialNumber instanceId? sqlId? SQ_
+    ;
+
+flushPasswordfileMetadataCacheClause
+    : FLUSH PASSWORDFILE_METADATA_CACHE
+    ;
+
+instanceClause
+    : INSTANCE SQ_ instanceName SQ_
+    ;
+
+sequenceClause
+    : SEQUENCE numberLiterals
+    ;
+
+changeClause
+    : CHANGE numberLiterals
+    ;
+
+currentClause
+    : CURRENT NOSWITCH?
+    ;
+
+groupClause
+    : GROUP numberLiterals
+    ;
+
+logfileClause
+    : LOGFILE logFileName (USING BACKUP CONTROLFILE)?
+    ;
+
+nextClause
+    : NEXT
+    ;
+
+allClause
+    : ALL
+    ;
+
+toLocationClause
+    : TO logFileGroupsArchivedLocationName
+    ;
+
+flushClauseOption
+    : sharedPoolClause | globalContextClause | bufferCacheClause | flashCacheClause | redoToClause
+    ;
+
+disconnectSessionClause
+    : DISCONNECT SESSION SQ_ numberLiterals COMMA_ numberLiterals SQ_ POST_TRANSACTION?
+    ;
+
+killSessionClause
+    : KILL SESSION SQ_ numberLiterals COMMA_ numberLiterals (COMMA_ AT_ numberLiterals)? SQ_
+    ;
+
+startRollingMigrationClause
+    : START ROLLING MIGRATION TO asmVersion
+    ;
+
+stopRollingMigrationClause
+    : STOP ROLLING MIGRATION
+    ;
+
+startRollingPatchClause
+    : START ROLLING PATCH
+    ;
+
+stopRollingPatchClause
+    : STOP ROLLING PATCH
+    ;
+
+restrictedSessionClause
+    : (ENABLE | DISABLE) RESTRICTED SESSION
+    ;
+
+setEncryptionWalletOpenClause
+    : SET ENCRYPTION WALLET OPEN IDENTIFIED BY (walletPassword | hsmAuthString)
+    ;
+
+setEncryptionWalletCloseClause
+    : SET ENCRYPTION WALLET CLOSE (IDENTIFIED BY (walletPassword | hsmAuthString))?
+    ;
+
+setEncryptionKeyClause
+    : SET ENCRYPTION KEY (identifiedByWalletPassword | identifiedByHsmAuthString)
+    ;
+
+enableAffinityClause
+    : ENABLE AFFINITY tableName (SERVICE serviceName)?
+    ;
+
+disableAffinityClause
+    : DISABLE AFFINITY tableName
+    ;
+
+alterSystemSetClause
+    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause
+    ;
+
+alterSystemResetClause
+    : parameterName scopeClause*
+    ;
+
+sharedPoolClause
+    : SHARED_POOL
+    ;
+
+globalContextClause
+    : GLOBAL CONTEXT
+    ;
+
+bufferCacheClause
+    : BUFFER_CACHE
+    ;
+
+flashCacheClause
+    : FLASH_CACHE
+    ;
+
+redoToClause
+    : REDO TO targetDbName (NO? CONFIRM APPLY)?
+    ;
+
+identifiedByWalletPassword
+    : certificateId? IDENTIFIED BY walletPassword
+    ;
+
+identifiedByHsmAuthString
+    : IDENTIFIED BY hsmAuthString (MIGRATE USING walletPassword)?
+    ;
+
+setParameterClause
+    : parameterName EQ_ parameterValue (COMMA_ parameterValue)* commentClause? DEFERRED? containerCurrentAllClause? scopeClause*
+    ;
+
+useStoredOutlinesClause
+    : USE_STORED_OUTLINES EQ_ (TRUE | FALSE | categoryName)
+    ;
+
+globalTopicEnabledClause
+    : GLOBAL_TOPIC_ENABLED EQ_ (TRUE | FALSE)
+    ;
+
+commentClause
+    : COMMENT EQ_ stringLiterals
+    ;
+
+containerCurrentAllClause
+    : CONTAINER EQ_ (CURRENT | ALL)
+    ;
+
+scopeClause
+    : SCOPE EQ_ (MEMORY | SPFILE | BOTH) | SID EQ_ (SQ_ sessionId SQ_ | SQ_ ASTERISK_ SQ_ )
+    ;
