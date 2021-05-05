@@ -15,39 +15,18 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | setRole
-    | call
-    | merge
-    | alterSynonym
-    | alterSession
-    | alterDatabase
-    ) SEMI_?
-    ;
+/**
+ * Alter Database statement.
+ */
+@Getter
+@Setter
+@ToString
+public abstract class AlterDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
+}

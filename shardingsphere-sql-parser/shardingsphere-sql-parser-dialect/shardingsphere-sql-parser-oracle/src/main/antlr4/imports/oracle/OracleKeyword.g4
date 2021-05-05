@@ -1430,7 +1430,7 @@ INDEXES
 SUPPLEMENTAL
     : S U P P L E M E N T A L
     ;
-    
+
 ADVISE
     : A D V I S E
     ;
@@ -1457,4 +1457,340 @@ ACTIVE
 
 DEFAULT_COLLATION
     : D E F A U L T UL_ C O L L A T I O N
+    ;
+
+MOUNT
+    : M O U N T
+    ;
+
+STANDBY
+    : S T A N D B Y
+    ;
+
+CLONE
+    : C L O N E
+    ;
+
+RESETLOGS
+    : R E S E T L O G S
+    ;
+
+NORESETLOGS
+    : N O R E S E T L O G S
+    ;
+
+UPGRADE
+    : U P G R A D E
+    ;
+
+DOWNGRADE
+    : D O W N G R A D E
+    ;
+
+RECOVER
+    : R E C O V E R
+    ;
+
+LOGFILE
+    : L O G F I L E
+    ;
+
+TEST
+    : T E S T
+    ;
+
+CORRUPTION
+    : C O R R U P T I O N
+    ;
+
+CONTINUE
+    : C O N T I N U E
+    ;
+
+CANCEL
+    : C A N C E L
+    ;
+
+UNTIL
+    : U N T I L
+    ;
+
+CONTROLFILE
+    : C O N T R O L F I L E
+    ;
+
+SNAPSHOT
+    : S N A P S H O T
+    ;
+
+DATAFILE
+    : D A T A F I L E
+    ;
+
+MANAGED
+    : M A N A G E D
+    ;
+
+ARCHIVED
+    : A R C H I V E D
+    ;
+
+DISCONNECT
+    : D I S C O N N E C T
+    ;
+
+NODELAY
+    : N O D E L A Y
+    ;
+
+INSTANCES
+    : I N S T A N C E S
+    ;
+
+FINISH
+    : F I N I S H
+    ;
+
+LOGICAL
+    : L O G I C A L
+    ;
+
+FILE
+    : F I L E
+    ;
+
+SIZE
+    : S I Z E
+    ;
+
+AUTOEXTEND
+    : A U T O E X T E N D
+    ;
+
+BLOCKSIZE
+    : B L O C K S I Z E
+    ;
+
+OFFLINE
+    : O F F L I N E
+    ;
+
+RESIZE
+    : R E S I Z E
+    ;
+
+TEMPFILE
+    : T E M P F I L E
+    ;
+
+DATAFILES
+    : D A T A F I L E S
+    ;
+
+ARCHIVELOG
+    : A R C H I V E L O G
+    ;
+
+MANUAL
+    : M A N U A L
+    ;
+
+NOARCHIVELOG
+    : N O A R C H I V E L O G
+    ;
+
+AVAILABILITY
+    : A V A I L A B I L I T Y
+    ;
+
+PERFORMANCE
+    : P E R F O R M A N C E
+    ;
+
+CLEAR
+    : C L E A R
+    ;
+
+UNARCHIVED
+    : U N A R C H I V E D
+    ;
+
+UNRECOVERABLE
+    : U N R E C O V E R A B L E
+    ;
+
+THREAD
+    : T H R E A D
+    ;
+
+MEMBER
+    : M E M B E R
+    ;
+
+PHYSICAL
+    : P H Y S I C A L
+    ;
+
+FAR
+    : F A R
+    ;
+
+TRACE
+    : T R A C E
+    ;
+
+SWITCH
+    : S W I T C H
+    ;
+
+LOGFILES
+    : L O G F I L E S
+    ;
+
+PROCEDURAL
+    : P R O C E D U R A L
+    ;
+
+REPLICATION
+    : R E P L I C A T I O N
+    ;
+
+SUBSET
+    : S U B S E T
+    ;
+
+ACTIVATE
+    : A C T I V A T E
+    ;
+
+APPLY
+    : A P P L Y
+    ;
+
+MAXIMIZE
+    : M A X I M I Z E
+    ;
+
+PROTECTION
+    : P R O T E C T I O N
+    ;
+
+REGISTER
+    : R E G I S T E R
+    ;
+
+PREPARE
+    : P R E P A R E
+    ;
+
+SWITCHOVER
+    : S W I T C H O V E R
+    ;
+
+SHUTDOWN
+    : S H U T D O W N
+    ;
+
+FAILED
+    : F A I L E D
+    ;
+
+SKIP_SYMBOL
+    : S K I P
+    ;
+
+STOP
+    : S T O P
+    ;
+
+ABORT
+    : A B O R T
+    ;
+
+VERIFY
+    : V E R I F Y
+    ;
+
+CONVERT
+    : C O N V E R T
+    ;
+
+FAILOVER
+    : F A I L O V E R
+    ;
+
+BIGFILE
+    : B I G F I L E
+    ;
+
+SMALLFILE
+    : S M A L L F I L E
+    ;
+
+TRACKING
+    : T R A C K I N G
+    ;
+
+CACHING
+    : C A C H I N G
+    ;
+
+CONTAINERS
+    : C O N T A I N E R S
+    ;
+
+TARGET
+    : T A R G E T
+    ;
+
+UNDO
+    : U N D O
+    ;
+
+MOVE
+    : M O V E
+    ;
+
+MIRROR
+    : M I R R O R
+    ;
+
+COPY
+    : C O P Y
+    ;
+
+UNPROTECTED
+    : U N P R O T E C T E D
+    ;
+
+REDUNDANCY
+    : R E D U N D A N C Y
+    ;
+
+REMOVE
+    : R E M O V E
+    ;
+
+SUSPEND
+    : S U S P E N D
+    ;
+
+LOST
+    : L O S T
+    ;
+
+LEAD_CDB
+    : L E A D UL_ C D B
+    ;
+
+LEAD_CDB_URI
+    : L E A D UL_ C D B UL_ U R I
+    ;
+
+PROPERTY
+    : P R O P E R T Y
+    ;
+
+DEFAULT_CREDENTIAL
+    : D E F A U L T UL_ C R E D E N T I A L
     ;
