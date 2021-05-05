@@ -558,3 +558,7 @@ FLOAT
 TRIGGERS
     : T R I G G E R S
     ;
+
+GLOBAL_NAME
+    : G L O B A L UL_ N A M E
+    ;

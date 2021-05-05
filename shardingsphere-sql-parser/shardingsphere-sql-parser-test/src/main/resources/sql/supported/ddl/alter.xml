@@ -160,12 +160,14 @@
     <sql-case id="alter_function_reset" value="ALTER FUNCTION check_password(text) RESET search_path" db-types="PostgreSQL" />
     <sql-case id="alter_function_depend_on" value="ALTER FUNCTION sqrt(integer) DEPENDS ON EXTENSION mathlib" db-types="PostgreSQL" />
 <!--alter database test-->
-<!--    <sql-case id="alter_database_set_to" value="ALTER DATABASE test SET enable_indexscan TO off" db-types="PostgreSQL" />-->
-<!--    <sql-case id="alter_database_set_to_default" value="ALTER DATABASE test SET enable_indexscan TO DEFAULT" db-types="PostgreSQL" />-->
-<!--    <sql-case id="alter_database_set_equal" value="ALTER DATABASE test SET enable_indexscan = off" db-types="PostgreSQL" />-->
-<!--    <sql-case id="alter_database_reset_all" value="ALTER DATABASE test RESET ALL" db-types="PostgreSQL" />-->
-<!--    <sql-case id="alter_database_reset_param" value="ALTER DATABASE test RESET parameter1" db-types="PostgreSQL" />-->
-<!--    <sql-case id="alter_database_owner" value="ALTER DATABASE name OWNER TO user1" db-types="PostgreSQL" />-->
+    <sql-case id="alter_database_mount" value="ALTER DATABASE db1 MOUNT" db-types="Oracle" />
+    <sql-case id="alter_database_open" value="ALTER DATABASE db1 OPEN READONLY" db-types="Oracle" />
+    <sql-case id="alter_database_recovery1" value="ALTER DATABASE db1 BEGIN BACKUP" db-types="Oracle" />
+    <sql-case id="alter_database_recovery2" value="ALTER DATABASE db1 END BACKUP" db-types="Oracle" />
+    <sql-case id="alter_database_rename" value="ALTER DATABASE db1 RENAME FILE 'a.dbf' to 'b.dbf'" db-types="Oracle" />
+    <sql-case id="alter_database_create1" value="ALTER DATABASE db1 CREATE DATAFILE '01.dbf' as '01.dbf'" db-types="Oracle" />
+    <sql-case id="alter_database_create2" value="ALTER DATABASE db1 CREATE DATAFILE 2 as '02.dbf'" db-types="Oracle" />
+    <sql-case id="alter_database_create3" value="ALTER DATABASE db1 CREATE DATAFILE '03.dbf' as NEW" db-types="Oracle" />
 <!--alter procedure test-->
     <sql-case id="alter_procedure_rename" value="ALTER PROCEDURE insert_data(integer, integer) RENAME TO insert_record" db-types="PostgreSQL" />
     <sql-case id="alter_procedure_owner" value="ALTER PROCEDURE insert_data(integer, integer) OWNER TO joe" db-types="PostgreSQL" />
