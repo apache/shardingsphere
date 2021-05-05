@@ -623,10 +623,6 @@ sqlId
     : identifier
     ;
 
-instanceName
-    : stringLiterals
-    ;
-
 logFileName
     : stringLiterals
     ;

@@ -1691,10 +1691,6 @@ PROTECTION
     : P R O T E C T I O N
     ;
 
-LOGFILE
-    : L O G F I L E
-    ;
-
 SUSPEND
     : S U S P E N D
     ;
@@ -1725,10 +1721,6 @@ PREPARE
 
 SWITCHOVER
     : S W I T C H O V E R
-    ;
-
-SHUTDOWN
-    : S H U T D O W N
     ;
 
 FAILED
@@ -1811,10 +1803,6 @@ REMOVE
     : R E M O V E
     ;
 
-SUSPEND
-    : S U S P E N D
-    ;
-
 LOST
     : L O S T
     ;
@@ -1847,24 +1835,12 @@ CLIENT
     : C L I E N T
     ;
 
-CANCEL
-    : C A N C E L
-    ;
-
 PASSWORDFILE_METADATA_CACHE
     : P A S S W O R D F I L E UL_ M E T A D A T A UL_ C A C H E
     ;
 
 NOSWITCH
     : N O S W I T C H
-    ;
-
-CONTROLFILE
-    : C O N T R O L F I L E
-    ;
-
-DISCONNECT
-    : D I S C O N N E C T
     ;
 
 POST_TRANSACTION
@@ -1881,10 +1857,6 @@ ROLLING
 
 MIGRATION
     : M I G R A T I O N
-    ;
-
-STOP
-    : S T O P
     ;
 
 PATCH
@@ -1933,10 +1905,6 @@ REDO
 
 CONFIRM
     : C O N F I R M
-    ;
-
-APPLY
-    : A P P L Y
     ;
 
 MIGRATE

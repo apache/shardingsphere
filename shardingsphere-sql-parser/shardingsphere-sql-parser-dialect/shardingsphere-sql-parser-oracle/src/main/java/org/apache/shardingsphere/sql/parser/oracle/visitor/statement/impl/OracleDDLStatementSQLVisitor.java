@@ -26,11 +26,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterD
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSessionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSynonymContext;
-<<<<<<< HEAD
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSystemContext;
-=======
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseContext;
->>>>>>> upstream/master
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
@@ -63,14 +60,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSessionStatement;
-<<<<<<< HEAD
-=======
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTableStatement;
->>>>>>> upstream/master
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSystemStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
