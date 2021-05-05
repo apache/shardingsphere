@@ -1241,7 +1241,7 @@ flushPasswordfileMetadataCacheClause
     ;
 
 instanceClause
-    : INSTANCE SQ_ instanceName SQ_
+    : INSTANCE instanceName
     ;
 
 sequenceClause
@@ -1365,7 +1365,7 @@ identifiedByHsmAuthString
     ;
 
 setParameterClause
-    : parameterName EQ_ parameterValue (COMMA_ parameterValue)* commentClause? DEFERRED? containerCurrentAllClause? scopeClause*
+    : parameterName EQ_ parameterValue (COMMA_ parameterValue)* alterSystemCommentClause? DEFERRED? containerCurrentAllClause? scopeClause*
     ;
 
 useStoredOutlinesClause
@@ -1376,7 +1376,7 @@ globalTopicEnabledClause
     : GLOBAL_TOPIC_ENABLED EQ_ (TRUE | FALSE)
     ;
 
-commentClause
+alterSystemCommentClause
     : COMMENT EQ_ stringLiterals
     ;
 

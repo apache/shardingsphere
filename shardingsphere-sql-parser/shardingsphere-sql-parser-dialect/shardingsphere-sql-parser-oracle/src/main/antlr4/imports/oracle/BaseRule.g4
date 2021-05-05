@@ -548,7 +548,7 @@ instanceId
     ;
 
 sqlId
-    : stringLiterals
+    : identifier
     ;
 
 instanceName
@@ -584,5 +584,5 @@ certificateId
     ;
 
 categoryName
-    : stringLiterals
+    : identifier
     ;
