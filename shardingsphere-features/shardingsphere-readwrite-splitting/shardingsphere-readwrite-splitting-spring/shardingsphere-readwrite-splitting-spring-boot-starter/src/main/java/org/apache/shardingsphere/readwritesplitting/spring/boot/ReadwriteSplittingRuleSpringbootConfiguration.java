@@ -46,7 +46,7 @@ import java.util.Optional;
 @ConditionalOnClass(YamlReadwriteSplittingRuleConfiguration.class)
 @Conditional(ReadwriteSplittingSpringBootCondition.class)
 @RequiredArgsConstructor
-public class ReadWriteSplittingRuleSpringbootConfiguration {
+public class ReadwriteSplittingRuleSpringbootConfiguration {
     
     private final ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper();
     
