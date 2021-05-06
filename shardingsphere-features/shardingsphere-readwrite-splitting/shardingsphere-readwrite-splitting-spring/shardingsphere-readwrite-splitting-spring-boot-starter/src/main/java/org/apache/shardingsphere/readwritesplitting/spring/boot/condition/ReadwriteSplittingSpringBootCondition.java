@@ -26,7 +26,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * Spring boot condition for readwrite-splitting.
  */
-public final class ReadWriteSplittingSpringBootCondition extends SpringBootCondition {
+public final class ReadwriteSplittingSpringBootCondition extends SpringBootCondition {
     
     private static final String PREFIX = "spring.shardingsphere.rules.readwrite-splitting";
     

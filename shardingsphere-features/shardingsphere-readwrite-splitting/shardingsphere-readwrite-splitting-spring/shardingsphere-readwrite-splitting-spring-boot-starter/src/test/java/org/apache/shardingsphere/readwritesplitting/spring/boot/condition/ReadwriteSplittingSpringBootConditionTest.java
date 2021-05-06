@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ReadWriteSplittingSpringBootConditionTest {
+public final class ReadwriteSplittingSpringBootConditionTest {
     
     @Test
     public void assertNotMatch() {
@@ -41,7 +41,7 @@ public final class ReadWriteSplittingSpringBootConditionTest {
         ConditionContext context = mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
-        ReadWriteSplittingSpringBootCondition condition = new ReadWriteSplittingSpringBootCondition();
+        ReadwriteSplittingSpringBootCondition condition = new ReadwriteSplittingSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
         assertFalse(matchOutcome.isMatch());
     }
@@ -53,7 +53,7 @@ public final class ReadWriteSplittingSpringBootConditionTest {
         ConditionContext context = mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);
-        ReadWriteSplittingSpringBootCondition condition = new ReadWriteSplittingSpringBootCondition();
+        ReadwriteSplittingSpringBootCondition condition = new ReadwriteSplittingSpringBootCondition();
         ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
         assertTrue(matchOutcome.isMatch());
     }
