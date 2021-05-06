@@ -34,10 +34,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = ReadWriteSplittingSpringBootStarterTest.class)
+@SpringBootTest(classes = ReadwriteSplittingSpringBootStarterTest.class)
 @SpringBootApplication
 @ActiveProfiles("readwrite-splitting")
-public class ReadWriteSplittingSpringBootStarterTest {
+public class ReadwriteSplittingSpringBootStarterTest {
     
     @Resource
     private RandomReplicaLoadBalanceAlgorithm random;
