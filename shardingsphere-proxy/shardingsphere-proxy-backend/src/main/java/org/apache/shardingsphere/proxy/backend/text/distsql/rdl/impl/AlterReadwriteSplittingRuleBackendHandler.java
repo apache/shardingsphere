@@ -52,9 +52,9 @@ import java.util.stream.Collectors;
 /**
  * Alter readwrite-splitting rule backend handler.
  */
-public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<AlterReadwriteSplittingRuleStatement> {
+public final class AlterReadwriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<AlterReadwriteSplittingRuleStatement> {
 
-    public AlterReadWriteSplittingRuleBackendHandler(final AlterReadwriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
+    public AlterReadwriteSplittingRuleBackendHandler(final AlterReadwriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
