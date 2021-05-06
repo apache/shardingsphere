@@ -25,7 +25,7 @@ import org.springframework.core.env.Environment;
 /**
  * Readwrite-splitting algorithm provided bean registry.
  */
-public final class ReadWriteSplittingAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<ReplicaLoadBalanceAlgorithm> {
+public final class ReadwriteSplittingAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<ReplicaLoadBalanceAlgorithm> {
     
     private static final String ALGORITHMS = "spring.shardingsphere.rules.readwrite-splitting.load-balancers.";
     
@@ -34,7 +34,7 @@ public final class ReadWriteSplittingAlgorithmProvidedBeanRegistry extends Abstr
      *
      * @param environment environment
      */
-    public ReadWriteSplittingAlgorithmProvidedBeanRegistry(final Environment environment) {
+    public ReadwriteSplittingAlgorithmProvidedBeanRegistry(final Environment environment) {
         super(environment);
     }
     

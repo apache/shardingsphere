@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.spring.boot.algorithm.ReadWriteSplittingAlgorithmProvidedBeanRegistry;
+import org.apache.shardingsphere.readwritesplitting.spring.boot.algorithm.ReadwriteSplittingAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.readwritesplitting.spring.boot.condition.ReadWriteSplittingSpringBootCondition;
 import org.apache.shardingsphere.readwritesplitting.spring.boot.rule.YamlReadWriteSplittingRuleSpringBootConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
@@ -73,7 +73,7 @@ public class ReadWriteSplittingRuleSpringbootConfiguration {
      * @return readwrite-splitting algorithm provided bean registry
      */
     @Bean
-    public static ReadWriteSplittingAlgorithmProvidedBeanRegistry readWriteSplittingAlgorithmProvidedBeanRegistry(final Environment environment) {
-        return new ReadWriteSplittingAlgorithmProvidedBeanRegistry(environment);
+    public static ReadwriteSplittingAlgorithmProvidedBeanRegistry readWriteSplittingAlgorithmProvidedBeanRegistry(final Environment environment) {
+        return new ReadwriteSplittingAlgorithmProvidedBeanRegistry(environment);
     }
 }
