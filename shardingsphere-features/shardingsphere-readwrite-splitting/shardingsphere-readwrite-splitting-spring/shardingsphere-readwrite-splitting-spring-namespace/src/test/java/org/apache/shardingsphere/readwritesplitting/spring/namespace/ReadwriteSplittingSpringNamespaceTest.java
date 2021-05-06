@@ -34,7 +34,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/readwrite-splitting-application-context.xml")
-public final class ReadWriteSplittingSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
+public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Resource
     private ReplicaLoadBalanceAlgorithm randomLoadbalancer;
