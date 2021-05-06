@@ -24,7 +24,7 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgori
 import org.apache.shardingsphere.readwritesplitting.spring.boot.algorithm.ReadWriteSplittingAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.readwritesplitting.spring.boot.condition.ReadWriteSplittingSpringBootCondition;
 import org.apache.shardingsphere.readwritesplitting.spring.boot.rule.YamlReadWriteSplittingRuleSpringBootConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.swapper.ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 @Configuration
 @EnableConfigurationProperties(YamlReadWriteSplittingRuleSpringBootConfiguration.class)
-@ConditionalOnClass(YamlReadWriteSplittingRuleConfiguration.class)
+@ConditionalOnClass(YamlReadwriteSplittingRuleConfiguration.class)
 @Conditional(ReadWriteSplittingSpringBootCondition.class)
 @RequiredArgsConstructor
 public class ReadWriteSplittingRuleSpringbootConfiguration {

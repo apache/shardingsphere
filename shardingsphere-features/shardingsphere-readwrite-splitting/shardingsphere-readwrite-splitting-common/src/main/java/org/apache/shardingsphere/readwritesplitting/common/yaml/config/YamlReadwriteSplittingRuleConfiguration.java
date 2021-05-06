@@ -32,7 +32,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public final class YamlReadWriteSplittingRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlReadwriteSplittingRuleConfiguration implements YamlRuleConfiguration {
     
     private Map<String, YamlReadWriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
     

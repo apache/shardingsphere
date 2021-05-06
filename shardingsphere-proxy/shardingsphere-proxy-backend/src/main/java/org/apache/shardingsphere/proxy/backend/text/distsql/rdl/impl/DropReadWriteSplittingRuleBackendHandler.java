@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -56,9 +56,9 @@ public final class DropReadWriteSplittingRuleBackendHandler extends SchemaRequir
             throw new ReadWriteSplittingRuleNotExistedException();
         }
         check(ruleConfig.get(), ruleNames);
-        Optional<YamlReadWriteSplittingRuleConfiguration> yamlConfig = new YamlRuleConfigurationSwapperEngine()
+        Optional<YamlReadwriteSplittingRuleConfiguration> yamlConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig.get())).stream()
-                .map(each -> (YamlReadWriteSplittingRuleConfiguration) each).findFirst();
+                .map(each -> (YamlReadwriteSplittingRuleConfiguration) each).findFirst();
         if (!yamlConfig.isPresent()) {
             throw new ReadWriteSplittingRuleNotExistedException();
         }
@@ -75,7 +75,7 @@ public final class DropReadWriteSplittingRuleBackendHandler extends SchemaRequir
         }
     }
 
-    private Collection<RuleConfiguration> drop(final YamlReadWriteSplittingRuleConfiguration yamlConfig, final Collection<String> ruleNames) {
+    private Collection<RuleConfiguration> drop(final YamlReadwriteSplittingRuleConfiguration yamlConfig, final Collection<String> ruleNames) {
         for (String each : ruleNames) {
             yamlConfig.getDataSources().remove(each);
         }

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.CreateReadWriteSplittingRuleStatementConverter;
 
 import java.util.Collection;
@@ -47,7 +47,7 @@ public final class CreateReadWriteSplittingRuleBackendHandler extends SchemaRequ
     @Override
     public ResponseHeader execute(final String schemaName, final CreateReadWriteSplittingRuleStatement sqlStatement) {
         check(schemaName);
-        YamlReadWriteSplittingRuleConfiguration config = CreateReadWriteSplittingRuleStatementConverter.convert(sqlStatement);
+        YamlReadwriteSplittingRuleConfiguration config = CreateReadWriteSplittingRuleStatementConverter.convert(sqlStatement);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         post(schemaName, rules);
         return new UpdateResponseHeader(sqlStatement);

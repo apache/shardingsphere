@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.common.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -41,7 +41,7 @@ public final class YamlRootRuleConfigurationsForYamlReadwriteSplittingRuleConfig
         assertNotNull(url);
         YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
         assertThat(rootRuleConfigs.getRules().size(), is(1));
-        assertReadWriteSplittingRule((YamlReadWriteSplittingRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
+        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
     }
     
     @Test
@@ -59,22 +59,22 @@ public final class YamlRootRuleConfigurationsForYamlReadwriteSplittingRuleConfig
         }
         YamlRootRuleConfigurations rootRuleConfigs = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class);
         assertThat(rootRuleConfigs.getRules().size(), is(1));
-        assertReadWriteSplittingRule((YamlReadWriteSplittingRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
+        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) rootRuleConfigs.getRules().iterator().next());
     }
     
-    private void assertReadWriteSplittingRule(final YamlReadWriteSplittingRuleConfiguration actual) {
+    private void assertReadwriteSplittingRule(final YamlReadwriteSplittingRuleConfiguration actual) {
         assertThat(actual.getDataSources().size(), is(2));
-        assertReadWriteSplittingRuleForDs0(actual);
-        assertReadWriteSplittingRuleForDs1(actual);
+        assertReadwriteSplittingRuleForDs0(actual);
+        assertReadwriteSplittingRuleForDs1(actual);
     }
     
-    private void assertReadWriteSplittingRuleForDs0(final YamlReadWriteSplittingRuleConfiguration actual) {
+    private void assertReadwriteSplittingRuleForDs0(final YamlReadwriteSplittingRuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_0").getWriteDataSourceName(), is("write_ds_0"));
         assertThat(actual.getDataSources().get("ds_0").getReadDataSourceNames(), is(Arrays.asList("write_ds_0_read_0", "write_ds_0_read_1")));
         assertThat(actual.getDataSources().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
-    private void assertReadWriteSplittingRuleForDs1(final YamlReadWriteSplittingRuleConfiguration actual) {
+    private void assertReadwriteSplittingRuleForDs1(final YamlReadwriteSplittingRuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_1").getWriteDataSourceName(), is("write_ds_1"));
         assertThat(actual.getDataSources().get("ds_1").getReadDataSourceNames(), is(Arrays.asList("write_ds_1_read_0", "write_ds_1_read_1")));
         assertThat(actual.getDataSources().get("ds_1").getLoadBalancerName(), is("random"));

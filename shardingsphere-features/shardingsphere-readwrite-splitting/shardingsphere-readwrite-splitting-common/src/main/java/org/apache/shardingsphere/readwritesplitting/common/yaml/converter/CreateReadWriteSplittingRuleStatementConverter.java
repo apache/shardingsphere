@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.common.yaml.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadWriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadWriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
@@ -37,8 +37,8 @@ public final class CreateReadWriteSplittingRuleStatementConverter {
      * @param sqlStatement create readwrite-splitting rule statement
      * @return YAML readwrite-splitting rule configuration
      */
-    public static YamlReadWriteSplittingRuleConfiguration convert(final CreateReadWriteSplittingRuleStatement sqlStatement) {
-        YamlReadWriteSplittingRuleConfiguration result = new YamlReadWriteSplittingRuleConfiguration();
+    public static YamlReadwriteSplittingRuleConfiguration convert(final CreateReadWriteSplittingRuleStatement sqlStatement) {
+        YamlReadwriteSplittingRuleConfiguration result = new YamlReadwriteSplittingRuleConfiguration();
         for (ReadWriteSplittingRuleSegment each : sqlStatement.getReadWriteSplittingRules()) {
             YamlReadWriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration = new YamlReadWriteSplittingDataSourceRuleConfiguration();
             dataSourceRuleConfiguration.setName(each.getName());

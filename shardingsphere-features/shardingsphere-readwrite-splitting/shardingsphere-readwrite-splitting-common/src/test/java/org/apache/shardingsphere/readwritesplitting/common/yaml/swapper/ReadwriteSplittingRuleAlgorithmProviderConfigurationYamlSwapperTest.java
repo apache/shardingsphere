@@ -22,7 +22,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -39,7 +39,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        YamlReadWriteSplittingRuleConfiguration actual = createYamlReadWriteSplittingRuleConfiguration();
+        YamlReadwriteSplittingRuleConfiguration actual = createYamlReadwriteSplittingRuleConfiguration();
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
@@ -55,7 +55,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     
     @Test
     public void assertSwapToObject() {
-        AlgorithmProvidedReadwriteSplittingRuleConfiguration actual = swapper.swapToObject(createYamlReadWriteSplittingRuleConfiguration());
+        AlgorithmProvidedReadwriteSplittingRuleConfiguration actual = swapper.swapToObject(createYamlReadwriteSplittingRuleConfiguration());
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertTrue(actual.getDataSources().iterator().hasNext());
@@ -83,7 +83,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         assertThat(swapper.getOrder(), is(ReadwriteSplittingOrder.ALGORITHM_PROVIDER_ORDER));
     }
     
-    private YamlReadWriteSplittingRuleConfiguration createYamlReadWriteSplittingRuleConfiguration() {
+    private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name", "", "writeDataSourceName",
                 Collections.singletonList("readDataSourceName"), "loadBalancerName");
         return swapper.swapToYamlConfiguration(
