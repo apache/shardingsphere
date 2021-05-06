@@ -80,9 +80,9 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     }
     
     private void checkAddDataSourceExist(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadwriteSplittingRuleStatement statement) {
-        Set<String> existReadWriteSplittingDataSourceNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Set<String> existReadwriteSplittingDataSourceNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> addExistReplicaQueryDataSourceNames = statement.getAddReadwriteSplittingRules().stream().map(ReadwriteSplittingRuleSegment::getName)
-                .filter(existReadWriteSplittingDataSourceNames::contains).collect(Collectors.toList());
+                .filter(existReadwriteSplittingDataSourceNames::contains).collect(Collectors.toList());
         if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
             throw new AddReadwriteSplittingRuleDataSourcesExistedException(addExistReplicaQueryDataSourceNames);
         }

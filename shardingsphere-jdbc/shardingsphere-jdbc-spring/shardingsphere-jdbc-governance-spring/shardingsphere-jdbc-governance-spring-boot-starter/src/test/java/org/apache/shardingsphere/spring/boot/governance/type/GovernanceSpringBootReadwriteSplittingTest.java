@@ -42,10 +42,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = GovernanceSpringBootReadWriteSplittingTest.class)
+@SpringBootTest(classes = GovernanceSpringBootReadwriteSplittingTest.class)
 @SpringBootApplication
 @ActiveProfiles("readwrite-splitting")
-public class GovernanceSpringBootReadWriteSplittingTest {
+public class GovernanceSpringBootReadwriteSplittingTest {
     
     @Resource
     private DataSource dataSource;
