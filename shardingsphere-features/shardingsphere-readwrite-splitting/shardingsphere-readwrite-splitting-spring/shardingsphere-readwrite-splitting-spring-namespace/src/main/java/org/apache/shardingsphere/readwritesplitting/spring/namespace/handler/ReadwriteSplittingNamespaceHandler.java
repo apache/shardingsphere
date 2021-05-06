@@ -27,7 +27,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 /**
  * Spring namespace handler for readwrite-splitting.
  */
-public final class ReadWriteSplittingNamespaceHandler extends NamespaceHandlerSupport {
+public final class ReadwriteSplittingNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
