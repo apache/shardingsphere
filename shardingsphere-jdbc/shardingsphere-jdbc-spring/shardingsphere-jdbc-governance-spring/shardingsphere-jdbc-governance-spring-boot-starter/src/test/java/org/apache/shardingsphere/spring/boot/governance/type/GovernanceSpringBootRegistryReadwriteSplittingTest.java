@@ -68,7 +68,7 @@ public class GovernanceSpringBootRegistryReadwriteSplittingTest {
     }
     
     @Test
-    public void assertWithReadWriteSplittingDataSource() throws NoSuchFieldException, IllegalAccessException {
+    public void assertWithReadwriteSplittingDataSource() throws NoSuchFieldException, IllegalAccessException {
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
         Field field = GovernanceShardingSphereDataSource.class.getDeclaredField("metaDataContexts");
         field.setAccessible(true);

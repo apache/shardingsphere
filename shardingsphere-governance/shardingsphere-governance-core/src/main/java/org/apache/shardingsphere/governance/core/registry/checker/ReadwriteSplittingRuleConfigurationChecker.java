@@ -22,7 +22,7 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 /**
  * Readwrite-splitting rule configuration checker.
  */
-public final class ReadWriteSplittingRuleConfigurationChecker extends AbstractReadWriteSplittingRuleConfigurationChecker<ReadwriteSplittingRuleConfiguration> {
+public final class ReadwriteSplittingRuleConfigurationChecker extends AbstractReadWriteSplittingRuleConfigurationChecker<ReadwriteSplittingRuleConfiguration> {
     
     @Override
     public void check(final String schemaName, final ReadwriteSplittingRuleConfiguration ruleConfiguration) {
