@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.AlterReadWriteSplittingRuleStatementConverter;
@@ -80,7 +80,7 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     }
     
     private void checkAddDataSourceExist(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement) {
-        Set<String> existReadWriteSplittingDataSourceNames = ruleConfig.getDataSources().stream().map(ReadWriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Set<String> existReadWriteSplittingDataSourceNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> addExistReplicaQueryDataSourceNames = statement.getAddReplicaQueryRules().stream().map(ReadWriteSplittingRuleSegment::getName)
                 .filter(existReadWriteSplittingDataSourceNames::contains).collect(Collectors.toList());
         if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
@@ -106,7 +106,7 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     }
     
     private void checkModifyDataSourceNotExist(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement) {
-        Set<String> existReplicaQueryDataSourceNames = ruleConfig.getDataSources().stream().map(ReadWriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Set<String> existReplicaQueryDataSourceNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> addExistReplicaQueryDataSourceNames = statement.getModifyReplicaQueryRules().stream().map(ReadWriteSplittingRuleSegment::getName)
                 .filter(each -> !existReplicaQueryDataSourceNames.contains(each)).collect(Collectors.toList());
         if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
@@ -116,7 +116,7 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     
     private YamlReadWriteSplittingRuleConfiguration alter(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement) {
         YamlReadWriteSplittingRuleConfiguration result = AlterReadWriteSplittingRuleStatementConverter.convert(statement.getModifyReplicaQueryRules());
-        for (ReadWriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
+        for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             YamlReadWriteSplittingDataSourceRuleConfiguration alterConfig = result.getDataSources().get(each.getName());
             if (null == alterConfig) {
                 YamlReadWriteSplittingDataSourceRuleConfiguration existConfig = new YamlReadWriteSplittingDataSourceRuleConfiguration();

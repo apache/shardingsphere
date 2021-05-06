@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -39,7 +39,7 @@ import java.util.Map;
 @Setter
 public final class AlgorithmProvidedReadWriteSplittingRuleConfiguration implements RuleConfiguration {
     
-    private Collection<ReadWriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+    private Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
     
     private Map<String, ReplicaLoadBalanceAlgorithm> loadBalanceAlgorithms = new LinkedHashMap<>();
 }

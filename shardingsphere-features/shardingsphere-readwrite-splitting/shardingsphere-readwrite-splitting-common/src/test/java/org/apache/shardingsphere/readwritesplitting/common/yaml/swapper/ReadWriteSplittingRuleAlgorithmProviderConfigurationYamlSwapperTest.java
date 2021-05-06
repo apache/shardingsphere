@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.common.yaml.swapper;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
@@ -59,7 +59,7 @@ public final class ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertTrue(actual.getDataSources().iterator().hasNext());
-        ReadWriteSplittingDataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
+        ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
         assertNotNull(ruleConfig);
         assertThat(ruleConfig.getName(), is("name"));
         assertThat(ruleConfig.getWriteDataSourceName(), is("writeDataSourceName"));
@@ -84,7 +84,7 @@ public final class ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     }
     
     private YamlReadWriteSplittingRuleConfiguration createYamlReadWriteSplittingRuleConfiguration() {
-        ReadWriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadWriteSplittingDataSourceRuleConfiguration("name", "", "writeDataSourceName",
+        ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name", "", "writeDataSourceName",
                 Collections.singletonList("readDataSourceName"), "loadBalancerName");
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedReadWriteSplittingRuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm())));

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.spring.boot;
 
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -51,10 +51,10 @@ public class ReadWriteSplittingSpringBootStarterTest {
     }
     
     @Test
-    public void assertReplicaQueryRuleConfiguration() {
+    public void assertReadwriteSplittingRuleConfiguration() {
         assertThat(config.getDataSources().size(), is(1));
         assertTrue(config.getDataSources().stream().findFirst().isPresent());
-        ReadWriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
         assertThat(dataSourceRuleConfig.getName(), is("pr_ds"));
         assertThat(dataSourceRuleConfig.getWriteDataSourceName(), is("write_ds"));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("random"));

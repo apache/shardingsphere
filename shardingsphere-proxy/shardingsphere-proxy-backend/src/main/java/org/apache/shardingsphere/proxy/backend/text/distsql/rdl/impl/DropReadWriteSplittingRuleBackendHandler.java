@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 
 import java.util.Collection;
@@ -68,8 +68,8 @@ public final class DropReadWriteSplittingRuleBackendHandler extends SchemaRequir
     }
     
     private void check(final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<String> ruleNames) {
-        Collection<String> readWriteSplittingNames = ruleConfig.getDataSources().stream().map(ReadWriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
-        Collection<String> notExistedRuleNames = ruleNames.stream().filter(each -> !readWriteSplittingNames.contains(each)).collect(Collectors.toList());
+        Collection<String> readwriteSplittingDataSourceNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> notExistedRuleNames = ruleNames.stream().filter(each -> !readwriteSplittingDataSourceNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
             throw new ReadWriteSplittingRuleDataSourcesNotExistedException(notExistedRuleNames);
         }

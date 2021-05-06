@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
@@ -81,7 +81,7 @@ public final class ReadWriteSplittingSQLRouterTest {
     @Before
     public void setUp() {
         rule = new ReadWriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
-                new ReadWriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "", WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE), null)), Collections.emptyMap()));
+                new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "", WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE), null)), Collections.emptyMap()));
         sqlRouter = (ReadWriteSplittingSQLRouter) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLRouter.class).get(rule);
     }
     

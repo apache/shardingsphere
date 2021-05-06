@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ import java.util.Optional;
  */
 public final class ReadWriteSplittingRuleQueryBackendHandler extends SchemaRequiredBackendHandler<ShowRuleStatement> {
     
-    private Iterator<ReadWriteSplittingDataSourceRuleConfiguration> data;
+    private Iterator<ReadwriteSplittingDataSourceRuleConfiguration> data;
     
     private final String schema;
     
@@ -83,7 +83,7 @@ public final class ReadWriteSplittingRuleQueryBackendHandler extends SchemaRequi
     
     @Override
     public Collection<Object> getRowData() {
-        ReadWriteSplittingDataSourceRuleConfiguration ruleConfig = data.next();
+        ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = data.next();
         String name = ruleConfig.getName();
         String writeDataSourceName = ruleConfig.getWriteDataSourceName();
         String readDataSourceNames = (new Gson()).toJson(ruleConfig.getReadDataSourceNames());

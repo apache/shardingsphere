@@ -27,7 +27,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReadWriteSplittingDataSourceRuleConfiguration {
+public final class ReadwriteSplittingDataSourceRuleConfiguration {
     
     private final String name;
     

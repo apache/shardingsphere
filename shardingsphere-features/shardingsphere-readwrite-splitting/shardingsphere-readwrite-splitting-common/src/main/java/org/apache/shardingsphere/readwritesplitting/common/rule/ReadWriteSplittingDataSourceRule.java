@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -54,7 +54,7 @@ public final class ReadWriteSplittingDataSourceRule {
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public ReadWriteSplittingDataSourceRule(final ReadWriteSplittingDataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
+    public ReadWriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
         checkConfiguration(config);
         name = config.getName();
         autoAwareDataSourceName = config.getAutoAwareDataSourceName();
@@ -63,7 +63,7 @@ public final class ReadWriteSplittingDataSourceRule {
         this.loadBalancer = loadBalancer;
     }
     
-    private void checkConfiguration(final ReadWriteSplittingDataSourceRuleConfiguration config) {
+    private void checkConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration config) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
         if (Strings.isNullOrEmpty(config.getAutoAwareDataSourceName())) {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), "Write data source name is required.");

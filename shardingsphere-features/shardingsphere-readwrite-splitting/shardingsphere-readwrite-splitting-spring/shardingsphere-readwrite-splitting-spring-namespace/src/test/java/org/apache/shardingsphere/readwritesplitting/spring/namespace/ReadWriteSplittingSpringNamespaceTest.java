@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.spring.namespace;
 
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -62,7 +62,7 @@ public final class ReadWriteSplittingSpringNamespaceTest extends AbstractJUnit4S
         assertThat(loadBalances.get("randomLoadbalancer"), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
     }
     
-    private void assertDefaultDataSourceRule(final ReadWriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
+    private void assertDefaultDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
         assertThat(dataSourceRuleConfig.getName(), is("default_ds"));
         assertThat(dataSourceRuleConfig.getWriteDataSourceName(), is("write_ds"));
         assertThat(dataSourceRuleConfig.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
@@ -76,7 +76,7 @@ public final class ReadWriteSplittingSpringNamespaceTest extends AbstractJUnit4S
         assertRandomDataSourceRule(randomRule.getDataSources().iterator().next());
     }
     
-    private void assertRandomDataSourceRule(final ReadWriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
+    private void assertRandomDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
         assertThat(dataSourceRuleConfig.getName(), is("random_ds"));
         assertThat(dataSourceRuleConfig.getWriteDataSourceName(), is("write_ds"));
         assertThat(dataSourceRuleConfig.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.checker;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Collection;
 
@@ -31,7 +31,7 @@ import java.util.Collection;
  */
 public abstract class AbstractReadWriteSplittingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
-    protected void checkDataSources(final String schemaName, final Collection<ReadWriteSplittingDataSourceRuleConfiguration> dataSources) {
+    protected void checkDataSources(final String schemaName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
         dataSources.forEach(each -> {
             if (Strings.isNullOrEmpty(each.getAutoAwareDataSourceName())) {
                 Preconditions.checkState(
