@@ -45,10 +45,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = GovernanceSpringBootRegistryReadWriteSplittingTest.class)
+@SpringBootTest(classes = GovernanceSpringBootRegistryReadwriteSplittingTest.class)
 @SpringBootApplication
 @ActiveProfiles("registry-readwrite-splitting")
-public class GovernanceSpringBootRegistryReadWriteSplittingTest {
+public class GovernanceSpringBootRegistryReadwriteSplittingTest {
     
     private static final String DATA_SOURCE_FILE = "yaml/readwrite-splitting-databases.yaml";
     
