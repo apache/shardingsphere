@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Readwrite-splitting rule configuration YAML swapper.
  */
-public final class ReadWriteSplittingRuleConfigurationYamlSwapper 
+public final class ReadwriteSplittingRuleConfigurationYamlSwapper 
         implements YamlRuleConfigurationSwapper<YamlReadwriteSplittingRuleConfiguration, ReadwriteSplittingRuleConfiguration> {
     
     private final ShardingSphereAlgorithmConfigurationYamlSwapper algorithmSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();

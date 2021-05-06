@@ -105,22 +105,22 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertGetTypeClass() {
-        ReadWriteSplittingRuleConfigurationYamlSwapper swapper = getReadwriteSplittingRuleConfigurationYamlSwapper();
+        ReadwriteSplittingRuleConfigurationYamlSwapper swapper = getReadwriteSplittingRuleConfigurationYamlSwapper();
         Class<ReadwriteSplittingRuleConfiguration> actual = swapper.getTypeClass();
         assertTrue(actual.isAssignableFrom(ReadwriteSplittingRuleConfiguration.class));
     }
     
     @Test
     public void assertGetOrder() {
-        ReadWriteSplittingRuleConfigurationYamlSwapper swapper = getReadwriteSplittingRuleConfigurationYamlSwapper();
+        ReadwriteSplittingRuleConfigurationYamlSwapper swapper = getReadwriteSplittingRuleConfigurationYamlSwapper();
         int actual = swapper.getOrder();
         assertThat(actual, is(ReadwriteSplittingOrder.ORDER));
     }
     
-    private ReadWriteSplittingRuleConfigurationYamlSwapper getReadwriteSplittingRuleConfigurationYamlSwapper() {
-        Optional<ReadWriteSplittingRuleConfigurationYamlSwapper> optional = collection.stream()
-                .filter(swapper -> swapper instanceof ReadWriteSplittingRuleConfigurationYamlSwapper)
-                .map(swapper -> (ReadWriteSplittingRuleConfigurationYamlSwapper) swapper)
+    private ReadwriteSplittingRuleConfigurationYamlSwapper getReadwriteSplittingRuleConfigurationYamlSwapper() {
+        Optional<ReadwriteSplittingRuleConfigurationYamlSwapper> optional = collection.stream()
+                .filter(swapper -> swapper instanceof ReadwriteSplittingRuleConfigurationYamlSwapper)
+                .map(swapper -> (ReadwriteSplittingRuleConfigurationYamlSwapper) swapper)
                 .findFirst();
         assertTrue(optional.isPresent());
         return optional.get();
