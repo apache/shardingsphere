@@ -42,7 +42,7 @@ public final class SQLServerDatabaseTypeTest {
     
     @Test
     public void assertGetJdbcUrlPrefixes() {
-    	assertThat(new SQLServerDatabaseType().getJdbcUrlPrefixes(), is(new ArrayList<String>(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:"))));
+        assertThat(new SQLServerDatabaseType().getJdbcUrlPrefixes(), is(new ArrayList<String>(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:"))));
     }
     
     @Test
