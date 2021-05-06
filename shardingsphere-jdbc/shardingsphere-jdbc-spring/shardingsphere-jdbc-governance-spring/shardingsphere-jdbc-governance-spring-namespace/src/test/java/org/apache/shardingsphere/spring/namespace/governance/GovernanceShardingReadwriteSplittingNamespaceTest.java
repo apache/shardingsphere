@@ -43,7 +43,7 @@ public class GovernanceShardingReadwriteSplittingNamespaceTest extends AbstractJ
     }
     
     @Test
-    public void assertReadWriteSplittingShardingDataSourceByUserStrategy() {
+    public void assertReadwriteSplittingShardingDataSourceByUserStrategy() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("dataSourceByUserStrategyGovernance");
         assertNotNull(dataSourceMap.get("dbtbl_write_0"));
         assertNotNull(dataSourceMap.get("dbtbl_0_read_0"));

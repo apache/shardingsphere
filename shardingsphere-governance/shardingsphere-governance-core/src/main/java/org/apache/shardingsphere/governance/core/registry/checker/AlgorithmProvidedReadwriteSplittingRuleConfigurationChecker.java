@@ -22,7 +22,7 @@ import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.Algo
 /**
  * Algorithm provided readwrite-splitting ruleConfiguration checker.
  */
-public final class AlgorithmProvidedReadWriteSplittingRuleConfigurationChecker extends AbstractReadWriteSplittingRuleConfigurationChecker<AlgorithmProvidedReadwriteSplittingRuleConfiguration> { 
+public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker extends AbstractReadWriteSplittingRuleConfigurationChecker<AlgorithmProvidedReadwriteSplittingRuleConfiguration> { 
     
     @Override
     public void check(final String schemaName, final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfiguration) {

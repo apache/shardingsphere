@@ -41,7 +41,7 @@ public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest 
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("test_write_ds", "test_read_ds");
     
     @BeforeClass
-    public static void initReadWriteSplittingDataSources() throws SQLException, IOException {
+    public static void initReadwriteSplittingDataSources() throws SQLException, IOException {
         if (null != dataSource) {
             return;
         }

@@ -43,7 +43,7 @@ public final class RuleConfigurationCheckerFactory {
         REGISTRY.put(ShardingRuleConfiguration.class, new ShardingRuleConfigurationChecker());
         REGISTRY.put(AlgorithmProvidedShardingRuleConfiguration.class, new AlgorithmProvidedShardingRuleConfigurationChecker());
         REGISTRY.put(ReadwriteSplittingRuleConfiguration.class, new ReadwriteSplittingRuleConfigurationChecker());
-        REGISTRY.put(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class, new AlgorithmProvidedReadWriteSplittingRuleConfigurationChecker());
+        REGISTRY.put(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class, new AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker());
         REGISTRY.put(EncryptRuleConfiguration.class, new EncryptRuleConfigurationChecker());
         REGISTRY.put(AlgorithmProvidedEncryptRuleConfiguration.class, new AlgorithmProvidedEncryptRuleConfigurationChecker());
         REGISTRY.put(ShadowRuleConfiguration.class, new ShadowRuleConfigurationChecker());

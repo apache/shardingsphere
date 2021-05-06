@@ -222,7 +222,7 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertPersistConfigurationForReadWriteSplittingWithoutAuthenticationAndIsOverwrite() {
+    public void assertPersistConfigurationForReadwriteSplittingWithoutAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadwriteSplittingRuleConfiguration(), true);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
@@ -270,7 +270,7 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertPersistConfigurationForReadWriteSplittingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
+    public void assertPersistConfigurationForReadwriteSplittingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadwriteSplittingRuleConfiguration(), false);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
@@ -278,7 +278,7 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertPersistConfigurationForReadWriteSplittingRuleWithAuthenticationAndIsOverwrite() {
+    public void assertPersistConfigurationForReadwriteSplittingRuleWithAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadwriteSplittingRuleConfiguration(), true);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
