@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.common.yaml.swapper;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -48,8 +48,8 @@ public final class ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         return result;
     }
     
-    private YamlReadWriteSplittingDataSourceRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
-        YamlReadWriteSplittingDataSourceRuleConfiguration result = new YamlReadWriteSplittingDataSourceRuleConfiguration();
+    private YamlReadwriteSplittingDataSourceRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
+        YamlReadwriteSplittingDataSourceRuleConfiguration result = new YamlReadwriteSplittingDataSourceRuleConfiguration();
         result.setName(dataSourceRuleConfig.getName());
         result.setAutoAwareDataSourceName(dataSourceRuleConfig.getAutoAwareDataSourceName());
         result.setWriteDataSourceName(dataSourceRuleConfig.getWriteDataSourceName());
@@ -61,7 +61,7 @@ public final class ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     @Override
     public AlgorithmProvidedReadwriteSplittingRuleConfiguration swapToObject(final YamlReadwriteSplittingRuleConfiguration yamlConfig) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        for (Entry<String, YamlReadWriteSplittingDataSourceRuleConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
+        for (Entry<String, YamlReadwriteSplittingDataSourceRuleConfiguration> entry : yamlConfig.getDataSources().entrySet()) {
             dataSources.add(swapToObject(entry.getKey(), entry.getValue()));
         }
         AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig = new AlgorithmProvidedReadwriteSplittingRuleConfiguration();
@@ -69,7 +69,7 @@ public final class ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         return ruleConfig;
     }
     
-    private ReadwriteSplittingDataSourceRuleConfiguration swapToObject(final String name, final YamlReadWriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
+    private ReadwriteSplittingDataSourceRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
         return new ReadwriteSplittingDataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getAutoAwareDataSourceName(),
                 yamlDataSourceRuleConfig.getWriteDataSourceName(), yamlDataSourceRuleConfig.getReadDataSourceNames(), yamlDataSourceRuleConfig.getLoadBalancerName());
     }

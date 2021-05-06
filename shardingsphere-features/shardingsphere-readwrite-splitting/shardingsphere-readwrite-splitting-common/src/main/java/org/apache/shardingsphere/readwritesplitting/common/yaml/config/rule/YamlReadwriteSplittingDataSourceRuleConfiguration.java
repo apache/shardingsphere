@@ -30,7 +30,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class YamlReadWriteSplittingDataSourceRuleConfiguration implements YamlConfiguration {
+public final class YamlReadwriteSplittingDataSourceRuleConfiguration implements YamlConfiguration {
     
     private String name;
     

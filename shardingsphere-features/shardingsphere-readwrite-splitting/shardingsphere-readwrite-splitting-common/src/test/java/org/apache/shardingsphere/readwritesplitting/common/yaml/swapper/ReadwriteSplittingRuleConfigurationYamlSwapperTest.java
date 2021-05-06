@@ -25,7 +25,7 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -89,7 +89,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
         YamlReadwriteSplittingRuleConfiguration result = new YamlReadwriteSplittingRuleConfiguration();
-        result.getDataSources().put("read_query_ds", new YamlReadWriteSplittingDataSourceRuleConfiguration());
+        result.getDataSources().put("read_query_ds", new YamlReadwriteSplittingDataSourceRuleConfiguration());
         result.getDataSources().get("read_query_ds").setName("read_query_ds");
         result.getDataSources().get("read_query_ds").setWriteDataSourceName("write_ds");
         result.getDataSources().get("read_query_ds").setReadDataSourceNames(Arrays.asList("read_ds_0", "read_ds_1"));

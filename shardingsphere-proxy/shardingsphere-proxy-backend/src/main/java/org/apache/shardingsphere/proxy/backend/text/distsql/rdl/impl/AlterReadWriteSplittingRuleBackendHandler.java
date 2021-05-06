@@ -36,7 +36,7 @@ import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.AlterReadWriteSplittingRuleStatementConverter;
 
 import javax.sql.DataSource;
@@ -117,9 +117,9 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     private YamlReadwriteSplittingRuleConfiguration alter(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement) {
         YamlReadwriteSplittingRuleConfiguration result = AlterReadWriteSplittingRuleStatementConverter.convert(statement.getModifyReplicaQueryRules());
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            YamlReadWriteSplittingDataSourceRuleConfiguration alterConfig = result.getDataSources().get(each.getName());
+            YamlReadwriteSplittingDataSourceRuleConfiguration alterConfig = result.getDataSources().get(each.getName());
             if (null == alterConfig) {
-                YamlReadWriteSplittingDataSourceRuleConfiguration existConfig = new YamlReadWriteSplittingDataSourceRuleConfiguration();
+                YamlReadwriteSplittingDataSourceRuleConfiguration existConfig = new YamlReadwriteSplittingDataSourceRuleConfiguration();
                 existConfig.setName(each.getName());
                 existConfig.setWriteDataSourceName(each.getWriteDataSourceName());
                 existConfig.setReadDataSourceNames(each.getReadDataSourceNames());
