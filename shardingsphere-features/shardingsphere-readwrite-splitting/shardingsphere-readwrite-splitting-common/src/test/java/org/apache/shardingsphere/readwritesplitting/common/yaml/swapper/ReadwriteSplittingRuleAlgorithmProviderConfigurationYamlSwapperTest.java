@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapperTest {
     
-    private final ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper();
+    private final ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper();
     
     @Test
     public void assertSwapToYamlConfiguration() {
