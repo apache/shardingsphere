@@ -37,7 +37,7 @@ import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class YamlGovernanceReadWriteSplittingIntegrateTest extends AbstractYamlDataSourceTest {
+public final class YamlGovernanceReadwriteSplittingIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final String filePath;
     
@@ -46,16 +46,16 @@ public final class YamlGovernanceReadWriteSplittingIntegrateTest extends Abstrac
     @Parameters(name = "{index}:{0}-{1}")
     public static Collection<?> init() {
         return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/readwrite_splitting/configWithReadWriteSplittingDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/readwrite_splitting/configWithReadWriteSplittingDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/readwrite_splitting/configWithReadWriteSplittingDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/readwrite_splitting/configWithReadWriteSplittingDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true},
+                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true},
         });
     }
     
     @Test
     public void assertWithDataSource() throws Exception {
-        File yamlFile = new File(YamlGovernanceReadWriteSplittingIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlGovernanceReadwriteSplittingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
@@ -74,7 +74,7 @@ public final class YamlGovernanceReadWriteSplittingIntegrateTest extends Abstrac
     
     @Test
     public void assertWithDataSourceByYamlBytes() throws Exception {
-        File yamlFile = new File(YamlGovernanceReadWriteSplittingIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlGovernanceReadwriteSplittingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
