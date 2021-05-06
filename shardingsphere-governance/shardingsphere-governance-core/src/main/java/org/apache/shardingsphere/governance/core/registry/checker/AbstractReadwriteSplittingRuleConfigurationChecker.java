@@ -29,7 +29,7 @@ import java.util.Collection;
  * 
  * @param <T> rule configuration
  */
-public abstract class AbstractReadWriteSplittingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
+public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
     protected void checkDataSources(final String schemaName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
         dataSources.forEach(each -> {
