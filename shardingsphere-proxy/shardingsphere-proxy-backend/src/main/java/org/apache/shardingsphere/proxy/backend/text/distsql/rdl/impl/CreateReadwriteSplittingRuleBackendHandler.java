@@ -38,9 +38,9 @@ import java.util.Collections;
 /**
  * Create readwrite-splitting rule backend handler.
  */
-public final class CreateReadWriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<CreateReadwriteSplittingRuleStatement> {
+public final class CreateReadwriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<CreateReadwriteSplittingRuleStatement> {
     
-    public CreateReadWriteSplittingRuleBackendHandler(final CreateReadwriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
+    public CreateReadwriteSplittingRuleBackendHandler(final CreateReadwriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
