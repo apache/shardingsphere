@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 /**
  * Drop readwrite-splitting rule backend handler.
  */
-public final class DropReadWriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<DropReplicaQueryRuleStatement> {
+public final class DropReadwriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<DropReplicaQueryRuleStatement> {
 
-    public DropReadWriteSplittingRuleBackendHandler(final DropReplicaQueryRuleStatement sqlStatement, final BackendConnection backendConnection) {
+    public DropReadwriteSplittingRuleBackendHandler(final DropReplicaQueryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
