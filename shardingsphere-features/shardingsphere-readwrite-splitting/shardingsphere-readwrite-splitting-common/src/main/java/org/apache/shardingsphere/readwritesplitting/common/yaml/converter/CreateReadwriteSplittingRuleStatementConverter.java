@@ -29,7 +29,7 @@ import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.Yaml
  * Create readwrite-splitting rule statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateReadWriteSplittingRuleStatementConverter {
+public final class CreateReadwriteSplittingRuleStatementConverter {
     
     /**
      * Convert create readwrite-splitting rule statement context to YAML readwrite-splitting rule configuration.
