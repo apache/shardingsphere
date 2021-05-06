@@ -87,14 +87,14 @@ encryptAlgorithmConfigs.put("pwd_encryptor", new ShardingSphereAlgorithmConfigur
 EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
 
 /* 读写分离规则配置 */
-ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadWriteSplittingDataSourceRuleConfiguration("ds_0", "write_ds0", Arrays.asList("write_ds0_read0", "write_ds0_read1"), "roundRobin");
-ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadWriteSplittingDataSourceRuleConfiguration("ds_1", "write_ds0", Arrays.asList("write_ds1_read0", "write_ds1_read0"), "roundRobin");
+ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_0", "write_ds0", Arrays.asList("write_ds0_read0", "write_ds0_read1"), "roundRobin");
+ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_1", "write_ds0", Arrays.asList("write_ds1_read0", "write_ds1_read0"), "roundRobin");
 
 //负载均衡算法
 Map<String, ShardingSphereAlgorithmConfiguration> loadBalanceMaps = new HashMap<>(1);
 loadBalanceMaps.put("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()));
 
-ReadWriteSplittingRuleConfiguration readWriteSplittingyRuleConfiguration = new ReadWriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), loadBalanceMaps);
+ReadwriteSplittingRuleConfiguration readWriteSplittingyRuleConfiguration = new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), loadBalanceMaps);
 
 /* 其他配置 */
 Properties otherProperties = new Properties();
@@ -103,5 +103,4 @@ otherProperties.setProperty("query-with-cipher-column", "true");
 
 /* shardingDataSource 就是最终被ORM框架或其他jdbc框架引用的数据源名称 */
 DataSource shardingDataSource = ShardingSphereDataSourceFactory.createDataSource(datasourceMaps, Arrays.asList(shardingRuleConfiguration, readWriteSplittingyRuleConfiguration, encryptRuleConfiguration), otherProperties);
-
 ```
