@@ -24,11 +24,11 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public final class CloudReadWriteSplittingConfiguration implements ExampleConfiguration {
+public final class CloudReadwriteSplittingConfiguration implements ExampleConfiguration {
     
     private final GovernanceConfiguration governanceConfig;
     
-    public CloudReadWriteSplittingConfiguration(final GovernanceConfiguration governanceConfig) {
+    public CloudReadwriteSplittingConfiguration(final GovernanceConfiguration governanceConfig) {
         this.governanceConfig = governanceConfig;
     }
     
