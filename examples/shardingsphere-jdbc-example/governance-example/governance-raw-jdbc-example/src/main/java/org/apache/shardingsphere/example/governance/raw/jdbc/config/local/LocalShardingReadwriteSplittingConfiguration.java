@@ -40,11 +40,11 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
-public final class LocalShardingReadWriteSplittingConfiguration implements ExampleConfiguration {
+public final class LocalShardingReadwriteSplittingConfiguration implements ExampleConfiguration {
     
     private final GovernanceConfiguration governanceConfig;
     
-    public LocalShardingReadWriteSplittingConfiguration(final GovernanceConfiguration governanceConfig) {
+    public LocalShardingReadwriteSplittingConfiguration(final GovernanceConfiguration governanceConfig) {
         this.governanceConfig = governanceConfig;
     }
     

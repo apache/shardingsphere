@@ -98,7 +98,7 @@ public final class RuleChangedListenerTest extends MetaDataListenerTest {
     }
     
     @Test
-    public void assertCreateEventWithReadWriteSplittingRule() {
+    public void assertCreateEventWithReadwriteSplittingRule() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/readwrite_splitting_db/rule", readYAML(READWRITE_SPLITTING_RULE_FILE), Type.UPDATED);
         Optional<GovernanceEvent> actual = ruleChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
