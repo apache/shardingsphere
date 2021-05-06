@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.readwritesplitting.route.engine.impl.ReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingDataSourceRule;
-import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,10 +38,10 @@ import java.util.Optional;
 /**
  * Readwrite-splitting SQL router.
  */
-public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadWriteSplittingRule> {
+public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSplittingRule> {
     
     @Override
-    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ReadWriteSplittingRule rule, final ConfigurationProperties props) {
+    public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ReadwriteSplittingRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
         String dataSourceName = new ReadwriteSplittingDataSourceRouter(rule.getSingleDataSourceRule()).route(logicSQL.getSqlStatementContext().getSqlStatement());
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
@@ -50,7 +50,7 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadWriteSpl
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
-                                     final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ReadWriteSplittingRule rule, final ConfigurationProperties props) {
+                                     final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ReadwriteSplittingRule rule, final ConfigurationProperties props) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
@@ -72,7 +72,7 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadWriteSpl
     }
     
     @Override
-    public Class<ReadWriteSplittingRule> getTypeClass() {
-        return ReadWriteSplittingRule.class;
+    public Class<ReadwriteSplittingRule> getTypeClass() {
+        return ReadwriteSplittingRule.class;
     }
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
-import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -30,11 +30,11 @@ import java.util.Map;
 /**
  * Readwrite-splitting rule builder.
  */
-public final class ReadWriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadWriteSplittingRule, ReadwriteSplittingRuleConfiguration> {
+public final class ReadWriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadwriteSplittingRule, ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public ReadWriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        return new ReadWriteSplittingRule(ruleConfig);
+    public ReadwriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        return new ReadwriteSplittingRule(ruleConfig);
     }
     
     @Override

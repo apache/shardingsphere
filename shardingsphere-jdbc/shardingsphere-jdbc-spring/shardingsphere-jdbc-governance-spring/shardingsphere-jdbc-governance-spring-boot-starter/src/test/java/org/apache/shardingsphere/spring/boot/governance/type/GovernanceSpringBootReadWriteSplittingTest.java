@@ -21,7 +21,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingDataSourceRule;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -67,10 +67,10 @@ public class GovernanceSpringBootReadWriteSplittingTest {
         }
         Collection<ShardingSphereRule> rules = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules();
         assertThat(rules.size(), is(1));
-        assertReadWriteSplittingRule((ReadWriteSplittingRule) rules.iterator().next());
+        assertReadwriteSplittingRule((ReadwriteSplittingRule) rules.iterator().next());
     }
     
-    private void assertReadWriteSplittingRule(final ReadWriteSplittingRule rule) {
+    private void assertReadwriteSplittingRule(final ReadwriteSplittingRule rule) {
         ReadWriteSplittingDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
         assertThat(dataSourceRule.getName(), is("pr_ds"));
         assertThat(dataSourceRule.getWriteDataSourceName(), is("write_ds"));

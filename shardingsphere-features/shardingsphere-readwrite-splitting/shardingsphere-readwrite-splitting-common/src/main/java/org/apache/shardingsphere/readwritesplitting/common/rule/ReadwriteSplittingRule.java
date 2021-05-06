@@ -43,7 +43,7 @@ import java.util.Optional;
 /**
  * Readwrite-splitting rule.
  */
-public final class ReadWriteSplittingRule implements FeatureRule, SchemaRule, DataSourceContainedRule, StatusContainedRule {
+public final class ReadwriteSplittingRule implements FeatureRule, SchemaRule, DataSourceContainedRule, StatusContainedRule {
     
     static {
         ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
@@ -53,7 +53,7 @@ public final class ReadWriteSplittingRule implements FeatureRule, SchemaRule, Da
     
     private final Map<String, ReadWriteSplittingDataSourceRule> dataSourceRules;
     
-    public ReadWriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+    public ReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig) {
         Preconditions.checkArgument(!ruleConfig.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         ruleConfig.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ReplicaLoadBalanceAlgorithm.class)));
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
@@ -65,7 +65,7 @@ public final class ReadWriteSplittingRule implements FeatureRule, SchemaRule, Da
         }
     }
     
-    public ReadWriteSplittingRule(final AlgorithmProvidedReadWriteSplittingRuleConfiguration ruleConfig) {
+    public ReadwriteSplittingRule(final AlgorithmProvidedReadWriteSplittingRuleConfiguration ruleConfig) {
         Preconditions.checkArgument(!ruleConfig.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         loadBalancers.putAll(ruleConfig.getLoadBalanceAlgorithms());
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
