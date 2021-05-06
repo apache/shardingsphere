@@ -1433,7 +1433,7 @@ alterSystemOption
     | distributedRecovClauses
     | flushClause
     | endSessionClauses
-    | switchLogfileClause
+    | alterSystemSwitchLogfileClause
     | suspendResumeClause
     | quiesceClauses
     | rollingMigrationClauses
@@ -1473,7 +1473,7 @@ endSessionClauses
     : (disconnectSessionClause | killSessionClause) (IMMEDIATE | NOREPLY)?
     ;
 
-switchLogfileClause
+alterSystemSwitchLogfileClause
     : SWITCH LOGFILE
     ;
 
