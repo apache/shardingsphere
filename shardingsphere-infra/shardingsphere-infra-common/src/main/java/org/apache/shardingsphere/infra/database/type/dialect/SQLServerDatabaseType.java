@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSo
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -42,7 +41,7 @@ public final class SQLServerDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return new ArrayList<String>(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:"));
+        return Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:");
     }
     
     @Override

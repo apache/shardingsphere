@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -41,7 +40,7 @@ public final class SQLServerDatabaseTypeTest {
     
     @Test
     public void assertGetJdbcUrlPrefixes() {
-        assertThat(new SQLServerDatabaseType().getJdbcUrlPrefixes(), is(new ArrayList<String>(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:"))));
+        assertThat(new SQLServerDatabaseType().getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:")));
     }
     
     @Test
