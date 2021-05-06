@@ -37,7 +37,7 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.AlterReadWriteSplittingRuleStatementConverter;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.AlterReadwriteSplittingRuleStatementConverter;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -115,7 +115,7 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     }
     
     private YamlReadwriteSplittingRuleConfiguration alter(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement) {
-        YamlReadwriteSplittingRuleConfiguration result = AlterReadWriteSplittingRuleStatementConverter.convert(statement.getModifyReplicaQueryRules());
+        YamlReadwriteSplittingRuleConfiguration result = AlterReadwriteSplittingRuleStatementConverter.convert(statement.getModifyReplicaQueryRules());
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             YamlReadwriteSplittingDataSourceRuleConfiguration alterConfig = result.getDataSources().get(each.getName());
             if (null == alterConfig) {
@@ -143,7 +143,7 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     }
     
     private YamlReadwriteSplittingRuleConfiguration add(final YamlReadwriteSplittingRuleConfiguration config, final AlterReadWriteSplittingRuleStatement statement) {
-        YamlReadwriteSplittingRuleConfiguration addConfig = AlterReadWriteSplittingRuleStatementConverter.convert(statement.getAddReplicaQueryRules());
+        YamlReadwriteSplittingRuleConfiguration addConfig = AlterReadwriteSplittingRuleStatementConverter.convert(statement.getAddReplicaQueryRules());
         config.getDataSources().putAll(addConfig.getDataSources());
         config.getLoadBalancers().putAll(addConfig.getLoadBalancers());
         return config;

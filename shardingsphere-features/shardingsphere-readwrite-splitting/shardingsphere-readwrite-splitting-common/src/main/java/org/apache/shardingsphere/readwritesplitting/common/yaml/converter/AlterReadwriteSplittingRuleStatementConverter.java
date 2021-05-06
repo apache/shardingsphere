@@ -30,7 +30,7 @@ import java.util.Collection;
  * Alter readwrite-splitting rule statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AlterReadWriteSplittingRuleStatementConverter {
+public final class AlterReadwriteSplittingRuleStatementConverter {
     
     /**
      * Convert alter readwrite-splitting rule statement context to YAML readwrite-splitting rule configuration.
