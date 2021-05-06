@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceExcept
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleCreateExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
@@ -164,7 +164,7 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof AddReadWriteSplittingRuleDataSourcesExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ((AddReadWriteSplittingRuleDataSourcesExistedException) cause).getRuleNames());
         }
-        if (cause instanceof ReadWriteSplittingRuleCreateExistsException) {
+        if (cause instanceof ReadwriteSplittingRuleCreateExistsException) {
             return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_EXIST);
         }
         if (cause instanceof ScalingJobNotFoundException) {
