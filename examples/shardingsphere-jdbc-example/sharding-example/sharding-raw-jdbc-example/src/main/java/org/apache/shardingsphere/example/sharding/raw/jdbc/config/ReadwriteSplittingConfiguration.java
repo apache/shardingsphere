@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.governance.raw.jdbc.config.local;
+package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 
-import org.apache.shardingsphere.driver.governance.api.GovernanceShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -32,20 +31,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class LocalReadWriteSplittingConfiguration implements ExampleConfiguration {
-    
-    private final GovernanceConfiguration governanceConfig;
-    
-    public LocalReadWriteSplittingConfiguration(final GovernanceConfiguration governanceConfig) {
-        this.governanceConfig = governanceConfig;
-    }
+public final class ReadwriteSplittingConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadWriteSplittingDataSourceRuleConfiguration(
-                "demo_readwrite_splitting_ds", "", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), null);
-        ReadWriteSplittingRuleConfiguration ruleConfig = new ReadWriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
-        return GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), new Properties(), governanceConfig);
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
+                "demo_read_query_ds", "", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), null);
+        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), new Properties());
     }
     
     private Map<String, DataSource> createDataSourceMap() {

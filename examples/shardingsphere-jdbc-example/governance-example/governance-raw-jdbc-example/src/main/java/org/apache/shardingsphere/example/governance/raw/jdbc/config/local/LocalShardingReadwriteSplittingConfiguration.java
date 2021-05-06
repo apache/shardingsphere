@@ -22,8 +22,8 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -52,7 +52,7 @@ public final class LocalShardingReadwriteSplittingConfiguration implements Examp
     public DataSource getDataSource() throws SQLException {
         Collection<RuleConfiguration> configs = new LinkedList<>();
         configs.add(getShardingRuleConfiguration());
-        configs.add(getReadWriteSplittingRuleConfiguration());
+        configs.add(getReadwriteSplittingRuleConfiguration());
         return GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configs, new Properties(), governanceConfig);
     }
     
@@ -84,12 +84,12 @@ public final class LocalShardingReadwriteSplittingConfiguration implements Examp
         return new KeyGenerateStrategyConfiguration("order_id", "snowflake");
     }
     
-    private ReadWriteSplittingRuleConfiguration getReadWriteSplittingRuleConfiguration() {
-        ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadWriteSplittingDataSourceRuleConfiguration(
+    private ReadwriteSplittingRuleConfiguration getReadwriteSplittingRuleConfiguration() {
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration(
                 "ds_0", "", "demo_write_ds_0", Arrays.asList("demo_write_ds_0_read_0", "demo_write_ds_0_read_1"), null);
-        ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadWriteSplittingDataSourceRuleConfiguration(
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration(
                 "ds_1", "", "demo_write_ds_1", Arrays.asList("demo_write_ds_1_read_0", "demo_write_ds_1_read_1"), null);
-        return new ReadWriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
+        return new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
     }
     
     private static Properties getProperties() {

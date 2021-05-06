@@ -20,8 +20,8 @@ package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import javax.sql.DataSource;
@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class ReadWriteSplittingShadowDatabasesConfiguration implements ExampleConfiguration {
+public final class ReadwriteSplittingShadowDatabasesConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {
@@ -41,11 +41,11 @@ public final class ReadWriteSplittingShadowDatabasesConfiguration implements Exa
         dataSourceMap.put("shadow_write_ds", DataSourceUtil.createDataSource("demo_shadow_write_ds"));
         dataSourceMap.put("shadow_read_ds", DataSourceUtil.createDataSource("demo_shadow_read_ds"));
         ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Arrays.asList("write_ds", "read_ds"), Arrays.asList("shadow_write_ds", "shadow_read_ds"));
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfig, getReadWriteSplittingRuleConfiguration()), null);
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfig, getReadwriteSplittingRuleConfiguration()), null);
     }
     
-    private ReadWriteSplittingRuleConfiguration getReadWriteSplittingRuleConfiguration() {
-        ReadWriteSplittingDataSourceRuleConfiguration config = new ReadWriteSplittingDataSourceRuleConfiguration("pr_ds", "", "write_ds", Collections.singletonList("read_ds"), null);
-        return new ReadWriteSplittingRuleConfiguration(Collections.singletonList(config), Collections.emptyMap());
+    private ReadwriteSplittingRuleConfiguration getReadwriteSplittingRuleConfiguration() {
+        ReadwriteSplittingDataSourceRuleConfiguration config = new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "", "write_ds", Collections.singletonList("read_ds"), null);
+        return new ReadwriteSplittingRuleConfiguration(Collections.singletonList(config), Collections.emptyMap());
     }
 }

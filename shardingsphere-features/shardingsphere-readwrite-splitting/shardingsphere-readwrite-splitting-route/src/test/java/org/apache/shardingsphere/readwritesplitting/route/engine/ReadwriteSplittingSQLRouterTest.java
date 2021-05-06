@@ -61,7 +61,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
-    private static final String NONE_READWRITE_SPLITTING_DATASOURCE_NAME = "noneReadWriteSplittingDatasource";
+    private static final String NONE_READWRITE_SPLITTING_DATASOURCE_NAME = "noneReadwriteSplittingDatasource";
     
     private static final String WRITE_DATASOURCE = "write";
     
