@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting=org.apache.shardingsphere.readwritesplitting.spring.namespace.handler.ReadWriteSplittingNamespaceHandler
+http\://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting=org.apache.shardingsphere.readwritesplitting.spring.namespace.handler.ReadwriteSplittingNamespaceHandler

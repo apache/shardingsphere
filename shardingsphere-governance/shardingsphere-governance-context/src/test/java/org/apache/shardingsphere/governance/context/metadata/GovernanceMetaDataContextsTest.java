@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,7 +85,7 @@ public final class GovernanceMetaDataContextsTest {
     private ShardingSphereMetaData metaData;
     
     @Mock
-    private ReadWriteSplittingRule readWriteSplittingRule;
+    private ReadwriteSplittingRule readwriteSplittingRule;
     
     private GovernanceMetaDataContexts governanceMetaDataContexts;
     
@@ -103,7 +103,7 @@ public final class GovernanceMetaDataContextsTest {
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaData.getResource()).thenReturn(resource);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
-        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(readWriteSplittingRule));
+        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(readwriteSplittingRule));
         return Collections.singletonMap("schema", metaData);
     }
     
@@ -190,7 +190,7 @@ public final class GovernanceMetaDataContextsTest {
     public void assertDisableStateChanged() {
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new GovernanceSchema("schema.ds_0"), true);
         governanceMetaDataContexts.renew(event);
-        verify(readWriteSplittingRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
+        verify(readwriteSplittingRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
     }
     
     @Test

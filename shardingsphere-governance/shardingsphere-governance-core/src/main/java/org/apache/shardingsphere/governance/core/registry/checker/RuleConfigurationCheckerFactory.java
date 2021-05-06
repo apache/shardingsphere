@@ -23,8 +23,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -42,8 +42,8 @@ public final class RuleConfigurationCheckerFactory {
     static {
         REGISTRY.put(ShardingRuleConfiguration.class, new ShardingRuleConfigurationChecker());
         REGISTRY.put(AlgorithmProvidedShardingRuleConfiguration.class, new AlgorithmProvidedShardingRuleConfigurationChecker());
-        REGISTRY.put(ReadWriteSplittingRuleConfiguration.class, new ReadWriteSplittingRuleConfigurationChecker());
-        REGISTRY.put(AlgorithmProvidedReadWriteSplittingRuleConfiguration.class, new AlgorithmProvidedReadWriteSplittingRuleConfigurationChecker());
+        REGISTRY.put(ReadwriteSplittingRuleConfiguration.class, new ReadwriteSplittingRuleConfigurationChecker());
+        REGISTRY.put(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class, new AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker());
         REGISTRY.put(EncryptRuleConfiguration.class, new EncryptRuleConfigurationChecker());
         REGISTRY.put(AlgorithmProvidedEncryptRuleConfiguration.class, new AlgorithmProvidedEncryptRuleConfigurationChecker());
         REGISTRY.put(ShadowRuleConfiguration.class, new ShadowRuleConfigurationChecker());
