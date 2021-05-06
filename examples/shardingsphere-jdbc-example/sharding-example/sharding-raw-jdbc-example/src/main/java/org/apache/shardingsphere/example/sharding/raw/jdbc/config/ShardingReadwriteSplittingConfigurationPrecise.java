@@ -36,11 +36,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ShardingReadWriteSplittingConfigurationPrecise implements ExampleConfiguration {
+public final class ShardingReadwriteSplittingConfigurationPrecise implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createReadWriteSplittingConfiguration()), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createReadwriteSplittingConfiguration()), new Properties());
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
@@ -80,7 +80,7 @@ public final class ShardingReadWriteSplittingConfigurationPrecise implements Exa
         return result;
     }
     
-    private static ReadWriteSplittingRuleConfiguration createReadWriteSplittingConfiguration() {
+    private static ReadWriteSplittingRuleConfiguration createReadwriteSplittingConfiguration() {
         ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadWriteSplittingDataSourceRuleConfiguration(
                 "ds_0", "", "demo_write_ds_0", Arrays.asList("demo_write_ds_0_read_0", "demo_write_ds_0_read_1"), null);
         ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadWriteSplittingDataSourceRuleConfiguration(
