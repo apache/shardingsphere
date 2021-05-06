@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateReadWriteSplittingRuleStatement extends CreateRDLStatement {
+public final class CreateReadwriteSplittingRuleStatement extends CreateRDLStatement {
     
     private final Collection<ReadWriteSplittingRuleSegment> readWriteSplittingRules;
 }

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadWriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadWriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
@@ -107,8 +107,8 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof AlterShardingRuleStatement) {
             return Optional.of(new AlterShardingRuleBackendHandler((AlterShardingRuleStatement) sqlStatement, backendConnection));
         }
-        if (sqlStatement instanceof CreateReadWriteSplittingRuleStatement) {
-            return Optional.of(new CreateReadWriteSplittingRuleBackendHandler((CreateReadWriteSplittingRuleStatement) sqlStatement, backendConnection));
+        if (sqlStatement instanceof CreateReadwriteSplittingRuleStatement) {
+            return Optional.of(new CreateReadWriteSplittingRuleBackendHandler((CreateReadwriteSplittingRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof AlterReadWriteSplittingRuleStatement) {
             return Optional.of(new AlterReadWriteSplittingRuleBackendHandler((AlterReadWriteSplittingRuleStatement) sqlStatement, backendConnection));

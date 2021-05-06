@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadWriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -38,14 +38,14 @@ import java.util.Collections;
 /**
  * Create readwrite-splitting rule backend handler.
  */
-public final class CreateReadWriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<CreateReadWriteSplittingRuleStatement> {
+public final class CreateReadWriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<CreateReadwriteSplittingRuleStatement> {
     
-    public CreateReadWriteSplittingRuleBackendHandler(final CreateReadWriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
+    public CreateReadWriteSplittingRuleBackendHandler(final CreateReadwriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final CreateReadWriteSplittingRuleStatement sqlStatement) {
+    public ResponseHeader execute(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
         check(schemaName);
         YamlReadwriteSplittingRuleConfiguration config = CreateReadwriteSplittingRuleStatementConverter.convert(sqlStatement);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));

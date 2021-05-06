@@ -75,7 +75,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
         YamlReadwriteSplittingRuleConfiguration yamlConfig = createYamlReadwriteSplittingRuleConfiguration();
         yamlConfig.getDataSources().get("read_query_ds").setLoadBalancerName("RANDOM");
         ReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToObject(yamlConfig);
-        assertReadWriteSplittingRuleConfiguration(actual);
+        assertReadwriteSplittingRuleConfiguration(actual);
         assertThat(actual.getDataSources().iterator().next().getLoadBalancerName(), is("RANDOM"));
     }
     
@@ -83,7 +83,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     public void assertSwapToObjectWithoutLoadBalanceAlgorithm() {
         YamlReadwriteSplittingRuleConfiguration yamlConfig = createYamlReadwriteSplittingRuleConfiguration();
         ReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToObject(yamlConfig);
-        assertReadWriteSplittingRuleConfiguration(actual);
+        assertReadwriteSplittingRuleConfiguration(actual);
         assertNull(actual.getDataSources().iterator().next().getLoadBalancerName());
     }
     
@@ -96,7 +96,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
         return result;
     }
     
-    private void assertReadWriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration actual) {
+    private void assertReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration actual) {
         ReadwriteSplittingDataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
         assertThat(group.getName(), is("read_query_ds"));
         assertThat(group.getWriteDataSourceName(), is("write_ds"));
