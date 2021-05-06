@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Readwrite-splitting rule bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadWriteSplittingRuleBeanDefinitionTag {
+public final class ReadwriteSplittingRuleBeanDefinitionTag {
     
     public static final String ROOT_TAG = "rule";
     

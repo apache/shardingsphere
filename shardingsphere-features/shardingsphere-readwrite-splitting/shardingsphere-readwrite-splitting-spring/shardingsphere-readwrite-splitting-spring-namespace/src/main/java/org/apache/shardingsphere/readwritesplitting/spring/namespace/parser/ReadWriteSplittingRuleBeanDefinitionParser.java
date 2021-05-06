@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spring.namespace.factorybean.ReplicaLoadBalanceAlgorithmFactoryBean;
-import org.apache.shardingsphere.readwritesplitting.spring.namespace.tag.ReadWriteSplittingRuleBeanDefinitionTag;
+import org.apache.shardingsphere.readwritesplitting.spring.namespace.tag.ReadwriteSplittingRuleBeanDefinitionTag;
 import org.apache.shardingsphere.spring.namespace.registry.ShardingSphereAlgorithmBeanRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -49,7 +49,7 @@ public final class ReadWriteSplittingRuleBeanDefinitionParser extends AbstractBe
     }
     
     private List<BeanDefinition> parseReadWriteSplittingDataSourceRuleConfigurations(final Element element) {
-        List<Element> dataSourceElements = DomUtils.getChildElementsByTagName(element, ReadWriteSplittingRuleBeanDefinitionTag.DATA_SOURCE_TAG);
+        List<Element> dataSourceElements = DomUtils.getChildElementsByTagName(element, ReadwriteSplittingRuleBeanDefinitionTag.DATA_SOURCE_TAG);
         List<BeanDefinition> result = new ManagedList<>(dataSourceElements.size());
         for (Element each : dataSourceElements) {
             result.add(parseReadWriteSplittingDataSourceRuleConfiguration(each));
@@ -59,16 +59,16 @@ public final class ReadWriteSplittingRuleBeanDefinitionParser extends AbstractBe
     
     private BeanDefinition parseReadWriteSplittingDataSourceRuleConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ReadWriteSplittingRuleBeanDefinitionTag.READWRITE_SPLITTING_DATA_SOURCE_ID_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(ReadWriteSplittingRuleBeanDefinitionTag.AUTO_AWARE_DATA_SOURCE_NAME));
-        factory.addConstructorArgValue(element.getAttribute(ReadWriteSplittingRuleBeanDefinitionTag.WRITE_DATA_SOURCE_NAME_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.READWRITE_SPLITTING_DATA_SOURCE_ID_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.AUTO_AWARE_DATA_SOURCE_NAME));
+        factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.WRITE_DATA_SOURCE_NAME_ATTRIBUTE));
         factory.addConstructorArgValue(parseReplicaDataSourcesRef(element));
-        factory.addConstructorArgValue(element.getAttribute(ReadWriteSplittingRuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
     private Collection<String> parseReplicaDataSourcesRef(final Element element) {
-        List<String> replicaDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(ReadWriteSplittingRuleBeanDefinitionTag.READ_DATA_SOURCE_NAMES_ATTRIBUTE));
+        List<String> replicaDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(ReadwriteSplittingRuleBeanDefinitionTag.READ_DATA_SOURCE_NAMES_ATTRIBUTE));
         Collection<String> result = new ManagedList<>(replicaDataSources.size());
         result.addAll(replicaDataSources);
         return result;
