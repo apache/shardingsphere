@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Readwrite-splitting rule builder.
  */
-public final class ReadWriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadwriteSplittingRule, ReadwriteSplittingRuleConfiguration> {
+public final class ReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadwriteSplittingRule, ReadwriteSplittingRuleConfiguration> {
     
     @Override
     public ReadwriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ReadwriteSplittingRuleConfiguration ruleConfig) {
