@@ -28,9 +28,9 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterReadWriteSplittingRuleStatement extends RDLStatement {
+public final class AlterReadwriteSplittingRuleStatement extends RDLStatement {
     
-    private final Collection<ReadwriteSplittingRuleSegment> modifyReplicaQueryRules;
+    private final Collection<ReadwriteSplittingRuleSegment> modifyReadwriteSplittingRules;
     
-    private final Collection<ReadwriteSplittingRuleSegment> addReplicaQueryRules;
+    private final Collection<ReadwriteSplittingRuleSegment> addReadwriteSplittingRules;
 }
