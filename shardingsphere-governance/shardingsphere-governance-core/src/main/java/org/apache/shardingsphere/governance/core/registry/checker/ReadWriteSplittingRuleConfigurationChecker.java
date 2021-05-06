@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.governance.core.registry.checker;
 
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 
 /**
  * Readwrite-splitting rule configuration checker.
  */
-public final class ReadWriteSplittingRuleConfigurationChecker extends AbstractReadWriteSplittingRuleConfigurationChecker<ReadWriteSplittingRuleConfiguration> {
+public final class ReadWriteSplittingRuleConfigurationChecker extends AbstractReadWriteSplittingRuleConfigurationChecker<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final ReadWriteSplittingRuleConfiguration ruleConfiguration) {
+    public void check(final String schemaName, final ReadwriteSplittingRuleConfiguration ruleConfiguration) {
         checkDataSources(schemaName, ruleConfiguration.getDataSources());
     }
 }

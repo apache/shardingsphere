@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleC
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.CreateReadWriteSplittingRuleStatementConverter;
 
@@ -54,7 +54,7 @@ public final class CreateReadWriteSplittingRuleBackendHandler extends SchemaRequ
     }
     
     private void check(final String schemaName) {
-        if (ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream().anyMatch(each -> each instanceof ReadWriteSplittingRuleConfiguration)) {
+        if (ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream().anyMatch(each -> each instanceof ReadwriteSplittingRuleConfiguration)) {
             throw new ReadWriteSplittingRuleCreateExistsException();
         }
     }

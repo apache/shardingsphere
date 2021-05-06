@@ -43,7 +43,7 @@ import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfig
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
@@ -432,11 +432,11 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertLoadReadWriteSplittingRuleConfiguration() {
+    public void assertLoadReadwriteSplittingRuleConfiguration() {
         when(registryRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(READWRITE_SPLITTING_RULE_YAML));
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         Collection<RuleConfiguration> actual = registryCenter.loadRuleConfigurations("sharding_db");
-        ReadWriteSplittingRuleConfiguration config = (ReadWriteSplittingRuleConfiguration) actual.iterator().next();
+        ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) actual.iterator().next();
         assertThat(config.getDataSources().size(), is(1));
         assertThat(config.getDataSources().iterator().next().getWriteDataSourceName(), is("write_ds"));
         assertThat(config.getDataSources().iterator().next().getReadDataSourceNames().size(), is(2));

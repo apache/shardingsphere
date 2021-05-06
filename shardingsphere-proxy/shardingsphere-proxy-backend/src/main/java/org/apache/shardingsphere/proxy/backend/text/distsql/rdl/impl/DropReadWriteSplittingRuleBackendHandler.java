@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleN
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 
@@ -50,14 +50,14 @@ public final class DropReadWriteSplittingRuleBackendHandler extends SchemaRequir
     @Override
     public ResponseHeader execute(final String schemaName, final DropReplicaQueryRuleStatement sqlStatement) {
         Collection<String> ruleNames = sqlStatement.getRuleNames();
-        Optional<ReadWriteSplittingRuleConfiguration> readWriteSplittingRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ReadWriteSplittingRuleConfiguration).map(each -> (ReadWriteSplittingRuleConfiguration) each).findFirst();
-        if (!readWriteSplittingRuleConfig.isPresent()) {
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
+                .filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst();
+        if (!ruleConfig.isPresent()) {
             throw new ReadWriteSplittingRuleNotExistedException();
         }
-        check(readWriteSplittingRuleConfig.get(), ruleNames);
+        check(ruleConfig.get(), ruleNames);
         Optional<YamlReadWriteSplittingRuleConfiguration> yamlConfig = new YamlRuleConfigurationSwapperEngine()
-                .swapToYamlRuleConfigurations(Collections.singletonList(readWriteSplittingRuleConfig.get())).stream()
+                .swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig.get())).stream()
                 .map(each -> (YamlReadWriteSplittingRuleConfiguration) each).findFirst();
         if (!yamlConfig.isPresent()) {
             throw new ReadWriteSplittingRuleNotExistedException();
@@ -67,8 +67,8 @@ public final class DropReadWriteSplittingRuleBackendHandler extends SchemaRequir
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final ReadWriteSplittingRuleConfiguration readWriteSplittingRuleConfig, final Collection<String> ruleNames) {
-        Collection<String> readWriteSplittingNames = readWriteSplittingRuleConfig.getDataSources().stream().map(ReadWriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+    private void check(final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<String> ruleNames) {
+        Collection<String> readWriteSplittingNames = ruleConfig.getDataSources().stream().map(ReadWriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = ruleNames.stream().filter(each -> !readWriteSplittingNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
             throw new ReadWriteSplittingRuleDataSourcesNotExistedException(notExistedRuleNames);

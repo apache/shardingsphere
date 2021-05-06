@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class YamlRootRuleConfigurationsForYamlReadWriteSplittingRuleConfigurationTest {
+public final class YamlRootRuleConfigurationsForYamlReadwriteSplittingRuleConfigurationTest {
     
     @Test
     public void assertUnmarshalWithYamlFile() throws IOException {

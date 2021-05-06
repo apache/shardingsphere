@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ReadWriteSplittingRuleConfigurationYamlSwapperTest {
+public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     
     private final Collection<YamlRuleConfigurationSwapper> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(YamlRuleConfigurationSwapper.class);
     
@@ -51,7 +51,7 @@ public final class ReadWriteSplittingRuleConfigurationYamlSwapperTest {
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfig = 
                 new ReadWriteSplittingDataSourceRuleConfiguration("ds", "", "write", Collections.singletonList("read"), "roundRobin");
-        YamlReadWriteSplittingRuleConfiguration actual = getReplicaQueryRuleConfigurationYamlSwapper().swapToYamlConfiguration(new ReadWriteSplittingRuleConfiguration(
+        YamlReadWriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration(new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getWriteDataSourceName(), is("write"));
@@ -62,8 +62,8 @@ public final class ReadWriteSplittingRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
         ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadWriteSplittingDataSourceRuleConfiguration("ds", "", "write", Collections.singletonList("read"), null);
-        YamlReadWriteSplittingRuleConfiguration actual = getReplicaQueryRuleConfigurationYamlSwapper().swapToYamlConfiguration(
-                new ReadWriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
+        YamlReadWriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration(
+                new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getWriteDataSourceName(), is("write"));
         assertThat(actual.getDataSources().get("ds").getReadDataSourceNames(), is(Collections.singletonList("read")));
@@ -74,7 +74,7 @@ public final class ReadWriteSplittingRuleConfigurationYamlSwapperTest {
     public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
         YamlReadWriteSplittingRuleConfiguration yamlConfig = createYamlReadWriteSplittingRuleConfiguration();
         yamlConfig.getDataSources().get("read_query_ds").setLoadBalancerName("RANDOM");
-        ReadWriteSplittingRuleConfiguration actual = getReplicaQueryRuleConfigurationYamlSwapper().swapToObject(yamlConfig);
+        ReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertReadWriteSplittingRuleConfiguration(actual);
         assertThat(actual.getDataSources().iterator().next().getLoadBalancerName(), is("RANDOM"));
     }
@@ -82,7 +82,7 @@ public final class ReadWriteSplittingRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToObjectWithoutLoadBalanceAlgorithm() {
         YamlReadWriteSplittingRuleConfiguration yamlConfig = createYamlReadWriteSplittingRuleConfiguration();
-        ReadWriteSplittingRuleConfiguration actual = getReplicaQueryRuleConfigurationYamlSwapper().swapToObject(yamlConfig);
+        ReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertReadWriteSplittingRuleConfiguration(actual);
         assertNull(actual.getDataSources().iterator().next().getLoadBalancerName());
     }
@@ -96,7 +96,7 @@ public final class ReadWriteSplittingRuleConfigurationYamlSwapperTest {
         return result;
     }
     
-    private void assertReadWriteSplittingRuleConfiguration(final ReadWriteSplittingRuleConfiguration actual) {
+    private void assertReadWriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration actual) {
         ReadWriteSplittingDataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
         assertThat(group.getName(), is("read_query_ds"));
         assertThat(group.getWriteDataSourceName(), is("write_ds"));
@@ -105,19 +105,19 @@ public final class ReadWriteSplittingRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertGetTypeClass() {
-        ReadWriteSplittingRuleConfigurationYamlSwapper swapper = getReplicaQueryRuleConfigurationYamlSwapper();
-        Class<ReadWriteSplittingRuleConfiguration> actual = swapper.getTypeClass();
-        assertTrue(actual.isAssignableFrom(ReadWriteSplittingRuleConfiguration.class));
+        ReadWriteSplittingRuleConfigurationYamlSwapper swapper = getReadwriteSplittingRuleConfigurationYamlSwapper();
+        Class<ReadwriteSplittingRuleConfiguration> actual = swapper.getTypeClass();
+        assertTrue(actual.isAssignableFrom(ReadwriteSplittingRuleConfiguration.class));
     }
     
     @Test
     public void assertGetOrder() {
-        ReadWriteSplittingRuleConfigurationYamlSwapper swapper = getReplicaQueryRuleConfigurationYamlSwapper();
+        ReadWriteSplittingRuleConfigurationYamlSwapper swapper = getReadwriteSplittingRuleConfigurationYamlSwapper();
         int actual = swapper.getOrder();
         assertThat(actual, is(ReadWriteSplittingOrder.ORDER));
     }
     
-    private ReadWriteSplittingRuleConfigurationYamlSwapper getReplicaQueryRuleConfigurationYamlSwapper() {
+    private ReadWriteSplittingRuleConfigurationYamlSwapper getReadwriteSplittingRuleConfigurationYamlSwapper() {
         Optional<ReadWriteSplittingRuleConfigurationYamlSwapper> optional = collection.stream()
                 .filter(swapper -> swapper instanceof ReadWriteSplittingRuleConfigurationYamlSwapper)
                 .map(swapper -> (ReadWriteSplittingRuleConfigurationYamlSwapper) swapper)

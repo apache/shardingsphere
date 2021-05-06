@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.common.rule;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
 import org.junit.Test;
 
@@ -39,7 +39,7 @@ public final class ReadWriteSplittingRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewWithEmptyDataSourceRule() {
-        new ReadWriteSplittingRule(new ReadWriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        new ReadWriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
     }
     
     @Test
@@ -57,7 +57,7 @@ public final class ReadWriteSplittingRuleTest {
     private ReadWriteSplittingRule createReadWriteSplittingRule() {
         ReadWriteSplittingDataSourceRuleConfiguration config = 
                 new ReadWriteSplittingDataSourceRuleConfiguration("test_pr", "", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random");
-        return new ReadWriteSplittingRule(new ReadWriteSplittingRuleConfiguration(
+        return new ReadWriteSplittingRule(new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(config), ImmutableMap.of("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))));
     }
     

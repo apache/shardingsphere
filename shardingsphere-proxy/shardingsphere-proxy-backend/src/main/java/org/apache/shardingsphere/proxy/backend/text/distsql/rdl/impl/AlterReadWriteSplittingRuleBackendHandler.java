@@ -33,7 +33,7 @@ import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedExcep
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
@@ -60,27 +60,27 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     
     @Override
     public ResponseHeader execute(final String schemaName, final AlterReadWriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadWriteSplittingRuleConfiguration> readWriteSplittingRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ReadWriteSplittingRuleConfiguration).map(each -> (ReadWriteSplittingRuleConfiguration) each).findFirst();
-        if (!readWriteSplittingRuleConfig.isPresent()) {
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
+                .filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst();
+        if (!ruleConfig.isPresent()) {
             throw new ReadWriteSplittingRuleNotExistedException();
         }
-        check(readWriteSplittingRuleConfig.get(), sqlStatement, schemaName);
-        YamlReadWriteSplittingRuleConfiguration alterConfig = alter(readWriteSplittingRuleConfig.get(), sqlStatement);
+        check(ruleConfig.get(), sqlStatement, schemaName);
+        YamlReadWriteSplittingRuleConfiguration alterConfig = alter(ruleConfig.get(), sqlStatement);
         YamlReadWriteSplittingRuleConfiguration addConfig = add(alterConfig, sqlStatement);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(addConfig));
         post(schemaName, rules);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final ReadWriteSplittingRuleConfiguration readWriteSplittingRuleConfig, final AlterReadWriteSplittingRuleStatement statement, final String schemaName) {
-        checkAddDataSourceExist(readWriteSplittingRuleConfig, statement);
-        checkModifyDataSourceNotExist(readWriteSplittingRuleConfig, statement);
+    private void check(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement, final String schemaName) {
+        checkAddDataSourceExist(ruleConfig, statement);
+        checkModifyDataSourceNotExist(ruleConfig, statement);
         checkResourceExist(statement, schemaName);
     }
     
-    private void checkAddDataSourceExist(final ReadWriteSplittingRuleConfiguration replicaQueryRuleConfig, final AlterReadWriteSplittingRuleStatement statement) {
-        Set<String> existReadWriteSplittingDataSourceNames = replicaQueryRuleConfig.getDataSources().stream().map(ReadWriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+    private void checkAddDataSourceExist(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement) {
+        Set<String> existReadWriteSplittingDataSourceNames = ruleConfig.getDataSources().stream().map(ReadWriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> addExistReplicaQueryDataSourceNames = statement.getAddReplicaQueryRules().stream().map(ReadWriteSplittingRuleSegment::getName)
                 .filter(existReadWriteSplittingDataSourceNames::contains).collect(Collectors.toList());
         if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
@@ -105,8 +105,8 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
         }
     }
     
-    private void checkModifyDataSourceNotExist(final ReadWriteSplittingRuleConfiguration replicaQueryRuleConfig, final AlterReadWriteSplittingRuleStatement statement) {
-        Set<String> existReplicaQueryDataSourceNames = replicaQueryRuleConfig.getDataSources().stream().map(ReadWriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+    private void checkModifyDataSourceNotExist(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement) {
+        Set<String> existReplicaQueryDataSourceNames = ruleConfig.getDataSources().stream().map(ReadWriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> addExistReplicaQueryDataSourceNames = statement.getModifyReplicaQueryRules().stream().map(ReadWriteSplittingRuleSegment::getName)
                 .filter(each -> !existReplicaQueryDataSourceNames.contains(each)).collect(Collectors.toList());
         if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
@@ -114,9 +114,9 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
         }
     }
     
-    private YamlReadWriteSplittingRuleConfiguration alter(final ReadWriteSplittingRuleConfiguration replicaQueryRuleConfig, final AlterReadWriteSplittingRuleStatement statement) {
+    private YamlReadWriteSplittingRuleConfiguration alter(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement) {
         YamlReadWriteSplittingRuleConfiguration result = AlterReadWriteSplittingRuleStatementConverter.convert(statement.getModifyReplicaQueryRules());
-        for (ReadWriteSplittingDataSourceRuleConfiguration each : replicaQueryRuleConfig.getDataSources()) {
+        for (ReadWriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             YamlReadWriteSplittingDataSourceRuleConfiguration alterConfig = result.getDataSources().get(each.getName());
             if (null == alterConfig) {
                 YamlReadWriteSplittingDataSourceRuleConfiguration existConfig = new YamlReadWriteSplittingDataSourceRuleConfiguration();
@@ -124,18 +124,18 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
                 existConfig.setWriteDataSourceName(each.getWriteDataSourceName());
                 existConfig.setReadDataSourceNames(each.getReadDataSourceNames());
                 existConfig.setLoadBalancerName(each.getLoadBalancerName());
-                existConfig.setProps(replicaQueryRuleConfig.getLoadBalancers().get(each.getLoadBalancerName()).getProps());
+                existConfig.setProps(ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()).getProps());
                 result.getDataSources().put(each.getName(), existConfig);
-                if (!replicaQueryRuleConfig.getLoadBalancers().containsKey(each.getLoadBalancerName())) {
+                if (!ruleConfig.getLoadBalancers().containsKey(each.getLoadBalancerName())) {
                     YamlShardingSphereAlgorithmConfiguration algorithm = new YamlShardingSphereAlgorithmConfiguration();
                     algorithm.setType(each.getLoadBalancerName());
-                    algorithm.setProps(replicaQueryRuleConfig.getLoadBalancers().get(each.getLoadBalancerName()).getProps());
+                    algorithm.setProps(ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()).getProps());
                     result.getLoadBalancers().put(each.getLoadBalancerName(), algorithm);
                 }
             } else {
                 if (null == alterConfig.getLoadBalancerName()) {
                     alterConfig.setLoadBalancerName(each.getLoadBalancerName());
-                    alterConfig.setProps(replicaQueryRuleConfig.getLoadBalancers().get(each.getLoadBalancerName()).getProps());
+                    alterConfig.setProps(ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()).getProps());
                 }
             }
         }
@@ -143,11 +143,10 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     }
     
     private YamlReadWriteSplittingRuleConfiguration add(final YamlReadWriteSplittingRuleConfiguration config, final AlterReadWriteSplittingRuleStatement statement) {
-        YamlReadWriteSplittingRuleConfiguration result = config;
         YamlReadWriteSplittingRuleConfiguration addConfig = AlterReadWriteSplittingRuleStatementConverter.convert(statement.getAddReplicaQueryRules());
-        result.getDataSources().putAll(addConfig.getDataSources());
-        result.getLoadBalancers().putAll(addConfig.getLoadBalancers());
-        return result;
+        config.getDataSources().putAll(addConfig.getDataSources());
+        config.getLoadBalancers().putAll(addConfig.getLoadBalancers());
+        return config;
     }
 
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {

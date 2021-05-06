@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReadWriteSplittingRuleConfiguration implements RuleConfiguration {
+public final class ReadwriteSplittingRuleConfiguration implements RuleConfiguration {
     
     private final Collection<ReadWriteSplittingDataSourceRuleConfiguration> dataSources;
     

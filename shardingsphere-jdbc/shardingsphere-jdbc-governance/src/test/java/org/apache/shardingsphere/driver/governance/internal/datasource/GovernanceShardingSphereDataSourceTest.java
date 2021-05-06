@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -86,7 +86,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewRules() throws SQLException {
-        metaDataContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getReadWriteSplittingRuleConfiguration())));
+        metaDataContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getReadwriteSplittingRuleConfiguration())));
         assertThat(((ShardingRule) metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator().next()).getTableRules().size(), is(1));
     }
     
@@ -96,10 +96,10 @@ public final class GovernanceShardingSphereDataSourceTest {
         return result;
     }
     
-    private ReadWriteSplittingRuleConfiguration getReadWriteSplittingRuleConfiguration() {
+    private ReadwriteSplittingRuleConfiguration getReadwriteSplittingRuleConfiguration() {
         ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfig
                 = new ReadWriteSplittingDataSourceRuleConfiguration("pr_ds", "", "write_ds", Collections.singletonList("read_ds"), "roundRobin");
-        return new ReadWriteSplittingRuleConfiguration(
+        return new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties())));
     }
     

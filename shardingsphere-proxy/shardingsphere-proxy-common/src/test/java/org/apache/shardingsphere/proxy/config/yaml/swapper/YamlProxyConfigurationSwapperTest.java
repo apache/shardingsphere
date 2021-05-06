@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 import org.junit.Test;
 
@@ -91,7 +91,7 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(ruleConfigs.size(), is(1));
         RuleConfiguration ruleConfig = ruleConfigs.iterator().next();
         assertNotNull(ruleConfig);
-        assertThat(ruleConfig, instanceOf(ReadWriteSplittingRuleConfiguration.class));
+        assertThat(ruleConfig, instanceOf(ReadwriteSplittingRuleConfiguration.class));
     }
     
     private void assertProxyConfigurationProps(final ProxyConfiguration proxyConfig) {
