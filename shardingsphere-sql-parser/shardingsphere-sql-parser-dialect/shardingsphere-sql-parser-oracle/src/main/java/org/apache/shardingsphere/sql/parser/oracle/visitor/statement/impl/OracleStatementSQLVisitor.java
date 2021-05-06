@@ -389,10 +389,10 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
             return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
-            return visit(ctx.parameterMarker());
+            return new ParameterMarkerExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         }
         if (null != ctx.literals()) {
-            return visit(ctx.literals());
+            return createLiteralExpression(ctx.literals());
         }
         if (null != ctx.functionCall()) {
             return visit(ctx.functionCall());
@@ -401,6 +401,24 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
             return visit(ctx.columnName());
         }
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    private ExpressionSegment createLiteralExpression(final LiteralsContext context) {
+        ASTNode astNode = visit(context);
+        if (astNode instanceof StringLiteralValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((StringLiteralValue) astNode).getValue());
+        }
+        if (astNode instanceof NumberLiteralValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberLiteralValue) astNode).getValue());
+        }
+        if (astNode instanceof BooleanLiteralValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((BooleanLiteralValue) astNode).getValue());
+        }
+        if (astNode instanceof OtherLiteralValue) {
+            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), ((OtherLiteralValue) astNode).getValue());
+        }
+        return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(),
+                context.start.getInputStream().getText(new Interval(context.start.getStartIndex(), context.stop.getStopIndex())));
     }
     
     @Override
