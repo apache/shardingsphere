@@ -40,7 +40,7 @@ import java.util.Map.Entry;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class YamlGovernanceShardingWithReadWriteSplittingIntegrateTest extends AbstractYamlDataSourceTest {
+public final class YamlGovernanceShardingWithReadwriteSplittingIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final String filePath;
     
@@ -58,7 +58,7 @@ public final class YamlGovernanceShardingWithReadWriteSplittingIntegrateTest ext
     
     @Test
     public void assertWithDataSource() throws Exception {
-        File yamlFile = new File(YamlGovernanceShardingWithReadWriteSplittingIntegrateTest.class.getResource(filePath).toURI());
+        File yamlFile = new File(YamlGovernanceShardingWithReadwriteSplittingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
             dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
