@@ -616,7 +616,7 @@ serialNumber
     ;
 
 instanceId
-    : AT_ numberLiterals
+    : numberLiterals
     ;
 
 sqlId
@@ -636,11 +636,11 @@ asmVersion
     ;
 
 walletPassword
-    : stringLiterals
+    : identifier
     ;
 
 hsmAuthString
-    : stringLiterals
+    : identifier
     ;
 
 targetDbName
@@ -648,7 +648,7 @@ targetDbName
     ;
 
 certificateId
-    : stringLiterals
+    : identifier
     ;
 
 categoryName

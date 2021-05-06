@@ -1522,7 +1522,7 @@ relocateClientClause
     ;
 
 cancelSqlClause
-    : CANCEL SQL SQ_ sessionId serialNumber instanceId? sqlId? SQ_
+    : CANCEL SQL SQ_ sessionId serialNumber (AT_ instanceId)? sqlId? SQ_
     ;
 
 flushPasswordfileMetadataCacheClause
