@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadWriteSplittingRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
 
 import java.util.Collection;
@@ -31,5 +31,5 @@ import java.util.Collection;
 @Getter
 public final class CreateReadwriteSplittingRuleStatement extends CreateRDLStatement {
     
-    private final Collection<ReadWriteSplittingRuleSegment> readWriteSplittingRules;
+    private final Collection<ReadwriteSplittingRuleSegment> readwriteSplittingRules;
 }

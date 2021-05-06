@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadWriteSplittingRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
 
 import java.util.Collection;
 
@@ -30,7 +30,7 @@ import java.util.Collection;
 @Getter
 public final class AlterReadWriteSplittingRuleStatement extends RDLStatement {
     
-    private final Collection<ReadWriteSplittingRuleSegment> modifyReplicaQueryRules;
+    private final Collection<ReadwriteSplittingRuleSegment> modifyReplicaQueryRules;
     
-    private final Collection<ReadWriteSplittingRuleSegment> addReplicaQueryRules;
+    private final Collection<ReadwriteSplittingRuleSegment> addReplicaQueryRules;
 }

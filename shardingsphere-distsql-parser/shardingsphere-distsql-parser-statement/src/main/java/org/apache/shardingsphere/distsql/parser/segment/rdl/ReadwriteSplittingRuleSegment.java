@@ -29,7 +29,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class ReadWriteSplittingRuleSegment implements ASTNode {
+public final class ReadwriteSplittingRuleSegment implements ASTNode {
     
     private String name;
     

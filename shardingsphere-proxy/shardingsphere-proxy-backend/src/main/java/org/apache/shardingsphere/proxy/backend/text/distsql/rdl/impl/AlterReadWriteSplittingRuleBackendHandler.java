@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadWriteSplittingRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadWriteSplittingRuleStatement;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -81,7 +81,7 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     
     private void checkAddDataSourceExist(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement) {
         Set<String> existReadWriteSplittingDataSourceNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
-        Collection<String> addExistReplicaQueryDataSourceNames = statement.getAddReplicaQueryRules().stream().map(ReadWriteSplittingRuleSegment::getName)
+        Collection<String> addExistReplicaQueryDataSourceNames = statement.getAddReplicaQueryRules().stream().map(ReadwriteSplittingRuleSegment::getName)
                 .filter(existReadWriteSplittingDataSourceNames::contains).collect(Collectors.toList());
         if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
             throw new AddReadWriteSplittingRuleDataSourcesExistedException(addExistReplicaQueryDataSourceNames);
@@ -90,11 +90,11 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     
     private void checkResourceExist(final AlterReadWriteSplittingRuleStatement statement, final String schemaName) {
         List<String> resources = new LinkedList<>();
-        for (ReadWriteSplittingRuleSegment each: statement.getModifyReplicaQueryRules()) {
+        for (ReadwriteSplittingRuleSegment each: statement.getModifyReplicaQueryRules()) {
             resources.add(each.getWriteDataSource());
             resources.addAll(each.getReadDataSources());
         }
-        for (ReadWriteSplittingRuleSegment each: statement.getAddReplicaQueryRules()) {
+        for (ReadwriteSplittingRuleSegment each: statement.getAddReplicaQueryRules()) {
             resources.add(each.getWriteDataSource());
             resources.addAll(each.getReadDataSources());
         }
@@ -107,7 +107,7 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
     
     private void checkModifyDataSourceNotExist(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadWriteSplittingRuleStatement statement) {
         Set<String> existReplicaQueryDataSourceNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
-        Collection<String> addExistReplicaQueryDataSourceNames = statement.getModifyReplicaQueryRules().stream().map(ReadWriteSplittingRuleSegment::getName)
+        Collection<String> addExistReplicaQueryDataSourceNames = statement.getModifyReplicaQueryRules().stream().map(ReadwriteSplittingRuleSegment::getName)
                 .filter(each -> !existReplicaQueryDataSourceNames.contains(each)).collect(Collectors.toList());
         if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
             throw new ReadWriteSplittingRuleDataSourcesNotExistedException(addExistReplicaQueryDataSourceNames);
