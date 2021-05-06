@@ -17,28 +17,26 @@
 
 package org.apache.shardingsphere.proxy.frontend.executor;
 
-import io.netty.channel.ChannelId;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
 
-public final class ChannelThreadExecutorGroupTest {
+public final class ConnectionThreadExecutorGroupTest {
     
     @Test
     public void assertRegister() {
-        ChannelId channelId = mock(ChannelId.class);
-        ChannelThreadExecutorGroup.getInstance().register(channelId);
-        assertNotNull(ChannelThreadExecutorGroup.getInstance().get(channelId));
-        ChannelThreadExecutorGroup.getInstance().unregister(channelId);
+        int connectionId = 1;
+        ConnectionThreadExecutorGroup.getInstance().register(connectionId);
+        assertNotNull(ConnectionThreadExecutorGroup.getInstance().get(connectionId));
+        ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionId);
     }
     
     @Test
     public void assertUnregister() {
-        ChannelId channelId = mock(ChannelId.class);
-        ChannelThreadExecutorGroup.getInstance().register(channelId);
-        ChannelThreadExecutorGroup.getInstance().unregister(channelId);
-        assertNull(ChannelThreadExecutorGroup.getInstance().get(channelId));
+        int connectionId = 2;
+        ConnectionThreadExecutorGroup.getInstance().register(connectionId);
+        ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionId);
+        assertNull(ConnectionThreadExecutorGroup.getInstance().get(connectionId));
     }
 }

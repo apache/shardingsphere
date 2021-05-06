@@ -46,18 +46,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     
     @Override
     public void release(final BackendConnection backendConnection) {
-        waitingForFinish(backendConnection);
         PostgreSQLBinaryStatementRegistry.getInstance().unregister(backendConnection.getConnectionId());
-    }
-    
-    private void waitingForFinish(final BackendConnection backendConnection) {
-        while (backendConnection.getSubmittedTaskCount().get() > 0) {
-            try {
-                Thread.sleep(500L);
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
-        }
     }
     
     @Override
