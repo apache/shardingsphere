@@ -23,7 +23,7 @@ import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.Algo
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.spring.boot.algorithm.ReadwriteSplittingAlgorithmProvidedBeanRegistry;
 import org.apache.shardingsphere.readwritesplitting.spring.boot.condition.ReadwriteSplittingSpringBootCondition;
-import org.apache.shardingsphere.readwritesplitting.spring.boot.rule.YamlReadWriteSplittingRuleSpringBootConfiguration;
+import org.apache.shardingsphere.readwritesplitting.spring.boot.rule.YamlReadwriteSplittingRuleSpringBootConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.swapper.ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper;
 import org.springframework.beans.factory.ObjectProvider;
@@ -42,7 +42,7 @@ import java.util.Optional;
  * Rule spring boot configuration for readwrite-splitting.
  */
 @Configuration
-@EnableConfigurationProperties(YamlReadWriteSplittingRuleSpringBootConfiguration.class)
+@EnableConfigurationProperties(YamlReadwriteSplittingRuleSpringBootConfiguration.class)
 @ConditionalOnClass(YamlReadwriteSplittingRuleConfiguration.class)
 @Conditional(ReadwriteSplittingSpringBootCondition.class)
 @RequiredArgsConstructor
@@ -50,7 +50,7 @@ public class ReadWriteSplittingRuleSpringbootConfiguration {
     
     private final ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper();
     
-    private final YamlReadWriteSplittingRuleSpringBootConfiguration yamlConfig;
+    private final YamlReadwriteSplittingRuleSpringBootConfiguration yamlConfig;
     
     /**
      * Readwrite-splitting rule configuration for spring boot.

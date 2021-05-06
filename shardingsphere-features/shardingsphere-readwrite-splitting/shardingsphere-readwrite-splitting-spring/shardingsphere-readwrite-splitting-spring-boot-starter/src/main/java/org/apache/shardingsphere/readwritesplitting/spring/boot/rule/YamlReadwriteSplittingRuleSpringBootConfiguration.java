@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
-public final class YamlReadWriteSplittingRuleSpringBootConfiguration {
+public final class YamlReadwriteSplittingRuleSpringBootConfiguration {
     
     private YamlReadwriteSplittingRuleConfiguration readwriteSplitting;
 }
