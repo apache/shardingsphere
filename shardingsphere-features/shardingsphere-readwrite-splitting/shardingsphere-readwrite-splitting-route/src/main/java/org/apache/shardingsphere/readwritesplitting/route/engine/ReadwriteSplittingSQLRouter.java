@@ -38,7 +38,7 @@ import java.util.Optional;
 /**
  * Readwrite-splitting SQL router.
  */
-public final class ReadWriteSplittingSQLRouter implements SQLRouter<ReadWriteSplittingRule> {
+public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadWriteSplittingRule> {
     
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ReadWriteSplittingRule rule, final ConfigurationProperties props) {

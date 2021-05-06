@@ -57,7 +57,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ReadWriteSplittingSQLRouterTest {
+public final class ReadwriteSplittingSQLRouterTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
@@ -72,7 +72,7 @@ public final class ReadWriteSplittingSQLRouterTest {
     @Mock
     private SQLStatementContext<SQLStatement> sqlStatementContext;
     
-    private ReadWriteSplittingSQLRouter sqlRouter;
+    private ReadwriteSplittingSQLRouter sqlRouter;
     
     static {
         ShardingSphereServiceLoader.register(SQLRouter.class);
@@ -82,7 +82,7 @@ public final class ReadWriteSplittingSQLRouterTest {
     public void setUp() {
         rule = new ReadWriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
                 new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "", WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE), null)), Collections.emptyMap()));
-        sqlRouter = (ReadWriteSplittingSQLRouter) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLRouter.class).get(rule);
+        sqlRouter = (ReadwriteSplittingSQLRouter) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLRouter.class).get(rule);
     }
     
     @After
