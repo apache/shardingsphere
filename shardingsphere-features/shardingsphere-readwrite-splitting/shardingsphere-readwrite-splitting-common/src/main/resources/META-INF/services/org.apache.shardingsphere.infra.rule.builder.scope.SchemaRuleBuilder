@@ -16,4 +16,4 @@
 #
 
 org.apache.shardingsphere.readwritesplitting.common.rule.biulder.ReadWriteSplittingRuleBuilder
-org.apache.shardingsphere.readwritesplitting.common.rule.biulder.AlgorithmProvidedReadWriteSplittingRuleBuilder
+org.apache.shardingsphere.readwritesplitting.common.rule.biulder.AlgorithmProvidedReadwriteSplittingRuleBuilder
