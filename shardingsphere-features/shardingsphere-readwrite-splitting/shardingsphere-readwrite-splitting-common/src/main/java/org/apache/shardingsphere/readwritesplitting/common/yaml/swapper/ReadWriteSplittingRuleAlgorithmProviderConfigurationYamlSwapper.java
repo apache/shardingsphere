@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.common.yaml.swapper;
 
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
@@ -86,6 +86,6 @@ public final class ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     
     @Override
     public int getOrder() {
-        return ReadWriteSplittingOrder.ALGORITHM_PROVIDER_ORDER;
+        return ReadwriteSplittingOrder.ALGORITHM_PROVIDER_ORDER;
     }
 }

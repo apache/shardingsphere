@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Readwrite-splitting order.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadWriteSplittingOrder {
+public final class ReadwriteSplittingOrder {
     
     /**
      * Readwrite-splitting order.

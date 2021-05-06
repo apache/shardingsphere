@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
 import org.junit.Test;
@@ -114,7 +114,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     public void assertGetOrder() {
         ReadWriteSplittingRuleConfigurationYamlSwapper swapper = getReadwriteSplittingRuleConfigurationYamlSwapper();
         int actual = swapper.getOrder();
-        assertThat(actual, is(ReadWriteSplittingOrder.ORDER));
+        assertThat(actual, is(ReadwriteSplittingOrder.ORDER));
     }
     
     private ReadWriteSplittingRuleConfigurationYamlSwapper getReadwriteSplittingRuleConfigurationYamlSwapper() {

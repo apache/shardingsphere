@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 import org.junit.Test;
 
@@ -80,7 +80,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     
     @Test
     public void assertGetOrder() {
-        assertThat(swapper.getOrder(), is(ReadWriteSplittingOrder.ALGORITHM_PROVIDER_ORDER));
+        assertThat(swapper.getOrder(), is(ReadwriteSplittingOrder.ALGORITHM_PROVIDER_ORDER));
     }
     
     private YamlReadWriteSplittingRuleConfiguration createYamlReadWriteSplittingRuleConfiguration() {

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.readwritesplitting.route.engine.impl.ReadwriteSplittingDataSourceRouter;
-import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 
@@ -68,7 +68,7 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSpl
     
     @Override
     public int getOrder() {
-        return ReadWriteSplittingOrder.ORDER;
+        return ReadwriteSplittingOrder.ORDER;
     }
     
     @Override

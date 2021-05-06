@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 
 import javax.sql.DataSource;
@@ -39,7 +39,7 @@ public final class ReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, 
     
     @Override
     public int getOrder() {
-        return ReadWriteSplittingOrder.ORDER;
+        return ReadwriteSplittingOrder.ORDER;
     }
     
     @Override
