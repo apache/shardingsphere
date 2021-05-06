@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReadWriteSplittingRuleNotExistedException extends BackendException {
-
+public final class ReadwriteSplittingRuleNotExistedException extends BackendException {
+    
     private static final long serialVersionUID = -5119217255419990719L;
 }

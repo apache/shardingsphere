@@ -33,7 +33,7 @@ import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceExceptio
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleDataSourcesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
@@ -155,7 +155,7 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingTableRuleExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULE_EXIST, ((ShardingTableRuleExistedException) cause).getTableNames());
         }
-        if (cause instanceof ReadWriteSplittingRuleNotExistedException) {
+        if (cause instanceof ReadwriteSplittingRuleNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_NOT_EXIST);
         }
         if (cause instanceof ReadWriteSplittingRuleDataSourcesNotExistedException) {

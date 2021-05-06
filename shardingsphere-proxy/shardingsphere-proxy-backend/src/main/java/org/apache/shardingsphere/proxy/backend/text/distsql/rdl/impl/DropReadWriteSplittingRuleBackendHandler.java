@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleDataSourcesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -53,14 +53,14 @@ public final class DropReadWriteSplittingRuleBackendHandler extends SchemaRequir
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst();
         if (!ruleConfig.isPresent()) {
-            throw new ReadWriteSplittingRuleNotExistedException();
+            throw new ReadwriteSplittingRuleNotExistedException();
         }
         check(ruleConfig.get(), ruleNames);
         Optional<YamlReadwriteSplittingRuleConfiguration> yamlConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig.get())).stream()
                 .map(each -> (YamlReadwriteSplittingRuleConfiguration) each).findFirst();
         if (!yamlConfig.isPresent()) {
-            throw new ReadWriteSplittingRuleNotExistedException();
+            throw new ReadwriteSplittingRuleNotExistedException();
         }
         Collection<RuleConfiguration> rules = drop(yamlConfig.get(), ruleNames);
         post(schemaName, rules);
