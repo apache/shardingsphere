@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.spring.namespace.handler;
 
 import org.apache.shardingsphere.readwritesplitting.spring.namespace.factorybean.ReplicaLoadBalanceAlgorithmFactoryBean;
-import org.apache.shardingsphere.readwritesplitting.spring.namespace.parser.ReadWriteSplittingRuleBeanDefinitionParser;
+import org.apache.shardingsphere.readwritesplitting.spring.namespace.parser.ReadwriteSplittingRuleBeanDefinitionParser;
 import org.apache.shardingsphere.readwritesplitting.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
 import org.apache.shardingsphere.readwritesplitting.spring.namespace.tag.ReadwriteSplittingRuleBeanDefinitionTag;
 import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
@@ -31,7 +31,7 @@ public final class ReadwriteSplittingNamespaceHandler extends NamespaceHandlerSu
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(ReadwriteSplittingRuleBeanDefinitionTag.ROOT_TAG, new ReadWriteSplittingRuleBeanDefinitionParser());
+        registerBeanDefinitionParser(ReadwriteSplittingRuleBeanDefinitionTag.ROOT_TAG, new ReadwriteSplittingRuleBeanDefinitionParser());
         registerBeanDefinitionParser(LoadBalanceAlgorithmBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(ReplicaLoadBalanceAlgorithmFactoryBean.class));
     }
 }
