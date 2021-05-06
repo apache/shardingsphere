@@ -235,7 +235,7 @@ public final class RDLBackendHandlerFactoryTest {
         try {
             RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateReadwriteSplittingRuleStatement.class), connection);
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `CreateReadWriteSplittingRuleStatement` SQL"));
+            assertThat(ex.getMessage(), is("No Registry center to execute `CreateReadwriteSplittingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
         Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateReadwriteSplittingRuleStatement.class), connection);
@@ -251,7 +251,7 @@ public final class RDLBackendHandlerFactoryTest {
         try {
             RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterReadwriteSplittingRuleStatement.class), connection);
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `AlterReadWriteSplittingRuleStatement` SQL"));
+            assertThat(ex.getMessage(), is("No Registry center to execute `AlterReadwriteSplittingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
         Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterReadwriteSplittingRuleStatement.class), connection);

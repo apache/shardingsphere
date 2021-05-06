@@ -40,13 +40,13 @@ import java.util.Optional;
 /**
  * Backend handler for show readwrite-splitting rule.
  */
-public final class ReadWriteSplittingRuleQueryBackendHandler extends SchemaRequiredBackendHandler<ShowRuleStatement> {
+public final class ReadwriteSplittingRuleQueryBackendHandler extends SchemaRequiredBackendHandler<ShowRuleStatement> {
     
     private Iterator<ReadwriteSplittingDataSourceRuleConfiguration> data;
     
     private final String schema;
     
-    public ReadWriteSplittingRuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final BackendConnection backendConnection) {
+    public ReadwriteSplittingRuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
         if (sqlStatement.getSchema().isPresent()) {
             schema = sqlStatement.getSchema().get().getIdentifier().getValue();
