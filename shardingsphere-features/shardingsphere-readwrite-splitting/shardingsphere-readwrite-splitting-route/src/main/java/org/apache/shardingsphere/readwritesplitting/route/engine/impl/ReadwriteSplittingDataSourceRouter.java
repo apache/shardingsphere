@@ -36,7 +36,7 @@ import java.util.Optional;
  * Data source router for readwrite-splitting.
  */
 @RequiredArgsConstructor
-public final class ReadWriteSplittingDataSourceRouter {
+public final class ReadwriteSplittingDataSourceRouter {
     
     private final ReadWriteSplittingDataSourceRule rule;
     

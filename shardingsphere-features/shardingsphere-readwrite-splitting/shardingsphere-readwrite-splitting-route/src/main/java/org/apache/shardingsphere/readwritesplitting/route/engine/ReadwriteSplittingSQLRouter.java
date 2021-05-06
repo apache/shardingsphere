@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.readwritesplitting.route.engine.impl.ReadWriteSplittingDataSourceRouter;
+import org.apache.shardingsphere.readwritesplitting.route.engine.impl.ReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingRule;
@@ -43,7 +43,7 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadWriteSpl
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ReadWriteSplittingRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
-        String dataSourceName = new ReadWriteSplittingDataSourceRouter(rule.getSingleDataSourceRule()).route(logicSQL.getSqlStatementContext().getSqlStatement());
+        String dataSourceName = new ReadwriteSplittingDataSourceRouter(rule.getSingleDataSourceRule()).route(logicSQL.getSqlStatementContext().getSqlStatement());
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
         return result;
     }
@@ -58,7 +58,7 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadWriteSpl
             Optional<ReadWriteSplittingDataSourceRule> dataSourceRule = rule.findDataSourceRule(dataSourceName);
             if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
-                String actualDataSourceName = new ReadWriteSplittingDataSourceRouter(dataSourceRule.get()).route(logicSQL.getSqlStatementContext().getSqlStatement());
+                String actualDataSourceName = new ReadwriteSplittingDataSourceRouter(dataSourceRule.get()).route(logicSQL.getSqlStatementContext().getSqlStatement());
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
             }
         }
