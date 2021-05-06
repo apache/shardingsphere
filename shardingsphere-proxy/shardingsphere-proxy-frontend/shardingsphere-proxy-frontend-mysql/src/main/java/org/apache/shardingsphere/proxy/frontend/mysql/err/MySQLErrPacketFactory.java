@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.proxy.backend.exception.AddReadWriteSplittingRuleDataSourcesExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.AddReadwriteSplittingRuleDataSourcesExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
@@ -161,8 +161,8 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ReadWriteSplittingRuleDataSourcesNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST, ((ReadWriteSplittingRuleDataSourcesNotExistedException) cause).getRuleNames());
         }
-        if (cause instanceof AddReadWriteSplittingRuleDataSourcesExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ((AddReadWriteSplittingRuleDataSourcesExistedException) cause).getRuleNames());
+        if (cause instanceof AddReadwriteSplittingRuleDataSourcesExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ((AddReadwriteSplittingRuleDataSourcesExistedException) cause).getRuleNames());
         }
         if (cause instanceof ReadwriteSplittingRuleCreateExistsException) {
             return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_EXIST);

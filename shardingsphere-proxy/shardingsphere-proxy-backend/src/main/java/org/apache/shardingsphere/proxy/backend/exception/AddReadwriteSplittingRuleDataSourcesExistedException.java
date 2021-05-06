@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddReadWriteSplittingRuleDataSourcesExistedException extends BackendException {
+public final class AddReadwriteSplittingRuleDataSourcesExistedException extends BackendException {
     
     private static final long serialVersionUID = -4169758880611482863L;
     

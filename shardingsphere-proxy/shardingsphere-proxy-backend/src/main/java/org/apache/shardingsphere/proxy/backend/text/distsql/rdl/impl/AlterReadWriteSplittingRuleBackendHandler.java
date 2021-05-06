@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereA
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.AddReadWriteSplittingRuleDataSourcesExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.AddReadwriteSplittingRuleDataSourcesExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
@@ -84,7 +84,7 @@ public final class AlterReadWriteSplittingRuleBackendHandler extends SchemaRequi
         Collection<String> addExistReplicaQueryDataSourceNames = statement.getAddReadwriteSplittingRules().stream().map(ReadwriteSplittingRuleSegment::getName)
                 .filter(existReadWriteSplittingDataSourceNames::contains).collect(Collectors.toList());
         if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
-            throw new AddReadWriteSplittingRuleDataSourcesExistedException(addExistReplicaQueryDataSourceNames);
+            throw new AddReadwriteSplittingRuleDataSourcesExistedException(addExistReplicaQueryDataSourceNames);
         }
     }
     
