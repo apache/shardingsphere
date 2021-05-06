@@ -37,7 +37,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class AlgorithmProvidedReadWriteSplittingRuleConfiguration implements RuleConfiguration {
+public final class AlgorithmProvidedReadwriteSplittingRuleConfiguration implements RuleConfiguration {
     
     private Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
     

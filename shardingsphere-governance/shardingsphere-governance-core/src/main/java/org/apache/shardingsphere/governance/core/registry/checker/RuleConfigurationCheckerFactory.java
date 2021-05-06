@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -43,7 +43,7 @@ public final class RuleConfigurationCheckerFactory {
         REGISTRY.put(ShardingRuleConfiguration.class, new ShardingRuleConfigurationChecker());
         REGISTRY.put(AlgorithmProvidedShardingRuleConfiguration.class, new AlgorithmProvidedShardingRuleConfigurationChecker());
         REGISTRY.put(ReadwriteSplittingRuleConfiguration.class, new ReadWriteSplittingRuleConfigurationChecker());
-        REGISTRY.put(AlgorithmProvidedReadWriteSplittingRuleConfiguration.class, new AlgorithmProvidedReadWriteSplittingRuleConfigurationChecker());
+        REGISTRY.put(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class, new AlgorithmProvidedReadWriteSplittingRuleConfigurationChecker());
         REGISTRY.put(EncryptRuleConfiguration.class, new EncryptRuleConfigurationChecker());
         REGISTRY.put(AlgorithmProvidedEncryptRuleConfiguration.class, new AlgorithmProvidedEncryptRuleConfigurationChecker());
         REGISTRY.put(ShadowRuleConfiguration.class, new ShadowRuleConfigurationChecker());

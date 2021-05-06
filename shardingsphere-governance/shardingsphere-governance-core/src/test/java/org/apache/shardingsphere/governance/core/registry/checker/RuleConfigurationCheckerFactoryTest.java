@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -62,7 +62,7 @@ public final class RuleConfigurationCheckerFactoryTest {
     
     @Test
     public void assertAlgorithmProvidedReadwriteSplittingRuleConfigurationChecker() {
-        assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(AlgorithmProvidedReadWriteSplittingRuleConfiguration.class)).isPresent());
+        assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class)).isPresent());
     }
     
     @Test

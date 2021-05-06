@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.common.yaml.swapper;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     
     @Test
     public void assertSwapToObject() {
-        AlgorithmProvidedReadWriteSplittingRuleConfiguration actual = swapper.swapToObject(createYamlReadWriteSplittingRuleConfiguration());
+        AlgorithmProvidedReadwriteSplittingRuleConfiguration actual = swapper.swapToObject(createYamlReadWriteSplittingRuleConfiguration());
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertTrue(actual.getDataSources().iterator().hasNext());
@@ -70,7 +70,7 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     
     @Test
     public void assertGetTypeClass() {
-        assertThat(swapper.getTypeClass(), equalTo(AlgorithmProvidedReadWriteSplittingRuleConfiguration.class));
+        assertThat(swapper.getTypeClass(), equalTo(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class));
     }
     
     @Test
@@ -87,6 +87,6 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name", "", "writeDataSourceName",
                 Collections.singletonList("readDataSourceName"), "loadBalancerName");
         return swapper.swapToYamlConfiguration(
-                new AlgorithmProvidedReadWriteSplittingRuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm())));
+                new AlgorithmProvidedReadwriteSplittingRuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm())));
     }
 }

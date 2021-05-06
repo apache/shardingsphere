@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.spring.namespace;
 
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.junit.Test;
@@ -40,10 +40,10 @@ public final class ReadWriteSplittingSpringNamespaceTest extends AbstractJUnit4S
     private ReplicaLoadBalanceAlgorithm randomLoadbalancer;
     
     @Resource
-    private AlgorithmProvidedReadWriteSplittingRuleConfiguration defaultRule;
+    private AlgorithmProvidedReadwriteSplittingRuleConfiguration defaultRule;
     
     @Resource
-    private AlgorithmProvidedReadWriteSplittingRuleConfiguration randomRule;
+    private AlgorithmProvidedReadwriteSplittingRuleConfiguration randomRule;
     
     @Test
     public void assertRandomLoadbalancer() {

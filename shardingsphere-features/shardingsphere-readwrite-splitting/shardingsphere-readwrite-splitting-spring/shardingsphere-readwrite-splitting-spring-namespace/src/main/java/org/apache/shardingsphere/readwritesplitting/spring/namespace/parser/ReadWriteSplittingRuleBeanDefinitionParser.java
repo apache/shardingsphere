@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spring.namespace.factorybean.ReplicaLoadBalanceAlgorithmFactoryBean;
 import org.apache.shardingsphere.readwritesplitting.spring.namespace.tag.ReadWriteSplittingRuleBeanDefinitionTag;
@@ -42,7 +42,7 @@ public final class ReadWriteSplittingRuleBeanDefinitionParser extends AbstractBe
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedReadWriteSplittingRuleConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
         factory.addConstructorArgValue(parseReadWriteSplittingDataSourceRuleConfigurations(element));
         factory.addConstructorArgValue(ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ReplicaLoadBalanceAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();

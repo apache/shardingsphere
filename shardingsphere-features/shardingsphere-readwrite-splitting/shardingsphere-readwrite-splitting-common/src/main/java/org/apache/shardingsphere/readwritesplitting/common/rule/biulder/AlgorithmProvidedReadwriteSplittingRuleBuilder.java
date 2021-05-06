@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.common.rule.biulder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 
@@ -30,11 +30,11 @@ import java.util.Map;
 /**
  * Algorithm provided readwrite-splitting rule builder.
  */
-public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadwriteSplittingRule, AlgorithmProvidedReadWriteSplittingRuleConfiguration> {
+public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadwriteSplittingRule, AlgorithmProvidedReadwriteSplittingRuleConfiguration> {
     
     @Override
     public ReadwriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType,
-                                        final AlgorithmProvidedReadWriteSplittingRuleConfiguration ruleConfig) {
+                                        final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig) {
         return new ReadwriteSplittingRule(ruleConfig);
     }
     
@@ -44,7 +44,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements Fea
     }
     
     @Override
-    public Class<AlgorithmProvidedReadWriteSplittingRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedReadWriteSplittingRuleConfiguration.class;
+    public Class<AlgorithmProvidedReadwriteSplittingRuleConfiguration> getTypeClass() {
+        return AlgorithmProvidedReadwriteSplittingRuleConfiguration.class;
     }
 }

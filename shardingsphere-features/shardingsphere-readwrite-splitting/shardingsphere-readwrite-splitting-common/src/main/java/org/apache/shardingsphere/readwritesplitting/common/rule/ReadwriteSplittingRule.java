@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -65,7 +65,7 @@ public final class ReadwriteSplittingRule implements FeatureRule, SchemaRule, Da
         }
     }
     
-    public ReadwriteSplittingRule(final AlgorithmProvidedReadWriteSplittingRuleConfiguration ruleConfig) {
+    public ReadwriteSplittingRule(final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig) {
         Preconditions.checkArgument(!ruleConfig.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         loadBalancers.putAll(ruleConfig.getLoadBalanceAlgorithms());
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);

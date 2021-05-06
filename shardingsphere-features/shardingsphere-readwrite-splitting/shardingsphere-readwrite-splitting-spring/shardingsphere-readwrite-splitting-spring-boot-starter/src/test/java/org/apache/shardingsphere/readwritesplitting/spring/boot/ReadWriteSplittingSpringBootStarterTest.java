@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.spring.boot;
 
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +43,7 @@ public class ReadWriteSplittingSpringBootStarterTest {
     private RandomReplicaLoadBalanceAlgorithm random;
     
     @Resource
-    private AlgorithmProvidedReadWriteSplittingRuleConfiguration config;
+    private AlgorithmProvidedReadwriteSplittingRuleConfiguration config;
     
     @Test
     public void assertLoadBalanceAlgorithm() {

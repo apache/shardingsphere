@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 import org.junit.Test;
 
@@ -42,7 +42,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        AlgorithmProvidedReadWriteSplittingRuleConfiguration algorithmProvidedRuleConfig = mock(AlgorithmProvidedReadWriteSplittingRuleConfiguration.class);
+        AlgorithmProvidedReadwriteSplittingRuleConfiguration algorithmProvidedRuleConfig = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
                 "name", "pr_ds", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
