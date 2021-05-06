@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractShardingSphereDataSourceForReadWriteSplittingTest extends AbstractSQLTest {
+public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest extends AbstractSQLTest {
     
     private static ShardingSphereDataSource dataSource;
     
@@ -54,10 +54,10 @@ public abstract class AbstractShardingSphereDataSourceForReadWriteSplittingTest 
     
     private static File getFile(final String fileName) {
         return new File(Preconditions.checkNotNull(
-                AbstractShardingSphereDataSourceForReadWriteSplittingTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+                AbstractShardingSphereDataSourceForReadwriteSplittingTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
-    protected final ShardingSphereDataSource getReadWriteSplittingDataSource() {
+    protected final ShardingSphereDataSource getReadwriteSplittingDataSource() {
         return dataSource;
     }
     

@@ -17,35 +17,25 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForReadWriteSplittingTest;
+import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForReadwriteSplittingTest;
 import org.junit.Test;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class ReadWriteSplittingPreparedStatementTest extends AbstractShardingSphereDataSourceForReadWriteSplittingTest {
+public final class ReadwriteSplittingStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement preparedStatement = getReadWriteSplittingDataSource().getConnection().prepareStatement(null)) {
-            preparedStatement.executeQuery();
+        try (Statement statement = getReadwriteSplittingDataSource().getConnection().createStatement()) {
+            statement.executeQuery(null);
         }
     }
     
     @Test(expected = SQLException.class)
     public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement preparedStatement = getReadWriteSplittingDataSource().getConnection().prepareStatement("")) {
-            preparedStatement.executeQuery();
-        }
-    }
-    
-    @Test
-    public void assertGetParameterMetaData() throws SQLException {
-        try (PreparedStatement preparedStatement = getReadWriteSplittingDataSource().getConnection().prepareStatement("SELECT * FROM t_global where id = ?")) {
-            assertThat(preparedStatement.getParameterMetaData().getParameterCount(), is(1));
+        try (Statement statement = getReadwriteSplittingDataSource().getConnection().createStatement()) {
+            statement.executeQuery("");
         }
     }
 }
