@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.transaction.TransactionHolder;
-import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
@@ -38,7 +38,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ReadwriteSplittingDataSourceRouter {
     
-    private final ReadWriteSplittingDataSourceRule rule;
+    private final ReadwriteSplittingDataSourceRule rule;
     
     /**
      * Route.

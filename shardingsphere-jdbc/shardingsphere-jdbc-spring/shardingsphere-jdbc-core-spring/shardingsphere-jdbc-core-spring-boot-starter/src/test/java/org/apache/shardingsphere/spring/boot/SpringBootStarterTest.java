@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
@@ -109,7 +109,7 @@ public class SpringBootStarterTest {
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule rule) {
         assertThat(rule.getDataSourceMapper(), is(Collections.singletonMap("pr_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
-        ReadWriteSplittingDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
+        ReadwriteSplittingDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
         assertNotNull(dataSourceRule);
         assertThat(dataSourceRule.getName(), is("pr_ds"));
         assertThat(dataSourceRule.getWriteDataSourceName(), is("write_ds"));

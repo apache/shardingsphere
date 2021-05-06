@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.readwritesplitting.route.engine.impl.ReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.common.constant.ReadWriteSplittingOrder;
-import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
@@ -55,7 +55,7 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSpl
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
             String dataSourceName = each.getDataSourceMapper().getLogicName();
-            Optional<ReadWriteSplittingDataSourceRule> dataSourceRule = rule.findDataSourceRule(dataSourceName);
+            Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.findDataSourceRule(dataSourceName);
             if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
                 String actualDataSourceName = new ReadwriteSplittingDataSourceRouter(dataSourceRule.get()).route(logicSQL.getSqlStatementContext().getSqlStatement());

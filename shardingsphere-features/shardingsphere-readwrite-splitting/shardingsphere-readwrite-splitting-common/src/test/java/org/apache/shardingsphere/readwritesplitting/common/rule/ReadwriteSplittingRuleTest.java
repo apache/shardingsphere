@@ -44,7 +44,7 @@ public final class ReadwriteSplittingRuleTest {
     
     @Test
     public void assertFindDataSourceRule() {
-        Optional<ReadWriteSplittingDataSourceRule> actual = createReadwriteSplittingRule().findDataSourceRule("test_pr");
+        Optional<ReadwriteSplittingDataSourceRule> actual = createReadwriteSplittingRule().findDataSourceRule("test_pr");
         assertTrue(actual.isPresent());
         assertDataSourceRule(actual.get());
     }
@@ -61,7 +61,7 @@ public final class ReadwriteSplittingRuleTest {
                 Collections.singleton(config), ImmutableMap.of("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))));
     }
     
-    private void assertDataSourceRule(final ReadWriteSplittingDataSourceRule actual) {
+    private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {
         assertThat(actual.getName(), is("test_pr"));
         assertThat(actual.getWriteDataSourceName(), is("write_ds"));
         assertThat(actual.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));

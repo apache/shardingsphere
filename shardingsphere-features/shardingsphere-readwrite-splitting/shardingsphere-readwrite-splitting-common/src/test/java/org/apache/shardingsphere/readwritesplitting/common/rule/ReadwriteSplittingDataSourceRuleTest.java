@@ -33,57 +33,57 @@ import static org.junit.Assert.assertThat;
 
 public final class ReadwriteSplittingDataSourceRuleTest {
     
-    private final ReadWriteSplittingDataSourceRule readWriteSplittingDataSourceRule = new ReadWriteSplittingDataSourceRule(
+    private final ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
             new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random"), new RandomReplicaLoadBalanceAlgorithm());
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadWriteSplittingDataSourceRuleWithoutName() {
-        new ReadWriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("", "", "write_ds", Collections.singletonList("read_ds"), null), 
+    public void assertNewReadwriteSplittingDataSourceRuleWithoutName() {
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("", "", "write_ds", Collections.singletonList("read_ds"), null), 
                 new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadWriteSplittingDataSourceRuleWithoutPrimaryDataSourceName() {
-        new ReadWriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "", "", Collections.singletonList("read_ds"), null), new RoundRobinReplicaLoadBalanceAlgorithm());
+    public void assertNewReadwriteSplittingDataSourceRuleWithoutPrimaryDataSourceName() {
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "", "", Collections.singletonList("read_ds"), null), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadWriteSplittingDataSourceRuleWithNullReadDataSourceName() {
-        new ReadWriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "", "write_ds", null, null), new RoundRobinReplicaLoadBalanceAlgorithm());
+    public void assertNewReadwriteSplittingDataSourceRuleWithNullReadDataSourceName() {
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "", "write_ds", null, null), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadWriteSplittingDataSourceRuleWithEmptyReadDataSourceName() {
-        new ReadWriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "", "write_ds", Collections.emptyList(), null), new RoundRobinReplicaLoadBalanceAlgorithm());
+    public void assertNewReadwriteSplittingDataSourceRuleWithEmptyReadDataSourceName() {
+        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds", "", "write_ds", Collections.emptyList(), null), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test
     public void assertGetReadDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(readWriteSplittingDataSourceRule.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(readwriteSplittingDataSourceRule.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     @Test
     public void assertGetReadDataSourceNamesWithDisabledDataSourceNames() {
-        readWriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
-        assertThat(readWriteSplittingDataSourceRule.getReadDataSourceNames(), is(Collections.singletonList("read_ds_1")));
+        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
+        assertThat(readwriteSplittingDataSourceRule.getReadDataSourceNames(), is(Collections.singletonList("read_ds_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForDisabled() {
-        readWriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
-        assertThat(readWriteSplittingDataSourceRule.getReadDataSourceNames(), is(Collections.singletonList("read_ds_1")));
+        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
+        assertThat(readwriteSplittingDataSourceRule.getReadDataSourceNames(), is(Collections.singletonList("read_ds_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForEnabled() {
-        readWriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
-        readWriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", false);
-        assertThat(readWriteSplittingDataSourceRule.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
+        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", false);
+        assertThat(readwriteSplittingDataSourceRule.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     @Test
     public void assertGetDataSourceMapper() {
-        Map<String, Collection<String>> actual = readWriteSplittingDataSourceRule.getDataSourceMapper();
+        Map<String, Collection<String>> actual = readwriteSplittingDataSourceRule.getDataSourceMapper();
         Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
         assertThat(actual, is(expected));
     }

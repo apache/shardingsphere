@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Readwrite-splitting data source rule.
  */
 @Getter
-public final class ReadWriteSplittingDataSourceRule {
+public final class ReadwriteSplittingDataSourceRule {
     
     private final String name;
     
@@ -54,7 +54,7 @@ public final class ReadWriteSplittingDataSourceRule {
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public ReadWriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
+    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
         checkConfiguration(config);
         name = config.getName();
         autoAwareDataSourceName = config.getAutoAwareDataSourceName();

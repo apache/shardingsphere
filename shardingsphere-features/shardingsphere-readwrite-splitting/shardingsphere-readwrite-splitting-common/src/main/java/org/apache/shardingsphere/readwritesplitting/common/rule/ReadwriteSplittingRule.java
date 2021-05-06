@@ -51,7 +51,7 @@ public final class ReadwriteSplittingRule implements FeatureRule, SchemaRule, Da
     
     private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
-    private final Map<String, ReadWriteSplittingDataSourceRule> dataSourceRules;
+    private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
     public ReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig) {
         Preconditions.checkArgument(!ruleConfig.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
@@ -61,7 +61,7 @@ public final class ReadwriteSplittingRule implements FeatureRule, SchemaRule, Da
             // TODO check if can not find load balancer should throw exception.
             ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
                     ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
-            dataSourceRules.put(each.getName(), new ReadWriteSplittingDataSourceRule(each, loadBalanceAlgorithm));
+            dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm));
         }
     }
     
@@ -73,7 +73,7 @@ public final class ReadwriteSplittingRule implements FeatureRule, SchemaRule, Da
             // TODO check if can not find load balancer should throw exception.
             ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
                     ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
-            dataSourceRules.put(each.getName(), new ReadWriteSplittingDataSourceRule(each, loadBalanceAlgorithm));
+            dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm));
         }
     }
     
@@ -91,7 +91,7 @@ public final class ReadwriteSplittingRule implements FeatureRule, SchemaRule, Da
      *
      * @return replica query data source rule
      */
-    public ReadWriteSplittingDataSourceRule getSingleDataSourceRule() {
+    public ReadwriteSplittingDataSourceRule getSingleDataSourceRule() {
         return dataSourceRules.values().iterator().next();
     }
     
@@ -101,14 +101,14 @@ public final class ReadwriteSplittingRule implements FeatureRule, SchemaRule, Da
      * @param dataSourceName data source name
      * @return replica query data source rule
      */
-    public Optional<ReadWriteSplittingDataSourceRule> findDataSourceRule(final String dataSourceName) {
+    public Optional<ReadwriteSplittingDataSourceRule> findDataSourceRule(final String dataSourceName) {
         return Optional.ofNullable(dataSourceRules.get(dataSourceName));
     }
     
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>();
-        for (Entry<String, ReadWriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
+        for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
             result.putAll(entry.getValue().getDataSourceMapper());
         }
         return result;
@@ -117,7 +117,7 @@ public final class ReadwriteSplittingRule implements FeatureRule, SchemaRule, Da
     @Override
     public void updateRuleStatus(final RuleChangedEvent event) {
         if (event instanceof DataSourceNameDisabledEvent) {
-            for (Entry<String, ReadWriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
+            for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
                 entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
             }
         }
