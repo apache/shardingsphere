@@ -1438,7 +1438,7 @@ alterSystemOption
     | quiesceClauses
     | rollingMigrationClauses
     | rollingPatchClauses
-    | alterSystemSecuriyClauses
+    | alterSystemSecurityClauses
     | affinityClauses
     | shutdownDispatcherClause
     | registerClause
@@ -1493,7 +1493,7 @@ rollingPatchClauses
     : startRollingPatchClause | stopRollingPatchClause
     ;
 
-alterSystemSecuriyClauses
+alterSystemSecurityClauses
     : restrictedSessionClause | setEncryptionWalletOpenClause | setEncryptionWalletCloseClause | setEncryptionKeyClause
     ;
 
