@@ -48,3 +48,7 @@ fragment INT_
 fragment HEX_
     : [0-9a-fA-F]
     ;
+
+INTEGER_
+    : (PLUS_ | MINUS_)? INT_
+    ;

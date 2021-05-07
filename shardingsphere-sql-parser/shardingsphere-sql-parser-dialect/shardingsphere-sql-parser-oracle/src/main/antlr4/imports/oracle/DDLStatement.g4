@@ -1534,11 +1534,11 @@ instanceClause
     ;
 
 sequenceClause
-    : SEQUENCE numberLiterals
+    : SEQUENCE INTEGER_
     ;
 
 changeClause
-    : CHANGE numberLiterals
+    : CHANGE INTEGER_
     ;
 
 currentClause
@@ -1546,7 +1546,7 @@ currentClause
     ;
 
 groupClause
-    : GROUP numberLiterals
+    : GROUP INTEGER_
     ;
 
 logfileClause
@@ -1570,11 +1570,11 @@ flushClauseOption
     ;
 
 disconnectSessionClause
-    : DISCONNECT SESSION SQ_ numberLiterals COMMA_ numberLiterals SQ_ POST_TRANSACTION?
+    : DISCONNECT SESSION SQ_ INTEGER_ COMMA_ INTEGER_ SQ_ POST_TRANSACTION?
     ;
 
 killSessionClause
-    : KILL SESSION SQ_ numberLiterals COMMA_ numberLiterals (COMMA_ AT_ numberLiterals)? SQ_
+    : KILL SESSION SQ_ INTEGER_ COMMA_ INTEGER_ (COMMA_ AT_ INTEGER_)? SQ_
     ;
 
 startRollingMigrationClause
