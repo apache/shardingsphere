@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetVari
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinaryLogsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinlogEventsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCharacterSetContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCharsetContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCollationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateEventContext;
@@ -51,6 +52,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCre
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowDatabasesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowEngineContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowEnginesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowErrorsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
@@ -121,7 +124,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     @Override
-    public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) {
+    public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) { 
         return new MySQLUninstallPluginStatement();
     }
     
@@ -138,6 +141,21 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitShowCreateView(final ShowCreateViewContext ctx) {
         return new MySQLShowCreateViewStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowEngines(final ShowEnginesContext ctx) {
+        return new MySQLShowOtherStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowEngine(final ShowEngineContext ctx) {
+        return new MySQLShowOtherStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowCharset(final ShowCharsetContext ctx) {
+        return new MySQLShowOtherStatement();
     }
     
     @Override
