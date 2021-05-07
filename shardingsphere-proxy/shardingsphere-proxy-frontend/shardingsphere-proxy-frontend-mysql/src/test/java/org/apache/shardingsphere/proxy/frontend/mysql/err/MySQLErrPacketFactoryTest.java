@@ -101,7 +101,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSqlState(), is("HY000"));
         assertThat(actual.getErrorMessage(), is("Please do not modify the unknown_table table with an XA transaction. "
                 + "This is an internal system table used to store GTIDs for committed transactions. "
-                + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction."));
+                + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction."));
     }
     
     @Test
