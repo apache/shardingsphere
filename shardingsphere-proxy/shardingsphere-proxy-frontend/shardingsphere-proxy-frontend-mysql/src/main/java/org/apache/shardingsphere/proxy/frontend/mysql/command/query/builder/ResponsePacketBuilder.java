@@ -54,7 +54,7 @@ public final class ResponsePacketBuilder {
         result.add(new MySQLFieldCountPacket(++sequenceId, queryHeader.size()));
         for (QueryHeader each : queryHeader) {
             result.add(new MySQLColumnDefinition41Packet(++sequenceId, getColumnFieldDetailFlag(each), each.getSchema(), each.getTable(), each.getTable(),
-                    each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals()));
+                    each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
         }
         result.add(new MySQLEofPacket(++sequenceId));
         return result;
