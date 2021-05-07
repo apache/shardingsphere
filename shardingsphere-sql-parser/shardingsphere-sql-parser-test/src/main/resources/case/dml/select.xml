@@ -862,7 +862,7 @@
                                     <right>
                                         <list-expression>
                                             <items>
-                                                <common-expression text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90"/>
+                                                <expression-projection text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90"/>
                                             </items>
                                         </list-expression>
                                     </right>
@@ -1774,7 +1774,7 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
+                                                <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1855,7 +1855,7 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
+                                                <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1938,7 +1938,7 @@
                                     </left>
                                     <operator>=</operator>
                                     <right>
-                                        <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
+                                        <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
                                     </right>
                                 </binary-operation-expression>
                             </right>
