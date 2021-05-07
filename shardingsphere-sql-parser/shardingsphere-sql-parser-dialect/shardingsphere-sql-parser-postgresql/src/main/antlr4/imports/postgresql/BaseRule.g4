@@ -504,6 +504,22 @@ comparisonOperator
     : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
+patternMatchingOperator
+    : LIKE
+    | TILDE_TILDE_
+    | NOT LIKE
+    | NOT_TILDE_TILDE_
+    | ILIKE
+    | ILIKE_
+    | NOT ILIKE
+    | NOT_ILIKE_
+    | SIMILAR TO
+    | NOT SIMILAR TO
+    | TILDE_
+    | NOT_ TILDE_
+    | TILDE_ ASTERISK_
+    | NOT_ TILDE_ ASTERISK_
+    ;
 
 cursorName
     : name
@@ -527,18 +543,8 @@ aExpr
     | aExpr qualOp
     | aExpr comparisonOperator aExpr
     | NOT aExpr
-    | aExpr LIKE aExpr
-    | aExpr LIKE aExpr ESCAPE aExpr
-    | aExpr NOT LIKE aExpr
-    | aExpr NOT LIKE aExpr ESCAPE aExpr
-    | aExpr TILDE_ aExpr
-    | aExpr TILDE_ aExpr ESCAPE aExpr
-    | aExpr NOT_ TILDE_ aExpr
-    | aExpr NOT_ TILDE_ aExpr ESCAPE aExpr
-    | aExpr SIMILAR TO aExpr
-    | aExpr SIMILAR TO aExpr ESCAPE aExpr
-    | aExpr NOT SIMILAR TO aExpr
-    | aExpr NOT SIMILAR TO aExpr ESCAPE aExpr
+    | aExpr patternMatchingOperator aExpr
+    | aExpr patternMatchingOperator aExpr ESCAPE aExpr
     | aExpr IS NULL
     | aExpr ISNULL
     | aExpr IS NOT NULL
@@ -658,8 +664,6 @@ columnref
 
 qualOp
     : jsonOperator
-    | TILDE_TILDE_
-    | NOT_TILDE_TILDE_
     | OPERATOR LP_ anyOperator RP_
     ;
 

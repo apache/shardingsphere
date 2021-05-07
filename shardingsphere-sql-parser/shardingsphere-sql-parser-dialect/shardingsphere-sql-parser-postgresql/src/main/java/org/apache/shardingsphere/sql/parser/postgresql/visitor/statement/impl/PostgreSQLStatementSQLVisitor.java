@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementBaseVisitor;
@@ -188,33 +189,36 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
         if (null != ctx.IN()) {
             return createInSegment(ctx);
         }
-        if (null != ctx.TILDE_()) {
-            String operator = "~";
-            if (null != ctx.NOT_()) {
-                operator = "!~";
-            }
-            ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
-            ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
-            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+        if (null != ctx.patternMatchingOperator()) {
+            return createPatternMatchingOperationSegment(ctx);
         }
         if (null != ctx.comparisonOperator()) {
-            ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
-            ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
-            String operator = ctx.comparisonOperator().getText();
-            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+            return createCommonBinaryOperationSegment(ctx, ctx.comparisonOperator().getText());
         }
         if (null != ctx.logicalOperator()) {
-            ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
-            ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
-            String operator = ctx.logicalOperator().getText();
-            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+            return createCommonBinaryOperationSegment(ctx, ctx.logicalOperator().getText());
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+    }
+        
+    private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx) {
+        String operator = ctx.patternMatchingOperator().getText();
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
+        ListExpression right = new ListExpression(ctx.aExpr(1).start.getStartIndex(), ctx.aExpr().get(ctx.aExpr().size() - 1).stop.getStopIndex());
+        for (int i = 1; i < ctx.aExpr().size(); i++) {
+            right.getItems().add((ExpressionSegment) visit(ctx.aExpr().get(i)));
+        }
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+    }
+    
+    private BinaryOperationExpression createCommonBinaryOperationSegment(final AExprContext ctx, final String operator) {
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
+        ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
     
     @Override
@@ -235,8 +239,38 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
         if (null != ctx.aExpr()) {
             return visit(ctx.aExpr());
         }
+        if (null != ctx.funcExpr()) {
+            return visit(ctx.funcExpr());
+        }
         super.visitCExpr(ctx);
-        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), text);
+    }
+    
+    @Override
+    public ASTNode visitFuncExpr(final FuncExprContext ctx) {
+        calculateParameterCount(getTargetRuleContextFromParseTree(ctx, CExprContext.class));
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+    }
+    
+    private <T extends ParseTree> Collection<T> getTargetRuleContextFromParseTree(final ParseTree parseTree, final Class<? extends T> clazz) {
+        Collection<T> result = new LinkedList<>();
+        for (int index = 0; index < parseTree.getChildCount(); index++) {
+            ParseTree child = parseTree.getChild(index);
+            if (clazz.isInstance(child)) {
+                result.add(clazz.cast(child));
+            } else {
+                result.addAll(getTargetRuleContextFromParseTree(child, clazz));
+            }
+        }
+        return result;
+    }
+    
+    private void calculateParameterCount(final Collection<CExprContext> cexprContexts) {
+        for (CExprContext each : cexprContexts) {
+            visit(each);
+        }
     }
     
     @Override
