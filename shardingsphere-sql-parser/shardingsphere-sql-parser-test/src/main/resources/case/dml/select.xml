@@ -687,6 +687,50 @@
         </where>
     </select>
 
+    <select sql-case-id="select_count_like" parameters="1, 'init'">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="65" literal-stop-index="70">
+            <expr>
+                <binary-operation-expression start-index="36" stop-index="64" literal-stop-index="69">
+                    <left>
+                        <binary-operation-expression start-index="36" stop-index="46">
+                            <left>
+                                <column name="user_id" start-index="36" stop-index="42" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="46" stop-index="46" />
+                                <parameter-marker-expression value="0" start-index="46" stop-index="46" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="52" stop-index="64" literal-stop-index="69">
+                            <left>
+                                <column name="status" start-index="52" stop-index="57" />
+                            </left>
+                            <operator>LIKE</operator>
+                            <right>
+                                <list-expression>
+                                    <items>
+                                        <literal-expression value="init" start-index="64" stop-index="69" />
+                                        <parameter-marker-expression value="1" start-index="64" stop-index="64" />
+                                    </items>
+                                </list-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
     <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <from>
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />

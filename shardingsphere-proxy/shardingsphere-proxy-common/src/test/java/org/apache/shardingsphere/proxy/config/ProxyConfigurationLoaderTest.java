@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.config;
 
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadWriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -45,7 +45,7 @@ public final class ProxyConfigurationLoaderTest {
         assertThat(actual.getServerConfiguration().getGovernance().getRegistryCenter().getServerLists(), is("localhost:2181"));
         assertThat(actual.getRuleConfigurations().size(), is(3));
         assertShardingRuleConfiguration(actual.getRuleConfigurations().get("sharding_db"));
-        assertReadWriteSplittingRuleConfiguration(actual.getRuleConfigurations().get("readwrite_splitting_db"));
+        assertReadwriteSplittingRuleConfiguration(actual.getRuleConfigurations().get("readwrite_splitting_db"));
         assertEncryptRuleConfiguration(actual.getRuleConfigurations().get("encrypt_db"));
     }
     
@@ -73,7 +73,7 @@ public final class ProxyConfigurationLoaderTest {
         assertNotNull(actual.getDefaultDatabaseStrategy().getNone());
     }
     
-    private void assertReadWriteSplittingRuleConfiguration(final YamlProxyRuleConfiguration actual) {
+    private void assertReadwriteSplittingRuleConfiguration(final YamlProxyRuleConfiguration actual) {
         assertThat(actual.getSchemaName(), is("readwrite_splitting_db"));
         assertThat(actual.getDataSources().size(), is(3));
         assertNull(actual.getDataSource());
@@ -84,15 +84,15 @@ public final class ProxyConfigurationLoaderTest {
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
         assertFalse(actual.getRules().stream().filter(
             each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration).isPresent());
-        Optional<YamlReadWriteSplittingRuleConfiguration> ruleConfig = actual.getRules().stream().filter(
-            each -> each instanceof YamlReadWriteSplittingRuleConfiguration).findFirst().map(configuration -> (YamlReadWriteSplittingRuleConfiguration) configuration);
+        Optional<YamlReadwriteSplittingRuleConfiguration> ruleConfig = actual.getRules().stream().filter(
+            each -> each instanceof YamlReadwriteSplittingRuleConfiguration).findFirst().map(configuration -> (YamlReadwriteSplittingRuleConfiguration) configuration);
         assertTrue(ruleConfig.isPresent());
-        for (YamlReadWriteSplittingDataSourceRuleConfiguration each : ruleConfig.get().getDataSources().values()) {
-            assertReadWriteSplittingRuleConfiguration(each);
+        for (YamlReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.get().getDataSources().values()) {
+            assertReadwriteSplittingRuleConfiguration(each);
         }
     }
     
-    private void assertReadWriteSplittingRuleConfiguration(final YamlReadWriteSplittingDataSourceRuleConfiguration actual) {
+    private void assertReadwriteSplittingRuleConfiguration(final YamlReadwriteSplittingDataSourceRuleConfiguration actual) {
         assertThat(actual.getName(), is("pr_ds"));
         assertThat(actual.getWriteDataSourceName(), is("write_ds"));
         assertThat(actual.getReadDataSourceNames().size(), is(2));

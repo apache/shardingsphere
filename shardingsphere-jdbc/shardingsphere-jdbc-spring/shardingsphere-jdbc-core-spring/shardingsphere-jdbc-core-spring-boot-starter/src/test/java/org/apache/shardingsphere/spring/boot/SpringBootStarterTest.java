@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.readwritesplitting.common.algorithm.RandomReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingDataSourceRule;
-import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -77,8 +77,8 @@ public class SpringBootStarterTest {
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
                 assertShardingRule((ShardingRule) each);
-            } else if (each instanceof ReadWriteSplittingRule) {
-                assertReadWriteSplittingRule((ReadWriteSplittingRule) each);
+            } else if (each instanceof ReadwriteSplittingRule) {
+                assertReadwriteSplittingRule((ReadwriteSplittingRule) each);
             } else if (each instanceof EncryptRule) {
                 assertEncryptRule((EncryptRule) each);
             } else if (each instanceof ShadowRule) {
@@ -107,9 +107,9 @@ public class SpringBootStarterTest {
         assertThat(tableRule.getDatasourceToTablesMap(), is(ImmutableMap.of("ds_1", Sets.newHashSet("t_order_0", "t_order_1"), "ds_0", Sets.newHashSet("t_order_0", "t_order_1"))));
     }
     
-    private void assertReadWriteSplittingRule(final ReadWriteSplittingRule rule) {
+    private void assertReadwriteSplittingRule(final ReadwriteSplittingRule rule) {
         assertThat(rule.getDataSourceMapper(), is(Collections.singletonMap("pr_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
-        ReadWriteSplittingDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
+        ReadwriteSplittingDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
         assertNotNull(dataSourceRule);
         assertThat(dataSourceRule.getName(), is("pr_ds"));
         assertThat(dataSourceRule.getWriteDataSourceName(), is("write_ds"));

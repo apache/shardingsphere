@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadWriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadWriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
@@ -35,15 +35,15 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AddResourceBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AlterReadWriteSplittingRuleBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AlterReadwriteSplittingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AlterShardingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateReadWriteSplittingRuleBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateReadwriteSplittingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingBindingTableRulesBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingBroadcastTableRulesBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingTableRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropReadWriteSplittingRuleBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropReadwriteSplittingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropShardingRuleBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -107,14 +107,14 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof AlterShardingRuleStatement) {
             return Optional.of(new AlterShardingRuleBackendHandler((AlterShardingRuleStatement) sqlStatement, backendConnection));
         }
-        if (sqlStatement instanceof CreateReadWriteSplittingRuleStatement) {
-            return Optional.of(new CreateReadWriteSplittingRuleBackendHandler((CreateReadWriteSplittingRuleStatement) sqlStatement, backendConnection));
+        if (sqlStatement instanceof CreateReadwriteSplittingRuleStatement) {
+            return Optional.of(new CreateReadwriteSplittingRuleBackendHandler((CreateReadwriteSplittingRuleStatement) sqlStatement, backendConnection));
         }
-        if (sqlStatement instanceof AlterReadWriteSplittingRuleStatement) {
-            return Optional.of(new AlterReadWriteSplittingRuleBackendHandler((AlterReadWriteSplittingRuleStatement) sqlStatement, backendConnection));
+        if (sqlStatement instanceof AlterReadwriteSplittingRuleStatement) {
+            return Optional.of(new AlterReadwriteSplittingRuleBackendHandler((AlterReadwriteSplittingRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof DropReplicaQueryRuleStatement) {
-            return Optional.of(new DropReadWriteSplittingRuleBackendHandler((DropReplicaQueryRuleStatement) sqlStatement, backendConnection));
+            return Optional.of(new DropReadwriteSplittingRuleBackendHandler((DropReplicaQueryRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement));

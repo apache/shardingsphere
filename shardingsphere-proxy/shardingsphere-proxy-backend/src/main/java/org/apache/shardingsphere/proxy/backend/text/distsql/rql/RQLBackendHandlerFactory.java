@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleState
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadWriteSplittingRuleQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRuleQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.RuleQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingRuleQueryBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -51,7 +51,7 @@ public final class RQLBackendHandlerFactory {
                 case "SHARDING":
                     return Optional.of(new ShardingRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
                 case "REPLICA_QUERY":
-                    return Optional.of(new ReadWriteSplittingRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+                    return Optional.of(new ReadwriteSplittingRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
                 case "ENCRYPT":
                     return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
                 case "SHADOW":

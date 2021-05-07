@@ -385,14 +385,16 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     
     @Override
     public final ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
+        int startIndex = ctx.getStart().getStartIndex();
+        int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.subquery()) {
-            return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()));
+            return new SubquerySegment(startIndex, stopIndex, (OracleSelectStatement) visit(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
-            return visit(ctx.parameterMarker());
+            return new ParameterMarkerExpressionSegment(startIndex, stopIndex, ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         }
         if (null != ctx.literals()) {
-            return visit(ctx.literals());
+            return SQLUtil.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
         }
         if (null != ctx.functionCall()) {
             return visit(ctx.functionCall());
@@ -400,7 +402,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
     }
     
     @Override
