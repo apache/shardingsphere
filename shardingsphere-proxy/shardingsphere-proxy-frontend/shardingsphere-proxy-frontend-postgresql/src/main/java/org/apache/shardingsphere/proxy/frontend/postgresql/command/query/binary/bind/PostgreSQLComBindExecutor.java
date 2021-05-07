@@ -98,12 +98,10 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponseHeader queryResponseHeader) {
         Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponseHeader);
-        if (columnDescriptions.isEmpty()) {
-            responseType = ResponseType.QUERY;
-        }
         if (columnDescriptions.isEmpty() || packet.isBinaryRowData()) {
             return Optional.empty();
         }
+        responseType = ResponseType.QUERY;
         return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
     }
     
