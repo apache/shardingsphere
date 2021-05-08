@@ -20,6 +20,7 @@ package org.apache.shardingsphere.distsql.parser.api;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
@@ -57,7 +58,13 @@ public final class DistSQLStatementParserEngineTest {
             + "(t_order,t_order_item), (t_1,t_2))";
     
     private static final String RDL_CREATE_SHARDING_BROADCAST_TABLE_RULES = "CREATE SHARDING BROADCAST TABLE RULES(t_1,t_2)";
-    
+
+    private static final String RDL_ALTER_SHARDING_TABLE_RULE = "ALTER SHARDING TABLE RULE t_order ("
+            + "RESOURCES(ms_group_0,ms_group_1),"
+            + "SHARDING_COLUMN=order_id,"
+            + "TYPE(NAME=hash_mod,PROPERTIES('sharding-count'=4)),"
+            + "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123))))";
+
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
     @Test
@@ -150,5 +157,21 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_SHARDING_BROADCAST_TABLE_RULES);
         assertTrue(sqlStatement instanceof CreateShardingBroadcastTableRulesStatement);
         assertThat(((CreateShardingBroadcastTableRulesStatement) sqlStatement).getTables(), is(Arrays.asList("t_1", "t_2")));
+    }
+
+    @Test
+    public void assertParseAlterShardingTableRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_ALTER_SHARDING_TABLE_RULE);
+        assertTrue(sqlStatement instanceof AlterShardingTableRuleStatement);
+        assertThat(((AlterShardingTableRuleStatement) sqlStatement).getTables().size(), is(1));
+        TableRuleSegment tableRuleSegment = ((AlterShardingTableRuleStatement) sqlStatement).getTables().iterator().next();
+        assertThat(tableRuleSegment.getLogicTable(), is("t_order"));
+        assertTrue(tableRuleSegment.getDataSources().containsAll(Arrays.asList("ms_group_0", "ms_group_1")));
+        assertThat(tableRuleSegment.getTableStrategyColumn(), is("order_id"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategy().getAlgorithmName(), is("snowflake"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategy().getAlgorithmProps().getProperty("worker-id"), is("123"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategyColumn(), is("another_id"));
+        assertThat(tableRuleSegment.getTableStrategy().getAlgorithmName(), is("hash_mod"));
+        assertThat(tableRuleSegment.getTableStrategy().getAlgorithmProps().getProperty("sharding-count"), is("4"));
     }
 }
