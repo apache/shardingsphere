@@ -117,8 +117,10 @@ public final class StoragePrivilegeBuilder {
     private static void save(final DataSource dataSource, final Collection<ShardingSphereUser> users, final StoragePrivilegeHandler handler) {
         try {
             Collection<ShardingSphereUser> noneExisted = handler.diff(users, dataSource);
-            handler.create(noneExisted, dataSource);
-            handler.grantAll(noneExisted, dataSource);
+            if (!noneExisted.isEmpty()) {
+                handler.create(noneExisted, dataSource);
+                handler.grantAll(noneExisted, dataSource);
+            }
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
