@@ -20,7 +20,7 @@ grammar DALStatement;
 import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DMLStatement, DDLStatement;
 
 show
-    : SHOW (varName | TIME ZONE | TRANSACTION ISOLATION LEVEL | SESSION AUTHORIZATION | ALL)
+    : SHOW (varName | TIME ZONE | TRANSACTION ISOLATION LEVEL | SESSION AUTHORIZATION | ALL) EOF
     ;
 
 set
