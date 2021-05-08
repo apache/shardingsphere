@@ -48,8 +48,7 @@ public final class PostgreSQLErrPacketFactory {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
         }
         if (cause instanceof SQLException) {
-            // TODO consider what severity to use
-            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, ((SQLException) cause).getSQLState(), cause.getMessage()).build();
+            return createErrorResponsePacket((SQLException) cause);
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, cause.getMessage()).build();
@@ -63,6 +62,13 @@ public final class PostgreSQLErrPacketFactory {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, ((PostgreSQLAuthenticationException) cause).getErrorCode(), cause.getMessage()).build();
         }
         return createErrorResponsePacketForUnknownException(cause);
+    }
+    
+    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
+        // TODO consider what severity to use
+        String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLErrorCode.SYSTEM_ERROR.getErrorCode() : cause.getSQLState();
+        String message = Strings.isNullOrEmpty(cause.getMessage()) ? cause.toString() : cause.getMessage();
+        return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message).build();
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
