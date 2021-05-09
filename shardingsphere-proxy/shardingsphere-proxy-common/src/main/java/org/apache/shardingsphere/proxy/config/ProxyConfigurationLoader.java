@@ -74,7 +74,7 @@ public final class ProxyConfigurationLoader {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
         Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
         YamlRuleConfiguration authorityRuleConfig = result.getRules().stream().filter(ruleConfig -> ruleConfig instanceof YamlAuthorityRuleConfiguration).findAny().orElse(null);
-        Preconditions.checkState(null != result.getGovernance() && null != authorityRuleConfig, "Authority configuration is invalid.");
+        Preconditions.checkState(null != result.getGovernance() || null != authorityRuleConfig, "Authority configuration is invalid.");
         return result;
     }
     
