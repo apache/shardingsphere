@@ -30,7 +30,7 @@ governance:
 rules:
   - !AUTHORITY
     users:
-      - root@%:root
+      - root@:root
       - sharding@:sharding
     provider:
       type: NATIVE
