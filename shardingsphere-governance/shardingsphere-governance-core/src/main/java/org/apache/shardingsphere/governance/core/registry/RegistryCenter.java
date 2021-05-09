@@ -124,12 +124,10 @@ public final class RegistryCenter {
     /**
      * Persist global configuration.
      *
-     * @param users user
      * @param props properties
      * @param isOverwrite is overwrite config center's configuration
      */
-    public void persistGlobalConfiguration(final Collection<ShardingSphereUser> users, final Properties props, final boolean isOverwrite) {
-        persistUsers(users, isOverwrite);
+    public void persistGlobalConfiguration(final Properties props, final boolean isOverwrite) {
         persistProperties(props, isOverwrite);
     }
     
@@ -196,12 +194,6 @@ public final class RegistryCenter {
         YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
         result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs));
         return result;
-    }
-
-    private void persistUsers(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
-        if (!users.isEmpty() && (isOverwrite || !hasUsers())) {
-            repository.persist(node.getUsersNode(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
-        }
     }
 
     private void persistNewUsers(final Collection<ShardingSphereUser> users) {

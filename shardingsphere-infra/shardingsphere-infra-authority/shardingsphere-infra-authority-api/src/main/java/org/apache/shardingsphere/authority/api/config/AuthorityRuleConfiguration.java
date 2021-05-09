@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+
+import java.util.Collection;
 
 /**
  * Authority rule configuration.
@@ -28,6 +31,8 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 @RequiredArgsConstructor
 @Getter
 public final class AuthorityRuleConfiguration implements RuleConfiguration {
-    
+
+    private final Collection<ShardingSphereUser> users;
+
     private final ShardingSphereAlgorithmConfiguration provider;
 }
