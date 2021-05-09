@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 public final class GeneralDQLIT extends BaseDQLIT {
     
     @ClassRule
-    public static ComposeManager composeManager = new ComposeManager("GeneralDQLIT");
+    public static ComposeManager composeMaYamlProxyServerConfigurationnager = new ComposeManager("GeneralDQLIT");
     
     public GeneralDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
@@ -55,7 +55,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     public static Collection<ParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DQL)
                 .stream()
-                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                .peek(each -> each.setCompose(composeMaYamlProxyServerConfigurationnager.getOrCreateCompose(each)))
                 .collect(Collectors.toList());
     }
     
