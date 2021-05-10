@@ -84,6 +84,11 @@ public final class RegistryCenterNodeTest {
     }
 
     @Test
+    public void assertGetGlobalRuleNodePath() {
+        assertThat(registryCenterNode.getGlobalRuleNode(), is("/rule"));
+    }
+
+    @Test
     public void assertGetPropsPath() {
         assertThat(registryCenterNode.getPropsPath(), is("/props"));
     }
