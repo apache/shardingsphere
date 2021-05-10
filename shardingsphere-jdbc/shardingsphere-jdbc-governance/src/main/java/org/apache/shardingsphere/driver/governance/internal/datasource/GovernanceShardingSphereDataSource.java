@@ -124,7 +124,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(metaDataContexts.getDefaultMetaData().getResource().getDataSources());
         Collection<RuleConfiguration> ruleConfigurations = metaDataContexts.getDefaultMetaData().getRuleMetaData().getConfigurations();
         governanceFacade.onlineInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs),
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), Collections.emptyList(), metaDataContexts.getProps().getProps());
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), metaDataContexts.getProps().getProps());
     }
     
     @Override

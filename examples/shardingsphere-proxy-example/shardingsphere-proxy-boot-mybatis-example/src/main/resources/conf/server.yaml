@@ -33,9 +33,13 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 
-users:
-  - root@:root
-  - sharding@%:sharding
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+      - sharding@:sharding
+    provider:
+      type: NATIVE
 
 props:
   max-connections-size-per-query: 1
