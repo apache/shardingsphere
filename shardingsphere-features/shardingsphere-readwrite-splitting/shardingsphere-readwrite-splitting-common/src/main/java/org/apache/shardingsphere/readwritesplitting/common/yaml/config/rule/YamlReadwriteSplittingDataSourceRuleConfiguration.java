@@ -32,8 +32,6 @@ import java.util.Properties;
 @Setter
 public final class YamlReadwriteSplittingDataSourceRuleConfiguration implements YamlConfiguration {
     
-    private String name;
-    
     private String autoAwareDataSourceName;
     
     private String writeDataSourceName;

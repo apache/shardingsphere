@@ -42,7 +42,6 @@ public final class AlterReadwriteSplittingRuleStatementConverter {
         YamlReadwriteSplittingRuleConfiguration result = new YamlReadwriteSplittingRuleConfiguration();
         for (ReadwriteSplittingRuleSegment each : rules) {
             YamlReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration = new YamlReadwriteSplittingDataSourceRuleConfiguration();
-            dataSourceRuleConfiguration.setName(each.getName());
             dataSourceRuleConfiguration.setWriteDataSourceName(each.getWriteDataSource());
             dataSourceRuleConfiguration.getReadDataSourceNames().addAll(each.getReadDataSources());
             dataSourceRuleConfiguration.setLoadBalancerName(each.getLoadBalancer());

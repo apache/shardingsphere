@@ -520,10 +520,9 @@ dataSources:
     maintenanceIntervalMilliseconds: 30000
 
 rules:
-- !REPLICA_QUERY
+- !READWRITE_SPLITTING
   dataSources:
     pr_ds:
-      name: pr_ds
       primaryDataSourceName: ds_0
       replicaDataSourceNames:
         - ds_0
@@ -707,10 +706,9 @@ rules:
       props:
         worker-id: 123
 
-- !REPLICA_QUERY
+- !READWRITE_SPLITTING
   dataSources:
     ds_0:
-      name: ds_0
       primaryDataSourceName: primary_ds_0
       replicaDataSourceNames:
         - primary_ds_0

@@ -25,8 +25,8 @@
 schemaName: readwrite-splitting_db
 
 dataSources:
-  writey_ds:
-    url: jdbc:mysql://127.0.0.1:3306/writey_ds?serverTimezone=UTC&useSSL=false
+  write_ds:
+    url: jdbc:mysql://127.0.0.1:3306/write_ds?serverTimezone=UTC&useSSL=false
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -60,8 +60,7 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds:
-      name: pr_ds
-      writeyDataSourceName: writey_ds
+      writeDataSourceName: write_ds
       readDataSourceNames:
         - read_ds_0
         - read_ds_1
