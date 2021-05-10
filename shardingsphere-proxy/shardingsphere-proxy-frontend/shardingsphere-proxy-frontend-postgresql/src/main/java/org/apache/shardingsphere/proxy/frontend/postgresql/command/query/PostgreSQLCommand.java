@@ -26,6 +26,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabas
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 
 /**
  * PostgreSQL command.
@@ -55,6 +58,15 @@ public final class PostgreSQLCommand {
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
             return "DROP";
+        }
+        if (sqlStatement instanceof BeginTransactionStatement) {
+            return "BEGIN";
+        }
+        if (sqlStatement instanceof CommitStatement) {
+            return "COMMIT";
+        }
+        if (sqlStatement instanceof RollbackStatement) {
+            return "ROLLBACK";
         }
         return "";
     }
