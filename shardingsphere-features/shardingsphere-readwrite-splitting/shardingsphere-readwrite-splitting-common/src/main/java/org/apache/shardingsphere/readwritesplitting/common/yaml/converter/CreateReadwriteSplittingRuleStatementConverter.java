@@ -41,7 +41,6 @@ public final class CreateReadwriteSplittingRuleStatementConverter {
         YamlReadwriteSplittingRuleConfiguration result = new YamlReadwriteSplittingRuleConfiguration();
         for (ReadwriteSplittingRuleSegment each : sqlStatement.getReadwriteSplittingRules()) {
             YamlReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration = new YamlReadwriteSplittingDataSourceRuleConfiguration();
-            dataSourceRuleConfiguration.setName(each.getName());
             dataSourceRuleConfiguration.setWriteDataSourceName(each.getWriteDataSource());
             dataSourceRuleConfiguration.getReadDataSourceNames().addAll(each.getReadDataSources());
             dataSourceRuleConfiguration.setLoadBalancerName(each.getLoadBalancer());

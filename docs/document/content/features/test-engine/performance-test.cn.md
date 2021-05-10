@@ -149,8 +149,7 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds:
-      name: pr_ds
-      writeyDataSourceName: primary_ds
+      writeDataSourceName: primary_ds
       readDataSourceNames:
         - replica_ds_0
 ```

@@ -120,7 +120,6 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends SchemaRequi
             YamlReadwriteSplittingDataSourceRuleConfiguration alterConfig = result.getDataSources().get(each.getName());
             if (null == alterConfig) {
                 YamlReadwriteSplittingDataSourceRuleConfiguration existConfig = new YamlReadwriteSplittingDataSourceRuleConfiguration();
-                existConfig.setName(each.getName());
                 existConfig.setWriteDataSourceName(each.getWriteDataSourceName());
                 existConfig.setReadDataSourceNames(each.getReadDataSourceNames());
                 existConfig.setLoadBalancerName(each.getLoadBalancerName());

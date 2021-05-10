@@ -60,7 +60,6 @@
 #- !READWRITE_SPLITTING
 #  dataSources:
 #    pr_ds:
-#      name: pr_ds
 #      writeDataSourceName: primary_ds
 #      readDataSourceNames:
 #        - replica_ds_0
@@ -109,8 +108,6 @@
 #rules:
 #- !READWRITE_SPLITTING
 #  dataSources:
-#    pr_ds:
-#      name: pr_ds
 #      writeDataSourceName: write_ds
 #      readDataSourceNames:
 #        - read_ds_0

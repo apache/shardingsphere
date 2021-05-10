@@ -54,7 +54,6 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapper
     
     private YamlReadwriteSplittingDataSourceRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
         YamlReadwriteSplittingDataSourceRuleConfiguration result = new YamlReadwriteSplittingDataSourceRuleConfiguration();
-        result.setName(dataSourceRuleConfig.getName());
         result.setAutoAwareDataSourceName(dataSourceRuleConfig.getAutoAwareDataSourceName());
         result.setWriteDataSourceName(dataSourceRuleConfig.getWriteDataSourceName());
         result.setReadDataSourceNames(dataSourceRuleConfig.getReadDataSourceNames());

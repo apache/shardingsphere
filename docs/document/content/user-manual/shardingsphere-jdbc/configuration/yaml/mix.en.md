@@ -17,7 +17,7 @@ dataSources: # Configure the real data source name.
     # ...Omit specific configuration.
   read_ds_0:
     # ...Omit specific configuration.
-  read_ds_0:
+  read_ds_1:
     # ...Omit specific configuration.
 
 rules:
@@ -51,8 +51,7 @@ rules:
   
   - !READWRITE_SPLITTING # Configure readwrite-splitting rules.
     dataSources:
-      ds:
-        name: ds # The logical data source name 'ds' for readwrite-splitting is used in data sharding.
+      ds: # The logical data source name 'ds' for readwrite-splitting is used in data sharding.
         writeDataSourceName: write_ds # Use the real data source name 'write_ds'.
         readDataSourceNames:
           - read_ds_0 # Use the real data source name 'read_ds_0'.

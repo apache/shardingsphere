@@ -79,7 +79,6 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     write-read-ds:
-      name: write-read-ds
       writeDataSourceName: write_ds
       readDataSourceNames:
         - read_0

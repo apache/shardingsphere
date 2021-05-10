@@ -43,7 +43,6 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
-        assertThat(actual.getDataSources().get("name").getName(), is("name"));
         assertThat(actual.getDataSources().get("name").getWriteDataSourceName(), is("writeDataSourceName"));
         assertThat(actual.getDataSources().get("name").getLoadBalancerName(), is("loadBalancerName"));
         assertThat(actual.getDataSources().get("name").getReadDataSourceNames(), is(Collections.singletonList("readDataSourceName")));
