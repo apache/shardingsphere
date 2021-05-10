@@ -26,11 +26,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Tables context.
@@ -46,14 +46,9 @@ public final class TablesContext {
     }
     
     public TablesContext(final Collection<SimpleTableSegment> tableSegments) {
-        Map<String, SimpleTableSegment> tableMaps = new HashMap<>(1, 1);
-        Collection<SimpleTableSegment> actualTables = new LinkedList<>();
-        for (SimpleTableSegment each : tableSegments) {
-            if (!tableMaps.containsKey(each.getTableName().getIdentifier().getValue())) {
-                tableMaps.put(each.getTableName().getIdentifier().getValue(), each);
-                actualTables.add(each);
-            }
-        }
+        Collection<SimpleTableSegment> actualTables = new LinkedList<>(tableSegments);
+        Set<String> tableSets = new HashSet<>(actualTables.size(), 1);
+        actualTables.removeIf(each -> !tableSets.add(each.getTableName().getIdentifier().getValue()));
         tables = actualTables;
     }
     
@@ -63,11 +58,8 @@ public final class TablesContext {
      * @return table names
      */
     public Collection<String> getTableNames() {
-        Collection<String> result = new LinkedHashSet<>(tables.size(), 1);
-        for (SimpleTableSegment each : tables) {
-            result.add(each.getTableName().getIdentifier().getValue());
-        }
-        return result;
+        return tables.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(
+                Collectors.toSet());
     }
     
     /**
