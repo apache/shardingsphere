@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import org.apache.shardingsphere.infra.database.metadata.dialect.MariaDBDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.dialect.OpenGaussDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -48,8 +48,8 @@ public final class OpenGaussDatabaseType implements BranchDatabaseType {
     }
     
     @Override
-    public MariaDBDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return new MariaDBDataSourceMetaData(url);
+    public OpenGaussDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
+        return new OpenGaussDataSourceMetaData(url);
     }
     
     @Override
