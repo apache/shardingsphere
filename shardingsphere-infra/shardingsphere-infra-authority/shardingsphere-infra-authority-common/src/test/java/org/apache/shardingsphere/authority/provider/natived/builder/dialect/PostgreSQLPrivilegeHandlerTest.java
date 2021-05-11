@@ -108,14 +108,14 @@ public final class PostgreSQLPrivilegeHandlerTest {
     
     private void assertCreateUsers(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
         for (ShardingSphereUser each : users) {
-            verify(statement).execute(String.format("CREATE USER %s WITH PASSWORD '%s'", each.getGrantee(), each.getPassword()));
+            verify(statement).execute(String.format("CREATE USER %s WITH PASSWORD '%s'", each.getGrantee().getUsername(), each.getPassword()));
         }
     }
     
     private void assertGrantUsersAll(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
-        String grantUsers = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
-                .collect(Collectors.joining(", "));
-        verify(statement).execute(String.format("GRANT ALL ON ALL TABLES IN SCHEMA public TO %s", grantUsers));
+        for (ShardingSphereUser each : users) {
+            verify(statement).execute(String.format("ALTER USER %s WITH SUPERUSER", each.getGrantee().getUsername()));
+        }
     }
     
     private Collection<ShardingSphereUser> createUsers() {
@@ -129,7 +129,7 @@ public final class PostgreSQLPrivilegeHandlerTest {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
-        String diffUsersSQL = "select * from pg_roles WHERE rolname IN (%s)";
+        String diffUsersSQL = "SELECT * FROM pg_roles WHERE rolname IN (%s)";
         String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
         when(statement.executeQuery(String.format(diffUsersSQL, userList))).thenReturn(usersResultSet);
         when(connection.createStatement()).thenReturn(statement);
@@ -140,11 +140,11 @@ public final class PostgreSQLPrivilegeHandlerTest {
     private DataSource mockDataSource(final Collection<ShardingSphereUser> users) throws SQLException {
         ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        String tablePrivilegeSql = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
-        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
+        String tablePrivilegeSql = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable FROM information_schema.table_privileges WHERE grantee IN (%s)";
+        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
         when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
         ResultSet rolePrivilegeResultSet = mockRolePrivilegeResultSet();
-        String rolePrivilegeSql = "select * from pg_roles WHERE rolname IN (%s)";
+        String rolePrivilegeSql = "SELECT * FROM pg_roles WHERE rolname IN (%s)";
         when(result.getConnection().createStatement().executeQuery(String.format(rolePrivilegeSql, userList))).thenReturn(rolePrivilegeResultSet);
         return result;
     }
@@ -180,4 +180,3 @@ public final class PostgreSQLPrivilegeHandlerTest {
         return result;
     }
 }
-
