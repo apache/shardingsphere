@@ -50,9 +50,9 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
     
     private static final String GRANT_ALL_SQL = "ALTER USER %s WITH SUPERUSER";
     
-    private static final String ROLES_SQL = "select * from pg_roles WHERE rolname IN (%s)";
+    private static final String ROLES_SQL = "SELECT * FROM pg_roles WHERE rolname IN (%s)";
     
-    private static final String TABLE_PRIVILEGE_SQL = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
+    private static final String TABLE_PRIVILEGE_SQL = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable FROM information_schema.table_privileges WHERE grantee IN (%s)";
     
     @Override
     public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
