@@ -29,6 +29,10 @@ STRING_
     | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
     ;
 
+INTEGER_
+    : (PLUS_ | MINUS_)? INT_
+    ;
+
 NUMBER_
     : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
     ;
@@ -47,8 +51,4 @@ fragment INT_
 
 fragment HEX_
     : [0-9a-fA-F]
-    ;
-
-INTEGER_
-    : (PLUS_ | MINUS_)? INT_
     ;
