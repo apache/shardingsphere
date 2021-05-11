@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
@@ -89,17 +88,16 @@ public final class ShardingSphereRulesBuilder {
      *
      * @param globalRuleConfigurations global rule configurations
      * @param mataDataMap mata data map
-     * @param users users
      * @return built global rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildGlobalRules(final Collection<RuleConfiguration> globalRuleConfigurations, 
-                                                                  final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+                                                                  final Map<String, ShardingSphereMetaData> mataDataMap) {
         Map<RuleConfiguration, GlobalRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(globalRuleConfigurations, GlobalRuleBuilder.class);
         appendDefaultKernelGlobalRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : builders.entrySet()) {
-            result.add(entry.getValue().build(entry.getKey(), mataDataMap, users));
+            result.add(entry.getValue().build(entry.getKey(), mataDataMap));
         }
         return result;
     }

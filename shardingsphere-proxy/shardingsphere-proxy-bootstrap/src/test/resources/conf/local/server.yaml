@@ -27,9 +27,13 @@ governance:
       operationTimeoutMilliseconds: 500
   overwrite: false
 
-users:
-  - root@:root
-  - sharding@:sharding
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+      - sharding@:sharding
+    provider:
+      type: NATIVE
 
 props:
   alpha-1: alpha-A

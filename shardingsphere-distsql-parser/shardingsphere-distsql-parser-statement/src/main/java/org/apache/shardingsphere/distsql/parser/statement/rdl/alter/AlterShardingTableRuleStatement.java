@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Properties;
+import java.util.LinkedList;
 
 /**
- * Proxy configuration.
+ * Alter sharding table rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ProxyConfiguration {
+public final class AlterShardingTableRuleStatement extends RDLStatement {
     
-    private final Map<String, Map<String, DataSourceParameter>> schemaDataSources;
-    
-    private final Map<String, Collection<RuleConfiguration>> schemaRules;
-    
-    private final Collection<RuleConfiguration> globalRules;
-    
-    private final Properties props;
+    private final Collection<TableRuleSegment> tables = new LinkedList<>();
 }

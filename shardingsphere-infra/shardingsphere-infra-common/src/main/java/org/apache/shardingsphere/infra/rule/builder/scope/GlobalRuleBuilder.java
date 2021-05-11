@@ -19,10 +19,8 @@ package org.apache.shardingsphere.infra.rule.builder.scope;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -38,8 +36,7 @@ public interface GlobalRuleBuilder<R extends GlobalRule, T extends RuleConfigura
      *
      * @param ruleConfig rule configuration
      * @param mataDataMap mata data map
-     * @param users users
      * @return global rule
      */
-    R build(T ruleConfig, Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users);
+    R build(T ruleConfig, Map<String, ShardingSphereMetaData> mataDataMap);
 }

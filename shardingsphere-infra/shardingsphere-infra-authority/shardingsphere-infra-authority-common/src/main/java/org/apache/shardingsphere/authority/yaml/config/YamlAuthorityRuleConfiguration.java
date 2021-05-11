@@ -23,13 +23,18 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * Authority rule configuration for YAML.
  */
 @Getter
 @Setter
 public final class YamlAuthorityRuleConfiguration implements YamlRuleConfiguration {
-    
+
+    private Collection<String> users = new LinkedList<>();
+
     private YamlShardingSphereAlgorithmConfiguration provider;
     
     @Override

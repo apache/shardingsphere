@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -42,6 +44,7 @@ public final class MetaDataContextsBuilderTest {
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyMap(), null).build();
         assertTrue(actual.getAllSchemaNames().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
+        assertTrue(actual.getUsers().getUsers().isEmpty());
     }
     
     @Test
@@ -66,6 +69,23 @@ public final class MetaDataContextsBuilderTest {
         assertDataSources(actual);
         assertThat(actual.getProps().getProps().size(), is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
+    }
+
+    @Test
+    public void assertBuildWithAuthorityRuleConfigurations() throws SQLException {
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
+        ShardingSphereUser user = new ShardingSphereUser("root", "root", "");
+        AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.singleton(user), null);
+
+        MetaDataContexts actual = new MetaDataContextsBuilder(
+                Collections.singletonMap("logic_db", Collections.emptyMap()), Collections.singletonMap("logic_db",
+                Collections.singleton(new FixtureRuleConfiguration())), Collections.singleton(authorityRuleConfig), props).build();
+        assertRules(actual);
+        assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
+        assertThat(actual.getProps().getProps().size(), is(1));
+        assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
+        assertThat(actual.getUsers().getUsers().size(), is(1));
     }
     
     private void assertRules(final MetaDataContexts actual) {

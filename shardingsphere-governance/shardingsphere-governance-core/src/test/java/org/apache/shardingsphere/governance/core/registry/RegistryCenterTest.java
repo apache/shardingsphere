@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -318,7 +317,7 @@ public final class RegistryCenterTest {
     @Test
     public void assertPersistGlobalConfiguration() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistGlobalConfiguration(YamlUsersConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(readYAML(USERS_YAML), Collection.class)), createProperties(), true);
+        registryCenter.persistGlobalConfiguration(createProperties(), true);
         verify(registryRepository, times(0)).persist("/users", readYAML(USERS_YAML));
         verify(registryRepository).persist("/props", PROPS_YAML);
     }

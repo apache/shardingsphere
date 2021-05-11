@@ -48,11 +48,11 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
     
     private static final String CREATE_USER_SQL = "CREATE USER %s WITH PASSWORD '%s'";
     
-    private static final String GRANT_ALL_SQL = "GRANT ALL ON ALL TABLES IN SCHEMA public TO %s";
+    private static final String GRANT_ALL_SQL = "ALTER USER %s WITH SUPERUSER";
     
-    private static final String ROLES_SQL = "select * from pg_roles WHERE rolname IN (%s)";
+    private static final String ROLES_SQL = "SELECT * FROM pg_roles WHERE rolname IN (%s)";
     
-    private static final String TABLE_PRIVILEGE_SQL = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
+    private static final String TABLE_PRIVILEGE_SQL = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable FROM information_schema.table_privileges WHERE grantee IN (%s)";
     
     @Override
     public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
@@ -78,20 +78,20 @@ public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler
     }
     
     private String getCreateUsersSQL(final ShardingSphereUser user) {
-        return String.format(CREATE_USER_SQL, user.getGrantee(), user.getPassword());
+        return String.format(CREATE_USER_SQL, user.getGrantee().getUsername(), user.getPassword());
     }
     
     @Override
     public void grantAll(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
-            statement.execute(getGrantAllSQL(users));
+            for (ShardingSphereUser each : users) {
+                statement.execute(getGrantAllSQL(each));
+            }
         }
     }
     
-    private String getGrantAllSQL(final Collection<ShardingSphereUser> users) {
-        String grantUsers = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
-                .collect(Collectors.joining(", "));
-        return String.format(GRANT_ALL_SQL, grantUsers);
+    private String getGrantAllSQL(final ShardingSphereUser user) {
+        return String.format(GRANT_ALL_SQL, user.getGrantee().getUsername());
     }
     
     @Override

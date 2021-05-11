@@ -1,12 +1,12 @@
 +++
 pre = "<b>3.9.5. </b>"
-title = "性能测试(sysbench)"
+title = "Performance Test(sysbench)"
 weight = 5
 +++
 
-## 环境
+## Environment
 
-#### 推荐硬件环境
+#### Recommended Hardware
 
 ```
 CPU: 32 Cores
@@ -14,7 +14,7 @@ RAM: 128 GB
 NIC: 10Gb Ethernet
 ```
 
-至少需要5台机器：
+At least 5 machines are required: 
 
 ```
 Jenkins * 1: ${host-jenkins}
@@ -23,107 +23,107 @@ ShardingSphere-Proxy * 1: ${host-proxy}
 MySQL Server * 2: ${host-mysql-1}, ${host-mysql-2}
 ```
 
-可以适当降低Jenkins和Sysbench机器的硬件标准
+The hardware standards of Jenkins and Sysbench machines can appropriately lower.
 
-#### 软件环境
+#### Software Environment
 
 ```
-Jenins: 最新版本
+Jenins: The latest version
 Sysbench: 1.0.20
-ShardingSphere-Proxy: master分支代码打包
+ShardingSphere-Proxy: package from master branch
 MySQL Server: 5.7.28
 ```
 
-## 测试方案
+## Test Program
 
-根据以上的硬件环境，配置参数如下，参数应根据硬件环境改变而调整
+According to the above hardware environment, the configuration parameters are as follows, 
+and the parameters should be adjusted according to the changes in the hardware environment.
 
-#### ShardingSphere-Proxy配置
-
-```
-Proxy运行在${host-proxy}机器
-版本包括：Master分支版本、4.1.1版本、3.0.0版本
-场景包括：config-sharding、config-replica-query、config-sharding-replica-query、config-encrypt
-配置文件详细内容：见附录1
-```
-
-#### MySQL Server配置
-
-两个MySQL实例分别运行在${host-mysql-1}和${host-mysql-2}机器
-```
-需要提前在两个实例上创建sbtest数据库
-设置参数max_prepared_stmt_count = 500000
-设置参数max_connections = 2000
-```
-
-#### Jenkins配置
-
-创建6个Jenkins任务，每个任务依次调用下一个任务：（运行在${host-jenkins}机器）
+#### ShardingSphere-Proxy Configuration
 
 ```
-1. sysbench_install: 拉取最新代码，打包Proxy压缩包
+Proxy runs on ${host-proxy}
+Version includes: Master branch, 4.1.1, 3.0.0
+Scenarios: config-sharding, config-replica-query, config-sharding-replica-query, config-encrypt
+Configurations: Refer to Appendix 1
 ```
 
-以下任务通过Jenkins slave运行在单独的Sysbench发压机器：（运行在${host-sysbench}机器）
+#### MySQL Server Configuration
+
+Two MySQL instances runs on `${host-mysql-1}` and `${host-mysql-2}` machines respectively.
+```
+Need to create the 'sbtest' database on both instances in advance.
+Set parameter: max_prepared_stmt_count = 500000
+Set parameter: max_connections = 2000
+```
+
+#### Jenkins Configuration
+
+Create 6 Jenkins tasks, and each task calls the next task in turn: (runs on the `${host-jenkins}` machine).
+```
+1. sysbench_install: Pull the latest code, package the Proxy compression package
+```
+
+The following tasks are run on a separate Sysbench pressure generating machine via Jenkins slave: (runs on the `{host-sysbench}` machine)
 ```
 2. sysbench_sharding: 
-   a. 远程部署各版本Proxy的分片场景
-   b. 执行Sysbench命令压测Proxy
-   c. 执行Sysbench命令压测MySQL Server
-   d. 保存Sysbench压测结果
-   e. 使用画图脚本生成性能曲线和表格（画图脚本见附录2）
+   a. Sharding scenarios for remote deployment of various versions of Proxy
+   b. Execute Sysbench command to pressure test Proxy
+   c. Execute Sysbench command to pressure test MySQL Server
+   d. Save Sysbench stress test results
+   e. Use drawing scripts to generate performance curves and tables (see Appendix 2 for drawing scripts)
 3. sysbench_master_slave:
-   a. 远程部署各版本Proxy的读写分离场景
-   b. 执行Sysbench命令压测Proxy
-   c. 执行Sysbench命令压测MySQL Server
-   d. 保存Sysbench压测结果
-   e. 使用画图脚本生成性能曲线和表格
+   a. Read and write separation scenarios for remote deployment of various versions of Proxy
+   b. Execute Sysbench command to pressure test Proxy
+   c. Execute Sysbench command to pressure test MySQL Server
+   d. Save Sysbench stress test results
+   e. Use drawing scripts to generate performance curves and tables
 4. sysbench_sharding_master_slave:
-   a. 远程部署各版本Proxy的分片+读写分离场景
-   b. 执行Sysbench命令压测Proxy
-   c. 执行Sysbench命令压测MySQL Server
-   d. 保存Sysbench压测结果
-   e. 使用画图脚本生成性能曲线和表格
+   a. Remote deployment of sharding + read-write splitting scenarios of various versions of Proxy
+   b. Execute Sysbench command to pressure test Proxy
+   c. Execute Sysbench command to pressure test MySQL Server
+   d. Save Sysbench stress test results
+   e. Use drawing scripts to generate performance curves and tables
 5. sysbench_encrypt:
-   a. 远程部署各版本Proxy的加密场景
-   b. 执行Sysbench命令压测Proxy
-   c. 执行Sysbench命令压测MySQL Server
-   d. 保存Sysbench压测结果
-   e. 使用画图脚本生成性能曲线和表格
+   a. Encryption scenarios for remote deployment of various versions of Proxy
+   b. Execute Sysbench command to pressure test Proxy
+   c. Execute Sysbench command to pressure test MySQL Server
+   d. Save Sysbench stress test results
+   e. Use drawing scripts to generate performance curves and tables
 6. sysbench_result_aggregation:
-   a. 重新对所有任务的压测结果执行画图脚本
+   a. Re-execute the drawing script for the pressure test results of all tasks
       python3 plot_graph.py sharding
       python3 plot_graph.py ms
       python3 plot_graph.py sharding_ms
       python3 plot_graph.py encrypt
-   b. 使用Jenkins的Publish HTML reports插件将所有图片整合到一个HTML页面中
+   b. Use Jenkins "Publish HTML reports" plugin to integrate all images into one HTML page
 ```
 
-## 测试过程
+## Testing Process
 
-以sysbench_sharding为例（其他场景类似）
+Take sysbench sharding as an example (other scenarios are similar)
 
-#### 进入sysbench压测结果目录
+#### Enter the Sysbench pressure test result directory
 
 ```bash
 cd /home/jenkins/sysbench_res/sharding
 ```
 
-#### 创建本次构建的文件夹
+#### Create the folder for this build
 
 ```bash
 mkdir $BUILD_NUMBER
 ```
 
-#### 取最后14次构建，保存到隐藏文件中
+#### Take the last 14 builds and save them in a hidden file
 
 ```bash
 ls -v | tail -n14 > .build_number.txt
 ```
 
-#### 部署及压测
+#### Deployment and stress testing
 
-步骤1 执行远程部署脚本，部署Proxy到${host-proxy}
+Step 1: Execute remote deployment script to deploy Proxy to `{host-proxy}`
 
 ./deploy_sharding.sh
 
@@ -144,7 +144,7 @@ cp -f prepared_conf/config-sharding.yaml prepared_conf/server.yaml apache-shardi
 sleep 30
 ```
 
-步骤2 执行sysbench脚本
+Step 2: Execute the sysbench script
 
 ```bash
 # master
@@ -167,9 +167,9 @@ sysbench oltp_delete           --mysql-host=${host-proxy} --mysql-port=3307 --my
 sysbench oltp_read_only --mysql-host=${host-proxy} --mysql-port=3307 --mysql-user=root --mysql-password='root' --mysql-db=sbtest --tables=10 --table-size=1000000 --report-interval=10 --time=3600 --threads=10 --max-requests=0 --percentile=99 --mysql-ignore-errors="all" --rand-type=uniform --range_selects=off --auto_inc=off cleanup
 ```
 
-4.1.1、3.0.0、直连MySQL这三个场景，重复上面步骤1和步骤2
+4.1.1, 3.0.0, three scenarios of direct connection to MySQL, repeat steps 1 and 2 above.
 
-#### 执行停止Proxy脚本
+#### Execute stop proxy script
 
 ./stop_proxy.sh
 
@@ -181,7 +181,7 @@ sysbench oltp_read_only --mysql-host=${host-proxy} --mysql-port=3307 --mysql-use
 ./apache-shardingsphere-*-shardingsphere-proxy-bin/bin/stop.sh
 ```
 
-#### 生成压测曲线图片
+#### Generate pressure test curve picture
 
 ```bash
 # Generate graph
@@ -190,7 +190,7 @@ cd /home/jenkins/sysbench_res/
 python3 plot_graph.py sharding
 ```
 
-#### 利用Jenkins的 Publish HTML reports插件 将图片发布到页面里
+#### Use Jenkins Publish HTML reports plugin to publish pictures to the page
 
 ```
 HTML directory to archive: /home/jenkins/sysbench_res/graph/
@@ -198,7 +198,7 @@ Index page[s]: 01_sharding.html
 Report title: HTML Report
 ```
 
-## sysbench测试用例分析
+## sysbench test case describe
 
 #### oltp_point_select
 
@@ -296,7 +296,7 @@ Prepare Statement (ID = 1): DELETE FROM sbtest1 WHERE id=?
 Execute Statement: ID = 1
 ```
 
-## 附录1
+## Appendix 1
 
 #### Master branch version
 
@@ -1421,10 +1421,10 @@ shardingRule:
 config-encrypt.yaml
 
 ```
-不支持
+Unsupported
 ```
 
-## 附录2
+## Appendix 2
 
 plot_graph.py
 

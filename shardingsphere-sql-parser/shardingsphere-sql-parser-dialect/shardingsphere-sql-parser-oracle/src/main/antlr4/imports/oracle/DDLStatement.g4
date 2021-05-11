@@ -1355,7 +1355,7 @@ defaultSettingsClauses
     | SET DEFAULT (BIGFILE | SMALLFILE) TABLESPACE
     | DEFAULT TABLESPACE tablespaceName
     | DEFAULT LOCAL? TEMPORARY TABLESPACE (tablespaceName | tablespaceGroupName)
-    | RENAME GLOBAL_NAME TO databaseName DO_ domain (DQ_ domain)*
+    | RENAME GLOBAL_NAME TO databaseName DOT_ domain (DOT_ domain)*
     | ENABLE BLOCK CHANGE TRACKING (USING FILE fileName REUSE?)?
     | DISABLE BLOCK CHANGE TRACKING
     | NO? FORCE FULL DATABASE CACHING

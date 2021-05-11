@@ -22,6 +22,7 @@ import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
 
+import java.util.Collections;
 import java.util.Properties;
 
 /**
@@ -31,7 +32,7 @@ public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultKe
     
     @Override
     public AuthorityRuleConfiguration build() {
-        return new AuthorityRuleConfiguration(new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        return new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
     }
     
     @Override

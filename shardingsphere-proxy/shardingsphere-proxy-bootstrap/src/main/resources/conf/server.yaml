@@ -20,7 +20,7 @@
 # If you want to configure governance, authorization and proxy properties, please refer to this file.
 # 
 ######################################################################################################
-#
+
 #governance:
 #  name: governance_ds
 #  registryCenter:
@@ -32,15 +32,19 @@
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
-#
-#users:
-#  - root@%:root
-#  - sharding@:sharding
-#
+
 #scaling:
 #  blockQueueSize: 10000
 #  workerThread: 40
-#
+
+#rules:
+#  - !AUTHORITY
+#    users:
+#      - root@%:root
+#      - sharding@:sharding
+#    provider:
+#      type: NATIVE
+
 #props:
 #  max-connections-size-per-query: 1
 #  executor-size: 16  # Infinite by default.
@@ -56,8 +60,3 @@
 #  sql-show: false
 #  check-table-metadata-enabled: false
 #  lock-wait-timeout-milliseconds: 50000 # The maximum time to wait for a lock
-#
-#rules:
-#  - !AUTHORITY
-#    provider:
-#      type: NATIVE

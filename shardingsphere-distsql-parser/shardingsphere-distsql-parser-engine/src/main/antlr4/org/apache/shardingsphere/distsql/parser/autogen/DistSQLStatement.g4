@@ -25,7 +25,7 @@ execute
     | createShardingTableRule
     | createShardingBindingTableRules
     | createShardingBroadcastTableRules
-    | alterShardingRule
+    | alterShardingTableRule
     | dropShardingRule
     | createReplicaQueryRule
     | alterReplicaQueryRule
