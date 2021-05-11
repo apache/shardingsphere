@@ -46,19 +46,20 @@ public final class TransactionBackendHandlerFactory {
      */
     public static TextProtocolBackendHandler newInstance(final TCLStatement tclStatement, final String sql, final BackendConnection backendConnection) {
         if (tclStatement instanceof BeginTransactionStatement) {
-            return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
+            return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, backendConnection);
         }
         if (tclStatement instanceof SetAutoCommitStatement) {
             if (((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
-                return backendConnection.getTransactionStatus().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
+                return backendConnection.getTransactionStatus().isInTransaction()
+                        ? new TransactionBackendHandler(tclStatement, TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
             }
-            return new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
+            return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, backendConnection);
         }
         if (tclStatement instanceof CommitStatement) {
-            return new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection);
+            return new TransactionBackendHandler(tclStatement, TransactionOperationType.COMMIT, backendConnection);
         }
         if (tclStatement instanceof RollbackStatement) {
-            return new TransactionBackendHandler(TransactionOperationType.ROLLBACK, backendConnection);
+            return new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, backendConnection);
         }
         return new BroadcastDatabaseBackendHandler(tclStatement, sql, backendConnection);
     }

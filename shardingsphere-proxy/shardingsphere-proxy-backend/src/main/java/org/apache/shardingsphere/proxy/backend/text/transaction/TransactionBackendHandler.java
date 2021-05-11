@@ -22,6 +22,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.Ba
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;
@@ -32,11 +33,14 @@ import java.sql.SQLFeatureNotSupportedException;
  */
 public final class TransactionBackendHandler implements TextProtocolBackendHandler {
     
+    private final TCLStatement tclStatement;
+    
     private final TransactionOperationType operationType;
     
     private final BackendTransactionManager backendTransactionManager;
     
-    public TransactionBackendHandler(final TransactionOperationType operationType, final BackendConnection backendConnection) {
+    public TransactionBackendHandler(final TCLStatement tclStatement, final TransactionOperationType operationType, final BackendConnection backendConnection) {
+        this.tclStatement = tclStatement;
         this.operationType = operationType;
         backendTransactionManager = new BackendTransactionManager(backendConnection);
     }
@@ -56,6 +60,6 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
             default:
                 throw new SQLFeatureNotSupportedException(operationType.name());
         }
-        return new UpdateResponseHeader(null);
+        return new UpdateResponseHeader(tclStatement);
     }
 }
