@@ -30,7 +30,7 @@ STRING_
     ;
 
 INTEGER_
-    : (PLUS_ | MINUS_)? INT_
+    : INT_
     ;
 
 NUMBER_

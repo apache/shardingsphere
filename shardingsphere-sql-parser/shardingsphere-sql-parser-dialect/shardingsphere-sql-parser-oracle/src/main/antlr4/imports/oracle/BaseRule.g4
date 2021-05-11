@@ -38,7 +38,7 @@ stringLiterals
     ;
 
 numberLiterals
-   : INTEGER_ | MINUS_? NUMBER_
+   : (PLUS_ | MINUS_)? (INTEGER_ | NUMBER_)
    ;
 
 dateTimeLiterals
