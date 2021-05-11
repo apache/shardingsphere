@@ -527,7 +527,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         DataTypeLengthSegment result = new DataTypeLengthSegment();
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStartIndex());
-        List<TerminalNode> numbers = ctx.NUMBER_();
+        List<TerminalNode> numbers = ctx.INTEGER_();
         if (numbers.size() == 1) {
             result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
         }

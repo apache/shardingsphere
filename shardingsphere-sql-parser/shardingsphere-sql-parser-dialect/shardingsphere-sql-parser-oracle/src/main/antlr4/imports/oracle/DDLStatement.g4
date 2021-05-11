@@ -156,15 +156,15 @@ identifyOptions
     ;
 
 identityOption
-    : START WITH (NUMBER_ | LIMIT VALUE)
-    | INCREMENT BY NUMBER_
-    | MAXVALUE NUMBER_
+    : START WITH (INTEGER_ | LIMIT VALUE)
+    | INCREMENT BY INTEGER_
+    | MAXVALUE INTEGER_
     | NOMAXVALUE
-    | MINVALUE NUMBER_
+    | MINVALUE INTEGER_
     | NOMINVALUE
     | CYCLE
     | NOCYCLE
-    | CACHE NUMBER_
+    | CACHE INTEGER_
     | NOCACHE
     | ORDER
     | NOORDER
@@ -787,7 +787,7 @@ hashPartitions
     ;
 
 hashPartitionsByQuantity
-    : PARTITIONS NUMBER_ (STORE IN (tablespaceName (COMMA_ tablespaceName)*))? (tableCompression | indexCompression)? (OVERFLOW STORE IN (tablespaceName (COMMA_ tablespaceName)*))?
+    : PARTITIONS INTEGER_ (STORE IN (tablespaceName (COMMA_ tablespaceName)*))? (tableCompression | indexCompression)? (OVERFLOW STORE IN (tablespaceName (COMMA_ tablespaceName)*))?
     ;
 
 indexCompression

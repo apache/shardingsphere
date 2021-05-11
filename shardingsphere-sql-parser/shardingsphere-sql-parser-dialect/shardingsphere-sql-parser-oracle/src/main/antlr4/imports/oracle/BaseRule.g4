@@ -38,7 +38,7 @@ stringLiterals
     ;
 
 numberLiterals
-   : MINUS_? NUMBER_
+   : INTEGER_ | MINUS_? NUMBER_
    ;
 
 dateTimeLiterals
@@ -296,7 +296,7 @@ alias
     ;
 
 dataTypeLength
-    : LP_ (NUMBER_ (COMMA_ NUMBER_)?)? RP_
+    : LP_ (INTEGER_ (COMMA_ INTEGER_)?)? RP_
     ;
 
 primaryKey
@@ -552,7 +552,7 @@ asmFileName
     ;
 
 fileNumber
-    : NUMBER_
+    : INTEGER_
     ;
 
 instanceName
