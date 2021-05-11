@@ -20,8 +20,8 @@ package org.apache.shardingsphere.governance.core.registry.checker;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -47,22 +47,22 @@ public final class RuleConfigurationCheckerFactoryTest {
     
     @Test
     public void assertEncryptRuleConfigurationChecker() {
-        assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(ReadWriteSplittingRuleConfiguration.class)).isPresent());
-    }
-    
-    @Test
-    public void assertAlgorithmProvidedEncryptRuleConfigurationChecker() {
-        assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(AlgorithmProvidedReadWriteSplittingRuleConfiguration.class)).isPresent());
-    }
-    
-    @Test
-    public void assertReplicaQueryRuleConfigurationChecker() {
         assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(EncryptRuleConfiguration.class)).isPresent());
     }
     
     @Test
-    public void assertAlgorithmProvidedReplicaQueryRuleConfigurationChecker() {
+    public void assertAlgorithmProvidedEncryptRuleConfigurationChecker() {
         assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(AlgorithmProvidedEncryptRuleConfiguration.class)).isPresent());
+    }
+    
+    @Test
+    public void assertReadwriteSplittingRuleConfigurationChecker() {
+        assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(ReadwriteSplittingRuleConfiguration.class)).isPresent());
+    }
+    
+    @Test
+    public void assertAlgorithmProvidedReadwriteSplittingRuleConfigurationChecker() {
+        assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class)).isPresent());
     }
     
     @Test

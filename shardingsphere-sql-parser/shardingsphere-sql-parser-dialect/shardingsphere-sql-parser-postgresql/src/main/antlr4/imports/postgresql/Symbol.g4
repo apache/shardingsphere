@@ -61,6 +61,8 @@ SEMI_:               ';';
 TILDE_TILDE_:        '~~';
 NOT_TILDE_TILDE_:    '!~~';
 TYPE_CAST_:          '::';
+ILIKE_:              '~~*';
+NOT_ILIKE_:          '!~~*';
 JSON_EXTRACT_:       '->';
 JSON_EXTRACT_TEXT_:  '->>';
 JSON_PATH_EXTRACT_:  '#>';

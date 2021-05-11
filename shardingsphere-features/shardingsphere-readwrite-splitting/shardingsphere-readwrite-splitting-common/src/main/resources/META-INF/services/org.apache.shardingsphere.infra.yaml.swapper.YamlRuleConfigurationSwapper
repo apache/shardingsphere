@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.common.yaml.swapper.ReadWriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper
-org.apache.shardingsphere.readwritesplitting.common.yaml.swapper.ReadWriteSplittingRuleConfigurationYamlSwapper
+org.apache.shardingsphere.readwritesplitting.common.yaml.swapper.ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper
+org.apache.shardingsphere.readwritesplitting.common.yaml.swapper.ReadwriteSplittingRuleConfigurationYamlSwapper

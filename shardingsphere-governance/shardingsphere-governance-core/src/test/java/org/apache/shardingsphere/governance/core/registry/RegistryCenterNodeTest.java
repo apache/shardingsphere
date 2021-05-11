@@ -51,6 +51,15 @@ public final class RegistryCenterNodeTest {
         Optional<GovernanceSchema> actual = registryCenterNode.getGovernanceSchema("/states/datanodes/replica_query_db/replica_ds_0");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getSchemaName(), is("replica_query_db"));
+        assertThat(actual.get().getDataSourceName(), is("replica_ds_0"));
+    }
+
+    @Test
+    public void assertGetGovernanceSchemaForIpDataSourceName() {
+        Optional<GovernanceSchema> actual = registryCenterNode.getGovernanceSchema("/states/datanodes/replica_query_db/127.0.0.1");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getSchemaName(), is("replica_query_db"));
+        assertThat(actual.get().getDataSourceName(), is("127.0.0.1"));
     }
     
     @Test

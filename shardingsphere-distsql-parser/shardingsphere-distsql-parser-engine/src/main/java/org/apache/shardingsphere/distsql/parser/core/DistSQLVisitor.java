@@ -21,13 +21,11 @@ import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterBindingTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.BindTableRulesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CheckScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
@@ -55,7 +53,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.T
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadWriteSplittingRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.CheckScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.DropScalingJobStatement;
@@ -64,10 +62,10 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJo
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJobStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StartScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StopScalingJobStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadWriteSplittingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadWriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
@@ -143,47 +141,12 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
-    public ASTNode visitAlterShardingRule(final AlterShardingRuleContext ctx) {
-        AlterShardingRuleStatement result;
-        if (null != ctx.defaultTableStrategy()) {
-            String defaultTableStrategyColumn = null != ctx.defaultTableStrategy().columnName() ? ctx.defaultTableStrategy().columnName().getText() : null;
-            result = new AlterShardingRuleStatement(defaultTableStrategyColumn, (FunctionSegment) visit(ctx.defaultTableStrategy()));
-        } else {
-            result = new AlterShardingRuleStatement(null, null);
-        }
-        for (AlterShardingTableRuleDefinitionContext each : ctx.alterShardingTableRuleDefinition()) {
-            if (null != each.ADD()) {
-                result.getAddShardingRules().add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
-            } else if (null != each.MODIFY()) {
-                result.getModifyShardingRules().add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
-            }
-        }
-        if (null != ctx.alterBindingTables()) {
-            for (AlterBindingTableContext each : ctx.alterBindingTables().alterBindingTable()) {
-                if (null != each.ADD()) {
-                    Collection<String> tables = each.bindingTable().tableNames().IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
-                    result.getAddBindingTables().add(tables);
-                } else if (null != each.DROP()) {
-                    Collection<String> tables = each.bindingTable().tableNames().IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
-                    result.getDropBindingTables().add(tables);
-                }
-            }
-        }
-        if (null != ctx.broadcastTables()) {
-            for (TerminalNode each : ctx.broadcastTables().IDENTIFIER()) {
-                result.getBroadcastTables().add(new IdentifierValue(each.getText()).getValue());
-            }
-        }
-        return result;
-    }
-    
-    @Override
     public ASTNode visitCreateReplicaQueryRule(final CreateReplicaQueryRuleContext ctx) {
-        Collection<ReadWriteSplittingRuleSegment> replicaQueryRules = new LinkedList<>();
+        Collection<ReadwriteSplittingRuleSegment> replicaQueryRules = new LinkedList<>();
         for (ReplicaQueryRuleDefinitionContext each : ctx.replicaQueryRuleDefinition()) {
-            replicaQueryRules.add((ReadWriteSplittingRuleSegment) visit(each));
+            replicaQueryRules.add((ReadwriteSplittingRuleSegment) visit(each));
         }
-        return new CreateReadWriteSplittingRuleStatement(replicaQueryRules);
+        return new CreateReadwriteSplittingRuleStatement(replicaQueryRules);
     }
     
     @Override
@@ -192,10 +155,19 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.getTables().addAll(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
         return result;
     }
-    
+
+    @Override
+    public ASTNode visitAlterShardingTableRule(final DistSQLStatementParser.AlterShardingTableRuleContext ctx) {
+        AlterShardingTableRuleStatement result = new AlterShardingTableRuleStatement();
+        for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
+            result.getTables().add((TableRuleSegment) visit(each));
+        }
+        return result;
+    }
+
     @Override
     public ASTNode visitReplicaQueryRuleDefinition(final ReplicaQueryRuleDefinitionContext ctx) {
-        ReadWriteSplittingRuleSegment result = new ReadWriteSplittingRuleSegment();
+        ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
         Collection<String> replicaDatasources = new LinkedList<>();
         for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
             replicaDatasources.add(each.getText());
@@ -216,16 +188,16 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitAlterReplicaQueryRule(final AlterReplicaQueryRuleContext ctx) {
-        Collection<ReadWriteSplittingRuleSegment> modifyReplicaQueryRules = new LinkedList<>();
-        Collection<ReadWriteSplittingRuleSegment> addReplicaQueryRules = new LinkedList<>();
+        Collection<ReadwriteSplittingRuleSegment> modifyReplicaQueryRules = new LinkedList<>();
+        Collection<ReadwriteSplittingRuleSegment> addReplicaQueryRules = new LinkedList<>();
         for (AlterReplicaQueryRuleDefinitionContext each : ctx.alterReplicaQueryRuleDefinition()) {
             if (null != each.MODIFY()) {
-                modifyReplicaQueryRules.add((ReadWriteSplittingRuleSegment) visit(each));
+                modifyReplicaQueryRules.add((ReadwriteSplittingRuleSegment) visit(each));
             } else {
-                addReplicaQueryRules.add((ReadWriteSplittingRuleSegment) visit(each));
+                addReplicaQueryRules.add((ReadwriteSplittingRuleSegment) visit(each));
             }
         }
-        return new AlterReadWriteSplittingRuleStatement(modifyReplicaQueryRules, addReplicaQueryRules);
+        return new AlterReadwriteSplittingRuleStatement(modifyReplicaQueryRules, addReplicaQueryRules);
     }
     
     @Override
@@ -239,7 +211,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitAlterReplicaQueryRuleDefinition(final AlterReplicaQueryRuleDefinitionContext ctx) {
-        ReadWriteSplittingRuleSegment result = new ReadWriteSplittingRuleSegment();
+        ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
         Collection<String> replicaDatasources = new LinkedList<>();
         for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
             replicaDatasources.add(each.getText());

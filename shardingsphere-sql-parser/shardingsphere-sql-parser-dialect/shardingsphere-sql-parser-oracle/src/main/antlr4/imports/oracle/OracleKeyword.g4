@@ -1823,6 +1823,10 @@ DEFAULT_CREDENTIAL
     : D E F A U L T UL_ C R E D E N T I A L
     ;
 
+TIME_ZONE
+    : T I M E UL_ Z O N E
+    ;
+
 RESET
     : R E S E T
     ;

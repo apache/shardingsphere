@@ -35,8 +35,6 @@ import java.util.Properties;
 @Setter
 public final class YamlProxyServerConfiguration implements YamlConfiguration {
     
-    private Collection<String> users = new LinkedList<>();
-    
     private YamlGovernanceConfiguration governance;
     
     private YamlScalingConfiguration scaling;

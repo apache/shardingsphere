@@ -19,7 +19,6 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     test_ds:
-      name: test_ds
       writeDataSourceName: test_write_ds
       readDataSourceNames:
         - test_replica_ds

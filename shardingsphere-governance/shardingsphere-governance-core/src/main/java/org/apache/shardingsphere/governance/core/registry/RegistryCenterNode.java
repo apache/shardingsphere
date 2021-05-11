@@ -154,7 +154,7 @@ public final class RegistryCenterNode {
      * @return governance schema
      */
     public Optional<GovernanceSchema> getGovernanceSchema(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getDataNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getDataNodesPath() + "/" + "(\\w+)/(\\S+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
     }

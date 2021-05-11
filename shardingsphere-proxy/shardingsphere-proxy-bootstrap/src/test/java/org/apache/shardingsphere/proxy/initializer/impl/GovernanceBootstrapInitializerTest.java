@@ -112,7 +112,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertNotNull(actual);
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        assertUsers(new ShardingSphereUsers(actual.getUsers()));
         assertProps(actual.getProps());
     }
     

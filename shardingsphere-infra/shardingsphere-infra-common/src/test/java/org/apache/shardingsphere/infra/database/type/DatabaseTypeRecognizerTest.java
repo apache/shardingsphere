@@ -126,7 +126,7 @@ public final class DatabaseTypeRecognizerTest {
                 url = "jdbc:postgresql://localhost:5432/test";
                 break;
             case "SQL92":
-                url = "jdbc:sqlserver://127.0.0.1;DatabaseName=test";
+                url = "jdbc:jtds:sqlserver://127.0.0.1;DatabaseName=test";
                 break;
             case "SQLServer":
                 url = "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=test";
