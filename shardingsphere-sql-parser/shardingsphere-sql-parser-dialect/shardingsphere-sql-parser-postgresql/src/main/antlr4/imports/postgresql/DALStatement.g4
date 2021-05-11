@@ -63,7 +63,7 @@ explain
     ;
 
 explainableStmt
-    : select | insert | update | delete | declare | execute | createMaterializedView | refreshMatViewStmt
+    : select | insert | update | delete | declare | executeStmt | createMaterializedView | refreshMatViewStmt
     ;
 
 explainOptionList

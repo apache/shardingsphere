@@ -68,5 +68,8 @@ execute
     | dropView
     | dropSequence
     | vacuum
+    | prepare
+    | executeStmt
+    | deallocate
     ) SEMI_?
     ;
