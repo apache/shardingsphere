@@ -20,7 +20,7 @@
 # If you want to configure governance, authorization and proxy properties, please refer to this file.
 # 
 ######################################################################################################
-#
+
 #governance:
 #  name: governance_ds
 #  registryCenter:
@@ -33,13 +33,17 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 
-#users:
-#  - root@%:root
-#  - sharding@:sharding
-
 #scaling:
 #  blockQueueSize: 10000
 #  workerThread: 40
+
+#rules:
+#  - !AUTHORITY
+#    users:
+#      - root@%:root
+#      - sharding@:sharding
+#    provider:
+#      type: NATIVE
 
 #props:
 #  max-connections-size-per-query: 1

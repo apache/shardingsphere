@@ -27,8 +27,12 @@ governance:
       operationTimeoutMilliseconds: 500
   overwrite: true
 
-users:
-  - root@:root
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+    provider:
+      type: NATIVE
 
 props:
   max-connections-size-per-query: 1

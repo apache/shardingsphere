@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.repository.api.listener.DataChangedE
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,14 +98,14 @@ public final class RuleChangedListenerTest extends MetaDataListenerTest {
     }
     
     @Test
-    public void assertCreateEventWithReadWriteSplittingRule() {
+    public void assertCreateEventWithReadwriteSplittingRule() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/readwrite_splitting_db/rule", readYAML(READWRITE_SPLITTING_RULE_FILE), Type.UPDATED);
         Optional<GovernanceEvent> actual = ruleChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual.get();
         assertThat(event.getSchemaName(), is("readwrite_splitting_db"));
-        assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(ReadWriteSplittingRuleConfiguration.class));
-        ReadWriteSplittingRuleConfiguration ruleConfig = (ReadWriteSplittingRuleConfiguration) event.getRuleConfigurations().iterator().next();
+        assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(ReadwriteSplittingRuleConfiguration.class));
+        ReadwriteSplittingRuleConfiguration ruleConfig = (ReadwriteSplittingRuleConfiguration) event.getRuleConfigurations().iterator().next();
         assertThat(ruleConfig.getDataSources().iterator().next().getWriteDataSourceName(), is("write_ds"));
     }
 }

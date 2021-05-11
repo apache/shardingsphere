@@ -73,7 +73,6 @@ rules:
   - !READWRITE_SPLITTING
     dataSources:
       calcite_ds:
-        name: calcite_ds
         writeDataSourceName:
           - calcite_jdbc_1
         readDataSourceNames:

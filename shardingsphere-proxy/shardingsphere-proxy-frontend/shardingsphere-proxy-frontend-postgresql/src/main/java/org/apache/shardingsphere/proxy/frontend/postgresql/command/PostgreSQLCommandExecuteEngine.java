@@ -104,7 +104,9 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
                 count = 0;
             }
         }
-        context.write(new PostgreSQLCommandCompletePacket());
+        if (ResponseType.QUERY == queryCommandExecutor.getResponseType()) {
+            context.write(new PostgreSQLCommandCompletePacket());
+        }
         if (queryCommandExecutor instanceof PostgreSQLComQueryExecutor) {
             context.write(new PostgreSQLReadyForQueryPacket(true));
         }

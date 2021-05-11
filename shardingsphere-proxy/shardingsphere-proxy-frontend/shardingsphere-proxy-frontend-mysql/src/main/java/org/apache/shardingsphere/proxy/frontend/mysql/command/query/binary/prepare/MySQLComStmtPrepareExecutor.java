@@ -84,7 +84,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final int parameterCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         for (int i = 0; i < parameterCount; i++) {
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0));
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;
@@ -93,7 +93,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private Collection<DatabasePacket<?>> createProjectionColumnDefinition41Packets(final int projectionCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         for (int i = 0; i < projectionCount; i++) {
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0));
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
         }
         result.add(new MySQLEofPacket(++currentSequenceId));
         return result;

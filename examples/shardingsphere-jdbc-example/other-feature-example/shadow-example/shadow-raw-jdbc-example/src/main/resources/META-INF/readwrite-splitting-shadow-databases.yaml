@@ -54,7 +54,6 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds:
-      name: pr_ds
       writeDataSourceName: write_ds
       readDataSourceNames: [read_ds]
 

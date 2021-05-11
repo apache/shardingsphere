@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.readwritesplitting.common.rule.ReadWriteSplittingRule;
+import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
 import org.junit.Test;
@@ -51,8 +51,8 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
                 assertShardingRule((ShardingRule) each);
-            } else if (each instanceof ReadWriteSplittingRule) {
-                assertReadWriteSplittingRule((ReadWriteSplittingRule) each);
+            } else if (each instanceof ReadwriteSplittingRule) {
+                assertReadwriteSplittingRule((ReadwriteSplittingRule) each);
             } else if (each instanceof EncryptRule) {
                 assertEncryptRule((EncryptRule) each);
             }
@@ -76,7 +76,7 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
                 new DataNode("ds_1.t_order_0"), new DataNode("ds_1.t_order_1"), new DataNode("ds_1.t_order_2"), new DataNode("ds_1.t_order_3"))));
     }
     
-    private void assertReadWriteSplittingRule(final ReadWriteSplittingRule rule) {
+    private void assertReadwriteSplittingRule(final ReadwriteSplittingRule rule) {
         assertTrue(rule.findDataSourceRule("ds_0").isPresent());
         assertThat(rule.findDataSourceRule("ds_0").get().getWriteDataSourceName(), is("ds_0_write"));
         assertThat(rule.findDataSourceRule("ds_0").get().getReadDataSourceNames(), is(Arrays.asList("ds_0_read_0", "ds_0_read_1")));

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -25,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -108,10 +111,20 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        assertUsers(new ShardingSphereUsers(actual.getUsers()));
+        assertUsers(new ShardingSphereUsers(getUsersFromAuthorityRule(actual.getGlobalRules())));
         assertProps(actual.getProps());
     }
-    
+
+    private Collection<ShardingSphereUser> getUsersFromAuthorityRule(final Collection<RuleConfiguration> globalRuleConfigs) {
+        for (RuleConfiguration ruleConfig : globalRuleConfigs) {
+            if (ruleConfig instanceof AuthorityRuleConfiguration) {
+                AuthorityRuleConfiguration authorityRuleConfiguration = (AuthorityRuleConfiguration) ruleConfig;
+                return authorityRuleConfiguration.getUsers();
+            }
+        }
+        return Collections.emptyList();
+    }
+
     private void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> actual) {
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("logic-db"));
@@ -153,8 +166,13 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
-        YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
-        result.getUsers().add("root@:root");
+        final YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
+        YamlAuthorityRuleConfiguration yamlRule = new YamlAuthorityRuleConfiguration();
+        yamlRule.setUsers(Collections.singletonList("root@%:root"));
+        YamlShardingSphereAlgorithmConfiguration provider = new YamlShardingSphereAlgorithmConfiguration();
+        provider.setType("test");
+        yamlRule.setProvider(provider);
+        result.getRules().add(yamlRule);
         result.setProps(createProperties());
         return result;
     }

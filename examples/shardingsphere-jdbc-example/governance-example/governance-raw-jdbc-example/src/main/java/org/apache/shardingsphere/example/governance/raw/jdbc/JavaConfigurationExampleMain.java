@@ -24,11 +24,11 @@ import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.GovernanceRepositoryConfigurationUtil;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudEncryptConfiguration;
-import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudReadWriteSplittingConfiguration;
+import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudReadwriteSplittingConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalEncryptConfiguration;
-import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalReadWriteSplittingConfiguration;
+import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalReadwriteSplittingConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.ShardingType;
@@ -69,7 +69,7 @@ public final class JavaConfigurationExampleMain {
                         ? new CloudShardingDatabasesAndTablesConfiguration(governanceConfig) : new LocalShardingDatabasesAndTablesConfiguration(governanceConfig);
                 break;
             case READWRITE_SPLITTING:
-                config = loadConfigFromRegCenter ? new CloudReadWriteSplittingConfiguration(governanceConfig) : new LocalReadWriteSplittingConfiguration(governanceConfig);
+                config = loadConfigFromRegCenter ? new CloudReadwriteSplittingConfiguration(governanceConfig) : new LocalReadwriteSplittingConfiguration(governanceConfig);
                 break;
             case ENCRYPT:
                 config = loadConfigFromRegCenter ? new CloudEncryptConfiguration(governanceConfig) : new LocalEncryptConfiguration(governanceConfig);

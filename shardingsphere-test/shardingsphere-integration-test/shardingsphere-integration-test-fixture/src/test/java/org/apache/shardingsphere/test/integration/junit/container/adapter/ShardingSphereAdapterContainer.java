@@ -20,8 +20,10 @@ package org.apache.shardingsphere.test.integration.junit.container.adapter;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
@@ -29,6 +31,8 @@ import org.apache.shardingsphere.test.integration.junit.param.model.Parameterize
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * ShardingSphere adapter container.
@@ -53,7 +57,7 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
                 ByteStreams.toByteArray(this.getClass().getResourceAsStream("/docker/" + parameterizedArray.getScenario() + "/proxy/conf/server.yaml")),
                 YamlProxyServerConfiguration.class
         );
-        return YamlUsersConfigurationConverter.convertYamlUserConfiguration(configuration.getUsers())
+        return YamlUsersConfigurationConverter.convertYamlUserConfiguration(getUsersFromConfiguration(configuration))
                 .stream()
                 .filter(each -> "root".equals(each.getUsername()))
                 .findFirst()
@@ -66,5 +70,15 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
      * @return DataSource
      */
     public abstract DataSource getDataSource();
+
+    private Collection<String> getUsersFromConfiguration(final YamlProxyServerConfiguration serverConfig) {
+        for (YamlRuleConfiguration config : serverConfig.getRules()) {
+            if (config instanceof YamlAuthorityRuleConfiguration) {
+                YamlAuthorityRuleConfiguration authorityRuleConfig = (YamlAuthorityRuleConfiguration) config;
+                return authorityRuleConfig.getUsers();
+            }
+        }
+        return Collections.emptyList();
+    }
     
 }
