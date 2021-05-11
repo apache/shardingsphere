@@ -180,4 +180,3 @@ public final class PostgreSQLPrivilegeHandlerTest {
         return result;
     }
 }
-
