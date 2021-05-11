@@ -616,7 +616,7 @@ serialNumber
     ;
 
 instanceId
-    : numberLiterals
+    : NUMBER_
     ;
 
 sqlId
