@@ -20,6 +20,7 @@ package org.apache.shardingsphere.distsql.parser.api;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
@@ -64,6 +65,9 @@ public final class DistSQLStatementParserEngineTest {
             + "SHARDING_COLUMN=order_id,"
             + "TYPE(NAME=hash_mod,PROPERTIES('sharding-count'=4)),"
             + "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123))))";
+
+    private static final String RDL_ALTER_SHARDING_BINDING_TABLE_RULES = "ALTER SHARDING BINDING TABLE RULES ("
+            + "(t_order,t_order_item), (t_1,t_2))";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -173,5 +177,17 @@ public final class DistSQLStatementParserEngineTest {
         assertThat(tableRuleSegment.getKeyGenerateStrategyColumn(), is("another_id"));
         assertThat(tableRuleSegment.getTableStrategy().getAlgorithmName(), is("hash_mod"));
         assertThat(tableRuleSegment.getTableStrategy().getAlgorithmProps().getProperty("sharding-count"), is("4"));
+    }
+
+    @Test
+    public void assertParseAlterShardingBindingTableRules() {
+        SQLStatement sqlStatement = engine.parse(RDL_ALTER_SHARDING_BINDING_TABLE_RULES);
+        assertTrue(sqlStatement instanceof AlterShardingBindingTableRulesStatement);
+        List<ShardingBindingTableRuleSegment> shardingBindingTableRuleSegments = new ArrayList<>(((AlterShardingBindingTableRulesStatement) sqlStatement).getRules());
+        assertThat(shardingBindingTableRuleSegments.size(), is(2));
+        ShardingBindingTableRuleSegment segment = shardingBindingTableRuleSegments.get(0);
+        assertThat(segment.getTables(), is("t_order,t_order_item"));
+        segment = shardingBindingTableRuleSegments.get(1);
+        assertThat(segment.getTables(), is("t_1,t_2"));
     }
 }

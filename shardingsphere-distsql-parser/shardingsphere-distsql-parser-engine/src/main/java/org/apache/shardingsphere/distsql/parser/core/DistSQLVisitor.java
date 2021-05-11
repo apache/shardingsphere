@@ -63,6 +63,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJo
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StartScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StopScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
@@ -161,6 +162,18 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         AlterShardingTableRuleStatement result = new AlterShardingTableRuleStatement();
         for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
             result.getTables().add((TableRuleSegment) visit(each));
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitAlterShardingBindingTableRules(final DistSQLStatementParser.AlterShardingBindingTableRulesContext ctx) {
+        AlterShardingBindingTableRulesStatement result = new AlterShardingBindingTableRulesStatement();
+        for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
+            ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
+            segment.setTables(Joiner.on(",")
+                    .join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
+            result.getRules().add(segment);
         }
         return result;
     }

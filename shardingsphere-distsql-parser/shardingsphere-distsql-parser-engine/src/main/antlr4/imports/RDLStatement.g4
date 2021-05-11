@@ -79,6 +79,10 @@ alterShardingTableRule
     : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
     ;
 
+alterShardingBindingTableRules
+    : ALTER SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    ;
+
 createReplicaQueryRule
     : CREATE REPLICA_QUERY RULE LP replicaQueryRuleDefinition (COMMA replicaQueryRuleDefinition)* RP
     ;
