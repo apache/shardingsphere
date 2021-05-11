@@ -64,6 +64,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StartScalingJ
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StopScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
@@ -175,6 +176,13 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
                     .join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
             result.getRules().add(segment);
         }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitAlterShardingBroadcastTableRules(final DistSQLStatementParser.AlterShardingBroadcastTableRulesContext ctx) {
+        AlterShardingBroadcastTableRulesStatement result = new AlterShardingBroadcastTableRulesStatement();
+        result.getTables().addAll(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
         return result;
     }
 
