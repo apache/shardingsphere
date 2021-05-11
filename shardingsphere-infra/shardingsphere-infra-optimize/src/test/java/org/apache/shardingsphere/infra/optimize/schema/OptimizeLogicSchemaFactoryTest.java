@@ -21,7 +21,7 @@ import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.row.OptimizeRowExecutor;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -31,17 +31,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class CalciteLogicSchemaFactoryTest {
+public final class OptimizeLogicSchemaFactoryTest {
     
     @Test
     public void assertCreate() {
         Map<String, ShardingSphereMetaData> metaDataMap = new LinkedMap<>();
         metaDataMap.put("logic_db", mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
-        CalciteLogicSchemaFactory calciteLogicSchemaFactory = new CalciteLogicSchemaFactory(metaDataMap);
+        OptimizeLogicSchemaFactory optimizeLogicSchemaFactory = new OptimizeLogicSchemaFactory(metaDataMap);
         JDBCExecutor jdbcExecutor = mock(JDBCExecutor.class);
         ExecutionContext executionContext = mock(ExecutionContext.class);
-        CalciteRowExecutor calciteRowExecutor = new CalciteRowExecutor(Collections.emptyList(), 0, null, jdbcExecutor, executionContext, null);
-        CalciteLogicSchema logicDbExist = calciteLogicSchemaFactory.create("logic_db", calciteRowExecutor);
+        OptimizeRowExecutor optimizeRowExecutor = new OptimizeRowExecutor(Collections.emptyList(), 0, null, jdbcExecutor, executionContext, null);
+        OptimizeLogicSchema logicDbExist = optimizeLogicSchemaFactory.create("logic_db", optimizeRowExecutor);
         assertNotNull(logicDbExist);
     }
 }

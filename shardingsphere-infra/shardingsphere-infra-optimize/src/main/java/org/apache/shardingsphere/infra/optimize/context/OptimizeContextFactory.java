@@ -50,18 +50,18 @@ import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseTy
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.execute.raw.plan.PlannerInitializer;
-import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchema;
-import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchemaFactory;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.OptimizeLogicSchema;
+import org.apache.shardingsphere.infra.optimize.schema.OptimizeLogicSchemaFactory;
+import org.apache.shardingsphere.infra.optimize.schema.row.OptimizeRowExecutor;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Calcite context factory.
+ * Optimize context factory.
  */
-public final class CalciteContextFactory {
+public final class OptimizeContextFactory {
     
     private static final String LEX_CAMEL_NAME = CalciteConnectionProperty.LEX.camelName();
     
@@ -75,16 +75,16 @@ public final class CalciteContextFactory {
     
     private final RelDataTypeFactory typeFactory;
     
-    private final CalciteLogicSchemaFactory factory;
+    private final OptimizeLogicSchemaFactory factory;
     
     private final RelOptCluster cluster;
     
-    public CalciteContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public OptimizeContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         initProperties(databaseType);
         typeFactory = new JavaTypeFactoryImpl();
         cluster = newCluster();
-        factory = new CalciteLogicSchemaFactory(metaDataMap);
+        factory = new OptimizeLogicSchemaFactory(metaDataMap);
         connectionConfig = new CalciteConnectionConfigImpl(properties);
         parserConfig = SqlParser.config()
                 .withLex(connectionConfig.lex())
@@ -149,18 +149,18 @@ public final class CalciteContextFactory {
      * @param executor executor
      * @return calcite context
      */
-    public CalciteContext create(final String schema, final CalciteRowExecutor executor) {
-        CalciteLogicSchema calciteLogicSchema = factory.create(schema, executor);
-        CalciteCatalogReader catalogReader = createCalciteCatalogReader(schema, connectionConfig, typeFactory, calciteLogicSchema);
+    public OptimizeContext create(final String schema, final OptimizeRowExecutor executor) {
+        OptimizeLogicSchema optimizeLogicSchema = factory.create(schema, executor);
+        CalciteCatalogReader catalogReader = createCalciteCatalogReader(schema, connectionConfig, typeFactory, optimizeLogicSchema);
         SqlValidator validator = createSqlValidator(connectionConfig, typeFactory, catalogReader);
         SqlToRelConverter relConverter = createSqlToRelConverter(cluster, validator, catalogReader);
-        return new CalciteContext(properties, calciteLogicSchema, parserConfig, validator, relConverter);
+        return new OptimizeContext(properties, optimizeLogicSchema, parserConfig, validator, relConverter);
     }
     
     private CalciteCatalogReader createCalciteCatalogReader(final String schema, final CalciteConnectionConfig config,
-                                                            final RelDataTypeFactory typeFactory, final CalciteLogicSchema calciteLogicSchema) {
+                                                            final RelDataTypeFactory typeFactory, final OptimizeLogicSchema optimizeLogicSchema) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
-        rootSchema.add(calciteLogicSchema.getName(), calciteLogicSchema);
+        rootSchema.add(optimizeLogicSchema.getName(), optimizeLogicSchema);
         return new CalciteCatalogReader(rootSchema, Collections.singletonList(schema), typeFactory, config);
     }
     

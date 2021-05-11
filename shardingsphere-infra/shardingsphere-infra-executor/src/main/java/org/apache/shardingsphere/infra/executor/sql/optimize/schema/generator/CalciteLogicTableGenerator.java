@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema.generator;
+package org.apache.shardingsphere.infra.executor.sql.optimize.schema.generator;
 
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
@@ -26,11 +26,11 @@ import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.table.CalciteFilterableTable;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
-import org.apache.shardingsphere.infra.optimize.schema.table.CalciteFilterableTable;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

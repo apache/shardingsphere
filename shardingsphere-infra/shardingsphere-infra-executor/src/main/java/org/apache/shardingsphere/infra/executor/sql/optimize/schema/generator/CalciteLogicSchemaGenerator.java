@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema.generator;
+package org.apache.shardingsphere.infra.executor.sql.optimize.schema.generator;
 
 import org.apache.calcite.schema.Table;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.CalciteLogicSchema;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
-import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
@@ -52,7 +52,7 @@ public final class CalciteLogicSchemaGenerator {
         Collection<DataNodeContainedRule> dataNodeRules = getDataNodeContainedRules(metaData);
         Map<String, Collection<DataNode>> tableDataNodes = getTableDataNodes(dataNodeRules);
         Map<String, Collection<String>> dataSourceRules = getDataSourceRules(metaData);
-        for (Map.Entry<String, Collection<DataNode>> entry : tableDataNodes.entrySet()) {
+        for (Entry<String, Collection<DataNode>> entry : tableDataNodes.entrySet()) {
             tables.put(entry.getKey(),
                     new CalciteLogicTableGenerator(entry.getKey(), metaData.getResource().getDataSources(), dataSourceRules, entry.getValue(), metaData.getResource().getDatabaseType()));
         }

@@ -35,7 +35,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class CalciteExecutionContextGeneratorTest {
+public final class OptimizeExecutionContextGeneratorTest {
     
     private ExecutionContext initialExecutionContext;
     
@@ -63,8 +63,8 @@ public final class CalciteExecutionContextGeneratorTest {
     
     @Test
     public void assertGenerate() {
-        CalciteExecutionContextGenerator generator =
-                new CalciteExecutionContextGenerator("t_order", initialExecutionContext, new CalciteExecutionSQLGenerator(mock(DataContext.class), Collections.emptyList(), new int[]{}));
+        OptimizeExecutionContextGenerator generator =
+                new OptimizeExecutionContextGenerator("t_order", initialExecutionContext, new OptimizeExecutionSQLGenerator(mock(DataContext.class), Collections.emptyList(), new int[]{}));
         ExecutionContext actual = generator.generate();
         assertThat(actual.getExecutionUnits().size(), is(4));
         assertThat(actual.getExecutionUnits().iterator().next().getDataSourceName(), is("ds0"));

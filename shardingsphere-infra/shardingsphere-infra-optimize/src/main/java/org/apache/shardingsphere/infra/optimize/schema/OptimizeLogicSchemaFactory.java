@@ -20,24 +20,24 @@ package org.apache.shardingsphere.infra.optimize.schema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.generator.CalciteLogicSchemaGenerator;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.generator.OptimizeLogicSchemaGenerator;
+import org.apache.shardingsphere.infra.optimize.schema.row.OptimizeRowExecutor;
 
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Calcite logic schema factory.
+ * Optimize logic schema factory.
  */
-public final class CalciteLogicSchemaFactory {
+public final class OptimizeLogicSchemaFactory {
     
-    private final Map<String, CalciteLogicSchemaGenerator> schemas = new LinkedMap<>();
+    private final Map<String, OptimizeLogicSchemaGenerator> schemas = new LinkedMap<>();
     
-    public CalciteLogicSchemaFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public OptimizeLogicSchemaFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
             try {
-                schemas.put(each.getKey(), new CalciteLogicSchemaGenerator(each.getValue()));
+                schemas.put(each.getKey(), new OptimizeLogicSchemaGenerator(each.getValue()));
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
@@ -51,7 +51,7 @@ public final class CalciteLogicSchemaFactory {
      * @param executor executor
      * @return schema
      */
-    public CalciteLogicSchema create(final String name, final CalciteRowExecutor executor) {
+    public OptimizeLogicSchema create(final String name, final OptimizeRowExecutor executor) {
         if (!schemas.containsKey(name)) {
             throw new ShardingSphereException("No `%s` schema.", name);
         }

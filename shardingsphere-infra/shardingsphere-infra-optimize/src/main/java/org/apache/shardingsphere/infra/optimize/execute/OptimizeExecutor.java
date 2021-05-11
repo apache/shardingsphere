@@ -24,9 +24,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Calcite executor.
+ * Optimize executor.
  */
-public interface CalciteExecutor {
+public interface OptimizeExecutor {
     
     /**
      * Execute query.

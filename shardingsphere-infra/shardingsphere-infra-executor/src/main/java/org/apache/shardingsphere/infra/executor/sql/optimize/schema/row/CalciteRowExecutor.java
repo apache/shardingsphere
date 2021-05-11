@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema.row;
+package org.apache.shardingsphere.infra.executor.sql.optimize.schema.row;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

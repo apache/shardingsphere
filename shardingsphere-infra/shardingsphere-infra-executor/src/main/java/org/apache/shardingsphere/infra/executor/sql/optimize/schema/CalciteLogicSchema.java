@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context;
+package org.apache.shardingsphere.infra.executor.sql.optimize.schema;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchema;
+import org.apache.calcite.schema.Table;
+import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.commons.collections4.map.LinkedMap;
 
-import java.util.Properties;
+import java.util.Map;
+
 
 /**
- * Calcite context.
+ * Calcite logic schema.
+ *
  */
-@RequiredArgsConstructor
 @Getter
-public final class CalciteContext {
+public final class CalciteLogicSchema extends AbstractSchema {
     
-    private final Properties connectionProperties;
+    private final String name;
     
-    private final CalciteLogicSchema calciteLogicSchema;
+    private final Map<String, Table> tables = new LinkedMap<>();
     
-    private final SqlParser.Config parserConfig;
+    public CalciteLogicSchema(final String name, final Map<String, Table> tables) {
+        this.name = name;
+        this.tables.putAll(tables);
+    }
     
-    private final SqlValidator validator;
-    
-    private final SqlToRelConverter relConverter;
+    @Override
+    protected Map<String, Table> getTableMap() {
+        return tables;
+    }
 }

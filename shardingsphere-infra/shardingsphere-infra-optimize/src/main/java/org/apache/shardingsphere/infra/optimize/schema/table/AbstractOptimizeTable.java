@@ -15,40 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.execute.raw.context;
+package org.apache.shardingsphere.infra.optimize.schema.table;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.DataContext;
-import org.apache.calcite.adapter.java.JavaTypeFactory;
-import org.apache.calcite.linq4j.QueryProvider;
-import org.apache.calcite.schema.SchemaPlus;
-import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelProtoDataType;
+import org.apache.calcite.schema.impl.AbstractTable;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.optimize.schema.row.OptimizeRowExecutor;
 
 /**
- * Calcite data context.
+ * Abstract optimize table.
  */
+@Getter(AccessLevel.PROTECTED)
 @RequiredArgsConstructor
-public final class CalciteDataContext implements DataContext {
+public abstract class AbstractOptimizeTable extends AbstractTable {
     
-    private final CalciteContext context;
+    private final String name;
     
-    @Override
-    public SchemaPlus getRootSchema() {
-        return context.getValidator().getCatalogReader().getRootSchema().plus();
-    }
+    private final TableMetaData tableMetaData;
     
-    @Override
-    public JavaTypeFactory getTypeFactory() {
-        return (JavaTypeFactory) context.getRelConverter().getCluster().getTypeFactory();
-    }
+    private final RelProtoDataType relProtoDataType;
+    
+    private final OptimizeRowExecutor executor;
     
     @Override
-    public QueryProvider getQueryProvider() {
-        return null;
-    }
-    
-    @Override
-    public Object get(final String name) {
-        return null;
+    public final RelDataType getRowType(final RelDataTypeFactory typeFactory) {
+        return relProtoDataType.apply(typeFactory);
     }
 }

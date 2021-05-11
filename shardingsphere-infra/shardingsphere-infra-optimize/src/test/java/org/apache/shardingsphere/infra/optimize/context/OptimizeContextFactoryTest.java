@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchema;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.OptimizeLogicSchema;
+import org.apache.shardingsphere.infra.optimize.schema.row.OptimizeRowExecutor;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class CalciteContextFactoryTest {
+public final class OptimizeContextFactoryTest {
     
     @Test
     public void assertCreate() {
@@ -46,16 +46,16 @@ public final class CalciteContextFactoryTest {
         schema.put("tab_user", mock(TableMetaData.class));
         ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData("logic_db", shardingSphereResource, metaData, schema);
-        CalciteContextFactory calciteContextFactory = new CalciteContextFactory(Collections.singletonMap("logic_db", shardingSphereMetaData));
-        assertNotNull(calciteContextFactory);
-        CalciteContext logicDb = calciteContextFactory.create("logic_db", new CalciteRowExecutor(Collections.emptyList(), 0, null, mock(JDBCExecutor.class), mock(ExecutionContext.class), null));
+        OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(Collections.singletonMap("logic_db", shardingSphereMetaData));
+        assertNotNull(optimizeContextFactory);
+        OptimizeContext logicDb = optimizeContextFactory.create("logic_db", new OptimizeRowExecutor(Collections.emptyList(), 0, null, mock(JDBCExecutor.class), mock(ExecutionContext.class), null));
         assertNotNull(logicDb);
         Properties properties = logicDb.getConnectionProperties();
         assertNotNull(properties);
         assertThat(properties.getProperty("lex"), is("MYSQL"));
         assertThat(properties.getProperty("conformance"), is("DEFAULT"));
-        CalciteLogicSchema calciteLogicSchema = logicDb.getCalciteLogicSchema();
-        assertNotNull(calciteLogicSchema);
-        assertThat(calciteLogicSchema.getName(), is("logic_db"));
+        OptimizeLogicSchema optimizeLogicSchema = logicDb.getOptimizeLogicSchema();
+        assertNotNull(optimizeLogicSchema);
+        assertThat(optimizeLogicSchema.getName(), is("logic_db"));
     }
 }

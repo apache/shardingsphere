@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.execute;
+package org.apache.shardingsphere.infra.executor.sql.optimize.execute;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
-import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
+import org.apache.shardingsphere.infra.executor.sql.optimize.context.CalciteContext;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

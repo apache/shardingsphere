@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.execute.raw;
+package org.apache.shardingsphere.infra.executor.sql.optimize.execute.raw;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
@@ -30,9 +30,9 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
-import org.apache.shardingsphere.infra.optimize.execute.raw.context.CalciteDataContext;
+import org.apache.shardingsphere.infra.executor.sql.optimize.context.CalciteContext;
+import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteExecutor;
+import org.apache.shardingsphere.infra.executor.sql.optimize.execute.raw.context.CalciteDataContext;
 
 import java.sql.ResultSet;
 import java.util.Collections;

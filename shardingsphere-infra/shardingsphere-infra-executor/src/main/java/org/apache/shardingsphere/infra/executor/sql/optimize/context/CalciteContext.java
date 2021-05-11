@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema.table.execute;
+package org.apache.shardingsphere.infra.executor.sql.optimize.context;
 
-import org.apache.calcite.DataContext;
-import org.apache.calcite.rex.RexNode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.CalciteLogicSchema;
 
-import java.util.List;
+import java.util.Properties;
 
 /**
- * Calcite execution sql generator.
+ * Calcite context.
  */
-public final class CalciteExecutionSQLGenerator {
+@RequiredArgsConstructor
+@Getter
+public final class CalciteContext {
     
-    public CalciteExecutionSQLGenerator(final DataContext root, final List<RexNode> filters, final int[] projects) {
-        // TODO
-    }
+    private final Properties connectionProperties;
     
-    /**
-     * Create sql.
-     *
-     * @param table table
-     * @return sql
-     */
-    public String generate(final String table) {
-        // TODO
-        return String.format("SELECT * FROM %s", table);
-    }
+    private final CalciteLogicSchema calciteLogicSchema;
+    
+    private final SqlParser.Config parserConfig;
+    
+    private final SqlValidator validator;
+    
+    private final SqlToRelConverter relConverter;
 }

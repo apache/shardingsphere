@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema.table;
+package org.apache.shardingsphere.infra.executor.sql.optimize.schema.table;
 
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.AbstractEnumerable;
@@ -24,11 +24,11 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowEnumerator;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.table.execute.CalciteExecutionContextGenerator;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.table.execute.CalciteExecutionSQLGenerator;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowEnumerator;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
-import org.apache.shardingsphere.infra.optimize.schema.table.execute.CalciteExecutionContextGenerator;
-import org.apache.shardingsphere.infra.optimize.schema.table.execute.CalciteExecutionSQLGenerator;
 
 import java.util.List;
 
