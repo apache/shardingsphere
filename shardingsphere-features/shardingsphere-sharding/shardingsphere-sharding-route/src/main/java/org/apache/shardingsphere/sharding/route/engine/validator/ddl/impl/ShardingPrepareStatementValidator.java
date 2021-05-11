@@ -50,7 +50,7 @@ public final class ShardingPrepareStatementValidator extends ShardingDDLStatemen
             throw new ShardingSphereException("Can not get route result, please check your sharding table config.");
         }
         if (routeContext.getRouteUnits().stream().collect(Collectors.groupingBy(RouteUnit::getDataSourceMapper)).entrySet().stream().anyMatch(each -> each.getValue().size() > 1)) {
-            throw new ShardingSphereException("Prepare ... statement can not support sharding tables route to multiple data sources.");
+            throw new ShardingSphereException("Prepare ... statement can not support sharding tables route to same data sources.");
         }
     }
 }
