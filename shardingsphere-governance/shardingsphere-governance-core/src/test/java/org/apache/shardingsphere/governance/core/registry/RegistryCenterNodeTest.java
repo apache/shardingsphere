@@ -86,22 +86,27 @@ public final class RegistryCenterNodeTest {
     public void assertGetRulePath() {
         assertThat(registryCenterNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/metadata/logic_db/rule"));
     }
-
+    
     @Test
     public void assertGetUsersNodePath() {
         assertThat(registryCenterNode.getUsersNode(), is("/users"));
     }
-
+    
+    @Test
+    public void assertGetGlobalRuleNodePath() {
+        assertThat(registryCenterNode.getGlobalRuleNode(), is("/rule"));
+    }
+    
     @Test
     public void assertGetPropsPath() {
         assertThat(registryCenterNode.getPropsPath(), is("/props"));
     }
-
+    
     @Test
     public void assertGetSchemaName() {
         assertThat(registryCenterNode.getSchemaName("/metadata/logic_db/rule"), is(DefaultSchema.LOGIC_NAME));
     }
-
+    
     @Test
     public void assertGetAllSchemaConfigPaths() {
         Collection<String> actual = registryCenterNode.getAllSchemaConfigPaths(Collections.singletonList(DefaultSchema.LOGIC_NAME));
