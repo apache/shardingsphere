@@ -53,10 +53,10 @@ public interface GovernanceRepository extends TypedSPI {
     String get(String key);
     
     /**
-     * Get node's sub-nodes list.
+     * Get names of sub-node.
      *
      * @param key key of data
-     * @return sub-nodes name list
+     * @return sub-node names
      */
     List<String> getChildrenKeys(String key);
     
