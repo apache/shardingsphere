@@ -87,8 +87,8 @@ public final class ScalingAPIImpl implements ScalingAPI {
             return Optional.empty();
         }
         log.info("Start scaling job by {}", YamlEngine.marshal(jobConfig));
-        ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
-        ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
+        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
+        ScalingAPIFactory.getGovernanceRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());
     }
     
@@ -114,13 +114,13 @@ public final class ScalingAPIImpl implements ScalingAPI {
     public void remove(final long jobId) {
         log.info("Remove scaling job {}", jobId);
         ScalingAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
-        ScalingAPIFactory.getRegistryRepositoryAPI().deleteJob(jobId);
+        ScalingAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
     }
     
     @Override
     public Map<Integer, JobProgress> getProgress(final long jobId) {
         return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getShardingTotalCount()).boxed()
-                .collect(LinkedHashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getRegistryRepositoryAPI().getJobProgress(jobId, each)), LinkedHashMap::putAll);
+                .collect(LinkedHashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, each)), LinkedHashMap::putAll);
     }
     
     @Override
@@ -138,7 +138,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     @Override
     public void reset(final long jobId) throws SQLException {
         log.info("Scaling job {} reset target table", jobId);
-        ScalingAPIFactory.getRegistryRepositoryAPI().deleteJobProgress(jobId);
+        ScalingAPIFactory.getGovernanceRepositoryAPI().deleteJobProgress(jobId);
         new ScalingEnvironmentManager().resetTargetTable(new JobContext(getJobConfig(jobId)));
     }
     

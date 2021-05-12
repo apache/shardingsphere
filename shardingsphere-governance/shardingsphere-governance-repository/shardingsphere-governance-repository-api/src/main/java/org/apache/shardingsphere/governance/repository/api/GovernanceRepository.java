@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.governance.repository.api;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Governance repository.
@@ -32,11 +33,6 @@ public interface GovernanceRepository extends TypedSPI {
      * Path separator.
      */
     String PATH_SEPARATOR = "/";
-    
-    /**
-     * Dot separator.
-     */
-    String DOT_SEPARATOR = ".";
     
     /**
      * Initialize governance center.
@@ -57,10 +53,10 @@ public interface GovernanceRepository extends TypedSPI {
     String get(String key);
     
     /**
-     * Get node's sub-nodes list.
+     * Get names of sub-node.
      *
      * @param key key of data
-     * @return sub-nodes name list
+     * @return sub-node names
      */
     List<String> getChildrenKeys(String key);
     
@@ -71,6 +67,14 @@ public interface GovernanceRepository extends TypedSPI {
      * @param value value of data
      */
     void persist(String key, String value);
+    
+    /**
+     * Persist ephemeral data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    void persistEphemeral(String key, String value);
     
     /**
      * Delete node.
@@ -86,6 +90,23 @@ public interface GovernanceRepository extends TypedSPI {
      * @param listener data changed event listener
      */
     void watch(String key, DataChangedEventListener listener);
+    
+    /**
+     * Try to get lock under the lock key.
+     *
+     * @param key lock key
+     * @param time time to wait
+     * @param unit time unit
+     * @return true if get the lock, false if not
+     */
+    boolean tryLock(String key, long time, TimeUnit unit);
+    
+    /**
+     * Release lock.
+     *
+     * @param key lock key
+     */
+    void releaseLock(String key);
     
     /**
      * Close.

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.schema.SchemaChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
@@ -35,8 +35,8 @@ import java.util.Optional;
  */
 public final class SchemaChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    public SchemaChangedListener(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        super(registryRepository, new RegistryCenterNode().getAllMetadataSchemaPaths(schemaNames));
+    public SchemaChangedListener(final GovernanceRepository governanceRepository, final Collection<String> schemaNames) {
+        super(governanceRepository, new RegistryCenterNode().getAllMetadataSchemaPaths(schemaNames));
     }
     
     @Override

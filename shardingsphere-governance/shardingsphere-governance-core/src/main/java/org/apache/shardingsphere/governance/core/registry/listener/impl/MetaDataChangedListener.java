@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.commons.collections4.SetUtils;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 
 import java.util.Collection;
@@ -42,8 +42,8 @@ public final class MetaDataChangedListener extends PostGovernanceRepositoryEvent
     
     private final RegistryCenterNode registryCenterNode;
     
-    public MetaDataChangedListener(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        super(registryRepository, Collections.singleton(new RegistryCenterNode().getMetadataNodePath()));
+    public MetaDataChangedListener(final GovernanceRepository governanceRepository, final Collection<String> schemaNames) {
+        super(governanceRepository, Collections.singleton(new RegistryCenterNode().getMetadataNodePath()));
         registryCenterNode = new RegistryCenterNode();
         existedSchemaNames = new LinkedHashSet<>(schemaNames);
     }

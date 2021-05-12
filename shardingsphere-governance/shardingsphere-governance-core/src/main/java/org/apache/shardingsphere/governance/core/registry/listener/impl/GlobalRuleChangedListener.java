@@ -23,7 +23,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanc
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurationWrap;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
@@ -39,8 +39,8 @@ import java.util.Optional;
  */
 public final class GlobalRuleChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    public GlobalRuleChangedListener(final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singleton(new RegistryCenterNode().getGlobalRuleNode()));
+    public GlobalRuleChangedListener(final GovernanceRepository governanceRepository) {
+        super(governanceRepository, Collections.singleton(new RegistryCenterNode().getGlobalRuleNode()));
     }
     
     @Override

@@ -85,7 +85,7 @@ rules:
 governance:
   name: test_sharding_ms_registry_name
   registryCenter:
-    type: REG_TEST
+    type: GOV_TEST
     serverLists: localhost:3181
     props:
       retryIntervalMilliseconds: 10

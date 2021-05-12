@@ -29,12 +29,12 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.scaling.core.api.impl.RegistryRepositoryAPIImpl;
+import org.apache.shardingsphere.scaling.core.api.impl.GovernanceRepositoryAPIImpl;
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingAPIImpl;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -58,12 +58,12 @@ public final class ScalingAPIFactory {
     }
     
     /**
-     * Get registry repository API.
+     * Get governance repository API.
      *
-     * @return registry repository API
+     * @return governance repository API
      */
-    public static RegistryRepositoryAPI getRegistryRepositoryAPI() {
-        return RegistryRepositoryAPIHolder.getInstance();
+    public static GovernanceRepositoryAPI getGovernanceRepositoryAPI() {
+        return GovernanceRepositoryAPIHolder.getInstance();
     }
     
     /**
@@ -125,32 +125,32 @@ public final class ScalingAPIFactory {
         }
     }
     
-    private static final class RegistryRepositoryAPIHolder {
+    private static final class GovernanceRepositoryAPIHolder {
         
-        private static volatile RegistryRepositoryAPI instance;
+        private static volatile GovernanceRepositoryAPI instance;
         
         static {
-            ShardingSphereServiceLoader.register(RegistryRepository.class);
+            ShardingSphereServiceLoader.register(GovernanceRepository.class);
         }
         
-        public static RegistryRepositoryAPI getInstance() {
+        public static GovernanceRepositoryAPI getInstance() {
             if (null == instance) {
                 synchronized (ScalingAPIFactory.class) {
                     if (null == instance) {
-                        instance = createRegistryRepositoryAPI();
+                        instance = createGovernanceRepositoryAPI();
                     }
                 }
             }
             return instance;
         }
         
-        private static RegistryRepositoryAPI createRegistryRepositoryAPI() {
+        private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-            GovernanceCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
-            RegistryRepository registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-            registryRepository.init(governanceConfig.getName(), registryCenterConfig);
-            return new RegistryRepositoryAPIImpl(registryRepository);
+            GovernanceCenterConfiguration registryCenterConfig = governanceConfig.getGovernanceCenterConfiguration();
+            GovernanceRepository governanceRepository = TypedSPIRegistry.getRegisteredService(GovernanceRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
+            governanceRepository.init(governanceConfig.getName(), registryCenterConfig);
+            return new GovernanceRepositoryAPIImpl(governanceRepository);
         }
     }
     
@@ -169,9 +169,9 @@ public final class ScalingAPIFactory {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT;
-            jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
-            jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
-            jobOperateAPI = JobAPIFactory.createJobOperateAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
+            jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getGovernanceCenterConfiguration().getServerLists(), namespace, null);
+            jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getGovernanceCenterConfiguration().getServerLists(), namespace, null);
+            jobOperateAPI = JobAPIFactory.createJobOperateAPI(governanceConfig.getGovernanceCenterConfiguration().getServerLists(), namespace, null);
         }
         
         public static ElasticJobAPIHolder getInstance() {
@@ -210,9 +210,9 @@ public final class ScalingAPIFactory {
         private static ZookeeperConfiguration getZookeeperConfig() {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-            ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
+            ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getGovernanceCenterConfiguration().getServerLists(),
                     governanceConfig.getName() + ScalingConstant.SCALING_ROOT);
-            Properties props = governanceConfig.getRegistryCenterConfiguration().getProps();
+            Properties props = governanceConfig.getGovernanceCenterConfiguration().getProps();
             result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
             result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));
             result.setConnectionTimeoutMilliseconds(getProperty(props, "connection.timeout.milliseconds", result.getConnectionTimeoutMilliseconds()));

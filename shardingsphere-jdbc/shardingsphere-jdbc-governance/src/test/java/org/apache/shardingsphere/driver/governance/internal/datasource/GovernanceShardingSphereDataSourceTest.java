@@ -76,7 +76,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     private static GovernanceCenterConfiguration getRegistryCenterConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        return new GovernanceCenterConfiguration("REG_TEST", "localhost:3181", properties);
+        return new GovernanceCenterConfiguration("GOV_TEST", "localhost:3181", properties);
     }
     
     @Test

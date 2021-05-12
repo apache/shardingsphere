@@ -20,14 +20,10 @@ package org.apache.shardingsphere.governance.core.registry.listener.impl;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -35,23 +31,13 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class DataSourceStateChangedListenerTest {
-    
-    private DataSourceStateChangedListener dataSourceStateChangedListener;
-    
-    @Mock
-    private RegistryRepository registryRepository;
-    
-    @Before
-    public void setUp() {
-        dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, Arrays.asList("sharding_db", "replica_query_db", "encrypt_db"));
-    }
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = dataSourceStateChangedListener.createEvent(
+        Optional<GovernanceEvent> actual = new DataSourceStateChangedListener(mock(GovernanceRepository.class), Arrays.asList("sharding_db", "replica_query_db", "encrypt_db")).createEvent(
                 new DataChangedEvent("/states/datanodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((DisabledStateChangedEvent) actual.get()).getGovernanceSchema().getSchemaName(), is(new GovernanceSchema("replica_query_db", "replica_ds_0").getSchemaName()));

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.fixture.FixtureRegistryRepository;
+import org.apache.shardingsphere.proxy.fixture.FixtureGovernanceRepository;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -71,7 +71,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private static final String PROPS_YAML = "conf/reg_center/props.yaml";
     
-    private final FixtureRegistryRepository registryRepository = new FixtureRegistryRepository();
+    private final FixtureGovernanceRepository governanceRepository = new FixtureGovernanceRepository();
     
     @Test
     public void assertGetProxyConfiguration() throws IOException {
@@ -83,11 +83,11 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private void initConfigCenter() {
         RegistryCenterNode node = new RegistryCenterNode();
-        registryRepository.persist(node.getUsersNode(), readYAML(USERS_YAML));
-        registryRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
-        registryRepository.persist(node.getMetadataNodePath(), "db");
-        registryRepository.persist(node.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
-        registryRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
+        governanceRepository.persist(node.getUsersNode(), readYAML(USERS_YAML));
+        governanceRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
+        governanceRepository.persist(node.getMetadataNodePath(), "db");
+        governanceRepository.persist(node.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
+        governanceRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})
@@ -96,7 +96,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     private void closeConfigCenter() {
-        registryRepository.close();
+        governanceRepository.close();
     }
     
     @Test

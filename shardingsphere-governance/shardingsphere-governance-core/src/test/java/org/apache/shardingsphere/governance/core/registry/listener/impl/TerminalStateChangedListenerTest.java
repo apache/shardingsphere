@@ -18,33 +18,21 @@
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.state.StateEvent;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class TerminalStateChangedListenerTest {
     
-    private TerminalStateChangedListener terminalStateChangedListener;
-    
-    @Mock
-    private RegistryRepository registryRepository;
-    
-    @Before
-    public void setUp() {
-        terminalStateChangedListener = new TerminalStateChangedListener(registryRepository);
-    }
+    private final TerminalStateChangedListener terminalStateChangedListener = new TerminalStateChangedListener(mock(GovernanceRepository.class));
     
     @Test
     public void assertCreateEventWhenEnabled() {

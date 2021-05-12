@@ -75,7 +75,7 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     
     private GovernanceConfiguration createGovernanceConfiguration() {
         GovernanceConfiguration result = mock(GovernanceConfiguration.class);
-        when(result.getRegistryCenterConfiguration()).thenReturn(new GovernanceCenterConfiguration("REG_TEST", "", null));
+        when(result.getGovernanceCenterConfiguration()).thenReturn(new GovernanceCenterConfiguration("GOV_TEST", "", null));
         return result;
     }
 }

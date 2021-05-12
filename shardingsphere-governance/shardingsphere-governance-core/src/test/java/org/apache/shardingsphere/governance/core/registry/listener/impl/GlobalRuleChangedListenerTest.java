@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.GlobalRuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Before;
@@ -37,11 +37,11 @@ public final class GlobalRuleChangedListenerTest extends MetaDataListenerTest {
     private GlobalRuleChangedListener globalRuleChangedListener;
     
     @Mock
-    private RegistryRepository registryRepository;
+    private GovernanceRepository governanceRepository;
     
     @Before
     public void setUp() {
-        globalRuleChangedListener = new GlobalRuleChangedListener(registryRepository);
+        globalRuleChangedListener = new GlobalRuleChangedListener(governanceRepository);
     }
     
     @Test

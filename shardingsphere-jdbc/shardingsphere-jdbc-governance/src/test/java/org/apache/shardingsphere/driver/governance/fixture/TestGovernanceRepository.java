@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.fixture;
+package org.apache.shardingsphere.driver.governance.fixture;
 
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public final class FixtureRegistryRepository implements RegistryRepository {
+public final class TestGovernanceRepository implements GovernanceRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -56,6 +56,14 @@ public final class FixtureRegistryRepository implements RegistryRepository {
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener) {
+    }
+    
+    @Override
     public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         return false;
     }
@@ -65,20 +73,12 @@ public final class FixtureRegistryRepository implements RegistryRepository {
     }
     
     @Override
-    public void delete(final String key) {
-    }
-    
-    @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
-    }
-    
-    @Override
     public void close() {
         REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "REG_FIXTURE";
+        return "GOV_TEST";
     }
 }

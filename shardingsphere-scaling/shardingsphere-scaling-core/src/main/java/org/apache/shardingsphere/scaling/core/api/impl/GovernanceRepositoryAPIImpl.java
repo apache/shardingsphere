@@ -20,9 +20,9 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
@@ -36,13 +36,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Registry repository API impl.
+ * Governance repository API impl.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
+public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAPI {
     
-    private final RegistryRepository registryRepository;
+    private final GovernanceRepository repository;
     
     @Override
     public void persistJobProgress(final JobContext jobContext) {
@@ -51,7 +51,7 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
         jobProgress.setDatabaseType(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
         jobProgress.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
         jobProgress.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
-        registryRepository.persist(getOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), jobProgress.toString());
+        repository.persist(getOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), jobProgress.toString());
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final JobContext jobContext) {
@@ -72,35 +72,35 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     
     @Override
     public JobProgress getJobProgress(final long jobId, final int shardingItem) {
-        String data = registryRepository.get(getOffsetPath(jobId, shardingItem));
+        String data = repository.get(getOffsetPath(jobId, shardingItem));
         return Strings.isNullOrEmpty(data) ? null : JobProgress.init(data);
     }
     
     @Override
     public void deleteJobProgress(final long jobId) {
         log.info("delete job progress {}", jobId);
-        registryRepository.delete(String.format("%s/%d/offset", ScalingConstant.SCALING_ROOT, jobId));
+        repository.delete(String.format("%s/%d/offset", ScalingConstant.SCALING_ROOT, jobId));
     }
     
     @Override
     public void deleteJob(final long jobId) {
         log.info("delete job {}", jobId);
-        registryRepository.delete(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobId));
+        repository.delete(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobId));
     }
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return registryRepository.getChildrenKeys(key);
+        return repository.getChildrenKeys(key);
     }
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        registryRepository.watch(key, listener);
+        repository.watch(key, listener);
     }
     
     @Override
     public void persist(final String key, final String value) {
-        registryRepository.persist(key, value);
+        repository.persist(key, value);
     }
     
     private String getOffsetPath(final long jobId, final int shardingItem) {

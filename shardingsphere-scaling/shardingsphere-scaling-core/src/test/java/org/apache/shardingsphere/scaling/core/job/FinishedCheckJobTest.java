@@ -22,7 +22,7 @@ import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
@@ -56,7 +56,7 @@ public final class FinishedCheckJobTest {
     private ScalingAPI scalingAPI;
     
     @Mock
-    private RegistryRepositoryAPI registryRepositoryAPI;
+    private GovernanceRepositoryAPI governanceRepositoryAPI;
     
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -69,12 +69,12 @@ public final class FinishedCheckJobTest {
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
         ReflectionUtil.setFieldValue(finishedCheckJob, "scalingAPI", scalingAPI);
-        ReflectionUtil.setFieldValue(finishedCheckJob, "registryRepositoryAPI", registryRepositoryAPI);
+        ReflectionUtil.setFieldValue(finishedCheckJob, "governanceRepositoryAPI", governanceRepositoryAPI);
     }
     
     @Test
     public void assertExecuteWithoutWorkflow() {
-        when(registryRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Lists.newArrayList("1"));
+        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Lists.newArrayList("1"));
         when(scalingAPI.getJobConfig(1L)).thenReturn(new JobConfiguration());
         finishedCheckJob.execute(null);
         verify(scalingAPI, never()).getProgress(1L);
@@ -82,7 +82,7 @@ public final class FinishedCheckJobTest {
     
     @Test
     public void assertExecuteWithWorkflow() {
-        when(registryRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Lists.newArrayList("1"));
+        when(governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT)).thenReturn(Lists.newArrayList("1"));
         when(scalingAPI.getJobConfig(1L)).thenReturn(mockJobConfigWithWorkflow());
         when(scalingAPI.getProgress(1L)).thenReturn(Maps.newHashMap());
         when(scalingAPI.dataConsistencyCheck(1L)).thenReturn(mockDataConsistencyCheck());

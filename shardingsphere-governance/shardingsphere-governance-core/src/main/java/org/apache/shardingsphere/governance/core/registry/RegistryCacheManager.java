@@ -18,25 +18,22 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 
 import java.util.UUID;
 
 /**
  * Registry cache manager.
  */
+@RequiredArgsConstructor
 public final class RegistryCacheManager {
     
     private static final String PATH_SEPARATOR = "/";
     
-    private final RegistryRepository repository;
+    private final GovernanceRepository repository;
     
     private final RegistryCenterNode node;
-    
-    public RegistryCacheManager(final RegistryRepository repository, final RegistryCenterNode node) {
-        this.repository = repository;
-        this.node = node;
-    }
     
     /**
      * Cache configuration.

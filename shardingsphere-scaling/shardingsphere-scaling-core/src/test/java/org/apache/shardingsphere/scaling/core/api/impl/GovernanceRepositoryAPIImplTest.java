@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.api.impl;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
@@ -48,37 +48,37 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class RegistryRepositoryAPIImplTest {
+public final class GovernanceRepositoryAPIImplTest {
     
-    private static RegistryRepositoryAPI registryRepositoryAPI;
+    private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
     @BeforeClass
     public static void beforeClass() throws Exception {
         EmbedTestingServer.start();
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
-        registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
+        governanceRepositoryAPI = ScalingAPIFactory.getGovernanceRepositoryAPI();
     }
     
     @Test
     public void assertPersistJobProgress() {
         JobContext jobContext = mockJobContext();
-        registryRepositoryAPI.persistJobProgress(jobContext);
-        JobProgress actual = registryRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
+        governanceRepositoryAPI.persistJobProgress(jobContext);
+        JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
         assertThat(actual.toString(), is(mockYamlJobProgress()));
     }
     
     @Test
     public void assertDeleteJob() {
-        registryRepositoryAPI.persist(ScalingConstant.SCALING_ROOT + "/1", "");
-        registryRepositoryAPI.deleteJob(1L);
-        JobProgress actual = registryRepositoryAPI.getJobProgress(0L, 0);
+        governanceRepositoryAPI.persist(ScalingConstant.SCALING_ROOT + "/1", "");
+        governanceRepositoryAPI.deleteJob(1L);
+        JobProgress actual = governanceRepositoryAPI.getJobProgress(0L, 0);
         assertNull(actual);
     }
     
     @Test
     public void assertGetChildrenKeys() {
-        registryRepositoryAPI.persist(ScalingConstant.SCALING_ROOT + "/1", "");
-        List<String> actual = registryRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT);
+        governanceRepositoryAPI.persist(ScalingConstant.SCALING_ROOT + "/1", "");
+        List<String> actual = governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT);
         assertFalse(actual.isEmpty());
     }
     
@@ -86,8 +86,8 @@ public final class RegistryRepositoryAPIImplTest {
     public void assertWatch() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         String key = ScalingConstant.SCALING_ROOT + "/1";
-        registryRepositoryAPI.persist(key, "");
-        registryRepositoryAPI.watch(ScalingConstant.SCALING_ROOT, event -> {
+        governanceRepositoryAPI.persist(key, "");
+        governanceRepositoryAPI.watch(ScalingConstant.SCALING_ROOT, event -> {
             if (event.getKey().equals(key)) {
                 assertThat(event.getType(), is(DataChangedEvent.Type.ADDED));
                 countDownLatch.countDown();
