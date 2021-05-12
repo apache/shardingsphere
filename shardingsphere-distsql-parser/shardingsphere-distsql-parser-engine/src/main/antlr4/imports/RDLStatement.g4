@@ -171,8 +171,16 @@ dropReplicaQueryRule
     : DROP REPLICA_QUERY RULE LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
-dropShardingRule
-    : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
+dropShardingTableRule
+    : DROP SHARDING TABLE RULE tableName (COMMA tableName)*
+    ;
+
+dropShardingBindingTableRules
+    : DROP SHARDING BINDING TABLE RULES
+    ;
+
+dropShardingBroadcastTableRules
+    : DROP SHARDING BROADCAST TABLE RULES
     ;
 
 showShardingRule

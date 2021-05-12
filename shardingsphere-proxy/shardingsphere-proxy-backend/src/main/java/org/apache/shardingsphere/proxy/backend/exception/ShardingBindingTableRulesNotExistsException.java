@@ -15,33 +15,19 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-execute
-    : (addResource
-    | dropResource
-    | createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | createReplicaQueryRule
-    | alterReplicaQueryRule
-    | dropReplicaQueryRule
-    | showResources
-    | showRule
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * Sharding binding table rules not exists exception.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShardingBindingTableRulesNotExistsException extends BackendException {
+
+    private static final long serialVersionUID = -1930065143932541970L;
+
+    private final String schemaName;
+}

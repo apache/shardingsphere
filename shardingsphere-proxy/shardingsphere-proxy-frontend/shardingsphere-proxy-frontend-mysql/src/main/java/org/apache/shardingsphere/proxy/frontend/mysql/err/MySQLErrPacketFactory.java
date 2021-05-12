@@ -37,7 +37,9 @@ import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleN
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
@@ -154,6 +156,12 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof ShardingTableRuleExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULE_EXIST, ((ShardingTableRuleExistedException) cause).getTableNames());
+        }
+        if (cause instanceof ShardingBindingTableRulesNotExistsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BINDING_TABLE_RULES_NOT_EXIST, ((ShardingBindingTableRulesNotExistsException) cause).getSchemaName());
+        }
+        if (cause instanceof ShardingBroadcastTableRulesNotExistsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST, ((ShardingBroadcastTableRulesNotExistsException) cause).getSchemaName());
         }
         if (cause instanceof ReadwriteSplittingRuleNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_NOT_EXIST);

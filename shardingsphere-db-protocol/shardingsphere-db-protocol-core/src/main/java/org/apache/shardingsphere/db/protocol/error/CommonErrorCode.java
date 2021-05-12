@@ -56,7 +56,11 @@ public enum CommonErrorCode implements SQLErrorCode {
     DUPLICATE_TABLE(1113, "C1113", "Duplicate table names %s."),
     
     SHARDING_BROADCAST_EXIST(1114, "C1114", "Sharding broadcast table rules already exist in schema %s."),
-    
+
+    SHARDING_BINDING_TABLE_RULES_NOT_EXIST(1115, "C1115", "Sharding binding table rules not exist in schema %s."),
+
+    SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST(1116, "C1116", "Sharding broadcast table rules not exist in schema %s."),
+
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     
     SCALING_OPERATE_FAILED(1209, "C1209", "Scaling Operate Failed: [%s]"),
