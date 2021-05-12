@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.listener.metadata;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
@@ -38,14 +38,14 @@ public final class MetaDataListener {
     
     private volatile SchemaChangedListener schemaChangedListener;
     
-    private final RegistryRepository registryRepository;
+    private final GovernanceRepository governanceRepository;
     
-    public MetaDataListener(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        this.registryRepository = registryRepository;
-        metaDataChangedListener = new MetaDataChangedListener(registryRepository, schemaNames);
-        ruleChangedListener = new RuleChangedListener(registryRepository, schemaNames);
-        dataSourceChangedListener = new DataSourceChangedListener(registryRepository, schemaNames);
-        schemaChangedListener = new SchemaChangedListener(registryRepository, schemaNames);
+    public MetaDataListener(final GovernanceRepository governanceRepository, final Collection<String> schemaNames) {
+        this.governanceRepository = governanceRepository;
+        metaDataChangedListener = new MetaDataChangedListener(governanceRepository, schemaNames);
+        ruleChangedListener = new RuleChangedListener(governanceRepository, schemaNames);
+        dataSourceChangedListener = new DataSourceChangedListener(governanceRepository, schemaNames);
+        schemaChangedListener = new SchemaChangedListener(governanceRepository, schemaNames);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -66,9 +66,9 @@ public final class MetaDataListener {
      */
     @Subscribe
     public void renew(final MetaDataChangedEvent event) {
-        ruleChangedListener = new RuleChangedListener(registryRepository, event.getSchemaNames());
-        dataSourceChangedListener = new DataSourceChangedListener(registryRepository, event.getSchemaNames());
-        schemaChangedListener = new SchemaChangedListener(registryRepository, event.getSchemaNames());
+        ruleChangedListener = new RuleChangedListener(governanceRepository, event.getSchemaNames());
+        dataSourceChangedListener = new DataSourceChangedListener(governanceRepository, event.getSchemaNames());
+        schemaChangedListener = new SchemaChangedListener(governanceRepository, event.getSchemaNames());
         ruleChangedListener.watch(Type.UPDATED);
         dataSourceChangedListener.watch(Type.UPDATED);
         schemaChangedListener.watch(Type.UPDATED);

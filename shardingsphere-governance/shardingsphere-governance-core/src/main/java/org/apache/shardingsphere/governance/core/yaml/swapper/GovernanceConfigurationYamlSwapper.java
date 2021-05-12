@@ -33,7 +33,7 @@ public final class GovernanceConfigurationYamlSwapper implements YamlConfigurati
     public YamlGovernanceConfiguration swapToYamlConfiguration(final GovernanceConfiguration data) {
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
         result.setName(data.getName());
-        result.setRegistryCenter(governanceCenterConfigurationSwapper.swapToYamlConfiguration(data.getRegistryCenterConfiguration()));
+        result.setRegistryCenter(governanceCenterConfigurationSwapper.swapToYamlConfiguration(data.getGovernanceCenterConfiguration()));
         return result;
     }
     

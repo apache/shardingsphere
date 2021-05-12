@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.fixture.FixtureRegistryRepository;
+import org.apache.shardingsphere.proxy.fixture.FixtureGovernanceRepository;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -71,7 +71,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private static final String PROPS_YAML = "conf/reg_center/props.yaml";
     
-    private final FixtureRegistryRepository registryRepository = new FixtureRegistryRepository();
+    private final FixtureGovernanceRepository registryRepository = new FixtureGovernanceRepository();
     
     @Test
     public void assertGetProxyConfiguration() throws IOException {

@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.facade.fixture;
+package org.apache.shardingsphere.driver.governance.fixture;
 
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public final class TestAllRepository implements RegistryRepository {
+public final class TestGovernanceRepository implements GovernanceRepository {
+    
+    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {
@@ -33,7 +37,7 @@ public final class TestAllRepository implements RegistryRepository {
     
     @Override
     public String get(final String key) {
-        return "";
+        return REGISTRY_DATA.get(key);
     }
     
     @Override
@@ -43,10 +47,12 @@ public final class TestAllRepository implements RegistryRepository {
     
     @Override
     public void persist(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
@@ -56,7 +62,6 @@ public final class TestAllRepository implements RegistryRepository {
     
     @Override
     public void releaseLock(final String key) {
-        
     }
     
     @Override
@@ -69,10 +74,11 @@ public final class TestAllRepository implements RegistryRepository {
     
     @Override
     public void close() {
+        REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "ALL";
+        return "REG_TEST";
     }
 }

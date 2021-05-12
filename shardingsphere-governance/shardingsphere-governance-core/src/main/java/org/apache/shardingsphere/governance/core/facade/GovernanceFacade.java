@@ -55,8 +55,8 @@ public final class GovernanceFacade implements AutoCloseable {
     public void init(final GovernanceConfiguration config, final Collection<String> schemaNames) {
         isOverwrite = config.isOverwrite();
         repositoryFacade = new GovernanceRepositoryFacade(config);
-        registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
-        listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(), schemaNames.isEmpty()
+        registryCenter = new RegistryCenter(repositoryFacade.getGovernanceRepository());
+        listenerManager = new GovernanceListenerManager(repositoryFacade.getGovernanceRepository(), schemaNames.isEmpty()
                 ? registryCenter.getAllSchemaNames() : Stream.of(registryCenter.getAllSchemaNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
     }
     

@@ -32,7 +32,7 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     @Test
     public void marshal() {
         YamlGovernanceConfiguration expected = createExpectedYamlGovernanceConfiguration();
-        GovernanceCenterConfiguration actual = YamlGovernanceRepositoryConfigurationSwapperUtil.marshal(expected).getRegistryCenterConfiguration();
+        GovernanceCenterConfiguration actual = YamlGovernanceRepositoryConfigurationSwapperUtil.marshal(expected).getGovernanceCenterConfiguration();
         assertThat(actual.getType(), is(expected.getRegistryCenter().getType()));
         assertThat(actual.getServerLists(), is(expected.getRegistryCenter().getServerLists()));
         assertThat(actual.getProps(), is(expected.getRegistryCenter().getProps()));

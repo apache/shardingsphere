@@ -21,6 +21,11 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.governance.core.lock.node.LockAck;
+import org.apache.shardingsphere.governance.core.lock.node.LockNode;
+import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessSummaryReportEvent;
@@ -33,16 +38,11 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Ru
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
-import org.apache.shardingsphere.governance.core.lock.node.LockAck;
-import org.apache.shardingsphere.governance.core.lock.node.LockNode;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
-import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -50,12 +50,12 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
@@ -87,7 +87,7 @@ public final class RegistryCenter {
     
     private final RegistryCenterNode node;
     
-    private final RegistryRepository repository;
+    private final GovernanceRepository repository;
     
     private final GovernanceInstance instance;
     
@@ -95,13 +95,13 @@ public final class RegistryCenter {
     
     private final RegistryCacheManager registryCacheManager;
     
-    public RegistryCenter(final RegistryRepository registryRepository) {
+    public RegistryCenter(final GovernanceRepository governanceRepository) {
         node = new RegistryCenterNode();
-        repository = registryRepository;
+        repository = governanceRepository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
         initLockNode();
-        registryCacheManager = new RegistryCacheManager(registryRepository, node);
+        registryCacheManager = new RegistryCacheManager(governanceRepository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
     

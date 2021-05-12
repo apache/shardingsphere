@@ -24,9 +24,9 @@ import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import java.util.List;
 
 /**
- * Registry repository API.
+ * Governance repository API.
  */
-public interface RegistryRepositoryAPI {
+public interface GovernanceRepositoryAPI {
     
     /**
      * persist job progress.
