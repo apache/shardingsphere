@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.metadata;
+package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;

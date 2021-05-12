@@ -221,6 +221,16 @@ public final class RegistryCenter {
         return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
     }
     
+    private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
+        if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
+            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
+        }
+    }
+    
+    private boolean hasGlobalRuleConfigurations() {
+        return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
+    }
+    
     private void persistSchemaName(final String schemaName) {
         String schemaNames = repository.get(node.getMetadataNodePath());
         if (Strings.isNullOrEmpty(schemaNames)) {
@@ -272,6 +282,15 @@ public final class RegistryCenter {
      */
     public Properties loadProperties() {
         return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : YamlConfigurationConverter.convertProperties(repository.get(node.getPropsPath()));
+    }
+    
+    /**
+     * Load global rule configurations.
+     * 
+     * @return global rule configurations
+     */
+    public Collection<RuleConfiguration> loadGlobalRuleConfigurations() {
+        return hasGlobalRuleConfigurations() ? YamlConfigurationConverter.convertRuleConfigurations(repository.get(node.getGlobalRuleNode())) : Collections.emptyList();
     }
     
     /**

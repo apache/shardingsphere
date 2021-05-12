@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import org.apache.shardingsphere.governance.core.registry.listener.metadata.MetaDataListener;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -37,14 +36,11 @@ public final class GovernanceListenerManager {
     
     private final Collection<String> schemaNames;
     
-    private final MetaDataListener metaDataListener;
-    
     private final Collection<GovernanceListenerFactory> governanceListenerFactories;
     
     public GovernanceListenerManager(final GovernanceRepository governanceRepository, final Collection<String> schemaNames) {
         this.governanceRepository = governanceRepository;
         this.schemaNames = schemaNames;
-        metaDataListener = new MetaDataListener(governanceRepository, schemaNames);
         governanceListenerFactories = ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceListenerFactory.class);
     }
     
@@ -52,7 +48,6 @@ public final class GovernanceListenerManager {
      * Initialize all state changed listeners.
      */
     public void initListeners() {
-        metaDataListener.watch();
         for (GovernanceListenerFactory each : governanceListenerFactories) {
             each.create(governanceRepository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
         }

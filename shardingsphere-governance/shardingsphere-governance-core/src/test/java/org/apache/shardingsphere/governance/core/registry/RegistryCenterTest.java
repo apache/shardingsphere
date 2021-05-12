@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
@@ -63,6 +64,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -70,6 +72,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -98,6 +101,8 @@ public final class RegistryCenterTest {
     private static final String SHADOW_RULE_YAML = "yaml/registryCenter/data-shadow-rule.yaml";
     
     private static final String USERS_YAML = "yaml/registryCenter/data-users.yaml";
+    
+    private static final String GLOBAL_RULE_YAML = "yaml/registryCenter/data-global-rule.yaml";
     
     private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
@@ -488,6 +493,25 @@ public final class RegistryCenterTest {
         RegistryCenter registryCenter = new RegistryCenter(governanceRepository);
         Properties actual = registryCenter.loadProperties();
         assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));
+    }
+    
+    @Test
+    public void assertLoadGlobalRuleConfigurations() {
+        when(governanceRepository.get("/rule")).thenReturn(readYAML(GLOBAL_RULE_YAML));
+        RegistryCenter registryCenter = new RegistryCenter(governanceRepository);
+        Collection<RuleConfiguration> globalRuleConfigs = registryCenter.loadGlobalRuleConfigurations();
+        assertFalse(globalRuleConfigs.isEmpty());
+        Collection<ShardingSphereUser> users = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
+                .flatMap(each -> ((AuthorityRuleConfiguration) each).getUsers().stream()).collect(Collectors.toList());
+        Optional<ShardingSphereUser> user = users.stream().filter(each -> each.getGrantee().equals(new Grantee("root", ""))).findFirst();
+        assertTrue(user.isPresent());
+        assertThat(user.get().getPassword(), is("root"));
+        Collection<ShardingSphereAlgorithmConfiguration> providers = globalRuleConfigs.stream()
+                .filter(each -> each instanceof AuthorityRuleConfiguration && Objects.nonNull(((AuthorityRuleConfiguration) each).getProvider()))
+                .map(each -> ((AuthorityRuleConfiguration) each).getProvider()).collect(Collectors.toList());
+        assertFalse(providers.isEmpty());
+        Optional<ShardingSphereAlgorithmConfiguration> nativeProvider = providers.stream().filter(each -> "NATIVE".equals(each.getType())).findFirst();
+        assertTrue(nativeProvider.isPresent());
     }
     
     @Test
