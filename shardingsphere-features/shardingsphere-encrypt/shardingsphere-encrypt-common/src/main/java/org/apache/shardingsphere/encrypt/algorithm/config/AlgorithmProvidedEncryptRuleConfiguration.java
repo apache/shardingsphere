@@ -42,4 +42,6 @@ public final class AlgorithmProvidedEncryptRuleConfiguration implements RuleConf
     private Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
     
     private Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
+    
+    private boolean queryWithCipherColumn = true;
 }

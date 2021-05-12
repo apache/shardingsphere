@@ -45,7 +45,7 @@ rules:
       type: test
     assistedTest:
       type: assistedTest
+  queryWithCipherColumn: false
 
 props:
   sql-show: true
-  query-with-cipher-column: false

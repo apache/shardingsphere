@@ -56,7 +56,6 @@
 #  xa-transaction-manager-type: Atomikos
 #  proxy-opentracing-enabled: false
 #  proxy-hint-enabled: false
-#  query-with-cipher-column: true
 #  sql-show: false
 #  check-table-metadata-enabled: false
 #  lock-wait-timeout-milliseconds: 50000 # The maximum time to wait for a lock

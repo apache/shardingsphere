@@ -43,6 +43,3 @@ rules:
         aes-key-value: 123456abc
     pwd_encryptor:
       type: assistedTest
-
-props:
-  query-with-cipher-column: true

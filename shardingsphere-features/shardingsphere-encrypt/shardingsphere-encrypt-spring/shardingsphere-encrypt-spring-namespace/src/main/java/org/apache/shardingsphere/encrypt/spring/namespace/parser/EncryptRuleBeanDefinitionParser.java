@@ -46,6 +46,8 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedEncryptRuleConfiguration.class);
         factory.addConstructorArgValue(parseEncryptTableRuleConfigurations(element));
         factory.addConstructorArgValue(ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, EncryptAlgorithmFactoryBean.class));
+        // TODO define queryWithCipherColumn
+        factory.addConstructorArgValue(true);
         return factory.getBeanDefinition();
     }
     

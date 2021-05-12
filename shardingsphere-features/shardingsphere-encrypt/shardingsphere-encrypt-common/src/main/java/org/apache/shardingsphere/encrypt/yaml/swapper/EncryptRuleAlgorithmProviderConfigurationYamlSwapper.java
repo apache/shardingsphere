@@ -42,6 +42,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapper implemen
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
         data.getTables().forEach(each -> result.getTables().put(each.getName(), tableYamlSwapper.swapToYamlConfiguration(each)));
         data.getEncryptors().forEach((key, value) -> result.getEncryptors().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
+        result.setQueryWithCipherColumn(data.isQueryWithCipherColumn());
         return result;
     }
     
@@ -49,6 +50,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapper implemen
     public AlgorithmProvidedEncryptRuleConfiguration swapToObject(final YamlEncryptRuleConfiguration yamlConfig) {
         AlgorithmProvidedEncryptRuleConfiguration result = new AlgorithmProvidedEncryptRuleConfiguration();
         result.setTables(swapTables(yamlConfig));
+        result.setQueryWithCipherColumn(yamlConfig.isQueryWithCipherColumn());
         return result;
     }
     

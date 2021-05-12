@@ -140,5 +140,3 @@ rules:
           plainColumn: number_plain
           cipherColumn: number_cipher
           encryptorName: aes_encryptor
-props:
-  query-with-cipher-column: true

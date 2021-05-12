@@ -83,5 +83,4 @@ rules:
         type: ROUND_ROBIN
 props:
   sql-show: true
-  query-with-cipher-column: true
 
