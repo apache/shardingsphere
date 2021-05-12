@@ -42,11 +42,11 @@ import static org.mockito.Mockito.verify;
 public final class PostRegistryCenterRepositoryEventListenerTest {
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
+    private RegistryCenterRepository repository;
     
     @Test
     public void assertWatch() {
-        PostGovernanceRepositoryEventListener<GovernanceEvent> postEventListener = new PostGovernanceRepositoryEventListener<GovernanceEvent>(registryCenterRepository, Collections.singletonList("test")) {
+        PostGovernanceRepositoryEventListener<GovernanceEvent> postEventListener = new PostGovernanceRepositoryEventListener<GovernanceEvent>(repository, Collections.singletonList("test")) {
             
             @Override
             protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
@@ -57,14 +57,14 @@ public final class PostRegistryCenterRepositoryEventListenerTest {
             DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
             listener.onChange(new DataChangedEvent("test", "value", Type.UPDATED));
             return mock(DataChangedEventListener.class);
-        }).when(registryCenterRepository).watch(anyString(), any(DataChangedEventListener.class));
+        }).when(repository).watch(anyString(), any(DataChangedEventListener.class));
         postEventListener.watch(Type.UPDATED);
-        verify(registryCenterRepository).watch(eq("test"), any());
+        verify(repository).watch(eq("test"), any());
     }
     
     @Test
     public void assertWatchMultipleKey() {
-        PostGovernanceRepositoryEventListener<GovernanceEvent> postEventListener = new PostGovernanceRepositoryEventListener<GovernanceEvent>(registryCenterRepository, Arrays.asList("test", "dev")) {
+        PostGovernanceRepositoryEventListener<GovernanceEvent> postEventListener = new PostGovernanceRepositoryEventListener<GovernanceEvent>(repository, Arrays.asList("test", "dev")) {
             
             @Override
             protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
@@ -75,9 +75,9 @@ public final class PostRegistryCenterRepositoryEventListenerTest {
             DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
             listener.onChange(new DataChangedEvent("test", "value", Type.UPDATED));
             return mock(DataChangedEventListener.class);
-        }).when(registryCenterRepository).watch(anyString(), any(DataChangedEventListener.class));
+        }).when(repository).watch(anyString(), any(DataChangedEventListener.class));
         postEventListener.watch(Type.UPDATED, Type.DELETED);
-        verify(registryCenterRepository).watch(eq("test"), any());
-        verify(registryCenterRepository).watch(eq("dev"), any());
+        verify(repository).watch(eq("test"), any());
+        verify(repository).watch(eq("dev"), any());
     }
 }
