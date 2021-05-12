@@ -49,4 +49,14 @@ public final class ConnectionScopeBinaryStatementRegistry {
     public PostgreSQLBinaryStatement getBinaryStatement(final String statementId) {
         return binaryStatements.get(statementId);
     }
+    
+    /**
+     * Close prepared statement.
+     *
+     * @param statementId statement ID
+     * @return closed binary prepared statement
+     */
+    public PostgreSQLBinaryStatement closeStatement(final String statementId) {
+        return binaryStatements.remove(statementId);
+    }
 }
