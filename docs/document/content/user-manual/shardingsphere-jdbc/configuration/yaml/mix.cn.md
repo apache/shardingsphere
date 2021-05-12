@@ -62,5 +62,4 @@ rules:
 
 props:
   sql-show: true
-  query-with-cipher-column: true
 ```

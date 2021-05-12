@@ -302,9 +302,7 @@ rules:
           encryptorName: aes_encryptor
         pad:
           cipherColumn: pad_cipher
-          encryptorName: md5_encryptor
-props:
-  query-with-cipher-column: true    
+          encryptorName: md5_encryptor    
 ```
 
 #### Full Route Configuration
