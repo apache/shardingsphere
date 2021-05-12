@@ -35,11 +35,6 @@ public interface GovernanceRepository extends TypedSPI {
     String PATH_SEPARATOR = "/";
     
     /**
-     * Dot separator.
-     */
-    String DOT_SEPARATOR = ".";
-    
-    /**
      * Initialize governance center.
      *
      * @param name governance center name
