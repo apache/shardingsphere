@@ -34,22 +34,22 @@
         <prop key="operation-timeout-milliseconds">1000</prop>
     </util:properties>
     
-    <governance:reg-center id="registryRepository" type="TestRegistry" server-lists="localhost:3181">
+    <governance:reg-center id="governanceRepository" type="TestRegistry" server-lists="localhost:3181">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
     </governance:reg-center>
     
-    <governance:data-source id="simpleShardingGovernance" data-source-names="dbtbl_0" rule-refs="simpleShardingDataSourceShardingRule" reg-center-ref="registryRepository" />
-    <governance:data-source id="shardingRuleWithAttributesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shardingRuleWithAttributesDataSourceShardingRule" reg-center-ref="registryRepository" />
-    <governance:data-source id="multiTableRulesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiTableRulesDataSourceShardingRule" reg-center-ref="registryRepository" />
-    <governance:data-source id="tableRuleWithAttributesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="tableRuleWithAttributesDataSourceShardingRule" reg-center-ref="registryRepository" />
-    <governance:data-source id="bindingTableRuleDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="bindingTableRuleDatasourceShardingRule" reg-center-ref="registryRepository" />
-    <governance:data-source id="multiBindingTableRulesDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBindingTableRulesDatasourceShardingRule" reg-center-ref="registryRepository" />
-    <governance:data-source id="broadcastTableRuleDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="broadcastTableRuleDatasourceShardingRule" reg-center-ref="registryRepository" />
-    <governance:data-source id="multiBroadcastTableRulesDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBroadcastTableRulesDatasourceShardingRule" reg-center-ref="registryRepository" />
-    <governance:data-source id="propsDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="propsDataSourceShardingRule" reg-center-ref="registryRepository">
+    <governance:data-source id="simpleShardingGovernance" data-source-names="dbtbl_0" rule-refs="simpleShardingDataSourceShardingRule" reg-center-ref="governanceRepository" />
+    <governance:data-source id="shardingRuleWithAttributesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shardingRuleWithAttributesDataSourceShardingRule" reg-center-ref="governanceRepository" />
+    <governance:data-source id="multiTableRulesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiTableRulesDataSourceShardingRule" reg-center-ref="governanceRepository" />
+    <governance:data-source id="tableRuleWithAttributesDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="tableRuleWithAttributesDataSourceShardingRule" reg-center-ref="governanceRepository" />
+    <governance:data-source id="bindingTableRuleDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="bindingTableRuleDatasourceShardingRule" reg-center-ref="governanceRepository" />
+    <governance:data-source id="multiBindingTableRulesDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBindingTableRulesDatasourceShardingRule" reg-center-ref="governanceRepository" />
+    <governance:data-source id="broadcastTableRuleDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="broadcastTableRuleDatasourceShardingRule" reg-center-ref="governanceRepository" />
+    <governance:data-source id="multiBroadcastTableRulesDatasourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBroadcastTableRulesDatasourceShardingRule" reg-center-ref="governanceRepository" />
+    <governance:data-source id="propsDataSourceGovernance" data-source-names="dbtbl_0,dbtbl_1" rule-refs="propsDataSourceShardingRule" reg-center-ref="governanceRepository">
         <props>
             <prop key="sql-show">${sql_show}</prop>
             <prop key="executor-size">10</prop>

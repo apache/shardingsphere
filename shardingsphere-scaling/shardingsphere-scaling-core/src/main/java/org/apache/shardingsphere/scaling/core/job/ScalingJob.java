@@ -33,7 +33,7 @@ import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
 @Slf4j
 public final class ScalingJob implements SimpleJob {
     
-    private final GovernanceRepositoryAPI governanceRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
+    private final GovernanceRepositoryAPI governanceRepositoryAPI = ScalingAPIFactory.getGovernanceRepositoryAPI();
     
     private final ScalingJobPreparer jobPreparer = new ScalingJobPreparer();
     

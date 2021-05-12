@@ -5,7 +5,7 @@ weight = 9
 chapter = true
 +++
 
-## ConfigurationRepository
+## GovernanceRepository
 
 | *SPI Name*                       | *Description*               |
 | -------------------------------- | --------------------------- |
@@ -15,17 +15,6 @@ chapter = true
 | -------------------------------- | --------------------------- |
 | CuratorZookeeperRepository       | ZooKeeper config repository |
 | EtcdRepository                   | etcd config repository      |
-
-## RegistryRepository
-
-| *SPI Name*                       | *Description*                 |
-| -------------------------------- | ----------------------------- |
-| RegistryRepository               | Registry repository           |
-
-| *Implementation Class*           | *Description*                 |
-| -------------------------------- | ----------------------------- |
-| CuratorZookeeperRepository       | ZooKeeper registry repository |
-| EtcdRepository                   | etcd registry repository      |
 
 ## GovernanceListenerFactory
 

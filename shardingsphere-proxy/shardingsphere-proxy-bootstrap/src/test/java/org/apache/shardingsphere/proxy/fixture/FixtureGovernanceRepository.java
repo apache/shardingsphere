@@ -56,6 +56,14 @@ public final class FixtureGovernanceRepository implements GovernanceRepository {
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener) {
+    }
+    
+    @Override
     public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         return false;
     }
@@ -65,20 +73,12 @@ public final class FixtureGovernanceRepository implements GovernanceRepository {
     }
     
     @Override
-    public void delete(final String key) {
-    }
-    
-    @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
-    }
-    
-    @Override
     public void close() {
         REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "REG_FIXTURE";
+        return "GOV_FIXTURE";
     }
 }

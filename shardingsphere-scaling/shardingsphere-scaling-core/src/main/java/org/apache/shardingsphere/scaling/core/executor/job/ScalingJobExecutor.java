@@ -47,11 +47,11 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor {
     public void start() {
         super.start();
         log.info("Start scaling job executor.");
-        watchRegistryRepositoryConfig();
+        watchGovernanceRepositoryConfiguration();
     }
     
-    private void watchRegistryRepositoryConfig() {
-        ScalingAPIFactory.getRegistryRepositoryAPI().watch(ScalingConstant.SCALING_ROOT, event -> {
+    private void watchGovernanceRepositoryConfiguration() {
+        ScalingAPIFactory.getGovernanceRepositoryAPI().watch(ScalingConstant.SCALING_ROOT, event -> {
             Optional<JobConfigurationPOJO> jobConfigPOJOOptional = getJobConfigPOJO(event);
             if (!jobConfigPOJOOptional.isPresent()) {
                 return;

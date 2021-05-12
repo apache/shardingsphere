@@ -58,12 +58,12 @@ public final class ScalingAPIFactory {
     }
     
     /**
-     * Get registry repository API.
+     * Get governance repository API.
      *
-     * @return registry repository API
+     * @return governance repository API
      */
-    public static GovernanceRepositoryAPI getRegistryRepositoryAPI() {
-        return RegistryRepositoryAPIHolder.getInstance();
+    public static GovernanceRepositoryAPI getGovernanceRepositoryAPI() {
+        return GovernanceRepositoryAPIHolder.getInstance();
     }
     
     /**
@@ -125,7 +125,7 @@ public final class ScalingAPIFactory {
         }
     }
     
-    private static final class RegistryRepositoryAPIHolder {
+    private static final class GovernanceRepositoryAPIHolder {
         
         private static volatile GovernanceRepositoryAPI instance;
         
@@ -137,14 +137,14 @@ public final class ScalingAPIFactory {
             if (null == instance) {
                 synchronized (ScalingAPIFactory.class) {
                     if (null == instance) {
-                        instance = createRegistryRepositoryAPI();
+                        instance = createGovernanceRepositoryAPI();
                     }
                 }
             }
             return instance;
         }
         
-        private static GovernanceRepositoryAPI createRegistryRepositoryAPI() {
+        private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             GovernanceCenterConfiguration registryCenterConfig = governanceConfig.getGovernanceCenterConfiguration();

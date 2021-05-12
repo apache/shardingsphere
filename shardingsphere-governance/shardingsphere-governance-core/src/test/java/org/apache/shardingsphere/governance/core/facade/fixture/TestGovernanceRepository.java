@@ -50,20 +50,20 @@ public final class TestGovernanceRepository implements GovernanceRepository {
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener) {
+    }
+    
+    @Override
     public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         return false;
     }
     
     @Override
     public void releaseLock(final String key) {
-    }
-    
-    @Override
-    public void delete(final String key) {
-    }
-    
-    @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
     }
     
     @Override

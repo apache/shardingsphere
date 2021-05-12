@@ -39,7 +39,7 @@ public final class FinishedCheckJob implements SimpleJob {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
-    private final GovernanceRepositoryAPI governanceRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
+    private final GovernanceRepositoryAPI governanceRepositoryAPI = ScalingAPIFactory.getGovernanceRepositoryAPI();
     
     @Override
     public void execute(final ShardingContext shardingContext) {

@@ -56,7 +56,7 @@ public final class GovernanceRepositoryAPIImplTest {
     public static void beforeClass() throws Exception {
         EmbedTestingServer.start();
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
-        governanceRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
+        governanceRepositoryAPI = ScalingAPIFactory.getGovernanceRepositoryAPI();
     }
     
     @Test

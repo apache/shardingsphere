@@ -18,7 +18,7 @@
 governance:
   name: test_name
   registryCenter:
-    type: REG_TEST
+    type: GOV_TEST
     serverLists: localhost:3181
   overwrite: true
 

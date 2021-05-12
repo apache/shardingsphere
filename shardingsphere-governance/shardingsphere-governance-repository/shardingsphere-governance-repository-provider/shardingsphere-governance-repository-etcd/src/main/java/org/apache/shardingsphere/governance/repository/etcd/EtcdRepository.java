@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Registry repository of ETCD.
+ * Governance repository of ETCD.
  */
 public final class EtcdRepository implements GovernanceRepository {
     
