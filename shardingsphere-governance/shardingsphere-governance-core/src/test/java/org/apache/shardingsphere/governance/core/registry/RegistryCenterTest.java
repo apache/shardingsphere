@@ -500,11 +500,13 @@ public final class RegistryCenterTest {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         Collection<RuleConfiguration> globalRuleConfigs = registryCenter.loadGlobalRuleConfigurations();
         assertTrue(!globalRuleConfigs.isEmpty());
-        Collection<ShardingSphereUser> users = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration).flatMap(each -> ((AuthorityRuleConfiguration) each).getUsers().stream()).collect(Collectors.toList());
+        Collection<ShardingSphereUser> users = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
+                .flatMap(each -> ((AuthorityRuleConfiguration) each).getUsers().stream()).collect(Collectors.toList());
         Optional<ShardingSphereUser> user = users.stream().filter(each -> each.getGrantee().equals(new Grantee("root", ""))).findFirst();
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("root"));
-        Collection<ShardingSphereAlgorithmConfiguration> providers = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration && Objects.nonNull(((AuthorityRuleConfiguration) each).getProvider()))
+        Collection<ShardingSphereAlgorithmConfiguration> providers = globalRuleConfigs.stream()
+                .filter(each -> each instanceof AuthorityRuleConfiguration && Objects.nonNull(((AuthorityRuleConfiguration) each).getProvider()))
                 .map(each -> ((AuthorityRuleConfiguration) each).getProvider()).collect(Collectors.toList());
         assertTrue(!providers.isEmpty());
         Optional<ShardingSphereAlgorithmConfiguration> nativeProvider = providers.stream().filter(each -> "NATIVE".equals(each.getType())).findFirst();

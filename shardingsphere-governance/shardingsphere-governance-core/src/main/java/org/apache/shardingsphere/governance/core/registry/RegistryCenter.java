@@ -221,7 +221,7 @@ public final class RegistryCenter {
         return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
     }
     
-    private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, boolean isOverwrite){
+    private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
         if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
             repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
         }
@@ -289,8 +289,8 @@ public final class RegistryCenter {
      * 
      * @return global rule configurations
      */
-    public Collection<RuleConfiguration> loadGlobalRuleConfigurations () {
-        return Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode())) ? Collections.emptyList() : YamlConfigurationConverter.convertRuleConfigurations(repository.get(node.getGlobalRuleNode()));
+    public Collection<RuleConfiguration> loadGlobalRuleConfigurations() {
+        return hasGlobalRuleConfigurations() ? YamlConfigurationConverter.convertRuleConfigurations(repository.get(node.getGlobalRuleNode())) : Collections.emptyList();
     }
     
     /**
