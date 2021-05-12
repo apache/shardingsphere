@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.spring.boot.governance.registry.TestGovernanceRepository;
+import org.apache.shardingsphere.spring.boot.governance.registry.TestRegistryCenterRepository;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public class GovernanceSpringBootRegistryReadwriteSplittingTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestGovernanceRepository repository = new TestGovernanceRepository();
+        TestRegistryCenterRepository repository = new TestRegistryCenterRepository();
         repository.persist("/metadata/logic_db/datasource", readYAML(DATA_SOURCE_FILE));
         repository.persist("/metadata/logic_db/rule", readYAML(RULE_FILE));
         repository.persist("/props", "{}\n");

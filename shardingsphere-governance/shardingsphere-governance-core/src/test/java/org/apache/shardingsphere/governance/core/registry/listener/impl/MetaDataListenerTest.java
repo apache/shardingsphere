@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.mockito.Mock;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class MetaDataListenerTest {
     
     @Mock
-    private GovernanceRepository governanceRepository;
+    private RegistryCenterRepository registryCenterRepository;
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
     protected String readYAML(final String yamlFile) {

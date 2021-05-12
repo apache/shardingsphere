@@ -25,7 +25,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.Governa
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurationWrap;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
@@ -42,8 +42,8 @@ public final class RuleChangedListener extends PostGovernanceRepositoryEventList
     
     private final RegistryCenterNode registryCenterNode;
     
-    public RuleChangedListener(final GovernanceRepository governanceRepository, final Collection<String> schemaNames) {
-        super(governanceRepository, new RegistryCenterNode().getAllRulePaths(schemaNames));
+    public RuleChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
+        super(registryCenterRepository, new RegistryCenterNode().getAllRulePaths(schemaNames));
         registryCenterNode = new RegistryCenterNode();
     }
     

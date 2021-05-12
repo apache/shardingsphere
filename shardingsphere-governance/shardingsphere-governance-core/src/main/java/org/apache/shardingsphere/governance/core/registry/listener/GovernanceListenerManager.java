@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
@@ -32,14 +32,14 @@ public final class GovernanceListenerManager {
         ShardingSphereServiceLoader.register(GovernanceListenerFactory.class);
     }
     
-    private final GovernanceRepository governanceRepository;
+    private final RegistryCenterRepository registryCenterRepository;
     
     private final Collection<String> schemaNames;
     
     private final Collection<GovernanceListenerFactory> governanceListenerFactories;
     
-    public GovernanceListenerManager(final GovernanceRepository governanceRepository, final Collection<String> schemaNames) {
-        this.governanceRepository = governanceRepository;
+    public GovernanceListenerManager(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
+        this.registryCenterRepository = registryCenterRepository;
         this.schemaNames = schemaNames;
         governanceListenerFactories = ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceListenerFactory.class);
     }
@@ -49,7 +49,7 @@ public final class GovernanceListenerManager {
      */
     public void initListeners() {
         for (GovernanceListenerFactory each : governanceListenerFactories) {
-            each.create(governanceRepository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
+            each.create(registryCenterRepository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
         }
     }
 }

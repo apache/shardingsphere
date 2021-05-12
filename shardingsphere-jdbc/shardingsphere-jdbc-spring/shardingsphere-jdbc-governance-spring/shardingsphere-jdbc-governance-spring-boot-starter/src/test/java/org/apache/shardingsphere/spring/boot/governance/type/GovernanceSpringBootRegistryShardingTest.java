@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.spring.boot.governance.registry.TestGovernanceRepository;
+import org.apache.shardingsphere.spring.boot.governance.registry.TestRegistryCenterRepository;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -66,7 +66,7 @@ public class GovernanceSpringBootRegistryShardingTest {
         EmbedTestingServer.start();
         String shardingDatabases = readYAML(SHARDING_DATABASES_FILE);
         String shardingRule = readYAML(SHARDING_RULE_FILE);
-        TestGovernanceRepository repository = new TestGovernanceRepository();
+        TestRegistryCenterRepository repository = new TestRegistryCenterRepository();
         repository.persist("/metadata/logic_db/datasource", shardingDatabases);
         repository.persist("/metadata/logic_db/rule", shardingRule);
         repository.persist("/props", ConfigurationPropertyKey.EXECUTOR_SIZE.getKey() + ": '100'\n" + ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");

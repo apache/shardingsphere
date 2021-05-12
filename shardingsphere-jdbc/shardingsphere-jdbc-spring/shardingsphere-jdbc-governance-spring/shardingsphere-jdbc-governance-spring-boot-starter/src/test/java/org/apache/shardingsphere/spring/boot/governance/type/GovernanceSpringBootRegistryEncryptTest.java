@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.spring.boot.governance.registry.TestGovernanceRepository;
+import org.apache.shardingsphere.spring.boot.governance.registry.TestRegistryCenterRepository;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -66,7 +66,7 @@ public class GovernanceSpringBootRegistryEncryptTest {
         EmbedTestingServer.start();
         String dataSource = readYAML(DATA_SOURCE_FILE);
         String encryptRule = readYAML(ENCRYPT_RULE_FILE);
-        TestGovernanceRepository repository = new TestGovernanceRepository();
+        TestRegistryCenterRepository repository = new TestRegistryCenterRepository();
         repository.persist("/metadata/logic_db/datasource", dataSource);
         repository.persist("/metadata/logic_db/rule", encryptRule);
         repository.persist("/props", ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");

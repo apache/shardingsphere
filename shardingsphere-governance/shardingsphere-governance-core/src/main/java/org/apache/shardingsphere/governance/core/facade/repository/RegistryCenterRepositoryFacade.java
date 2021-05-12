@@ -19,38 +19,38 @@ package org.apache.shardingsphere.governance.core.facade.repository;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 /**
- * Governance repository facade.
+ * Registry center repository facade.
  */
 @Getter
-public final class GovernanceRepositoryFacade implements AutoCloseable {
+public final class RegistryCenterRepositoryFacade implements AutoCloseable {
     
     static {
-        ShardingSphereServiceLoader.register(GovernanceRepository.class);
+        ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
     }
     
-    private final GovernanceRepository governanceRepository;
+    private final RegistryCenterRepository registryCenterRepository;
     
-    public GovernanceRepositoryFacade(final GovernanceConfiguration config) {
-        governanceRepository = createGovernanceRepository(config);
+    public RegistryCenterRepositoryFacade(final GovernanceConfiguration config) {
+        registryCenterRepository = createGovernanceRepository(config);
     }
     
-    private GovernanceRepository createGovernanceRepository(final GovernanceConfiguration config) {
+    private RegistryCenterRepository createGovernanceRepository(final GovernanceConfiguration config) {
         GovernanceCenterConfiguration governanceCenterConfig = config.getGovernanceCenterConfiguration();
         Preconditions.checkNotNull(governanceCenterConfig, "Governance center configuration cannot be null.");
-        GovernanceRepository result = TypedSPIRegistry.getRegisteredService(GovernanceRepository.class, governanceCenterConfig.getType(), governanceCenterConfig.getProps());
+        RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, governanceCenterConfig.getType(), governanceCenterConfig.getProps());
         result.init(config.getName(), governanceCenterConfig);
         return result;
     }
     
     @Override
     public void close() {
-        governanceRepository.close();
+        registryCenterRepository.close();
     }
 }

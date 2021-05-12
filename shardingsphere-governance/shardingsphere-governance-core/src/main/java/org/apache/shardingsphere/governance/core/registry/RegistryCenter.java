@@ -42,7 +42,7 @@ import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationCo
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -87,7 +87,7 @@ public final class RegistryCenter {
     
     private final RegistryCenterNode node;
     
-    private final GovernanceRepository repository;
+    private final RegistryCenterRepository repository;
     
     private final GovernanceInstance instance;
     
@@ -95,13 +95,13 @@ public final class RegistryCenter {
     
     private final RegistryCacheManager registryCacheManager;
     
-    public RegistryCenter(final GovernanceRepository governanceRepository) {
+    public RegistryCenter(final RegistryCenterRepository registryCenterRepository) {
         node = new RegistryCenterNode();
-        repository = governanceRepository;
+        repository = registryCenterRepository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
         initLockNode();
-        registryCacheManager = new RegistryCacheManager(governanceRepository, node);
+        registryCacheManager = new RegistryCacheManager(registryCenterRepository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
     

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.state.StateEvent;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 
 public final class TerminalStateChangedListenerTest {
     
-    private final TerminalStateChangedListener terminalStateChangedListener = new TerminalStateChangedListener(mock(GovernanceRepository.class));
+    private final TerminalStateChangedListener terminalStateChangedListener = new TerminalStateChangedListener(mock(RegistryCenterRepository.class));
     
     @Test
     public void assertCreateEventWhenEnabled() {
