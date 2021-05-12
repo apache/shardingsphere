@@ -45,10 +45,14 @@ public final class ConnectionScopeBinaryStatementRegistryTest {
     }
     
     @Test
-    public void assertGetBinaryStatement() {
+    public void assertGetAndCloseBinaryStatement() {
         ConnectionScopeBinaryStatementRegistry statementRegistry = new ConnectionScopeBinaryStatementRegistry();
-        statementRegistry.register("stat-id", "", 1, null);
-        PostgreSQLBinaryStatement binaryStatement = statementRegistry.getBinaryStatement("stat-id");
-        assertNotNull(binaryStatement);
+        String statementId = "stat-id";
+        statementRegistry.register(statementId, "", 1, null);
+        PostgreSQLBinaryStatement actual = statementRegistry.getBinaryStatement(statementId);
+        assertNotNull(actual);
+        PostgreSQLBinaryStatement actualClosed = statementRegistry.closeStatement(statementId);
+        assertThat(actualClosed, is(actual));
+        assertNull(statementRegistry.getBinaryStatement(statementId));
     }
 }
