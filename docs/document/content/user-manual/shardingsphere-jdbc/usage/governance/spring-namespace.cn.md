@@ -45,11 +45,7 @@ weight = 4
      <governance:reg-center id="regCenter" type="Zookeeper" server-lists="localhost:2181" />   
      <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" reg-center-ref="regCenter" config-center-ref="configCenter" rule-refs="shardingRule" overwrite="true" />
      <governance:data-source id="replicaQueryDataSource" data-source-names="demo_primary_ds, demo_replica_ds_0, demo_replica_ds_1" reg-center-ref="regCenter" config-center-ref="configCenter" rule-refs="replicaQueryRule" overwrite="true" />
-     <governance:data-source id="encryptDataSource" data-source-names="demo_ds" reg-center-ref="regCenter" config-center-ref="configCenter" rule-refs="encryptRule" overwrite="true" >
-        <props>
-            <prop key="query-with-cipher-column">true</prop>
-        </props>
-     </governance:data-source>
+     <governance:data-source id="encryptDataSource" data-source-names="demo_ds" reg-center-ref="regCenter" config-center-ref="configCenter" rule-refs="encryptRule" overwrite="true" />
 </beans>
 ```
 

@@ -99,7 +99,6 @@ ReadwriteSplittingRuleConfiguration readWriteSplittingyRuleConfiguration = new R
 /* 其他配置 */
 Properties otherProperties = new Properties();
 otherProperties.setProperty("sql-show", "true");
-otherProperties.setProperty("query-with-cipher-column", "true");
 
 /* shardingDataSource 就是最终被ORM框架或其他jdbc框架引用的数据源名称 */
 DataSource shardingDataSource = ShardingSphereDataSourceFactory.createDataSource(datasourceMaps, Arrays.asList(shardingRuleConfiguration, readWriteSplittingyRuleConfiguration, encryptRuleConfiguration), otherProperties);

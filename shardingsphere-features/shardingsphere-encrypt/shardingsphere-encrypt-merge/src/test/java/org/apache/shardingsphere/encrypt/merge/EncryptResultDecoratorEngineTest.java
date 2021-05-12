@@ -20,21 +20,19 @@ package org.apache.shardingsphere.encrypt.merge;
 import org.apache.shardingsphere.encrypt.merge.dal.EncryptDALResultDecorator;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptDQLResultDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
-import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
-import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentResultDecorator;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.DescribeStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
+import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
+import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentResultDecorator;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -63,18 +61,10 @@ public final class EncryptResultDecoratorEngineTest {
     @Mock
     private ShardingSphereSchema schema;
     
-    @Mock
-    private ConfigurationProperties props;
-    
-    @Before
-    public void setUp() {
-        when(props.getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN)).thenReturn(true);
-    }
-    
     @Test
     public void assertNewInstanceWithSelectStatement() {
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), ResultProcessEngine.class).get(rule);
-        ResultDecorator actual = engine.newInstance(databaseType, schema, rule, props, mock(SelectStatementContext.class));
+        ResultDecorator actual = engine.newInstance(databaseType, schema, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class));
         assertThat(actual, instanceOf(EncryptDQLResultDecorator.class));
     }
     
@@ -83,14 +73,14 @@ public final class EncryptResultDecoratorEngineTest {
         SQLStatementContext<MySQLDescribeStatement> sqlStatementContext = mock(DescribeStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLDescribeStatement.class));
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), ResultProcessEngine.class).get(rule);
-        ResultDecorator actual = engine.newInstance(databaseType, schema, rule, props, sqlStatementContext);
+        ResultDecorator actual = engine.newInstance(databaseType, schema, rule, mock(ConfigurationProperties.class), sqlStatementContext);
         assertThat(actual, instanceOf(EncryptDALResultDecorator.class));
     }
     
     @Test
     public void assertNewInstanceWithOtherStatement() {
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), ResultProcessEngine.class).get(rule);
-        ResultDecorator actual = engine.newInstance(databaseType, schema, rule, props, mock(InsertStatementContext.class));
+        ResultDecorator actual = engine.newInstance(databaseType, schema, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
         assertThat(actual, instanceOf(TransparentResultDecorator.class));
     }
 }

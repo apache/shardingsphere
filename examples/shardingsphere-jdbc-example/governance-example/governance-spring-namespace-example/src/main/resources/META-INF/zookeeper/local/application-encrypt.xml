@@ -57,11 +57,7 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <governance:data-source id="encryptDataSource" data-source-names="demo_ds" reg-center-ref="regCenter" rule-refs="encryptRule">
-        <props>
-            <prop key="query-with-cipher-column">true</prop>
-        </props>
-    </governance:data-source>
+    <governance:data-source id="encryptDataSource" data-source-names="demo_ds" reg-center-ref="regCenter" rule-refs="encryptRule" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

@@ -26,8 +26,7 @@ rules:
       props: # Encrypt algorithm properties
         # ...
 
-props:
-  # ...
+  queryWithCipherColumn: # Whether query with cipher column for data encrypt. User you can use plaintext to query if have
 ```
 
 Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt) for more details about type of algorithm.

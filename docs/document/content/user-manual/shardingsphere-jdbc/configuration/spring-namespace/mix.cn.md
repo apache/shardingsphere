@@ -124,10 +124,8 @@ weight = 6
     <shardingsphere:data-source id="readQueryDataSource" data-source-names="write_ds0, read_ds0_0, read_ds0_1, write_ds1, read_ds1_0, read_ds1_1" 
         rule-refs="readWriteSplittingRule, shardingRule, encryptRule" >
         <props>
-            <prop key="query-with-cipher-column">true</prop>
             <prop key="sql-show">true</prop>
         </props>
     </shardingsphere:data-source>
-    
 </beans>
 ```

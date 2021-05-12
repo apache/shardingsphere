@@ -60,6 +60,3 @@ rules:
       type: NORMAL_ENCRYPT
     assisted_query:
       type: ASSISTED_QUERY_ENCRYPT
-
-props:
-  query-with-cipher-column: true

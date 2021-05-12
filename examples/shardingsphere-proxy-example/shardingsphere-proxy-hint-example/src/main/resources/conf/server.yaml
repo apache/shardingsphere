@@ -50,6 +50,5 @@ props:
   proxy-transaction-type: LOCAL
   proxy-opentracing-enabled: false
   proxy-hint-enabled: true
-  query-with-cipher-column: true
   sql-show: true
   check-table-metadata-enabled: false

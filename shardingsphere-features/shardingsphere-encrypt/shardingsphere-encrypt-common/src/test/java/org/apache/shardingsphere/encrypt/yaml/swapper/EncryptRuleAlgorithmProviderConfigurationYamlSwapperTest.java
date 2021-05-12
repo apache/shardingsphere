@@ -59,7 +59,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapperTest {
     private AlgorithmProvidedEncryptRuleConfiguration createAlgorithmProvidedEncryptRuleConfiguration() {
         Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList()));
         Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
-        return new AlgorithmProvidedEncryptRuleConfiguration(tables, encryptors);
+        return new AlgorithmProvidedEncryptRuleConfiguration(tables, encryptors, true);
     }
     
     @Test
