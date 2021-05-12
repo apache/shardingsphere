@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.metadata;
+package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
