@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.executor;
 
-import io.netty.channel.ChannelId;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -36,15 +35,11 @@ public final class CommandExecutorSelector {
      * @param isOccupyThreadForPerConnection is occupy thread for per connection or not
      * @param supportHint is support hint
      * @param transactionType transaction type
-     * @param channelId channel ID
+     * @param connectionId connection ID
      * @return executor service
      */
-    public static ExecutorService getExecutorService(final boolean isOccupyThreadForPerConnection, final boolean supportHint, final TransactionType transactionType, final ChannelId channelId) {
-        return isOccupyThreadForPerConnection(isOccupyThreadForPerConnection, supportHint, transactionType)
-                ? ChannelThreadExecutorGroup.getInstance().get(channelId) : UserExecutorGroup.getInstance().getExecutorService();
-    }
-    
-    private static boolean isOccupyThreadForPerConnection(final boolean isOccupyThreadForPerConnection, final boolean supportHint, final TransactionType transactionType) {
-        return isOccupyThreadForPerConnection || supportHint || TransactionType.isDistributedTransaction(transactionType);
+    public static ExecutorService getExecutorService(final boolean isOccupyThreadForPerConnection, final boolean supportHint, final TransactionType transactionType, final int connectionId) {
+        return isOccupyThreadForPerConnection || supportHint || TransactionType.isDistributedTransaction(transactionType)
+                ? ConnectionThreadExecutorGroup.getInstance().get(connectionId) : UserExecutorGroup.getInstance().getExecutorService();
     }
 }

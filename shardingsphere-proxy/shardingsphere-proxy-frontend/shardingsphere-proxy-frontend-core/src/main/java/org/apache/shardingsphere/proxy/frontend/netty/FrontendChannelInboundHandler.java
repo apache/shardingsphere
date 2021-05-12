@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
-import org.apache.shardingsphere.proxy.frontend.executor.ChannelThreadExecutorGroup;
+import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
 import org.apache.shardingsphere.readwritesplitting.route.engine.impl.PrimaryVisitedManager;
@@ -53,8 +53,9 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {
-        ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
-        backendConnection.setConnectionId(databaseProtocolFrontendEngine.getAuthenticationEngine().handshake(context));
+        int connectionId = databaseProtocolFrontendEngine.getAuthenticationEngine().handshake(context);
+        ConnectionThreadExecutorGroup.getInstance().register(connectionId);
+        backendConnection.setConnectionId(connectionId);
     }
     
     @Override
@@ -87,17 +88,17 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @Override
     public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
-        closeAllResources(context);
+        closeAllResources();
     }
     
-    private void closeAllResources(final ChannelHandlerContext context) {
-        databaseProtocolFrontendEngine.release(backendConnection);
+    private void closeAllResources() {
         PrimaryVisitedManager.clear();
         backendConnection.closeResultSets();
         backendConnection.closeStatements();
         backendConnection.closeConnections(true);
         backendConnection.closeCalciteExecutor();
-        ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
+        ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(backendConnection.getConnectionId());
+        databaseProtocolFrontendEngine.release(backendConnection);
     }
     
     @Override

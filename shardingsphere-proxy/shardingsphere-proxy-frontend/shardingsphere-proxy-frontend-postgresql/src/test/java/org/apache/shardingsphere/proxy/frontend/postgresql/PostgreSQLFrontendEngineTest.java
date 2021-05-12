@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -47,6 +48,8 @@ public final class PostgreSQLFrontendEngineTest {
         registry.register(connectionId);
         assertNotNull(registry.get(connectionId));
         PostgreSQLFrontendEngine frontendEngine = new PostgreSQLFrontendEngine();
+        ConnectionThreadExecutorGroup.getInstance().register(connectionId);
+        ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionId);
         frontendEngine.release(backendConnection);
         assertNull(registry.get(connectionId));
     }
