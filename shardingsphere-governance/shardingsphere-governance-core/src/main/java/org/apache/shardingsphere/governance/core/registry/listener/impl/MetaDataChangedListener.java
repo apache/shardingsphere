@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.metadata;
+package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.commons.collections4.SetUtils;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;

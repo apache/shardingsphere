@@ -19,3 +19,7 @@ org.apache.shardingsphere.governance.core.registry.listener.factory.TerminalStat
 org.apache.shardingsphere.governance.core.registry.listener.factory.DataSourceStateChangedListenerFactory
 org.apache.shardingsphere.governance.core.registry.listener.factory.LockChangedListenerFactory
 org.apache.shardingsphere.governance.core.registry.listener.factory.PropertiesChangedListenerFactory
+org.apache.shardingsphere.governance.core.registry.listener.factory.DataSourceChangedListenerFactory
+org.apache.shardingsphere.governance.core.registry.listener.factory.MetaDataChangedListenerFactory
+org.apache.shardingsphere.governance.core.registry.listener.factory.RuleChangedListenerFactory
+org.apache.shardingsphere.governance.core.registry.listener.factory.SchemaChangedListenerFactory
