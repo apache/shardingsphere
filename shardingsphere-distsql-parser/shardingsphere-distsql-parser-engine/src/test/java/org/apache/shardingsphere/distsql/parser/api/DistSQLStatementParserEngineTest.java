@@ -28,12 +28,16 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -71,6 +75,12 @@ public final class DistSQLStatementParserEngineTest {
             + "(t_order,t_order_item), (t_1,t_2))";
 
     private static final String RDL_ALTER_SHARDING_BROADCAST_TABLE_RULES = "ALTER SHARDING BROADCAST TABLE RULES(t_1,t_2)";
+
+    private static final String RDL_DROP_SHARDING_TABLE_RULE = "DROP SHARDING TABLE RULE t_order,t_order_item";
+
+    private static final String RDL_DROP_SHARDING_BINDING_TABLE_RULES = "DROP SHARDING BINDING TABLE RULES";
+
+    private static final String RDL_DROP_SHARDING_BROADCAST_TABLE_RULES = "DROP SHARDING BROADCAST TABLE RULES";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -199,5 +209,25 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_ALTER_SHARDING_BROADCAST_TABLE_RULES);
         assertTrue(sqlStatement instanceof AlterShardingBroadcastTableRulesStatement);
         assertThat(((AlterShardingBroadcastTableRulesStatement) sqlStatement).getTables(), is(Arrays.asList("t_1", "t_2")));
+    }
+
+    @Test
+    public void assertParseDropShardingTableRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_SHARDING_TABLE_RULE);
+        assertTrue(sqlStatement instanceof DropShardingTableRuleStatement);
+        assertThat(((DropShardingTableRuleStatement) sqlStatement).getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Arrays.asList("t_order", "t_order_item")));
+    }
+
+    @Test
+    public void assertParseDropShardingBindingTableRules() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_SHARDING_BINDING_TABLE_RULES);
+        assertTrue(sqlStatement instanceof DropShardingBindingTableRulesStatement);
+    }
+
+    @Test
+    public void assertParseDropShardingBroadcastTableRules() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_SHARDING_BROADCAST_TABLE_RULES);
+        assertTrue(sqlStatement instanceof DropShardingBroadcastTableRulesStatement);
     }
 }

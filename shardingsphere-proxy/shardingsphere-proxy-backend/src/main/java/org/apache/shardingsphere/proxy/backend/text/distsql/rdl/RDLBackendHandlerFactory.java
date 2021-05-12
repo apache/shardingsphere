@@ -30,7 +30,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -49,7 +51,9 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShard
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropReadwriteSplittingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropResourceBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropShardingRuleBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropShardingBindingTableRulesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropShardingBroadcastTableRulesBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropShardingTableRuleBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
@@ -129,8 +133,14 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement));
         }
-        if (sqlStatement instanceof DropShardingRuleStatement) {
-            return Optional.of(new DropShardingRuleBackendHandler((DropShardingRuleStatement) sqlStatement, backendConnection));
+        if (sqlStatement instanceof DropShardingTableRuleStatement) {
+            return Optional.of(new DropShardingTableRuleBackendHandler((DropShardingTableRuleStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof DropShardingBindingTableRulesStatement) {
+            return Optional.of(new DropShardingBindingTableRulesBackendHandler((DropShardingBindingTableRulesStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof DropShardingBroadcastTableRulesStatement) {
+            return Optional.of(new DropShardingBroadcastTableRulesBackendHandler((DropShardingBroadcastTableRulesStatement) sqlStatement, backendConnection));
         }
         return Optional.empty();
     }

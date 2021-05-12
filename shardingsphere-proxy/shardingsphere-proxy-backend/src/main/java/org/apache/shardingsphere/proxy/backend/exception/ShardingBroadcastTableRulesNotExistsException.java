@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Drop sharding rule statement.
+ * Sharding broadcast table rules not exists exception.
  */
+@RequiredArgsConstructor
 @Getter
-public final class DropShardingRuleStatement extends DropRDLStatement {
-    
-    private final Collection<TableNameSegment> tableNames = new LinkedList<>();
+public final class ShardingBroadcastTableRulesNotExistsException extends BackendException {
+
+    private static final long serialVersionUID = 2816401356514609173L;
+
+    private final String schemaName;
 }

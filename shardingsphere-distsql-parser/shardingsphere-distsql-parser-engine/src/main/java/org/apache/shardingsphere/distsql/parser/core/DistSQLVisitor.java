@@ -36,7 +36,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.D
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.FunctionDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ResetScalingJobContext;
@@ -73,7 +72,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -229,7 +230,26 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         }
         return result;
     }
-    
+
+    @Override
+    public ASTNode visitDropShardingTableRule(final DistSQLStatementParser.DropShardingTableRuleContext ctx) {
+        DropShardingTableRuleStatement result = new DropShardingTableRuleStatement();
+        for (TableNameContext each : ctx.tableName()) {
+            result.getTableNames().add((TableNameSegment) visit(each));
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitDropShardingBindingTableRules(final DistSQLStatementParser.DropShardingBindingTableRulesContext ctx) {
+        return new DropShardingBindingTableRulesStatement();
+    }
+
+    @Override
+    public ASTNode visitDropShardingBroadcastTableRules(final DistSQLStatementParser.DropShardingBroadcastTableRulesContext ctx) {
+        return new DropShardingBroadcastTableRulesStatement();
+    }
+
     @Override
     public ASTNode visitAlterReplicaQueryRuleDefinition(final AlterReplicaQueryRuleDefinitionContext ctx) {
         ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
@@ -286,15 +306,6 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             }
         }
         result.setAlgorithmProps(algorithmProps);
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitDropShardingRule(final DropShardingRuleContext ctx) {
-        DropShardingRuleStatement result = new DropShardingRuleStatement();
-        for (TableNameContext each : ctx.tableName()) {
-            result.getTableNames().add((TableNameSegment) visit(each));
-        }
         return result;
     }
     
