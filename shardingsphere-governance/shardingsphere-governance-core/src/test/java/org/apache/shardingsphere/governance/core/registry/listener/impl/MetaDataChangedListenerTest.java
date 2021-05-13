@@ -37,7 +37,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetaDataChangedListenerTest extends MetaDataListenerTest {
+public final class MetaDataChangedListenerTest extends GovernanceListenerTest {
     
     private MetaDataChangedListener metaDataChangedListener;
     
