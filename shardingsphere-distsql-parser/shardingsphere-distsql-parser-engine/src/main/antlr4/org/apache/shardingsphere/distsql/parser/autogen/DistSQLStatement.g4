@@ -25,6 +25,7 @@ execute
     | createShardingTableRule
     | createShardingBindingTableRules
     | createShardingBroadcastTableRules
+    | createReadwriteSplittingRule
     | alterShardingTableRule
     | alterShardingBindingTableRules
     | alterShardingBroadcastTableRules
