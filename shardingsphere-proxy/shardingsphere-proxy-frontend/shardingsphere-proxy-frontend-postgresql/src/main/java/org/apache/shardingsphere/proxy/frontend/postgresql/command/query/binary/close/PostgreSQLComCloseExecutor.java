@@ -32,7 +32,6 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Command close executor for PostgreSQL.
@@ -64,7 +63,7 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
         return Collections.singletonList(new PostgreSQLCloseCompletePacket());
     }
     
-    private List<DatabasePacket<?>> closePortal() {
+    private Collection<DatabasePacket<?>> closePortal() {
         PostgreSQLErrorResponsePacket packet = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.FEATURE_NOT_SUPPORTED,
                 "Not implemented: Close portal").build();
         return Collections.singletonList(packet);
