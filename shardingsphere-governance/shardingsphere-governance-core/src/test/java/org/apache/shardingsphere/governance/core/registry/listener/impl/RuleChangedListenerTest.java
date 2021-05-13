@@ -54,7 +54,7 @@ public final class RuleChangedListenerTest extends MetaDataListenerTest {
     
     @Before
     public void setUp() {
-        ruleChangedListener = new RuleChangedListener(getGovernanceRepository(), Arrays.asList("sharding_db", "replica_query_db", "encrypt_db"));
+        ruleChangedListener = new RuleChangedListener(getRegistryCenterRepository(), Arrays.asList("sharding_db", "replica_query_db", "encrypt_db"));
     }
     
     @Test

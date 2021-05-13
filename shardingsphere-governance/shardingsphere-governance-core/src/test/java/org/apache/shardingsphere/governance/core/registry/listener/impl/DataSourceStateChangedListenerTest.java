@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.listener.impl;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public final class DataSourceStateChangedListenerTest {
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = new DataSourceStateChangedListener(mock(GovernanceRepository.class), Arrays.asList("sharding_db", "replica_query_db", "encrypt_db")).createEvent(
+        Optional<GovernanceEvent> actual = new DataSourceStateChangedListener(mock(RegistryCenterRepository.class), Arrays.asList("sharding_db", "replica_query_db", "encrypt_db")).createEvent(
                 new DataChangedEvent("/states/datanodes/replica_query_db/replica_ds_0", "disabled", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((DisabledStateChangedEvent) actual.get()).getGovernanceSchema().getSchemaName(), is(new GovernanceSchema("replica_query_db", "replica_ds_0").getSchemaName()));

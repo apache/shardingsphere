@@ -23,7 +23,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanc
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
@@ -43,8 +43,8 @@ public final class DataSourceChangedListener extends PostGovernanceRepositoryEve
     
     private final RegistryCenterNode registryCenterNode;
     
-    public DataSourceChangedListener(final GovernanceRepository governanceRepository, final Collection<String> schemaNames) {
-        super(governanceRepository, new RegistryCenterNode().getAllDataSourcePaths(schemaNames));
+    public DataSourceChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
+        super(registryCenterRepository, new RegistryCenterNode().getAllDataSourcePaths(schemaNames));
         registryCenterNode = new RegistryCenterNode();
     }
     

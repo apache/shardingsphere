@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.spring.boot.governance.registry.TestGovernanceRepository
+org.apache.shardingsphere.spring.namespace.governance.registry.TestRegistryCenterRepository

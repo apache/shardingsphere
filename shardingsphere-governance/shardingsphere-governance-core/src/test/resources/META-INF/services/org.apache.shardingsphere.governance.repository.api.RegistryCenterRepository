@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.fixture.FixtureGovernanceRepository
+org.apache.shardingsphere.governance.core.facade.fixture.TestRegistryCenterRepository
+org.apache.shardingsphere.governance.core.facade.fixture.TestAllRegistryCenterRepository

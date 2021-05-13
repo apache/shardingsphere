@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.governance.registry;
 
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public final class TestGovernanceRepository implements GovernanceRepository {
+public final class TestRegistryCenterRepository implements RegistryCenterRepository {
     
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.facade;
 
-import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
+import org.apache.shardingsphere.governance.core.facade.repository.RegistryCenterRepositoryFacade;
 import org.apache.shardingsphere.governance.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerManager;
@@ -46,7 +46,7 @@ public final class GovernanceFacadeTest {
     private final GovernanceFacade governanceFacade = new GovernanceFacade();
     
     @Mock
-    private GovernanceRepositoryFacade repositoryFacade;
+    private RegistryCenterRepositoryFacade repositoryFacade;
     
     @Mock
     private RegistryCenter registryCenter;
