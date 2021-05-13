@@ -29,7 +29,7 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 @Getter
-public class MetaDataListenerTest {
+public class GovernanceListenerTest {
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;

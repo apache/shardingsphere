@@ -42,7 +42,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class RuleChangedListenerTest extends MetaDataListenerTest {
+public final class RuleChangedListenerTest extends GovernanceListenerTest {
     
     private static final String SHARDING_RULE_FILE = "yaml/sharding-rule.yaml";
     
