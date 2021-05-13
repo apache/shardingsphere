@@ -40,6 +40,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Sw
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
@@ -124,10 +125,12 @@ public final class RegistryCenter {
     /**
      * Persist global configuration.
      *
+     * @param globalRuleConfigs global rule configurations
      * @param props properties
      * @param isOverwrite is overwrite config center's configuration
      */
-    public void persistGlobalConfiguration(final Properties props, final boolean isOverwrite) {
+    public void persistGlobalConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
+        persistGlobalRuleConfigurations(globalRuleConfigs, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
@@ -223,12 +226,18 @@ public final class RegistryCenter {
     
     private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
         if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
-            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
+            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(createYamlGlobalRuleConfigurationsWrap(globalRuleConfigs)));
         }
     }
     
     private boolean hasGlobalRuleConfigurations() {
         return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
+    }
+    
+    private YamlRuleConfigurationWrap createYamlGlobalRuleConfigurationsWrap(final Collection<RuleConfiguration> globalRuleConfigs) {
+        YamlRuleConfigurationWrap result = new YamlRuleConfigurationWrap();
+        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs));
+        return result;
     }
     
     private void persistSchemaName(final String schemaName) {

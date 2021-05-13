@@ -322,8 +322,8 @@ public final class RegistryCenterTest {
     @Test
     public void assertPersistGlobalConfiguration() {
         RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
-        registryCenter.persistGlobalConfiguration(createProperties(), true);
-        verify(registryCenterRepository, times(0)).persist("/users", readYAML(USERS_YAML));
+        registryCenter.persistGlobalConfiguration(createGlobalRuleConfigurations(), createProperties(), true);
+        verify(registryCenterRepository).persist(eq("/rule"), any());
         verify(registryCenterRepository).persist("/props", PROPS_YAML);
     }
     
@@ -371,7 +371,11 @@ public final class RegistryCenterTest {
     private Collection<RuleConfiguration> createShadowRuleConfiguration() {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHADOW_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
-
+    
+    private Collection<RuleConfiguration> createGlobalRuleConfigurations() {
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(GLOBAL_RULE_YAML), YamlRuleConfigurationWrap.class).getRules());
+    }
+    
     private Properties createProperties() {
         Properties result = new Properties();
         result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE);
