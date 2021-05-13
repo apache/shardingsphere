@@ -124,10 +124,12 @@ public final class RegistryCenter {
     /**
      * Persist global configuration.
      *
+     * @param globalRuleConfigs global rule configurations
      * @param props properties
      * @param isOverwrite is overwrite config center's configuration
      */
-    public void persistGlobalConfiguration(final Properties props, final boolean isOverwrite) {
+    public void persistGlobalConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
+        persistGlobalRuleConfigurations(globalRuleConfigs, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     

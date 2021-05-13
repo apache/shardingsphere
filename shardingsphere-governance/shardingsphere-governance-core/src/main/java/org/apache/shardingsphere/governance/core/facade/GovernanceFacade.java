@@ -65,11 +65,12 @@ public final class GovernanceFacade implements AutoCloseable {
      *
      * @param dataSourceConfigMap schema data source configuration map
      * @param schemaRuleMap schema rule map
+     * @param globalRuleConfigs global rule configurations
      * @param props properties
      */
     public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap,
-                               final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Properties props) {
-        registryCenter.persistGlobalConfiguration(props, isOverwrite);
+                               final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+        registryCenter.persistGlobalConfiguration(globalRuleConfigs, props, isOverwrite);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
             registryCenter.persistConfigurations(entry.getKey(), dataSourceConfigMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
         }

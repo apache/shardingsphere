@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -51,6 +55,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -89,12 +94,15 @@ public final class GovernanceMetaDataContextsTest {
     
     private GovernanceMetaDataContexts governanceMetaDataContexts;
     
+    @Mock
+    private ShardingSphereRuleMetaData globalRuleMetaData;
+    
     @Before
     public void setUp() {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
-                createMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.emptyList()), props), governanceFacade);
+                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.emptyList()), props), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -207,5 +215,20 @@ public final class GovernanceMetaDataContextsTest {
         result.put("ds_1", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_2", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         return result;
+    }
+    
+    @Test
+    public void assertGlobalRuleConfigurationsChanged() {
+        GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent("", getChangedGlobalRuleConfigurations());
+        governanceMetaDataContexts.renew(event);
+        assertThat(governanceMetaDataContexts.getGlobalRuleMetaData(), not(globalRuleMetaData));
+    }
+    
+    private Collection<RuleConfiguration> getChangedGlobalRuleConfigurations() {
+        Collection<ShardingSphereUser> users = new LinkedList<>();
+        users.add(new ShardingSphereUser("root", "root", "%"));
+        users.add(new ShardingSphereUser("sharding", "sharding", "localhost"));
+        RuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        return Collections.singleton(authorityRuleConfig);
     }
 }

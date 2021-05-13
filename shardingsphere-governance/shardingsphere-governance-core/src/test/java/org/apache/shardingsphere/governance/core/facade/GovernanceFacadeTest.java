@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 package org.apache.shardingsphere.governance.core.facade;
 
 import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
@@ -67,10 +67,10 @@ public final class GovernanceFacadeTest {
     public void assertOnlineInstanceWithParameters() {
         Map<String, DataSourceConfiguration> dataSourceConfigMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
         Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
+        Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
         Properties props = new Properties();
-        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, props);
-        verify(registryCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
-        verify(registryCenter).persistGlobalConfiguration(props, false);
+        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, globalRuleConfigs, props);        verify(registryCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
+        verify(registryCenter).persistGlobalConfiguration(globalRuleConfigs, props, false);
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataNodes();
         verify(listenerManager).initListeners();
