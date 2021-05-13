@@ -331,7 +331,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     public synchronized void renew(final GlobalRuleConfigurationsChangedEvent event) {
         Collection<RuleConfiguration> newGlobalConfigs = event.getRuleConfigurations();
         if (!newGlobalConfigs.isEmpty()) {
-            ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(newGlobalConfigs,  ShardingSphereRulesBuilder.buildGlobalRules(newGlobalConfigs, metaDataContexts.getMetaDataMap()));
+            ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(newGlobalConfigs, 
+                    ShardingSphereRulesBuilder.buildGlobalRules(newGlobalConfigs, metaDataContexts.getMetaDataMap()));
             metaDataContexts = new StandardMetaDataContexts(
                     metaDataContexts.getMetaDataMap(), newGlobalRuleMetaData, metaDataContexts.getExecutorEngine(), metaDataContexts.getUsers(), metaDataContexts.getProps());
         }
