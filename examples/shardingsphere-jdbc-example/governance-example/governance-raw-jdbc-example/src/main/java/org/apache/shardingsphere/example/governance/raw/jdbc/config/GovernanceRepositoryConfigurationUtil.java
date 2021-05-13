@@ -19,7 +19,7 @@ package org.apache.shardingsphere.example.governance.raw.jdbc.config;
 
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 
 import java.util.Properties;
 
@@ -28,7 +28,7 @@ public final class GovernanceRepositoryConfigurationUtil {
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     public static GovernanceConfiguration getZooKeeperConfiguration(final boolean overwrite, final ShardingType shardingType) {
-        GovernanceCenterConfiguration governanceCenterConfig = new GovernanceCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, new Properties());
+        RegistryCenterConfiguration governanceCenterConfig = new RegistryCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, new Properties());
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new GovernanceConfiguration("governance-sharding-data-source", governanceCenterConfig, overwrite);
@@ -45,7 +45,7 @@ public final class GovernanceRepositoryConfigurationUtil {
     
     public static GovernanceConfiguration getNacosConfiguration(final boolean overwrite, final ShardingType shardingType) {
         Properties zookeeperProperties = new Properties();
-        GovernanceCenterConfiguration zookeeperConfig = new GovernanceCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, zookeeperProperties);
+        RegistryCenterConfiguration zookeeperConfig = new RegistryCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, zookeeperProperties);
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 return new GovernanceConfiguration("governance-zookeeper-sharding-data-source", zookeeperConfig, overwrite);

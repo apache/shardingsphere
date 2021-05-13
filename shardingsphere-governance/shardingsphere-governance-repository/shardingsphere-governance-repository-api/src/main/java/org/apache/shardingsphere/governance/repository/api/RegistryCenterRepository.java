@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.repository.api;
 
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
@@ -40,7 +40,7 @@ public interface RegistryCenterRepository extends TypedSPI {
      * @param name governance center name
      * @param config governance center configuration
      */
-    void init(String name, GovernanceCenterConfiguration config);
+    void init(String name, RegistryCenterConfiguration config);
     
     /**
      * Get data from governance center.

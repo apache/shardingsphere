@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -26,11 +26,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class GovernanceCenterConfigurationYamlSwapperTest {
+public final class RegistryCenterConfigurationYamlSwapperTest {
     
     @Test
     public void assertToYamlConfiguration() {
-        GovernanceCenterConfiguration expected = new GovernanceCenterConfiguration("TEST", "127.0.0.1:2181", new Properties());
+        RegistryCenterConfiguration expected = new RegistryCenterConfiguration("TEST", "127.0.0.1:2181", new Properties());
         YamlGovernanceCenterConfiguration actual = new GovernanceCenterConfigurationYamlSwapper().swapToYamlConfiguration(expected);
         assertThat(actual.getType(), is(expected.getType()));
         assertThat(actual.getServerLists(), is(expected.getServerLists()));
@@ -40,7 +40,7 @@ public final class GovernanceCenterConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToObject() {
         YamlGovernanceCenterConfiguration yamlConfig = getYamlGovernanceCenterConfiguration();
-        GovernanceCenterConfiguration governanceCenterConfig = new GovernanceCenterConfigurationYamlSwapper().swapToObject(yamlConfig);
+        RegistryCenterConfiguration governanceCenterConfig = new GovernanceCenterConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertThat(governanceCenterConfig.getType(), is(yamlConfig.getType()));
         assertThat(governanceCenterConfig.getServerLists(), is(yamlConfig.getServerLists()));
         assertThat(governanceCenterConfig.getProps(), is(yamlConfig.getProps()));

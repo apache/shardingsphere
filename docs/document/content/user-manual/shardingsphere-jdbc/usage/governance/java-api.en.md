@@ -36,7 +36,7 @@ Using ZooKeeper as config center and registry center for example.
 // ...
 
 // Configure registry center
-GovernanceCenterConfiguration configuration = new GovernanceCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
+RegistryCenterConfiguration configuration = new RegistryCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
 
 // Configure governance
 Map<String, CenterConfiguration> configurationMap = new HashMap<String, CenterConfiguration>();

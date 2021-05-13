@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.boot.governance.registry;
 
 import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
 import java.util.Collections;
@@ -32,7 +32,7 @@ public final class TestRegistryCenterRepository implements RegistryCenterReposit
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
-    public void init(final String name, final GovernanceCenterConfiguration config) {
+    public void init(final String name, final RegistryCenterConfiguration config) {
     }
     
     @Override

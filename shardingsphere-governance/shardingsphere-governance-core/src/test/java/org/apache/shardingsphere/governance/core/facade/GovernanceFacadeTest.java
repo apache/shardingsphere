@@ -21,7 +21,7 @@ import org.apache.shardingsphere.governance.core.facade.repository.RegistryCente
 import org.apache.shardingsphere.governance.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerManager;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -56,7 +56,7 @@ public final class GovernanceFacadeTest {
     
     @Before
     public void setUp() {
-        GovernanceConfiguration governanceConfig = new GovernanceConfiguration("test_name", new GovernanceCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
+        GovernanceConfiguration governanceConfig = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
         governanceFacade.init(governanceConfig, Arrays.asList("sharding_db", "replica_query_db"));
         FieldUtil.setField(governanceFacade, "repositoryFacade", repositoryFacade);
         FieldUtil.setField(governanceFacade, "registryCenter", registryCenter);

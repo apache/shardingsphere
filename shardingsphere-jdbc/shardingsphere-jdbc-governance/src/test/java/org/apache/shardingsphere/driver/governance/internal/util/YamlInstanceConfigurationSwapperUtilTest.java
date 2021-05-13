@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.internal.util;
 
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     @Test
     public void marshal() {
         YamlGovernanceConfiguration expected = createExpectedYamlGovernanceConfiguration();
-        GovernanceCenterConfiguration actual = YamlGovernanceRepositoryConfigurationSwapperUtil.marshal(expected).getGovernanceCenterConfiguration();
+        RegistryCenterConfiguration actual = YamlGovernanceRepositoryConfigurationSwapperUtil.marshal(expected).getRegistryCenterConfiguration();
         assertThat(actual.getType(), is(expected.getRegistryCenter().getType()));
         assertThat(actual.getServerLists(), is(expected.getRegistryCenter().getServerLists()));
         assertThat(actual.getProps(), is(expected.getRegistryCenter().getProps()));

@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.Properties;
 
 /**
- * Governance center configuration.
+ * Registry center configuration.
  */
-@Getter
 @RequiredArgsConstructor
-public final class GovernanceCenterConfiguration {
+@Getter
+public final class RegistryCenterConfiguration {
     
     private final String type;
     

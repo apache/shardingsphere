@@ -30,7 +30,7 @@ import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -147,7 +147,7 @@ public final class ScalingAPIFactory {
         private static GovernanceRepositoryAPI createGovernanceRepositoryAPI() {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-            GovernanceCenterConfiguration registryCenterConfig = governanceConfig.getGovernanceCenterConfiguration();
+            RegistryCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
             RegistryCenterRepository registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
             registryCenterRepository.init(governanceConfig.getName(), registryCenterConfig);
             return new GovernanceRepositoryAPIImpl(registryCenterRepository);
@@ -169,9 +169,9 @@ public final class ScalingAPIFactory {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT;
-            jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getGovernanceCenterConfiguration().getServerLists(), namespace, null);
-            jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getGovernanceCenterConfiguration().getServerLists(), namespace, null);
-            jobOperateAPI = JobAPIFactory.createJobOperateAPI(governanceConfig.getGovernanceCenterConfiguration().getServerLists(), namespace, null);
+            jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
+            jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
+            jobOperateAPI = JobAPIFactory.createJobOperateAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
         }
         
         public static ElasticJobAPIHolder getInstance() {
@@ -210,9 +210,9 @@ public final class ScalingAPIFactory {
         private static ZookeeperConfiguration getZookeeperConfig() {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-            ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getGovernanceCenterConfiguration().getServerLists(),
+            ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
                     governanceConfig.getName() + ScalingConstant.SCALING_ROOT);
-            Properties props = governanceConfig.getGovernanceCenterConfiguration().getProps();
+            Properties props = governanceConfig.getRegistryCenterConfiguration().getProps();
             result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
             result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));
             result.setConnectionTimeoutMilliseconds(getProperty(props, "connection.timeout.milliseconds", result.getConnectionTimeoutMilliseconds()));
