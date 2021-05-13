@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 
 /**
  * Governance center configuration YAML swapper.
  */
-public final class GovernanceCenterConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlGovernanceCenterConfiguration, GovernanceCenterConfiguration> {
+public final class GovernanceCenterConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlGovernanceCenterConfiguration, RegistryCenterConfiguration> {
     
     @Override
-    public YamlGovernanceCenterConfiguration swapToYamlConfiguration(final GovernanceCenterConfiguration config) {
+    public YamlGovernanceCenterConfiguration swapToYamlConfiguration(final RegistryCenterConfiguration config) {
         YamlGovernanceCenterConfiguration result = new YamlGovernanceCenterConfiguration();
         result.setType(config.getType());
         result.setServerLists(config.getServerLists());
@@ -36,7 +36,7 @@ public final class GovernanceCenterConfigurationYamlSwapper implements YamlConfi
     }
     
     @Override
-    public GovernanceCenterConfiguration swapToObject(final YamlGovernanceCenterConfiguration yamlConfig) {
-        return new GovernanceCenterConfiguration(yamlConfig.getType(), yamlConfig.getServerLists(), yamlConfig.getProps());
+    public RegistryCenterConfiguration swapToObject(final YamlGovernanceCenterConfiguration yamlConfig) {
+        return new RegistryCenterConfiguration(yamlConfig.getType(), yamlConfig.getServerLists(), yamlConfig.getProps());
     }
 }

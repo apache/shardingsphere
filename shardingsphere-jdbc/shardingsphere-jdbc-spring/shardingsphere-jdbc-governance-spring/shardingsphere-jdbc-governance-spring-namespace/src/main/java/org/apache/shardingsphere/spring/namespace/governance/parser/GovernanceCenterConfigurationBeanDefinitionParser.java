@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.governance.parser;
 
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.spring.namespace.governance.constants.GovernanceCenterConfigurationBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -35,7 +35,7 @@ public final class GovernanceCenterConfigurationBeanDefinitionParser extends Abs
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(GovernanceCenterConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(RegistryCenterConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(GovernanceCenterConfigurationBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(GovernanceCenterConfigurationBeanDefinitionTag.SERVER_LISTS_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));

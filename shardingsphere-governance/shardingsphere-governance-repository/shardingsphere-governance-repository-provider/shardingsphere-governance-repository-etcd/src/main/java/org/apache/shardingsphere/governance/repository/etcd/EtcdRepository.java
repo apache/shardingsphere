@@ -31,7 +31,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
@@ -57,7 +57,7 @@ public final class EtcdRepository implements RegistryCenterRepository {
     private EtcdProperties etcdProperties;
     
     @Override
-    public void init(final String name, final GovernanceCenterConfiguration config) {
+    public void init(final String name, final RegistryCenterConfiguration config) {
         etcdProperties = new EtcdProperties(props);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).namespace(ByteSequence.from(name, StandardCharsets.UTF_8)).build();
     }

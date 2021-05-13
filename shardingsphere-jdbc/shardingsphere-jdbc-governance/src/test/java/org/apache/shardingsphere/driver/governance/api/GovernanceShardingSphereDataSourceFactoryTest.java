@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.governance.api;
 
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.junit.Test;
@@ -75,7 +75,7 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     
     private GovernanceConfiguration createGovernanceConfiguration() {
         GovernanceConfiguration result = mock(GovernanceConfiguration.class);
-        when(result.getGovernanceCenterConfiguration()).thenReturn(new GovernanceCenterConfiguration("GOV_TEST", "", null));
+        when(result.getRegistryCenterConfiguration()).thenReturn(new RegistryCenterConfiguration("GOV_TEST", "", null));
         return result;
     }
 }

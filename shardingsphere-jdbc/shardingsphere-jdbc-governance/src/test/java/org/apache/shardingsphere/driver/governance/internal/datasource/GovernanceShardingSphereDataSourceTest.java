@@ -26,7 +26,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.props.P
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -73,10 +73,10 @@ public final class GovernanceShardingSphereDataSourceTest {
         return new GovernanceConfiguration("test_name", getRegistryCenterConfiguration(), true);
     }
     
-    private static GovernanceCenterConfiguration getRegistryCenterConfiguration() {
+    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        return new GovernanceCenterConfiguration("GOV_TEST", "localhost:3181", properties);
+        return new RegistryCenterConfiguration("GOV_TEST", "localhost:3181", properties);
     }
     
     @Test

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.config.yaml;
 
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public final class ServerConfigurationYamlSwapperTest {
     private ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
         result.setWorkerThread(10);
-        result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("Zookeeper", "localhost:2181", null), false));
+        result.setGovernanceConfig(new GovernanceConfiguration("test", new RegistryCenterConfiguration("Zookeeper", "localhost:2181", null), false));
         return result;
     }
     
