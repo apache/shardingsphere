@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
 import java.util.Collection;
@@ -30,11 +30,11 @@ public interface GovernanceListenerFactory {
     /**
      * Create governance listener.
      * 
-     * @param governanceRepository governance repository
+     * @param registryCenterRepository governance repository
      * @param schemaNames schema names
      * @return governance listener
      */
-    GovernanceListener create(GovernanceRepository governanceRepository, Collection<String> schemaNames);
+    GovernanceListener create(RegistryCenterRepository registryCenterRepository, Collection<String> schemaNames);
     
     /**
      * Get watch types.

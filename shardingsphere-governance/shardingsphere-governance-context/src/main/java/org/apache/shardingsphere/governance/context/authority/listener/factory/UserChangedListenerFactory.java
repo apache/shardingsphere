@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.context.authority.listener.factory;
 import org.apache.shardingsphere.governance.context.authority.listener.UserChangedListener;
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerFactory;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
 import java.util.Collection;
@@ -32,8 +32,8 @@ import java.util.Collections;
 public final class UserChangedListenerFactory implements GovernanceListenerFactory {
     
     @Override
-    public GovernanceListener create(final GovernanceRepository governanceRepository, final Collection<String> schemaNames) {
-        return new UserChangedListener(governanceRepository);
+    public GovernanceListener create(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
+        return new UserChangedListener(registryCenterRepository);
     }
     
     @Override

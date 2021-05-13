@@ -44,7 +44,7 @@ public final class DataSourceChangedListenerTest extends MetaDataListenerTest {
     
     @Before
     public void setUp() {
-        dataSourceChangedListener = new DataSourceChangedListener(getGovernanceRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db", "encrypt_db"));
+        dataSourceChangedListener = new DataSourceChangedListener(getRegistryCenterRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db", "encrypt_db"));
     }
     
     @Test

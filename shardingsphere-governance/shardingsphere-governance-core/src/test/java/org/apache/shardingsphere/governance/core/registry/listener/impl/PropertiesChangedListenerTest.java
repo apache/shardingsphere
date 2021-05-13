@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -38,7 +38,7 @@ public final class PropertiesChangedListenerTest {
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = new PropertiesChangedListener(mock(GovernanceRepository.class)).createEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
+        Optional<GovernanceEvent> actual = new PropertiesChangedListener(mock(RegistryCenterRepository.class)).createEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
     }

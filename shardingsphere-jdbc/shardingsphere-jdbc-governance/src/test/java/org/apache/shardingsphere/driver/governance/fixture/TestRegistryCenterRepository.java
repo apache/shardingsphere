@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.governance.registry;
+package org.apache.shardingsphere.driver.governance.fixture;
 
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public final class TestGovernanceRepository implements GovernanceRepository {
+public final class TestRegistryCenterRepository implements RegistryCenterRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -56,6 +56,14 @@ public final class TestGovernanceRepository implements GovernanceRepository {
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener) {
+    }
+    
+    @Override
     public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         return false;
     }
@@ -65,20 +73,12 @@ public final class TestGovernanceRepository implements GovernanceRepository {
     }
     
     @Override
-    public void delete(final String key) {
-    }
-    
-    @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
-    }
-    
-    @Override
     public void close() {
         REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "TestRegistry";
+        return "GOV_TEST";
     }
 }

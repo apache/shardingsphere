@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Governance repository.
+ * Registry center repository.
  */
-public interface GovernanceRepository extends TypedSPI {
+public interface RegistryCenterRepository extends TypedSPI {
     
     /**
      * Path separator.

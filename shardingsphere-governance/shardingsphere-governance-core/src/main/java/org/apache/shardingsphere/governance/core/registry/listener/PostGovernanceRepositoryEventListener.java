@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.listener;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -35,7 +35,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class PostGovernanceRepositoryEventListener<T> implements GovernanceListener {
     
-    private final GovernanceRepository governanceRepository;
+    private final RegistryCenterRepository registryCenterRepository;
     
     private final Collection<String> watchKeys;
     
@@ -48,7 +48,7 @@ public abstract class PostGovernanceRepositoryEventListener<T> implements Govern
     }
     
     private void watch(final String watchKey, final Collection<Type> types) {
-        governanceRepository.watch(watchKey, dataChangedEvent -> {
+        registryCenterRepository.watch(watchKey, dataChangedEvent -> {
             if (types.contains(dataChangedEvent.getType())) {
                 Optional<T> event = createEvent(dataChangedEvent);
                 event.ifPresent(ShardingSphereEventBus.getInstance()::post);

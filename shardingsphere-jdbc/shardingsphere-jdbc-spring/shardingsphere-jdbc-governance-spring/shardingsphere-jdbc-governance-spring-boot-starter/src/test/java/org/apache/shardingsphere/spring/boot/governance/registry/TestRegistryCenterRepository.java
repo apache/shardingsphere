@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.facade.fixture;
+package org.apache.shardingsphere.spring.boot.governance.registry;
 
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public final class TestGovernanceRepository implements GovernanceRepository {
+public final class TestRegistryCenterRepository implements RegistryCenterRepository {
+    
+    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {
@@ -33,7 +37,7 @@ public final class TestGovernanceRepository implements GovernanceRepository {
     
     @Override
     public String get(final String key) {
-        return "";
+        return REGISTRY_DATA.get(key);
     }
     
     @Override
@@ -43,18 +47,12 @@ public final class TestGovernanceRepository implements GovernanceRepository {
     
     @Override
     public void persist(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
-    }
-    
-    @Override
-    public void delete(final String key) {
-    }
-    
-    @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
@@ -67,11 +65,20 @@ public final class TestGovernanceRepository implements GovernanceRepository {
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener) {
+    }
+    
+    @Override
     public void close() {
+        REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "REG";
+        return "TestRegistry";
     }
 }
