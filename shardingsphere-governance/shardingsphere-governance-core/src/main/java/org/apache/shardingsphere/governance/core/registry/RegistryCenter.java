@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.lock.node.LockAck;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
@@ -56,6 +58,7 @@ import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantState
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
@@ -493,7 +496,12 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final CreateUserStatementEvent event) {
-        persistNewUsers(event.getUsers());
+        Collection<RuleConfiguration> globalRuleConfigs = loadGlobalRuleConfigurations();
+        Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
+                .findAny().map(each -> (AuthorityRuleConfiguration) each);
+        Preconditions.checkState(authorityRuleConfig.isPresent());
+        refreshAuthorityRuleConfiguration(authorityRuleConfig.get(), event.getUsers());
+        persistGlobalRuleConfigurations(globalRuleConfigs, true);
     }
     
     /**
@@ -504,6 +512,26 @@ public final class RegistryCenter {
     @Subscribe
     public synchronized void renew(final GrantStatementEvent event) {
         persistChangedPrivilege(event.getUsers());
+    }
+    
+    private void refreshAuthorityRuleConfiguration(final AuthorityRuleConfiguration authRuleConfig, final Collection<ShardingSphereUser> createUsers) {
+        Collection<ShardingSphereUser> oldUsers = authRuleConfig.getUsers();
+        Collection<ShardingSphereUser> newUsers = oldUsers.isEmpty() ? createUsers : getChangedShardingSphereUsers(oldUsers, createUsers);
+        authRuleConfig.getUsers().removeAll(oldUsers);
+        authRuleConfig.getUsers().addAll(newUsers);
+    }
+    
+    private Collection<ShardingSphereUser> getChangedShardingSphereUsers(final Collection<ShardingSphereUser> oldUsers, final Collection<ShardingSphereUser> newUsers) {
+        Collection<ShardingSphereUser> result = new LinkedList<>(oldUsers);
+        ShardingSphereUsers shardingSphereUsers = new ShardingSphereUsers(oldUsers);
+        for (ShardingSphereUser each : newUsers) {
+            Optional<ShardingSphereUser> oldUser = shardingSphereUsers.findUser(each.getGrantee());
+            if (oldUser.isPresent()) {
+                result.remove(oldUser);
+            }
+            result.add(each);
+        }
+        return result;
     }
     
     /**
