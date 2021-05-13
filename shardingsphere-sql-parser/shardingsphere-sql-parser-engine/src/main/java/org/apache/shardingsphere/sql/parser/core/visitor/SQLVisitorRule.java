@@ -94,6 +94,8 @@ public enum SQLVisitorRule {
     
     ALTER_SESSION("AlterSession", SQLStatementType.DDL),
     
+    ALTER_SYSTEM("AlterSystem", SQLStatementType.DDL),
+    
     DROP_SERVER("DropServer", SQLStatementType.DDL),
     
     CREATE_TRIGGER("CreateTrigger", SQLStatementType.DDL),

@@ -15,40 +15,15 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import Alphabet, Symbol;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSystemStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-IDENTIFIER_
-    : [A-Za-z]+[A-Za-z_$#0-9]*
-    |  DQ_ ~'"'+ DQ_
-    ;
-
-STRING_ 
-    : (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
-    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
-    ;
-
-INTEGER_
-    : INT_
-    ;
-
-NUMBER_
-    : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
-    ;
-
-HEX_DIGIT_
-    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
-    ;
-
-BIT_NUM_
-    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
-    ;
-
-fragment INT_
-    : [0-9]+
-    ;
-
-fragment HEX_
-    : [0-9a-fA-F]
-    ;
+/**
+ * Oracle alter system statement.
+ */
+@ToString
+public class OracleAlterSystemStatement extends AlterSystemStatement implements OracleStatement {
+}

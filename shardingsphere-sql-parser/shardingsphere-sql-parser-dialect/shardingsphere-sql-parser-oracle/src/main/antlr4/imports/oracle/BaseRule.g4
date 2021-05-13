@@ -38,7 +38,7 @@ stringLiterals
     ;
 
 numberLiterals
-   : MINUS_? NUMBER_
+   : (PLUS_ | MINUS_)? (INTEGER_ | NUMBER_)
    ;
 
 dateTimeLiterals
@@ -175,6 +175,14 @@ directoryName
     : identifier
     ;
 
+dispatcherName
+    : stringLiterals
+    ;
+
+clientId
+    : stringLiterals
+    ;
+
 opaqueFormatSpec
     : identifier
     ;
@@ -288,7 +296,7 @@ alias
     ;
 
 dataTypeLength
-    : LP_ (NUMBER_ (COMMA_ NUMBER_)?)? RP_
+    : LP_ (INTEGER_ (COMMA_ INTEGER_)?)? RP_
     ;
 
 primaryKey
@@ -544,7 +552,7 @@ asmFileName
     ;
 
 fileNumber
-    : NUMBER_
+    : INTEGER_
     ;
 
 instanceName
@@ -597,4 +605,52 @@ domain
 
 dateValue
     : dateTimeLiterals | stringLiterals | numberLiterals | expr
+    ;
+
+sessionId
+    : numberLiterals
+    ;
+
+serialNumber
+    : numberLiterals
+    ;
+
+instanceId
+    : NUMBER_
+    ;
+
+sqlId
+    : identifier
+    ;
+
+logFileName
+    : stringLiterals
+    ;
+
+logFileGroupsArchivedLocationName
+    : stringLiterals
+    ;
+
+asmVersion
+    : stringLiterals
+    ;
+
+walletPassword
+    : identifier
+    ;
+
+hsmAuthString
+    : identifier
+    ;
+
+targetDbName
+    : identifier
+    ;
+
+certificateId
+    : identifier
+    ;
+
+categoryName
+    : identifier
     ;

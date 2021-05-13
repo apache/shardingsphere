@@ -156,15 +156,15 @@ identifyOptions
     ;
 
 identityOption
-    : START WITH (NUMBER_ | LIMIT VALUE)
-    | INCREMENT BY NUMBER_
-    | MAXVALUE NUMBER_
+    : START WITH (INTEGER_ | LIMIT VALUE)
+    | INCREMENT BY INTEGER_
+    | MAXVALUE INTEGER_
     | NOMAXVALUE
-    | MINVALUE NUMBER_
+    | MINVALUE INTEGER_
     | NOMINVALUE
     | CYCLE
     | NOCYCLE
-    | CACHE NUMBER_
+    | CACHE INTEGER_
     | NOCACHE
     | ORDER
     | NOORDER
@@ -787,7 +787,7 @@ hashPartitions
     ;
 
 hashPartitionsByQuantity
-    : PARTITIONS NUMBER_ (STORE IN (tablespaceName (COMMA_ tablespaceName)*))? (tableCompression | indexCompression)? (OVERFLOW STORE IN (tablespaceName (COMMA_ tablespaceName)*))?
+    : PARTITIONS INTEGER_ (STORE IN (tablespaceName (COMMA_ tablespaceName)*))? (tableCompression | indexCompression)? (OVERFLOW STORE IN (tablespaceName (COMMA_ tablespaceName)*))?
     ;
 
 indexCompression
@@ -1420,4 +1420,259 @@ leadCdbUriClause
 
 propertyClause
     : PROPERTY (SET | REMOVE) DEFAULT_CREDENTIAL EQ_ qualifiedCredentialName
+    ;
+
+alterSystem
+    : ALTER SYSTEM alterSystemOption
+    ;
+
+alterSystemOption
+    : archiveLogClause
+    | checkpointClause
+    | checkDatafilesClause
+    | distributedRecovClauses
+    | flushClause
+    | endSessionClauses
+    | alterSystemSwitchLogfileClause
+    | suspendResumeClause
+    | quiesceClauses
+    | rollingMigrationClauses
+    | rollingPatchClauses
+    | alterSystemSecurityClauses
+    | affinityClauses
+    | shutdownDispatcherClause
+    | registerClause
+    | setClause
+    | resetClause
+    | relocateClientClause
+    | cancelSqlClause
+    | flushPasswordfileMetadataCacheClause
+    ;
+
+archiveLogClause
+    : ARCHIVE LOG instanceClause? (sequenceClause | changeClause | currentClause | groupClause | logfileClause | nextClause | allClause) toLocationClause?
+    ;
+
+checkpointClause
+    : CHECKPOINT (GLOBAL | LOCAL)?
+    ;
+
+checkDatafilesClause
+    : CHECK DATAFILES (GLOBAL | LOCAL)?
+    ;
+
+distributedRecovClauses
+    : (ENABLE | DISABLE) DISTRIBUTED RECOVERY
+    ;
+
+flushClause
+    : FLUSH flushClauseOption
+    ;
+
+endSessionClauses
+    : (disconnectSessionClause | killSessionClause) (IMMEDIATE | NOREPLY)?
+    ;
+
+alterSystemSwitchLogfileClause
+    : SWITCH LOGFILE
+    ;
+
+suspendResumeClause
+    : SUSPEND | RESUME
+    ;
+
+quiesceClauses
+    : QUIESCE RESTRICTED | UNQUIESCE
+    ;
+
+rollingMigrationClauses
+    : startRollingMigrationClause | stopRollingMigrationClause
+    ;
+
+rollingPatchClauses
+    : startRollingPatchClause | stopRollingPatchClause
+    ;
+
+alterSystemSecurityClauses
+    : restrictedSessionClause | setEncryptionWalletOpenClause | setEncryptionWalletCloseClause | setEncryptionKeyClause
+    ;
+
+affinityClauses
+    : enableAffinityClause | disableAffinityClause
+    ;
+
+shutdownDispatcherClause
+    : SHUTDOWN IMMEDIATE? dispatcherName
+    ;
+
+registerClause
+    : REGISTER
+    ;
+
+setClause
+    : SET alterSystemSetClause+
+    ;
+
+resetClause
+    : RESET alterSystemResetClause+
+    ;
+
+relocateClientClause
+    : RELOCATE CLIENT clientId
+    ;
+
+cancelSqlClause
+    : CANCEL SQL SQ_ sessionId serialNumber (AT_ instanceId)? sqlId? SQ_
+    ;
+
+flushPasswordfileMetadataCacheClause
+    : FLUSH PASSWORDFILE_METADATA_CACHE
+    ;
+
+instanceClause
+    : INSTANCE instanceName
+    ;
+
+sequenceClause
+    : SEQUENCE INTEGER_
+    ;
+
+changeClause
+    : CHANGE INTEGER_
+    ;
+
+currentClause
+    : CURRENT NOSWITCH?
+    ;
+
+groupClause
+    : GROUP INTEGER_
+    ;
+
+logfileClause
+    : LOGFILE logFileName (USING BACKUP CONTROLFILE)?
+    ;
+
+nextClause
+    : NEXT
+    ;
+
+allClause
+    : ALL
+    ;
+
+toLocationClause
+    : TO logFileGroupsArchivedLocationName
+    ;
+
+flushClauseOption
+    : sharedPoolClause | globalContextClause | bufferCacheClause | flashCacheClause | redoToClause
+    ;
+
+disconnectSessionClause
+    : DISCONNECT SESSION SQ_ INTEGER_ COMMA_ INTEGER_ SQ_ POST_TRANSACTION?
+    ;
+
+killSessionClause
+    : KILL SESSION SQ_ INTEGER_ COMMA_ INTEGER_ (COMMA_ AT_ INTEGER_)? SQ_
+    ;
+
+startRollingMigrationClause
+    : START ROLLING MIGRATION TO asmVersion
+    ;
+
+stopRollingMigrationClause
+    : STOP ROLLING MIGRATION
+    ;
+
+startRollingPatchClause
+    : START ROLLING PATCH
+    ;
+
+stopRollingPatchClause
+    : STOP ROLLING PATCH
+    ;
+
+restrictedSessionClause
+    : (ENABLE | DISABLE) RESTRICTED SESSION
+    ;
+
+setEncryptionWalletOpenClause
+    : SET ENCRYPTION WALLET OPEN IDENTIFIED BY (walletPassword | hsmAuthString)
+    ;
+
+setEncryptionWalletCloseClause
+    : SET ENCRYPTION WALLET CLOSE (IDENTIFIED BY (walletPassword | hsmAuthString))?
+    ;
+
+setEncryptionKeyClause
+    : SET ENCRYPTION KEY (identifiedByWalletPassword | identifiedByHsmAuthString)
+    ;
+
+enableAffinityClause
+    : ENABLE AFFINITY tableName (SERVICE serviceName)?
+    ;
+
+disableAffinityClause
+    : DISABLE AFFINITY tableName
+    ;
+
+alterSystemSetClause
+    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause
+    ;
+
+alterSystemResetClause
+    : parameterName scopeClause*
+    ;
+
+sharedPoolClause
+    : SHARED_POOL
+    ;
+
+globalContextClause
+    : GLOBAL CONTEXT
+    ;
+
+bufferCacheClause
+    : BUFFER_CACHE
+    ;
+
+flashCacheClause
+    : FLASH_CACHE
+    ;
+
+redoToClause
+    : REDO TO targetDbName (NO? CONFIRM APPLY)?
+    ;
+
+identifiedByWalletPassword
+    : certificateId? IDENTIFIED BY walletPassword
+    ;
+
+identifiedByHsmAuthString
+    : IDENTIFIED BY hsmAuthString (MIGRATE USING walletPassword)?
+    ;
+
+setParameterClause
+    : parameterName EQ_ parameterValue (COMMA_ parameterValue)* alterSystemCommentClause? DEFERRED? containerCurrentAllClause? scopeClause*
+    ;
+
+useStoredOutlinesClause
+    : USE_STORED_OUTLINES EQ_ (TRUE | FALSE | categoryName)
+    ;
+
+globalTopicEnabledClause
+    : GLOBAL_TOPIC_ENABLED EQ_ (TRUE | FALSE)
+    ;
+
+alterSystemCommentClause
+    : COMMENT EQ_ stringLiterals
+    ;
+
+containerCurrentAllClause
+    : CONTAINER EQ_ (CURRENT | ALL)
+    ;
+
+scopeClause
+    : SCOPE EQ_ (MEMORY | SPFILE | BOTH) | SID EQ_ (SQ_ sessionId SQ_ | SQ_ ASTERISK_ SQ_)
     ;
