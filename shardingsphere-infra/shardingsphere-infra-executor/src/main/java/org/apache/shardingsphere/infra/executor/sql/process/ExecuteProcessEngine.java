@@ -66,4 +66,15 @@ public final class ExecuteProcessEngine {
             HANDLERS.iterator().next().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
         }
     }
+    
+    /**
+     * Finish.
+     *
+     * @param executionID execution ID
+     */
+    public static void finish(final String executionID) {
+        if (!HANDLERS.isEmpty()) {
+            HANDLERS.iterator().next().finish(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
+        }
+    }
 }

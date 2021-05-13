@@ -44,4 +44,9 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
         ShardingSphereEventBus.getInstance().post(new ExecuteProcessUnitReportEvent(executionID, executeProcessUnit));
     }
+    
+    @Override
+    public void finish(final String executionID, final ExecuteProcessConstants constants) {
+        // TODO
+    }
 }
