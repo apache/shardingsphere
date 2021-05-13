@@ -375,6 +375,7 @@ public final class RegistryCenterTest {
     private Collection<RuleConfiguration> createGlobalRuleConfigurations() {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(GLOBAL_RULE_YAML), YamlRuleConfigurationWrap.class).getRules());
     }
+    
     private Properties createProperties() {
         Properties result = new Properties();
         result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE);
