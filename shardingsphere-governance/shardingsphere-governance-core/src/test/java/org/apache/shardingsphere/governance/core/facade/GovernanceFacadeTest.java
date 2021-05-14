@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.facade;
 
-import org.apache.shardingsphere.governance.core.facade.util.FieldUtil;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerManager;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,9 +59,16 @@ public final class GovernanceFacadeTest {
     public void setUp() {
         GovernanceConfiguration governanceConfig = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
         governanceFacade.init(governanceConfig, Arrays.asList("sharding_db", "replica_query_db"));
-        FieldUtil.setField(governanceFacade, "registryCenterRepository", registryCenterRepository);
-        FieldUtil.setField(governanceFacade, "registryCenter", registryCenter);
-        FieldUtil.setField(governanceFacade, "listenerManager", listenerManager);
+        setField(governanceFacade, "registryCenterRepository", registryCenterRepository);
+        setField(governanceFacade, "registryCenter", registryCenter);
+        setField(governanceFacade, "listenerManager", listenerManager);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static void setField(final Object target, final String fieldName, final Object fieldValue) {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, fieldValue);
     }
     
     @Test
