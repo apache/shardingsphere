@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.skip;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * Skip backend handler.
+ * Empty query response packet for PostgreSQL.
  */
-@RequiredArgsConstructor
-public final class SkipBackendHandler implements TextProtocolBackendHandler {
-    
-    private final SQLStatement sqlStatement;
+public final class PostgreSQLEmptyQueryResponsePacket implements PostgreSQLIdentifierPacket {
     
     @Override
-    public ResponseHeader execute() {
-        return new UpdateResponseHeader(sqlStatement);
+    public void write(final PostgreSQLPacketPayload payload) {
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.EMPTY_QUERY_RESPONSE;
     }
 }
