@@ -26,10 +26,10 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 /**
- * Registry center repository facade.
+ * Registry center repository factory.
  */
 @Getter
-public final class RegistryCenterRepositoryFacade implements AutoCloseable {
+public final class RegistryCenterRepositoryFactory {
     
     static {
         ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
@@ -37,7 +37,7 @@ public final class RegistryCenterRepositoryFacade implements AutoCloseable {
     
     private final RegistryCenterRepository registryCenterRepository;
     
-    public RegistryCenterRepositoryFacade(final GovernanceConfiguration config) {
+    public RegistryCenterRepositoryFactory(final GovernanceConfiguration config) {
         registryCenterRepository = createRegistryCenterRepository(config);
     }
     
@@ -47,10 +47,5 @@ public final class RegistryCenterRepositoryFacade implements AutoCloseable {
         RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
         result.init(config.getName(), registryCenterConfig);
         return result;
-    }
-    
-    @Override
-    public void close() {
-        registryCenterRepository.close();
     }
 }

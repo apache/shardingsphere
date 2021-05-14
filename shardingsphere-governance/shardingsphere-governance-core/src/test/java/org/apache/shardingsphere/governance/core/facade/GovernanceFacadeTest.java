@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.governance.core.facade;
 
-import org.apache.shardingsphere.governance.core.facade.repository.RegistryCenterRepositoryFacade;
 import org.apache.shardingsphere.governance.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerManager;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public final class GovernanceFacadeTest {
     private final GovernanceFacade governanceFacade = new GovernanceFacade();
     
     @Mock
-    private RegistryCenterRepositoryFacade repositoryFacade;
+    private RegistryCenterRepository registryCenterRepository;
     
     @Mock
     private RegistryCenter registryCenter;
@@ -58,7 +58,7 @@ public final class GovernanceFacadeTest {
     public void setUp() {
         GovernanceConfiguration governanceConfig = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
         governanceFacade.init(governanceConfig, Arrays.asList("sharding_db", "replica_query_db"));
-        FieldUtil.setField(governanceFacade, "repositoryFacade", repositoryFacade);
+        FieldUtil.setField(governanceFacade, "registryCenterRepository", registryCenterRepository);
         FieldUtil.setField(governanceFacade, "registryCenter", registryCenter);
         FieldUtil.setField(governanceFacade, "listenerManager", listenerManager);
     }
@@ -88,6 +88,6 @@ public final class GovernanceFacadeTest {
     @Test
     public void assertClose() {
         governanceFacade.close();
-        verify(repositoryFacade).close();
+        verify(registryCenterRepository).close();
     }
 }
