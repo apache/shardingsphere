@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
@@ -30,12 +31,14 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.zookeeper.handler.CuratorZookeeperExceptionHandler;
+import org.apache.shardingsphere.governance.repository.zookeeper.props.ZookeeperProperties;
+import org.apache.shardingsphere.governance.repository.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
@@ -63,7 +66,7 @@ public final class CuratorZookeeperRepository implements RegistryCenterRepositor
     
     private CuratorFramework client;
     
-    private CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
+    private final Builder builder = CuratorFrameworkFactory.builder();
     
     private final Map<String, InterProcessLock> locks = new ConcurrentHashMap<>();
     
@@ -73,16 +76,16 @@ public final class CuratorZookeeperRepository implements RegistryCenterRepositor
     
     @Override
     public void init(final String name, final RegistryCenterConfiguration config) {
-        ZookeeperProperties zookeeperProperties = new ZookeeperProperties(props);
-        client = buildCuratorClient(name, config, zookeeperProperties);
-        initCuratorClient(zookeeperProperties);
+        ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
+        client = buildCuratorClient(name, config, zookeeperProps);
+        initCuratorClient(zookeeperProps);
     }
     
-    private CuratorFramework buildCuratorClient(final String namespace, final RegistryCenterConfiguration config, final ZookeeperProperties zookeeperProperties) {
-        int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
-        int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
-        int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
-        int operationTimeoutMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
+    private CuratorFramework buildCuratorClient(final String namespace, final RegistryCenterConfiguration config, final ZookeeperProperties zookeeperProps) {
+        int retryIntervalMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
+        int maxRetries = zookeeperProps.getValue(ZookeeperPropertyKey.MAX_RETRIES);
+        int timeToLiveSeconds = zookeeperProps.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
+        int operationTimeoutMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
         builder.connectString(config.getServerLists())
             .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
             .namespace(namespace);
@@ -92,7 +95,7 @@ public final class CuratorZookeeperRepository implements RegistryCenterRepositor
         if (0 != operationTimeoutMilliseconds) {
             builder.connectionTimeoutMs(operationTimeoutMilliseconds);
         }
-        String digest = zookeeperProperties.getValue(ZookeeperPropertyKey.DIGEST);
+        String digest = zookeeperProps.getValue(ZookeeperPropertyKey.DIGEST);
         if (!Strings.isNullOrEmpty(digest)) {
             builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(StandardCharsets.UTF_8))
                 .aclProvider(new ACLProvider() {
@@ -111,11 +114,11 @@ public final class CuratorZookeeperRepository implements RegistryCenterRepositor
         return builder.build();
     }
     
-    private void initCuratorClient(final ZookeeperProperties zookeeperProperties) {
+    private void initCuratorClient(final ZookeeperProperties zookeeperProps) {
         client.start();
         try {
-            int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
-            int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
+            int retryIntervalMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
+            int maxRetries = zookeeperProps.getValue(ZookeeperPropertyKey.MAX_RETRIES);
             if (!client.blockUntilConnected(retryIntervalMilliseconds * maxRetries, TimeUnit.MILLISECONDS)) {
                 client.close();
                 throw new OperationTimeoutException();

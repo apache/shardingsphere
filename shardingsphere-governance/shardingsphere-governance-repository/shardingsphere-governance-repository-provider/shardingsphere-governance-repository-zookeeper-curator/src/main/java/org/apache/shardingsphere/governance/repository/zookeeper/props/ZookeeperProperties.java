@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.etcd;
+package org.apache.shardingsphere.governance.repository.zookeeper.props;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
+import org.apache.shardingsphere.infra.properties.TypedProperties;
+
+import java.util.Properties;
 
 /**
- * Typed property key of Etcd.
+ * Typed properties of Zookeeper.
  */
-@RequiredArgsConstructor
-@Getter
-public enum EtcdPropertyKey implements TypedPropertyKey {
+public final class ZookeeperProperties extends TypedProperties<ZookeeperPropertyKey> {
     
-    /**
-     * Time to live seconds.
-     */
-    TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30", long.class);
-    
-    private final String key;
-    
-    private final String defaultValue;
-    
-    private final Class<?> type;
+    public ZookeeperProperties(final Properties props) {
+        super(ZookeeperPropertyKey.class, props);
+    }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.zookeeper;
+package org.apache.shardingsphere.governance.repository.zookeeper.props;
 
 import org.junit.Test;
 

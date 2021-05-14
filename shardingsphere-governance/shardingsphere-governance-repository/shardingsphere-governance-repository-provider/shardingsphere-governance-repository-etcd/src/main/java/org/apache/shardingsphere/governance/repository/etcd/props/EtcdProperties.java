@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.etcd;
+package org.apache.shardingsphere.governance.repository.etcd.props;
 
 import org.apache.shardingsphere.infra.properties.TypedProperties;
 
