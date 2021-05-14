@@ -27,19 +27,19 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
  */
 public final class GovernanceConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlGovernanceConfiguration, GovernanceConfiguration> {
     
-    private final GovernanceCenterConfigurationYamlSwapper governanceCenterConfigurationSwapper = new GovernanceCenterConfigurationYamlSwapper();
+    private final RegistryCenterConfigurationYamlSwapper registryCenterConfigurationYamlSwapper = new RegistryCenterConfigurationYamlSwapper();
     
     @Override
     public YamlGovernanceConfiguration swapToYamlConfiguration(final GovernanceConfiguration data) {
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
         result.setName(data.getName());
-        result.setRegistryCenter(governanceCenterConfigurationSwapper.swapToYamlConfiguration(data.getRegistryCenterConfiguration()));
+        result.setRegistryCenter(registryCenterConfigurationYamlSwapper.swapToYamlConfiguration(data.getRegistryCenterConfiguration()));
         return result;
     }
     
     @Override
     public GovernanceConfiguration swapToObject(final YamlGovernanceConfiguration yamlConfig) {
-        RegistryCenterConfiguration registryCenterConfiguration = governanceCenterConfigurationSwapper.swapToObject(yamlConfig.getRegistryCenter());
+        RegistryCenterConfiguration registryCenterConfiguration = registryCenterConfigurationYamlSwapper.swapToObject(yamlConfig.getRegistryCenter());
         return new GovernanceConfiguration(yamlConfig.getName(), registryCenterConfiguration, yamlConfig.isOverwrite());
     }
 }

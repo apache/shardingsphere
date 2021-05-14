@@ -22,9 +22,9 @@ import org.apache.shardingsphere.governance.repository.api.config.RegistryCenter
 import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * Governance center configuration YAML swapper.
+ * Registry center configuration YAML swapper.
  */
-public final class GovernanceCenterConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlRegistryCenterConfiguration, RegistryCenterConfiguration> {
+public final class RegistryCenterConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlRegistryCenterConfiguration, RegistryCenterConfiguration> {
     
     @Override
     public YamlRegistryCenterConfiguration swapToYamlConfiguration(final RegistryCenterConfiguration config) {
