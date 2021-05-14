@@ -28,33 +28,16 @@ public final class GovernanceRepositoryConfigurationUtil {
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     public static GovernanceConfiguration getZooKeeperConfiguration(final boolean overwrite, final ShardingType shardingType) {
-        RegistryCenterConfiguration governanceCenterConfig = new RegistryCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, new Properties());
+        RegistryCenterConfiguration registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, new Properties());
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                return new GovernanceConfiguration("governance-sharding-data-source", governanceCenterConfig, overwrite);
+                return new GovernanceConfiguration("governance-sharding-data-source", registryCenterConfig, overwrite);
             case READWRITE_SPLITTING:
-                return new GovernanceConfiguration("governance-readwrite-splitting-data-source", governanceCenterConfig, overwrite);
+                return new GovernanceConfiguration("governance-readwrite-splitting-data-source", registryCenterConfig, overwrite);
             case ENCRYPT:
-                return new GovernanceConfiguration("governance-encrypt-data-source", governanceCenterConfig, overwrite);
+                return new GovernanceConfiguration("governance-encrypt-data-source", registryCenterConfig, overwrite);
             case SHADOW:
-                return new GovernanceConfiguration("governance-shadow-data-source", governanceCenterConfig, overwrite);
-            default:
-                throw new UnsupportedOperationException(shardingType.toString());
-        }
-    }
-    
-    public static GovernanceConfiguration getNacosConfiguration(final boolean overwrite, final ShardingType shardingType) {
-        Properties zookeeperProperties = new Properties();
-        RegistryCenterConfiguration zookeeperConfig = new RegistryCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, zookeeperProperties);
-        switch (shardingType) {
-            case SHARDING_DATABASES_AND_TABLES:
-                return new GovernanceConfiguration("governance-zookeeper-sharding-data-source", zookeeperConfig, overwrite);
-            case READWRITE_SPLITTING:
-                return new GovernanceConfiguration("governance-zookeeper-readwrite-splitting-data-source", zookeeperConfig, overwrite);
-            case ENCRYPT:
-                return new GovernanceConfiguration("governance-zookeeper-encrypt-data-source", zookeeperConfig, overwrite);
-            case SHADOW:
-                return new GovernanceConfiguration("governance-zookeeper-shadow-data-source", zookeeperConfig, overwrite);
+                return new GovernanceConfiguration("governance-shadow-data-source", registryCenterConfig, overwrite);
             default:
                 throw new UnsupportedOperationException(shardingType.toString());
         }

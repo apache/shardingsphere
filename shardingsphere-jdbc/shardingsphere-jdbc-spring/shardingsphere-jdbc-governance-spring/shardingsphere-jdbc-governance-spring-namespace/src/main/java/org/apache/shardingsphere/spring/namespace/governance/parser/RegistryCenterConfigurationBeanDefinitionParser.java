@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.namespace.governance.parser;
 
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.spring.namespace.governance.constants.GovernanceCenterConfigurationBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.governance.constants.RegistryCenterConfigurationBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,21 +29,21 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Governance center configuration parser for spring namespace.
+ * Registry center configuration parser for spring namespace.
  */
-public final class GovernanceCenterConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class RegistryCenterConfigurationBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(RegistryCenterConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(GovernanceCenterConfigurationBeanDefinitionTag.TYPE_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(GovernanceCenterConfigurationBeanDefinitionTag.SERVER_LISTS_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(RegistryCenterConfigurationBeanDefinitionTag.SERVER_LISTS_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, GovernanceCenterConfigurationBeanDefinitionTag.PROP_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, RegistryCenterConfigurationBeanDefinitionTag.PROP_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

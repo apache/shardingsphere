@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Governance center configuration bean definition tag.
+ * Registry center configuration bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GovernanceCenterConfigurationBeanDefinitionTag {
+public final class RegistryCenterConfigurationBeanDefinitionTag {
     
     public static final String REG_CENTER_ROOT_TAG = "reg-center";
     
