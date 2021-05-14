@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
-execute
-    : (addResource
-    | dropResource
-    | createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | createReadwriteSplittingRule
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | alterReplicaQueryRule
-    | dropReplicaQueryRule
-    | showResources
-    | showRule
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+import java.util.List;
+import java.util.Properties;
+
+/**
+ * Test replica load balance algorithm.
+ */
+@Getter
+@Setter
+public final class TestReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+    
+    private Properties props = new Properties();
+    
+    @Override
+    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+        return null;
+    }
+    
+    @Override
+    public String getType() {
+        return "TEST";
+    }
+}

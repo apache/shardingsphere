@@ -28,7 +28,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.A
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.BindTableRulesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CheckScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingTableRuleContext;
@@ -37,7 +36,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.D
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.FunctionDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ResetScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingTableRuleDefinitionContext;
@@ -142,16 +140,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         }
         return result;
     }
-    
-    @Override
-    public ASTNode visitCreateReplicaQueryRule(final CreateReplicaQueryRuleContext ctx) {
-        Collection<ReadwriteSplittingRuleSegment> replicaQueryRules = new LinkedList<>();
-        for (ReplicaQueryRuleDefinitionContext each : ctx.replicaQueryRuleDefinition()) {
-            replicaQueryRules.add((ReadwriteSplittingRuleSegment) visit(each));
-        }
-        return new CreateReadwriteSplittingRuleStatement(replicaQueryRules);
-    }
-    
+
     @Override
     public ASTNode visitCreateShardingBroadcastTableRules(final CreateShardingBroadcastTableRulesContext ctx) {
         CreateShardingBroadcastTableRulesStatement result = new CreateShardingBroadcastTableRulesStatement();
@@ -221,27 +210,6 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     public ASTNode visitDynamicReadwriteSplittingRuleDefinition(final DistSQLStatementParser.DynamicReadwriteSplittingRuleDefinitionContext ctx) {
         ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
         result.setAutoAwareResource(ctx.IDENTIFIER().getText());
-        return result;
-    }
-
-    @Override
-    public ASTNode visitReplicaQueryRuleDefinition(final ReplicaQueryRuleDefinitionContext ctx) {
-        ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
-        Collection<String> replicaDatasources = new LinkedList<>();
-        for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
-            replicaDatasources.add(each.getText());
-        }
-        Properties props = new Properties();
-        if (null != ctx.functionDefinition().algorithmProperties()) {
-            for (AlgorithmPropertyContext each : ctx.functionDefinition().algorithmProperties().algorithmProperty()) {
-                props.setProperty(each.key.getText(), each.value.getText());
-            }
-        }
-        result.setName(ctx.ruleName().getText());
-        result.setWriteDataSource(ctx.primary.getText());
-        result.setReadDataSources(replicaDatasources);
-        result.setLoadBalancer(ctx.functionDefinition().functionName().getText());
-        result.setProps(props);
         return result;
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.common.yaml.converter;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
@@ -40,17 +41,35 @@ public final class CreateReadwriteSplittingRuleStatementConverter {
     public static YamlReadwriteSplittingRuleConfiguration convert(final CreateReadwriteSplittingRuleStatement sqlStatement) {
         YamlReadwriteSplittingRuleConfiguration result = new YamlReadwriteSplittingRuleConfiguration();
         for (ReadwriteSplittingRuleSegment each : sqlStatement.getReadwriteSplittingRules()) {
-            YamlReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration = new YamlReadwriteSplittingDataSourceRuleConfiguration();
-            dataSourceRuleConfiguration.setWriteDataSourceName(each.getWriteDataSource());
-            dataSourceRuleConfiguration.getReadDataSourceNames().addAll(each.getReadDataSources());
-            dataSourceRuleConfiguration.setLoadBalancerName(each.getLoadBalancer());
-            dataSourceRuleConfiguration.setProps(each.getProps());
-            result.getDataSources().put(each.getName(), dataSourceRuleConfiguration);
-            YamlShardingSphereAlgorithmConfiguration loadBalancer = new YamlShardingSphereAlgorithmConfiguration();
-            loadBalancer.setType(each.getLoadBalancer());
-            loadBalancer.setProps(each.getProps());
-            result.getLoadBalancers().put(each.getLoadBalancer(), loadBalancer);
+            String loadBalancerName = getLoadBalancerName(each.getName(), each.getLoadBalancer());
+            result.getDataSources().put(each.getName(), buildDataSourceRuleConfiguration(loadBalancerName, each));
+            result.getLoadBalancers().put(loadBalancerName, buildLoadBalancer(each));
         }
         return result;
+    }
+
+    private static YamlReadwriteSplittingDataSourceRuleConfiguration buildDataSourceRuleConfiguration(final String loadBalancerName,
+                                                                                                      final ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment) {
+        YamlReadwriteSplittingDataSourceRuleConfiguration result = new YamlReadwriteSplittingDataSourceRuleConfiguration();
+        if (Strings.isNullOrEmpty(readwriteSplittingRuleSegment.getAutoAwareResource())) {
+            result.setWriteDataSourceName(readwriteSplittingRuleSegment.getWriteDataSource());
+            result.getReadDataSourceNames().addAll(readwriteSplittingRuleSegment.getReadDataSources());
+        } else {
+            result.setAutoAwareDataSourceName(readwriteSplittingRuleSegment.getAutoAwareResource());
+        }
+        result.setLoadBalancerName(loadBalancerName);
+        result.setProps(readwriteSplittingRuleSegment.getProps());
+        return result;
+    }
+
+    private static YamlShardingSphereAlgorithmConfiguration buildLoadBalancer(final ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment) {
+        YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
+        result.setType(readwriteSplittingRuleSegment.getLoadBalancer());
+        result.setProps(readwriteSplittingRuleSegment.getProps());
+        return result;
+    }
+
+    private static String getLoadBalancerName(final String ruleName, final String loadBalancerType) {
+        return String.format("%s_%s", ruleName, loadBalancerType);
     }
 }
