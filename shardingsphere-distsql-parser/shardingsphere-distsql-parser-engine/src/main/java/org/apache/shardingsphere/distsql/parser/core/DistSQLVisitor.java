@@ -213,9 +213,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     public ASTNode visitStaticReadwriteSplittingRuleDefinition(final DistSQLStatementParser.StaticReadwriteSplittingRuleDefinitionContext ctx) {
         ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
         result.setWriteDataSource(ctx.writeResourceName().getText());
-        Collection<String> readResources = new LinkedList<>();
-        ctx.resourceName().forEach(each -> readResources.add(each.getText()));
-        result.setReadDataSources(readResources);
+        result.setReadDataSources(ctx.resourceName().stream().map(each -> each.getText()).collect(Collectors.toList()));
         return result;
     }
 
