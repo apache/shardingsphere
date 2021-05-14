@@ -35,15 +35,15 @@ public interface RegistryCenterRepository extends TypedSPI {
     String PATH_SEPARATOR = "/";
     
     /**
-     * Initialize governance center.
+     * Initialize registry center.
      *
-     * @param name governance center name
-     * @param config governance center configuration
+     * @param name registry center name
+     * @param config registry center configuration
      */
     void init(String name, RegistryCenterConfiguration config);
     
     /**
-     * Get data from governance center.
+     * Get data from registry center.
      *
      * <p>Maybe use cache if existed.</p>
      *
