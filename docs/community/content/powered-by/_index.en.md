@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 166 companies.
+Total: 167 companies.
 
 ### Financial Industry
 <ul>
@@ -199,6 +199,7 @@ Total: 166 companies.
 ### Manufacturing
 <ul>
     <li><a href="https://www.lixiang.com" rel="nofollow">LiXiang</a></li>
+<li><a href="https://www.gongniu.cn/" rel="nofollow">Bull</a></li>
 </ul>
 
 ### Software Development Services
