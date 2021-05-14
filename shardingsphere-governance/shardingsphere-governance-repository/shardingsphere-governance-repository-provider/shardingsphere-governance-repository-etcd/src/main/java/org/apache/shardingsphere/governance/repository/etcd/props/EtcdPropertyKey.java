@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.etcd;
+package org.apache.shardingsphere.governance.repository.etcd.props;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 
-import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class EtcdPropertiesTest {
+/**
+ * Typed property key of Etcd.
+ */
+@RequiredArgsConstructor
+@Getter
+public enum EtcdPropertyKey implements TypedPropertyKey {
     
-    @Test
-    public void assertGetValue() {
-        Properties props = new Properties();
-        props.setProperty(EtcdPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "50");
-        EtcdProperties actual = new EtcdProperties(props);
-        assertThat(actual.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(50L));
-    }
+    /**
+     * Time to live seconds.
+     */
+    TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30", long.class);
     
-    @Test
-    public void assertGetDefaultValue() {
-        EtcdProperties actual = new EtcdProperties(new Properties());
-        assertThat(actual.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(30L));
-    }
+    private final String key;
+    
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }

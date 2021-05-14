@@ -33,6 +33,7 @@ import io.etcd.jetcd.watch.WatchEvent;
 import io.etcd.jetcd.watch.WatchResponse;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.repository.etcd.props.EtcdProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
