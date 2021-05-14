@@ -37,6 +37,8 @@ import org.apache.shardingsphere.governance.repository.api.listener.DataChangedE
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.zookeeper.handler.CuratorZookeeperExceptionHandler;
+import org.apache.shardingsphere.governance.repository.zookeeper.props.ZookeeperProperties;
+import org.apache.shardingsphere.governance.repository.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
