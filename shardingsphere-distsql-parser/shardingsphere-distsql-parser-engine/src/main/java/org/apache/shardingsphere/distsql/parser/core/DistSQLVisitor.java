@@ -189,11 +189,8 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitCreateReadwriteSplittingRule(final DistSQLStatementParser.CreateReadwriteSplittingRuleContext ctx) {
-        Collection<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments = new LinkedList<>();
-        for (DistSQLStatementParser.ReadwriteSplittingRuleDefinitionContext each : ctx.readwriteSplittingRuleDefinition()) {
-            readwriteSplittingRuleSegments.add((ReadwriteSplittingRuleSegment) visit(each));
-        }
-        return new CreateReadwriteSplittingRuleStatement(readwriteSplittingRuleSegments);
+        return new CreateReadwriteSplittingRuleStatement(ctx.readwriteSplittingRuleDefinition()
+                .stream().map(each -> (ReadwriteSplittingRuleSegment) visit(each)).collect(Collectors.toList()));
     }
 
     @Override
@@ -203,11 +200,11 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
                         : visit(ctx.staticReadwriteSplittingRuleDefinition()));
         Properties props = new Properties();
         if (null != ctx.functionDefinition().algorithmProperties()) {
-            for (AlgorithmPropertyContext each : ctx.functionDefinition().algorithmProperties().algorithmProperty()) {
-                props.setProperty(each.key.getText(), each.value.getText());
-            }
+            ctx.functionDefinition().algorithmProperties().algorithmProperty()
+                    .forEach(each -> props.setProperty(each.key.getText(), each.value.getText()));
         }
         result.setName(ctx.ruleName().getText());
+        result.setLoadBalancer(ctx.functionDefinition().functionName().getText());
         result.setProps(props);
         return result;
     }
@@ -217,9 +214,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
         result.setWriteDataSource(ctx.writeResourceName().getText());
         Collection<String> readResources = new LinkedList<>();
-        for (DistSQLStatementParser.ResourceNameContext each : ctx.resourceName()) {
-            readResources.add(each.getText());
-        }
+        ctx.resourceName().forEach(each -> readResources.add(each.getText()));
         result.setReadDataSources(readResources);
         return result;
     }

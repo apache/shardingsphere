@@ -83,13 +83,13 @@ public final class DistSQLStatementParserEngineTest {
 
     private static final String RDL_DROP_SHARDING_BROADCAST_TABLE_RULES = "DROP SHARDING BROADCAST TABLE RULES";
 
-    private static final String RDL_CREATE_STATIC_READWRITE_SPLITTING_RULE = "CREATE READ_WRITE_SPLITTING RULE ms_group_0 ("
+    private static final String RDL_CREATE_STATIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_0 ("
             + "WRITE_RESOURCE=primary_ds,"
             + "READ_RESOURCES(replica_ds_0,replica_ds_1),"
             + "TYPE(NAME=random)"
             + ")";
 
-    private static final String RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE = "CREATE READ_WRITE_SPLITTING RULE ms_group_1 ("
+    private static final String RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_1 ("
             + "AUTO_AWARE_RESOURCE=group_0,"
             + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))"
             + ")";

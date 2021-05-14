@@ -88,7 +88,7 @@ alterShardingBroadcastTableRules
     ;
 
 createReadwriteSplittingRule
-    : CREATE READ_WRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
+    : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
 
 readwriteSplittingRuleDefinition
