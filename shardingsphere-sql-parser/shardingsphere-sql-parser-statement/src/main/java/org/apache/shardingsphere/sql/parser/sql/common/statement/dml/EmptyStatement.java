@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.skip;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.junit.Test;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class SkipBackendHandlerTest {
+/**
+ * Empty statement.
+ */
+public final class EmptyStatement implements SQLStatement {
     
-    @Test
-    public void assertExecuteSkipBackendHandler() {
-        SkipBackendHandler skipBackendHandler = new SkipBackendHandler(null);
-        ResponseHeader actual = skipBackendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+    @Override
+    public int getParameterCount() {
+        return 0;
     }
 }

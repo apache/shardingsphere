@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.skip;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class SkipBackendHandlerTest {
+public final class PostgreSQLEmptyQueryResponsePacketTest {
     
     @Test
-    public void assertExecuteSkipBackendHandler() {
-        SkipBackendHandler skipBackendHandler = new SkipBackendHandler(null);
-        ResponseHeader actual = skipBackendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+    public void assertIdentifier() {
+        PostgreSQLIdentifierTag actual = new PostgreSQLEmptyQueryResponsePacket().getIdentifier();
+        assertThat(actual, is(PostgreSQLMessagePacketType.EMPTY_QUERY_RESPONSE));
     }
 }
