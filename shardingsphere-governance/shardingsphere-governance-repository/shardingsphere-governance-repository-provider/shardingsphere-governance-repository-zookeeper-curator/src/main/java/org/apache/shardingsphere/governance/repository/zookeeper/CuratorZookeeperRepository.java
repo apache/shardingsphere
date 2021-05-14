@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Governance repository of ZooKeeper.
+ * Registry repository of ZooKeeper.
  */
 public final class CuratorZookeeperRepository implements RegistryCenterRepository {
     
