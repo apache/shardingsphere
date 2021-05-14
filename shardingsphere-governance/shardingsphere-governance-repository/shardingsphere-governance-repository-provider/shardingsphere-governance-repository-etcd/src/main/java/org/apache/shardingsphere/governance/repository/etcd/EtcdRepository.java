@@ -49,17 +49,21 @@ import java.util.stream.Collectors;
 public final class EtcdRepository implements RegistryCenterRepository {
     
     private Client client;
-    
+
+    private Long leaseId;
+
     @Getter
     @Setter
     private Properties props = new Properties();
     
     private EtcdProperties etcdProperties;
-    
+
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void init(final String name, final RegistryCenterConfiguration config) {
         etcdProperties = new EtcdProperties(props);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).namespace(ByteSequence.from(name, StandardCharsets.UTF_8)).build();
+        leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
@@ -89,24 +93,31 @@ public final class EtcdRepository implements RegistryCenterRepository {
     public void persist(final String key, final String value) {
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8)).get();
     }
-    
+
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void persistEphemeral(final String key, final String value) {
-        long leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> { }));
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8), PutOption.newBuilder().withLeaseId(leaseId).build()).get();
     }
     
     @Override
     public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        // TODO
-        return false;
+        try {
+            client.getLockClient().lock(ByteSequence.from(key, StandardCharsets.UTF_8), leaseId).get(time, unit);
+            return true;
+        } catch (final Exception ex) {
+            return false;
+        }
     }
     
     @Override
     public void releaseLock(final String key) {
-        // TODO
+        try {
+            client.getLockClient().unlock(ByteSequence.from(key, StandardCharsets.UTF_8)).get(etcdProperties.getValue(EtcdPropertyKey.CONNECTION_TIMEOUT_SECONDS), TimeUnit.SECONDS);
+        } catch (final Exception ex) {
+            // do noting
+        }
     }
     
     @Override
