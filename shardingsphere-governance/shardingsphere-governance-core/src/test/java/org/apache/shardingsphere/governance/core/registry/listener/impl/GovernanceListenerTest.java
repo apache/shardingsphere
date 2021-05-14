@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.mockito.Mock;
 
 import java.io.IOException;

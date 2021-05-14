@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.repository.api.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.UUID;
 
