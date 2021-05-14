@@ -57,7 +57,7 @@ public final class GovernanceFacadeTest {
     
     @Before
     public void setUp() {
-        GovernanceConfiguration governanceConfig = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
+        GovernanceConfiguration governanceConfig = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("REG", "127.0.0.1", new Properties()), false);
         governanceFacade.init(governanceConfig, Arrays.asList("sharding_db", "replica_query_db"));
         setField(governanceFacade, "registryCenterRepository", registryCenterRepository);
         setField(governanceFacade, "registryCenter", registryCenter);

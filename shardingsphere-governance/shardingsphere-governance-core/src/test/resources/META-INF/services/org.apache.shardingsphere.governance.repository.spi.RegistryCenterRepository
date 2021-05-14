@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.governance.core.facade.fixture.TestRegistryCenterRepository
-org.apache.shardingsphere.governance.core.facade.fixture.TestAllRegistryCenterRepository
