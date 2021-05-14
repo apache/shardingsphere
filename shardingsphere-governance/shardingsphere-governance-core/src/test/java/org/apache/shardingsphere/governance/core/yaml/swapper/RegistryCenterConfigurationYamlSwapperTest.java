@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlRegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ public final class RegistryCenterConfigurationYamlSwapperTest {
     @Test
     public void assertToYamlConfiguration() {
         RegistryCenterConfiguration expected = new RegistryCenterConfiguration("TEST", "127.0.0.1:2181", new Properties());
-        YamlGovernanceCenterConfiguration actual = new GovernanceCenterConfigurationYamlSwapper().swapToYamlConfiguration(expected);
+        YamlRegistryCenterConfiguration actual = new RegistryCenterConfigurationYamlSwapper().swapToYamlConfiguration(expected);
         assertThat(actual.getType(), is(expected.getType()));
         assertThat(actual.getServerLists(), is(expected.getServerLists()));
         assertThat(actual.getProps(), is(expected.getProps()));
@@ -39,15 +39,15 @@ public final class RegistryCenterConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        YamlGovernanceCenterConfiguration yamlConfig = getYamlGovernanceCenterConfiguration();
-        RegistryCenterConfiguration governanceCenterConfig = new GovernanceCenterConfigurationYamlSwapper().swapToObject(yamlConfig);
-        assertThat(governanceCenterConfig.getType(), is(yamlConfig.getType()));
-        assertThat(governanceCenterConfig.getServerLists(), is(yamlConfig.getServerLists()));
-        assertThat(governanceCenterConfig.getProps(), is(yamlConfig.getProps()));
+        YamlRegistryCenterConfiguration yamlConfig = getYamlRegistryCenterConfiguration();
+        RegistryCenterConfiguration config = new RegistryCenterConfigurationYamlSwapper().swapToObject(yamlConfig);
+        assertThat(config.getType(), is(yamlConfig.getType()));
+        assertThat(config.getServerLists(), is(yamlConfig.getServerLists()));
+        assertThat(config.getProps(), is(yamlConfig.getProps()));
     }
     
-    private YamlGovernanceCenterConfiguration getYamlGovernanceCenterConfiguration() {
-        YamlGovernanceCenterConfiguration result = new YamlGovernanceCenterConfiguration();
+    private YamlRegistryCenterConfiguration getYamlRegistryCenterConfiguration() {
+        YamlRegistryCenterConfiguration result = new YamlRegistryCenterConfiguration();
         result.setType("TEST");
         result.setProps(new Properties());
         result.setServerLists("127.0.0.1:2181");

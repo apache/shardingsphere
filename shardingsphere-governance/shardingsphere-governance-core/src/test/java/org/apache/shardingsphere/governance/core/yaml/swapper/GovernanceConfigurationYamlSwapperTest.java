@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlRegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -97,8 +97,8 @@ public final class GovernanceConfigurationYamlSwapperTest {
         return result;
     }
     
-    private YamlGovernanceCenterConfiguration createYamlRegistryCenterConfiguration() {
-        YamlGovernanceCenterConfiguration result = new YamlGovernanceCenterConfiguration();
+    private YamlRegistryCenterConfiguration createYamlRegistryCenterConfiguration() {
+        YamlRegistryCenterConfiguration result = new YamlRegistryCenterConfiguration();
         result.setType("TEST");
         result.setProps(new Properties());
         result.setServerLists("127.0.0.1:2181");

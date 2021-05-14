@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.governance.internal.util;
 
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlRegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.junit.Test;
 
@@ -27,12 +27,12 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class YamlInstanceConfigurationSwapperUtilTest {
+public final class YamlGovernanceConfigurationSwapperUtilTest {
     
     @Test
     public void marshal() {
         YamlGovernanceConfiguration expected = createExpectedYamlGovernanceConfiguration();
-        RegistryCenterConfiguration actual = YamlGovernanceRepositoryConfigurationSwapperUtil.marshal(expected).getRegistryCenterConfiguration();
+        RegistryCenterConfiguration actual = YamlGovernanceConfigurationSwapperUtil.marshal(expected).getRegistryCenterConfiguration();
         assertThat(actual.getType(), is(expected.getRegistryCenter().getType()));
         assertThat(actual.getServerLists(), is(expected.getRegistryCenter().getServerLists()));
         assertThat(actual.getProps(), is(expected.getRegistryCenter().getProps()));
@@ -41,12 +41,12 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     private YamlGovernanceConfiguration createExpectedYamlGovernanceConfiguration() {
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
         result.setName("test");
-        result.setRegistryCenter(createYamlGovernanceRepositoryConfiguration());
+        result.setRegistryCenter(createYamlRegistryRepositoryConfiguration());
         return result;
     }
     
-    private YamlGovernanceCenterConfiguration createYamlGovernanceRepositoryConfiguration() {
-        YamlGovernanceCenterConfiguration result = new YamlGovernanceCenterConfiguration();
+    private YamlRegistryCenterConfiguration createYamlRegistryRepositoryConfiguration() {
+        YamlRegistryCenterConfiguration result = new YamlRegistryCenterConfiguration();
         result.setType("ZooKeeper");
         result.setServerLists("localhost:2181");
         result.setProps(new Properties());

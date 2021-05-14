@@ -42,10 +42,10 @@ public final class RegistryCenterRepositoryFacade implements AutoCloseable {
     }
     
     private RegistryCenterRepository createGovernanceRepository(final GovernanceConfiguration config) {
-        RegistryCenterConfiguration governanceCenterConfig = config.getRegistryCenterConfiguration();
-        Preconditions.checkNotNull(governanceCenterConfig, "Governance center configuration cannot be null.");
-        RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, governanceCenterConfig.getType(), governanceCenterConfig.getProps());
-        result.init(config.getName(), governanceCenterConfig);
+        RegistryCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
+        Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
+        RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
+        result.init(config.getName(), registryCenterConfig);
         return result;
     }
     

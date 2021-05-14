@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.governance.api.yaml;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.driver.governance.internal.util.YamlGovernanceRepositoryConfigurationSwapperUtil;
+import org.apache.shardingsphere.driver.governance.internal.util.YamlGovernanceConfigurationSwapperUtil;
 import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceRootRuleConfigurations;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -109,13 +109,13 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
     }
     
     private static DataSource createDataSourceWithoutRules(final YamlGovernanceConfiguration governance) throws SQLException {
-        return new GovernanceShardingSphereDataSource(YamlGovernanceRepositoryConfigurationSwapperUtil.marshal(governance));
+        return new GovernanceShardingSphereDataSource(YamlGovernanceConfigurationSwapperUtil.marshal(governance));
     }
     
     private static DataSource createDataSourceWithRules(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
                                                         final Properties props, final YamlGovernanceConfiguration governance) throws SQLException {
         return new GovernanceShardingSphereDataSource(dataSourceMap, ruleConfigurations, props, 
-                YamlGovernanceRepositoryConfigurationSwapperUtil.marshal(governance));
+                YamlGovernanceConfigurationSwapperUtil.marshal(governance));
     }
     
     private static YamlGovernanceRootRuleConfigurations unmarshal(final File yamlFile) throws IOException {

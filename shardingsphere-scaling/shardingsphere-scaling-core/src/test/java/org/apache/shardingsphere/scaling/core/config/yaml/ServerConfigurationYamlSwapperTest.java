@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.config.yaml;
 
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlRegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -55,10 +55,10 @@ public final class ServerConfigurationYamlSwapperTest {
     
     private YamlServerConfiguration mockYamlServerConfig() {
         YamlServerConfiguration result = new YamlServerConfiguration();
-        YamlGovernanceConfiguration governance = new YamlGovernanceConfiguration();
-        governance.setName("test");
-        governance.setRegistryCenter(new YamlGovernanceCenterConfiguration());
-        result.setGovernance(governance);
+        YamlGovernanceConfiguration config = new YamlGovernanceConfiguration();
+        config.setName("test");
+        config.setRegistryCenter(new YamlRegistryCenterConfiguration());
+        result.setGovernance(config);
         result.getScaling().setWorkerThread(10);
         return result;
     }

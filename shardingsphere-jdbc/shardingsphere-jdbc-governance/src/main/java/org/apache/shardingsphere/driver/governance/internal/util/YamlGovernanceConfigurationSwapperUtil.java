@@ -21,21 +21,21 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceCenterConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.swapper.RegistryCenterConfigurationYamlSwapper;
 
 /**
  * YAML governance configuration swapper utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class YamlGovernanceRepositoryConfigurationSwapperUtil {
+public final class YamlGovernanceConfigurationSwapperUtil {
     
-    private static final GovernanceCenterConfigurationYamlSwapper SWAPPER = new GovernanceCenterConfigurationYamlSwapper();
+    private static final RegistryCenterConfigurationYamlSwapper SWAPPER = new RegistryCenterConfigurationYamlSwapper();
     
     /**
-     * Marshal YAML governance repository configuration map to instance configuration map.
+     * Marshal YAML governance configuration to governance configuration.
      *
      * @param governance YAML governance configuration
-     * @return governance repository configuration map
+     * @return governance configuration
      */
     public static GovernanceConfiguration marshal(final YamlGovernanceConfiguration governance) {
         return new GovernanceConfiguration(governance.getName(), SWAPPER.swapToObject(governance.getRegistryCenter()), governance.isOverwrite());

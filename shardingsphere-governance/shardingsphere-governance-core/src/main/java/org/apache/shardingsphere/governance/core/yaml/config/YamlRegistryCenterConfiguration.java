@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.governance.constants;
+package org.apache.shardingsphere.governance.core.yaml.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.Properties;
 
 /**
- * Governance center configuration bean definition tag.
+ * Registry center configuration for YAML.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GovernanceCenterConfigurationBeanDefinitionTag {
+@Getter
+@Setter
+public final class YamlRegistryCenterConfiguration implements YamlConfiguration {
     
-    public static final String REG_CENTER_ROOT_TAG = "reg-center";
+    private String type;
     
-    public static final String TYPE_ATTRIBUTE = "type";
+    private String serverLists;
     
-    public static final String SERVER_LISTS_ATTRIBUTE = "server-lists";
-    
-    public static final String PROP_TAG = "props";
+    private Properties props = new Properties();
 }
