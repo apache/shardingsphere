@@ -56,15 +56,15 @@ public final class GovernanceFacade implements AutoCloseable {
         isOverwrite = config.isOverwrite();
         registryCenterRepository = RegistryCenterRepositoryFactory.newInstance(config);
         registryCenter = new RegistryCenter(registryCenterRepository);
-        listenerManager = new GovernanceListenerManager(registryCenterRepository, schemaNames.isEmpty()
-                ? registryCenter.getAllSchemaNames() : Stream.of(registryCenter.getAllSchemaNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
+        listenerManager = new GovernanceListenerManager(registryCenterRepository, 
+                Stream.of(registryCenter.getAllSchemaNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
     }
     
     /**
      * Online instance.
      *
-     * @param dataSourceConfigMap schema data source configuration map
-     * @param schemaRuleMap schema rule map
+     * @param dataSourceConfigMap schema and data source configuration map
+     * @param schemaRuleMap schema and rule map
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      */

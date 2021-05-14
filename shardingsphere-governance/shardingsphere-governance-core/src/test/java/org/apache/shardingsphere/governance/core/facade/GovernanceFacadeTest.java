@@ -25,11 +25,7 @@ import org.apache.shardingsphere.governance.repository.api.config.RegistryCenter
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -38,30 +34,47 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class GovernanceFacadeTest {
     
     private final GovernanceFacade governanceFacade = new GovernanceFacade();
     
-    @Mock
-    private RegistryCenterRepository registryCenterRepository;
+    @Test
+    public void assertInit() {
+        GovernanceConfiguration config = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("REG", "127.0.0.1", new Properties()), false);
+        governanceFacade.init(config, Arrays.asList("schema_0", "schema_1"));
+        assertNotNull(governanceFacade.getRegistryCenter());
+        // TODO use reflection to assert attributes of GovernanceFacade
+    }
     
-    @Mock
-    private RegistryCenter registryCenter;
-    
-    @Mock
-    private GovernanceListenerManager listenerManager;
-    
-    @Before
-    public void setUp() {
-        GovernanceConfiguration governanceConfig = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("REG", "127.0.0.1", new Properties()), false);
-        governanceFacade.init(governanceConfig, Arrays.asList("sharding_db", "replica_query_db"));
-        setField(governanceFacade, "registryCenterRepository", registryCenterRepository);
+    @Test
+    public void assertOnlineInstance() {
+        RegistryCenter registryCenter = mock(RegistryCenter.class);
+        GovernanceListenerManager listenerManager = mock(GovernanceListenerManager.class);
         setField(governanceFacade, "registryCenter", registryCenter);
         setField(governanceFacade, "listenerManager", listenerManager);
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
+        Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
+        Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
+        Properties props = new Properties();
+        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, globalRuleConfigs, props);
+        verify(registryCenter).persistGlobalConfiguration(globalRuleConfigs, props, false);
+        verify(registryCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
+        verify(registryCenter).persistInstanceOnline();
+        verify(registryCenter).persistDataNodes();
+        verify(registryCenter).persistPrimaryNodes();
+        verify(listenerManager).initListeners();
+    }
+    
+    @Test
+    public void assertClose() {
+        RegistryCenterRepository registryCenterRepository = mock(RegistryCenterRepository.class);
+        setField(governanceFacade, "registryCenterRepository", registryCenterRepository);
+        governanceFacade.close();
+        verify(registryCenterRepository).close();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -69,33 +82,5 @@ public final class GovernanceFacadeTest {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, fieldValue);
-    }
-    
-    @Test
-    public void assertOnlineInstanceWithParameters() {
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
-        Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
-        Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
-        Properties props = new Properties();
-        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, globalRuleConfigs, props);
-        verify(registryCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
-        verify(registryCenter).persistGlobalConfiguration(globalRuleConfigs, props, false);
-        verify(registryCenter).persistInstanceOnline();
-        verify(registryCenter).persistDataNodes();
-        verify(listenerManager).initListeners();
-    }
-    
-    @Test
-    public void assertOnlineInstanceWithoutParameters() {
-        governanceFacade.onlineInstance();
-        verify(registryCenter).persistInstanceOnline();
-        verify(registryCenter).persistDataNodes();
-        verify(listenerManager).initListeners();
-    }
-    
-    @Test
-    public void assertClose() {
-        governanceFacade.close();
-        verify(registryCenterRepository).close();
     }
 }
