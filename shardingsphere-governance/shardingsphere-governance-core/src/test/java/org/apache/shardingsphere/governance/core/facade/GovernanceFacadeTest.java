@@ -44,7 +44,7 @@ public final class GovernanceFacadeTest {
     
     @Test
     public void assertInit() {
-        GovernanceConfiguration config = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("REG", "127.0.0.1", new Properties()), false);
+        GovernanceConfiguration config = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("TEST", "127.0.0.1", new Properties()), false);
         governanceFacade.init(config, Arrays.asList("schema_0", "schema_1"));
         assertNotNull(governanceFacade.getRegistryCenter());
         // TODO use reflection to assert attributes of GovernanceFacade
