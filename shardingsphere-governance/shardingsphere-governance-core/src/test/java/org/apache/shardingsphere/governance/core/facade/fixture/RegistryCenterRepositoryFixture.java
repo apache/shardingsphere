@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public final class TestAllRegistryCenterRepository implements RegistryCenterRepository {
+public final class RegistryCenterRepositoryFixture implements RegistryCenterRepository {
     
     @Override
     public void init(final String name, final RegistryCenterConfiguration config) {
@@ -72,6 +72,6 @@ public final class TestAllRegistryCenterRepository implements RegistryCenterRepo
     
     @Override
     public String getType() {
-        return "ALL";
+        return "TEST";
     }
 }
