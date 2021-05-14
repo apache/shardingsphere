@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardin
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
@@ -81,6 +82,17 @@ public final class DistSQLStatementParserEngineTest {
     private static final String RDL_DROP_SHARDING_BINDING_TABLE_RULES = "DROP SHARDING BINDING TABLE RULES";
 
     private static final String RDL_DROP_SHARDING_BROADCAST_TABLE_RULES = "DROP SHARDING BROADCAST TABLE RULES";
+
+    private static final String RDL_CREATE_STATIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_0 ("
+            + "WRITE_RESOURCE=primary_ds,"
+            + "READ_RESOURCES(replica_ds_0,replica_ds_1),"
+            + "TYPE(NAME=random)"
+            + ")";
+
+    private static final String RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_1 ("
+            + "AUTO_AWARE_RESOURCE=group_0,"
+            + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))"
+            + ")";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -229,5 +241,17 @@ public final class DistSQLStatementParserEngineTest {
     public void assertParseDropShardingBroadcastTableRules() {
         SQLStatement sqlStatement = engine.parse(RDL_DROP_SHARDING_BROADCAST_TABLE_RULES);
         assertTrue(sqlStatement instanceof DropShardingBroadcastTableRulesStatement);
+    }
+
+    @Test
+    public void assertParseStaticReadwriteSplittingRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_CREATE_STATIC_READWRITE_SPLITTING_RULE);
+        assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
+    }
+
+    @Test
+    public void assertParseDynamicReadwriteSplittingRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE);
+        assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
     }
 }

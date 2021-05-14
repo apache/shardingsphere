@@ -188,6 +188,43 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     }
 
     @Override
+    public ASTNode visitCreateReadwriteSplittingRule(final DistSQLStatementParser.CreateReadwriteSplittingRuleContext ctx) {
+        return new CreateReadwriteSplittingRuleStatement(ctx.readwriteSplittingRuleDefinition()
+                .stream().map(each -> (ReadwriteSplittingRuleSegment) visit(each)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public ASTNode visitReadwriteSplittingRuleDefinition(final DistSQLStatementParser.ReadwriteSplittingRuleDefinitionContext ctx) {
+        ReadwriteSplittingRuleSegment result = (ReadwriteSplittingRuleSegment) (null != ctx.dynamicReadwriteSplittingRuleDefinition()
+                        ? visit(ctx.dynamicReadwriteSplittingRuleDefinition())
+                        : visit(ctx.staticReadwriteSplittingRuleDefinition()));
+        Properties props = new Properties();
+        if (null != ctx.functionDefinition().algorithmProperties()) {
+            ctx.functionDefinition().algorithmProperties().algorithmProperty()
+                    .forEach(each -> props.setProperty(each.key.getText(), each.value.getText()));
+        }
+        result.setName(ctx.ruleName().getText());
+        result.setLoadBalancer(ctx.functionDefinition().functionName().getText());
+        result.setProps(props);
+        return result;
+    }
+
+    @Override
+    public ASTNode visitStaticReadwriteSplittingRuleDefinition(final DistSQLStatementParser.StaticReadwriteSplittingRuleDefinitionContext ctx) {
+        ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
+        result.setWriteDataSource(ctx.writeResourceName().getText());
+        result.setReadDataSources(ctx.resourceName().stream().map(each -> each.getText()).collect(Collectors.toList()));
+        return result;
+    }
+
+    @Override
+    public ASTNode visitDynamicReadwriteSplittingRuleDefinition(final DistSQLStatementParser.DynamicReadwriteSplittingRuleDefinitionContext ctx) {
+        ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
+        result.setAutoAwareResource(ctx.IDENTIFIER().getText());
+        return result;
+    }
+
+    @Override
     public ASTNode visitReplicaQueryRuleDefinition(final ReplicaQueryRuleDefinitionContext ctx) {
         ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
         Collection<String> replicaDatasources = new LinkedList<>();
