@@ -27,12 +27,12 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class YamlInstanceConfigurationSwapperUtilTest {
+public final class YamlGovernanceConfigurationSwapperUtilTest {
     
     @Test
     public void marshal() {
         YamlGovernanceConfiguration expected = createExpectedYamlGovernanceConfiguration();
-        RegistryCenterConfiguration actual = YamlGovernanceRepositoryConfigurationSwapperUtil.marshal(expected).getRegistryCenterConfiguration();
+        RegistryCenterConfiguration actual = YamlGovernanceConfigurationSwapperUtil.marshal(expected).getRegistryCenterConfiguration();
         assertThat(actual.getType(), is(expected.getRegistryCenter().getType()));
         assertThat(actual.getServerLists(), is(expected.getRegistryCenter().getServerLists()));
         assertThat(actual.getProps(), is(expected.getRegistryCenter().getProps()));
