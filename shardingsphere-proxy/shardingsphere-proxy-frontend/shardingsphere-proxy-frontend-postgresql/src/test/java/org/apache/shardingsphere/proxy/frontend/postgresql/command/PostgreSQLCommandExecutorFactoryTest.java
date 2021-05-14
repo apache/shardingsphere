@@ -67,9 +67,18 @@ public final class PostgreSQLCommandExecutorFactoryTest {
             if (null == commandPacketClass) {
                 commandPacketClass = PostgreSQLCommandPacket.class;
             }
-            CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(inputOutput.getCommandPacketType(), mock(commandPacketClass), mock(BackendConnection.class));
+            PostgreSQLCommandPacket packet = preparePacket(commandPacketClass);
+            CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(inputOutput.getCommandPacketType(), packet, mock(BackendConnection.class));
             assertThat(actual, instanceOf(inputOutput.getResultClass()));
         }
+    }
+    
+    private PostgreSQLCommandPacket preparePacket(final Class<? extends PostgreSQLCommandPacket> commandPacketClass) {
+        PostgreSQLCommandPacket result = mock(commandPacketClass);
+        if (result instanceof PostgreSQLComQueryPacket) {
+            when(((PostgreSQLComQueryPacket) result).getSql()).thenReturn("");
+        }
+        return result;
     }
     
     @RequiredArgsConstructor
