@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import java.util.Properties;
 
 /**
- * Governance center configuration for YAML.
+ * Registry center configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlGovernanceCenterConfiguration implements YamlConfiguration {
+public final class YamlRegistryCenterConfiguration implements YamlConfiguration {
     
     private String type;
     
