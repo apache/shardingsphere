@@ -103,14 +103,6 @@ dynamicReadwriteSplittingRuleDefinition
     : AUTO_AWARE_RESOURCE EQ IDENTIFIER
     ;
 
-createReplicaQueryRule
-    : CREATE REPLICA_QUERY RULE LP replicaQueryRuleDefinition (COMMA replicaQueryRuleDefinition)* RP
-    ;
-
-replicaQueryRuleDefinition
-    : ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition
-    ;
-
 alterReplicaQueryRule
     : ALTER REPLICA_QUERY RULE LP alterReplicaQueryRuleDefinition (COMMA alterReplicaQueryRuleDefinition)* RP
     ;
