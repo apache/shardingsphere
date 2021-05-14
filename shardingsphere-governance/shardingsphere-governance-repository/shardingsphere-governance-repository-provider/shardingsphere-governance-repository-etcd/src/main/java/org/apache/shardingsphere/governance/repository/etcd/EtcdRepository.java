@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Governance repository of ETCD.
+ * Registry repository of ETCD.
  */
 public final class EtcdRepository implements RegistryCenterRepository {
     
@@ -101,17 +101,6 @@ public final class EtcdRepository implements RegistryCenterRepository {
     }
     
     @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        // TODO
-        return false;
-    }
-    
-    @Override
-    public void releaseLock(final String key) {
-        // TODO
-    }
-    
-    @Override
     public void delete(final String key) {
         client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8));
     }
@@ -139,6 +128,17 @@ public final class EtcdRepository implements RegistryCenterRepository {
             default:
                 return Type.IGNORED;
         }
+    }
+    
+    @Override
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
+        // TODO
+        return false;
+    }
+    
+    @Override
+    public void releaseLock(final String key) {
+        // TODO
     }
     
     @Override
