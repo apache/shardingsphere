@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.governance.core.facade;
 
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.facade.repository.RegistryCenterRepositoryFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerManager;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
@@ -39,7 +39,7 @@ public final class GovernanceFacade implements AutoCloseable {
     
     private boolean isOverwrite;
     
-    private RegistryCenterRepositoryFacade repositoryFacade;
+    private RegistryCenterRepository registryCenterRepository;
     
     @Getter
     private RegistryCenter registryCenter;
@@ -54,9 +54,9 @@ public final class GovernanceFacade implements AutoCloseable {
      */
     public void init(final GovernanceConfiguration config, final Collection<String> schemaNames) {
         isOverwrite = config.isOverwrite();
-        repositoryFacade = new RegistryCenterRepositoryFacade(config);
-        registryCenter = new RegistryCenter(repositoryFacade.getRegistryCenterRepository());
-        listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryCenterRepository(), schemaNames.isEmpty()
+        registryCenterRepository = RegistryCenterRepositoryFactory.newInstance(config);
+        registryCenter = new RegistryCenter(registryCenterRepository);
+        listenerManager = new GovernanceListenerManager(registryCenterRepository, schemaNames.isEmpty()
                 ? registryCenter.getAllSchemaNames() : Stream.of(registryCenter.getAllSchemaNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
     }
     
@@ -89,6 +89,6 @@ public final class GovernanceFacade implements AutoCloseable {
     
     @Override
     public void close() {
-        repositoryFacade.close();
+        registryCenterRepository.close();
     }
 }

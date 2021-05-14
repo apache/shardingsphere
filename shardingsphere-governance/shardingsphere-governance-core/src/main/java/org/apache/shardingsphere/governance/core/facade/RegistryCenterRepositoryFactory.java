@@ -15,42 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.facade.repository;
+package org.apache.shardingsphere.governance.core.facade;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 /**
- * Registry center repository facade.
+ * Registry center repository factory.
  */
-@Getter
-public final class RegistryCenterRepositoryFacade implements AutoCloseable {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RegistryCenterRepositoryFactory {
     
     static {
         ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
     }
     
-    private final RegistryCenterRepository registryCenterRepository;
-    
-    public RegistryCenterRepositoryFacade(final GovernanceConfiguration config) {
-        registryCenterRepository = createRegistryCenterRepository(config);
-    }
-    
-    private RegistryCenterRepository createRegistryCenterRepository(final GovernanceConfiguration config) {
+    /**
+     * Create new instance of Registry center repository.
+     * 
+     * @param config governance configuration
+     * @return new instance of Registry center repository
+     */
+    public static RegistryCenterRepository newInstance(final GovernanceConfiguration config) {
         RegistryCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
         Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
         RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
         result.init(config.getName(), registryCenterConfig);
         return result;
-    }
-    
-    @Override
-    public void close() {
-        registryCenterRepository.close();
     }
 }
