@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.context.process;
 
+import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -47,6 +48,6 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     
     @Override
     public void finish(final String executionID, final ExecuteProcessConstants constants) {
-        // TODO
+        ShardingSphereEventBus.getInstance().post(new ExecuteProcessReportEvent(executionID));
     }
 }
