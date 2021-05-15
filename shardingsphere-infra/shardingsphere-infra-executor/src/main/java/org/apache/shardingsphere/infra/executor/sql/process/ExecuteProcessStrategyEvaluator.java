@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 /**
  * Process strategy evaluator.
@@ -38,6 +39,6 @@ public final class ExecuteProcessStrategyEvaluator {
      */
     public static boolean evaluate(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         // TODO : Add more conditions to evaluate whether to submit this process task or not
-        return false;
+        return context.getSqlStatement() instanceof DDLStatement;
     }
 }
