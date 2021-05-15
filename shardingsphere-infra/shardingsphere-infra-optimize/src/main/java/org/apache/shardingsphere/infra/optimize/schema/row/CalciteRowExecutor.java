@@ -72,6 +72,8 @@ public final class CalciteRowExecutor {
             return jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
+        } finally {
+            ExecuteProcessEngine.cleanupExecutionID();
         }
     }
     

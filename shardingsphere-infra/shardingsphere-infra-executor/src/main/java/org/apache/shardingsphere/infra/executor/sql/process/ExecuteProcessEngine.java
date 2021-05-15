@@ -56,6 +56,13 @@ public final class ExecuteProcessEngine {
     }
     
     /**
+     * Clean up execution ID.
+     */
+    public static void cleanupExecutionID() {
+        ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
+    }
+    
+    /**
      * Finish.
      *
      * @param executionID execution ID
