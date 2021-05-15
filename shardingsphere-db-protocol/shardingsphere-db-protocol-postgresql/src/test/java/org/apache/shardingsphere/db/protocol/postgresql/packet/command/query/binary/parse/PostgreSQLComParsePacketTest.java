@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,9 +49,9 @@ public final class PostgreSQLComParsePacketTest {
         assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.PARSE_COMMAND));
         assertThat(actual.getSql(), is("sql"));
         assertThat(actual.getStatementId(), is("sql"));
-        List<PostgreSQLBinaryStatementParameterType> types = actual.getBinaryStatementParameterTypes();
+        List<PostgreSQLBinaryColumnType> types = actual.getBinaryStatementColumnTypes();
         assertNotNull(types);
         assertThat(types.size(), equalTo(1));
-        assertThat(types.get(0).getColumnType(), is(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
+        assertThat(types.get(0), is(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
     }
 }
