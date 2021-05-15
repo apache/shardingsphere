@@ -131,7 +131,7 @@ public final class RDLBackendHandlerFactory {
             return Optional.of(new DropReadwriteSplittingRuleBackendHandler((DropReplicaQueryRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement));
+            return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof DropShardingTableRuleStatement) {
             return Optional.of(new DropShardingTableRuleBackendHandler((DropShardingTableRuleStatement) sqlStatement, backendConnection));
