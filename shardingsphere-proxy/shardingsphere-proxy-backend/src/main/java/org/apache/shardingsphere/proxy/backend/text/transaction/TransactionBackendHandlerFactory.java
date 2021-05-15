@@ -51,7 +51,7 @@ public final class TransactionBackendHandlerFactory {
         if (tclStatement instanceof SetAutoCommitStatement) {
             if (((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
                 return backendConnection.getTransactionStatus().isInTransaction()
-                        ? new TransactionBackendHandler(tclStatement, TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
+                        ? new TransactionBackendHandler(tclStatement, TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler(tclStatement);
             }
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, backendConnection);
         }

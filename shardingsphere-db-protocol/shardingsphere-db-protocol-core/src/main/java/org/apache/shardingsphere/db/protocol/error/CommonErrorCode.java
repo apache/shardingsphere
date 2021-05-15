@@ -42,8 +42,8 @@ public enum CommonErrorCode implements SQLErrorCode {
     REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST(1106, "C1106", "Data sources %s in replica query rule do not exist."),
     
     ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST(1107, "C1107", "Data sources %s in replica query rule already exists."),
-    
-    REPLICA_QUERY_RULE_EXIST(1108, "C1108", "Replica query rule already exists."),
+
+    READWRITE_SPLITTING_RULE_EXIST(1108, "C1108", "Readwrite splitting rule already exists in schema %s."),
     
     SHARDING_RULE_NOT_EXIST(1109, "C1109", "Sharding rule does not exist."),
     
@@ -60,6 +60,8 @@ public enum CommonErrorCode implements SQLErrorCode {
     SHARDING_BINDING_TABLE_RULES_NOT_EXIST(1115, "C1115", "Sharding binding table rules not exist in schema %s."),
 
     SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST(1116, "C1116", "Sharding broadcast table rules not exist in schema %s."),
+
+    INVALID_LOAD_BALANCERS(1117, "C1117", "Invalid load balancers %s."),
 
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     

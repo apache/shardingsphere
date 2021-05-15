@@ -49,5 +49,6 @@ execute
     | alterSynonym
     | alterSession
     | alterDatabase
+    | alterSystem
     ) SEMI_?
     ;

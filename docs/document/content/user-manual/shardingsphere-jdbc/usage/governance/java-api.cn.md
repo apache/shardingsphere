@@ -36,7 +36,7 @@ weight = 1
 // ...
 
 // 配置配置/注册中心
-GovernanceCenterConfiguration configuration = new GovernanceCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
+RegistryCenterConfiguration configuration = new RegistryCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
 
 // 配置治理
 Map<String, CenterConfiguration> configurationMap = new HashMap<String, CenterConfiguration>();

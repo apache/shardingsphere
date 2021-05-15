@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DataSourceChangedListenerTest extends MetaDataListenerTest {
+public final class DataSourceChangedListenerTest extends GovernanceListenerTest {
     
     private static final String DATA_SOURCE_FILE = "yaml/data-source.yaml";
     
@@ -44,7 +44,7 @@ public final class DataSourceChangedListenerTest extends MetaDataListenerTest {
     
     @Before
     public void setUp() {
-        dataSourceChangedListener = new DataSourceChangedListener(getGovernanceRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db", "encrypt_db"));
+        dataSourceChangedListener = new DataSourceChangedListener(getRegistryCenterRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db", "encrypt_db"));
     }
     
     @Test

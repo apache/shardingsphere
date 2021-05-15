@@ -37,13 +37,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MetaDataChangedListenerTest extends MetaDataListenerTest {
+public final class MetaDataChangedListenerTest extends GovernanceListenerTest {
     
     private MetaDataChangedListener metaDataChangedListener;
     
     @Before
     public void setUp() {
-        metaDataChangedListener = new MetaDataChangedListener(getGovernanceRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db"));
+        metaDataChangedListener = new MetaDataChangedListener(getRegistryCenterRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db"));
     }
     
     @Test

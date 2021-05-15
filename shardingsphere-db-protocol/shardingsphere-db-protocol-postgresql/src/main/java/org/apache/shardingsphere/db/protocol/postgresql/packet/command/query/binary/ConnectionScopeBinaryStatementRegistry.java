@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary;
 
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
+
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -34,10 +36,10 @@ public final class ConnectionScopeBinaryStatementRegistry {
      * @param statementId statement ID
      * @param sql SQL
      * @param parameterCount parameter count
-     * @param binaryStatementParameterTypes binary statement parameter types
+     * @param binaryColumnTypes binary statement column types
      */
-    public void register(final String statementId, final String sql, final int parameterCount, final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes) {
-        binaryStatements.put(statementId, new PostgreSQLBinaryStatement(sql, parameterCount, binaryStatementParameterTypes));
+    public void register(final String statementId, final String sql, final int parameterCount, final List<PostgreSQLBinaryColumnType> binaryColumnTypes) {
+        binaryStatements.put(statementId, new PostgreSQLBinaryStatement(sql, parameterCount, binaryColumnTypes));
     }
     
     /**

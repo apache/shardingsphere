@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaChangedListenerTest extends MetaDataListenerTest {
+public final class SchemaChangedListenerTest extends GovernanceListenerTest {
     
     private static final String META_DATA_FILE = "yaml/schema.yaml";
     
@@ -42,7 +42,7 @@ public final class SchemaChangedListenerTest extends MetaDataListenerTest {
     
     @Before
     public void setUp() {
-        schemaChangedListener = new SchemaChangedListener(getGovernanceRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db", "encrypt_db"));
+        schemaChangedListener = new SchemaChangedListener(getRegistryCenterRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db", "encrypt_db"));
     }
     
     @Test

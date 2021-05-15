@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.lock.node.LockAck;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
@@ -41,9 +43,10 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Sw
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -57,6 +60,7 @@ import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantState
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
@@ -89,7 +93,7 @@ public final class RegistryCenter {
     
     private final RegistryCenterNode node;
     
-    private final GovernanceRepository repository;
+    private final RegistryCenterRepository repository;
     
     private final GovernanceInstance instance;
     
@@ -97,13 +101,13 @@ public final class RegistryCenter {
     
     private final RegistryCacheManager registryCacheManager;
     
-    public RegistryCenter(final GovernanceRepository governanceRepository) {
+    public RegistryCenter(final RegistryCenterRepository registryCenterRepository) {
         node = new RegistryCenterNode();
-        repository = governanceRepository;
+        repository = registryCenterRepository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
         initLockNode();
-        registryCacheManager = new RegistryCacheManager(governanceRepository, node);
+        registryCacheManager = new RegistryCacheManager(registryCenterRepository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -126,10 +130,12 @@ public final class RegistryCenter {
     /**
      * Persist global configuration.
      *
+     * @param globalRuleConfigs global rule configurations
      * @param props properties
      * @param isOverwrite is overwrite config center's configuration
      */
-    public void persistGlobalConfiguration(final Properties props, final boolean isOverwrite) {
+    public void persistGlobalConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
+        persistGlobalRuleConfigurations(globalRuleConfigs, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
@@ -225,12 +231,18 @@ public final class RegistryCenter {
     
     private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
         if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
-            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
+            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(createYamlGlobalRuleConfigurationsWrap(globalRuleConfigs)));
         }
     }
     
     private boolean hasGlobalRuleConfigurations() {
         return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
+    }
+    
+    private YamlRuleConfigurationWrap createYamlGlobalRuleConfigurationsWrap(final Collection<RuleConfiguration> globalRuleConfigs) {
+        YamlRuleConfigurationWrap result = new YamlRuleConfigurationWrap();
+        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs));
+        return result;
     }
     
     private void persistSchemaName(final String schemaName) {
@@ -486,7 +498,12 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final CreateUserStatementEvent event) {
-        persistNewUsers(event.getUsers());
+        Collection<RuleConfiguration> globalRuleConfigs = loadGlobalRuleConfigurations();
+        Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
+                .findAny().map(each -> (AuthorityRuleConfiguration) each);
+        Preconditions.checkState(authorityRuleConfig.isPresent());
+        refreshAuthorityRuleConfiguration(authorityRuleConfig.get(), event.getUsers());
+        persistGlobalRuleConfigurations(globalRuleConfigs, true);
     }
     
     /**
@@ -497,6 +514,26 @@ public final class RegistryCenter {
     @Subscribe
     public synchronized void renew(final GrantStatementEvent event) {
         persistChangedPrivilege(event.getUsers());
+    }
+    
+    private void refreshAuthorityRuleConfiguration(final AuthorityRuleConfiguration authRuleConfig, final Collection<ShardingSphereUser> createUsers) {
+        Collection<ShardingSphereUser> oldUsers = authRuleConfig.getUsers();
+        Collection<ShardingSphereUser> newUsers = oldUsers.isEmpty() ? createUsers : getChangedShardingSphereUsers(oldUsers, createUsers);
+        authRuleConfig.getUsers().removeAll(oldUsers);
+        authRuleConfig.getUsers().addAll(newUsers);
+    }
+    
+    private Collection<ShardingSphereUser> getChangedShardingSphereUsers(final Collection<ShardingSphereUser> oldUsers, final Collection<ShardingSphereUser> newUsers) {
+        Collection<ShardingSphereUser> result = new LinkedList<>(oldUsers);
+        ShardingSphereUsers shardingSphereUsers = new ShardingSphereUsers(oldUsers);
+        for (ShardingSphereUser each : newUsers) {
+            Optional<ShardingSphereUser> oldUser = shardingSphereUsers.findUser(each.getGrantee());
+            if (oldUser.isPresent()) {
+                result.remove(oldUser);
+            }
+            result.add(each);
+        }
+        return result;
     }
     
     /**

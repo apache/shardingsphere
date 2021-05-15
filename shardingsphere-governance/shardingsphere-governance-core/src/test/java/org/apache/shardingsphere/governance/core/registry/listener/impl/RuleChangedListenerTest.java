@@ -42,7 +42,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class RuleChangedListenerTest extends MetaDataListenerTest {
+public final class RuleChangedListenerTest extends GovernanceListenerTest {
     
     private static final String SHARDING_RULE_FILE = "yaml/sharding-rule.yaml";
     
@@ -54,7 +54,7 @@ public final class RuleChangedListenerTest extends MetaDataListenerTest {
     
     @Before
     public void setUp() {
-        ruleChangedListener = new RuleChangedListener(getGovernanceRepository(), Arrays.asList("sharding_db", "replica_query_db", "encrypt_db"));
+        ruleChangedListener = new RuleChangedListener(getRegistryCenterRepository(), Arrays.asList("sharding_db", "replica_query_db", "encrypt_db"));
     }
     
     @Test

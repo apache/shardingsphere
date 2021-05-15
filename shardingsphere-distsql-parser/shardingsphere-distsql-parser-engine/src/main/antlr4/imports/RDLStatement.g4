@@ -87,12 +87,20 @@ alterShardingBroadcastTableRules
     : ALTER SHARDING BROADCAST TABLE RULES LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
-createReplicaQueryRule
-    : CREATE REPLICA_QUERY RULE LP replicaQueryRuleDefinition (COMMA replicaQueryRuleDefinition)* RP
+createReadwriteSplittingRule
+    : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
 
-replicaQueryRuleDefinition
-    : ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition
+readwriteSplittingRuleDefinition
+    : ruleName LP (staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition) (COMMA functionDefinition)? RP
+    ;
+
+staticReadwriteSplittingRuleDefinition
+    : WRITE_RESOURCE EQ writeResourceName COMMA READ_RESOURCES LP resourceName (COMMA resourceName)* RP
+    ;
+
+dynamicReadwriteSplittingRuleDefinition
+    : AUTO_AWARE_RESOURCE EQ IDENTIFIER
     ;
 
 alterReplicaQueryRule
@@ -113,6 +121,14 @@ shardingTableRuleDefinition
 
 resources
     : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
+writeResourceName
+    : resourceName
+    ;
+
+resourceName
+    : IDENTIFIER
     ;
 
 shardingColumn
@@ -196,7 +212,7 @@ schemaName
     ;
 
 functionDefinition
-    : TYPE LP NAME EQ functionName COMMA PROPERTIES LP algorithmProperties? RP RP
+    : TYPE LP NAME EQ functionName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
 functionName

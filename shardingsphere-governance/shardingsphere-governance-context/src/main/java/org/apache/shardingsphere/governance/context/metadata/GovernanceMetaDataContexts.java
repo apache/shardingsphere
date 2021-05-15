@@ -26,6 +26,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.metadat
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
@@ -53,6 +54,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
@@ -320,6 +322,22 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         }
     }
     
+    /**
+     * Renew global rule configurations.
+     *
+     * @param event global rule configurations changed event
+     */
+    @Subscribe
+    public synchronized void renew(final GlobalRuleConfigurationsChangedEvent event) {
+        Collection<RuleConfiguration> newGlobalConfigs = event.getRuleConfigurations();
+        if (!newGlobalConfigs.isEmpty()) {
+            ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(newGlobalConfigs,
+                    ShardingSphereRulesBuilder.buildGlobalRules(newGlobalConfigs, metaDataContexts.getMetaDataMap()));
+            metaDataContexts = new StandardMetaDataContexts(
+                    metaDataContexts.getMetaDataMap(), newGlobalRuleMetaData, metaDataContexts.getExecutorEngine(), metaDataContexts.getUsers(), metaDataContexts.getProps());
+        }
+    }
+    
     private ShardingSphereMetaData buildMetaData(final MetaDataPersistedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
         if (!governanceFacade.getRegistryCenter().hasDataSourceConfiguration(schemaName)) {
@@ -333,7 +351,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
                 Collections.singletonMap(schemaName, governanceFacade.getRegistryCenter().loadRuleConfigurations(schemaName)),
                 // TODO load global schema from reg center
-                new LinkedList<>(), 
+                governanceFacade.getRegistryCenter().loadGlobalRuleConfigurations(), 
                 metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build().getMetaDataMap().get(schemaName);
     }

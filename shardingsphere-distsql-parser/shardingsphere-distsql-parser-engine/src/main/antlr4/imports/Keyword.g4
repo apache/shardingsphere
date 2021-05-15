@@ -82,7 +82,23 @@ FROM
 SHARDING
     : S H A R D I N G
     ;
-   
+
+READWRITE_SPLITTING
+    : R E A D W R I T E UL_ S P L I T T I N G
+    ;
+
+WRITE_RESOURCE
+    : W R I T E UL_ R E S O U R C E
+    ;
+
+READ_RESOURCES
+    : R E A D UL_ R E S O U R C E S
+    ;
+
+AUTO_AWARE_RESOURCE
+    : A U T O UL_ A W A R E UL_ R E S O U R C E
+    ;
+
 REPLICA_QUERY
     : R E P L I C A UL_ Q U E R Y
     ;

@@ -30,7 +30,7 @@ public final class YamlGovernanceConfiguration implements YamlConfiguration {
     
     private String name;
     
-    private YamlGovernanceCenterConfiguration registryCenter;
+    private YamlRegistryCenterConfiguration registryCenter;
     
     private boolean overwrite;
 }

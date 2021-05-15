@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleCreateExistsException;
@@ -173,10 +174,13 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ((AddReadwriteSplittingRuleDataSourcesExistedException) cause).getRuleNames());
         }
         if (cause instanceof ReadwriteSplittingRuleCreateExistsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_EXIST);
+            return new MySQLErrPacket(1, CommonErrorCode.READWRITE_SPLITTING_RULE_EXIST, ((ReadwriteSplittingRuleCreateExistsException) cause).getSchemaName());
         }
         if (cause instanceof ScalingJobNotFoundException) {
             return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((ScalingJobNotFoundException) cause).getJobId());
+        }
+        if (cause instanceof InvalidLoadBalancersException) {
+            return new MySQLErrPacket(1, CommonErrorCode.INVALID_LOAD_BALANCERS, ((InvalidLoadBalancersException) cause).getLoadBalancers());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }

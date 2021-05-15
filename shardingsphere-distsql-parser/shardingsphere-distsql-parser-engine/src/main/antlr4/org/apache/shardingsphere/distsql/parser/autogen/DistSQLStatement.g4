@@ -25,13 +25,13 @@ execute
     | createShardingTableRule
     | createShardingBindingTableRules
     | createShardingBroadcastTableRules
+    | createReadwriteSplittingRule
     | alterShardingTableRule
     | alterShardingBindingTableRules
     | alterShardingBroadcastTableRules
     | dropShardingTableRule
     | dropShardingBindingTableRules
     | dropShardingBroadcastTableRules
-    | createReplicaQueryRule
     | alterReplicaQueryRule
     | dropReplicaQueryRule
     | showResources
