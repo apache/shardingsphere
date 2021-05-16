@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiPredicate;
 
 /**
  * SQL check engine.
@@ -79,5 +80,46 @@ public final class SQLCheckEngine {
                 throw new SQLCheckException(checkResult.getErrorMessage());
             }
         }
+    }
+
+    /**
+     * Check user exists.
+     * @param user user
+     * @param rules rules
+     * @return check result
+     */
+    public static boolean check(final Grantee user, final Collection<ShardingSphereRule> rules) {
+        if (rules.isEmpty()) {
+            return false;
+        }
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(rules, SQLChecker.class).entrySet()) {
+            boolean checkResult = entry.getValue().check(user, entry.getKey());
+            if (!checkResult) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * Check authentication.
+     * @param user user
+     * @param validate validate
+     * @param cipher cipher
+     * @param rules rules
+     * @return check result
+     */
+    public static boolean check(final Grantee user, final BiPredicate<Object, Object> validate, final Object cipher, final Collection<ShardingSphereRule> rules) {
+        if (rules.isEmpty()) {
+            return false;
+        }
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(rules, SQLChecker.class).entrySet()) {
+            boolean checkResult = entry.getValue().check(user, validate, cipher, entry.getKey());
+            if (!checkResult) {
+                return false;
+            }
+        }
+        return true;
     }
 }

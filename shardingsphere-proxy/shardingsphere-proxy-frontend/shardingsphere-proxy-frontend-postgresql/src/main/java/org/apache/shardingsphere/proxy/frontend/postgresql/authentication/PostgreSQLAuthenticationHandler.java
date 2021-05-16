@@ -22,22 +22,17 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.security.MessageDigest;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Authentication handler for PostgreSQL.
@@ -55,31 +50,30 @@ public final class PostgreSQLAuthenticationHandler {
      * @return PostgreSQL login result
      */
     public static PostgreSQLLoginResult loginWithMd5Password(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
-        Optional<ShardingSphereUser> user = getUsersFromGlobalRuleMetaData().findUser(new Grantee(username, "%"));
-        if (!user.isPresent()) {
-            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
-        }
         String md5Digest = passwordMessagePacket.getMd5Digest();
-        String expectedMd5Digest = md5Encode(username, user.get().getPassword(), md5Salt);
-        if (!expectedMd5Digest.equals(md5Digest)) {
-            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
-        }
+        Grantee grantee = new Grantee(username, "%");
         if (!Strings.isNullOrEmpty(databaseName) && !ProxyContext.getInstance().schemaExists(databaseName)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_CATALOG_NAME, String.format("database \"%s\" does not exist", databaseName));
         }
-        return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), user.get().getGrantee())
+        if (!SQLCheckEngine.check(grantee, getRules(databaseName))) {
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
+        }
+        if (!SQLCheckEngine.check(grantee, (a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[] {md5Digest, md5Salt}, getRules(databaseName))) {
+            return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
+        }
+        return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)
                 ? new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null)
                 : new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
     }
 
-    private static ShardingSphereUsers getUsersFromGlobalRuleMetaData() {
-        for (RuleConfiguration ruleConfig : ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getConfigurations()) {
-            if (ruleConfig instanceof AuthorityRuleConfiguration) {
-                AuthorityRuleConfiguration authorityRuleConfiguration = (AuthorityRuleConfiguration) ruleConfig;
-                return new ShardingSphereUsers(authorityRuleConfiguration.getUsers());
-            }
+    private static boolean isPasswordRight(final ShardingSphereUser user, final Object[] args) {
+        String md5Digest = (String) args[0];
+        byte[] md5Salt = (byte[]) args[1];
+        String expectedMd5Digest = md5Encode(user.getGrantee().getUsername(), user.getPassword(), md5Salt);
+        if (!expectedMd5Digest.equals(md5Digest)) {
+            return false;
         }
-        return new ShardingSphereUsers(Collections.emptyList());
+        return true;
     }
 
     private static String md5Encode(final String username, final String password, final byte[] md5Salt) {
@@ -91,8 +85,10 @@ public final class PostgreSQLAuthenticationHandler {
     }
     
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {
-        Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        if (!Strings.isNullOrEmpty(databaseName) && ProxyContext.getInstance().schemaExists(databaseName)) {
+            result.addAll(ProxyContext.getInstance().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
+        }
         result.addAll(ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }

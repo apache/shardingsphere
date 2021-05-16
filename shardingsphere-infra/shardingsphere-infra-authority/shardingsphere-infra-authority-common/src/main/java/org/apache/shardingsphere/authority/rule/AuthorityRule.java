@@ -42,10 +42,13 @@ public final class AuthorityRule implements KernelRule, GlobalRule {
     }
     
     private final AuthorityProvideAlgorithm provider;
+
+    private final Collection<ShardingSphereUser> users;
     
     public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
         provider = ShardingSphereAlgorithmFactory.createAlgorithm(config.getProvider(), AuthorityProvideAlgorithm.class);
         provider.init(mataDataMap, users);
+        this.users = users;
     }
     
     /**
@@ -66,5 +69,16 @@ public final class AuthorityRule implements KernelRule, GlobalRule {
      */
     public void refresh(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
         provider.refresh(mataDataMap, users);
+        this.users.clear();
+        this.users.addAll(users);
+    }
+
+    /**
+     * Find user.
+     * @param grantee grantee user
+     * @return user
+     */
+    public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
+        return users.stream().filter(user -> user.getGrantee().equals(grantee)).findFirst();
     }
 }
