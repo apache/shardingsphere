@@ -81,7 +81,7 @@ public final class ExecuteProcessEngine {
      */
     public static void finish(final String executionID) {
         if (!HANDLERS.isEmpty()) {
-            HANDLERS.iterator().next().finish(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
+            HANDLERS.iterator().next().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
         }
     }
 }

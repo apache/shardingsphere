@@ -47,7 +47,7 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     }
     
     @Override
-    public void finish(final String executionID, final ExecuteProcessConstants constants) {
+    public void report(final String executionID, final ExecuteProcessConstants constants) {
         ShardingSphereEventBus.getInstance().post(new ExecuteProcessReportEvent(executionID));
     }
 }

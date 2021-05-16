@@ -44,9 +44,9 @@ public interface ExecuteProcessReporter {
     void report(String executionID, SQLExecutionUnit executionUnit, ExecuteProcessConstants constants);
     
     /**
-     * Finish this task.
+     * Report this task on completion.
      * @param executionID execution ID
      * @param constants constants
      */
-    void finish(String executionID, ExecuteProcessConstants constants);
+    void report(String executionID, ExecuteProcessConstants constants);
 }
