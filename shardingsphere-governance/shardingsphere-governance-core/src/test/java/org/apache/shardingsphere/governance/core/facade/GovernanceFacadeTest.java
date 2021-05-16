@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -47,7 +48,9 @@ public final class GovernanceFacadeTest {
         GovernanceConfiguration config = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("TEST", "127.0.0.1", new Properties()), false);
         governanceFacade.init(config, Arrays.asList("schema_0", "schema_1"));
         assertNotNull(governanceFacade.getRegistryCenter());
-        // TODO use reflection to assert attributes of GovernanceFacade
+        assertFalse((Boolean) getField(governanceFacade, "isOverwrite"));
+        assertNotNull(getField(governanceFacade, "registryCenterRepository"));
+        assertNotNull(getField(governanceFacade, "listenerManager"));
     }
     
     @Test
@@ -82,5 +85,12 @@ public final class GovernanceFacadeTest {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, fieldValue);
+    }
+
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static Object getField(final Object target, final String fieldName) {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(target);
     }
 }
