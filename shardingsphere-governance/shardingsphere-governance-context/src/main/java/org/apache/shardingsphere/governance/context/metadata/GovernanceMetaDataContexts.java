@@ -324,7 +324,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
             ShardingSphereRuleMetaData newGlobalRuleMetaData = new ShardingSphereRuleMetaData(newGlobalConfigs,
                     ShardingSphereRulesBuilder.buildGlobalRules(newGlobalConfigs, metaDataContexts.getMetaDataMap()));
             metaDataContexts = new StandardMetaDataContexts(
-                    metaDataContexts.getMetaDataMap(), newGlobalRuleMetaData, metaDataContexts.getExecutorEngine(), metaDataContexts.getUsers(), metaDataContexts.getProps());
+                    metaDataContexts.getMetaDataMap(), newGlobalRuleMetaData, metaDataContexts.getExecutorEngine(), metaDataContexts.getProps());
         }
     }
     
