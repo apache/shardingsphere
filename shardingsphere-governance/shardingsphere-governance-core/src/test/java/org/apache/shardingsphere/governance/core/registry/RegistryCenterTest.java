@@ -29,8 +29,8 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.metadat
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.yaml.persisted.PersistedYamlRuleConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlSchema;
-import org.apache.shardingsphere.governance.core.yaml.config.swapper.SchemaYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
