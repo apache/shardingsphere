@@ -71,7 +71,6 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends SchemaRequ
             resources.add(each.getWriteDataSource());
             resources.addAll(each.getReadDataSources());
         });
-
         Collection<String> notExistResources = resources.stream().filter(each -> !this.isValidResource(schemaName, each)).collect(Collectors.toList());
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(notExistResources);

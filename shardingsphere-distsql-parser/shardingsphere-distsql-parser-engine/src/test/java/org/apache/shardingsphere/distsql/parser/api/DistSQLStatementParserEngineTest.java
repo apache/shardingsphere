@@ -98,8 +98,10 @@ public final class DistSQLStatementParserEngineTest {
     private static final String RDL_ALTER_READWRITE_SPLITTING_RULE = "ALTER READWRITE_SPLITTING RULE ms_group_0 ("
             + "AUTO_AWARE_RESOURCE=group_0,"
             + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))),"
-            + "ms_group_1 (AUTO_AWARE_RESOURCE=group_0,"
-            + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))"
+            + "ms_group_1 ("
+            + "WRITE_RESOURCE=primary_ds,"
+            + "READ_RESOURCES(replica_ds_0,replica_ds_1),"
+            + "TYPE(NAME=random)"
             + ")";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
