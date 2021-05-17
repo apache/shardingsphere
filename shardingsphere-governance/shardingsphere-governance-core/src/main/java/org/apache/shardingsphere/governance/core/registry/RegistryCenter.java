@@ -197,10 +197,10 @@ public final class RegistryCenter {
     }
     
     private PersistedYamlDataSourceConfiguration createPersistedYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, Map<String, Object>> yamlDataSourceConfigurations = dataSourceConfigs.entrySet().stream()
+        Map<String, Map<String, Object>> yamlDataSourceConfigs = dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         PersistedYamlDataSourceConfiguration result = new PersistedYamlDataSourceConfiguration();
-        result.setDataSources(yamlDataSourceConfigurations);
+        result.setDataSources(yamlDataSourceConfigs);
         return result;
     }
     
