@@ -129,6 +129,18 @@ public final class RegistryCenter {
         persistSchemaName(schemaName);
     }
     
+    private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
+        if (!dataSourceConfigurations.isEmpty() && (isOverwrite || !hasDataSourceConfiguration(schemaName))) {
+            persistDataSourceConfigurations(schemaName, dataSourceConfigurations);
+        }
+    }
+    
+    private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
+        if (!ruleConfigurations.isEmpty() && (isOverwrite || !hasRuleConfiguration(schemaName))) {
+            persistRuleConfigurations(schemaName, ruleConfigurations);
+        }
+    }
+    
     /**
      * Persist global configuration.
      *
@@ -144,12 +156,6 @@ public final class RegistryCenter {
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigurationCacheId) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
                 YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigurationCacheId), YamlRootRuleConfigurations.class).getRules());
-    }
-    
-    private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
-        if (!dataSourceConfigurations.isEmpty() && (isOverwrite || !hasDataSourceConfiguration(schemaName))) {
-            persistDataSourceConfigurations(schemaName, dataSourceConfigurations);
-        }
     }
     
     /**
@@ -174,12 +180,6 @@ public final class RegistryCenter {
         PersistedYamlDataSourceConfiguration result = new PersistedYamlDataSourceConfiguration();
         result.setDataSources(yamlDataSourceConfigurations);
         return result;
-    }
-    
-    private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
-        if (!ruleConfigurations.isEmpty() && (isOverwrite || !hasRuleConfiguration(schemaName))) {
-            persistRuleConfigurations(schemaName, ruleConfigurations);
-        }
     }
     
     /**
