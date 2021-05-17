@@ -190,23 +190,23 @@ public final class RegistryCenter {
                 YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), YamlRootRuleConfigurations.class).getRules());
     }
     
-    private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = loadDataSourceConfigurations(schemaName);
-        dataSourceConfigurationMap.putAll(dataSourceConfigurations);
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createPersistedYamlDataSourceConfiguration(dataSourceConfigurationMap)));
+    private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = loadDataSourceConfigurations(schemaName);
+        dataSourceConfigMap.putAll(dataSourceConfigs);
+        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createPersistedYamlDataSourceConfiguration(dataSourceConfigMap)));
     }
     
-    private PersistedYamlDataSourceConfiguration createPersistedYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Map<String, Map<String, Object>> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream()
+    private PersistedYamlDataSourceConfiguration createPersistedYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+        Map<String, Map<String, Object>> yamlDataSourceConfigurations = dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         PersistedYamlDataSourceConfiguration result = new PersistedYamlDataSourceConfiguration();
         result.setDataSources(yamlDataSourceConfigurations);
         return result;
     }
     
-    private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
+    private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> configs = new LinkedList<>();
-        for (RuleConfiguration each : ruleConfigurations) {
+        for (RuleConfiguration each : ruleConfigs) {
             Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(each);
             if (checker.isPresent()) {
                 checker.get().check(schemaName, each);
