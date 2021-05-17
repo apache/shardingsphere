@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwri
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -213,23 +213,23 @@ public final class RDLBackendHandlerFactoryTest {
     }
 
     @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
-    public void assertExecuteDropReplicaQueryRuleContext() throws SQLException {
+    public void assertExecuteDropReadwriteSplittingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReplicaQueryRuleStatement.class), connection);
+            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReadwriteSplittingRuleStatement.class), connection);
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `DropReplicaQueryRuleStatement` SQL"));
+            assertThat(ex.getMessage(), is("No Registry center to execute `DropReadwriteSplittingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReplicaQueryRuleStatement.class), connection);
+        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReadwriteSplittingRuleStatement.class), connection);
         assertTrue(rdlBackendHandler.isPresent());
         ResponseHeader response = rdlBackendHandler.get().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
 
     @Test
-    public void assertExecuteCreateReplicaQueryRuleContext() throws SQLException {
+    public void assertExecuteCreateReadwriteSplittingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
@@ -245,7 +245,7 @@ public final class RDLBackendHandlerFactoryTest {
     }
 
     @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
-    public void assertExecuteAlterReplicaQueryRuleContext() throws SQLException {
+    public void assertExecuteAlterReadwriteSplittingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {

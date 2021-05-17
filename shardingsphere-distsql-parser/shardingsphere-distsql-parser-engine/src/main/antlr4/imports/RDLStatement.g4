@@ -175,8 +175,8 @@ columnName
     : IDENTIFIER
     ;
 
-dropReplicaQueryRule
-    : DROP REPLICA_QUERY RULE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+dropReadwriteSplittingRule
+    : DROP READWRITE_SPLITTING RULE IDENTIFIER (COMMA IDENTIFIER)*
     ;
 
 dropShardingTableRule

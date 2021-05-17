@@ -33,7 +33,7 @@ execute
     | dropShardingBindingTableRules
     | dropShardingBroadcastTableRules
     | alterReadwriteSplittingRule
-    | dropReplicaQueryRule
+    | dropReadwriteSplittingRule
     | showResources
     | showRule
     | showScalingJobList

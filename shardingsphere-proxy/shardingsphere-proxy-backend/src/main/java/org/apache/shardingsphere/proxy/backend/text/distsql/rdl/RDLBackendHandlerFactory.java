@@ -28,7 +28,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
@@ -127,8 +127,8 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof AlterReadwriteSplittingRuleStatement) {
             return Optional.of(new AlterReadwriteSplittingRuleBackendHandler((AlterReadwriteSplittingRuleStatement) sqlStatement, backendConnection));
         }
-        if (sqlStatement instanceof DropReplicaQueryRuleStatement) {
-            return Optional.of(new DropReadwriteSplittingRuleBackendHandler((DropReplicaQueryRuleStatement) sqlStatement, backendConnection));
+        if (sqlStatement instanceof DropReadwriteSplittingRuleStatement) {
+            return Optional.of(new DropReadwriteSplittingRuleBackendHandler((DropReadwriteSplittingRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, backendConnection));

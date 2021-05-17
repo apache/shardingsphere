@@ -29,6 +29,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
@@ -103,6 +104,8 @@ public final class DistSQLStatementParserEngineTest {
             + "READ_RESOURCES(replica_ds_0,replica_ds_1),"
             + "TYPE(NAME=random)"
             + ")";
+
+    private static final String RDL_DROP_READWRITE_SPLITTING_RULE = "DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -269,5 +272,12 @@ public final class DistSQLStatementParserEngineTest {
     public void assertParseAlterReadwriteSplittingRule() {
         SQLStatement sqlStatement = engine.parse(RDL_ALTER_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof AlterReadwriteSplittingRuleStatement);
+    }
+
+    @Test
+    public void assertParseDropReadwriteSplittingRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_READWRITE_SPLITTING_RULE);
+        assertTrue(sqlStatement instanceof DropReadwriteSplittingRuleStatement);
+        assertThat(((DropReadwriteSplittingRuleStatement) sqlStatement).getRuleNames(), is(Arrays.asList("ms_group_0", "ms_group_1")));
     }
 }

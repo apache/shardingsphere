@@ -24,10 +24,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Drop replica query rule statement.
+ * Drop readwrite splitting rule statement.
  */
 @Getter
-public final class DropReplicaQueryRuleStatement extends DropRDLStatement {
+public final class DropReadwriteSplittingRuleStatement extends DropRDLStatement {
     
     private final Collection<String> ruleNames = new LinkedList<>();
 }
