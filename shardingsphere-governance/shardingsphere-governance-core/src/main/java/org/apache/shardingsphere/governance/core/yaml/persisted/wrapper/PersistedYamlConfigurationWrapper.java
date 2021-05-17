@@ -17,25 +17,19 @@
 
 package org.apache.shardingsphere.governance.core.yaml.persisted.wrapper;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.core.yaml.persisted.pojo.PersistedYamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.persisted.pojo.PersistedYamlRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Configuration wrapper for YAML content.
@@ -74,19 +68,5 @@ public final class PersistedYamlConfigurationWrapper {
      */
     public static Collection<RuleConfiguration> unwrapRuleConfigurations(final String yamlContent) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(yamlContent, PersistedYamlRuleConfiguration.class).getRules());
-    }
-    
-    /**
-     * Convert sharding rule configuration from YAML .
-     *
-     * @param yamlRuleConfigs yaml rule configurations
-     * @return sharding rule configuration
-     */
-    public static ShardingRuleConfiguration convertShardingRuleConfig(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        Optional<YamlRuleConfiguration> ruleConfig = yamlRuleConfigs.stream()
-                .filter(each -> each instanceof YamlShardingRuleConfiguration)
-                .findFirst();
-        Preconditions.checkState(ruleConfig.isPresent(), "No available sharding rule to load for governance.");
-        return new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) ruleConfig.get());
     }
 }
