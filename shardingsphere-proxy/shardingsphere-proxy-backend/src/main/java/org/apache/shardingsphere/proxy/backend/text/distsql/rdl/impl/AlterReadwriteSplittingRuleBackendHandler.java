@@ -37,7 +37,7 @@ import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.AlterReadwriteSplittingRuleStatementConverter;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.ReadwriteSplittingRuleStatementConverter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -113,9 +113,9 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends SchemaRequi
                 && ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(resourceName);
     }
     
-    private YamlReadwriteSplittingRuleConfiguration alter(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadwriteSplittingRuleStatement statement) {
+    private YamlReadwriteSplittingRuleConfiguration alter(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadwriteSplittingRuleStatement sqlStatement) {
         YamlReadwriteSplittingRuleConfiguration alterYamlReadwriteSplittingRuleConfiguration
-                = AlterReadwriteSplittingRuleStatementConverter.convert(statement.getReadwriteSplittingRules());
+                = ReadwriteSplittingRuleStatementConverter.convert(sqlStatement);
         YamlReadwriteSplittingRuleConfiguration result = new YamlRuleConfigurationSwapperEngine()
                 .swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig)).stream()
                 .map(each -> (YamlReadwriteSplittingRuleConfiguration) each).findFirst().get();
