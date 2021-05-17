@@ -129,15 +129,15 @@ public final class RegistryCenter {
         persistSchemaName(schemaName);
     }
     
-    private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
-        if (!dataSourceConfigurations.isEmpty() && (isOverwrite || !hasDataSourceConfiguration(schemaName))) {
-            persistDataSourceConfigurations(schemaName, dataSourceConfigurations);
+    private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {
+        if (!dataSourceConfigs.isEmpty() && (isOverwrite || !hasDataSourceConfiguration(schemaName))) {
+            persistDataSourceConfigurations(schemaName, dataSourceConfigs);
         }
     }
     
-    private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
-        if (!ruleConfigurations.isEmpty() && (isOverwrite || !hasRuleConfiguration(schemaName))) {
-            persistRuleConfigurations(schemaName, ruleConfigurations);
+    private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
+        if (!ruleConfigs.isEmpty() && (isOverwrite || !hasRuleConfiguration(schemaName))) {
+            persistRuleConfigurations(schemaName, ruleConfigs);
         }
     }
     
