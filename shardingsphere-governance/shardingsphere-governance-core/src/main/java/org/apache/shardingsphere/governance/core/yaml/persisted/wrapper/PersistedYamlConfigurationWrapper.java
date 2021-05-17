@@ -24,8 +24,6 @@ import org.apache.shardingsphere.governance.core.yaml.persisted.pojo.PersistedYa
 import org.apache.shardingsphere.governance.core.yaml.persisted.pojo.PersistedYamlRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
@@ -38,7 +36,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Configuration wrapper for YAML content.
@@ -70,6 +67,16 @@ public final class PersistedYamlConfigurationWrapper {
     }
     
     /**
+     * Unwrap rule configurations from YAML content.
+     *
+     * @param yamlContent YAML content
+     * @return rule configurations
+     */
+    public static Collection<RuleConfiguration> unwrapRuleConfigurations(final String yamlContent) {
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(yamlContent, PersistedYamlRuleConfiguration.class).getRules());
+    }
+    
+    /**
      * Convert sharding rule configuration from YAML .
      *
      * @param yamlRuleConfigs yaml rule configurations
@@ -81,36 +88,5 @@ public final class PersistedYamlConfigurationWrapper {
                 .findFirst();
         Preconditions.checkState(ruleConfig.isPresent(), "No available sharding rule to load for governance.");
         return new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) ruleConfig.get());
-    }
-    
-    /**
-     * Convert rule configurations from YAML content.
-     *
-     * @param yamlContent YAML content
-     * @return rule configurations
-     */
-    public static Collection<RuleConfiguration> convertRuleConfigurations(final String yamlContent) {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(yamlContent, PersistedYamlRuleConfiguration.class).getRules());
-    }
-    
-    /**
-     * Convert users from YAML content.
-     *
-     * @param yamlContent YAML content
-     * @return users
-     */
-    public static Collection<ShardingSphereUser> convertUsers(final String yamlContent) {
-        Collection<String> users = YamlEngine.unmarshal(yamlContent, Collection.class);
-        return YamlUsersConfigurationConverter.convertShardingSphereUser(users);
-    }
-    
-    /**
-     * Convert properties configuration from YAML content.
-     *
-     * @param yamlContent YAML content
-     * @return properties
-     */
-    public static Properties convertProperties(final String yamlContent) {
-        return YamlEngine.unmarshal(yamlContent, Properties.class);
     }
 }
