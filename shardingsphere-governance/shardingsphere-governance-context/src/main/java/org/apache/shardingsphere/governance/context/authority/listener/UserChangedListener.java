@@ -21,10 +21,12 @@ import org.apache.shardingsphere.governance.context.authority.listener.event.Aut
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.yaml.persisted.wrapper.PersistedYamlConfigurationWrapper;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -39,6 +41,6 @@ public final class UserChangedListener extends PostGovernanceRepositoryEventList
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new AuthorityChangedEvent(PersistedYamlConfigurationWrapper.convertUsers(event.getValue())));
+        return Optional.of(new AuthorityChangedEvent(YamlUsersConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(event.getValue(), Collection.class))));
     }
 }

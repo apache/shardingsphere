@@ -39,6 +39,7 @@ import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.yaml.ShardingRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -157,7 +158,7 @@ public final class JobConfigurationUtil {
     }
     
     private static Map<String, ShardingTableRuleConfiguration> getShardingRuleConfigMap(final YamlRootRuleConfigurations rootRuleConfigurations) {
-        ShardingRuleConfiguration ruleConfig = PersistedYamlConfigurationWrapper.convertShardingRuleConfig(rootRuleConfigurations.getRules());
+        ShardingRuleConfiguration ruleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(rootRuleConfigurations.getRules());
         return ruleConfig.getTables().stream()
                 .collect(Collectors.toMap(ShardingTableRuleConfiguration::getLogicTable, Function.identity()));
     }
@@ -219,8 +220,8 @@ public final class JobConfigurationUtil {
     public static List<TaskConfiguration> toTaskConfigs(final JobConfiguration jobConfig) {
         List<TaskConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfig(jobConfig);
-        ShardingRuleConfiguration sourceRuleConfig = PersistedYamlConfigurationWrapper.convertShardingRuleConfig(sourceConfig.getRootRuleConfigs().getRules());
-        Map<String, DataSourceConfiguration> sourceDataSource = PersistedYamlConfigurationWrapper.convertDataSourceConfigurations(sourceConfig.getRootRuleConfigs().getDataSources());
+        ShardingRuleConfiguration sourceRuleConfig = ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(sourceConfig.getRootRuleConfigs().getRules());
+        Map<String, DataSourceConfiguration> sourceDataSource = PersistedYamlConfigurationWrapper.unwrapDataSourceConfigurations(sourceConfig.getRootRuleConfigs().getDataSources());
         Map<String, DataSource> dataSourceMap = sourceDataSource.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().createDataSource()));
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(sourceRuleConfig, sourceConfig.getDatabaseType(), dataSourceMap));
         Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfig(jobConfig);
@@ -243,7 +244,8 @@ public final class JobConfigurationUtil {
     private static Optional<ShardingRuleConfiguration> getTargetRuleConfig(final JobConfiguration jobConfig) {
         ScalingDataSourceConfiguration dataSourceConfig = jobConfig.getRuleConfig().getTarget().unwrap();
         if (dataSourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration) {
-            return Optional.of(PersistedYamlConfigurationWrapper.convertShardingRuleConfig(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootRuleConfigs().getRules()));
+            return Optional.of(
+                    ShardingRuleConfigurationSwapper.findAndConvertShardingRuleConfiguration(((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfig).getRootRuleConfigs().getRules()));
         }
         return Optional.empty();
     }

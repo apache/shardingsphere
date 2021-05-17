@@ -266,7 +266,7 @@ public final class RegistryCenter {
      */
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
         return hasDataSourceConfiguration(schemaName)
-                ? PersistedYamlConfigurationWrapper.convertDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
+                ? PersistedYamlConfigurationWrapper.unwrapDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
     /**
@@ -276,7 +276,7 @@ public final class RegistryCenter {
      * @return rule configurations
      */
     public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
-        return hasRuleConfiguration(schemaName) ? PersistedYamlConfigurationWrapper.convertRuleConfigurations(repository.get(node.getRulePath(schemaName))) : new LinkedList<>();
+        return hasRuleConfiguration(schemaName) ? PersistedYamlConfigurationWrapper.unwrapRuleConfigurations(repository.get(node.getRulePath(schemaName))) : new LinkedList<>();
     }
     
     /**
@@ -285,7 +285,7 @@ public final class RegistryCenter {
      * @return users
      */
     public Collection<ShardingSphereUser> loadUsers() {
-        return hasUsers() ? PersistedYamlConfigurationWrapper.convertUsers(repository.get(node.getUsersNode())) : Collections.emptyList();
+        return hasUsers() ? YamlUsersConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(repository.get(node.getUsersNode()), Collection.class)) : Collections.emptyList();
     }
     
     /**
@@ -294,7 +294,7 @@ public final class RegistryCenter {
      * @return properties
      */
     public Properties loadProperties() {
-        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : PersistedYamlConfigurationWrapper.convertProperties(repository.get(node.getPropsPath()));
+        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(node.getPropsPath()), Properties.class);
     }
     
     /**
@@ -303,7 +303,7 @@ public final class RegistryCenter {
      * @return global rule configurations
      */
     public Collection<RuleConfiguration> loadGlobalRuleConfigurations() {
-        return hasGlobalRuleConfigurations() ? PersistedYamlConfigurationWrapper.convertRuleConfigurations(repository.get(node.getGlobalRuleNode())) : Collections.emptyList();
+        return hasGlobalRuleConfigurations() ? PersistedYamlConfigurationWrapper.unwrapRuleConfigurations(repository.get(node.getGlobalRuleNode())) : Collections.emptyList();
     }
     
     /**
