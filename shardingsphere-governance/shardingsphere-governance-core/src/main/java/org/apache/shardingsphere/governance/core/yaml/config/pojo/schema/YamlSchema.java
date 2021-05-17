@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.schema;
+package org.apache.shardingsphere.governance.core.yaml.config.pojo.schema;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
+import java.util.Map;
+
 /**
- * Column meta data for YAML.
+ * ShardingSphere schema for YAML.
  */
 @Getter
 @Setter
-public final class YamlColumnMetaData implements YamlConfiguration {
+public final class YamlSchema implements YamlConfiguration {
     
-    private String name;
-    
-    private int dataType;
-    
-    private String dataTypeName;
-    
-    private boolean primaryKey;
-    
-    private boolean generated;
-    
-    private boolean caseSensitive;
+    private Map<String, YamlTableMetaData> tables;
 }

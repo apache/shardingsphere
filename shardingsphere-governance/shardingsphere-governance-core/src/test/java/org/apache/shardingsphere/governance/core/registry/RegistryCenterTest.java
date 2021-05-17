@@ -28,9 +28,9 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.metadat
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.core.yaml.config.wrapper.YamlRuleConfigurationWrap;
-import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
-import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.persisted.pojo.PersistedYamlRuleConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.config.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -353,7 +353,7 @@ public final class RegistryCenterTest {
     }
     
     private Collection<RuleConfiguration> createRuleConfigurations() {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHARDING_RULE_YAML), YamlRuleConfigurationWrap.class).getRules());
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHARDING_RULE_YAML), PersistedYamlRuleConfiguration.class).getRules());
     }
     
     private Collection<RuleConfiguration> createReadwriteSplittingRuleConfiguration() {
@@ -373,7 +373,7 @@ public final class RegistryCenterTest {
     }
     
     private Collection<RuleConfiguration> createGlobalRuleConfigurations() {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(GLOBAL_RULE_YAML), YamlRuleConfigurationWrap.class).getRules());
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(GLOBAL_RULE_YAML), PersistedYamlRuleConfiguration.class).getRules());
     }
     
     private Properties createProperties() {

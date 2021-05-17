@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config;
+package org.apache.shardingsphere.governance.core.yaml.config.pojo.schema;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
+import java.util.Map;
+
 /**
- * Governance configuration for YAML.
+ * Table meta data for YAML.
  */
 @Getter
 @Setter
-public final class YamlGovernanceConfiguration implements YamlConfiguration {
+public final class YamlTableMetaData implements YamlConfiguration {
     
-    private String name;
+    private Map<String, YamlColumnMetaData> columns;
     
-    private YamlRegistryCenterConfiguration registryCenter;
-    
-    private boolean overwrite;
+    private Map<String, YamlIndexMetaData> indexes;
 }

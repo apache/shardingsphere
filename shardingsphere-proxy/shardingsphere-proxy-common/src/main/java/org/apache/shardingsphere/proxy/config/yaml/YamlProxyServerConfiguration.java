@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.scaling.YamlScalingConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.pojo.scaling.YamlScalingConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 

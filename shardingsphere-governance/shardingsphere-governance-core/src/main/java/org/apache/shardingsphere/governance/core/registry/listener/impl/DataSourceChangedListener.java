@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.yaml.config.wrapper.YamlDataSourceConfigurationWrap;
+import org.apache.shardingsphere.governance.core.yaml.persisted.pojo.PersistedYamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -63,14 +63,14 @@ public final class DataSourceChangedListener extends PostGovernanceRepositoryEve
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
-        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(event.getValue(), YamlDataSourceConfigurationWrap.class);
+        PersistedYamlDataSourceConfiguration result = YamlEngine.unmarshal(event.getValue(), PersistedYamlDataSourceConfiguration.class);
         return checkDataSourceEvent(result) ? new DataSourceChangedEvent(schemaName, new HashMap<>())
                 : new DataSourceChangedEvent(schemaName, result.getDataSources().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
                         .swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
-    private boolean checkDataSourceEvent(final YamlDataSourceConfigurationWrap warp) {
-        return Objects.isNull(warp) || Objects.isNull(warp.getDataSources()) || warp.getDataSources().isEmpty();
+    private boolean checkDataSourceEvent(final PersistedYamlDataSourceConfiguration persistedConfig) {
+        return Objects.isNull(persistedConfig) || Objects.isNull(persistedConfig.getDataSources()) || persistedConfig.getDataSources().isEmpty();
     }
 }

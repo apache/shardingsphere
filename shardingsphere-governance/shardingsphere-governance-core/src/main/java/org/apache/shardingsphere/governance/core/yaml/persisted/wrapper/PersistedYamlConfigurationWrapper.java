@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.wrapper;
+package org.apache.shardingsphere.governance.core.yaml.persisted.wrapper;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.governance.core.yaml.persisted.pojo.PersistedYamlDataSourceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.persisted.pojo.PersistedYamlRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
@@ -40,10 +42,10 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Configuration converter for YAML content.
+ * Configuration wrapper for YAML content.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class YamlConfigurationConverter {
+public final class PersistedYamlConfigurationWrapper {
     
     /**
      * Convert data source configurations from YAML content.
@@ -52,7 +54,7 @@ public final class YamlConfigurationConverter {
      * @return data source configurations
      */
     public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final String yamlContent) {
-        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(yamlContent, YamlDataSourceConfigurationWrap.class);
+        PersistedYamlDataSourceConfiguration result = YamlEngine.unmarshal(yamlContent, PersistedYamlDataSourceConfiguration.class);
         if (null == result.getDataSources() || result.getDataSources().isEmpty()) {
             return new LinkedHashMap<>();
         }
@@ -102,7 +104,7 @@ public final class YamlConfigurationConverter {
      * @return rule configurations
      */
     public static Collection<RuleConfiguration> convertRuleConfigurations(final String yamlContent) {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(yamlContent, YamlRuleConfigurationWrap.class).getRules());
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(yamlContent, PersistedYamlRuleConfiguration.class).getRules());
     }
     
     /**

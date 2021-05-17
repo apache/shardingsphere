@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.scaling;
+package org.apache.shardingsphere.governance.core.yaml.config.pojo.schema;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Scaling configuration for YAML.
+ * Column meta data for YAML.
  */
 @Getter
 @Setter
-public final class YamlScalingConfiguration implements YamlConfiguration {
+public final class YamlColumnMetaData implements YamlConfiguration {
     
-    private int blockQueueSize;
+    private String name;
     
-    private int workerThread;
+    private int dataType;
+    
+    private String dataTypeName;
+    
+    private boolean primaryKey;
+    
+    private boolean generated;
+    
+    private boolean caseSensitive;
 }
