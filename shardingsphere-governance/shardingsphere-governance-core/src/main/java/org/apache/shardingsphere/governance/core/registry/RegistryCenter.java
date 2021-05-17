@@ -266,7 +266,7 @@ public final class RegistryCenter {
      */
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
         return hasDataSourceConfiguration(schemaName)
-                ? PersistedYamlConfigurationWrapper.convertDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
+                ? PersistedYamlConfigurationWrapper.unwrapDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
     /**

@@ -47,23 +47,23 @@ import java.util.Properties;
 public final class PersistedYamlConfigurationWrapper {
     
     /**
-     * Convert data source configuration map from YAML content.
+     * Unwrap data source configuration map from YAML content.
      *
      * @param yamlContent YAML content
      * @return data source configuration map
      */
-    public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final String yamlContent) {
+    public static Map<String, DataSourceConfiguration> unwrapDataSourceConfigurations(final String yamlContent) {
         PersistedYamlDataSourceConfiguration persistedConfig = YamlEngine.unmarshal(yamlContent, PersistedYamlDataSourceConfiguration.class);
-        return null == persistedConfig.getDataSources() || persistedConfig.getDataSources().isEmpty() ? new LinkedHashMap<>() : convertDataSourceConfigurations(persistedConfig.getDataSources());
+        return null == persistedConfig.getDataSources() || persistedConfig.getDataSources().isEmpty() ? new LinkedHashMap<>() : unwrapDataSourceConfigurations(persistedConfig.getDataSources());
     }
     
     /**
-     * Convert data source configurations from YAML content.
+     * Unwrap data source configurations from YAML content.
      *
      * @param yamlDataSourceConfigs YAML data source configurations
      * @return data source configurations
      */
-    public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final Map<String, Map<String, Object>> yamlDataSourceConfigs) {
+    public static Map<String, DataSourceConfiguration> unwrapDataSourceConfigurations(final Map<String, Map<String, Object>> yamlDataSourceConfigs) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSourceConfigs.size());
         yamlDataSourceConfigs.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
         return result;

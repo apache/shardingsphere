@@ -220,7 +220,7 @@ public final class JobConfigurationUtil {
         List<TaskConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfig(jobConfig);
         ShardingRuleConfiguration sourceRuleConfig = PersistedYamlConfigurationWrapper.convertShardingRuleConfig(sourceConfig.getRootRuleConfigs().getRules());
-        Map<String, DataSourceConfiguration> sourceDataSource = PersistedYamlConfigurationWrapper.convertDataSourceConfigurations(sourceConfig.getRootRuleConfigs().getDataSources());
+        Map<String, DataSourceConfiguration> sourceDataSource = PersistedYamlConfigurationWrapper.unwrapDataSourceConfigurations(sourceConfig.getRootRuleConfigs().getDataSources());
         Map<String, DataSource> dataSourceMap = sourceDataSource.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().createDataSource()));
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(new ShardingRule(sourceRuleConfig, sourceConfig.getDatabaseType(), dataSourceMap));
         Optional<ShardingRuleConfiguration> targetRuleConfig = getTargetRuleConfig(jobConfig);
