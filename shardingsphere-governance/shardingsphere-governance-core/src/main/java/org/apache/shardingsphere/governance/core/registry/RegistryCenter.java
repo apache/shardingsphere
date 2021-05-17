@@ -224,12 +224,12 @@ public final class RegistryCenter {
         }
     }
     
-    private boolean hasProperties() {
-        return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
-    }
-    
     private boolean hasGlobalRuleConfigurations() {
         return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
+    }
+    
+    private boolean hasProperties() {
+        return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
     }
     
     private PersistedYamlRuleConfiguration createGlobalPersistedYamlRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
