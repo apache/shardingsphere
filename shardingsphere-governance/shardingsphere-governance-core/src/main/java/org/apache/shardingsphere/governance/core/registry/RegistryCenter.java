@@ -99,13 +99,18 @@ public final class RegistryCenter {
     private final RegistryCacheManager registryCacheManager;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
-        node = new RegistryCenterNode();
         this.repository = repository;
         instance = GovernanceInstance.getInstance();
+        node = new RegistryCenterNode();
         lockNode = new LockNode();
         initLockNode();
         registryCacheManager = new RegistryCacheManager(repository, node);
         ShardingSphereEventBus.getInstance().register(this);
+    }
+    
+    private void initLockNode() {
+        repository.persist(lockNode.getLockRootNodePath(), "");
+        repository.persist(lockNode.getLockedAckRootNodePah(), "");
     }
     
     /**
@@ -656,11 +661,6 @@ public final class RegistryCenter {
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
         return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
-    }
-    
-    private void initLockNode() {
-        repository.persist(lockNode.getLockRootNodePath(), "");
-        repository.persist(lockNode.getLockedAckRootNodePah(), "");
     }
     
     /**
