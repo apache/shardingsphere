@@ -37,11 +37,11 @@ import org.apache.shardingsphere.proxy.converter.AddResourcesStatementConverter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Add resource backend handler.
@@ -60,11 +60,19 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     @Override
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
-        post(schemaName, check(schemaName, sqlStatement));
+        check(schemaName, sqlStatement);
+        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = DataSourceParameterConverter.getDataSourceConfigurationMap(
+                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
+        Collection<String> invalidDataSourceNames = dataSourceConfigurationMap.entrySet()
+                .stream().filter(entry -> !dataSourceValidator.validate(entry.getValue())).map(Entry::getKey).collect(Collectors.toList());
+        if (!invalidDataSourceNames.isEmpty()) {
+            throw new InvalidResourceException(invalidDataSourceNames);
+        }
+        post(schemaName, dataSourceConfigurationMap);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private Map<String, DataSourceConfiguration> check(final String schemaName, final AddResourceStatement sqlStatement) {
+    private void check(final String schemaName, final AddResourceStatement sqlStatement) {
         List<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
         Set<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {
@@ -76,18 +84,6 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         if (!duplicateDataSourceNames.isEmpty()) {
             throw new DuplicateResourceException(duplicateDataSourceNames);
         }
-        Map<String, DataSourceConfiguration> result = DataSourceParameterConverter.getDataSourceConfigurationMap(
-                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
-        Collection<String> invalidDataSourceNames = new LinkedList<>();
-        for (Entry<String, DataSourceConfiguration> entry : result.entrySet()) {
-            if (!dataSourceValidator.validate(entry.getValue())) {
-                invalidDataSourceNames.add(entry.getKey());
-            }
-        }
-        if (!invalidDataSourceNames.isEmpty()) {
-            throw new InvalidResourceException(invalidDataSourceNames);
-        }
-        return result;
     }
     
     private void post(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
