@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config;
+package org.apache.shardingsphere.governance.core.yaml.config.wrapper;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;

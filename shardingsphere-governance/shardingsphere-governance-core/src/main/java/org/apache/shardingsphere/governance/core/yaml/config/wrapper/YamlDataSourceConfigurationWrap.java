@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config;
+package org.apache.shardingsphere.governance.core.yaml.config.wrapper;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Map;
 
 /**
- * Rule configuration warp for YAML.
+ * Data source configuration warp for YAML.
  */
 @Getter
 @Setter
-public final class YamlRuleConfigurationWrap implements YamlConfiguration {
+public final class YamlDataSourceConfigurationWrap implements YamlConfiguration {
     
-    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    private Map<String, Map<String, Object>> dataSources;
 }

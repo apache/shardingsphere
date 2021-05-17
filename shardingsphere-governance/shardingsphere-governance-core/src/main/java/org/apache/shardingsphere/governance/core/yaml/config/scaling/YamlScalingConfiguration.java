@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config;
+package org.apache.shardingsphere.governance.core.yaml.config.scaling;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Scaling configuration for Yaml.
+ * Scaling configuration for YAML.
  */
 @Getter
 @Setter
