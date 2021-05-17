@@ -24,16 +24,17 @@ import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public final class RegistryCenterRepositoryFactoryTest {
-
+    
     @Test
     public void assertNewInstance() {
         GovernanceConfiguration config = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("TEST", "127.0.0.1", new Properties()), false);
         RegistryCenterRepository registryCenterRepository = RegistryCenterRepositoryFactory.newInstance(config);
         assertNotNull(registryCenterRepository);
-        assertEquals("TEST", registryCenterRepository.getType());
+        assertThat(registryCenterRepository.getType(), is("TEST"));
     }
 }
