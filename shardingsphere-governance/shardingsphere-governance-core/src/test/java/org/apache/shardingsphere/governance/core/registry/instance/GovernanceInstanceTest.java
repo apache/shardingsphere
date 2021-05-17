@@ -17,34 +17,16 @@
 
 package org.apache.shardingsphere.governance.core.registry.instance;
 
-import lombok.Getter;
-import org.apache.shardingsphere.governance.core.utils.IpUtils;
+import org.junit.Test;
 
-import java.lang.management.ManagementFactory;
-import java.util.UUID;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Governance instance.
- */
-@Getter
-public final class GovernanceInstance {
+public final class GovernanceInstanceTest {
     
-    private static final String DELIMITER = "@";
-    
-    private static final GovernanceInstance INSTANCE = new GovernanceInstance();
-    
-    private final String id;
-    
-    private GovernanceInstance() {
-        id = String.join(DELIMITER, IpUtils.getIp(), ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], UUID.randomUUID().toString());
-    }
-    
-    /**
-     * Get instance.
-     *
-     * @return  singleton instance
-     */
-    public static GovernanceInstance getInstance() {
-        return INSTANCE;
+    @Test
+    public void assertGetId() {
+        String id = GovernanceInstance.getInstance().getId();
+        assertThat(id.split("@").length, is(3));
     }
 }

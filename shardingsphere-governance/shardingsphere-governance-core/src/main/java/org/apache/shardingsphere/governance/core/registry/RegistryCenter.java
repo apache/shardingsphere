@@ -88,22 +88,22 @@ public final class RegistryCenter {
     
     private static final int CHECK_ACK_INTERVAL_SECONDS = 1;
     
+    private final String instanceId;
+    
     private final RegistryCenterRepository repository;
     
     private final RegistryCenterNode node;
     
     private final LockNode lockNode;
     
-    private final String instanceId;
-    
     private final RegistryCacheManager registryCacheManager;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
+        instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
         node = new RegistryCenterNode();
         lockNode = new LockNode();
         initLockNode();
-        instanceId = GovernanceInstance.getInstance().getInstanceId();
         registryCacheManager = new RegistryCacheManager(repository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
