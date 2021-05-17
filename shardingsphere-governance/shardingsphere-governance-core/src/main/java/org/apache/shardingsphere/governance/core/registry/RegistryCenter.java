@@ -118,13 +118,13 @@ public final class RegistryCenter {
      *
      * @param schemaName schema name
      * @param dataSourceConfigs data source configuration map
-     * @param ruleConfigurations rule configurations
+     * @param ruleConfigs rule configurations
      * @param isOverwrite is overwrite config center's configuration
      */
     public void persistConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs,
-                                      final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
+                                      final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
         persistDataSourceConfigurations(schemaName, dataSourceConfigs, isOverwrite);
-        persistRuleConfigurations(schemaName, ruleConfigurations, isOverwrite);
+        persistRuleConfigurations(schemaName, ruleConfigs, isOverwrite);
         // TODO Consider removing the following one.
         persistSchemaName(schemaName);
     }
