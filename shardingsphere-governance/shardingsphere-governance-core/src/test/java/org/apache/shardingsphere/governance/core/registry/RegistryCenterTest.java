@@ -482,16 +482,6 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertLoadUsers() {
-        when(registryCenterRepository.get("/users")).thenReturn(readYAML(USERS_YAML));
-        RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
-        Collection<ShardingSphereUser> actual = registryCenter.loadUsers();
-        Optional<ShardingSphereUser> user = actual.stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
-        assertTrue(user.isPresent());
-        assertThat(user.get().getPassword(), is("root1"));
-    }
-    
-    @Test
     public void assertLoadProperties() {
         when(registryCenterRepository.get("/props")).thenReturn(PROPS_YAML);
         RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
@@ -519,10 +509,10 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertGetAllSchemaNames() {
+    public void assertLoadAllSchemaNames() {
         when(registryCenterRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
-        Collection<String> actual = registryCenter.getAllSchemaNames();
+        Collection<String> actual = registryCenter.loadAllSchemaNames();
         assertThat(actual.size(), is(2));
         assertThat(actual, hasItems("sharding_db"));
         assertThat(actual, hasItems("replica_query_db"));
