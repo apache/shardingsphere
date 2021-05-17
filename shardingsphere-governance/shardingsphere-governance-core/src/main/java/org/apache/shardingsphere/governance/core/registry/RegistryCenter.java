@@ -98,13 +98,13 @@ public final class RegistryCenter {
     
     private final RegistryCacheManager registryCacheManager;
     
-    public RegistryCenter(final RegistryCenterRepository registryCenterRepository) {
+    public RegistryCenter(final RegistryCenterRepository repository) {
         node = new RegistryCenterNode();
-        repository = registryCenterRepository;
+        this.repository = repository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
         initLockNode();
-        registryCacheManager = new RegistryCacheManager(registryCenterRepository, node);
+        registryCacheManager = new RegistryCacheManager(repository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
     

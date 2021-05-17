@@ -20,7 +20,6 @@ package org.apache.shardingsphere.governance.core.registry;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ import java.util.stream.Collectors;
 /**
  * Registry center node.
  */
-@RequiredArgsConstructor
 public final class RegistryCenterNode {
     
     private static final String ROOT = "states";
