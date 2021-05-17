@@ -94,7 +94,7 @@ public final class RegistryCenter {
     
     private final LockNode lockNode;
     
-    private final GovernanceInstance instance;
+    private final String instanceId;
     
     private final RegistryCacheManager registryCacheManager;
     
@@ -103,7 +103,7 @@ public final class RegistryCenter {
         node = new RegistryCenterNode();
         lockNode = new LockNode();
         initLockNode();
-        instance = GovernanceInstance.getInstance();
+        instanceId = GovernanceInstance.getInstance().getInstanceId();
         registryCacheManager = new RegistryCacheManager(repository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -600,7 +600,7 @@ public final class RegistryCenter {
      * Persist instance online.
      */
     public void persistInstanceOnline() {
-        repository.persistEphemeral(node.getProxyNodePath(instance.getInstanceId()), "");
+        repository.persistEphemeral(node.getProxyNodePath(instanceId), "");
     }
     
     /**
@@ -623,7 +623,7 @@ public final class RegistryCenter {
      * @param instanceData instance data
      */
     public void persistInstanceData(final String instanceData) {
-        repository.persist(node.getProxyNodePath(instance.getInstanceId()), instanceData);
+        repository.persist(node.getProxyNodePath(instanceId), instanceData);
     }
     
     /**
@@ -632,7 +632,7 @@ public final class RegistryCenter {
      * @return instance data
      */
     public String loadInstanceData() {
-        return repository.get(node.getProxyNodePath(instance.getInstanceId()));
+        return repository.get(node.getProxyNodePath(instanceId));
     }
     
     /**
@@ -689,7 +689,7 @@ public final class RegistryCenter {
      * @param lockName lock name
      */
     public void ackLock(final String lockName) {
-        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)), LockAck.LOCKED.getValue());
+        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.LOCKED.getValue());
     }
     
     /**
@@ -698,7 +698,7 @@ public final class RegistryCenter {
      * @param lockName lock name
      */
     public void ackUnlock(final String lockName) {
-        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)), LockAck.UNLOCKED.getValue());
+        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.UNLOCKED.getValue());
     }
     
     /**
@@ -707,7 +707,7 @@ public final class RegistryCenter {
      * @param lockName lock name
      */
     public void deleteLockAck(final String lockName) {
-        repository.delete(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)));
+        repository.delete(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)));
     }
     
     /**
