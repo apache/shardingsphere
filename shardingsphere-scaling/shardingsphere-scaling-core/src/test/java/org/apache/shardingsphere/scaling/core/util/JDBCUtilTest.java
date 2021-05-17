@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.scaling.core.util;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.governance.core.yaml.persisted.wrapper.PersistedYamlConfigurationWrapper;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,7 +44,7 @@ public final class JDBCUtilTest {
     public void assertAppendShardingSphereJDBCDataSourceConfig() {
         ShardingSphereJDBCDataSourceConfiguration dataSourceConfig = new ShardingSphereJDBCDataSourceConfiguration(mockDataSource(), "");
         JDBCUtil.appendJDBCParameter(dataSourceConfig, ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
-        ArrayList<DataSourceConfiguration> actual = new ArrayList<>(PersistedYamlConfigurationWrapper.unwrapDataSourceConfigurations(dataSourceConfig.getRootRuleConfigs().getDataSources()).values());
+        ArrayList<DataSourceConfiguration> actual = new ArrayList<>(getDataSourceConfigurations(dataSourceConfig.getRootRuleConfigs().getDataSources()).values());
         assertThat(actual.get(0).getProps().get("url"), is("jdbc:mysql://192.168.0.2:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
         assertThat(actual.get(1).getProps().get("url"), is("jdbc:mysql://192.168.0.1:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
     }
@@ -55,5 +57,11 @@ public final class JDBCUtilTest {
                 + "  ds_0:\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
                 + "    url: jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false\n";
+    }
+    
+    private static Map<String, DataSourceConfiguration> getDataSourceConfigurations(final Map<String, Map<String, Object>> yamlDataSourceConfigs) {
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSourceConfigs.size());
+        yamlDataSourceConfigs.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
+        return result;
     }
 }

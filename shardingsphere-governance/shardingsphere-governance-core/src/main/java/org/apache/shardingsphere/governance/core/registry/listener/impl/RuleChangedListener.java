@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanc
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.yaml.persisted.pojo.PersistedYamlRuleConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.persisted.PersistedYamlRuleConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
