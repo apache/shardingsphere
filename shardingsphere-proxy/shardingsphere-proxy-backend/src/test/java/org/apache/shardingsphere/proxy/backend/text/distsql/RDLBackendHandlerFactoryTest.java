@@ -213,13 +213,13 @@ public final class RDLBackendHandlerFactoryTest {
     }
 
     @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
-    public void assertExecuteDropReplicaQueryRuleContext() throws SQLException {
+    public void assertExecuteDropReadwriteSplittingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
             RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReadwriteSplittingRuleStatement.class), connection);
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `DropReplicaQueryRuleStatement` SQL"));
+            assertThat(ex.getMessage(), is("No Registry center to execute `DropReadwriteSplittingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
         Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReadwriteSplittingRuleStatement.class), connection);
@@ -229,7 +229,7 @@ public final class RDLBackendHandlerFactoryTest {
     }
 
     @Test
-    public void assertExecuteCreateReplicaQueryRuleContext() throws SQLException {
+    public void assertExecuteCreateReadwriteSplittingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
@@ -245,7 +245,7 @@ public final class RDLBackendHandlerFactoryTest {
     }
 
     @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
-    public void assertExecuteAlterReplicaQueryRuleContext() throws SQLException {
+    public void assertExecuteAlterReadwriteSplittingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
