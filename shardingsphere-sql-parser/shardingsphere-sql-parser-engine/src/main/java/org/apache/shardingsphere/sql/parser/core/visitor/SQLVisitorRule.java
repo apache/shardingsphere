@@ -121,6 +121,12 @@ public enum SQLVisitorRule {
     EXECUTE_STMT("ExecuteStmt", SQLStatementType.DDL),
     
     DEALLOCATE("Deallocate", SQLStatementType.DDL),
+
+    CREATE_TABLESPACE("CreateTablespace", SQLStatementType.DDL),
+    
+    ALTER_TABLESPACE("AlterTablespace", SQLStatementType.DDL),
+    
+    DROP_TABLESPACE("DropTablespace", SQLStatementType.DDL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     

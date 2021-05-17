@@ -71,5 +71,8 @@ execute
     | prepare
     | executeStmt
     | deallocate
+    | createTablespace
+    | dropTablespace
+    | alterTablespace
     ) SEMI_?
     ;
