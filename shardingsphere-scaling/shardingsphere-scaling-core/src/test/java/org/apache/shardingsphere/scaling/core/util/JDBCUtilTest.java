@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.util;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.governance.core.yaml.config.wrapper.YamlConfigurationConverter;
+import org.apache.shardingsphere.governance.core.yaml.persisted.wrapper.PersistedYamlConfigurationWrapper;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
@@ -42,7 +42,7 @@ public final class JDBCUtilTest {
     public void assertAppendShardingSphereJDBCDataSourceConfig() {
         ShardingSphereJDBCDataSourceConfiguration dataSourceConfig = new ShardingSphereJDBCDataSourceConfiguration(mockDataSource(), "");
         JDBCUtil.appendJDBCParameter(dataSourceConfig, ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
-        ArrayList<DataSourceConfiguration> actual = new ArrayList<>(YamlConfigurationConverter.convertDataSourceConfigurations(dataSourceConfig.getRootRuleConfigs().getDataSources()).values());
+        ArrayList<DataSourceConfiguration> actual = new ArrayList<>(PersistedYamlConfigurationWrapper.convertDataSourceConfigurations(dataSourceConfig.getRootRuleConfigs().getDataSources()).values());
         assertThat(actual.get(0).getProps().get("url"), is("jdbc:mysql://192.168.0.2:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
         assertThat(actual.get(1).getProps().get("url"), is("jdbc:mysql://192.168.0.1:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
     }

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.wrapper;
+package org.apache.shardingsphere.governance.core.yaml.config.pojo.scaling;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
-import java.util.Map;
-
 /**
- * Data source configuration warp for YAML.
+ * Scaling configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlDataSourceConfigurationWrap implements YamlConfiguration {
+public final class YamlScalingConfiguration implements YamlConfiguration {
     
-    private Map<String, Map<String, Object>> dataSources;
+    private int blockQueueSize;
+    
+    private int workerThread;
 }

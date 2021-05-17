@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.GlobalRuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.yaml.config.wrapper.YamlRuleConfigurationWrap;
+import org.apache.shardingsphere.governance.core.yaml.persisted.pojo.PersistedYamlRuleConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -49,7 +49,7 @@ public final class GlobalRuleChangedListener extends PostGovernanceRepositoryEve
     }
     
     private Collection<RuleConfiguration> getGlobalRuleConfigurations(final DataChangedEvent event) {
-        Collection<YamlRuleConfiguration> globalRuleConfigs = YamlEngine.unmarshal(event.getValue(), YamlRuleConfigurationWrap.class).getRules();
+        Collection<YamlRuleConfiguration> globalRuleConfigs = YamlEngine.unmarshal(event.getValue(), PersistedYamlRuleConfiguration.class).getRules();
         Preconditions.checkState(!globalRuleConfigs.isEmpty(), "No available global rule to load for governance.");
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(globalRuleConfigs);
     }

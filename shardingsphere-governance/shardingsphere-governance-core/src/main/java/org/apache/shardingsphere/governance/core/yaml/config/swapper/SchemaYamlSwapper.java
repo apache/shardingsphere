@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.swapper;
+package org.apache.shardingsphere.governance.core.yaml.config.swapper;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlColumnMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlIndexMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
-import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlTableMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlColumnMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlIndexMetaData;
+import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlTableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;

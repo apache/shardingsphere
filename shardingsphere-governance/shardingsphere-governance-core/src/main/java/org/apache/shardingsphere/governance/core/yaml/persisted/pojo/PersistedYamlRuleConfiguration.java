@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config;
+package org.apache.shardingsphere.governance.core.yaml.persisted.pojo;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
-import java.util.Properties;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Registry center configuration for YAML.
+ * Persisted rule configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlRegistryCenterConfiguration implements YamlConfiguration {
+public final class PersistedYamlRuleConfiguration implements YamlConfiguration {
     
-    private String type;
-    
-    private String serverLists;
-    
-    private Properties props = new Properties();
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
 }
