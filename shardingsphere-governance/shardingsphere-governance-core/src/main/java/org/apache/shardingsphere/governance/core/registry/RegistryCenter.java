@@ -287,15 +287,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load properties configuration.
-     *
-     * @return properties
-     */
-    public Properties loadProperties() {
-        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(node.getPropsPath()), Properties.class);
-    }
-    
-    /**
      * Load global rule configurations.
      * 
      * @return global rule configurations
@@ -304,6 +295,15 @@ public final class RegistryCenter {
         return hasGlobalRuleConfigurations()
                 ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), PersistedYamlRuleConfiguration.class).getRules())
                 : Collections.emptyList();
+    }
+    
+    /**
+     * Load properties configuration.
+     *
+     * @return properties
+     */
+    public Properties loadProperties() {
+        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(node.getPropsPath()), Properties.class);
     }
     
     /**
