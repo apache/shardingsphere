@@ -173,6 +173,18 @@ public final class RegistryCenter {
         persistProperties(props, isOverwrite);
     }
     
+    private void persistProperties(final Properties props, final boolean isOverwrite) {
+        if (!props.isEmpty() && (isOverwrite || !hasProperties())) {
+            repository.persist(node.getPropsPath(), YamlEngine.marshal(props));
+        }
+    }
+    
+    private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
+        if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
+            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(createGlobalPersistedYamlRuleConfiguration(globalRuleConfigs)));
+        }
+    }
+    
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigurationCacheId) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
                 YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigurationCacheId), YamlRootRuleConfigurations.class).getRules());
@@ -211,21 +223,9 @@ public final class RegistryCenter {
             repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
         }
     }
-
-    private void persistProperties(final Properties props, final boolean isOverwrite) {
-        if (!props.isEmpty() && (isOverwrite || !hasProperties())) {
-            repository.persist(node.getPropsPath(), YamlEngine.marshal(props));
-        }
-    }
     
     private boolean hasProperties() {
         return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
-    }
-    
-    private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
-        if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
-            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(createGlobalPersistedYamlRuleConfiguration(globalRuleConfigs)));
-        }
     }
     
     private boolean hasGlobalRuleConfigurations() {
