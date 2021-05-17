@@ -192,7 +192,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         governanceFacade.getRegistryCenter().persistSchema(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), 
                 metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
-        ShardingSphereEventBus.getInstance().post(new MetaDataChangedEvent(governanceFacade.getRegistryCenter().getAllSchemaNames()));
+        ShardingSphereEventBus.getInstance().post(new MetaDataChangedEvent(governanceFacade.getRegistryCenter().loadAllSchemaNames()));
     }
     
     /**

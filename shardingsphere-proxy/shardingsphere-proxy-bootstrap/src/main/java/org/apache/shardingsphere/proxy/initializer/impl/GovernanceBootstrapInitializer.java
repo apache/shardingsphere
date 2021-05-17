@@ -95,7 +95,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     private ProxyConfiguration loadProxyConfiguration() {
-        Collection<String> schemaNames = governanceFacade.getRegistryCenter().getAllSchemaNames();
+        Collection<String> schemaNames = governanceFacade.getRegistryCenter().loadAllSchemaNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
         Properties props = governanceFacade.getRegistryCenter().loadProperties();

@@ -509,10 +509,10 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertGetAllSchemaNames() {
+    public void assertLoadAllSchemaNames() {
         when(registryCenterRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
-        Collection<String> actual = registryCenter.getAllSchemaNames();
+        Collection<String> actual = registryCenter.loadAllSchemaNames();
         assertThat(actual.size(), is(2));
         assertThat(actual, hasItems("sharding_db"));
         assertThat(actual, hasItems("replica_query_db"));

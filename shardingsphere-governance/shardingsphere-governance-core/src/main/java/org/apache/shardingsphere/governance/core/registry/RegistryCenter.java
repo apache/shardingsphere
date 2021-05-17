@@ -307,11 +307,11 @@ public final class RegistryCenter {
     }
     
     /**
-     * Get all schema names.
+     * Load all schema names.
      *
      * @return all schema names
      */
-    public Collection<String> getAllSchemaNames() {
+    public Collection<String> loadAllSchemaNames() {
         String schemaNames = repository.get(node.getMetadataNodePath());
         return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
     }
