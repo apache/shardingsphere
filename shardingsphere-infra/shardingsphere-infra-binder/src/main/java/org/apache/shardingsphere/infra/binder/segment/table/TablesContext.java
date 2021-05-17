@@ -74,7 +74,7 @@ public final class TablesContext {
             return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
         }
         if (column.getOwner().isPresent()) {
-            return Optional.of(findTableNameFromSQL(column.getOwner().get().getIdentifier().getValue()));
+            return Optional.ofNullable(findTableNameFromSQL(column.getOwner().get().getIdentifier().getValue()));
         }
         return findTableNameFromMetaData(column.getIdentifier().getValue(), schema);
     }
@@ -107,7 +107,7 @@ public final class TablesContext {
                 return each.getTableName().getIdentifier().getValue();
             }
         }
-        throw new IllegalStateException("Can not find owner from table.");
+        return null;
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final ShardingSphereSchema schema) {
