@@ -482,16 +482,6 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertLoadUsers() {
-        when(registryCenterRepository.get("/users")).thenReturn(readYAML(USERS_YAML));
-        RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
-        Collection<ShardingSphereUser> actual = registryCenter.loadUsers();
-        Optional<ShardingSphereUser> user = actual.stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
-        assertTrue(user.isPresent());
-        assertThat(user.get().getPassword(), is("root1"));
-    }
-    
-    @Test
     public void assertLoadProperties() {
         when(registryCenterRepository.get("/props")).thenReturn(PROPS_YAML);
         RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);

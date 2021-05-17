@@ -287,15 +287,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load users.
-     *
-     * @return users
-     */
-    public Collection<ShardingSphereUser> loadUsers() {
-        return hasUsers() ? YamlUsersConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(repository.get(node.getUsersNode()), Collection.class)) : Collections.emptyList();
-    }
-    
-    /**
      * Load properties configuration.
      *
      * @return properties
