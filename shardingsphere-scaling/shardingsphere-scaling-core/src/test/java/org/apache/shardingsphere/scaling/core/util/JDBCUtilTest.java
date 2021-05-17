@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.util;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
+import org.apache.shardingsphere.governance.core.yaml.config.wrapper.YamlConfigurationConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;

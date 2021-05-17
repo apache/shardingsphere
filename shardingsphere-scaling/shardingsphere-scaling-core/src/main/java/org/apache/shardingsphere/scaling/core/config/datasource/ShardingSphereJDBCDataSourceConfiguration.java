@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
+import org.apache.shardingsphere.governance.core.yaml.config.wrapper.YamlConfigurationConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;

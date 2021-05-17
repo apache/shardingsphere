@@ -40,9 +40,9 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Ru
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurationWrap;
+import org.apache.shardingsphere.governance.core.yaml.config.wrapper.YamlConfigurationConverter;
+import org.apache.shardingsphere.governance.core.yaml.config.wrapper.YamlDataSourceConfigurationWrap;
+import org.apache.shardingsphere.governance.core.yaml.config.wrapper.YamlRuleConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
