@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.pojo.schema;
+package org.apache.shardingsphere.governance.core.yaml.schema.pojo;
 
 import lombok.Getter;
 import lombok.Setter;

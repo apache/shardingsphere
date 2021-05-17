@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.swapper;
+package org.apache.shardingsphere.governance.core.yaml.schema.swapper;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlColumnMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlIndexMetaData;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlSchema;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlTableMetaData;
+import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlColumnMetaData;
+import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlIndexMetaData;
+import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlTableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -45,7 +45,7 @@ public final class SchemaYamlSwapper implements YamlConfigurationSwapper<YamlSch
     @Override
     public YamlSchema swapToYamlConfiguration(final ShardingSphereSchema schema) {
         Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream()
-                .collect(Collectors.toMap(each -> each, each -> convertYamlTable(schema.get(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(each -> each, each -> swapYamlTable(schema.get(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         YamlSchema result = new YamlSchema();
         result.setTables(tables);
         return result;
@@ -53,56 +53,56 @@ public final class SchemaYamlSwapper implements YamlConfigurationSwapper<YamlSch
     
     @Override
     public ShardingSphereSchema swapToObject(final YamlSchema yamlConfig) {
-        return Optional.ofNullable(yamlConfig).map(this::convertSchema).orElse(new ShardingSphereSchema());
+        return Optional.ofNullable(yamlConfig).map(this::swapSchema).orElse(new ShardingSphereSchema());
     }
     
-    private ShardingSphereSchema convertSchema(final YamlSchema schema) {
+    private ShardingSphereSchema swapSchema(final YamlSchema schema) {
         return new ShardingSphereSchema(MapUtils.isEmpty(schema.getTables()) ? Maps.newLinkedHashMap() : schema.getTables().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+                .collect(Collectors.toMap(Entry::getKey, entry -> swapTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
-    private TableMetaData convertTable(final YamlTableMetaData table) {
-        return new TableMetaData(convertColumns(table.getColumns()), convertIndexes(table.getIndexes()));
+    private TableMetaData swapTable(final YamlTableMetaData table) {
+        return new TableMetaData(swapColumns(table.getColumns()), swapIndexes(table.getIndexes()));
     }
     
-    private Collection<IndexMetaData> convertIndexes(final Map<String, YamlIndexMetaData> indexes) {
-        return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertIndex).collect(Collectors.toList());
+    private Collection<IndexMetaData> swapIndexes(final Map<String, YamlIndexMetaData> indexes) {
+        return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::swapIndex).collect(Collectors.toList());
     }
     
-    private IndexMetaData convertIndex(final YamlIndexMetaData index) {
+    private IndexMetaData swapIndex(final YamlIndexMetaData index) {
         return new IndexMetaData(index.getName());
     }
     
-    private Collection<ColumnMetaData> convertColumns(final Map<String, YamlColumnMetaData> indexes) {
-        return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertColumn).collect(Collectors.toList());
+    private Collection<ColumnMetaData> swapColumns(final Map<String, YamlColumnMetaData> indexes) {
+        return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::swapColumn).collect(Collectors.toList());
     }
     
-    private ColumnMetaData convertColumn(final YamlColumnMetaData column) {
+    private ColumnMetaData swapColumn(final YamlColumnMetaData column) {
         return new ColumnMetaData(column.getName(), column.getDataType(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive());
     }
     
-    private YamlTableMetaData convertYamlTable(final TableMetaData table) {
+    private YamlTableMetaData swapYamlTable(final TableMetaData table) {
         YamlTableMetaData result = new YamlTableMetaData();
-        result.setColumns(convertYamlColumns(table.getColumns()));
-        result.setIndexes(convertYamlIndexes(table.getIndexes()));
+        result.setColumns(swapYamlColumns(table.getColumns()));
+        result.setIndexes(swapYamlIndexes(table.getIndexes()));
         return result;
     }
     
-    private Map<String, YamlIndexMetaData> convertYamlIndexes(final Map<String, IndexMetaData> indexes) {
-        return indexes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlIndex(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    private Map<String, YamlIndexMetaData> swapYamlIndexes(final Map<String, IndexMetaData> indexes) {
+        return indexes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapYamlIndex(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private YamlIndexMetaData convertYamlIndex(final IndexMetaData index) {
+    private YamlIndexMetaData swapYamlIndex(final IndexMetaData index) {
         YamlIndexMetaData result = new YamlIndexMetaData();
         result.setName(index.getName());
         return result;
     }
     
-    private Map<String, YamlColumnMetaData> convertYamlColumns(final Map<String, ColumnMetaData> columns) {
-        return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlColumn(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    private Map<String, YamlColumnMetaData> swapYamlColumns(final Map<String, ColumnMetaData> columns) {
+        return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapYamlColumn(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private YamlColumnMetaData convertYamlColumn(final ColumnMetaData column) {
+    private YamlColumnMetaData swapYamlColumn(final ColumnMetaData column) {
         YamlColumnMetaData result = new YamlColumnMetaData();
         result.setName(column.getName());
         result.setCaseSensitive(column.isCaseSensitive());

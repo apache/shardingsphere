@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.swapper;
+package org.apache.shardingsphere.governance.core.yaml.schema.swapper;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.schema.YamlSchema;
+import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
