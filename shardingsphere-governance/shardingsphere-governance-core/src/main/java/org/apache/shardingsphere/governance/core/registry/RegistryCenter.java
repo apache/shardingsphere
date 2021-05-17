@@ -135,10 +135,30 @@ public final class RegistryCenter {
         }
     }
     
+    /**
+     * Persist data source configurations.
+     *
+     * @param schemaName schema name
+     * @param dataSourceConfigurations data source configurations
+     */
+    public void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createPersistedYamlDataSourceConfiguration(dataSourceConfigurations)));
+    }
+    
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
         if (!ruleConfigs.isEmpty() && (isOverwrite || !hasRuleConfiguration(schemaName))) {
             persistRuleConfigurations(schemaName, ruleConfigs);
         }
+    }
+    
+    /**
+     * Persist rule configurations.
+     *
+     * @param schemaName schema name
+     * @param ruleConfigurations rule configurations
+     */
+    public void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
+        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
     }
     
     /**
@@ -158,16 +178,6 @@ public final class RegistryCenter {
                 YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigurationCacheId), YamlRootRuleConfigurations.class).getRules());
     }
     
-    /**
-     * Persist data source configurations.
-     *
-     * @param schemaName schema name
-     * @param dataSourceConfigurations data source configurations
-     */
-    public void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createPersistedYamlDataSourceConfiguration(dataSourceConfigurations)));
-    }
-    
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = loadDataSourceConfigurations(schemaName);
         dataSourceConfigurationMap.putAll(dataSourceConfigurations);
@@ -182,16 +192,6 @@ public final class RegistryCenter {
         return result;
     }
     
-    /**
-     * Persist rule configurations.
-     *
-     * @param schemaName schema name
-     * @param ruleConfigurations rule configurations
-     */
-    public void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
-        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
-    }
-
     private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
         Collection<RuleConfiguration> configs = new LinkedList<>();
         for (RuleConfiguration each : ruleConfigurations) {
