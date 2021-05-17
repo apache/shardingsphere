@@ -173,15 +173,15 @@ public final class RegistryCenter {
         persistProperties(props, isOverwrite);
     }
     
-    private void persistProperties(final Properties props, final boolean isOverwrite) {
-        if (!props.isEmpty() && (isOverwrite || !hasProperties())) {
-            repository.persist(node.getPropsPath(), YamlEngine.marshal(props));
-        }
-    }
-    
     private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
         if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
             repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(createGlobalPersistedYamlRuleConfiguration(globalRuleConfigs)));
+        }
+    }
+    
+    private void persistProperties(final Properties props, final boolean isOverwrite) {
+        if (!props.isEmpty() && (isOverwrite || !hasProperties())) {
+            repository.persist(node.getPropsPath(), YamlEngine.marshal(props));
         }
     }
     
