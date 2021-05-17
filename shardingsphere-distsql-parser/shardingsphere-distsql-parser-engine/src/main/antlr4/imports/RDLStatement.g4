@@ -103,16 +103,8 @@ dynamicReadwriteSplittingRuleDefinition
     : AUTO_AWARE_RESOURCE EQ IDENTIFIER
     ;
 
-alterReplicaQueryRule
-    : ALTER REPLICA_QUERY RULE LP alterReplicaQueryRuleDefinition (COMMA alterReplicaQueryRuleDefinition)* RP
-    ;
-
-alterReplicaQueryRuleDefinition
-    : (MODIFY | ADD) ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition?
-    ;
-
-alterShardingTableRuleDefinition
-    : (MODIFY | ADD) shardingTableRuleDefinition
+alterReadwriteSplittingRule
+    : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
 
 shardingTableRuleDefinition

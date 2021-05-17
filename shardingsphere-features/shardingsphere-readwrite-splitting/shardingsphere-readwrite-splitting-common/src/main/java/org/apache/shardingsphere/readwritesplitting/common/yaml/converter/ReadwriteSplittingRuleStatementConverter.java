@@ -20,27 +20,44 @@ package org.apache.shardingsphere.readwritesplitting.common.yaml.converter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 
+import java.util.Collection;
+
 /**
- * Create readwrite-splitting rule statement converter.
+ * Readwrite splitting rule statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateReadwriteSplittingRuleStatementConverter {
+public final class ReadwriteSplittingRuleStatementConverter {
     
     /**
-     * Convert create readwrite-splitting rule statement context to YAML readwrite-splitting rule configuration.
+     * Convert create readwrite splitting rule statement to YAML readwrite splitting rule configuration.
      *
-     * @param sqlStatement create readwrite-splitting rule statement
-     * @return YAML readwrite-splitting rule configuration
+     * @param sqlStatement create readwrite splitting rule statement
+     * @return YAML readwrite splitting rule configuration
      */
     public static YamlReadwriteSplittingRuleConfiguration convert(final CreateReadwriteSplittingRuleStatement sqlStatement) {
+        return convert(sqlStatement.getReadwriteSplittingRules());
+    }
+
+    /**
+     * Convert alter readwrite splitting rule statement to YAML readwrite splitting rule configuration.
+     *
+     * @param sqlStatement alter readwrite splitting rule statement
+     * @return YAML readwrite splitting rule configuration
+     */
+    public static YamlReadwriteSplittingRuleConfiguration convert(final AlterReadwriteSplittingRuleStatement sqlStatement) {
+        return convert(sqlStatement.getReadwriteSplittingRules());
+    }
+
+    private static YamlReadwriteSplittingRuleConfiguration convert(final Collection<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments) {
         YamlReadwriteSplittingRuleConfiguration result = new YamlReadwriteSplittingRuleConfiguration();
-        for (ReadwriteSplittingRuleSegment each : sqlStatement.getReadwriteSplittingRules()) {
+        for (ReadwriteSplittingRuleSegment each : readwriteSplittingRuleSegments) {
             String loadBalancerName = getLoadBalancerName(each.getName(), each.getLoadBalancer());
             result.getDataSources().put(each.getName(), buildDataSourceRuleConfiguration(loadBalancerName, each));
             result.getLoadBalancers().put(loadBalancerName, buildLoadBalancer(each));
