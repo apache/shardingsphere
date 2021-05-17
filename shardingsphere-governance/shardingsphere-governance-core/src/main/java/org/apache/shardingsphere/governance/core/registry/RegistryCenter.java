@@ -368,10 +368,6 @@ public final class RegistryCenter {
     public void deleteSchema(final String schemaName) {
         repository.delete(node.getSchemaNamePath(schemaName));
     }
-
-    private boolean hasUsers() {
-        return !Strings.isNullOrEmpty(repository.get(node.getUsersNode()));
-    }
     
     /**
      * Persist data source disabled state.
