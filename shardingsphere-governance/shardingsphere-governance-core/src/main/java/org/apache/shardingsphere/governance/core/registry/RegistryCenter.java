@@ -205,15 +205,6 @@ public final class RegistryCenter {
         result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs));
         return result;
     }
-
-    private void persistNewUsers(final Collection<ShardingSphereUser> users) {
-        if (!users.isEmpty()) {
-            Collection<String> yamlUsers = YamlEngine.unmarshal(repository.get(node.getUsersNode()), Collection.class);
-            Collection<String> newUsers = new LinkedHashSet<>(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users));
-            newUsers.addAll(yamlUsers);
-            repository.persist(node.getUsersNode(), YamlEngine.marshal(newUsers));
-        }
-    }
     
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
