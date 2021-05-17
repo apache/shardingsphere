@@ -62,10 +62,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     @Override
     public boolean check(final Grantee grantee, final AuthorityRule authorityRule) {
         Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
-        if (!user.isPresent()) {
-            return false;
-        }
-        return true;
+        return user.isPresent() ? true : false;
     }
 
     @Override
