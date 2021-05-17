@@ -60,7 +60,7 @@ public final class GovernanceFacadeTest {
         assertThat(getField(governanceFacade, "listenerManager"), instanceOf(GovernanceListenerManager.class));
         GovernanceListenerManager listenerManager = (GovernanceListenerManager) getField(governanceFacade, "listenerManager");
         assertThat(getField(listenerManager, "registryCenterRepository"), is(registryCenterRepository));
-        assertThat(getField(listenerManager,"schemaNames"), is(Arrays.asList("schema_0", "schema_1")));
+        assertThat(getField(listenerManager, "schemaNames"), is(Arrays.asList("schema_0", "schema_1")));
     }
     
     @Test
