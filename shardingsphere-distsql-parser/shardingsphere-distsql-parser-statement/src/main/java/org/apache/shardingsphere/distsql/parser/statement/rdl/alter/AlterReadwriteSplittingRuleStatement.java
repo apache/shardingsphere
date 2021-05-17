@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
 import java.util.Collection;
 
 /**
- * Alter readwrite-splitting rule statement.
+ * Alter readwrite splitting rule statement.
  */
 @RequiredArgsConstructor
 @Getter
 public final class AlterReadwriteSplittingRuleStatement extends RDLStatement {
-    
-    private final Collection<ReadwriteSplittingRuleSegment> modifyReadwriteSplittingRules;
-    
-    private final Collection<ReadwriteSplittingRuleSegment> addReadwriteSplittingRules;
+
+    private final Collection<ReadwriteSplittingRuleSegment> readwriteSplittingRules;
 }

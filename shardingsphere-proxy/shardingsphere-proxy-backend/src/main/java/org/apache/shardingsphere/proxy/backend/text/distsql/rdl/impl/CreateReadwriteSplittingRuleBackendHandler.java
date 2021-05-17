@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.CreateReadwriteSplittingRuleStatementConverter;
+import org.apache.shardingsphere.readwritesplitting.common.yaml.converter.ReadwriteSplittingRuleStatementConverter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -56,7 +56,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends SchemaRequ
     @Override
     public ResponseHeader execute(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
         check(schemaName, sqlStatement);
-        YamlReadwriteSplittingRuleConfiguration config = CreateReadwriteSplittingRuleStatementConverter.convert(sqlStatement);
+        YamlReadwriteSplittingRuleConfiguration config = ReadwriteSplittingRuleStatementConverter.convert(sqlStatement);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         post(schemaName, rules);
         return new UpdateResponseHeader(sqlStatement);
@@ -71,7 +71,6 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends SchemaRequ
             resources.add(each.getWriteDataSource());
             resources.addAll(each.getReadDataSources());
         });
-
         Collection<String> notExistResources = resources.stream().filter(each -> !this.isValidResource(schemaName, each)).collect(Collectors.toList());
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(notExistResources);

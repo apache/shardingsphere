@@ -20,6 +20,7 @@ package org.apache.shardingsphere.distsql.parser.api;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
@@ -92,6 +93,15 @@ public final class DistSQLStatementParserEngineTest {
     private static final String RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_1 ("
             + "AUTO_AWARE_RESOURCE=group_0,"
             + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))"
+            + ")";
+
+    private static final String RDL_ALTER_READWRITE_SPLITTING_RULE = "ALTER READWRITE_SPLITTING RULE ms_group_0 ("
+            + "AUTO_AWARE_RESOURCE=group_0,"
+            + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))),"
+            + "ms_group_1 ("
+            + "WRITE_RESOURCE=primary_ds,"
+            + "READ_RESOURCES(replica_ds_0,replica_ds_1),"
+            + "TYPE(NAME=random)"
             + ")";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
@@ -253,5 +263,11 @@ public final class DistSQLStatementParserEngineTest {
     public void assertParseDynamicReadwriteSplittingRule() {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
+    }
+
+    @Test
+    public void assertParseAlterReadwriteSplittingRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_ALTER_READWRITE_SPLITTING_RULE);
+        assertTrue(sqlStatement instanceof AlterReadwriteSplittingRuleStatement);
     }
 }

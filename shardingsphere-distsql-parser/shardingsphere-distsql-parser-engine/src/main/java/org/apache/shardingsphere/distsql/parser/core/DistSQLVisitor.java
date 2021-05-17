@@ -24,8 +24,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisi
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.BindTableRulesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CheckScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingBindingTableRulesContext;
@@ -59,7 +57,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJo
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJobStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StartScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StopScalingJobStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
@@ -212,19 +210,11 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setAutoAwareResource(ctx.IDENTIFIER().getText());
         return result;
     }
-    
+
     @Override
-    public ASTNode visitAlterReplicaQueryRule(final AlterReplicaQueryRuleContext ctx) {
-        Collection<ReadwriteSplittingRuleSegment> modifyReplicaQueryRules = new LinkedList<>();
-        Collection<ReadwriteSplittingRuleSegment> addReplicaQueryRules = new LinkedList<>();
-        for (AlterReplicaQueryRuleDefinitionContext each : ctx.alterReplicaQueryRuleDefinition()) {
-            if (null != each.MODIFY()) {
-                modifyReplicaQueryRules.add((ReadwriteSplittingRuleSegment) visit(each));
-            } else {
-                addReplicaQueryRules.add((ReadwriteSplittingRuleSegment) visit(each));
-            }
-        }
-        return new AlterReadwriteSplittingRuleStatement(modifyReplicaQueryRules, addReplicaQueryRules);
+    public ASTNode visitAlterReadwriteSplittingRule(final DistSQLStatementParser.AlterReadwriteSplittingRuleContext ctx) {
+        return new AlterReadwriteSplittingRuleStatement(ctx.readwriteSplittingRuleDefinition()
+                .stream().map(each -> (ReadwriteSplittingRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -253,29 +243,6 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitDropShardingBroadcastTableRules(final DistSQLStatementParser.DropShardingBroadcastTableRulesContext ctx) {
         return new DropShardingBroadcastTableRulesStatement();
-    }
-
-    @Override
-    public ASTNode visitAlterReplicaQueryRuleDefinition(final AlterReplicaQueryRuleDefinitionContext ctx) {
-        ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
-        Collection<String> replicaDatasources = new LinkedList<>();
-        for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
-            replicaDatasources.add(each.getText());
-        }
-        result.setName(ctx.ruleName().getText());
-        result.setWriteDataSource(ctx.primary.getText());
-        result.setReadDataSources(replicaDatasources);
-        if (null != ctx.functionDefinition()) {
-            Properties props = new Properties();
-            if (null != ctx.functionDefinition().algorithmProperties()) {
-                for (AlgorithmPropertyContext each : ctx.functionDefinition().algorithmProperties().algorithmProperty()) {
-                    props.setProperty(each.key.getText(), each.value.getText());
-                }
-            }
-            result.setLoadBalancer(ctx.functionDefinition().functionName().getText());
-            result.setProps(props);
-        }
-        return result;
     }
     
     @Override
