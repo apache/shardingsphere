@@ -335,16 +335,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Judge whether schema has rule configuration.
-     *
-     * @param schemaName schema name
-     * @return has rule configuration or not
-     */
-    public boolean hasRuleConfiguration(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(node.getRulePath(schemaName)));
-    }
-    
-    /**
      * Judge whether schema has data source configuration.
      *
      * @param schemaName schema name
@@ -352,6 +342,16 @@ public final class RegistryCenter {
      */
     public boolean hasDataSourceConfiguration(final String schemaName) {
         return !Strings.isNullOrEmpty(repository.get(node.getMetadataDataSourcePath(schemaName)));
+    }
+    
+    /**
+     * Judge whether schema has rule configuration.
+     *
+     * @param schemaName schema name
+     * @return has rule configuration or not
+     */
+    public boolean hasRuleConfiguration(final String schemaName) {
+        return !Strings.isNullOrEmpty(repository.get(node.getRulePath(schemaName)));
     }
     
     /**
