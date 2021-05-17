@@ -66,9 +66,6 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
                 result.add(executeResult);
             }
         }
-        if (dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            ExecuteProcessEngine.finish(dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString());
-        }
         return result;
     }
     

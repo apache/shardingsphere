@@ -66,9 +66,11 @@ public final class DriverJDBCExecutor {
                                           final SQLStatementContext<?> sqlStatementContext, final ExecuteQueryCallback callback) throws SQLException {
         try {
             ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
-            return jdbcExecutor.execute(executionGroupContext, callback);
+            List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback);
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            return result;
         } finally {
-            ExecuteProcessEngine.cleanupExecutionID();
+            ExecuteProcessEngine.clean();
         }
     }
     
@@ -87,9 +89,11 @@ public final class DriverJDBCExecutor {
         try {
             ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
             List<Integer> results = jdbcLockEngine.execute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-            return isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+            int result = isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            return result;
         } finally {
-            ExecuteProcessEngine.cleanupExecutionID();
+            ExecuteProcessEngine.clean();
         }
     }
     
@@ -116,9 +120,11 @@ public final class DriverJDBCExecutor {
         try {
             ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
             List<Boolean> results = jdbcLockEngine.execute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-            return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
+            boolean result = null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            return result;
         } finally {
-            ExecuteProcessEngine.cleanupExecutionID();
+            ExecuteProcessEngine.clean();
         }
     }
 }

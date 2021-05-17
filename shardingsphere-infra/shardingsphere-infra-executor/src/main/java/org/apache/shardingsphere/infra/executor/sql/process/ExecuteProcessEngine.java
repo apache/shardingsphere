@@ -56,9 +56,9 @@ public final class ExecuteProcessEngine {
     }
     
     /**
-     * Clean up execution ID.
+     * Clean.
      */
-    public static void cleanupExecutionID() {
+    public static void clean() {
         ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
     }
     
@@ -80,7 +80,7 @@ public final class ExecuteProcessEngine {
      * @param executionID execution ID
      */
     public static void finish(final String executionID) {
-        if (!HANDLERS.isEmpty()) {
+        if (!HANDLERS.isEmpty() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
             HANDLERS.iterator().next().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
         }
     }

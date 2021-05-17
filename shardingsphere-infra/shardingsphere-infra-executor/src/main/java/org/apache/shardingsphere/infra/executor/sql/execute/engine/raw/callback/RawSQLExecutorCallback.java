@@ -55,7 +55,6 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
             for (RawSQLExecutionUnit each : inputs) {
                 ExecuteProcessEngine.finish(executionID, each);
             }
-            ExecuteProcessEngine.finish(executionID);
         }
         return result;
     }

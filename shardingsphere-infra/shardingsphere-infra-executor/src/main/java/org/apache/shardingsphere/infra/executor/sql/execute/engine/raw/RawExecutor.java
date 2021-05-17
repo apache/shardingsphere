@@ -58,12 +58,13 @@ public final class RawExecutor {
             ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
             // TODO Load query header for first query
             List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             if (null == results || results.isEmpty() || null == results.get(0)) {
                 return Collections.singleton(new UpdateResult(0, 0L));
             }
             return results;
         } finally {
-            ExecuteProcessEngine.cleanupExecutionID();
+            ExecuteProcessEngine.clean();
         }
     }
     

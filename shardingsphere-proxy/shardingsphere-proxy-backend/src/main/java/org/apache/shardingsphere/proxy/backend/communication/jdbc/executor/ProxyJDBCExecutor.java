@@ -61,11 +61,13 @@ public final class ProxyJDBCExecutor {
         try {
             DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
             ExecuteProcessEngine.initialize(context, executionGroupContext);
-            return jdbcExecutor.execute(executionGroupContext,
+            Collection<ExecuteResult> result = jdbcExecutor.execute(executionGroupContext,
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true),
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, false));
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            return result;
         } finally {
-            ExecuteProcessEngine.cleanupExecutionID();
+            ExecuteProcessEngine.clean();
         }
     }
 }
