@@ -15,42 +15,41 @@
 # limitations under the License.
 #
 
-rules:
-  - !SHARDING
-    tables:
-      t_order:
-        actualDataNodes: ds_${0..1}.t_order_${0..1}
-        tableStrategy:
-          standard:
-            shardingColumn: order_id
-            shardingAlgorithmName: table_inline
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: snowflake
-    shardingAlgorithms:
-      table_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_order_${order_id % 2}
-    keyGenerators:
-      snowflake:
-        type: SNOWFLAKE
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: table_inline
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+  shardingAlgorithms:
+    table_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_${order_id % 2}
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
 
-  - !ENCRYPT
-    encryptors:
-      aes_encryptor:
-        type: AES
-        props:
-          aes-key-value: 123456abcd
-      md5_encryptor:
-        type: MD5
-    tables:
-      t_encrypt:
-        columns:
-          user_id:
-            plainColumn: user_plain
-            cipherColumn: user_cipher
-            encryptorName: aes_encryptor
-          order_id:
-            cipherColumn: order_cipher
-            encryptorName: md5_encryptor
+- !ENCRYPT
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abcd
+    md5_encryptor:
+      type: MD5
+  tables:
+    t_encrypt:
+      columns:
+        user_id:
+          plainColumn: user_plain
+          cipherColumn: user_cipher
+          encryptorName: aes_encryptor
+        order_id:
+          cipherColumn: order_cipher
+          encryptorName: md5_encryptor

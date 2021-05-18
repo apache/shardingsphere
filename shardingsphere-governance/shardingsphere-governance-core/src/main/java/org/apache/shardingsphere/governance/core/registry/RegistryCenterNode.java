@@ -55,7 +55,7 @@ public final class RegistryCenterNode {
     
     private static final String USERS_NODE = "users";
 
-    private static final String GLOBAL_RULE_NODE = "rule";
+    private static final String GLOBAL_RULE_NODE = "rules";
 
     private static final String PRIVILEGE_NODE = "privilegenode";
     

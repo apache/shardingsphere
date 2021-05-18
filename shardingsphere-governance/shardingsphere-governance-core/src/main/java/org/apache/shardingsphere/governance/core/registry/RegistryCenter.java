@@ -40,7 +40,6 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Ru
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
-import org.apache.shardingsphere.governance.core.yaml.persisted.PersistedYamlRuleConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -175,7 +174,7 @@ public final class RegistryCenter {
     
     private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
         if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
-            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(createGlobalPersistedYamlRuleConfiguration(globalRuleConfigs)));
+            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
         }
     }
     
@@ -185,9 +184,10 @@ public final class RegistryCenter {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigCacheId) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), YamlRootRuleConfigurations.class).getRules());
+                YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
     }
     
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
@@ -227,12 +227,6 @@ public final class RegistryCenter {
     
     private boolean hasProperties() {
         return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
-    }
-    
-    private PersistedYamlRuleConfiguration createGlobalPersistedYamlRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
-        PersistedYamlRuleConfiguration result = new PersistedYamlRuleConfiguration();
-        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs));
-        return result;
     }
     
     private void persistSchemaName(final String schemaName) {
@@ -277,11 +271,10 @@ public final class RegistryCenter {
      * @param schemaName schema name
      * @return rule configurations
      */
+    @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
         return hasRuleConfiguration(schemaName)
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                        YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), PersistedYamlRuleConfiguration.class).getRules())
-                : new LinkedList<>();
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), Collection.class)) : new LinkedList<>();
     }
     
     /**
@@ -289,10 +282,10 @@ public final class RegistryCenter {
      * 
      * @return global rule configurations
      */
+    @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> loadGlobalRuleConfigurations() {
         return hasGlobalRuleConfigurations()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), PersistedYamlRuleConfiguration.class).getRules())
-                : Collections.emptyList();
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
     }
     
     /**

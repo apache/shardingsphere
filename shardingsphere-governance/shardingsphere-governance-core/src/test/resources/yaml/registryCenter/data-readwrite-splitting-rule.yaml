@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-rules:
 - !READWRITE_SPLITTING
   dataSources:
     pr_ds:
