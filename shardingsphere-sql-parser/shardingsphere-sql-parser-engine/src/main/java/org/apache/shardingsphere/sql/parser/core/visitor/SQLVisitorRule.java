@@ -212,6 +212,8 @@ public enum SQLVisitorRule {
     
     VACUUM("Vacuum", SQLStatementType.DAL),
     
+    CREATE_UDF("CreateUdf", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 

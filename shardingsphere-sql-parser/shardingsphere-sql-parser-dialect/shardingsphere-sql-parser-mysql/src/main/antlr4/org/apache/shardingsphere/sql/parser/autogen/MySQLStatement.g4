@@ -116,6 +116,7 @@ execute
     | uninstall
     | unlock
     | xa
+    | createUdf
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;
