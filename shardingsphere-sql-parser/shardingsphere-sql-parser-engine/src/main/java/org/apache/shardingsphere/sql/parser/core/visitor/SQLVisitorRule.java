@@ -212,7 +212,7 @@ public enum SQLVisitorRule {
     
     VACUUM("Vacuum", SQLStatementType.DAL),
     
-    CREATE_UDF("CreateUdf", SQLStatementType.DAL),
+    CREATE_LOADABLE_FUNCTION("CreateLoadableFunction", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
     

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * MySQL create udf statement.
+ * MySQL create loadable function statement.
  */
 @ToString
-public final class MySQLCreateUdfStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class MySQLCreateLoadableFunctionStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }
