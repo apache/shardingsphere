@@ -101,7 +101,11 @@ multipleTableNames
     ;
 
 select 
-    : unionClause
+    : selectSubquery forUpdateClause?
+    ;
+
+selectSubquery
+    : (selectClause | selectClause ((UNION ALL? | INTERSECT | MINUS) selectSubquery)+ | LP_ selectSubquery RP_) orderByClause? rowLimitingClause
     ;
 
 unionClause
@@ -109,7 +113,7 @@ unionClause
     ;
 
 selectClause
-    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? lockClause?
+    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause?
     ;
 
 duplicateSpecification
@@ -174,11 +178,16 @@ havingClause
     ;
 
 subquery
-    : LP_ unionClause RP_
+    : LP_ selectSubquery RP_
     ;
 
-lockClause
-    : FOR UPDATE 
+forUpdateClause
+    : FOR UPDATE (OF ((tableName | viewName) DOT_)? columnName (COMMA_ ((tableName | viewName) DOT_)? columnName)*)? 
+    ((NOWAIT | WAIT INTEGER_) | SKIP_SYMBOL LOCKED)?
+    ;
+
+rowLimitingClause
+    : (OFFSET offset (ROW | ROWS))? (FETCH (FIRST | NEXT) (rowcount | percent PERCENT)? (ROW | ROWS) (ONLY | WITH TIES))?
     ;
 
 merge
