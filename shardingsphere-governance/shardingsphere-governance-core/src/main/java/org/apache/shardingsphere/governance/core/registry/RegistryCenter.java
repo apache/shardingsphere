@@ -40,10 +40,9 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Ru
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
+import org.apache.shardingsphere.governance.core.yaml.persisted.PersistedYamlRuleConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
-import org.apache.shardingsphere.governance.core.yaml.persisted.PersistedYamlDataSourceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.persisted.PersistedYamlRuleConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -74,6 +73,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -142,7 +142,7 @@ public final class RegistryCenter {
      * @param dataSourceConfigs data source configurations
      */
     public void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createPersistedYamlDataSourceConfiguration(dataSourceConfigs)));
+        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
@@ -193,15 +193,12 @@ public final class RegistryCenter {
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
         Map<String, DataSourceConfiguration> dataSourceConfigMap = loadDataSourceConfigurations(schemaName);
         dataSourceConfigMap.putAll(dataSourceConfigs);
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createPersistedYamlDataSourceConfiguration(dataSourceConfigMap)));
+        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigMap)));
     }
     
-    private PersistedYamlDataSourceConfiguration createPersistedYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, Map<String, Object>> yamlDataSourceConfigs = dataSourceConfigs.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        PersistedYamlDataSourceConfiguration result = new PersistedYamlDataSourceConfiguration();
-        result.setDataSources(yamlDataSourceConfigs);
-        return result;
+    private Map<String, Map<String, Object>> createYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+        return dataSourceConfigs.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
@@ -263,13 +260,14 @@ public final class RegistryCenter {
         return hasDataSourceConfiguration(schemaName) ? getDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
+    @SuppressWarnings("unchecked")
     private static Map<String, DataSourceConfiguration> getDataSourceConfigurations(final String yamlContent) {
-        PersistedYamlDataSourceConfiguration persistedConfig = YamlEngine.unmarshal(yamlContent, PersistedYamlDataSourceConfiguration.class);
-        if (null == persistedConfig.getDataSources() || persistedConfig.getDataSources().isEmpty()) {
+        Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(yamlContent, Map.class);
+        if (yamlDataSources.isEmpty()) {
             return new LinkedHashMap<>();
         }
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(persistedConfig.getDataSources().size());
-        persistedConfig.getDataSources().forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSources.size());
+        yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
         return result;
     }
     
