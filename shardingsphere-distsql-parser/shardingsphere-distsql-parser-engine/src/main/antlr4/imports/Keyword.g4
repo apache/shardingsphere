@@ -206,3 +206,7 @@ RULES
 BROADCAST
     : B R O A D C A S T
     ;
+
+DB_DISCOVERY
+    : D B UL_ D I S C O V E R Y
+    ;
