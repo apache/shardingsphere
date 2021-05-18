@@ -25,13 +25,11 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -51,24 +49,21 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final CalciteContextFactory calciteContextFactory;
     
-    private final ShardingSphereUsers users;
-    
     private final ConfigurationProperties props;
     
     private final StateContext stateContext;
     
     public StandardMetaDataContexts() {
         this(new LinkedHashMap<>(), 
-                new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null, new ShardingSphereUsers(new HashSet<>()), new ConfigurationProperties(new Properties()));
+                new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null, new ConfigurationProperties(new Properties()));
     }
     
     public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData, 
-                                    final ExecutorEngine executorEngine, final ShardingSphereUsers users, final ConfigurationProperties props) {
+                                    final ExecutorEngine executorEngine, final ConfigurationProperties props) {
         this.metaDataMap = new LinkedHashMap<>(metaDataMap);
         this.globalRuleMetaData = globalRuleMetaData;
         this.executorEngine = executorEngine;
         calciteContextFactory = new CalciteContextFactory(metaDataMap);
-        this.users = users;
         this.props = props;
         stateContext = new StateContext();
     }
