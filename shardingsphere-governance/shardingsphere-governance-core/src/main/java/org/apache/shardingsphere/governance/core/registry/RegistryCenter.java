@@ -30,6 +30,7 @@ import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurat
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ShowProcessListRequestEvent;
@@ -48,6 +49,7 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
@@ -562,7 +564,6 @@ public final class RegistryCenter {
     @Subscribe
     public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
         // TODO lock on the same jvm
-        event.getExecutionID().intern();
         String executionPath = node.getExecutionPath(event.getExecutionID());
         YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
         ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
@@ -572,6 +573,23 @@ public final class RegistryCenter {
             }
         }
         repository.persist(executionPath, YamlEngine.marshal(yamlExecuteProcessContext));
+    }
+    
+    /**
+     * Report execute process.
+     *
+     * @param event execute process report event.
+     */
+    @Subscribe
+    public void reportExecuteProcess(final ExecuteProcessReportEvent event) {
+        String executionPath = node.getExecutionPath(event.getExecutionID());
+        YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
+        for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
+            if (unit.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
+                return;
+            }
+        }
+        repository.delete(executionPath);
     }
     
     /**

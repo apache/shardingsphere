@@ -69,9 +69,13 @@ public final class CalciteRowExecutor {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(context);
             ExecuteProcessEngine.initialize(context.getSqlStatementContext(), executionGroupContext);
-            return jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
+            Collection<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            return result;
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
+        } finally {
+            ExecuteProcessEngine.clean();
         }
     }
     
