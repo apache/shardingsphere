@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 /**
  * SQL checker.
@@ -54,4 +55,23 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * @return SQL check result
      */
     SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, Grantee grantee, String currentSchema, Map<String, ShardingSphereMetaData> metaDataMap, T rule);
+
+
+    /**
+     * Check User.
+     * @param grantee grantee
+     * @param rule rule
+     * @return check result
+     */
+    boolean check(Grantee grantee, T rule);
+
+    /**
+     * Check User.
+     * @param grantee grantee
+     * @param validate password validate
+     * @param cipher cipher
+     * @param rule rule
+     * @return check result
+     */
+    boolean check(Grantee grantee, BiPredicate<Object, Object> validate, Object cipher, T rule);
 }

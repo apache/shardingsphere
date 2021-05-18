@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
-import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -34,8 +33,6 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 
@@ -44,7 +41,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -93,7 +89,7 @@ public final class MetaDataContextsBuilder {
         for (String each : schemaRuleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
-        return new StandardMetaDataContexts(mataDataMap, buildGlobalSchemaMetaData(mataDataMap), executorEngine, new ShardingSphereUsers(getUsersFromAuthorityRule()), props);
+        return new StandardMetaDataContexts(mataDataMap, buildGlobalSchemaMetaData(mataDataMap), executorEngine, props);
     }
     
     private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
@@ -138,15 +134,5 @@ public final class MetaDataContextsBuilder {
     
     private ShardingSphereSchema buildSchema(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         return SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
-    }
-
-    private Collection<ShardingSphereUser> getUsersFromAuthorityRule() {
-        for (RuleConfiguration ruleConfig : globalRuleConfigs) {
-            if (ruleConfig instanceof AuthorityRuleConfiguration) {
-                AuthorityRuleConfiguration authorityRuleConfiguration = (AuthorityRuleConfiguration) ruleConfig;
-                return authorityRuleConfiguration.getUsers();
-            }
-        }
-        return Collections.emptyList();
     }
 }

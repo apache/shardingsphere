@@ -34,6 +34,9 @@ execute
     | dropShardingBroadcastTableRules
     | alterReadwriteSplittingRule
     | dropReadwriteSplittingRule
+    | createDatabaseDiscoveryRule
+    | alterDatabaseDiscoveryRule
+    | dropDatabaseDiscoveryRule
     | showResources
     | showRule
     | showScalingJobList

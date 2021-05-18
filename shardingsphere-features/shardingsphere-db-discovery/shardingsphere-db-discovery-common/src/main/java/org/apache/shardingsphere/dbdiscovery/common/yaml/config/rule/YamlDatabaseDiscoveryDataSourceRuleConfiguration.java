@@ -31,9 +31,7 @@ import java.util.Properties;
 @Getter
 @Setter
 public final class YamlDatabaseDiscoveryDataSourceRuleConfiguration implements YamlConfiguration {
-    
-    private String name;
-    
+
     private List<String> dataSourceNames = new ArrayList<>();
     
     private String discoveryTypeName;
