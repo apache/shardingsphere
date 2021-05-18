@@ -58,14 +58,14 @@ public final class DataSourceChangedListenerTest extends GovernanceListenerTest 
     @Test
     public void assertCreateEventWithInvalidPath() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db/rule", dataSource, Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db/rules", dataSource, Type.UPDATED);
         Optional<GovernanceEvent> actual = dataSourceChangedListener.createEvent(dataChangedEvent);
         assertFalse(actual.isPresent());
     }
     
     @Test
     public void assertCreateEventWithEmptyValue() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db/datasource", "", Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db/dataSources", "", Type.UPDATED);
         Optional<GovernanceEvent> actual = dataSourceChangedListener.createEvent(dataChangedEvent);
         assertFalse(actual.isPresent());
     }
@@ -73,7 +73,7 @@ public final class DataSourceChangedListenerTest extends GovernanceListenerTest 
     @Test
     public void assertCreateEvent() {
         String dataSource = readYAML(DATA_SOURCE_FILE);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db/datasource", dataSource, Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db/dataSources", dataSource, Type.UPDATED);
         Optional<GovernanceEvent> actual = dataSourceChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(DataSourceChangedEvent.class));

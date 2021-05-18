@@ -58,20 +58,20 @@
 #
 #rules:
 #- !DB_DISCOVERY
-#    dataSources:
-#      pr_ds:
-#        dataSourceNames:
-#          - ds_0
-#          - ds_1
-#          - ds_2
-#        discoveryTypeName: mgr
-#    discoveryTypes:
-#      mgr:
-#        type: MGR
-#        props:
-#          groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
-#          zkServerLists: 'localhost:2181'
-#          keepAliveCron: '0/5 * * * * ?'
+#  dataSources:
+#    pr_ds:
+#      dataSourceNames:
+#        - ds_0
+#        - ds_1
+#        - ds_2
+#      discoveryTypeName: mgr
+#  discoveryTypes:
+#    mgr:
+#      type: MGR
+#      props:
+#        groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
+#        zkServerLists: 'localhost:2181'
+#        keepAliveCron: '0/5 * * * * ?'
 
 ######################################################################################################
 #
@@ -114,18 +114,18 @@
 #    maintenanceIntervalMilliseconds: 30000
 #
 #rules:
-#  - !DB_DISCOVERY
-#    dataSources:
-#      pr_ds:
-#        dataSourceNames:
-#          - ds_0
-#          - ds_1
-#          - ds_2
-#        discoveryTypeName: mgr
-#    discoveryTypes:
-#      mgr:
-#        type: MGR
-#        props:
-#          groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
-#          zkServerLists: 'localhost:2181'
-#          keepAliveCron: '0/5 * * * * ?'
+#- !DB_DISCOVERY
+#  dataSources:
+#    pr_ds:
+#      dataSourceNames:
+#        - ds_0
+#        - ds_1
+#        - ds_2
+#      discoveryTypeName: mgr
+#  discoveryTypes:
+#    mgr:
+#      type: MGR
+#      props:
+#        groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
+#        zkServerLists: 'localhost:2181'
+#        keepAliveCron: '0/5 * * * * ?'
