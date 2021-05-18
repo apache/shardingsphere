@@ -43,7 +43,6 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
         assertNotNull(actual);
         assertNotNull(actual.getDataSources());
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
-        assertThat(actual.getDataSources().get("name").getName(), is("name"));
     }
     
     @Test

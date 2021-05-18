@@ -46,7 +46,6 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
     
     private YamlDatabaseDiscoveryDataSourceRuleConfiguration swapToYamlConfiguration(final DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig) {
         YamlDatabaseDiscoveryDataSourceRuleConfiguration result = new YamlDatabaseDiscoveryDataSourceRuleConfiguration();
-        result.setName(dataSourceRuleConfig.getName());
         result.setDataSourceNames(dataSourceRuleConfig.getDataSourceNames());
         return result;
     }
