@@ -91,16 +91,16 @@ public final class GovernanceFacadeTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static void setField(final Object target, final String fieldName, final Object fieldValue) {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, fieldValue);
-    }
-
-    @SneakyThrows(ReflectiveOperationException.class)
     private static Object getField(final Object target, final String fieldName) {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         return field.get(target);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static void setField(final Object target, final String fieldName, final Object fieldValue) {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, fieldValue);
     }
 }
