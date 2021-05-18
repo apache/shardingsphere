@@ -25,10 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal.ExplainStatementHandler;
 
 import java.util.Collection;
@@ -52,16 +48,8 @@ public final class ExplainStatementContext extends CommonSQLStatementContext<Exp
         ExplainStatementHandler.getSimpleTableSegment(sqlStatement).ifPresent(result::add);
         SQLStatement explainableStatement = sqlStatement.getStatement().orElse(null);
         TableExtractor extractor = new TableExtractor();
-        if (explainableStatement instanceof SelectStatement) {
-            extractor.extractTablesFromSelect((SelectStatement) explainableStatement);
-        } else if (explainableStatement instanceof InsertStatement) {
-            extractor.extractTablesFromInsert((InsertStatement) explainableStatement);
-        } else if (explainableStatement instanceof UpdateStatement) {
-            extractor.extractTablesFromUpdate((UpdateStatement) explainableStatement);
-        } else if (explainableStatement instanceof DeleteStatement) {
-            extractor.extractTablesFromDelete((DeleteStatement) explainableStatement);
-        }
         // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView
+        extractor.extractTablesFromSQLStatement(explainableStatement);
         result.addAll(extractor.getRewriteTables());
         return result;
     }
