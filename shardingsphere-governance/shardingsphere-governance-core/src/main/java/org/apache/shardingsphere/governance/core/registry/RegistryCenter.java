@@ -59,7 +59,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
-import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -157,7 +157,7 @@ public final class RegistryCenter {
      * @param ruleConfigs rule configurations
      */
     public void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
-        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigs)));
+        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, ruleConfigs)));
     }
     
     /**
@@ -201,7 +201,7 @@ public final class RegistryCenter {
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
+    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> configs = new LinkedList<>();
         for (RuleConfiguration each : ruleConfigs) {
             Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(each);
@@ -210,9 +210,7 @@ public final class RegistryCenter {
                 configs.add(each);
             }
         }
-        YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
-        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs));
-        return result;
+        return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
     }
     
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
