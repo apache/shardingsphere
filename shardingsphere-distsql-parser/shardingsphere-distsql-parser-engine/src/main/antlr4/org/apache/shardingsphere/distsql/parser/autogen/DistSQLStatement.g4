@@ -35,6 +35,8 @@ execute
     | alterReadwriteSplittingRule
     | dropReadwriteSplittingRule
     | createDatabaseDiscoveryRule
+    | alterDatabaseDiscoveryRule
+    | dropDatabaseDiscoveryRule
     | showResources
     | showRule
     | showScalingJobList
