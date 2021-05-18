@@ -42,10 +42,13 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -63,29 +66,38 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
+    private final TextProtocolBackendHandler textProtocolBackendHandler;
+    
     @Getter
     private volatile ResponseType responseType;
     
-    public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) {
+    public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) throws SQLException {
         this.packet = packet;
-        if (null != packet.getSql()) {
-            ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
-                    ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType()));
-            SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
-            databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement, packet.getSql(), packet.getParameters(), backendConnection);
-        } else {
+        if (null == packet.getSql()) {
             databaseCommunicationEngine = null;
+            textProtocolBackendHandler = null;
+            return;
         }
+        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
+                ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType()));
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
+        if (sqlStatement instanceof TCLStatement) {
+            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), packet.getSql(), backendConnection);
+            databaseCommunicationEngine = null;
+            return;
+        }
+        textProtocolBackendHandler = null;
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement, packet.getSql(), packet.getParameters(), backendConnection);
     }
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         List<DatabasePacket<?>> result = new LinkedList<>();
         result.add(new PostgreSQLBindCompletePacket());
-        if (null == databaseCommunicationEngine) {
+        if (null == databaseCommunicationEngine && null == textProtocolBackendHandler) {
             return result;
         }
-        ResponseHeader responseHeader = databaseCommunicationEngine.execute();
+        ResponseHeader responseHeader = null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
             createQueryPacket((QueryResponseHeader) responseHeader).ifPresent(result::add);
         }

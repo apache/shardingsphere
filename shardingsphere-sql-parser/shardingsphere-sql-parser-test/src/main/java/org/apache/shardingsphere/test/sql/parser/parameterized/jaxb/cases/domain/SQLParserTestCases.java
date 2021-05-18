@@ -55,6 +55,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterServerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSessionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSynonymStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFunctionStatementTestCase;
@@ -254,6 +255,9 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "alter-synonym")
     private final List<AlterSynonymStatementTestCase> alterSynonymTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "alter-system")
+    private final List<AlterSystemStatementTestCase> alterSystemTestCase = new LinkedList<>();
 
     @XmlElement(name = "create-database")
     private final List<CreateDatabaseStatementTestCase> createDatabaseTestCase = new LinkedList<>();
@@ -364,6 +368,7 @@ public final class SQLParserTestCases {
         putAll(alterServerTestCase, result);
         putAll(alterSessionTestCase, result);
         putAll(alterSynonymTestCase, result);
+        putAll(alterSystemTestCase, result);
         putAll(alterProcedureTestCase, result);
         putAll(alterDatabaseTestCase, result);
         putAll(createViewTestCase, result);

@@ -95,7 +95,6 @@ ReadwriteSplittingRuleConfiguration readWriteSplittingRuleConfiguration = new Re
 /* Other Properties configuration */
 Properties otherProperties = new Properties();
 otherProperties.setProperty("sql-show", "true");
-otherProperties.setProperty("query-with-cipher-column", "true");
 
 /* The variable `shardingDataSource` is the logic data source referenced by other frameworks(such as ORM, JPA, etc.) */
 DataSource shardingDataSource = ShardingSphereDataSourceFactory.createDataSource(datasourceMaps, Arrays.asList(shardingRuleConfiguration, readWriteSplittingRuleConfiguration, encryptRuleConfiguration), otherProperties);

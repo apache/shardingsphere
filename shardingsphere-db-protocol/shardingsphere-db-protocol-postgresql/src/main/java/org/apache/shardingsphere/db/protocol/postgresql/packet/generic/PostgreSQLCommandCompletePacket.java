@@ -39,6 +39,14 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifi
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
+        switch (sqlCommand) {
+            case "BEGIN":
+            case "COMMIT":
+            case "ROLLBACK":
+                payload.writeStringNul(sqlCommand);
+                return;
+            default:
+        }
         String delimiter = "INSERT".equals(sqlCommand) ? " 0 " : " ";
         payload.writeStringNul(String.join(delimiter, sqlCommand, Long.toString(rowCount)));
     }

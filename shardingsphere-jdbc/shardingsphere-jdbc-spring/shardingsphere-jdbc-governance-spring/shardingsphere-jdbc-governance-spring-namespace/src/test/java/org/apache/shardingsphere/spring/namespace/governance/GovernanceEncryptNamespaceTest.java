@@ -36,7 +36,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -80,9 +79,7 @@ public final class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringCo
     @Test
     public void assertProperties() {
         boolean showSQL = getProperties("encryptDataSourceGovernance").getValue(ConfigurationPropertyKey.SQL_SHOW);
-        boolean queryWithCipherColumn = getProperties("encryptDataSourceGovernance").getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN);
         assertTrue(showSQL);
-        assertFalse(queryWithCipherColumn);
     }
     
     private ConfigurationProperties getProperties(final String encryptDatasourceName) {

@@ -5,27 +5,16 @@ weight = 9
 chapter = true
 +++
 
-## ConfigurationRepository
+## RegistryCenterRepository
 
-| *SPI Name*                       | *Description*               |
-| -------------------------------- | --------------------------- |
-| ConfigurationRepository          | Config repository           |
+| *SPI Name*                       | *Description*                        |
+| -------------------------------- | ------------------------------------ |
+| RegistryCenterRepository         | Registry center repository           |
 
-| *Implementation Class*           | *Description*               |
-| -------------------------------- | --------------------------- |
-| CuratorZookeeperRepository       | ZooKeeper config repository |
-| EtcdRepository                   | etcd config repository      |
-
-## RegistryRepository
-
-| *SPI Name*                       | *Description*                 |
-| -------------------------------- | ----------------------------- |
-| RegistryRepository               | Registry repository           |
-
-| *Implementation Class*           | *Description*                 |
-| -------------------------------- | ----------------------------- |
-| CuratorZookeeperRepository       | ZooKeeper registry repository |
-| EtcdRepository                   | etcd registry repository      |
+| *Implementation Class*           | *Description*                        |
+| -------------------------------- | ------------------------------------ |
+| CuratorZookeeperRepository       | ZooKeeper registry center repository |
+| EtcdRepository                   | Etcd registry center repository      |
 
 ## GovernanceListenerFactory
 

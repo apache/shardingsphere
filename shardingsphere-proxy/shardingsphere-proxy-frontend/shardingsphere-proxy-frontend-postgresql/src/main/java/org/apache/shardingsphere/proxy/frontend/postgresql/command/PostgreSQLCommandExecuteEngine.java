@@ -70,9 +70,8 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
-    public Optional<DatabasePacket<?>> getOtherPacket() {
-        // TODO judge is in transaction from context, not from TransactionHolder (because of thread local)
-        return Optional.of(new PostgreSQLReadyForQueryPacket(true));
+    public Optional<DatabasePacket<?>> getOtherPacket(final BackendConnection backendConnection) {
+        return Optional.of(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
     }
     
     @Override
@@ -86,7 +85,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             return;
         }
         if (ResponseType.UPDATE == queryCommandExecutor.getResponseType() && !(queryCommandExecutor instanceof PostgreSQLComBindExecutor)) {
-            context.write(new PostgreSQLReadyForQueryPacket(true));
+            context.write(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
             return;
         }
         int count = 0;
@@ -108,7 +107,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             context.write(new PostgreSQLCommandCompletePacket());
         }
         if (queryCommandExecutor instanceof PostgreSQLComQueryExecutor) {
-            context.write(new PostgreSQLReadyForQueryPacket(true));
+            context.write(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
         }
     }
 }

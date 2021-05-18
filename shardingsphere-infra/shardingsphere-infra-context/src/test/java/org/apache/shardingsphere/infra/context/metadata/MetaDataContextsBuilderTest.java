@@ -44,7 +44,6 @@ public final class MetaDataContextsBuilderTest {
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyMap(), null).build();
         assertTrue(actual.getAllSchemaNames().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
-        assertTrue(actual.getUsers().getUsers().isEmpty());
     }
     
     @Test
@@ -85,7 +84,6 @@ public final class MetaDataContextsBuilderTest {
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
-        assertThat(actual.getUsers().getUsers().size(), is(1));
     }
     
     private void assertRules(final MetaDataContexts actual) {

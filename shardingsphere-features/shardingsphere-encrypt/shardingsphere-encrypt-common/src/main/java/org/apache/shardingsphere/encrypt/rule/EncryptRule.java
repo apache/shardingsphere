@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -52,16 +53,21 @@ public final class EncryptRule implements FeatureRule, SchemaRule, TableContaine
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
+    @Getter
+    private final boolean queryWithCipherColumn;
+    
     public EncryptRule(final EncryptRuleConfiguration config) {
         Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         config.getEncryptors().forEach((key, value) -> encryptors.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
         config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+        queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
     public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
         encryptors.putAll(config.getEncryptors());
         config.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+        queryWithCipherColumn = config.isQueryWithCipherColumn();
     }
     
     private boolean isValidRuleConfiguration(final EncryptRuleConfiguration config) {

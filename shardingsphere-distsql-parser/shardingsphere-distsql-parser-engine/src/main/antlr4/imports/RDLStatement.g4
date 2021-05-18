@@ -79,24 +79,32 @@ alterShardingTableRule
     : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
     ;
 
-createReplicaQueryRule
-    : CREATE REPLICA_QUERY RULE LP replicaQueryRuleDefinition (COMMA replicaQueryRuleDefinition)* RP
+alterShardingBindingTableRules
+    : ALTER SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
     ;
 
-replicaQueryRuleDefinition
-    : ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition
+alterShardingBroadcastTableRules
+    : ALTER SHARDING BROADCAST TABLE RULES LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
-alterReplicaQueryRule
-    : ALTER REPLICA_QUERY RULE LP alterReplicaQueryRuleDefinition (COMMA alterReplicaQueryRuleDefinition)* RP
+createReadwriteSplittingRule
+    : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
 
-alterReplicaQueryRuleDefinition
-    : (MODIFY | ADD) ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition?
+readwriteSplittingRuleDefinition
+    : ruleName LP (staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition) (COMMA functionDefinition)? RP
     ;
 
-alterShardingTableRuleDefinition
-    : (MODIFY | ADD) shardingTableRuleDefinition
+staticReadwriteSplittingRuleDefinition
+    : WRITE_RESOURCE EQ writeResourceName COMMA READ_RESOURCES LP resourceName (COMMA resourceName)* RP
+    ;
+
+dynamicReadwriteSplittingRuleDefinition
+    : AUTO_AWARE_RESOURCE EQ IDENTIFIER
+    ;
+
+alterReadwriteSplittingRule
+    : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
 
 shardingTableRuleDefinition
@@ -107,40 +115,20 @@ resources
     : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
+writeResourceName
+    : resourceName
+    ;
+
+resourceName
+    : IDENTIFIER
+    ;
+
 shardingColumn
     : SHARDING_COLUMN EQ columnName
     ;
 
-alterBindingTables
-    : alterBindingTable (COMMA alterBindingTable)*
-    ;
-
-alterBindingTable
-    : (ADD | DROP) bindingTable
-    ;
-
-bindingTables
-    : bindingTable (COMMA bindingTable)*
-    ;
-
-bindingTable
-    : BINDING_TABLE LP tableNames RP
-    ;
-
-defaultTableStrategy
-    : DEFAULT_TABLE_STRATEGY columnName? functionDefinition
-    ;
-
-broadcastTables
-    : BROADCAST_TABLES LP IDENTIFIER (COMMA IDENTIFIER)* RP
-    ;
-
 keyGenerateStrategy
     : GENERATED_KEY LP COLUMN EQ columnName COMMA functionDefinition RP
-    ;
-
-actualDataNodes
-    : STRING (COMMA STRING)*
     ;
 
 ruleName
@@ -151,20 +139,24 @@ tableName
     : IDENTIFIER
     ;
 
-tableNames
-    : IDENTIFIER+
-    ;
-
 columnName
     : IDENTIFIER
     ;
 
-dropReplicaQueryRule
-    : DROP REPLICA_QUERY RULE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+dropReadwriteSplittingRule
+    : DROP READWRITE_SPLITTING RULE IDENTIFIER (COMMA IDENTIFIER)*
     ;
 
-dropShardingRule
-    : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
+dropShardingTableRule
+    : DROP SHARDING TABLE RULE tableName (COMMA tableName)*
+    ;
+
+dropShardingBindingTableRules
+    : DROP SHARDING BINDING TABLE RULES
+    ;
+
+dropShardingBroadcastTableRules
+    : DROP SHARDING BROADCAST TABLE RULES
     ;
 
 showShardingRule
@@ -180,7 +172,7 @@ schemaName
     ;
 
 functionDefinition
-    : TYPE LP NAME EQ functionName COMMA PROPERTIES LP algorithmProperties? RP RP
+    : TYPE LP NAME EQ functionName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
 functionName
@@ -193,4 +185,12 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    ;
+
+createDatabaseDiscoveryRule
+    : CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    ;
+
+databaseDiscoveryRuleDefinition
+    : ruleName LP resources COMMA functionDefinition RP
     ;

@@ -66,7 +66,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public Optional<DatabasePacket<?>> getOtherPacket() {
+    public Optional<DatabasePacket<?>> getOtherPacket(final BackendConnection backendConnection) {
         return Optional.empty();
     }
     

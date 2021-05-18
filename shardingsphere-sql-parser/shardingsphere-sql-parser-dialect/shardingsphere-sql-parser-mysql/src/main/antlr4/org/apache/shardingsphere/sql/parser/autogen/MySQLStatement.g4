@@ -116,6 +116,7 @@ execute
     | uninstall
     | unlock
     | xa
+    | createLoadableFunction
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

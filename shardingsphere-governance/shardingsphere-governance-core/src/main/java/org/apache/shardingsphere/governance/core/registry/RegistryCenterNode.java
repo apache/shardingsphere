@@ -20,7 +20,6 @@ package org.apache.shardingsphere.governance.core.registry;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ import java.util.stream.Collectors;
 /**
  * Registry center node.
  */
-@RequiredArgsConstructor
 public final class RegistryCenterNode {
     
     private static final String ROOT = "states";
@@ -56,7 +54,9 @@ public final class RegistryCenterNode {
     private static final String SCHEMA_NODE = "schema";
     
     private static final String USERS_NODE = "users";
-    
+
+    private static final String GLOBAL_RULE_NODE = "rule";
+
     private static final String PRIVILEGE_NODE = "privilegenode";
     
     private static final String PROPS_NODE = "props";
@@ -254,7 +254,16 @@ public final class RegistryCenterNode {
     public String getUsersNode() {
         return getFullPath(USERS_NODE);
     }
-
+    
+    /**
+     * Get global rule node path.
+     *
+     * @return global rule node path
+     */
+    public String getGlobalRuleNode() {
+        return getFullPath(GLOBAL_RULE_NODE);
+    }
+    
     /**
      * Get privilege node path.
      *

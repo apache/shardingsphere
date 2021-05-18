@@ -28,7 +28,7 @@ public final class SkipBackendHandlerTest {
     
     @Test
     public void assertExecuteSkipBackendHandler() {
-        SkipBackendHandler skipBackendHandler = new SkipBackendHandler();
+        SkipBackendHandler skipBackendHandler = new SkipBackendHandler(null);
         ResponseHeader actual = skipBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
     }

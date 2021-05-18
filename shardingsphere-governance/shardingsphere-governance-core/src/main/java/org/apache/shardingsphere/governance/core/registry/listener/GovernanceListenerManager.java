@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import org.apache.shardingsphere.governance.core.registry.listener.metadata.MetaDataListener;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
@@ -33,18 +32,15 @@ public final class GovernanceListenerManager {
         ShardingSphereServiceLoader.register(GovernanceListenerFactory.class);
     }
     
-    private final RegistryRepository registryRepository;
+    private final RegistryCenterRepository registryCenterRepository;
     
     private final Collection<String> schemaNames;
     
-    private final MetaDataListener metaDataListener;
-    
     private final Collection<GovernanceListenerFactory> governanceListenerFactories;
     
-    public GovernanceListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        this.registryRepository = registryRepository;
+    public GovernanceListenerManager(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
+        this.registryCenterRepository = registryCenterRepository;
         this.schemaNames = schemaNames;
-        metaDataListener = new MetaDataListener(registryRepository, schemaNames);
         governanceListenerFactories = ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceListenerFactory.class);
     }
     
@@ -52,9 +48,8 @@ public final class GovernanceListenerManager {
      * Initialize all state changed listeners.
      */
     public void initListeners() {
-        metaDataListener.watch();
         for (GovernanceListenerFactory each : governanceListenerFactories) {
-            each.create(registryRepository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
+            each.create(registryCenterRepository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
         }
     }
 }

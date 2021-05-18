@@ -22,7 +22,7 @@ import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -39,11 +39,11 @@ public final class FinishedCheckJob implements SimpleJob {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
-    private final RegistryRepositoryAPI registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
+    private final GovernanceRepositoryAPI governanceRepositoryAPI = ScalingAPIFactory.getGovernanceRepositoryAPI();
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        registryRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT).stream()
+        governanceRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT).stream()
                 .filter(each -> !each.startsWith("_"))
                 .forEach(each -> {
                     long jobId = Long.parseLong(each);

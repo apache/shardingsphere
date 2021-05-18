@@ -29,6 +29,10 @@ STRING_
     | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
     ;
 
+INTEGER_
+    : INT_
+    ;
+
 NUMBER_
     : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
     ;

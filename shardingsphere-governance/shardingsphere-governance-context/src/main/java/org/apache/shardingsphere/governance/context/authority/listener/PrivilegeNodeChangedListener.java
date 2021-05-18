@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.governance.context.authority.listener;
 
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -33,12 +35,12 @@ import java.util.Optional;
  */
 public final class PrivilegeNodeChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    public PrivilegeNodeChangedListener(final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singletonList(new RegistryCenterNode().getPrivilegeNodePath()));
+    public PrivilegeNodeChangedListener(final RegistryCenterRepository registryCenterRepository) {
+        super(registryCenterRepository, Collections.singletonList(new RegistryCenterNode().getPrivilegeNodePath()));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new AuthorityChangedEvent(YamlConfigurationConverter.convertUsers(event.getValue())));
+        return Optional.of(new AuthorityChangedEvent(YamlUsersConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(event.getValue(), Collection.class))));
     }
 }

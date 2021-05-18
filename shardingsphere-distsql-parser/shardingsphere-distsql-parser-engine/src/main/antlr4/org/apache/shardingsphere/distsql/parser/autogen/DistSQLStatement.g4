@@ -25,11 +25,16 @@ execute
     | createShardingTableRule
     | createShardingBindingTableRules
     | createShardingBroadcastTableRules
+    | createReadwriteSplittingRule
     | alterShardingTableRule
-    | dropShardingRule
-    | createReplicaQueryRule
-    | alterReplicaQueryRule
-    | dropReplicaQueryRule
+    | alterShardingBindingTableRules
+    | alterShardingBroadcastTableRules
+    | dropShardingTableRule
+    | dropShardingBindingTableRules
+    | dropShardingBroadcastTableRules
+    | alterReadwriteSplittingRule
+    | dropReadwriteSplittingRule
+    | createDatabaseDiscoveryRule
     | showResources
     | showRule
     | showScalingJobList

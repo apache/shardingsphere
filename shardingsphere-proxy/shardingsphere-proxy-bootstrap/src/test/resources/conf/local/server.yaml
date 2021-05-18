@@ -18,7 +18,7 @@
 governance:
   name: governance_ds
   registryCenter:
-    type: REG_FIXTURE
+    type: GOV_FIXTURE
     serverLists: localhost:2181
     props:
       retryIntervalMilliseconds: 500

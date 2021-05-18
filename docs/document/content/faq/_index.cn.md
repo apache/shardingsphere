@@ -275,3 +275,11 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 回答:
 
 1. 需要在spring-boot的引导类中添加 `@SpringBootApplication(exclude = JtaAutoConfiguration.class)`。
+
+## 24. ANTLR 插件在 src 同级目录下生成代码，容易误提交，如何避免？
+
+回答：
+
+进入 [Settings -> Languages & Frameworks -> ANTLR v4 default project settings](jetbrains://idea/settings?name=Languages+%26+Frameworks--ANTLR+v4+default+project+settings) 配置生成代码的输出目录为 `target/gen`，如图：
+
+![Configure ANTLR plugin](https://shardingsphere.apache.org/document/current/img/faq/configure-antlr-plugin.png)

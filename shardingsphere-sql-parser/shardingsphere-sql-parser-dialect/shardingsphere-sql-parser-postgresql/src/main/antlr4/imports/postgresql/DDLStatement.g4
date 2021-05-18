@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule,DMLStatement;
+import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule, DMLStatement;
 
 createTable
     : CREATE createTableSpecification TABLE tableNotExistClause? tableName
@@ -979,7 +979,7 @@ cursorOption
     | INSENSITIVE
     ;
 
-execute
+executeStmt
     : EXECUTE name executeParamClause
     ;
 
@@ -1781,6 +1781,10 @@ move
 
 prepare
     : PREPARE name prepTypeClause? AS preparableStmt
+    ;
+    
+deallocate
+    : DEALLOCATE PREPARE? (name | ALL)
     ;
 
 prepTypeClause

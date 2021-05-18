@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 166 家公司。
+共计 167 家公司。
 
 ### 金融行业
 <ul>
@@ -199,6 +199,7 @@ chapter = true
 ### 制造业
 <ul>
     <li><a href="https://www.lixiang.com" rel="nofollow">理想汽车</a></li>
+    <li><a href="https://www.gongniu.cn/" rel="nofollow">公牛智能产业中心</a></li>
 </ul>
 
 ### 软件开发及服务

@@ -19,19 +19,30 @@ package org.apache.shardingsphere.distsql.parser.api;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -64,6 +75,47 @@ public final class DistSQLStatementParserEngineTest {
             + "SHARDING_COLUMN=order_id,"
             + "TYPE(NAME=hash_mod,PROPERTIES('sharding-count'=4)),"
             + "GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES(\"worker-id\"=123))))";
+
+    private static final String RDL_ALTER_SHARDING_BINDING_TABLE_RULES = "ALTER SHARDING BINDING TABLE RULES ("
+            + "(t_order,t_order_item), (t_1,t_2))";
+
+    private static final String RDL_ALTER_SHARDING_BROADCAST_TABLE_RULES = "ALTER SHARDING BROADCAST TABLE RULES(t_1,t_2)";
+
+    private static final String RDL_DROP_SHARDING_TABLE_RULE = "DROP SHARDING TABLE RULE t_order,t_order_item";
+
+    private static final String RDL_DROP_SHARDING_BINDING_TABLE_RULES = "DROP SHARDING BINDING TABLE RULES";
+
+    private static final String RDL_DROP_SHARDING_BROADCAST_TABLE_RULES = "DROP SHARDING BROADCAST TABLE RULES";
+
+    private static final String RDL_CREATE_STATIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_0 ("
+            + "WRITE_RESOURCE=primary_ds,"
+            + "READ_RESOURCES(replica_ds_0,replica_ds_1),"
+            + "TYPE(NAME=random)"
+            + ")";
+
+    private static final String RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_1 ("
+            + "AUTO_AWARE_RESOURCE=group_0,"
+            + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))"
+            + ")";
+
+    private static final String RDL_ALTER_READWRITE_SPLITTING_RULE = "ALTER READWRITE_SPLITTING RULE ms_group_0 ("
+            + "AUTO_AWARE_RESOURCE=group_0,"
+            + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))),"
+            + "ms_group_1 ("
+            + "WRITE_RESOURCE=primary_ds,"
+            + "READ_RESOURCES(replica_ds_0,replica_ds_1),"
+            + "TYPE(NAME=random)"
+            + ")";
+
+    private static final String RDL_DROP_READWRITE_SPLITTING_RULE = "DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1";
+
+    private static final String RDL_CREATE_DATABASE_DISCOVERY_RULE = "CREATE DB_DISCOVERY RULE ha_group_0 ("
+            + "RESOURCES(resource0,resource1),"
+            + "TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))),"
+            + "ha_group_1 ("
+            + "RESOURCES(resource2,resource3),"
+            + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
+            + ")";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -173,5 +225,87 @@ public final class DistSQLStatementParserEngineTest {
         assertThat(tableRuleSegment.getKeyGenerateStrategyColumn(), is("another_id"));
         assertThat(tableRuleSegment.getTableStrategy().getAlgorithmName(), is("hash_mod"));
         assertThat(tableRuleSegment.getTableStrategy().getAlgorithmProps().getProperty("sharding-count"), is("4"));
+    }
+
+    @Test
+    public void assertParseAlterShardingBindingTableRules() {
+        SQLStatement sqlStatement = engine.parse(RDL_ALTER_SHARDING_BINDING_TABLE_RULES);
+        assertTrue(sqlStatement instanceof AlterShardingBindingTableRulesStatement);
+        List<ShardingBindingTableRuleSegment> shardingBindingTableRuleSegments = new ArrayList<>(((AlterShardingBindingTableRulesStatement) sqlStatement).getRules());
+        assertThat(shardingBindingTableRuleSegments.size(), is(2));
+        ShardingBindingTableRuleSegment segment = shardingBindingTableRuleSegments.get(0);
+        assertThat(segment.getTables(), is("t_order,t_order_item"));
+        segment = shardingBindingTableRuleSegments.get(1);
+        assertThat(segment.getTables(), is("t_1,t_2"));
+    }
+
+    @Test
+    public void assertParseAlterShardingBroadcastTableRules() {
+        SQLStatement sqlStatement = engine.parse(RDL_ALTER_SHARDING_BROADCAST_TABLE_RULES);
+        assertTrue(sqlStatement instanceof AlterShardingBroadcastTableRulesStatement);
+        assertThat(((AlterShardingBroadcastTableRulesStatement) sqlStatement).getTables(), is(Arrays.asList("t_1", "t_2")));
+    }
+
+    @Test
+    public void assertParseDropShardingTableRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_SHARDING_TABLE_RULE);
+        assertTrue(sqlStatement instanceof DropShardingTableRuleStatement);
+        assertThat(((DropShardingTableRuleStatement) sqlStatement).getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()),
+                is(Arrays.asList("t_order", "t_order_item")));
+    }
+
+    @Test
+    public void assertParseDropShardingBindingTableRules() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_SHARDING_BINDING_TABLE_RULES);
+        assertTrue(sqlStatement instanceof DropShardingBindingTableRulesStatement);
+    }
+
+    @Test
+    public void assertParseDropShardingBroadcastTableRules() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_SHARDING_BROADCAST_TABLE_RULES);
+        assertTrue(sqlStatement instanceof DropShardingBroadcastTableRulesStatement);
+    }
+
+    @Test
+    public void assertParseStaticReadwriteSplittingRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_CREATE_STATIC_READWRITE_SPLITTING_RULE);
+        assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
+    }
+
+    @Test
+    public void assertParseDynamicReadwriteSplittingRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE);
+        assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
+    }
+
+    @Test
+    public void assertParseAlterReadwriteSplittingRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_ALTER_READWRITE_SPLITTING_RULE);
+        assertTrue(sqlStatement instanceof AlterReadwriteSplittingRuleStatement);
+    }
+
+    @Test
+    public void assertParseDropReadwriteSplittingRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_READWRITE_SPLITTING_RULE);
+        assertTrue(sqlStatement instanceof DropReadwriteSplittingRuleStatement);
+        assertThat(((DropReadwriteSplittingRuleStatement) sqlStatement).getRuleNames(), is(Arrays.asList("ms_group_0", "ms_group_1")));
+    }
+
+    @Test
+    public void assertParseCreateDatabaseDiscoveryRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_CREATE_DATABASE_DISCOVERY_RULE);
+        assertTrue(sqlStatement instanceof CreateDatabaseDiscoveryRuleStatement);
+        CreateDatabaseDiscoveryRuleStatement statement = (CreateDatabaseDiscoveryRuleStatement) sqlStatement;
+        assertThat(statement.getDatabaseDiscoveryRules().size(), is(2));
+        List<DatabaseDiscoveryRuleSegment> databaseDiscoveryRuleSegments
+                = new ArrayList<>(((CreateDatabaseDiscoveryRuleStatement) sqlStatement).getDatabaseDiscoveryRules());
+        assertThat(databaseDiscoveryRuleSegments.get(0).getName(), is("ha_group_0"));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getDiscoveryTypeName(), is("mgr"));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getDataSources(), is(Arrays.asList("resource0", "resource1")));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getProps().get("groupName"), is("92504d5b-6dec"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getName(), is("ha_group_1"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getDiscoveryTypeName(), is("mgr2"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getDataSources(), is(Arrays.asList("resource2", "resource3")));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getProps().get("groupName"), is("92504d5b-6dec-2"));
     }
 }

@@ -30,8 +30,10 @@ import io.etcd.jetcd.watch.WatchEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.etcd.props.EtcdProperties;
+import org.apache.shardingsphere.governance.repository.etcd.props.EtcdPropertyKey;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
@@ -46,7 +48,7 @@ import java.util.stream.Collectors;
 /**
  * Registry repository of ETCD.
  */
-public final class EtcdRepository implements RegistryRepository {
+public final class EtcdRepository implements RegistryCenterRepository {
     
     private Client client;
     
@@ -57,7 +59,7 @@ public final class EtcdRepository implements RegistryRepository {
     private EtcdProperties etcdProperties;
     
     @Override
-    public void init(final String name, final GovernanceCenterConfiguration config) {
+    public void init(final String name, final RegistryCenterConfiguration config) {
         etcdProperties = new EtcdProperties(props);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).namespace(ByteSequence.from(name, StandardCharsets.UTF_8)).build();
     }
@@ -99,17 +101,6 @@ public final class EtcdRepository implements RegistryRepository {
     }
     
     @Override
-    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        // TODO
-        return false;
-    }
-    
-    @Override
-    public void releaseLock(final String key) {
-        // TODO
-    }
-    
-    @Override
     public void delete(final String key) {
         client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8));
     }
@@ -137,6 +128,17 @@ public final class EtcdRepository implements RegistryRepository {
             default:
                 return Type.IGNORED;
         }
+    }
+    
+    @Override
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
+        // TODO
+        return false;
+    }
+    
+    @Override
+    public void releaseLock(final String key) {
+        // TODO
     }
     
     @Override

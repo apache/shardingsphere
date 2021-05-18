@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.instance;
 
-import com.google.common.base.Joiner;
+import lombok.Getter;
 import org.apache.shardingsphere.governance.core.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
@@ -26,25 +26,17 @@ import java.util.UUID;
 /**
  * Governance instance.
  */
+@Getter
 public final class GovernanceInstance {
     
     private static final String DELIMITER = "@";
     
     private static final GovernanceInstance INSTANCE = new GovernanceInstance();
     
-    private final String instanceId;
+    private final String id;
     
     private GovernanceInstance() {
-        instanceId = Joiner.on(DELIMITER).join(IpUtils.getIp(), ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], UUID.randomUUID().toString());
-    }
-    
-    /**
-     * Getter for instance ID.
-     *
-     * @return  instance ID
-     */
-    public String getInstanceId() {
-        return instanceId;
+        id = String.join(DELIMITER, IpUtils.getIp(), ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], UUID.randomUUID().toString());
     }
     
     /**

@@ -19,11 +19,10 @@ package org.apache.shardingsphere.infra.context.metadata;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.executor.sql.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
-import org.apache.shardingsphere.infra.executor.sql.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.io.Closeable;
@@ -85,13 +84,6 @@ public interface MetaDataContexts extends Closeable {
      * @return calcite context factory
      */
     CalciteContextFactory getCalciteContextFactory();
-    
-    /**
-     * Get users.
-     * 
-     * @return users
-     */
-    ShardingSphereUsers getUsers();
     
     /**
      * Get configuration properties.

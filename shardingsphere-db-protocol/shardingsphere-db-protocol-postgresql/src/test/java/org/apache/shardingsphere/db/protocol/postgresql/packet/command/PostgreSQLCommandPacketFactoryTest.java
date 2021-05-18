@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
@@ -78,6 +79,12 @@ public final class PostgreSQLCommandPacketFactoryTest {
     @Test
     public void assertNewInstanceWithSyncComPacket() {
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.SYNC_COMMAND, payload, 1), instanceOf(PostgreSQLComSyncPacket.class));
+    }
+    
+    @Test
+    public void assertNewInstanceWithCloseComPacket() {
+        when(payload.readInt1()).thenReturn((int) PostgreSQLComClosePacket.Type.PREPARED_STATEMENT.getType());
+        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.CLOSE_COMMAND, payload, 1), instanceOf(PostgreSQLComClosePacket.class));
     }
     
     @Test
