@@ -15,27 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
+
+import java.util.Optional;
 
 /**
- * Explain statement assert.
+ * Explain statement handler for different dialect SQL statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExplainStatementAssert {
+public final class ExplainStatementHandler implements SQLStatementHandler {
     
     /**
-     * Assert explain statement is correct with expected parser result.
-     * 
-     * @param assertContext assert context
-     * @param actual actual explain statement
-     * @param expected expected explain statement test case
+     * Get simple table segment.
+     *
+     * @param explainStatement explain statement
+     * @return simple table segment
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ExplainStatement actual, final ExplainStatementTestCase expected) {
+    public static Optional<SimpleTableSegment> getSimpleTableSegment(final ExplainStatement explainStatement) {
+        if (explainStatement instanceof MySQLStatement) {
+            return ((MySQLExplainStatement) explainStatement).getTable();
+        }
+        return Optional.empty();
     }
 }

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIn
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateLoadableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlushContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
@@ -76,6 +77,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssig
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAnalyzeTableStatement;
@@ -250,8 +252,29 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
         MySQLExplainStatement result = new MySQLExplainStatement();
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.tableName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        } else if (null != ctx.explainableStatement()) {
+            result.setStatement((SQLStatement) visit(ctx.explainableStatement()));
+        } else if (null != ctx.select()) {
+            result.setStatement((SQLStatement) visit(ctx.select()));
+        }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitExplainableStatement(final ExplainableStatementContext ctx) {
+        if (null != ctx.select()) {
+            return visit(ctx.select());
+        } else if (null != ctx.delete()) {
+            return visit(ctx.delete());
+        } else if (null != ctx.insert()) {
+            return visit(ctx.insert());
+        } else if (null != ctx.replace()) {
+            return visit(ctx.replace());
+        } else {
+            return visit(ctx.update());
+        }
     }
     
     @Override

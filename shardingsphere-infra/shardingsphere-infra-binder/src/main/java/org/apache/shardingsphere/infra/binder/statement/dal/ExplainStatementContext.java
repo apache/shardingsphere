@@ -19,29 +19,55 @@ package org.apache.shardingsphere.infra.binder.statement.dal;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal.ExplainStatementHandler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Explain statement context.
  */
 @Getter
-public final class ExplainStatementContext extends CommonSQLStatementContext<MySQLExplainStatement> implements TableAvailable {
+public final class ExplainStatementContext extends CommonSQLStatementContext<ExplainStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public ExplainStatementContext(final MySQLExplainStatement sqlStatement) {
+    public ExplainStatementContext(final ExplainStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable());
+        tablesContext = new TablesContext(extractTablesFromExplain(sqlStatement));
+    }
+    
+    private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        ExplainStatementHandler.getSimpleTableSegment(sqlStatement).ifPresent(result::add);
+        SQLStatement explainableStatement = sqlStatement.getStatement().orElse(null);
+        TableExtractor extractor = new TableExtractor();
+        if (explainableStatement instanceof SelectStatement) {
+            extractor.extractTablesFromSelect((SelectStatement) explainableStatement);
+        } else if (explainableStatement instanceof InsertStatement) {
+            extractor.extractTablesFromInsert((InsertStatement) explainableStatement);
+        } else if (explainableStatement instanceof UpdateStatement) {
+            extractor.extractTablesFromUpdate((UpdateStatement) explainableStatement);
+        } else if (explainableStatement instanceof DeleteStatement) {
+            extractor.extractTablesFromDelete((DeleteStatement) explainableStatement);
+        }
+        // TODO: 2021/5/18 extract table from declare, execute, createMaterializedView, refreshMaterializedView
+        result.addAll(extractor.getRewriteTables());
+        return result;
     }
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
+        return extractTablesFromExplain(getSqlStatement());
     }
 }

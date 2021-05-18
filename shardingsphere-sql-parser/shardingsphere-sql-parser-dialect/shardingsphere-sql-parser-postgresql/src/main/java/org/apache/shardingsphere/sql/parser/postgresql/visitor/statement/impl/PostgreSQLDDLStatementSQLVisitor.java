@@ -430,11 +430,6 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     }
     
     @Override
-    public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new PostgreSQLExecuteStatement();
-    }
-    
-    @Override
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
         return new PostgreSQLDeallocateStatement();
     }

@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Explain statement assert.
+ * PostgreSQL explain statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExplainStatementAssert {
-    
-    /**
-     * Assert explain statement is correct with expected parser result.
-     * 
-     * @param assertContext assert context
-     * @param actual actual explain statement
-     * @param expected expected explain statement test case
-     */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ExplainStatement actual, final ExplainStatementTestCase expected) {
-    }
+@ToString
+public final class PostgreSQLExplainStatement extends ExplainStatement implements PostgreSQLStatement {
 }
