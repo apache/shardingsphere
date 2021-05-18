@@ -47,6 +47,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.T
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.CheckScalingJobStatement;
@@ -61,6 +62,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardin
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
@@ -270,7 +272,22 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setAlgorithmProps(algorithmProps);
         return result;
     }
-    
+
+    @Override
+    public ASTNode visitCreateDatabaseDiscoveryRule(final DistSQLStatementParser.CreateDatabaseDiscoveryRuleContext ctx) {
+        return new CreateDatabaseDiscoveryRuleStatement(ctx.databaseDiscoveryRuleDefinition().stream().map(each -> (DatabaseDiscoveryRuleSegment) visit(each)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public ASTNode visitDatabaseDiscoveryRuleDefinition(final DistSQLStatementParser.DatabaseDiscoveryRuleDefinitionContext ctx) {
+        DatabaseDiscoveryRuleSegment result = new DatabaseDiscoveryRuleSegment();
+        result.setName(ctx.ruleName().getText());
+        result.setDataSources(ctx.resources().IDENTIFIER().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList()));
+        result.setDiscoveryTypeName(ctx.functionDefinition().functionName().getText());
+        result.setProps(buildAlgorithmProperties(ctx.functionDefinition().algorithmProperties()));
+        return result;
+    }
+
     @Override
     public ASTNode visitTableName(final TableNameContext ctx) {
         return new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
@@ -339,5 +356,13 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitCheckScalingJob(final CheckScalingJobContext ctx) {
         return new CheckScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    }
+
+    private Properties buildAlgorithmProperties(final DistSQLStatementParser.AlgorithmPropertiesContext ctx) {
+        Properties result = new Properties();
+        for (AlgorithmPropertyContext each : ctx.algorithmProperty()) {
+            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+        }
+        return result;
     }
 }
