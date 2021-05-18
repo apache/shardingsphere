@@ -22,20 +22,20 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Describe statement context.
+ * Explain statement context.
  */
 @Getter
-public final class DescribeStatementContext extends CommonSQLStatementContext<MySQLDescribeStatement> implements TableAvailable {
+public final class ExplainStatementContext extends CommonSQLStatementContext<MySQLExplainStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public DescribeStatementContext(final MySQLDescribeStatement sqlStatement) {
+    public ExplainStatementContext(final MySQLExplainStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
     }

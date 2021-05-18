@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Describe statement test case.
+ * MySQL explain statement.
  */
-public final class DescribeStatementTestCase extends SQLParserTestCase {
+@Getter
+@Setter
+@ToString
+public final class MySQLExplainStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+    
+    private SimpleTableSegment table;
 }
