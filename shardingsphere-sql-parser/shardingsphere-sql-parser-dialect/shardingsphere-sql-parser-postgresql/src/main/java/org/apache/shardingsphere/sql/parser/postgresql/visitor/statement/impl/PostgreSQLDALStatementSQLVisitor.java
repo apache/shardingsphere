@@ -125,15 +125,15 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
         } else if (null != ctx.delete()) {
             return visit(ctx.delete());
         } else if (null != ctx.declare()) {
-            // TODO: 2021/5/18 visit declare statement 
+            // TODO visit declare statement 
             return visit(ctx.declare());
         } else if (null != ctx.executeStmt()) {
             return visit(ctx.executeStmt());
         } else if (null != ctx.createMaterializedView()) {
-            // TODO: 2021/5/18 visit create materialized view statement
+            // TODO visit create materialized view statement
             return visit(ctx.createMaterializedView());
         } else {
-            // TODO: 2021/5/18 visit refresh materialized view statement
+            // TODO visit refresh materialized view statement
             return visit(ctx.refreshMatViewStmt());
         }
     }

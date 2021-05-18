@@ -61,7 +61,7 @@ public final class ExplainStatementContext extends CommonSQLStatementContext<Exp
         } else if (explainableStatement instanceof DeleteStatement) {
             extractor.extractTablesFromDelete((DeleteStatement) explainableStatement);
         }
-        // TODO: 2021/5/18 extract table from declare, execute, createMaterializedView, refreshMaterializedView
+        // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView
         result.addAll(extractor.getRewriteTables());
         return result;
     }
