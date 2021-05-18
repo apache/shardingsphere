@@ -15,34 +15,27 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.segment.rdl;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-execute
-    : (addResource
-    | dropResource
-    | createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | createReadwriteSplittingRule
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | showResources
-    | showRule
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+import java.util.Collection;
+import java.util.Properties;
+
+/**
+ * Database discovery rule segment.
+ */
+@Getter
+@Setter
+public final class DatabaseDiscoveryRuleSegment implements ASTNode {
+
+    private String name;
+
+    private Collection<String> dataSources;
+
+    private String discoveryTypeName;
+
+    private Properties props;
+}

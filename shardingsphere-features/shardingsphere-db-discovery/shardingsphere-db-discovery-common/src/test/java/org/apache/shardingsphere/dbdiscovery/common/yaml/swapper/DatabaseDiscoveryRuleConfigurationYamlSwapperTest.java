@@ -52,7 +52,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
                 new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
                 ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))));
-        assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
+        assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));
         assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }
     
@@ -61,7 +61,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(
                 new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
-        assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
+        assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));
         assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }
     
@@ -82,7 +82,6 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
     private YamlDatabaseDiscoveryRuleConfiguration createYamlHARuleConfiguration() {
         YamlDatabaseDiscoveryRuleConfiguration result = new YamlDatabaseDiscoveryRuleConfiguration();
         result.getDataSources().put("ha_ds", new YamlDatabaseDiscoveryDataSourceRuleConfiguration());
-        result.getDataSources().get("ha_ds").setName("ha_ds");
         result.getDataSources().get("ha_ds").setDataSourceNames(Arrays.asList("ds_0", "ds_1"));
         return result;
     }

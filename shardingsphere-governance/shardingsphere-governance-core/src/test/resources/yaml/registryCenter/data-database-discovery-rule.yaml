@@ -19,7 +19,6 @@ rules:
   - !DB_DISCOVERY
     dataSources:
       pr_ds:
-        name: pr_ds
         dataSourceNames:
           - ds_0
           - ds_1

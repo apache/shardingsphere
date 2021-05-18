@@ -15,34 +15,17 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.governance.core.registry.listener.event.invocation;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-execute
-    : (addResource
-    | dropResource
-    | createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | createReadwriteSplittingRule
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | showResources
-    | showRule
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * Execute process report event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteProcessReportEvent {
+    
+    private final String executionID;
+}

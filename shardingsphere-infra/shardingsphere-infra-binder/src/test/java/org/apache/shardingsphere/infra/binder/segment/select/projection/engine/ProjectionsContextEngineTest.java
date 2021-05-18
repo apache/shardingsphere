@@ -26,14 +26,17 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -341,6 +344,51 @@ public final class ProjectionsContextEngineTest {
         Collection<SimpleTableSegment> tables = selectStatementContext.getAllSimpleTableSegments();
         ProjectionsContext actual = new ProjectionsContextEngine(schema)
                 .createProjectionsContext(tables, projectionsSegment, new GroupByContext(Collections.emptyList(), 0), orderByContext);
+        assertNotNull(actual);
+    }
+        
+    @Test
+    public void assertCreateProjectionsContextWithTemporaryTableForMySQL() {
+        assertCreateProjectionsContextWithTemporaryTable(new MySQLSelectStatement(), new MySQLSelectStatement());
+    }
+    
+    @Test
+    public void assertCreateProjectionsContextWithTemporaryTableForOracle() {
+        assertCreateProjectionsContextWithTemporaryTable(new OracleSelectStatement(), new OracleSelectStatement());
+    }
+    
+    @Test
+    public void assertCreateProjectionsContextWithTemporaryTableForPostgreSQL() {
+        assertCreateProjectionsContextWithTemporaryTable(new PostgreSQLSelectStatement(), new PostgreSQLSelectStatement());
+    }
+    
+    @Test
+    public void assertCreateProjectionsContextWithTemporaryTableForSQL92() {
+        assertCreateProjectionsContextWithTemporaryTable(new SQL92SelectStatement(), new SQL92SelectStatement());
+    }
+    
+    @Test
+    public void assertCreateProjectionsContextWithTemporaryTableForSQLServer() {
+        assertCreateProjectionsContextWithTemporaryTable(new SQLServerSelectStatement(), new SQLServerSelectStatement());
+    }
+    
+    private void assertCreateProjectionsContextWithTemporaryTable(final SelectStatement selectStatement, final SelectStatement subquerySelectStatement) {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
+        projectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("d")));
+        projectionsSegment.getProjections().addAll(Collections.singletonList(projectionSegment));
+        selectStatement.setProjections(projectionsSegment);
+        subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, subquerySelectStatement));
+        subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("d")));
+        selectStatement.setFrom(subqueryTableSegment);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("d")));
+        OrderByItem groupByItem = new OrderByItem(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC));
+        GroupByContext groupByContext = new GroupByContext(Collections.singleton(groupByItem), 0);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        ProjectionsContext actual = new ProjectionsContextEngine(schema)
+                .createProjectionsContext(selectStatementContext.getFromSimpleTableSegments(), projectionsSegment, groupByContext, new OrderByContext(Collections.emptyList(), false));
         assertNotNull(actual);
     }
 }

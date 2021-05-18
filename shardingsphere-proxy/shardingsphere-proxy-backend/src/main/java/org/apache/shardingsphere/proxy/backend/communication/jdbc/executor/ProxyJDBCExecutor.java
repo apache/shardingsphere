@@ -58,10 +58,16 @@ public final class ProxyJDBCExecutor {
      */
     public Collection<ExecuteResult> execute(final SQLStatementContext<?> context, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                              final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
-        ExecuteProcessEngine.initialize(context, executionGroupContext);
-        return jdbcExecutor.execute(executionGroupContext,
-                ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true),
-                ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, false));
+        try {
+            DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
+            ExecuteProcessEngine.initialize(context, executionGroupContext);
+            Collection<ExecuteResult> result = jdbcExecutor.execute(executionGroupContext,
+                    ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true),
+                    ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, false));
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            return result;
+        } finally {
+            ExecuteProcessEngine.clean();
+        }
     }
 }

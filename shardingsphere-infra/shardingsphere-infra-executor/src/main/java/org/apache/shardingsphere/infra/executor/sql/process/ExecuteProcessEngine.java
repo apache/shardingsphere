@@ -56,6 +56,13 @@ public final class ExecuteProcessEngine {
     }
     
     /**
+     * Clean.
+     */
+    public static void clean() {
+        ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
+    }
+    
+    /**
      * Finish.
      *
      * @param executionID execution ID
@@ -64,6 +71,17 @@ public final class ExecuteProcessEngine {
     public static void finish(final String executionID, final SQLExecutionUnit executionUnit) {
         if (!HANDLERS.isEmpty()) {
             HANDLERS.iterator().next().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
+        }
+    }
+    
+    /**
+     * Finish.
+     *
+     * @param executionID execution ID
+     */
+    public static void finish(final String executionID) {
+        if (!HANDLERS.isEmpty() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            HANDLERS.iterator().next().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
         }
     }
 }

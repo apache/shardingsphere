@@ -127,36 +127,8 @@ shardingColumn
     : SHARDING_COLUMN EQ columnName
     ;
 
-alterBindingTables
-    : alterBindingTable (COMMA alterBindingTable)*
-    ;
-
-alterBindingTable
-    : (ADD | DROP) bindingTable
-    ;
-
-bindingTables
-    : bindingTable (COMMA bindingTable)*
-    ;
-
-bindingTable
-    : BINDING_TABLE LP tableNames RP
-    ;
-
-defaultTableStrategy
-    : DEFAULT_TABLE_STRATEGY columnName? functionDefinition
-    ;
-
-broadcastTables
-    : BROADCAST_TABLES LP IDENTIFIER (COMMA IDENTIFIER)* RP
-    ;
-
 keyGenerateStrategy
     : GENERATED_KEY LP COLUMN EQ columnName COMMA functionDefinition RP
-    ;
-
-actualDataNodes
-    : STRING (COMMA STRING)*
     ;
 
 ruleName
@@ -165,10 +137,6 @@ ruleName
 
 tableName
     : IDENTIFIER
-    ;
-
-tableNames
-    : IDENTIFIER+
     ;
 
 columnName
@@ -217,4 +185,12 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    ;
+
+createDatabaseDiscoveryRule
+    : CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    ;
+
+databaseDiscoveryRuleDefinition
+    : ruleName LP resources COMMA functionDefinition RP
     ;

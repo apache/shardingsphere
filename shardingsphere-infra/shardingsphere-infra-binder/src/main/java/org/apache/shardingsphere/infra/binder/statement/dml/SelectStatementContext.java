@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
@@ -35,6 +34,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
@@ -43,14 +43,19 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Te
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Select SQL statement context.
@@ -213,6 +218,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      * @return tables with from clause
      */
     public Collection<SimpleTableSegment> getFromSimpleTableSegments() {
-        return new TableExtractor().extractTablesWithFromClause(getSqlStatement());
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        TableExtractor extractor = new TableExtractor();
+        result.addAll(extractor.extractTablesWithFromClause(getSqlStatement()));
+        result.addAll(getTemporarySimpleTableSegments(extractor.getTableContext()));
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getTemporarySimpleTableSegments(final Collection<TableSegment> tableSegments) {
+        return tableSegments.stream().filter(each -> each instanceof SubqueryTableSegment).map(each
+            -> new SimpleTableSegment(each.getStartIndex(), each.getStopIndex(), new IdentifierValue(each.getAlias().orElse("")))).collect(Collectors.toList());
     }
 }
