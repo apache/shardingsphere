@@ -182,8 +182,15 @@ subquery
     ;
 
 forUpdateClause
-    : FOR UPDATE (OF ((tableName | viewName) DOT_)? columnName (COMMA_ ((tableName | viewName) DOT_)? columnName)*)? 
-    ((NOWAIT | WAIT INTEGER_) | SKIP_SYMBOL LOCKED)?
+    : FOR UPDATE (OF forUpdateClauseList)? ((NOWAIT | WAIT INTEGER_) | SKIP_SYMBOL LOCKED)?
+    ;
+
+forUpdateClauseList
+    : forUpdateClauseOption (COMMA_ forUpdateClauseOption)*
+    ;
+
+forUpdateClauseOption
+    : ((tableName | viewName) DOT_)? columnName
     ;
 
 rowLimitingClause
