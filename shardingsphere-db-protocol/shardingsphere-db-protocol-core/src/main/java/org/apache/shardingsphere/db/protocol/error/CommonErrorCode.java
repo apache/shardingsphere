@@ -67,6 +67,10 @@ public enum CommonErrorCode implements SQLErrorCode {
 
     INVALID_DATABASE_DISCOVERY_TYPES(1119, "C1119", "Invalid database discovery types %s."),
 
+    DATABASE_DISCOVERY_RULE_NOT_EXIST(1120, "C1120", "Database discovery rule not exist in schema %s."),
+
+    DATABASE_DISCOVERY_RULE_DATASOURCE_NOT_EXIST(1121, "C1121", "Database discovery rules %s do not exist."),
+
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     
     SCALING_OPERATE_FAILED(1209, "C1209", "Scaling Operate Failed: [%s]"),
