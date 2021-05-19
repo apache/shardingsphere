@@ -37,6 +37,9 @@ execute
     | createDatabaseDiscoveryRule
     | alterDatabaseDiscoveryRule
     | dropDatabaseDiscoveryRule
+    | createEncryptRule
+    | alterEncryptRule
+    | dropEncryptRule
     | showResources
     | showRule
     | showScalingJobList
