@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,5 +78,13 @@ public final class UseDatabaseExecutorTest {
         UseDatabaseExecutor useSchemaBackendHandler = new UseDatabaseExecutor(useStatement);
         useSchemaBackendHandler.execute(backendConnection);
         verify(backendConnection).setCurrentSchema(anyString());
+    }
+    
+    @Test(expected = UnknownDatabaseException.class)
+    public void assertExecuteUseStatementBackendHandlerWhenSchemaNotExist() {
+        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
+        when(useStatement.getSchema()).thenReturn(String.format(SCHEMA_PATTERN, 10));
+        UseDatabaseExecutor useSchemaBackendHandler = new UseDatabaseExecutor(useStatement);
+        useSchemaBackendHandler.execute(backendConnection);
     }
 }
