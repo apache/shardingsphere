@@ -158,7 +158,7 @@ public final class EtcdRepository implements RegistryCenterRepository {
     public void close() {
         client.close();
     }
-    
+
     @Override
     public String getType() {
         return "etcd";
