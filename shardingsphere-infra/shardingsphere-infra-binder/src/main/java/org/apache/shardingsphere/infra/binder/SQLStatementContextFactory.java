@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.AnalyzeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowCreateTableStatementContext;
@@ -48,6 +49,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -197,6 +199,9 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof MySQLShowIndexStatement) {
             return new ShowIndexStatementContext((MySQLShowIndexStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof AnalyzeTableStatement) {
+            return new AnalyzeTableStatementContext((AnalyzeTableStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }

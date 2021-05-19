@@ -98,7 +98,7 @@ constraintsSetList
     : ALL | qualifiedNameList
     ;
 
-analyze
+analyzeTable
     : analyzeKeyword (VERBOSE? | LP_ vacAnalyzeOptionList RP_) vacuumRelationList?
     ;
 

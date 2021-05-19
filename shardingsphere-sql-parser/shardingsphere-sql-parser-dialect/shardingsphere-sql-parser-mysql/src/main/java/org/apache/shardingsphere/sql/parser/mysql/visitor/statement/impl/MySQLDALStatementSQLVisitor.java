@@ -78,6 +78,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegme
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAnalyzeTableStatement;
@@ -202,9 +203,12 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return new MySQLRepairTableStatement();
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
-        return new MySQLAnalyzeTableStatement();
+        MySQLAnalyzeTableStatement result = new MySQLAnalyzeTableStatement();
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        return result;
     }
     
     @Override

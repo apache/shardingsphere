@@ -214,6 +214,10 @@ public enum SQLVisitorRule {
     
     CREATE_LOADABLE_FUNCTION("CreateLoadableFunction", SQLStatementType.DAL),
     
+    ANALYZE("AnalyzeTable", SQLStatementType.DAL),
+    
+    LOAD("Load", SQLStatementType.DAL),
+    
     CALL("Call", SQLStatementType.DML),
     
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 

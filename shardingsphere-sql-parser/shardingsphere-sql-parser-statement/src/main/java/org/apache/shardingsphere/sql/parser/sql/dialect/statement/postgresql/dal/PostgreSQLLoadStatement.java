@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
-import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Analyze table statement.
+ * PostgreSQL load statement.
  */
-@Getter
 @ToString
-public abstract class AnalyzeTableStatement extends AbstractSQLStatement implements DALStatement {
-    
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+public final class PostgreSQLLoadStatement extends AbstractSQLStatement implements DALStatement, PostgreSQLStatement {
 }
