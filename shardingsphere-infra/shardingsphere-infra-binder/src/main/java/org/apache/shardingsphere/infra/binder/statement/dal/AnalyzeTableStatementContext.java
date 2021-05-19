@@ -15,22 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
+package org.apache.shardingsphere.infra.binder.statement.dal;
 
 import lombok.Getter;
-import lombok.ToString;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Analyze table statement.
+ * Analyze table statement context.
  */
 @Getter
-@ToString
-public abstract class AnalyzeTableStatement extends AbstractSQLStatement implements DALStatement {
+public final class AnalyzeTableStatementContext extends CommonSQLStatementContext<AnalyzeTableStatement> implements TableAvailable {
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    private final TablesContext tablesContext;
+    
+    public AnalyzeTableStatementContext(final AnalyzeTableStatement sqlStatement) {
+        super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTables());
+    }
+    
+    @Override
+    public Collection<SimpleTableSegment> getAllTables() {
+        return getSqlStatement().getTables();
+    }
 }
