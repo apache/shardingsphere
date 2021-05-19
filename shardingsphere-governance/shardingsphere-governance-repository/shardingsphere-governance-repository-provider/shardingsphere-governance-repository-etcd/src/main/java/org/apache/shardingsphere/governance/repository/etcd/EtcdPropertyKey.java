@@ -34,7 +34,7 @@ public enum EtcdPropertyKey implements TypedPropertyKey {
     TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30", long.class),
 
     /**
-     * Time out to connection
+     * Time out to connection.
      */
     CONNECTION_TIMEOUT_SECONDS("connectionTimeout", "30", long.class);
     
