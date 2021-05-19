@@ -15,12 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.util.Optional;
 
 /**
- * Describe statement test case.
+ * Explain statement.
  */
-public final class DescribeStatementTestCase extends SQLParserTestCase {
+@ToString
+@Setter
+public abstract class ExplainStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private SQLStatement statement;
+    
+    /**
+     * Get SQL statement.
+     * @return SQL statement
+     */
+    public Optional<SQLStatement> getStatement() {
+        return Optional.ofNullable(statement);
+    }
 }

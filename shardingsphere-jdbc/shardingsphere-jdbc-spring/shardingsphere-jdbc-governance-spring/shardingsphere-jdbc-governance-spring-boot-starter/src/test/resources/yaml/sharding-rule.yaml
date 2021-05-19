@@ -15,51 +15,50 @@
 # limitations under the License.
 #
 
-rules:
-  - !SHARDING
-    bindingTables:
-      - t_order
-      - t_order_item
-    broadcastTables:
-      - t_config
-    defaultDatabaseStrategy:
-      standard:
-        shardingAlgorithmName: database_inline
-        shardingColumn: user_id
-    tables:
-      t_order:
-        actualDataNodes: ds_${0..1}.t_order_${0..1}
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: snowflake
-        logicTable: t_order
-        tableStrategy:
-          standard:
-            shardingAlgorithmName: t_order_inline
-            shardingColumn: order_id
-      t_order_item:
-        actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-        keyGenerateStrategy:
-          column: order_item_id
-          keyGeneratorName: snowflake
-        logicTable: t_order_item
-        tableStrategy:
-          standard:
-            shardingAlgorithmName: t_order_item_inline
-            shardingColumn: order_id
-    shardingAlgorithms:
-      database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${user_id % 2}
-      t_order_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_order_${order_id % 2}
-      t_order_item_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_order_item_${order_id % 2}
-    keyGenerators:
-      snowflake:
-        type: SNOWFLAKE
+- !SHARDING
+  bindingTables:
+    - t_order
+    - t_order_item
+  broadcastTables:
+    - t_config
+  defaultDatabaseStrategy:
+    standard:
+      shardingAlgorithmName: database_inline
+      shardingColumn: user_id
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+      logicTable: t_order
+      tableStrategy:
+        standard:
+          shardingAlgorithmName: t_order_inline
+          shardingColumn: order_id
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      keyGenerateStrategy:
+        column: order_item_id
+        keyGeneratorName: snowflake
+      logicTable: t_order_item
+      tableStrategy:
+        standard:
+          shardingAlgorithmName: t_order_item_inline
+          shardingColumn: order_id
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_${order_id % 2}
+    t_order_item_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_item_${order_id % 2}
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE

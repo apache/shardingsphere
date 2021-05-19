@@ -22,17 +22,16 @@ import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.yaml.persisted.PersistedYamlDataSourceConfiguration;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,15 +61,12 @@ public final class DataSourceChangedListener extends PostGovernanceRepositoryEve
         return registryCenterNode.getMetadataDataSourcePath(schemaName).equals(eventPath);
     }
     
+    @SuppressWarnings("unchecked")
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
-        PersistedYamlDataSourceConfiguration result = YamlEngine.unmarshal(event.getValue(), PersistedYamlDataSourceConfiguration.class);
-        return checkDataSourceEvent(result) ? new DataSourceChangedEvent(schemaName, new HashMap<>())
-                : new DataSourceChangedEvent(schemaName, result.getDataSources().entrySet().stream()
+        Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
+        return yamlDataSources.isEmpty() ? new DataSourceChangedEvent(schemaName, new HashMap<>())
+                : new DataSourceChangedEvent(schemaName, yamlDataSources.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
                         .swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
-    }
-    
-    private boolean checkDataSourceEvent(final PersistedYamlDataSourceConfiguration persistedConfig) {
-        return Objects.isNull(persistedConfig) || Objects.isNull(persistedConfig.getDataSources()) || persistedConfig.getDataSources().isEmpty();
     }
 }

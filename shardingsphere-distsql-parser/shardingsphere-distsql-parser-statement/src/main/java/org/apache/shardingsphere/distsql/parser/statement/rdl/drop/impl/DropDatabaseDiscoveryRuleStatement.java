@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * MySQL describe statement.
+ * Drop database discovery rule statement.
  */
 @Getter
-@Setter
-@ToString
-public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+public final class DropDatabaseDiscoveryRuleStatement extends DropRDLStatement {
     
-    private SimpleTableSegment table;
+    private final Collection<String> ruleNames = new LinkedList<>();
 }

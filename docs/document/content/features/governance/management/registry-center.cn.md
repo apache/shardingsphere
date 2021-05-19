@@ -23,12 +23,12 @@ namespace
    ├──props                                     # 属性配置
    ├──metadata                                  # Metadata 配置
    ├      ├──${schema_1}                        # Schema 名称1
-   ├      ├      ├──datasource                  # 数据源配置
-   ├      ├      ├──rule                        # 规则配置
+   ├      ├      ├──dataSources                 # 数据源配置
+   ├      ├      ├──rules                       # 规则配置
    ├      ├      ├──schema                      # 表结构配置
    ├      ├──${schema_2}                        # Schema 名称2
-   ├      ├      ├──datasource                  # 数据源配置
-   ├      ├      ├──rule                        # 规则配置
+   ├      ├      ├──dataSources                 # 数据源配置
+   ├      ├      ├──rules                       # 规则配置
    ├      ├      ├──schema                      # 表结构配置
    ├──states
    ├    ├──proxynodes
@@ -63,44 +63,42 @@ executor-size: 20
 sql-show: true
 ```
 
-### /metadata/${schemeName}/datasource
+### /metadata/${schemeName}/dataSources
 
 多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid, HikariCP）。
 
 ```yaml
-dataSources:
-  ds_0: 
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    props:
-      url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
-      password: null
-      maxPoolSize: 50
-      maintenanceIntervalMilliseconds: 30000
-      connectionTimeoutMilliseconds: 30000
-      idleTimeoutMilliseconds: 60000
-      minPoolSize: 1
-      username: root
-      maxLifetimeMilliseconds: 1800000
-  ds_1: 
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    props:
-      url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
-      password: null
-      maxPoolSize: 50
-      maintenanceIntervalMilliseconds: 30000
-      connectionTimeoutMilliseconds: 30000
-      idleTimeoutMilliseconds: 60000
-      minPoolSize: 1
-      username: root
-      maxLifetimeMilliseconds: 1800000
+ds_0: 
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  props:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+    password: null
+    maxPoolSize: 50
+    maintenanceIntervalMilliseconds: 30000
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    minPoolSize: 1
+    username: root
+    maxLifetimeMilliseconds: 1800000
+ds_1: 
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  props:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+    password: null
+    maxPoolSize: 50
+    maintenanceIntervalMilliseconds: 30000
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    minPoolSize: 1
+    username: root
+    maxLifetimeMilliseconds: 1800000
 ```
 
-### /metadata/${schemeName}/rule
+### /metadata/${schemeName}/rules
 
 规则配置，可包括数据分片、读写分离、数据加密、影子库压测等配置。
 
 ```yaml
-rules:
 - !SHARDING
   xxx
   

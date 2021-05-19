@@ -24,9 +24,8 @@ import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanc
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.yaml.persisted.PersistedYamlRuleConfiguration;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -75,8 +74,9 @@ public final class RuleChangedListener extends PostGovernanceRepositoryEventList
         return new RuleConfigurationsChangedEvent(schemaName, getRuleConfigurations(event.getValue()));
     }
     
+    @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> getRuleConfigurations(final String yamlContent) {
-        Collection<YamlRuleConfiguration> rules = YamlEngine.unmarshal(yamlContent, PersistedYamlRuleConfiguration.class).getRules();
+        Collection<YamlRuleConfiguration> rules = YamlEngine.unmarshal(yamlContent, Collection.class);
         Preconditions.checkState(!rules.isEmpty(), "No available rule to load for governance.");
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
     }

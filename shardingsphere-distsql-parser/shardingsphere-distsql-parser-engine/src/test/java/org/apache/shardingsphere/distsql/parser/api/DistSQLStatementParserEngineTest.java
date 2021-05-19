@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
@@ -116,6 +118,16 @@ public final class DistSQLStatementParserEngineTest {
             + "RESOURCES(resource2,resource3),"
             + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
             + ")";
+
+    private static final String RDL_ALTER_DATABASE_DISCOVERY_RULE = "ALTER DB_DISCOVERY RULE ha_group_0 ("
+            + "RESOURCES(resource0,resource1),"
+            + "TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))),"
+            + "ha_group_1 ("
+            + "RESOURCES(resource2,resource3),"
+            + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
+            + ")";
+
+    private static final String RDL_DROP_DATABASE_DISCOVERY_RULE = "DROP DB_DISCOVERY RULE ha_group_0,ha_group_1";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -307,5 +319,30 @@ public final class DistSQLStatementParserEngineTest {
         assertThat(databaseDiscoveryRuleSegments.get(1).getDiscoveryTypeName(), is("mgr2"));
         assertThat(databaseDiscoveryRuleSegments.get(1).getDataSources(), is(Arrays.asList("resource2", "resource3")));
         assertThat(databaseDiscoveryRuleSegments.get(1).getProps().get("groupName"), is("92504d5b-6dec-2"));
+    }
+
+    @Test
+    public void assertParseAlterDatabaseDiscoveryRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_ALTER_DATABASE_DISCOVERY_RULE);
+        assertTrue(sqlStatement instanceof AlterDatabaseDiscoveryRuleStatement);
+        AlterDatabaseDiscoveryRuleStatement statement = (AlterDatabaseDiscoveryRuleStatement) sqlStatement;
+        assertThat(statement.getDatabaseDiscoveryRules().size(), is(2));
+        List<DatabaseDiscoveryRuleSegment> databaseDiscoveryRuleSegments
+                = new ArrayList<>(((AlterDatabaseDiscoveryRuleStatement) sqlStatement).getDatabaseDiscoveryRules());
+        assertThat(databaseDiscoveryRuleSegments.get(0).getName(), is("ha_group_0"));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getDiscoveryTypeName(), is("mgr"));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getDataSources(), is(Arrays.asList("resource0", "resource1")));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getProps().get("groupName"), is("92504d5b-6dec"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getName(), is("ha_group_1"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getDiscoveryTypeName(), is("mgr2"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getDataSources(), is(Arrays.asList("resource2", "resource3")));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getProps().get("groupName"), is("92504d5b-6dec-2"));
+    }
+
+    @Test
+    public void assertParseDropDatabaseDiscoveryRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_DATABASE_DISCOVERY_RULE);
+        assertTrue(sqlStatement instanceof DropDatabaseDiscoveryRuleStatement);
+        assertThat(((DropDatabaseDiscoveryRuleStatement) sqlStatement).getRuleNames(), is(Arrays.asList("ha_group_0", "ha_group_1")));
     }
 }

@@ -15,10 +15,9 @@
 # limitations under the License.
 #
 
-rules:
-  - !AUTHORITY
-    users:
-      - root@%:root
-      - sharding@:sharding
-    provider:
-      type: NATIVE
+- !AUTHORITY
+  users:
+    - root@%:root
+    - sharding@:sharding
+  provider:
+    type: NATIVE

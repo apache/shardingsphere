@@ -67,8 +67,8 @@ public class GovernanceSpringBootRegistryShardingTest {
         String shardingDatabases = readYAML(SHARDING_DATABASES_FILE);
         String shardingRule = readYAML(SHARDING_RULE_FILE);
         TestRegistryCenterRepository repository = new TestRegistryCenterRepository();
-        repository.persist("/metadata/logic_db/datasource", shardingDatabases);
-        repository.persist("/metadata/logic_db/rule", shardingRule);
+        repository.persist("/metadata/logic_db/dataSources", shardingDatabases);
+        repository.persist("/metadata/logic_db/rules", shardingRule);
         repository.persist("/props", ConfigurationPropertyKey.EXECUTOR_SIZE.getKey() + ": '100'\n" + ConfigurationPropertyKey.SQL_SHOW.getKey() + ": 'true'\n");
         repository.persist("/states/datanodes", "");
     }

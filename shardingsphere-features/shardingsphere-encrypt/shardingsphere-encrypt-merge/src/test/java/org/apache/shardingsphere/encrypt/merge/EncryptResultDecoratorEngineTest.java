@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.merge.dal.EncryptDALResultDecorator;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptDQLResultDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dal.DescribeStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -32,7 +32,8 @@ import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentRe
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -70,8 +71,8 @@ public final class EncryptResultDecoratorEngineTest {
     
     @Test
     public void assertNewInstanceWithDALStatement() {
-        SQLStatementContext<MySQLDescribeStatement> sqlStatementContext = mock(DescribeStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLDescribeStatement.class));
+        SQLStatementContext<ExplainStatement> sqlStatementContext = mock(ExplainStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLExplainStatement.class));
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), ResultProcessEngine.class).get(rule);
         ResultDecorator actual = engine.newInstance(databaseType, schema, rule, mock(ConfigurationProperties.class), sqlStatementContext);
         assertThat(actual, instanceOf(EncryptDALResultDecorator.class));

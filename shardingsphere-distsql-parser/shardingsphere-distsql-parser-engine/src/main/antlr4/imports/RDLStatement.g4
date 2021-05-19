@@ -194,3 +194,11 @@ createDatabaseDiscoveryRule
 databaseDiscoveryRuleDefinition
     : ruleName LP resources COMMA functionDefinition RP
     ;
+
+alterDatabaseDiscoveryRule
+    : ALTER DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    ;
+
+dropDatabaseDiscoveryRule
+    : DROP DB_DISCOVERY RULE IDENTIFIER (COMMA IDENTIFIER)*
+    ;

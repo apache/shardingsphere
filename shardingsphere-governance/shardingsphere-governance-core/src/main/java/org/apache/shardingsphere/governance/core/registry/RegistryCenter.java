@@ -43,8 +43,6 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Sw
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
-import org.apache.shardingsphere.governance.core.yaml.persisted.PersistedYamlDataSourceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.persisted.PersistedYamlRuleConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -63,7 +61,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
-import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -76,6 +74,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -144,7 +143,7 @@ public final class RegistryCenter {
      * @param dataSourceConfigs data source configurations
      */
     public void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createPersistedYamlDataSourceConfiguration(dataSourceConfigs)));
+        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
@@ -160,7 +159,7 @@ public final class RegistryCenter {
      * @param ruleConfigs rule configurations
      */
     public void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
-        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigs)));
+        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, ruleConfigs)));
     }
     
     /**
@@ -177,7 +176,7 @@ public final class RegistryCenter {
     
     private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
         if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
-            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(createGlobalPersistedYamlRuleConfiguration(globalRuleConfigs)));
+            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
         }
     }
     
@@ -187,26 +186,24 @@ public final class RegistryCenter {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigCacheId) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), YamlRootRuleConfigurations.class).getRules());
+                YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
     }
     
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
         Map<String, DataSourceConfiguration> dataSourceConfigMap = loadDataSourceConfigurations(schemaName);
         dataSourceConfigMap.putAll(dataSourceConfigs);
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createPersistedYamlDataSourceConfiguration(dataSourceConfigMap)));
+        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigMap)));
     }
     
-    private PersistedYamlDataSourceConfiguration createPersistedYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, Map<String, Object>> yamlDataSourceConfigs = dataSourceConfigs.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        PersistedYamlDataSourceConfiguration result = new PersistedYamlDataSourceConfiguration();
-        result.setDataSources(yamlDataSourceConfigs);
-        return result;
+    private Map<String, Map<String, Object>> createYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+        return dataSourceConfigs.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
+    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> configs = new LinkedList<>();
         for (RuleConfiguration each : ruleConfigs) {
             Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(each);
@@ -215,9 +212,7 @@ public final class RegistryCenter {
                 configs.add(each);
             }
         }
-        YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
-        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs));
-        return result;
+        return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
     }
     
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
@@ -232,12 +227,6 @@ public final class RegistryCenter {
     
     private boolean hasProperties() {
         return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
-    }
-    
-    private PersistedYamlRuleConfiguration createGlobalPersistedYamlRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs) {
-        PersistedYamlRuleConfiguration result = new PersistedYamlRuleConfiguration();
-        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs));
-        return result;
     }
     
     private void persistSchemaName(final String schemaName) {
@@ -265,13 +254,14 @@ public final class RegistryCenter {
         return hasDataSourceConfiguration(schemaName) ? getDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
+    @SuppressWarnings("unchecked")
     private static Map<String, DataSourceConfiguration> getDataSourceConfigurations(final String yamlContent) {
-        PersistedYamlDataSourceConfiguration persistedConfig = YamlEngine.unmarshal(yamlContent, PersistedYamlDataSourceConfiguration.class);
-        if (null == persistedConfig.getDataSources() || persistedConfig.getDataSources().isEmpty()) {
+        Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(yamlContent, Map.class);
+        if (yamlDataSources.isEmpty()) {
             return new LinkedHashMap<>();
         }
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(persistedConfig.getDataSources().size());
-        persistedConfig.getDataSources().forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSources.size());
+        yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
         return result;
     }
     
@@ -281,11 +271,10 @@ public final class RegistryCenter {
      * @param schemaName schema name
      * @return rule configurations
      */
+    @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
         return hasRuleConfiguration(schemaName)
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                        YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), PersistedYamlRuleConfiguration.class).getRules())
-                : new LinkedList<>();
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), Collection.class)) : new LinkedList<>();
     }
     
     /**
@@ -293,10 +282,10 @@ public final class RegistryCenter {
      * 
      * @return global rule configurations
      */
+    @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> loadGlobalRuleConfigurations() {
         return hasGlobalRuleConfigurations()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), PersistedYamlRuleConfiguration.class).getRules())
-                : Collections.emptyList();
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
     }
     
     /**

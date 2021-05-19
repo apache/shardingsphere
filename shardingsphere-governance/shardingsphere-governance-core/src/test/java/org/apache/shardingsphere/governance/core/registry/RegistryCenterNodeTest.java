@@ -84,7 +84,7 @@ public final class RegistryCenterNodeTest {
     
     @Test
     public void assertGetRulePath() {
-        assertThat(registryCenterNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/metadata/logic_db/rule"));
+        assertThat(registryCenterNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/metadata/logic_db/rules"));
     }
     
     @Test
@@ -94,7 +94,7 @@ public final class RegistryCenterNodeTest {
     
     @Test
     public void assertGetGlobalRuleNodePath() {
-        assertThat(registryCenterNode.getGlobalRuleNode(), is("/rule"));
+        assertThat(registryCenterNode.getGlobalRuleNode(), is("/rules"));
     }
     
     @Test
@@ -104,7 +104,7 @@ public final class RegistryCenterNodeTest {
     
     @Test
     public void assertGetSchemaName() {
-        assertThat(registryCenterNode.getSchemaName("/metadata/logic_db/rule"), is(DefaultSchema.LOGIC_NAME));
+        assertThat(registryCenterNode.getSchemaName("/metadata/logic_db/rules"), is(DefaultSchema.LOGIC_NAME));
     }
     
     @Test
@@ -112,8 +112,8 @@ public final class RegistryCenterNodeTest {
         Collection<String> actual = registryCenterNode.getAllSchemaConfigPaths(Collections.singletonList(DefaultSchema.LOGIC_NAME));
         assertThat(actual.size(), is(4));
         assertThat(actual, hasItems("/metadata"));
-        assertThat(actual, hasItems("/metadata/logic_db/rule"));
-        assertThat(actual, hasItems("/metadata/logic_db/datasource"));
+        assertThat(actual, hasItems("/metadata/logic_db/rules"));
+        assertThat(actual, hasItems("/metadata/logic_db/dataSources"));
         assertThat(actual, hasItems("/metadata/logic_db/schema"));
     }
 

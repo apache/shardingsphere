@@ -34,7 +34,12 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -47,7 +52,15 @@ public final class GovernanceFacadeTest {
         GovernanceConfiguration config = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("TEST", "127.0.0.1", new Properties()), false);
         governanceFacade.init(config, Arrays.asList("schema_0", "schema_1"));
         assertNotNull(governanceFacade.getRegistryCenter());
-        // TODO use reflection to assert attributes of GovernanceFacade
+        assertThat(getField(governanceFacade, "isOverwrite"), instanceOf(Boolean.class));
+        assertFalse((Boolean) getField(governanceFacade, "isOverwrite"));
+        assertThat(getField(governanceFacade, "registryCenterRepository"), instanceOf(RegistryCenterRepository.class));
+        RegistryCenterRepository registryCenterRepository = (RegistryCenterRepository) getField(governanceFacade, "registryCenterRepository");
+        assertEquals(registryCenterRepository.getType(), "TEST");
+        assertThat(getField(governanceFacade, "listenerManager"), instanceOf(GovernanceListenerManager.class));
+        GovernanceListenerManager listenerManager = (GovernanceListenerManager) getField(governanceFacade, "listenerManager");
+        assertThat(getField(listenerManager, "registryCenterRepository"), is(registryCenterRepository));
+        assertThat(getField(listenerManager, "schemaNames"), is(Arrays.asList("schema_0", "schema_1")));
     }
     
     @Test
@@ -75,6 +88,13 @@ public final class GovernanceFacadeTest {
         setField(governanceFacade, "registryCenterRepository", registryCenterRepository);
         governanceFacade.close();
         verify(registryCenterRepository).close();
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static Object getField(final Object target, final String fieldName) {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(target);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

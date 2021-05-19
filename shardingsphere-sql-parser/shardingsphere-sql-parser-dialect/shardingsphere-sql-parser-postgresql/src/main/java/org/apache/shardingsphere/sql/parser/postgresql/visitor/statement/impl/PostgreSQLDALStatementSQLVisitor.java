@@ -22,14 +22,18 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AnalyzeContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.VacuumContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ConfigurationParameterClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExplainContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExplainableStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ResetParameterContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ShowContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.VacuumContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLAnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLShowStatement;
@@ -101,5 +105,36 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
     @Override 
     public ASTNode visitVacuum(final VacuumContext ctx) {
         return new PostgreSQLVacuumStatement(); 
+    }
+    
+    @Override
+    public ASTNode visitExplain(final ExplainContext ctx) {
+        PostgreSQLExplainStatement result = new PostgreSQLExplainStatement();
+        result.setStatement((SQLStatement) visit(ctx.explainableStmt()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitExplainableStmt(final ExplainableStmtContext ctx) {
+        if (null != ctx.select()) {
+            return visit(ctx.select());
+        } else if (null != ctx.insert()) {
+            return visit(ctx.insert());
+        } else if (null != ctx.update()) {
+            return visit(ctx.update());
+        } else if (null != ctx.delete()) {
+            return visit(ctx.delete());
+        } else if (null != ctx.declare()) {
+            // TODO visit declare statement 
+            return visit(ctx.declare());
+        } else if (null != ctx.executeStmt()) {
+            return visit(ctx.executeStmt());
+        } else if (null != ctx.createMaterializedView()) {
+            // TODO visit create materialized view statement
+            return visit(ctx.createMaterializedView());
+        } else {
+            // TODO visit refresh materialized view statement
+            return visit(ctx.refreshMatViewStmt());
+        }
     }
 }

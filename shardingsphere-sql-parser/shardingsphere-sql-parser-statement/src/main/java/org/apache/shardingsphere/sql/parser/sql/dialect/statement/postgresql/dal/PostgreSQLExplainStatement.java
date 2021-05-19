@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.persisted;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Persisted rule configuration for YAML.
+ * PostgreSQL explain statement.
  */
-@Getter
-@Setter
-public final class PersistedYamlRuleConfiguration implements YamlConfiguration {
-    
-    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+@ToString
+public final class PostgreSQLExplainStatement extends ExplainStatement implements PostgreSQLStatement {
 }

@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.persisted;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Persisted data source configuration for YAML.
+ * Alter database discovery rule statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class PersistedYamlDataSourceConfiguration implements YamlConfiguration {
+public final class AlterDatabaseDiscoveryRuleStatement extends RDLStatement {
     
-    private Map<String, Map<String, Object>> dataSources;
+    private final Collection<DatabaseDiscoveryRuleSegment> databaseDiscoveryRules;
 }
