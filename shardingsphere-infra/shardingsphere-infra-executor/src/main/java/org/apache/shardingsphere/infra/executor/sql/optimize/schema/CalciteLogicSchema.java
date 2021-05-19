@@ -21,8 +21,13 @@ import lombok.Getter;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.table.CalciteFilterableTable;
+import org.apache.shardingsphere.infra.optimize.schema.LogicSchemaMetadata;
+import org.apache.shardingsphere.infra.optimize.schema.LogicTableMetadata;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 
 /**
@@ -36,9 +41,15 @@ public final class CalciteLogicSchema extends AbstractSchema {
     
     private final Map<String, Table> tables = new LinkedMap<>();
     
-    public CalciteLogicSchema(final String name, final Map<String, Table> tables) {
-        this.name = name;
-        this.tables.putAll(tables);
+    public CalciteLogicSchema(final LogicSchemaMetadata metadata, final CalciteRowExecutor executor) {
+        this.name = metadata.getName();
+        initTables(metadata, executor);
+    }
+    
+    private void initTables(final LogicSchemaMetadata metadata, final CalciteRowExecutor executor) {
+        for (Entry<String, LogicTableMetadata> entry : metadata.getTables().entrySet()) {
+            tables.put(entry.getKey(), new CalciteFilterableTable(entry.getValue(), executor));
+        }
     }
     
     @Override
