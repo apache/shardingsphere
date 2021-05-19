@@ -66,14 +66,14 @@ public final class RuleChangedListenerTest extends GovernanceListenerTest {
     
     @Test
     public void assertCreateEventWithEmptyValue() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db/rule", "", Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db/rules", "", Type.UPDATED);
         Optional<GovernanceEvent> actual = ruleChangedListener.createEvent(dataChangedEvent);
         assertFalse(actual.isPresent());
     }
     
     @Test
     public void assertCreateEventWithShardingRule() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db/rule", readYAML(SHARDING_RULE_FILE), Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db/rules", readYAML(SHARDING_RULE_FILE), Type.UPDATED);
         Optional<GovernanceEvent> actual = ruleChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((RuleConfigurationsChangedEvent) actual.get()).getSchemaName(), is("sharding_db"));
@@ -84,7 +84,7 @@ public final class RuleChangedListenerTest extends GovernanceListenerTest {
     
     @Test
     public void assertCreateEventWithEncryptRule() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/encrypt_db/rule", readYAML(ENCRYPT_RULE_FILE), Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/encrypt_db/rules", readYAML(ENCRYPT_RULE_FILE), Type.UPDATED);
         Optional<GovernanceEvent> actual = ruleChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual.get();
@@ -99,7 +99,7 @@ public final class RuleChangedListenerTest extends GovernanceListenerTest {
     
     @Test
     public void assertCreateEventWithReadwriteSplittingRule() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/readwrite_splitting_db/rule", readYAML(READWRITE_SPLITTING_RULE_FILE), Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/readwrite_splitting_db/rules", readYAML(READWRITE_SPLITTING_RULE_FILE), Type.UPDATED);
         Optional<GovernanceEvent> actual = ruleChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         RuleConfigurationsChangedEvent event = (RuleConfigurationsChangedEvent) actual.get();

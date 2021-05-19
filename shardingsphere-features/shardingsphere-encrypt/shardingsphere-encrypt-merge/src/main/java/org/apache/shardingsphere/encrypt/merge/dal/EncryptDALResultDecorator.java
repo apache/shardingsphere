@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 
 /**
@@ -46,6 +46,6 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
     }
     
     private boolean isNeedMergeEncryptColumns(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof MySQLDescribeStatement || sqlStatement instanceof MySQLShowColumnsStatement;
+        return sqlStatement instanceof MySQLExplainStatement || sqlStatement instanceof MySQLShowColumnsStatement;
     }
 }

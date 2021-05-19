@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.governance.core.yaml.config.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -95,7 +95,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     private ProxyConfiguration loadProxyConfiguration() {
-        Collection<String> schemaNames = governanceFacade.getRegistryCenter().getAllSchemaNames();
+        Collection<String> schemaNames = governanceFacade.getRegistryCenter().loadAllSchemaNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
         Properties props = governanceFacade.getRegistryCenter().loadProperties();

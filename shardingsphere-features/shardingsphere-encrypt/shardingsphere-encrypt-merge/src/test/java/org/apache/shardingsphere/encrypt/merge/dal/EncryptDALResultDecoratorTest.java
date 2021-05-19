@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.merge.dal.impl.DecoratedEncryptColumnsM
 import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedEncryptColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dal.DescribeStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,10 +77,10 @@ public final class EncryptDALResultDecoratorTest {
     }
     
     private SQLStatementContext<?> getDescribeStatementContext() {
-        DescribeStatementContext result = mock(DescribeStatementContext.class);
+        ExplainStatementContext result = mock(ExplainStatementContext.class);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
         when(result.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
-        when(result.getSqlStatement()).thenReturn(mock(MySQLDescribeStatement.class));
+        when(result.getSqlStatement()).thenReturn(mock(MySQLExplainStatement.class));
         return result;
     }
     

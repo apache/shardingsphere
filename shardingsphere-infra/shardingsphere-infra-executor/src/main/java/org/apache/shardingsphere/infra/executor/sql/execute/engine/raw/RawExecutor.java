@@ -54,13 +54,18 @@ public final class RawExecutor {
     public Collection<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext,
                                              final SQLStatementContext<?> sqlStatementContext,
                                              final RawSQLExecutorCallback callback) throws SQLException {
-        ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
-        // TODO Load query header for first query
-        List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
-        if (null == results || results.isEmpty() || null == results.get(0)) {
-            return Collections.singleton(new UpdateResult(0, 0L));
+        try {
+            ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
+            // TODO Load query header for first query
+            List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            if (null == results || results.isEmpty() || null == results.get(0)) {
+                return Collections.singleton(new UpdateResult(0, 0L));
+            }
+            return results;
+        } finally {
+            ExecuteProcessEngine.clean();
         }
-        return results;
     }
     
     @SuppressWarnings("unchecked")

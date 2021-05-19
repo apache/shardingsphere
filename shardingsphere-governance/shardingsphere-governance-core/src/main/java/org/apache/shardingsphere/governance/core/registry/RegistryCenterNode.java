@@ -20,7 +20,6 @@ package org.apache.shardingsphere.governance.core.registry;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ import java.util.stream.Collectors;
 /**
  * Registry center node.
  */
-@RequiredArgsConstructor
 public final class RegistryCenterNode {
     
     private static final String ROOT = "states";
@@ -49,15 +47,15 @@ public final class RegistryCenterNode {
     
     private static final String METADATA_NODE = "metadata";
     
-    private static final String DATA_SOURCE_NODE = "datasource";
+    private static final String DATA_SOURCES_NODE = "dataSources";
     
-    private static final String RULE_NODE = "rule";
+    private static final String RULES_NODE = "rules";
     
     private static final String SCHEMA_NODE = "schema";
     
     private static final String USERS_NODE = "users";
 
-    private static final String GLOBAL_RULE_NODE = "rule";
+    private static final String GLOBAL_RULE_NODE = "rules";
 
     private static final String PRIVILEGE_NODE = "privilegenode";
     
@@ -135,7 +133,7 @@ public final class RegistryCenterNode {
      * @return data source path
      */
     public String getMetadataDataSourcePath(final String schemaName) {
-        return getFullMetadataPath(schemaName, DATA_SOURCE_NODE);
+        return getFullMetadataPath(schemaName, DATA_SOURCES_NODE);
     }
     
     /**
@@ -235,7 +233,7 @@ public final class RegistryCenterNode {
      * @return rule path
      */
     public String getRulePath(final String schemaName) {
-        return getFullMetadataPath(schemaName, RULE_NODE);
+        return getFullMetadataPath(schemaName, RULES_NODE);
     }
     
     /**

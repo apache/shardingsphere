@@ -71,5 +71,8 @@ execute
     | prepare
     | executeStmt
     | deallocate
+    | explain
+    | analyzeTable
+    | load
     ) SEMI_?
     ;

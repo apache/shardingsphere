@@ -28,4 +28,6 @@ import lombok.RequiredArgsConstructor;
 public final class ReadwriteSplittingRuleCreateExistsException extends BackendException {
     
     private static final long serialVersionUID = -6902287715467426449L;
+
+    private final String schemaName;
 }

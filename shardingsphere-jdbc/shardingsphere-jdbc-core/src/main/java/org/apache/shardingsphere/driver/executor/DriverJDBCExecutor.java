@@ -64,8 +64,14 @@ public final class DriverJDBCExecutor {
      */
     public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, 
                                           final SQLStatementContext<?> sqlStatementContext, final ExecuteQueryCallback callback) throws SQLException {
-        ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
-        return jdbcExecutor.execute(executionGroupContext, callback);
+        try {
+            ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
+            List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback);
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            return result;
+        } finally {
+            ExecuteProcessEngine.clean();
+        }
     }
     
     /**
@@ -80,9 +86,15 @@ public final class DriverJDBCExecutor {
      */
     public int executeUpdate(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                              final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
-        ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
-        List<Integer> results = jdbcLockEngine.execute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-        return isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+        try {
+            ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
+            List<Integer> results = jdbcLockEngine.execute(executionGroupContext, sqlStatementContext, routeUnits, callback);
+            int result = isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            return result;
+        } finally {
+            ExecuteProcessEngine.clean();
+        }
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext<?> sqlStatementContext) {
@@ -105,8 +117,14 @@ public final class DriverJDBCExecutor {
      */
     public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatementContext<?> sqlStatementContext,
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
-        ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
-        List<Boolean> results = jdbcLockEngine.execute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-        return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
+        try {
+            ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
+            List<Boolean> results = jdbcLockEngine.execute(executionGroupContext, sqlStatementContext, routeUnits, callback);
+            boolean result = null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            return result;
+        } finally {
+            ExecuteProcessEngine.clean();
+        }
     }
 }

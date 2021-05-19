@@ -14,9 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-dataSources:
-   write_ds:
-     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-     url: jdbc:mysql://localhost:3306/demo_write_ds
-     username: root
-     password: null
+write_ds:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  url: jdbc:mysql://localhost:3306/demo_write_ds
+  username: root
+  password: null

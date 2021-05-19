@@ -32,9 +32,11 @@ execute
     | dropShardingTableRule
     | dropShardingBindingTableRules
     | dropShardingBroadcastTableRules
-    | createReplicaQueryRule
-    | alterReplicaQueryRule
-    | dropReplicaQueryRule
+    | alterReadwriteSplittingRule
+    | dropReadwriteSplittingRule
+    | createDatabaseDiscoveryRule
+    | alterDatabaseDiscoveryRule
+    | dropDatabaseDiscoveryRule
     | showResources
     | showRule
     | showScalingJobList

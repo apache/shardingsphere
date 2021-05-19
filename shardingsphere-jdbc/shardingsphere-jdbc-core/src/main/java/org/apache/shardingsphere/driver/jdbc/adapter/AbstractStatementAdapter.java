@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteExecutor;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;

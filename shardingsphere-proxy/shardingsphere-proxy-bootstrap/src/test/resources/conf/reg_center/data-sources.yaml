@@ -15,26 +15,25 @@
 # limitations under the License.
 #
 
-dataSources:
-  ds_0:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:fixturedb:xxx
-    username: root
-    password: pwd
-    connectionTimeout: 1000
-    idleTimeout: 2000
-    maxLifetime: 4000
-    maxPoolSize: 20
-    minPoolSize: 10
-    readOnly: true
-  ds_1:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:fixturedb:xxx
-    username: root
-    password: pwd
-    connectionTimeout: 1000
-    idleTimeout: 2000
-    maxLifetime: 4000
-    maxPoolSize: 20
-    minPoolSize: 10
-    readOnly: true
+ds_0:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  jdbcUrl: jdbc:fixturedb:xxx
+  username: root
+  password: pwd
+  connectionTimeout: 1000
+  idleTimeout: 2000
+  maxLifetime: 4000
+  maxPoolSize: 20
+  minPoolSize: 10
+  readOnly: true
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  jdbcUrl: jdbc:fixturedb:xxx
+  username: root
+  password: pwd
+  connectionTimeout: 1000
+  idleTimeout: 2000
+  maxLifetime: 4000
+  maxPoolSize: 20
+  minPoolSize: 10
+  readOnly: true

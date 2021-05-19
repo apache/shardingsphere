@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -39,16 +39,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Drop readwrite-splitting rule backend handler.
+ * Drop readwrite splitting rule backend handler.
  */
-public final class DropReadwriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<DropReplicaQueryRuleStatement> {
+public final class DropReadwriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<DropReadwriteSplittingRuleStatement> {
 
-    public DropReadwriteSplittingRuleBackendHandler(final DropReplicaQueryRuleStatement sqlStatement, final BackendConnection backendConnection) {
+    public DropReadwriteSplittingRuleBackendHandler(final DropReadwriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropReplicaQueryRuleStatement sqlStatement) {
+    public ResponseHeader execute(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement) {
         Collection<String> ruleNames = sqlStatement.getRuleNames();
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst();
@@ -62,8 +62,9 @@ public final class DropReadwriteSplittingRuleBackendHandler extends SchemaRequir
         if (!yamlConfig.isPresent()) {
             throw new ReadwriteSplittingRuleNotExistedException();
         }
-        Collection<RuleConfiguration> rules = drop(yamlConfig.get(), ruleNames);
-        post(schemaName, rules);
+        drop(yamlConfig.get(), ruleNames);
+        post(schemaName, new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(yamlConfig.get().getDataSources().isEmpty() ? Collections.emptyList() : Collections.singletonList(yamlConfig.get())));
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -75,14 +76,10 @@ public final class DropReadwriteSplittingRuleBackendHandler extends SchemaRequir
         }
     }
 
-    private Collection<RuleConfiguration> drop(final YamlReadwriteSplittingRuleConfiguration yamlConfig, final Collection<String> ruleNames) {
+    private void drop(final YamlReadwriteSplittingRuleConfiguration yamlConfig, final Collection<String> ruleNames) {
         for (String each : ruleNames) {
+            yamlConfig.getLoadBalancers().remove(yamlConfig.getDataSources().get(each).getLoadBalancerName());
             yamlConfig.getDataSources().remove(each);
-        }
-        if (yamlConfig.getDataSources().isEmpty()) {
-            return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.emptyList());
-        } else {
-            return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(yamlConfig));
         }
     }
     

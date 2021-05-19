@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.context.metadata;
 
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
@@ -43,7 +42,6 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.readwritesplitting.common.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -96,13 +94,13 @@ public final class GovernanceMetaDataContextsTest {
     
     @Mock
     private ShardingSphereRuleMetaData globalRuleMetaData;
-    
+
     @Before
     public void setUp() {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
-                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.emptyList()), props), governanceFacade);
+                createMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), props), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -165,13 +163,6 @@ public final class GovernanceMetaDataContextsTest {
     }
     
     @Test
-    public void assertAuthorityChanged() {
-        AuthorityChangedEvent event = new AuthorityChangedEvent(Collections.singleton(mock(ShardingSphereUser.class)));
-        governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getUsers().getUsers().size(), is(1));
-    }
-    
-    @Test
     public void assertSchemaChanged() {
         SchemaChangedEvent event = new SchemaChangedEvent("schema_changed", mock(ShardingSphereSchema.class));
         governanceMetaDataContexts.renew(event);
@@ -216,14 +207,14 @@ public final class GovernanceMetaDataContextsTest {
         result.put("ds_2", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         return result;
     }
-    
+
     @Test
     public void assertGlobalRuleConfigurationsChanged() {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent("", getChangedGlobalRuleConfigurations());
         governanceMetaDataContexts.renew(event);
         assertThat(governanceMetaDataContexts.getGlobalRuleMetaData(), not(globalRuleMetaData));
     }
-    
+
     private Collection<RuleConfiguration> getChangedGlobalRuleConfigurations() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         users.add(new ShardingSphereUser("root", "root", "%"));

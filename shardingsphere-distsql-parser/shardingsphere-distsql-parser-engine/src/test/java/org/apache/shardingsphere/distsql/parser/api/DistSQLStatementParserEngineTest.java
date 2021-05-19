@@ -19,15 +19,21 @@ package org.apache.shardingsphere.distsql.parser.api;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
@@ -93,6 +99,35 @@ public final class DistSQLStatementParserEngineTest {
             + "AUTO_AWARE_RESOURCE=group_0,"
             + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))"
             + ")";
+
+    private static final String RDL_ALTER_READWRITE_SPLITTING_RULE = "ALTER READWRITE_SPLITTING RULE ms_group_0 ("
+            + "AUTO_AWARE_RESOURCE=group_0,"
+            + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))),"
+            + "ms_group_1 ("
+            + "WRITE_RESOURCE=primary_ds,"
+            + "READ_RESOURCES(replica_ds_0,replica_ds_1),"
+            + "TYPE(NAME=random)"
+            + ")";
+
+    private static final String RDL_DROP_READWRITE_SPLITTING_RULE = "DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1";
+
+    private static final String RDL_CREATE_DATABASE_DISCOVERY_RULE = "CREATE DB_DISCOVERY RULE ha_group_0 ("
+            + "RESOURCES(resource0,resource1),"
+            + "TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))),"
+            + "ha_group_1 ("
+            + "RESOURCES(resource2,resource3),"
+            + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
+            + ")";
+
+    private static final String RDL_ALTER_DATABASE_DISCOVERY_RULE = "ALTER DB_DISCOVERY RULE ha_group_0 ("
+            + "RESOURCES(resource0,resource1),"
+            + "TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))),"
+            + "ha_group_1 ("
+            + "RESOURCES(resource2,resource3),"
+            + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
+            + ")";
+
+    private static final String RDL_DROP_DATABASE_DISCOVERY_RULE = "DROP DB_DISCOVERY RULE ha_group_0,ha_group_1";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -253,5 +288,61 @@ public final class DistSQLStatementParserEngineTest {
     public void assertParseDynamicReadwriteSplittingRule() {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
+    }
+
+    @Test
+    public void assertParseAlterReadwriteSplittingRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_ALTER_READWRITE_SPLITTING_RULE);
+        assertTrue(sqlStatement instanceof AlterReadwriteSplittingRuleStatement);
+    }
+
+    @Test
+    public void assertParseDropReadwriteSplittingRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_READWRITE_SPLITTING_RULE);
+        assertTrue(sqlStatement instanceof DropReadwriteSplittingRuleStatement);
+        assertThat(((DropReadwriteSplittingRuleStatement) sqlStatement).getRuleNames(), is(Arrays.asList("ms_group_0", "ms_group_1")));
+    }
+
+    @Test
+    public void assertParseCreateDatabaseDiscoveryRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_CREATE_DATABASE_DISCOVERY_RULE);
+        assertTrue(sqlStatement instanceof CreateDatabaseDiscoveryRuleStatement);
+        CreateDatabaseDiscoveryRuleStatement statement = (CreateDatabaseDiscoveryRuleStatement) sqlStatement;
+        assertThat(statement.getDatabaseDiscoveryRules().size(), is(2));
+        List<DatabaseDiscoveryRuleSegment> databaseDiscoveryRuleSegments
+                = new ArrayList<>(((CreateDatabaseDiscoveryRuleStatement) sqlStatement).getDatabaseDiscoveryRules());
+        assertThat(databaseDiscoveryRuleSegments.get(0).getName(), is("ha_group_0"));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getDiscoveryTypeName(), is("mgr"));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getDataSources(), is(Arrays.asList("resource0", "resource1")));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getProps().get("groupName"), is("92504d5b-6dec"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getName(), is("ha_group_1"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getDiscoveryTypeName(), is("mgr2"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getDataSources(), is(Arrays.asList("resource2", "resource3")));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getProps().get("groupName"), is("92504d5b-6dec-2"));
+    }
+
+    @Test
+    public void assertParseAlterDatabaseDiscoveryRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_ALTER_DATABASE_DISCOVERY_RULE);
+        assertTrue(sqlStatement instanceof AlterDatabaseDiscoveryRuleStatement);
+        AlterDatabaseDiscoveryRuleStatement statement = (AlterDatabaseDiscoveryRuleStatement) sqlStatement;
+        assertThat(statement.getDatabaseDiscoveryRules().size(), is(2));
+        List<DatabaseDiscoveryRuleSegment> databaseDiscoveryRuleSegments
+                = new ArrayList<>(((AlterDatabaseDiscoveryRuleStatement) sqlStatement).getDatabaseDiscoveryRules());
+        assertThat(databaseDiscoveryRuleSegments.get(0).getName(), is("ha_group_0"));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getDiscoveryTypeName(), is("mgr"));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getDataSources(), is(Arrays.asList("resource0", "resource1")));
+        assertThat(databaseDiscoveryRuleSegments.get(0).getProps().get("groupName"), is("92504d5b-6dec"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getName(), is("ha_group_1"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getDiscoveryTypeName(), is("mgr2"));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getDataSources(), is(Arrays.asList("resource2", "resource3")));
+        assertThat(databaseDiscoveryRuleSegments.get(1).getProps().get("groupName"), is("92504d5b-6dec-2"));
+    }
+
+    @Test
+    public void assertParseDropDatabaseDiscoveryRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_DATABASE_DISCOVERY_RULE);
+        assertTrue(sqlStatement instanceof DropDatabaseDiscoveryRuleStatement);
+        assertThat(((DropDatabaseDiscoveryRuleStatement) sqlStatement).getRuleNames(), is(Arrays.asList("ha_group_0", "ha_group_1")));
     }
 }

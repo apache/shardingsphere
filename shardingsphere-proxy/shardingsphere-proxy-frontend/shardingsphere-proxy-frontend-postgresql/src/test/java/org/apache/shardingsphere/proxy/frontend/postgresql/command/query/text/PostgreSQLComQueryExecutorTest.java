@@ -64,6 +64,7 @@ public final class PostgreSQLComQueryExecutorTest {
     public void setUp() throws SQLException {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
         BackendConnection backendConnection = mock(BackendConnection.class);
+        when(queryPacket.getSql()).thenReturn("");
         queryExecutor = new PostgreSQLComQueryExecutor(queryPacket, backendConnection);
         setMockFieldIntoExecutor(queryExecutor);
     }

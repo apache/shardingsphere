@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Use database executor.
@@ -48,8 +49,8 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     }
     
     private Collection<ShardingSphereRule> getRules(final String schemaName) {
-        Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        Optional.ofNullable(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName)).ifPresent(each -> result.addAll(each.getRuleMetaData().getRules()));
         result.addAll(ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }

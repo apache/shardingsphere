@@ -103,24 +103,8 @@ dynamicReadwriteSplittingRuleDefinition
     : AUTO_AWARE_RESOURCE EQ IDENTIFIER
     ;
 
-createReplicaQueryRule
-    : CREATE REPLICA_QUERY RULE LP replicaQueryRuleDefinition (COMMA replicaQueryRuleDefinition)* RP
-    ;
-
-replicaQueryRuleDefinition
-    : ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition
-    ;
-
-alterReplicaQueryRule
-    : ALTER REPLICA_QUERY RULE LP alterReplicaQueryRuleDefinition (COMMA alterReplicaQueryRuleDefinition)* RP
-    ;
-
-alterReplicaQueryRuleDefinition
-    : (MODIFY | ADD) ruleName LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition?
-    ;
-
-alterShardingTableRuleDefinition
-    : (MODIFY | ADD) shardingTableRuleDefinition
+alterReadwriteSplittingRule
+    : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
 
 shardingTableRuleDefinition
@@ -143,36 +127,8 @@ shardingColumn
     : SHARDING_COLUMN EQ columnName
     ;
 
-alterBindingTables
-    : alterBindingTable (COMMA alterBindingTable)*
-    ;
-
-alterBindingTable
-    : (ADD | DROP) bindingTable
-    ;
-
-bindingTables
-    : bindingTable (COMMA bindingTable)*
-    ;
-
-bindingTable
-    : BINDING_TABLE LP tableNames RP
-    ;
-
-defaultTableStrategy
-    : DEFAULT_TABLE_STRATEGY columnName? functionDefinition
-    ;
-
-broadcastTables
-    : BROADCAST_TABLES LP IDENTIFIER (COMMA IDENTIFIER)* RP
-    ;
-
 keyGenerateStrategy
     : GENERATED_KEY LP COLUMN EQ columnName COMMA functionDefinition RP
-    ;
-
-actualDataNodes
-    : STRING (COMMA STRING)*
     ;
 
 ruleName
@@ -183,16 +139,12 @@ tableName
     : IDENTIFIER
     ;
 
-tableNames
-    : IDENTIFIER+
-    ;
-
 columnName
     : IDENTIFIER
     ;
 
-dropReplicaQueryRule
-    : DROP REPLICA_QUERY RULE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+dropReadwriteSplittingRule
+    : DROP READWRITE_SPLITTING RULE IDENTIFIER (COMMA IDENTIFIER)*
     ;
 
 dropShardingTableRule
@@ -233,4 +185,20 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    ;
+
+createDatabaseDiscoveryRule
+    : CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    ;
+
+databaseDiscoveryRuleDefinition
+    : ruleName LP resources COMMA functionDefinition RP
+    ;
+
+alterDatabaseDiscoveryRule
+    : ALTER DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    ;
+
+dropDatabaseDiscoveryRule
+    : DROP DB_DISCOVERY RULE IDENTIFIER (COMMA IDENTIFIER)*
     ;
