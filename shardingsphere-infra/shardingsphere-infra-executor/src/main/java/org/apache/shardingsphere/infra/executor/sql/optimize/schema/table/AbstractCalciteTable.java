@@ -22,10 +22,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowExecutor;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.optimize.schema.LogicTableMetadata;
 
 /**
  * Abstract calcite table.
@@ -34,16 +33,12 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 @RequiredArgsConstructor
 public abstract class AbstractCalciteTable extends AbstractTable {
     
-    private final String name;
-    
-    private final TableMetaData tableMetaData;
-    
-    private final RelProtoDataType relProtoDataType;
+    private final LogicTableMetadata metadata;
     
     private final CalciteRowExecutor executor;
     
     @Override
     public final RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return relProtoDataType.apply(typeFactory);
+        return metadata.getRelProtoDataType().apply(typeFactory);
     }
 }

@@ -21,14 +21,13 @@ import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowEnumerator;
 import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.executor.sql.optimize.schema.table.execute.CalciteExecutionContextGenerator;
 import org.apache.shardingsphere.infra.executor.sql.optimize.schema.table.execute.CalciteExecutionSQLGenerator;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.optimize.schema.LogicTableMetadata;
 
 import java.util.List;
 
@@ -38,9 +37,8 @@ import java.util.List;
  */
 public final class CalciteFilterableTable extends AbstractCalciteTable implements ProjectableFilterableTable {
     
-    public CalciteFilterableTable(final String name, final TableMetaData tableMetaData, final RelProtoDataType relProtoDataType,
-                                  final CalciteRowExecutor executor) {
-        super(name, tableMetaData, relProtoDataType, executor);
+    public CalciteFilterableTable(final LogicTableMetadata metadata, final CalciteRowExecutor executor) {
+        super(metadata, executor);
     }
     
     @Override
@@ -49,8 +47,8 @@ public final class CalciteFilterableTable extends AbstractCalciteTable implement
 
             @Override
             public Enumerator<Object[]> enumerator() {
-                CalciteExecutionContextGenerator generator =
-                        new CalciteExecutionContextGenerator(getName(), getExecutor().getInitialExecutionContext(), new CalciteExecutionSQLGenerator(root, filters, projects));
+                CalciteExecutionContextGenerator generator = new CalciteExecutionContextGenerator(getMetadata().getName(), 
+                        getExecutor().getInitialExecutionContext(), new CalciteExecutionSQLGenerator(root, filters, projects));
                 return new CalciteRowEnumerator(getExecutor().execute(generator.generate()));
             }
         };
