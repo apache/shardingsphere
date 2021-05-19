@@ -19,23 +19,23 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.DescribeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
 
 /**
- * Describe statement assert.
+ * Explain statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DescribeStatementAssert {
+public final class ExplainStatementAssert {
     
     /**
-     * Assert describe statement is correct with expected parser result.
+     * Assert explain statement is correct with expected parser result.
      * 
      * @param assertContext assert context
-     * @param actual actual describe statement
-     * @param expected expected describe statement test case
+     * @param actual actual explain statement
+     * @param expected expected explain statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDescribeStatement actual, final DescribeStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ExplainStatement actual, final ExplainStatementTestCase expected) {
     }
 }

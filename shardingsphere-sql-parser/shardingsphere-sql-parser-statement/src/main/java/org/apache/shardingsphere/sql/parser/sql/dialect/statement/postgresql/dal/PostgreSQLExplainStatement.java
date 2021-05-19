@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Describe statement test case.
+ * PostgreSQL explain statement.
  */
-public final class DescribeStatementTestCase extends SQLParserTestCase {
+@ToString
+public final class PostgreSQLExplainStatement extends ExplainStatement implements PostgreSQLStatement {
 }

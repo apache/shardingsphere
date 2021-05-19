@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dal.DescribeStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowIndexStatementContext;
@@ -49,6 +49,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementConte
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
@@ -71,7 +72,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
@@ -186,8 +186,8 @@ public final class SQLStatementContextFactory {
     }
     
     private static SQLStatementContext<?> getDALStatementContext(final DALStatement sqlStatement) {
-        if (sqlStatement instanceof MySQLDescribeStatement) {
-            return new DescribeStatementContext((MySQLDescribeStatement) sqlStatement);
+        if (sqlStatement instanceof ExplainStatement) {
+            return new ExplainStatementContext((ExplainStatement) sqlStatement);
         }
         if (sqlStatement instanceof MySQLShowCreateTableStatement) {
             return new ShowCreateTableStatementContext((MySQLShowCreateTableStatement) sqlStatement);

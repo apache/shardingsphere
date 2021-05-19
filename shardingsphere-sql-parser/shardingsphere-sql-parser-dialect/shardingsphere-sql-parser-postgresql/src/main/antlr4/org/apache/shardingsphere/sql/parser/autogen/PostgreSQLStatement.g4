@@ -71,5 +71,6 @@ execute
     | prepare
     | executeStmt
     | deallocate
+    | explain
     ) SEMI_?
     ;

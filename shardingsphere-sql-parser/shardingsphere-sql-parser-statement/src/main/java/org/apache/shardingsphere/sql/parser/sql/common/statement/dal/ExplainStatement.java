@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.util.Optional;
 
 /**
- * MySQL describe statement.
+ * Explain statement.
  */
-@Getter
-@Setter
 @ToString
-public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
+@Setter
+public abstract class ExplainStatement extends AbstractSQLStatement implements DALStatement {
     
-    private SimpleTableSegment table;
+    private SQLStatement statement;
+    
+    /**
+     * Get SQL statement.
+     * @return SQL statement
+     */
+    public Optional<SQLStatement> getStatement() {
+        return Optional.ofNullable(statement);
+    }
 }
