@@ -22,8 +22,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import lombok.Getter;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.core.lock.node.LockAck;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
@@ -41,6 +41,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Ru
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
+import org.apache.shardingsphere.governance.core.registry.lock.LockRegistryCenter;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -77,17 +78,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
  * Registry center.
  */
 public final class RegistryCenter {
-    
-    private static final int CHECK_ACK_MAXIMUM = 5;
-    
-    private static final int CHECK_ACK_INTERVAL_SECONDS = 1;
     
     private final String instanceId;
     
@@ -99,6 +95,9 @@ public final class RegistryCenter {
     
     private final RegistryCacheManager registryCacheManager;
     
+    @Getter
+    private final LockRegistryCenter lock;
+    
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
@@ -106,6 +105,7 @@ public final class RegistryCenter {
         lockNode = new LockNode();
         initLockNode();
         registryCacheManager = new RegistryCacheManager(repository, node);
+        lock = new LockRegistryCenter(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -646,104 +646,5 @@ public final class RegistryCenter {
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
         return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
-    }
-    
-    /**
-     * Try to get lock.
-     *
-     * @param lockName lock name
-     * @param timeout the maximum time in milliseconds to acquire lock
-     * @return true if get the lock, false if not
-     */
-    public boolean tryLock(final String lockName, final long timeout) {
-        return repository.tryLock(lockNode.getLockNodePath(lockName), timeout, TimeUnit.MILLISECONDS);
-    }
-    
-    /**
-     * Release lock.
-     * 
-     * @param lockName lock name
-     */
-    public void releaseLock(final String lockName) {
-        repository.releaseLock(lockNode.getLockNodePath(lockName));
-    }
-    
-    /**
-     * Ack lock.
-     * 
-     * @param lockName lock name
-     */
-    public void ackLock(final String lockName) {
-        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.LOCKED.getValue());
-    }
-    
-    /**
-     * Ack unlock.
-     * 
-     * @param lockName lock name
-     */
-    public void ackUnlock(final String lockName) {
-        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.UNLOCKED.getValue());
-    }
-    
-    /**
-     * Delete lock ack.
-     * 
-     * @param lockName lock name
-     */
-    public void deleteLockAck(final String lockName) {
-        repository.delete(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)));
-    }
-    
-    /**
-     * Check lock ack.
-     * 
-     * @param lockName lock name
-     * @return true if all instances ack lock, false if not
-     */
-    public boolean checkLockAck(final String lockName) {
-        boolean result = checkAck(loadAllInstances(), lockName, LockAck.LOCKED.getValue());
-        if (!result) {
-            releaseLock(lockName);
-        }
-        return result;
-    }
-    
-    /**
-     * Check unlock ack.
-     * 
-     * @param lockName lock name
-     * @return true if all instances ack unlock, false if not
-     */
-    public boolean checkUnlockAck(final String lockName) {
-        return checkAck(loadAllInstances(), lockName, LockAck.UNLOCKED.getValue());
-    }
-    
-    private boolean checkAck(final Collection<String> instanceIds, final String lockName, final String ackValue) {
-        for (int i = 0; i < CHECK_ACK_MAXIMUM; i++) {
-            if (check(instanceIds, lockName, ackValue)) {
-                return true;
-            }
-            try {
-                Thread.sleep(CHECK_ACK_INTERVAL_SECONDS * 1000L);
-                // CHECKSTYLE:OFF
-            } catch (final InterruptedException ex) {
-                // CHECKSTYLE:ON
-            }
-        }
-        return false;
-    }
-    
-    private boolean check(final Collection<String> instanceIds, final String lockName, final String ackValue) {
-        for (String each : instanceIds) {
-            if (!ackValue.equalsIgnoreCase(loadLockAck(each, lockName))) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private String loadLockAck(final String instanceId, final String lockName) {
-        return Strings.nullToEmpty(repository.get(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName))));
     }
 }

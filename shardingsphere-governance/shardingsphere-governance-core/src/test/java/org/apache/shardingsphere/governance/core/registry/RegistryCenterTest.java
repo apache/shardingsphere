@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
@@ -65,7 +64,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -97,8 +95,6 @@ public final class RegistryCenterTest {
     private static final String ENCRYPT_RULE_YAML = "yaml/registryCenter/data-encrypt-rule.yaml";
     
     private static final String SHADOW_RULE_YAML = "yaml/registryCenter/data-shadow-rule.yaml";
-    
-    private static final String USERS_YAML = "yaml/registryCenter/data-users.yaml";
     
     private static final String GLOBAL_RULE_YAML = "yaml/registryCenter/data-global-rule.yaml";
     
@@ -155,18 +151,6 @@ public final class RegistryCenterTest {
         registryCenter.loadDisabledDataSources("replica_query_db");
         verify(registryCenterRepository).getChildrenKeys(anyString());
         verify(registryCenterRepository).get(anyString());
-    }
-    
-    @Test
-    public void assertTryLock() {
-        registryCenter.tryLock("test", 50L);
-        verify(registryCenterRepository).tryLock(eq(new LockNode().getLockNodePath("test")), eq(50L), eq(TimeUnit.MILLISECONDS));
-    }
-    
-    @Test
-    public void assertReleaseLock() {
-        registryCenter.releaseLock("test");
-        verify(registryCenterRepository).releaseLock(eq(new LockNode().getLockNodePath("test")));
     }
     
     @Test
@@ -703,12 +687,5 @@ public final class RegistryCenterTest {
         RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
         registryCenter.renew(event);
         verify(registryCenterRepository).persist(startsWith("/metadata/sharding_db/dataSources"), anyString());
-    }
-    
-    @Test
-    public void assertDeleteLockAck() {
-        RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
-        registryCenter.deleteLockAck("test");
-        verify(registryCenterRepository).delete(anyString());
     }
 }
