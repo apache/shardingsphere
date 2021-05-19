@@ -139,8 +139,6 @@ public final class EtcdRepositoryTest {
         when(leaseGrantResponse.getID()).thenReturn(123L);
         when(client.getWatchClient()).thenReturn(watch);
         when(etcdLock.lock(any(ByteSequence.class), anyLong())).thenReturn(lockFuture);
-        when(lockFuture.get()).thenReturn(lockResponse);
-        when(lockResponse.getKey()).thenReturn(ByteSequence.from("test", StandardCharsets.UTF_8));
         return client;
     }
     
