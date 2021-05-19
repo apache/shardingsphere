@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * Database discovery rule not existed exception.
+ * Database discovery rule data sources not existed exception.
  */
 @RequiredArgsConstructor
 @Getter
