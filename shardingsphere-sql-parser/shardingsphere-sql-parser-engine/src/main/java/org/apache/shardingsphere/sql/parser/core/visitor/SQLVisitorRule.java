@@ -128,6 +128,10 @@ public enum SQLVisitorRule {
     
     BEGIN_TRANSACTION("BeginTransaction", SQLStatementType.TCL),
     
+    START_TRANSACTION("StartTransaction", SQLStatementType.TCL),
+    
+    END("End", SQLStatementType.TCL),
+    
     SET_AUTOCOMMIT("SetAutoCommit", SQLStatementType.TCL),
     
     COMMIT("Commit", SQLStatementType.TCL),

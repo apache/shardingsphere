@@ -18,14 +18,16 @@
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EndContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTransactionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.StartTransactionContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackStatement;
@@ -67,5 +69,15 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
         return new PostgreSQLSavepointStatement();
+    }
+    
+    @Override
+    public ASTNode visitStartTransaction(final StartTransactionContext ctx) {
+        return new PostgreSQLBeginTransactionStatement();
+    }
+    
+    @Override
+    public ASTNode visitEnd(final EndContext ctx) {
+        return new PostgreSQLCommitStatement();
     }
 }
