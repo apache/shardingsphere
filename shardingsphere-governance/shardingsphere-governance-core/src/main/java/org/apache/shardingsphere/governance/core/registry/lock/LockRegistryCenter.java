@@ -59,15 +59,6 @@ public final class LockRegistryCenter {
     }
     
     /**
-     * Load all instances.
-     *
-     * @return collection of all instances
-     */
-    public Collection<String> loadAllInstances() {
-        return repository.getChildrenKeys(node.getProxyNodesPath());
-    }
-    
-    /**
      * Try to get lock.
      *
      * @param lockName lock name
@@ -164,5 +155,9 @@ public final class LockRegistryCenter {
     
     private String loadLockAck(final String instanceId, final String lockName) {
         return Strings.nullToEmpty(repository.get(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName))));
+    }
+    
+    private Collection<String> loadAllInstances() {
+        return repository.getChildrenKeys(node.getProxyNodesPath());
     }
 }
