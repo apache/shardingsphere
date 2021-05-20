@@ -93,7 +93,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     private StandardMetaDataContexts createMetaDataContexts(final GovernanceFacade governanceFacade) throws SQLException {
         RegistryCenter registryCenter = governanceFacade.getRegistryCenter();
-        Map<String, DataSourceConfiguration> dataSourceConfigs = registryCenter.getDataSource().loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
+        Map<String, DataSourceConfiguration> dataSourceConfigs = registryCenter.getDataSource().load(DefaultSchema.LOGIC_NAME);
         Collection<RuleConfiguration> ruleConfigurations = registryCenter.getSchemaRule().load(DefaultSchema.LOGIC_NAME);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 

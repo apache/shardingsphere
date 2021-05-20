@@ -107,7 +107,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
         return schemaNames.stream()
             .collect(Collectors.toMap(each -> each, 
-                each -> DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getRegistryCenter().getDataSource().loadDataSourceConfigurations(each)),
+                each -> DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getRegistryCenter().getDataSource().load(each)),
                 (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     

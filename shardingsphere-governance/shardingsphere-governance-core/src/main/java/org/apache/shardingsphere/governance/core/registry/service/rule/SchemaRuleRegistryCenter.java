@@ -37,7 +37,7 @@ import java.util.Optional;
  * Schema rule registry center.
  */
 @RequiredArgsConstructor
-public final class SchemaRuleRegistryCenter implements SchemaBasedRegistryService<RuleConfiguration> {
+public final class SchemaRuleRegistryCenter implements SchemaBasedRegistryService<Collection<RuleConfiguration>> {
     
     private final RegistryCenterRepository repository;
     

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.service.datasource;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
+import org.apache.shardingsphere.governance.core.registry.service.SchemaBasedRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -34,32 +35,21 @@ import java.util.stream.Collectors;
  * DataSource registry center.
  */
 @RequiredArgsConstructor
-public final class DataSourceRegistryCenter {
+public final class DataSourceRegistryCenter implements SchemaBasedRegistryService<Map<String, DataSourceConfiguration>> {
     
     private final RegistryCenterRepository repository;
     
     private final RegistryCenterNode node = new RegistryCenterNode();
     
-    /**
-     * Persist data source configurations.
-     * 
-     * @param schemaName schema name
-     * @param dataSourceConfigs data source configurations
-     * @param isOverwrite is overwrite
-     */
-    public void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {
-        if (!dataSourceConfigs.isEmpty() && (isOverwrite || !hasDataSourceConfiguration(schemaName))) {
-            persistDataSourceConfigurations(schemaName, dataSourceConfigs);
+    @Override
+    public void persist(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {
+        if (!dataSourceConfigs.isEmpty() && (isOverwrite || !isExisted(schemaName))) {
+            persist(schemaName, dataSourceConfigs);
         }
     }
     
-    /**
-     * Persist data source configurations.
-     *
-     * @param schemaName schema name
-     * @param dataSourceConfigs data source configurations
-     */
-    public void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+    @Override
+    public void persist(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
         repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
@@ -68,14 +58,9 @@ public final class DataSourceRegistryCenter {
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    /**
-     * Load data source configurations.
-     *
-     * @param schemaName schema name
-     * @return data source configurations
-     */
-    public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
-        return hasDataSourceConfiguration(schemaName) ? getDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
+    @Override
+    public Map<String, DataSourceConfiguration> load(final String schemaName) {
+        return isExisted(schemaName) ? getDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
     @SuppressWarnings("unchecked")
@@ -89,13 +74,8 @@ public final class DataSourceRegistryCenter {
         return result;
     }
     
-    /**
-     * Judge whether schema has data source configuration.
-     *
-     * @param schemaName schema name
-     * @return has data source configuration or not
-     */
-    public boolean hasDataSourceConfiguration(final String schemaName) {
+    @Override
+    public boolean isExisted(final String schemaName) {
         return !Strings.isNullOrEmpty(repository.get(node.getMetadataDataSourcePath(schemaName)));
     }
 }

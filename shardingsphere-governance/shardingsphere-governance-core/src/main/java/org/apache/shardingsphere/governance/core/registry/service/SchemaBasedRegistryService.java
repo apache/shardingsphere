@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.service;
 
-import java.util.Collection;
-
 /**
  * Schema based registry service.
  * 
@@ -33,7 +31,7 @@ public interface SchemaBasedRegistryService<T> {
      * @param configs configurations
      * @param isOverwrite is overwrite
      */
-    void persist(String schemaName, Collection<T> configs, boolean isOverwrite);
+    void persist(String schemaName, T configs, boolean isOverwrite);
     
     /**
      * Persist configurations.
@@ -41,7 +39,7 @@ public interface SchemaBasedRegistryService<T> {
      * @param schemaName schema name
      * @param configs configurations
      */
-    void persist(String schemaName, Collection<T> configs);
+    void persist(String schemaName, T configs);
     
     /**
      * Load configurations.
@@ -49,7 +47,7 @@ public interface SchemaBasedRegistryService<T> {
      * @param schemaName schema name
      * @return configurations
      */
-    Collection<T> load(String schemaName);
+    T load(String schemaName);
     
     /**
      * Judge whether schema configuration existed.

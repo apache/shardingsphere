@@ -125,7 +125,7 @@ public final class RegistryCenter {
      */
     public void persistConfigurations(final String schemaName, 
                                       final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
-        dataSource.persistDataSourceConfigurations(schemaName, dataSourceConfigs, isOverwrite);
+        dataSource.persist(schemaName, dataSourceConfigs, isOverwrite);
         schemaRule.persist(schemaName, ruleConfigs, isOverwrite);
         // TODO Consider removing the following one.
         persistSchemaName(schemaName);
@@ -156,7 +156,7 @@ public final class RegistryCenter {
     }
     
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = dataSource.loadDataSourceConfigurations(schemaName);
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = dataSource.load(schemaName);
         dataSourceConfigMap.putAll(dataSourceConfigs);
         repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigMap)));
     }
@@ -281,7 +281,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final DataSourceAlteredEvent event) {
-        dataSource.persistDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
+        dataSource.persist(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
     /**

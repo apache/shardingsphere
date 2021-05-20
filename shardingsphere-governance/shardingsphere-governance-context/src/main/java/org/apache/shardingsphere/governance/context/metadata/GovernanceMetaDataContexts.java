@@ -330,14 +330,14 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private ShardingSphereMetaData buildMetaData(final MetaDataPersistedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
-        if (!governanceFacade.getRegistryCenter().getDataSource().hasDataSourceConfiguration(schemaName)) {
-            governanceFacade.getRegistryCenter().getDataSource().persistDataSourceConfigurations(schemaName, new LinkedHashMap<>());
+        if (!governanceFacade.getRegistryCenter().getDataSource().isExisted(schemaName)) {
+            governanceFacade.getRegistryCenter().getDataSource().persist(schemaName, new LinkedHashMap<>());
         }
         if (!governanceFacade.getRegistryCenter().getSchemaRule().isExisted(schemaName)) {
             governanceFacade.getRegistryCenter().getSchemaRule().persist(schemaName, new LinkedList<>());
         }
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName,
-                governanceFacade.getRegistryCenter().getDataSource().loadDataSourceConfigurations(schemaName)));
+                governanceFacade.getRegistryCenter().getDataSource().load(schemaName)));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
                 Collections.singletonMap(schemaName, governanceFacade.getRegistryCenter().getSchemaRule().load(schemaName)),
                 // TODO load global schema from reg center

@@ -62,9 +62,9 @@ public final class DataSourceRegistryCenterTest {
     }
     
     @Test
-    public void assertLoadDataSourceConfigurations() {
+    public void assertLoad() {
         when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAM));
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryCenter.loadDataSourceConfigurations("sharding_db");
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryCenter.load("sharding_db");
         assertThat(actual.size(), is(2));
         assertDataSourceConfiguration(actual.get("ds_0"), createDataSourceConfiguration(createDataSource("ds_0")));
         assertDataSourceConfiguration(actual.get("ds_1"), createDataSourceConfiguration(createDataSource("ds_1")));
@@ -78,16 +78,16 @@ public final class DataSourceRegistryCenterTest {
     }
     
     @Test
-    public void assertLoadDataSourceConfigurationsNotExistPath() {
+    public void assertLoadWhenPathNotExist() {
         when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn("");
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryCenter.loadDataSourceConfigurations("sharding_db");
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryCenter.load("sharding_db");
         assertThat(actual.size(), is(0));
     }
     
     @Test
-    public void assertLoadDataSourceConfigurationsWithConnectionInitSQLs() {
+    public void assertLoadWithConnectionInitSQLs() {
         when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL));
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryCenter.loadDataSourceConfigurations("sharding_db");
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryCenter.load("sharding_db");
         assertThat(actual.size(), is(2));
         assertDataSourceConfigurationWithConnectionInitSQLs(actual.get("ds_0"), createDataSourceConfiguration(createDataSourceWithConnectionInitSQLs("ds_0")));
         assertDataSourceConfigurationWithConnectionInitSQLs(actual.get("ds_1"), createDataSourceConfiguration(createDataSourceWithConnectionInitSQLs("ds_1")));
