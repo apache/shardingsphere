@@ -24,7 +24,6 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
@@ -91,8 +90,6 @@ public final class RegistryCenter {
     
     private final RegistryCenterNode node;
     
-    private final LockNode lockNode;
-    
     private final RegistryCacheManager registryCacheManager;
     
     @Getter
@@ -102,16 +99,9 @@ public final class RegistryCenter {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
         node = new RegistryCenterNode();
-        lockNode = new LockNode();
-        initLockNode();
         registryCacheManager = new RegistryCacheManager(repository, node);
         lock = new LockRegistryCenter(repository);
         ShardingSphereEventBus.getInstance().register(this);
-    }
-    
-    private void initLockNode() {
-        repository.persist(lockNode.getLockRootNodePath(), "");
-        repository.persist(lockNode.getLockedAckRootNodePah(), "");
     }
     
     /**
