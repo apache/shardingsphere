@@ -62,11 +62,11 @@ public final class LockRegistryCenter {
      * Try to get lock.
      *
      * @param lockName lock name
-     * @param timeout the maximum time in milliseconds to acquire lock
+     * @param timeoutMilliseconds the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryLock(final String lockName, final long timeout) {
-        return repository.tryLock(lockNode.getLockNodePath(lockName), timeout, TimeUnit.MILLISECONDS);
+    public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
+        return repository.tryLock(lockNode.getLockNodePath(lockName), timeoutMilliseconds, TimeUnit.MILLISECONDS);
     }
     
     /**
@@ -112,7 +112,7 @@ public final class LockRegistryCenter {
      * @return true if all instances ack lock, false if not
      */
     public boolean checkLockAck(final String lockName) {
-        boolean result = checkAck(loadAllInstances(), lockName, LockAck.LOCKED.getValue());
+        boolean result = checkAck(lockName, LockAck.LOCKED.getValue());
         if (!result) {
             releaseLock(lockName);
         }
@@ -126,10 +126,11 @@ public final class LockRegistryCenter {
      * @return true if all instances ack unlock, false if not
      */
     public boolean checkUnlockAck(final String lockName) {
-        return checkAck(loadAllInstances(), lockName, LockAck.UNLOCKED.getValue());
+        return checkAck(lockName, LockAck.UNLOCKED.getValue());
     }
     
-    private boolean checkAck(final Collection<String> instanceIds, final String lockName, final String ackValue) {
+    private boolean checkAck(final String lockName, final String ackValue) {
+        Collection<String> instanceIds = repository.getChildrenKeys(node.getProxyNodesPath());
         for (int i = 0; i < CHECK_ACK_MAXIMUM; i++) {
             if (check(instanceIds, lockName, ackValue)) {
                 return true;
@@ -145,19 +146,10 @@ public final class LockRegistryCenter {
     }
     
     private boolean check(final Collection<String> instanceIds, final String lockName, final String ackValue) {
-        for (String each : instanceIds) {
-            if (!ackValue.equalsIgnoreCase(loadLockAck(each, lockName))) {
-                return false;
-            }
-        }
-        return true;
+        return instanceIds.stream().allMatch(each -> ackValue.equalsIgnoreCase(loadLockAck(each, lockName)));
     }
     
     private String loadLockAck(final String instanceId, final String lockName) {
         return Strings.nullToEmpty(repository.get(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName))));
-    }
-    
-    private Collection<String> loadAllInstances() {
-        return repository.getChildrenKeys(node.getProxyNodesPath());
     }
 }
