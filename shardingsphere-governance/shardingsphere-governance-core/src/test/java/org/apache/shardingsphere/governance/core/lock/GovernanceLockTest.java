@@ -41,7 +41,7 @@ public final class GovernanceLockTest {
     @Before
     public void setUp() {
         RegistryCenter registryCenter = mock(RegistryCenter.class);
-        when(registryCenter.getLock()).thenReturn(lockRegistryService);
+        when(registryCenter.getLockService()).thenReturn(lockRegistryService);
         lock = new GovernanceLock(registryCenter, 50L);
     }
     

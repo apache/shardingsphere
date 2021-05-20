@@ -93,30 +93,30 @@ public final class RegistryCenter {
     private final RegistryCacheManager registryCacheManager;
     
     @Getter
-    private final DataSourceRegistryService dataSource;
+    private final DataSourceRegistryService dataSourceService;
     
     @Getter
-    private final SchemaRuleRegistryService schemaRule;
+    private final SchemaRuleRegistryService schemaRuleService;
     
     @Getter
-    private final GlobalRuleRegistryService globalRule;
+    private final GlobalRuleRegistryService globalRuleService;
     
     @Getter
     private final PropertiesRegistryService propsService;
     
     @Getter
-    private final LockRegistryService lock;
+    private final LockRegistryService lockService;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
         node = new RegistryCenterNode();
         registryCacheManager = new RegistryCacheManager(repository, node);
-        dataSource = new DataSourceRegistryService(repository);
-        schemaRule = new SchemaRuleRegistryService(repository);
-        globalRule = new GlobalRuleRegistryService(repository);
+        dataSourceService = new DataSourceRegistryService(repository);
+        schemaRuleService = new SchemaRuleRegistryService(repository);
+        globalRuleService = new GlobalRuleRegistryService(repository);
         propsService = new PropertiesRegistryService(repository);
-        lock = new LockRegistryService(repository);
+        lockService = new LockRegistryService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -130,8 +130,8 @@ public final class RegistryCenter {
      */
     public void persistConfigurations(final String schemaName, 
                                       final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
-        dataSource.persist(schemaName, dataSourceConfigs, isOverwrite);
-        schemaRule.persist(schemaName, ruleConfigs, isOverwrite);
+        dataSourceService.persist(schemaName, dataSourceConfigs, isOverwrite);
+        schemaRuleService.persist(schemaName, ruleConfigs, isOverwrite);
         // TODO Consider removing the following one.
         persistSchemaName(schemaName);
     }
@@ -144,7 +144,7 @@ public final class RegistryCenter {
      * @param isOverwrite is overwrite config center's configuration
      */
     public void persistGlobalConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
-        globalRule.persist(globalRuleConfigs, isOverwrite);
+        globalRuleService.persist(globalRuleConfigs, isOverwrite);
         propsService.persist(props, isOverwrite);
     }
     
@@ -155,7 +155,7 @@ public final class RegistryCenter {
     }
     
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = dataSource.load(schemaName);
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = dataSourceService.load(schemaName);
         dataSourceConfigMap.putAll(dataSourceConfigs);
         repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigMap)));
     }
@@ -267,7 +267,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final DataSourceAlteredEvent event) {
-        dataSource.persist(event.getSchemaName(), event.getDataSourceConfigurations());
+        dataSourceService.persist(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
     /**
@@ -277,7 +277,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsAlteredEvent event) {
-        schemaRule.persist(event.getSchemaName(), event.getRuleConfigurations());
+        schemaRuleService.persist(event.getSchemaName(), event.getRuleConfigurations());
     }
     
     /**
@@ -327,7 +327,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final SwitchRuleConfigurationEvent event) {
-        schemaRule.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
+        schemaRuleService.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
         registryCacheManager.deleteCache(node.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
     }
     
@@ -352,12 +352,12 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final CreateUserStatementEvent event) {
-        Collection<RuleConfiguration> globalRuleConfigs = globalRule.load();
+        Collection<RuleConfiguration> globalRuleConfigs = globalRuleService.load();
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .findAny().map(each -> (AuthorityRuleConfiguration) each);
         Preconditions.checkState(authorityRuleConfig.isPresent());
         refreshAuthorityRuleConfiguration(authorityRuleConfig.get(), event.getUsers());
-        globalRule.persist(globalRuleConfigs, true);
+        globalRuleService.persist(globalRuleConfigs, true);
     }
     
     /**

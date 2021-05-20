@@ -131,7 +131,7 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertSchemaAdd() throws SQLException {
         MetaDataPersistedEvent event = new MetaDataPersistedEvent("schema_add");
-        when(registryCenter.getDataSource().load("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(registryCenter.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
         governanceMetaDataContexts.renew(event);
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add").getResource().getDataSources());

@@ -56,7 +56,7 @@ public final class GovernanceLock implements ShardingSphereLock {
      */
     @Override
     public boolean tryLock(final String lockName) {
-        return registryCenter.getLock().tryLock(lockName, lockTimeoutMilliseconds) && registryCenter.getLock().checkLockAck(lockName);
+        return registryCenter.getLockService().tryLock(lockName, lockTimeoutMilliseconds) && registryCenter.getLockService().checkLockAck(lockName);
     }
     
     /**
@@ -68,7 +68,7 @@ public final class GovernanceLock implements ShardingSphereLock {
      */
     @Override
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
-        return registryCenter.getLock().tryLock(lockName, timeoutMilliseconds) && registryCenter.getLock().checkLockAck(lockName);
+        return registryCenter.getLockService().tryLock(lockName, timeoutMilliseconds) && registryCenter.getLockService().checkLockAck(lockName);
     }
     
     /**
@@ -78,8 +78,8 @@ public final class GovernanceLock implements ShardingSphereLock {
      */
     @Override
     public void releaseLock(final String lockName) {
-        registryCenter.getLock().releaseLock(lockName);
-        registryCenter.getLock().checkUnlockAck(lockName);
+        registryCenter.getLockService().releaseLock(lockName);
+        registryCenter.getLockService().checkUnlockAck(lockName);
     }
     
     /**
@@ -95,7 +95,7 @@ public final class GovernanceLock implements ShardingSphereLock {
     
     @Override
     public boolean isReleased(final String lockName) {
-        return registryCenter.getLock().checkUnlockAck(lockName);
+        return registryCenter.getLockService().checkUnlockAck(lockName);
     }
     
     @Override
@@ -122,7 +122,7 @@ public final class GovernanceLock implements ShardingSphereLock {
     @Subscribe
     public void renew(final LockNotificationEvent event) {
         lockedResources.add(event.getLockName());
-        registryCenter.getLock().ackLock(event.getLockName());
+        registryCenter.getLockService().ackLock(event.getLockName());
     }
     
     /**
@@ -132,7 +132,7 @@ public final class GovernanceLock implements ShardingSphereLock {
      */
     @Subscribe
     public void renew(final LockReleasedEvent event) {
-        registryCenter.getLock().deleteLockAck(event.getLockName());
+        registryCenter.getLockService().deleteLockAck(event.getLockName());
     }
     
     /**
@@ -148,7 +148,7 @@ public final class GovernanceLock implements ShardingSphereLock {
     private void releaseInnerLock(final String lockName) {
         if (lockedResources.contains(lockName)) {
             lockedResources.remove(lockName);
-            registryCenter.getLock().ackUnlock(lockName);
+            registryCenter.getLockService().ackUnlock(lockName);
         }
     }
 }
