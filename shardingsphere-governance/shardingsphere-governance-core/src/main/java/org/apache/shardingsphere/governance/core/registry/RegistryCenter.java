@@ -42,6 +42,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Ru
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.registry.lock.LockRegistryCenter;
+import org.apache.shardingsphere.governance.core.registry.rule.SchemaRuleRegistryCenter;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -97,6 +98,9 @@ public final class RegistryCenter {
     private final DataSourceRegistryCenter dataSource;
     
     @Getter
+    private final SchemaRuleRegistryCenter schemaRule;
+    
+    @Getter
     private final LockRegistryCenter lock;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
@@ -105,6 +109,7 @@ public final class RegistryCenter {
         node = new RegistryCenterNode();
         registryCacheManager = new RegistryCacheManager(repository, node);
         dataSource = new DataSourceRegistryCenter(repository);
+        schemaRule = new SchemaRuleRegistryCenter(repository);
         lock = new LockRegistryCenter(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -120,25 +125,9 @@ public final class RegistryCenter {
     public void persistConfigurations(final String schemaName, 
                                       final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
         dataSource.persistDataSourceConfigurations(schemaName, dataSourceConfigs, isOverwrite);
-        persistRuleConfigurations(schemaName, ruleConfigs, isOverwrite);
+        schemaRule.persistRuleConfigurations(schemaName, ruleConfigs, isOverwrite);
         // TODO Consider removing the following one.
         persistSchemaName(schemaName);
-    }
-    
-    private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
-        if (!ruleConfigs.isEmpty() && (isOverwrite || !hasRuleConfiguration(schemaName))) {
-            persistRuleConfigurations(schemaName, ruleConfigs);
-        }
-    }
-    
-    /**
-     * Persist rule configurations.
-     *
-     * @param schemaName schema name
-     * @param ruleConfigs rule configurations
-     */
-    public void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
-        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, ruleConfigs)));
     }
     
     /**
@@ -224,18 +213,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load rule configurations.
-     *
-     * @param schemaName schema name
-     * @return rule configurations
-     */
-    @SuppressWarnings("unchecked")
-    public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
-        return hasRuleConfiguration(schemaName)
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), Collection.class)) : new LinkedList<>();
-    }
-    
-    /**
      * Load global rule configurations.
      * 
      * @return global rule configurations
@@ -273,16 +250,6 @@ public final class RegistryCenter {
      */
     public boolean hasDataSourceConfiguration(final String schemaName) {
         return !Strings.isNullOrEmpty(repository.get(node.getMetadataDataSourcePath(schemaName)));
-    }
-    
-    /**
-     * Judge whether schema has rule configuration.
-     *
-     * @param schemaName schema name
-     * @return has rule configuration or not
-     */
-    public boolean hasRuleConfiguration(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(node.getRulePath(schemaName)));
     }
     
     /**
@@ -366,8 +333,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsAlteredEvent event) {
-        //TODO
-        persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
+        schemaRule.persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
     }
     
     /**
@@ -417,7 +383,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final SwitchRuleConfigurationEvent event) {
-        persistRuleConfigurations(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
+        schemaRule.persistRuleConfigurations(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
         registryCacheManager.deleteCache(node.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
     }
     

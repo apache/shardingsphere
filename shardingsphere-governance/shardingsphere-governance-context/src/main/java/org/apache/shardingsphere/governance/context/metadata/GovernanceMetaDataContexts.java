@@ -333,13 +333,13 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         if (!governanceFacade.getRegistryCenter().hasDataSourceConfiguration(schemaName)) {
             governanceFacade.getRegistryCenter().getDataSource().persistDataSourceConfigurations(schemaName, new LinkedHashMap<>());
         }
-        if (!governanceFacade.getRegistryCenter().hasRuleConfiguration(schemaName)) {
-            governanceFacade.getRegistryCenter().persistRuleConfigurations(schemaName, new LinkedList<>());
+        if (!governanceFacade.getRegistryCenter().getSchemaRule().hasRuleConfiguration(schemaName)) {
+            governanceFacade.getRegistryCenter().getSchemaRule().persistRuleConfigurations(schemaName, new LinkedList<>());
         }
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName,
                 governanceFacade.getRegistryCenter().getDataSource().loadDataSourceConfigurations(schemaName)));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
-                Collections.singletonMap(schemaName, governanceFacade.getRegistryCenter().loadRuleConfigurations(schemaName)),
+                Collections.singletonMap(schemaName, governanceFacade.getRegistryCenter().getSchemaRule().loadRuleConfigurations(schemaName)),
                 // TODO load global schema from reg center
                 governanceFacade.getRegistryCenter().loadGlobalRuleConfigurations(), 
                 metaDataContexts.getProps().getProps());
