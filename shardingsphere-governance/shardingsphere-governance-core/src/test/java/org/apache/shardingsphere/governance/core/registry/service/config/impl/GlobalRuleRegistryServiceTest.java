@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class GlobalRuleRegistryServiceTest {
     
-    private static final String GLOBAL_RULE_YAML = "yaml/registryCenter/data-global-rule.yaml";
+    private static final String YAML_DATA = "yaml/regcenter/data-global-rule.yaml";
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
@@ -66,7 +66,7 @@ public final class GlobalRuleRegistryServiceTest {
     
     @Test
     public void assertLoad() {
-        when(registryCenterRepository.get("/rules")).thenReturn(readYAML(GLOBAL_RULE_YAML));
+        when(registryCenterRepository.get("/rules")).thenReturn(readYAML(YAML_DATA));
         Collection<RuleConfiguration> globalRuleConfigs = globalRuleRegistryService.load();
         assertFalse(globalRuleConfigs.isEmpty());
         Collection<ShardingSphereUser> users = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)

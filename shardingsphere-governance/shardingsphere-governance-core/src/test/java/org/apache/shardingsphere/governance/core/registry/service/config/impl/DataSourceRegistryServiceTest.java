@@ -44,9 +44,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceRegistryServiceTest {
     
-    private static final String DATA_SOURCE_YAM = "yaml/registryCenter/data-source.yaml";
+    private static final String DATA_SOURCE_YAM = "yaml/regcenter/data-source.yaml";
     
-    private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL = "yaml/registryCenter/data-source-init-sql.yaml";
+    private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL = "yaml/regcenter/data-source-init-sql.yaml";
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
