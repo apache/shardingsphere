@@ -20,6 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.service.rule;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
+import org.apache.shardingsphere.governance.core.registry.service.GlobalRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -32,36 +33,27 @@ import java.util.Collections;
  * Global rule registry center.
  */
 @RequiredArgsConstructor
-public final class GlobalRuleRegistryCenter {
+public final class GlobalRuleRegistryCenter implements GlobalRegistryService<Collection<RuleConfiguration>> {
     
     private final RegistryCenterRepository repository;
     
     private final RegistryCenterNode node = new RegistryCenterNode();
     
-    /**
-     * Persist global rule configurations.
-     * 
-     * @param globalRuleConfigs global rule configurations
-     * @param isOverwrite is overwrite
-     */
-    public void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
-        if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
+    @Override
+    public void persist(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
+        if (!globalRuleConfigs.isEmpty() && (isOverwrite || !isExisted())) {
             repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
         }
     }
     
-    private boolean hasGlobalRuleConfigurations() {
-        return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<RuleConfiguration> load() {
+        return isExisted()
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
     }
     
-    /**
-     * Load global rule configurations.
-     * 
-     * @return global rule configurations
-     */
-    @SuppressWarnings("unchecked")
-    public Collection<RuleConfiguration> loadGlobalRuleConfigurations() {
-        return hasGlobalRuleConfigurations()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
+    private boolean isExisted() {
+        return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
     }
 }
