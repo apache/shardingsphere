@@ -33,6 +33,8 @@ execute
     | truncateTable
     | setTransaction
     | beginTransaction
+    | startTransaction
+    | end
     | commit
     | rollback
     | savepoint
