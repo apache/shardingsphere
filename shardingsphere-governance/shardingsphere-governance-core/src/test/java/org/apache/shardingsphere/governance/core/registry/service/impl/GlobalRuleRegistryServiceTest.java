@@ -47,27 +47,27 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GlobalRuleRegistryCenterTest {
+public final class GlobalRuleRegistryServiceTest {
     
     private static final String GLOBAL_RULE_YAML = "yaml/registryCenter/data-global-rule.yaml";
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
     
-    private GlobalRuleRegistryCenter globalRuleRegistryCenter;
+    private GlobalRuleRegistryService globalRuleRegistryService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        globalRuleRegistryCenter = new GlobalRuleRegistryCenter(registryCenterRepository);
-        Field field = globalRuleRegistryCenter.getClass().getDeclaredField("repository");
+        globalRuleRegistryService = new GlobalRuleRegistryService(registryCenterRepository);
+        Field field = globalRuleRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
-        field.set(globalRuleRegistryCenter, registryCenterRepository);
+        field.set(globalRuleRegistryService, registryCenterRepository);
     }
     
     @Test
     public void assertLoad() {
         when(registryCenterRepository.get("/rules")).thenReturn(readYAML(GLOBAL_RULE_YAML));
-        Collection<RuleConfiguration> globalRuleConfigs = globalRuleRegistryCenter.load();
+        Collection<RuleConfiguration> globalRuleConfigs = globalRuleRegistryService.load();
         assertFalse(globalRuleConfigs.isEmpty());
         Collection<ShardingSphereUser> users = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .flatMap(each -> ((AuthorityRuleConfiguration) each).getUsers().stream()).collect(Collectors.toList());

@@ -42,7 +42,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DataSourceRegistryCenterTest {
+public final class DataSourceRegistryServiceTest {
     
     private static final String DATA_SOURCE_YAM = "yaml/registryCenter/data-source.yaml";
     
@@ -51,20 +51,20 @@ public final class DataSourceRegistryCenterTest {
     @Mock
     private RegistryCenterRepository registryCenterRepository;
     
-    private DataSourceRegistryCenter dataSourceRegistryCenter;
+    private DataSourceRegistryService dataSourceRegistryService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        dataSourceRegistryCenter = new DataSourceRegistryCenter(registryCenterRepository);
-        Field field = dataSourceRegistryCenter.getClass().getDeclaredField("repository");
+        dataSourceRegistryService = new DataSourceRegistryService(registryCenterRepository);
+        Field field = dataSourceRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
-        field.set(dataSourceRegistryCenter, registryCenterRepository);
+        field.set(dataSourceRegistryService, registryCenterRepository);
     }
     
     @Test
     public void assertLoad() {
         when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAM));
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryCenter.load("sharding_db");
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("sharding_db");
         assertThat(actual.size(), is(2));
         assertDataSourceConfiguration(actual.get("ds_0"), createDataSourceConfiguration(createDataSource("ds_0")));
         assertDataSourceConfiguration(actual.get("ds_1"), createDataSourceConfiguration(createDataSource("ds_1")));
@@ -80,14 +80,14 @@ public final class DataSourceRegistryCenterTest {
     @Test
     public void assertLoadWhenPathNotExist() {
         when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn("");
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryCenter.load("sharding_db");
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("sharding_db");
         assertThat(actual.size(), is(0));
     }
     
     @Test
     public void assertLoadWithConnectionInitSQLs() {
         when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL));
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryCenter.load("sharding_db");
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("sharding_db");
         assertThat(actual.size(), is(2));
         assertDataSourceConfigurationWithConnectionInitSQLs(actual.get("ds_0"), createDataSourceConfiguration(createDataSourceWithConnectionInitSQLs("ds_0")));
         assertDataSourceConfigurationWithConnectionInitSQLs(actual.get("ds_1"), createDataSourceConfiguration(createDataSourceWithConnectionInitSQLs("ds_1")));

@@ -34,10 +34,10 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Schema rule registry center.
+ * Schema rule registry service.
  */
 @RequiredArgsConstructor
-public final class SchemaRuleRegistryCenter implements SchemaBasedRegistryService<Collection<RuleConfiguration>> {
+public final class SchemaRuleRegistryService implements SchemaBasedRegistryService<Collection<RuleConfiguration>> {
     
     private final RegistryCenterRepository repository;
     

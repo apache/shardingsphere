@@ -46,7 +46,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaRuleRegistryCenterTest {
+public final class SchemaRuleRegistryServiceTest {
     
     private static final String SHARDING_RULE_YAML = "yaml/registryCenter/data-sharding-rule.yaml";
     
@@ -63,20 +63,20 @@ public final class SchemaRuleRegistryCenterTest {
     @Mock
     private RegistryCenterRepository registryCenterRepository;
     
-    private SchemaRuleRegistryCenter schemaRuleRegistryCenter;
+    private SchemaRuleRegistryService schemaRuleRegistryService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        schemaRuleRegistryCenter = new SchemaRuleRegistryCenter(registryCenterRepository);
-        Field field = schemaRuleRegistryCenter.getClass().getDeclaredField("repository");
+        schemaRuleRegistryService = new SchemaRuleRegistryService(registryCenterRepository);
+        Field field = schemaRuleRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
-        field.set(schemaRuleRegistryCenter, registryCenterRepository);
+        field.set(schemaRuleRegistryService, registryCenterRepository);
     }
     
     @Test
     public void assertLoadShardingAndEncryptRuleConfigurations() {
         when(registryCenterRepository.get("/metadata/sharding_db/rules")).thenReturn(readYAML(SHARDING_AND_ENCRYPT_RULE_YAML));
-        Collection<RuleConfiguration> ruleConfigurations = schemaRuleRegistryCenter.load("sharding_db");
+        Collection<RuleConfiguration> ruleConfigurations = schemaRuleRegistryService.load("sharding_db");
         assertThat(ruleConfigurations.size(), is(2));
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
@@ -96,7 +96,7 @@ public final class SchemaRuleRegistryCenterTest {
     @Test
     public void assertLoadShardingRuleConfiguration() {
         when(registryCenterRepository.get("/metadata/sharding_db/rules")).thenReturn(readYAML(SHARDING_RULE_YAML));
-        Collection<RuleConfiguration> actual = schemaRuleRegistryCenter.load("sharding_db");
+        Collection<RuleConfiguration> actual = schemaRuleRegistryService.load("sharding_db");
         assertThat(actual.size(), is(1));
         ShardingRuleConfiguration actualShardingRuleConfig = (ShardingRuleConfiguration) actual.iterator().next();
         assertThat(actualShardingRuleConfig.getTables().size(), is(1));
@@ -106,7 +106,7 @@ public final class SchemaRuleRegistryCenterTest {
     @Test
     public void assertLoadReadwriteSplittingRuleConfiguration() {
         when(registryCenterRepository.get("/metadata/sharding_db/rules")).thenReturn(readYAML(READWRITE_SPLITTING_RULE_YAML));
-        Collection<RuleConfiguration> actual = schemaRuleRegistryCenter.load("sharding_db");
+        Collection<RuleConfiguration> actual = schemaRuleRegistryService.load("sharding_db");
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) actual.iterator().next();
         assertThat(config.getDataSources().size(), is(1));
         assertThat(config.getDataSources().iterator().next().getWriteDataSourceName(), is("write_ds"));
@@ -116,7 +116,7 @@ public final class SchemaRuleRegistryCenterTest {
     @Test
     public void assertLoadDatabaseDiscoveryRuleConfiguration() {
         when(registryCenterRepository.get("/metadata/sharding_db/rules")).thenReturn(readYAML(DB_DISCOVERY_RULE_YAML));
-        Collection<RuleConfiguration> actual = schemaRuleRegistryCenter.load("sharding_db");
+        Collection<RuleConfiguration> actual = schemaRuleRegistryService.load("sharding_db");
         DatabaseDiscoveryRuleConfiguration config = (DatabaseDiscoveryRuleConfiguration) actual.iterator().next();
         assertThat(config.getDataSources().size(), is(1));
         assertThat(config.getDataSources().iterator().next().getDataSourceNames().size(), is(3));
@@ -125,7 +125,7 @@ public final class SchemaRuleRegistryCenterTest {
     @Test
     public void assertLoadEncryptRuleConfiguration() {
         when(registryCenterRepository.get("/metadata/sharding_db/rules")).thenReturn(readYAML(ENCRYPT_RULE_YAML));
-        EncryptRuleConfiguration actual = (EncryptRuleConfiguration) schemaRuleRegistryCenter.load("sharding_db").iterator().next();
+        EncryptRuleConfiguration actual = (EncryptRuleConfiguration) schemaRuleRegistryService.load("sharding_db").iterator().next();
         assertThat(actual.getEncryptors().size(), is(1));
         ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = actual.getEncryptors().get("order_encryptor");
         assertThat(encryptAlgorithmConfig.getType(), is("AES"));
@@ -135,7 +135,7 @@ public final class SchemaRuleRegistryCenterTest {
     @Test
     public void assertLoadShadowRuleConfiguration() {
         when(registryCenterRepository.get("/metadata/sharding_db/rules")).thenReturn(readYAML(SHADOW_RULE_YAML));
-        ShadowRuleConfiguration actual = (ShadowRuleConfiguration) schemaRuleRegistryCenter.load("sharding_db").iterator().next();
+        ShadowRuleConfiguration actual = (ShadowRuleConfiguration) schemaRuleRegistryService.load("sharding_db").iterator().next();
         assertThat(actual.getSourceDataSourceNames(), is(Arrays.asList("ds", "ds1")));
         assertThat(actual.getShadowDataSourceNames(), is(Arrays.asList("shadow_ds", "shadow_ds1")));
         assertThat(actual.getColumn(), is("shadow"));

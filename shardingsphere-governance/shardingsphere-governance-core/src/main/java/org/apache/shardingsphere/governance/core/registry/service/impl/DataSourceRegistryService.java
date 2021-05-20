@@ -32,10 +32,10 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * DataSource registry center.
+ * Data source registry service.
  */
 @RequiredArgsConstructor
-public final class DataSourceRegistryCenter implements SchemaBasedRegistryService<Map<String, DataSourceConfiguration>> {
+public final class DataSourceRegistryService implements SchemaBasedRegistryService<Map<String, DataSourceConfiguration>> {
     
     private final RegistryCenterRepository repository;
     

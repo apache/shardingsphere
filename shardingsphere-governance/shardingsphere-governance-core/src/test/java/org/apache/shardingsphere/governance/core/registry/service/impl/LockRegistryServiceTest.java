@@ -33,36 +33,36 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class LockRegistryCenterTest {
+public final class LockRegistryServiceTest {
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
     
-    private LockRegistryCenter lockRegistryCenter;
+    private LockRegistryService lockRegistryService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        lockRegistryCenter = new LockRegistryCenter(registryCenterRepository);
-        Field field = lockRegistryCenter.getClass().getDeclaredField("repository");
+        lockRegistryService = new LockRegistryService(registryCenterRepository);
+        Field field = lockRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
-        field.set(lockRegistryCenter, registryCenterRepository);
+        field.set(lockRegistryService, registryCenterRepository);
     }
     
     @Test
     public void assertTryLock() {
-        lockRegistryCenter.tryLock("test", 50L);
+        lockRegistryService.tryLock("test", 50L);
         verify(registryCenterRepository).tryLock(eq(new LockNode().getLockNodePath("test")), eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test
     public void assertReleaseLock() {
-        lockRegistryCenter.releaseLock("test");
+        lockRegistryService.releaseLock("test");
         verify(registryCenterRepository).releaseLock(eq(new LockNode().getLockNodePath("test")));
     }
     
     @Test
     public void assertDeleteLockAck() {
-        lockRegistryCenter.deleteLockAck("test");
+        lockRegistryService.deleteLockAck("test");
         verify(registryCenterRepository).delete(anyString());
     }
 }

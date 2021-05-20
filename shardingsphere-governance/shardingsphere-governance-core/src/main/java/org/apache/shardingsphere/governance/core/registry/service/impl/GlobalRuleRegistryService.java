@@ -30,10 +30,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Global rule registry center.
+ * Global rule registry service.
  */
 @RequiredArgsConstructor
-public final class GlobalRuleRegistryCenter implements GlobalRegistryService<Collection<RuleConfiguration>> {
+public final class GlobalRuleRegistryService implements GlobalRegistryService<Collection<RuleConfiguration>> {
     
     private final RegistryCenterRepository repository;
     
