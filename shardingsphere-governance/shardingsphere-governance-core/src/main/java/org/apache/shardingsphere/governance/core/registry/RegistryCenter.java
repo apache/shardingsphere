@@ -172,10 +172,6 @@ public final class RegistryCenter {
         }
     }
     
-    private boolean hasGlobalRuleConfigurations() {
-        return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
-    }
-    
     private boolean hasProperties() {
         return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
     }
