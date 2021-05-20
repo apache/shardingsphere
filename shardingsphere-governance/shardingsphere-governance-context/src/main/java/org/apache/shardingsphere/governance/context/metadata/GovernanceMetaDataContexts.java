@@ -341,7 +341,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
                 Collections.singletonMap(schemaName, governanceFacade.getRegistryCenter().getSchemaRule().load(schemaName)),
                 // TODO load global schema from reg center
-                governanceFacade.getRegistryCenter().getGlobalRule().loadGlobalRuleConfigurations(), 
+                governanceFacade.getRegistryCenter().getGlobalRule().load(), 
                 metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build().getMetaDataMap().get(schemaName);
     }

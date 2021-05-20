@@ -65,9 +65,9 @@ public final class GlobalRuleRegistryCenterTest {
     }
     
     @Test
-    public void assertLoadGlobalRuleConfigurations() {
+    public void assertLoad() {
         when(registryCenterRepository.get("/rules")).thenReturn(readYAML(GLOBAL_RULE_YAML));
-        Collection<RuleConfiguration> globalRuleConfigs = globalRuleRegistryCenter.loadGlobalRuleConfigurations();
+        Collection<RuleConfiguration> globalRuleConfigs = globalRuleRegistryCenter.load();
         assertFalse(globalRuleConfigs.isEmpty());
         Collection<ShardingSphereUser> users = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .flatMap(each -> ((AuthorityRuleConfiguration) each).getUsers().stream()).collect(Collectors.toList());

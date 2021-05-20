@@ -139,7 +139,7 @@ public final class RegistryCenter {
      * @param isOverwrite is overwrite config center's configuration
      */
     public void persistGlobalConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
-        globalRule.persistGlobalRuleConfigurations(globalRuleConfigs, isOverwrite);
+        globalRule.persist(globalRuleConfigs, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
@@ -366,12 +366,12 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final CreateUserStatementEvent event) {
-        Collection<RuleConfiguration> globalRuleConfigs = globalRule.loadGlobalRuleConfigurations();
+        Collection<RuleConfiguration> globalRuleConfigs = globalRule.load();
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .findAny().map(each -> (AuthorityRuleConfiguration) each);
         Preconditions.checkState(authorityRuleConfig.isPresent());
         refreshAuthorityRuleConfiguration(authorityRuleConfig.get(), event.getUsers());
-        globalRule.persistGlobalRuleConfigurations(globalRuleConfigs, true);
+        globalRule.persist(globalRuleConfigs, true);
     }
     
     /**
