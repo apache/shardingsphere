@@ -132,8 +132,23 @@ public final class RegistryCenter {
                                       final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
         dataSourceService.persist(schemaName, dataSourceConfigs, isOverwrite);
         schemaRuleService.persist(schemaName, ruleConfigs, isOverwrite);
-        // TODO Consider removing the following one.
+        // TODO persistSchemaName is for etcd to get SchemaName which is for impl details, should move the logic into etcd repository, just keep reg center clear and high abstract. 
         persistSchemaName(schemaName);
+    }
+    
+    private void persistSchemaName(final String schemaName) {
+        String schemaNamesStr = repository.get(node.getMetadataNodePath());
+        if (Strings.isNullOrEmpty(schemaNamesStr)) {
+            repository.persist(node.getMetadataNodePath(), schemaName);
+            return;
+        }
+        Collection<String> schemaNames = Splitter.on(",").splitToList(schemaNamesStr);
+        if (schemaNames.contains(schemaName)) {
+            return;
+        }
+        Collection<String> newSchemaNames = new ArrayList<>(schemaNames);
+        newSchemaNames.add(schemaName);
+        repository.persist(node.getMetadataNodePath(), String.join(",", newSchemaNames));
     }
     
     /**
@@ -169,21 +184,6 @@ public final class RegistryCenter {
         if (!users.isEmpty()) {
             repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
         }
-    }
-    
-    private void persistSchemaName(final String schemaName) {
-        String schemaNames = repository.get(node.getMetadataNodePath());
-        if (Strings.isNullOrEmpty(schemaNames)) {
-            repository.persist(node.getMetadataNodePath(), schemaName);
-            return;
-        }
-        List<String> schemaNameList = Splitter.on(",").splitToList(schemaNames);
-        if (schemaNameList.contains(schemaName)) {
-            return;
-        }
-        List<String> newArrayList = new ArrayList<>(schemaNameList);
-        newArrayList.add(schemaName);
-        repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(newArrayList));
     }
     
     /**
