@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.service.impl;
+package org.apache.shardingsphere.governance.core.registry.service.state;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;

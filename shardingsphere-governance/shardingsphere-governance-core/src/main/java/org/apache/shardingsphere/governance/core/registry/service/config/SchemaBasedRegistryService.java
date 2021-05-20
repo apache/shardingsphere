@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.service;
+package org.apache.shardingsphere.governance.core.registry.service.config;
 
 /**
  * Schema based registry service.
