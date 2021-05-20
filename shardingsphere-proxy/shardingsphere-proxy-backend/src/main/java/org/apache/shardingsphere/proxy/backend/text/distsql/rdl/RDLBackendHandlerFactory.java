@@ -26,6 +26,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardin
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
@@ -49,6 +50,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AlterShardi
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AlterShardingTableRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateDatabaseDiscoveryRuleBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateEncryptRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateReadwriteSplittingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingBindingTableRulesBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingBroadcastTableRulesBackendHandler;
@@ -156,6 +158,9 @@ public final class RDLBackendHandlerFactory {
         }
         if (sqlStatement instanceof DropDatabaseDiscoveryRuleStatement) {
             return Optional.of(new DropDatabaseDiscoveryRuleBackendHandler((DropDatabaseDiscoveryRuleStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof CreateEncryptRuleStatement) {
+            return Optional.of(new CreateEncryptRuleBackendHandler((CreateEncryptRuleStatement) sqlStatement, backendConnection));
         }
         return Optional.empty();
     }

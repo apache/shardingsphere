@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-
-import java.util.Collection;
 
 /**
- * Encrypt rule segment.
+ * Encrypt rule exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class EncryptRuleSegment implements ASTNode {
+public final class EncryptRuleExistsException extends BackendException {
 
-    private final String tableName;
+    private static final long serialVersionUID = -1673568903990383982L;
 
-    private final Collection<EncryptColumnSegment> columns;
+    private final String schemaName;
 }

@@ -55,7 +55,7 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     DUPLICATE_TABLE(1113, "C1113", "Duplicate table names %s."),
     
-    SHARDING_BROADCAST_EXIST(1114, "C1114", "Sharding broadcast table rules already exist in schema %s."),
+    SHARDING_BROADCAST_EXIST(1114, "C1114", "Sharding broadcast table rules already exists in schema %s."),
 
     SHARDING_BINDING_TABLE_RULES_NOT_EXIST(1115, "C1115", "Sharding binding table rules not exist in schema %s."),
 
@@ -63,13 +63,17 @@ public enum CommonErrorCode implements SQLErrorCode {
 
     INVALID_LOAD_BALANCERS(1117, "C1117", "Invalid load balancers %s."),
 
-    DATABASE_DISCOVERY_RULE_EXIST(1118, "C1118", "Database discovery rule already exist in schema %s."),
+    DATABASE_DISCOVERY_RULE_EXIST(1118, "C1118", "Database discovery rule already exists in schema %s."),
 
     INVALID_DATABASE_DISCOVERY_TYPES(1119, "C1119", "Invalid database discovery types %s."),
 
     DATABASE_DISCOVERY_RULE_NOT_EXIST(1120, "C1120", "Database discovery rule not exist in schema %s."),
 
     DATABASE_DISCOVERY_RULE_DATASOURCE_NOT_EXIST(1121, "C1121", "Database discovery rules %s do not exist."),
+
+    ENCRYPT_RULE_EXIST(1122, "C1122", "Encrypt rule already exists in schema %s."),
+
+    INVALID_ENCRYPTORS(1123, "C1123", "Invalid encryptors %s."),
 
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     
