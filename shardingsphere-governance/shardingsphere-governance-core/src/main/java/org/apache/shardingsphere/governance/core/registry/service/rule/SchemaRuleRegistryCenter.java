@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.governance.core.registry.service.SchemaBasedRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
@@ -36,33 +37,22 @@ import java.util.Optional;
  * Schema rule registry center.
  */
 @RequiredArgsConstructor
-public final class SchemaRuleRegistryCenter {
+public final class SchemaRuleRegistryCenter implements SchemaBasedRegistryService<RuleConfiguration> {
     
     private final RegistryCenterRepository repository;
     
     private final RegistryCenterNode node = new RegistryCenterNode();
     
-    /**
-     * Persist rule configurations.
-     *
-     * @param schemaName schema name
-     * @param ruleConfigs rule configurations
-     * @param isOverwrite is overwrite
-     */
-    public void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
-        if (!ruleConfigs.isEmpty() && (isOverwrite || !hasRuleConfiguration(schemaName))) {
-            persistRuleConfigurations(schemaName, ruleConfigs);
+    @Override
+    public void persist(final String schemaName, final Collection<RuleConfiguration> configs, final boolean isOverwrite) {
+        if (!configs.isEmpty() && (isOverwrite || !isExisted(schemaName))) {
+            persist(schemaName, configs);
         }
     }
     
-    /**
-     * Persist rule configurations.
-     *
-     * @param schemaName schema name
-     * @param ruleConfigs rule configurations
-     */
-    public void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
-        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, ruleConfigs)));
+    @Override
+    public void persist(final String schemaName, final Collection<RuleConfiguration> configs) {
+        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, configs)));
     }
     
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
@@ -77,25 +67,15 @@ public final class SchemaRuleRegistryCenter {
         return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
     }
     
-    /**
-     * Load rule configurations.
-     *
-     * @param schemaName schema name
-     * @return rule configurations
-     */
+    @Override
     @SuppressWarnings("unchecked")
-    public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
-        return hasRuleConfiguration(schemaName)
+    public Collection<RuleConfiguration> load(final String schemaName) {
+        return isExisted(schemaName)
                 ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), Collection.class)) : new LinkedList<>();
     }
     
-    /**
-     * Judge whether schema has rule configuration.
-     *
-     * @param schemaName schema name
-     * @return has rule configuration or not
-     */
-    public boolean hasRuleConfiguration(final String schemaName) {
+    @Override
+    public boolean isExisted(final String schemaName) {
         return !Strings.isNullOrEmpty(repository.get(node.getRulePath(schemaName)));
     }
 }

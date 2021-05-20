@@ -113,7 +113,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
         return schemaNames.stream().collect(
-                Collectors.toMap(each -> each, each -> governanceFacade.getRegistryCenter().getSchemaRule().loadRuleConfigurations(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                Collectors.toMap(each -> each, each -> governanceFacade.getRegistryCenter().getSchemaRule().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

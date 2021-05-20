@@ -126,7 +126,7 @@ public final class RegistryCenter {
     public void persistConfigurations(final String schemaName, 
                                       final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
         dataSource.persistDataSourceConfigurations(schemaName, dataSourceConfigs, isOverwrite);
-        schemaRule.persistRuleConfigurations(schemaName, ruleConfigs, isOverwrite);
+        schemaRule.persist(schemaName, ruleConfigs, isOverwrite);
         // TODO Consider removing the following one.
         persistSchemaName(schemaName);
     }
@@ -291,7 +291,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsAlteredEvent event) {
-        schemaRule.persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
+        schemaRule.persist(event.getSchemaName(), event.getRuleConfigurations());
     }
     
     /**
@@ -341,7 +341,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final SwitchRuleConfigurationEvent event) {
-        schemaRule.persistRuleConfigurations(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
+        schemaRule.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
         registryCacheManager.deleteCache(node.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
     }
     
