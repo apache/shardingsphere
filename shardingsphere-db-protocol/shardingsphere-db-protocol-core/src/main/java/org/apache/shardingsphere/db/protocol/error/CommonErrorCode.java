@@ -71,6 +71,10 @@ public enum CommonErrorCode implements SQLErrorCode {
 
     DATABASE_DISCOVERY_RULE_DATASOURCE_NOT_EXIST(1121, "C1121", "Database discovery rules %s do not exist."),
 
+    ENCRYPT_RULE_EXIST(1122, "C1122", "Encrypt rule already exist in schema %s."),
+
+    INVALID_ENCRYPTORS(1123, "C1123", "Invalid encryptors %s."),
+
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     
     SCALING_OPERATE_FAILED(1209, "C1209", "Scaling Operate Failed: [%s]"),
