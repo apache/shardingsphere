@@ -48,17 +48,17 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaRuleRegistryServiceTest {
     
-    private static final String SHARDING_RULE_YAML = "yaml/registryCenter/data-sharding-rule.yaml";
+    private static final String SHARDING_RULE_YAML = "yaml/regcenter/data-sharding-rule.yaml";
     
-    private static final String READWRITE_SPLITTING_RULE_YAML = "yaml/registryCenter/data-readwrite-splitting-rule.yaml";
+    private static final String READWRITE_SPLITTING_RULE_YAML = "yaml/regcenter/data-readwrite-splitting-rule.yaml";
     
-    private static final String DB_DISCOVERY_RULE_YAML = "yaml/registryCenter/data-database-discovery-rule.yaml";
+    private static final String DB_DISCOVERY_RULE_YAML = "yaml/regcenter/data-database-discovery-rule.yaml";
     
-    private static final String ENCRYPT_RULE_YAML = "yaml/registryCenter/data-encrypt-rule.yaml";
+    private static final String ENCRYPT_RULE_YAML = "yaml/regcenter/data-encrypt-rule.yaml";
     
-    private static final String SHADOW_RULE_YAML = "yaml/registryCenter/data-shadow-rule.yaml";
+    private static final String SHADOW_RULE_YAML = "yaml/regcenter/data-shadow-rule.yaml";
     
-    private static final String SHARDING_AND_ENCRYPT_RULE_YAML = "yaml/registryCenter/data-sharding-encrypt-rule.yaml";
+    private static final String SHARDING_AND_ENCRYPT_RULE_YAML = "yaml/regcenter/data-sharding-encrypt-rule.yaml";
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;

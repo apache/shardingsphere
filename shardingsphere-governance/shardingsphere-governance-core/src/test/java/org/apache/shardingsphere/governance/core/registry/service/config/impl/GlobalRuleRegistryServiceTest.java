@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class GlobalRuleRegistryServiceTest {
     
-    private static final String GLOBAL_RULE_YAML = "yaml/registryCenter/data-global-rule.yaml";
+    private static final String GLOBAL_RULE_YAML = "yaml/regcenter/data-global-rule.yaml";
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
