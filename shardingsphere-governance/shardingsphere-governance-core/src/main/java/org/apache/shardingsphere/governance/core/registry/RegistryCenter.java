@@ -24,8 +24,6 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.governance.core.registry.datasource.DataSourceRegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
@@ -42,6 +40,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Ru
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.registry.lock.LockRegistryCenter;
+import org.apache.shardingsphere.governance.core.registry.rule.GlobalRuleRegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.rule.SchemaRuleRegistryCenter;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
@@ -63,14 +62,12 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -101,6 +98,9 @@ public final class RegistryCenter {
     private final SchemaRuleRegistryCenter schemaRule;
     
     @Getter
+    private final GlobalRuleRegistryCenter globalRule;
+    
+    @Getter
     private final LockRegistryCenter lock;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
@@ -110,6 +110,7 @@ public final class RegistryCenter {
         registryCacheManager = new RegistryCacheManager(repository, node);
         dataSource = new DataSourceRegistryCenter(repository);
         schemaRule = new SchemaRuleRegistryCenter(repository);
+        globalRule = new GlobalRuleRegistryCenter(repository);
         lock = new LockRegistryCenter(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -138,14 +139,8 @@ public final class RegistryCenter {
      * @param isOverwrite is overwrite config center's configuration
      */
     public void persistGlobalConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
-        persistGlobalRuleConfigurations(globalRuleConfigs, isOverwrite);
+        globalRule.persistGlobalRuleConfigurations(globalRuleConfigs, isOverwrite);
         persistProperties(props, isOverwrite);
-    }
-    
-    private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
-        if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
-            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
-        }
     }
     
     private void persistProperties(final Properties props, final boolean isOverwrite) {
@@ -169,18 +164,6 @@ public final class RegistryCenter {
     private Map<String, Map<String, Object>> createYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
         return dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
-        Collection<RuleConfiguration> configs = new LinkedList<>();
-        for (RuleConfiguration each : ruleConfigs) {
-            Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(each);
-            if (checker.isPresent()) {
-                checker.get().check(schemaName, each);
-                configs.add(each);
-            }
-        }
-        return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
     }
     
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
@@ -210,17 +193,6 @@ public final class RegistryCenter {
         List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(schemaName);
         repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(newArrayList));
-    }
-    
-    /**
-     * Load global rule configurations.
-     * 
-     * @return global rule configurations
-     */
-    @SuppressWarnings("unchecked")
-    public Collection<RuleConfiguration> loadGlobalRuleConfigurations() {
-        return hasGlobalRuleConfigurations()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
     }
     
     /**
@@ -402,18 +374,18 @@ public final class RegistryCenter {
     }
     
     /**
-     * User configuration event.
+     * Renew create user statement.
      *
-     * @param event user configuration event
+     * @param event create user statement event
      */
     @Subscribe
     public synchronized void renew(final CreateUserStatementEvent event) {
-        Collection<RuleConfiguration> globalRuleConfigs = loadGlobalRuleConfigurations();
+        Collection<RuleConfiguration> globalRuleConfigs = globalRule.loadGlobalRuleConfigurations();
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .findAny().map(each -> (AuthorityRuleConfiguration) each);
         Preconditions.checkState(authorityRuleConfig.isPresent());
         refreshAuthorityRuleConfiguration(authorityRuleConfig.get(), event.getUsers());
-        persistGlobalRuleConfigurations(globalRuleConfigs, true);
+        globalRule.persistGlobalRuleConfigurations(globalRuleConfigs, true);
     }
     
     /**

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
@@ -29,13 +28,10 @@ import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.junit.Before;
@@ -55,14 +51,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -339,24 +333,6 @@ public final class RegistryCenterTest {
         when(registryCenterRepository.get("/props")).thenReturn(PROPS_YAML);
         Properties actual = registryCenter.loadProperties();
         assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));
-    }
-    
-    @Test
-    public void assertLoadGlobalRuleConfigurations() {
-        when(registryCenterRepository.get("/rules")).thenReturn(readYAML(GLOBAL_RULE_YAML));
-        Collection<RuleConfiguration> globalRuleConfigs = registryCenter.loadGlobalRuleConfigurations();
-        assertFalse(globalRuleConfigs.isEmpty());
-        Collection<ShardingSphereUser> users = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
-                .flatMap(each -> ((AuthorityRuleConfiguration) each).getUsers().stream()).collect(Collectors.toList());
-        Optional<ShardingSphereUser> user = users.stream().filter(each -> each.getGrantee().equals(new Grantee("root", ""))).findFirst();
-        assertTrue(user.isPresent());
-        assertThat(user.get().getPassword(), is("root"));
-        Collection<ShardingSphereAlgorithmConfiguration> providers = globalRuleConfigs.stream()
-                .filter(each -> each instanceof AuthorityRuleConfiguration && Objects.nonNull(((AuthorityRuleConfiguration) each).getProvider()))
-                .map(each -> ((AuthorityRuleConfiguration) each).getProvider()).collect(Collectors.toList());
-        assertFalse(providers.isEmpty());
-        Optional<ShardingSphereAlgorithmConfiguration> nativeProvider = providers.stream().filter(each -> "NATIVE".equals(each.getType())).findFirst();
-        assertTrue(nativeProvider.isPresent());
     }
     
     @Test
