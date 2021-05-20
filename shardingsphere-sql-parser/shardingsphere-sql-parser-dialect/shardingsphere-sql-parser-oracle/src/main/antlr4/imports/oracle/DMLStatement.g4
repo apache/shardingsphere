@@ -105,14 +105,22 @@ select
     ;
 
 selectSubquery
-    : (selectClause | selectClause ((UNION ALL? | INTERSECT | MINUS) selectSubquery)+ | LP_ selectSubquery RP_) orderByClause? rowLimitingClause
+    : (queryBlock | selectUnionClause | parenthesisSelectSubquery) orderByClause? rowLimitingClause
+    ;
+
+selectUnionClause
+    : ((queryBlock | parenthesisSelectSubquery) orderByClause? rowLimitingClause) ((UNION ALL? | INTERSECT | MINUS) selectSubquery)+
+    ;
+
+parenthesisSelectSubquery
+    : LP_ selectSubquery RP_
     ;
 
 unionClause
-    : selectClause (UNION (ALL | DISTINCT)? selectClause)*
+    : queryBlock (UNION (ALL | DISTINCT)? queryBlock)*
     ;
 
-selectClause
+queryBlock
     : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause?
     ;
 

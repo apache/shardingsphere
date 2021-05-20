@@ -49,12 +49,14 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeU
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParenthesisSelectSubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QualifiedShorthandContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectSubqueryContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectUnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryContext;
@@ -258,12 +260,19 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitUnionClause(final UnionClauseContext ctx) {
         // TODO :Unsupported for union SQL.
-        return visit(ctx.selectClause(0));
+        return visit(ctx.queryBlock(0));
     }
     
     @Override
     public ASTNode visitSelectSubquery(final SelectSubqueryContext ctx) {
-        OracleSelectStatement result = (OracleSelectStatement) visit(ctx.selectClause());
+        OracleSelectStatement result;
+        if (null != ctx.queryBlock()) {
+            result = (OracleSelectStatement) visit(ctx.queryBlock());
+        } else if (null != ctx.selectUnionClause()) {
+            result = (OracleSelectStatement) visit(ctx.selectUnionClause());
+        } else {
+            result = (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
+        }
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
@@ -271,7 +280,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     }
     
     @Override
-    public ASTNode visitSelectClause(final SelectClauseContext ctx) {
+    public ASTNode visitQueryBlock(final QueryBlockContext ctx) {
         OracleSelectStatement result = new OracleSelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.duplicateSpecification()) {
@@ -289,8 +298,30 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         }
         return result;
     }
-
-    private boolean isDistinct(final SelectClauseContext ctx) {
+    
+    @Override
+    public ASTNode visitSelectUnionClause(final SelectUnionClauseContext ctx) {
+        OracleSelectStatement result;
+        if (null != ctx.queryBlock()) {
+            result = (OracleSelectStatement) visit(ctx.queryBlock());
+        } else {
+            result = (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        for (SelectSubqueryContext each : ctx.selectSubquery()) {
+            visit(each);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitParenthesisSelectSubquery(final ParenthesisSelectSubqueryContext ctx) {
+        return visit(ctx.selectSubquery());
+    }
+    
+    private boolean isDistinct(final QueryBlockContext ctx) {
         return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
     }
     
