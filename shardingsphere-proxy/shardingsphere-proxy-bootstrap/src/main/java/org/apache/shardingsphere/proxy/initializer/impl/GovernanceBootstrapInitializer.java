@@ -98,7 +98,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         Collection<String> schemaNames = governanceFacade.getRegistryCenter().loadAllSchemaNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
-        Properties props = governanceFacade.getRegistryCenter().loadProperties();
+        Properties props = governanceFacade.getRegistryCenter().getPropsService().load();
         // TODO load global rules from reg center
         Collection<RuleConfiguration> globalRuleConfigs = governanceFacade.getRegistryCenter().getGlobalRule().load();
         return new ProxyConfiguration(schemaDataSources, schemaRules, globalRuleConfigs, props);

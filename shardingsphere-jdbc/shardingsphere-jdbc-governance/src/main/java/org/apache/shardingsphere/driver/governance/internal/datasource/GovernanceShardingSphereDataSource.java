@@ -97,7 +97,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         Collection<RuleConfiguration> ruleConfigurations = registryCenter.getSchemaRule().load(DefaultSchema.LOGIC_NAME);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), registryCenter.getGlobalRule().load(), registryCenter.loadProperties());
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), registryCenter.getGlobalRule().load(), registryCenter.getPropsService().load());
         return metaDataContextsBuilder.build();
     }
     

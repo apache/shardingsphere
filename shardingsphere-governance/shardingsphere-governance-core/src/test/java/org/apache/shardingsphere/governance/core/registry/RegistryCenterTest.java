@@ -329,13 +329,6 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertLoadProperties() {
-        when(registryCenterRepository.get("/props")).thenReturn(PROPS_YAML);
-        Properties actual = registryCenter.loadProperties();
-        assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));
-    }
-    
-    @Test
     public void assertLoadAllSchemaNames() {
         when(registryCenterRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         Collection<String> actual = registryCenter.loadAllSchemaNames();

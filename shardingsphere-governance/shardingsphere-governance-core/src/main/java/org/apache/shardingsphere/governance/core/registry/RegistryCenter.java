@@ -24,7 +24,6 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.core.registry.service.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
@@ -39,8 +38,10 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Ru
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
-import org.apache.shardingsphere.governance.core.registry.service.impl.LockRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.impl.GlobalRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.impl.LockRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.impl.SchemaRuleRegistryService;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
@@ -101,6 +102,9 @@ public final class RegistryCenter {
     private final GlobalRuleRegistryService globalRule;
     
     @Getter
+    private final PropertiesRegistryService propsService;
+    
+    @Getter
     private final LockRegistryService lock;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
@@ -111,6 +115,7 @@ public final class RegistryCenter {
         dataSource = new DataSourceRegistryService(repository);
         schemaRule = new SchemaRuleRegistryService(repository);
         globalRule = new GlobalRuleRegistryService(repository);
+        propsService = new PropertiesRegistryService(repository);
         lock = new LockRegistryService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -140,13 +145,7 @@ public final class RegistryCenter {
      */
     public void persistGlobalConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         globalRule.persist(globalRuleConfigs, isOverwrite);
-        persistProperties(props, isOverwrite);
-    }
-    
-    private void persistProperties(final Properties props, final boolean isOverwrite) {
-        if (!props.isEmpty() && (isOverwrite || !hasProperties())) {
-            repository.persist(node.getPropsPath(), YamlEngine.marshal(props));
-        }
+        propsService.persist(props, isOverwrite);
     }
     
     @SuppressWarnings("unchecked")
@@ -172,10 +171,6 @@ public final class RegistryCenter {
         }
     }
     
-    private boolean hasProperties() {
-        return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
-    }
-    
     private void persistSchemaName(final String schemaName) {
         String schemaNames = repository.get(node.getMetadataNodePath());
         if (Strings.isNullOrEmpty(schemaNames)) {
@@ -189,15 +184,6 @@ public final class RegistryCenter {
         List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(schemaName);
         repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(newArrayList));
-    }
-    
-    /**
-     * Load properties configuration.
-     *
-     * @return properties
-     */
-    public Properties loadProperties() {
-        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(node.getPropsPath()), Properties.class);
     }
     
     /**

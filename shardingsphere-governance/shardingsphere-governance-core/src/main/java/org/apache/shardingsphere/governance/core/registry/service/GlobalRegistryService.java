@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.service;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
-
 /**
  * Global registry service.
  * 
@@ -41,5 +37,5 @@ public interface GlobalRegistryService<T> {
      *
      * @return configurations
      */
-    Collection<RuleConfiguration> load();
+    T load();
 }
