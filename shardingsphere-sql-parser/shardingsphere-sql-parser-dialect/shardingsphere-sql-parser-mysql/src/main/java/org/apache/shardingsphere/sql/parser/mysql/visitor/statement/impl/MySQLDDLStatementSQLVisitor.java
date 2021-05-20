@@ -297,7 +297,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ModifyColumnContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.columnInternalRef.stop.getStopIndex(), (IdentifierValue) visit(ctx.columnInternalRef));
-        ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), generateColumnDefinitionSegment(column, ctx.fieldDefinition()));
+        ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), generateColumnDefinitionSegment(column, ctx.fieldDefinition()));
         if (null != ctx.place()) {
             modifyColumnDefinition.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }
