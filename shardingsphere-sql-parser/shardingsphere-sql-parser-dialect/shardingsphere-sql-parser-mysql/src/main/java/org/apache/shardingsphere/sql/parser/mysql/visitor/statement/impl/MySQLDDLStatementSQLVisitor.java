@@ -24,10 +24,13 @@ import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVi
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddTableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterInstanceContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterListContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterListItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterLogfileGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterServerContext;
@@ -61,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropSer
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlowControlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IfStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyListWithExpressionContext;
@@ -78,8 +82,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableEl
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FieldDefinitionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterListContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -264,38 +266,49 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (ctx.alterListItem().isEmpty()) {
             return result;
         }
-        for (MySQLStatementParser.AlterListItemContext each : ctx.alterListItem()) {
+        for (AlterListItemContext each : ctx.alterListItem()) {
             if (each instanceof AddColumnContext) {
                 result.getValue().add((AddColumnDefinitionSegment) visit(each));
             }
             if (each instanceof ChangeColumnContext) {
-                ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
-                        each.getStart().getStartIndex(), each.getStop().getStopIndex(),
-                        (ColumnDefinitionSegment) visit(((ChangeColumnContext) each).columnDefinition()));
-                if (null != ((MySQLStatementParser.ChangeColumnContext) each).place()) {
-                    modifyColumnDefinition.setColumnPosition((ColumnPositionSegment) visit(((MySQLStatementParser.ChangeColumnContext) each).place()));
-                }
-                result.getValue().add(modifyColumnDefinition);
+                result.getValue().add(generateModifyColumnDefinitionSegment((ChangeColumnContext) each));
             }
             if (each instanceof ModifyColumnContext) {
-                ColumnSegment column = new ColumnSegment(((ModifyColumnContext) each).columnInternalRef.start.getStartIndex(), ((ModifyColumnContext) each).columnInternalRef.stop.getStopIndex(),
-                        (IdentifierValue) visit(((ModifyColumnContext) each).columnInternalRef));
-                ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
-                        each.getStart().getStartIndex(), each.getStop().getStopIndex(),
-                        generateColumnDefinitionSegment(column, ((MySQLStatementParser.ModifyColumnContext) each).fieldDefinition()));
-                if (null != ((MySQLStatementParser.ModifyColumnContext) each).place()) {
-                    modifyColumnDefinition.setColumnPosition((ColumnPositionSegment) visit(((MySQLStatementParser.ModifyColumnContext) each).place()));
-                }
-                result.getValue().add(modifyColumnDefinition);
+                result.getValue().add(generateModifyColumnDefinitionSegment((ModifyColumnContext) each));
             }
             if (each instanceof AlterTableDropContext) {
                 AlterTableDropContext alterTableDrop = (AlterTableDropContext) each;
                 if (null == alterTableDrop.KEY() && null == alterTableDrop.CHECK() && null == alterTableDrop.CONSTRAINT() && null == alterTableDrop.keyOrIndex()) {
-                    ColumnSegment column = new ColumnSegment(alterTableDrop.columnInternalRef.start.getStartIndex(), alterTableDrop.columnInternalRef.stop.getStopIndex(),
-                            (IdentifierValue) visit(alterTableDrop.columnInternalRef));
-                    result.getValue().add(new DropColumnDefinitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), Collections.singletonList(column)));
+                    result.getValue().add(generateDropColumnDefinitionSegment(alterTableDrop));
                 }
             }
+            if (each instanceof AddTableConstraintContext) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(((AddTableConstraintContext) each).tableConstraintDef()));
+            }
+        }
+        return result;
+    }
+    
+    private DropColumnDefinitionSegment generateDropColumnDefinitionSegment(final AlterTableDropContext ctx) {
+        ColumnSegment column = new ColumnSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.columnInternalRef.stop.getStopIndex(),
+                (IdentifierValue) visit(ctx.columnInternalRef));
+        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(column));
+    }
+    
+    private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ModifyColumnContext ctx) {
+        ColumnSegment column = new ColumnSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.columnInternalRef.stop.getStopIndex(), (IdentifierValue) visit(ctx.columnInternalRef));
+        ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), generateColumnDefinitionSegment(column, ctx.fieldDefinition()));
+        if (null != ctx.place()) {
+            modifyColumnDefinition.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
+        }
+        return modifyColumnDefinition;
+    }
+    
+    private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ChangeColumnContext ctx) {
+        ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(ctx.columnDefinition()));
+        if (null != ctx.place()) {
+            result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }
         return result;
     }

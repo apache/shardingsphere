@@ -77,4 +77,64 @@
         <input sql="ALTER TABLE t_single add constraint t_single_fk foreign key (order_id) references t_single_extend (order_id)" />
         <output sql="ALTER TABLE t_single add constraint t_single_fk foreign key (order_id) references t_single_extend (order_id)" />
     </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_single_data_node_binding_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_order add constraint t_order_fk foreign key (order_id) references t_order_item (order_id)" />
+        <output sql="ALTER TABLE t_order_0 add constraint t_order_fk foreign key (order_id) references t_order_item_0 (order_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_single_data_node_unbinding_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_order add constraint t_order_fk foreign key (order_id) references t_order_extend (order_id)" />
+        <output sql="ALTER TABLE t_order_0 add constraint t_order_fk foreign key (order_id) references t_order_extend_0 (order_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_multi_data_node_and_single_data_node_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_account add constraint t_account_fk foreign key (account_id) references t_order (account_id)" />
+        <output sql="ALTER TABLE t_account_0 add constraint t_account_fk foreign key (account_id) references t_order_0 (account_id)" />
+        <output sql="ALTER TABLE t_account_1 add constraint t_account_fk foreign key (account_id) references t_order_0 (account_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_multi_data_node_binding_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_account add constraint t_account_fk foreign key (account_id) references t_account_detail (account_id)" />
+        <output sql="ALTER TABLE t_account_0 add constraint t_account_fk foreign key (account_id) references t_account_detail_0 (account_id)" />
+        <output sql="ALTER TABLE t_account_1 add constraint t_account_fk foreign key (account_id) references t_account_detail_1 (account_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_single_data_node_and_broadcast_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_order add constraint t_order_fk foreign key (order_id) references t_config (order_id)" />
+        <output sql="ALTER TABLE t_order_0 add constraint t_order_fk foreign key (order_id) references t_config (order_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_multi_data_node_and_broadcast_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_account add constraint t_account_fk foreign key (account_id) references t_config (account_id)" />
+        <output sql="ALTER TABLE t_account_0 add constraint t_account_fk foreign key (account_id) references t_config (account_id)" />
+        <output sql="ALTER TABLE t_account_1 add constraint t_account_fk foreign key (account_id) references t_config (account_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_single_data_node_and_single_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_order add constraint t_order_fk foreign key (order_id) references t_single (order_id)" />
+        <output sql="ALTER TABLE t_order_0 add constraint t_order_fk foreign key (order_id) references t_single (order_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_multi_data_node_and_single_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_account add constraint t_account_fk foreign key (account_id) references t_single (account_id)" />
+        <output sql="ALTER TABLE t_account_0 add constraint t_account_fk foreign key (account_id) references t_single (account_id)" />
+        <output sql="ALTER TABLE t_account_1 add constraint t_account_fk foreign key (account_id) references t_single (account_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_broadcast_and_single_data_node_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_config add constraint t_config_fk foreign key (order_id) references t_order (order_id)" />
+        <output sql="ALTER TABLE t_config add constraint t_config_fk foreign key (order_id) references t_order_0 (order_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_broadcast_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_config add constraint t_config_fk foreign key (order_id) references t_order_type (order_id)" />
+        <output sql="ALTER TABLE t_config add constraint t_config_fk foreign key (order_id) references t_order_type (order_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_broadcast_and_single_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_config add constraint t_config_fk foreign key (order_id) references t_single (order_id)" />
+        <output sql="ALTER TABLE t_config add constraint t_config_fk foreign key (order_id) references t_single (order_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_single_and_single_data_node_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_single add constraint t_single_fk foreign key (order_id) references t_order (order_id)" />
+        <output sql="ALTER TABLE t_single add constraint t_single_fk foreign key (order_id) references t_order_0 (order_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_single_and_broadcast_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_single add constraint t_single_fk foreign key (order_id) references t_config (order_id)" />
+        <output sql="ALTER TABLE t_single add constraint t_single_fk foreign key (order_id) references t_config (order_id)" />
+    </rewrite-assertion>
+    <rewrite-assertion id="alter_table_with_single_table_with_add_foreign_constraint_for_mysql" db-type="MySQL">
+        <input sql="ALTER TABLE t_single add constraint t_single_fk foreign key (order_id) references t_single_extend (order_id)" />
+        <output sql="ALTER TABLE t_single add constraint t_single_fk foreign key (order_id) references t_single_extend (order_id)" />
+    </rewrite-assertion>
 </rewrite-assertions>
