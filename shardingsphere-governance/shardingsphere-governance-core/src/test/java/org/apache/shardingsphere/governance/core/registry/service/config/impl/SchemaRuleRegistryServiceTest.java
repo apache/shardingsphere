@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.service.impl;
+package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;

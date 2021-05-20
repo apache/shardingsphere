@@ -15,45 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.service.impl;
+package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
-import org.apache.shardingsphere.governance.core.registry.service.GlobalRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.config.GlobalRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Properties;
 
 /**
- * Global rule registry service.
+ * Properties registry service.
  */
 @RequiredArgsConstructor
-public final class GlobalRuleRegistryService implements GlobalRegistryService<Collection<RuleConfiguration>> {
+public final class PropertiesRegistryService implements GlobalRegistryService<Properties> {
     
     private final RegistryCenterRepository repository;
     
     private final RegistryCenterNode node = new RegistryCenterNode();
     
     @Override
-    public void persist(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
-        if (!globalRuleConfigs.isEmpty() && (isOverwrite || !isExisted())) {
-            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
+    public void persist(final Properties props, final boolean isOverwrite) {
+        if (!props.isEmpty() && (isOverwrite || !isExisted())) {
+            repository.persist(node.getPropsPath(), YamlEngine.marshal(props));
         }
     }
     
-    @Override
-    @SuppressWarnings("unchecked")
-    public Collection<RuleConfiguration> load() {
-        return isExisted()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
+    private boolean isExisted() {
+        return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
     }
     
-    private boolean isExisted() {
-        return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
+    @Override
+    public Properties load() {
+        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(node.getPropsPath()), Properties.class);
     }
 }
