@@ -661,18 +661,38 @@
     
     <alter-table sql-case-id="alter_table_add_index">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint index-name="order_index" start-index="24" stop-index="51">
+            <index-column name="order_id" start-index="43" stop-index="50" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_fulltext_index">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint index-name="idx_column1" start-index="24" stop-index="59">
+            <index-column name="column1" start-index="52" stop-index="58" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_composite_index">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint index-name="order_index" start-index="24" stop-index="68">
+            <index-column name="order_id" start-index="43" stop-index="50" />
+            <index-column name="user_id" start-index="53" stop-index="59" />
+            <index-column name="status" start-index="62" stop-index="67" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_indexes">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint index-name="idx_column1" start-index="24" stop-index="50">
+            <index-column name="column1" start-index="43" stop-index="49" />
+        </add-constraint>
+        <add-constraint index-name="idx_column2" start-index="57" stop-index="83">
+            <index-column name="column2" start-index="76" stop-index="82" />
+        </add-constraint>
+        <add-constraint index-name="idx_column3" start-index="90" stop-index="116">
+            <index-column name="column3" start-index="109" stop-index="115" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_index">
