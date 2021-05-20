@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.service.rule;
+package org.apache.shardingsphere.governance.core.registry.service.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
