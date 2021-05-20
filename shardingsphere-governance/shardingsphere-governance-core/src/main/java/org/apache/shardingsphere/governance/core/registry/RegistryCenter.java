@@ -26,6 +26,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.governance.core.registry.datasource.DataSourceRegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
@@ -93,6 +94,9 @@ public final class RegistryCenter {
     private final RegistryCacheManager registryCacheManager;
     
     @Getter
+    private final DataSourceRegistryCenter dataSource;
+    
+    @Getter
     private final LockRegistryCenter lock;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
@@ -100,6 +104,7 @@ public final class RegistryCenter {
         this.repository = repository;
         node = new RegistryCenterNode();
         registryCacheManager = new RegistryCacheManager(repository, node);
+        dataSource = new DataSourceRegistryCenter(repository);
         lock = new LockRegistryCenter(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -114,26 +119,10 @@ public final class RegistryCenter {
      */
     public void persistConfigurations(final String schemaName, 
                                       final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
-        persistDataSourceConfigurations(schemaName, dataSourceConfigs, isOverwrite);
+        dataSource.persistDataSourceConfigurations(schemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfigurations(schemaName, ruleConfigs, isOverwrite);
         // TODO Consider removing the following one.
         persistSchemaName(schemaName);
-    }
-    
-    private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {
-        if (!dataSourceConfigs.isEmpty() && (isOverwrite || !hasDataSourceConfiguration(schemaName))) {
-            persistDataSourceConfigurations(schemaName, dataSourceConfigs);
-        }
-    }
-    
-    /**
-     * Persist data source configurations.
-     *
-     * @param schemaName schema name
-     * @param dataSourceConfigs data source configurations
-     */
-    public void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
@@ -183,7 +172,7 @@ public final class RegistryCenter {
     }
     
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = loadDataSourceConfigurations(schemaName);
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = dataSource.loadDataSourceConfigurations(schemaName);
         dataSourceConfigMap.putAll(dataSourceConfigs);
         repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigMap)));
     }
@@ -232,27 +221,6 @@ public final class RegistryCenter {
         List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(schemaName);
         repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(newArrayList));
-    }
-
-    /**
-     * Load data source configurations.
-     *
-     * @param schemaName schema name
-     * @return data source configurations
-     */
-    public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
-        return hasDataSourceConfiguration(schemaName) ? getDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static Map<String, DataSourceConfiguration> getDataSourceConfigurations(final String yamlContent) {
-        Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(yamlContent, Map.class);
-        if (yamlDataSources.isEmpty()) {
-            return new LinkedHashMap<>();
-        }
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSources.size());
-        yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
-        return result;
     }
     
     /**
@@ -388,7 +356,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final DataSourceAlteredEvent event) {
-        persistDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
+        dataSource.persistDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
     /**
@@ -608,15 +576,6 @@ public final class RegistryCenter {
      */
     public String loadInstanceData() {
         return repository.get(node.getProxyNodePath(instanceId));
-    }
-    
-    /**
-     * Load all instances.
-     *
-     * @return collection of all instances
-     */
-    public Collection<String> loadAllInstances() {
-        return repository.getChildrenKeys(node.getProxyNodesPath());
     }
     
     /**

@@ -82,8 +82,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class RegistryCenterTest {
     
-    private static final String DATA_SOURCE_YAM = "yaml/registryCenter/data-source.yaml";
-    
     private static final String SHARDING_RULE_YAML = "yaml/registryCenter/data-sharding-rule.yaml";
     
     private static final String SHARDING_AND_ENCRYPT_RULE_YAML = "yaml/registryCenter/data-sharding-encrypt-rule.yaml";
@@ -99,8 +97,6 @@ public final class RegistryCenterTest {
     private static final String GLOBAL_RULE_YAML = "yaml/registryCenter/data-global-rule.yaml";
     
     private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
-    
-    private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL = "yaml/registryCenter/data-source-init-sql.yaml";
     
     private static final String META_DATA_YAML = "yaml/schema.yaml";
     
@@ -314,10 +310,6 @@ public final class RegistryCenterTest {
                 DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
-        return DataSourceConfiguration.getDataSourceConfiguration(dataSource);
-    }
-    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
         result.put("ds_0", createDataSource("ds_0"));
@@ -368,31 +360,6 @@ public final class RegistryCenterTest {
         Properties result = new Properties();
         result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE);
         return result;
-    }
-    
-    @Test
-    public void assertLoadDataSourceConfigurations() {
-        when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAM));
-        RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
-        Map<String, DataSourceConfiguration> actual = registryCenter.loadDataSourceConfigurations("sharding_db");
-        assertThat(actual.size(), is(2));
-        assertDataSourceConfiguration(actual.get("ds_0"), createDataSourceConfiguration(createDataSource("ds_0")));
-        assertDataSourceConfiguration(actual.get("ds_1"), createDataSourceConfiguration(createDataSource("ds_1")));
-    }
-    
-    private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
-        assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
-        assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
-        assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
-    }
-    
-    @Test
-    public void assertLoadDataSourceConfigurationsNotExistPath() {
-        when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn("");
-        RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
-        Map<String, DataSourceConfiguration> actual = registryCenter.loadDataSourceConfigurations("sharding_db");
-        assertThat(actual.size(), is(0));
     }
     
     @Test
@@ -504,34 +471,6 @@ public final class RegistryCenterTest {
         assertThat(actual.size(), is(2));
         assertThat(actual, hasItems("sharding_db"));
         assertThat(actual, hasItems("replica_query_db"));
-    }
-    
-    @Test
-    public void assertLoadDataSourceConfigurationsWithConnectionInitSQLs() {
-        when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL));
-        RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
-        Map<String, DataSourceConfiguration> actual = registryCenter.loadDataSourceConfigurations("sharding_db");
-        assertThat(actual.size(), is(2));
-        assertDataSourceConfigurationWithConnectionInitSqls(actual.get("ds_0"), createDataSourceConfiguration(createDataSourceWithConnectionInitSqls("ds_0")));
-        assertDataSourceConfigurationWithConnectionInitSqls(actual.get("ds_1"), createDataSourceConfiguration(createDataSourceWithConnectionInitSqls("ds_1")));
-    }
-    
-    private DataSource createDataSourceWithConnectionInitSqls(final String name) {
-        MockDataSource result = new MockDataSource();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setUrl("jdbc:mysql://localhost:3306/" + name);
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
-        return result;
-    }
-    
-    private void assertDataSourceConfigurationWithConnectionInitSqls(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
-        assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
-        assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
-        assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
-        assertThat(actual.getProps().get("connectionInitSqls"), is(expected.getProps().get("connectionInitSqls")));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
