@@ -211,16 +211,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Judge whether schema has data source configuration.
-     *
-     * @param schemaName schema name
-     * @return has data source configuration or not
-     */
-    public boolean hasDataSourceConfiguration(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(node.getMetadataDataSourcePath(schemaName)));
-    }
-    
-    /**
      * Persist ShardingSphere schema.
      *
      * @param schemaName schema name

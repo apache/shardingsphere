@@ -330,7 +330,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private ShardingSphereMetaData buildMetaData(final MetaDataPersistedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
-        if (!governanceFacade.getRegistryCenter().hasDataSourceConfiguration(schemaName)) {
+        if (!governanceFacade.getRegistryCenter().getDataSource().hasDataSourceConfiguration(schemaName)) {
             governanceFacade.getRegistryCenter().getDataSource().persistDataSourceConfigurations(schemaName, new LinkedHashMap<>());
         }
         if (!governanceFacade.getRegistryCenter().getSchemaRule().hasRuleConfiguration(schemaName)) {
@@ -341,7 +341,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
                 Collections.singletonMap(schemaName, governanceFacade.getRegistryCenter().getSchemaRule().loadRuleConfigurations(schemaName)),
                 // TODO load global schema from reg center
-                governanceFacade.getRegistryCenter().loadGlobalRuleConfigurations(), 
+                governanceFacade.getRegistryCenter().getGlobalRule().loadGlobalRuleConfigurations(), 
                 metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build().getMetaDataMap().get(schemaName);
     }

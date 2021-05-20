@@ -78,10 +78,6 @@ public final class DataSourceRegistryCenter {
         return hasDataSourceConfiguration(schemaName) ? getDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
-    private boolean hasDataSourceConfiguration(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(node.getMetadataDataSourcePath(schemaName)));
-    }
-    
     @SuppressWarnings("unchecked")
     private static Map<String, DataSourceConfiguration> getDataSourceConfigurations(final String yamlContent) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(yamlContent, Map.class);
@@ -91,5 +87,15 @@ public final class DataSourceRegistryCenter {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSources.size());
         yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
         return result;
+    }
+    
+    /**
+     * Judge whether schema has data source configuration.
+     *
+     * @param schemaName schema name
+     * @return has data source configuration or not
+     */
+    public boolean hasDataSourceConfiguration(final String schemaName) {
+        return !Strings.isNullOrEmpty(repository.get(node.getMetadataDataSourcePath(schemaName)));
     }
 }
