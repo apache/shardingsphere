@@ -1423,8 +1423,24 @@ NONEDITIONABLE
     : N O N E D I T I O N A B L E
     ;
 
+DEPENDENT
+    : D E P E N D E N T
+    ;
+
 INDEXES
     : I N D E X E S
+    ;
+
+SHRINK
+    : S H R I N K
+    ;
+
+SPACE
+    : S P A C E
+    ;
+
+COMPACT
+    : C O M P A C T
     ;
 
 SUPPLEMENTAL

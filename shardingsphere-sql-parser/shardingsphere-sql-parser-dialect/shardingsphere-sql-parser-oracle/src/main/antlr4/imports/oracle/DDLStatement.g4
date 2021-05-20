@@ -1069,19 +1069,31 @@ coalesceTablePartition
     ;
 
 addTablePartition
-    : ADD (addRangePartitionClause | addListPartitionClause)
+    : ADD ((PARTITION partitionName? addRangePartitionClause (COMMA_ PARTITION partitionName? addRangePartitionClause)*)
+        |  (PARTITION partitionName? addListPartitionClause (COMMA_ PARTITION partitionName? addListPartitionClause)*)
+        |  (PARTITION partitionName? addSystemPartitionClause (COMMA_ PARTITION partitionName? addSystemPartitionClause)*)
+        |  (PARTITION partitionName? addHashPartitionClause (COMMA_ PARTITION partitionName? addHashPartitionClause)*)
+        ) dependentTablesClause?
     ;
 
 addRangePartitionClause
-    : PARTITION partitionName? rangeValuesClause tablePartitionDescription
+    : rangeValuesClause tablePartitionDescription? externalPartSubpartDataProps?
     ((LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
-        | hashSubpartitionQuantity)?
+    | hashSubpartitionQuantity)? updateIndexClauses?
     ;
 
 addListPartitionClause
-    : PARTITION partitionName? listValuesClause tablePartitionDescription
+    : listValuesClause tablePartitionDescription? externalPartSubpartDataProps?
     ((LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
-    | hashSubpartitionQuantity)?
+    | hashSubpartitionQuantity)? updateIndexClauses?
+    ;
+
+addSystemPartitionClause
+    : tablePartitionDescription? updateIndexClauses?
+    ;
+
+addHashPartitionClause
+    : partitioningStorageClause updateIndexClauses? parallelClause? readOnlyClause? indexingClause?
     ;
 
 dropTablePartition
