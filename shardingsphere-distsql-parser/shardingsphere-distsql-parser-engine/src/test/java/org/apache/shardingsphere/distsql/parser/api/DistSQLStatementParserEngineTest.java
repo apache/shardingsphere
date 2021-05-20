@@ -20,19 +20,24 @@ package org.apache.shardingsphere.distsql.parser.api;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
@@ -128,6 +133,22 @@ public final class DistSQLStatementParserEngineTest {
             + ")";
 
     private static final String RDL_DROP_DATABASE_DISCOVERY_RULE = "DROP DB_DISCOVERY RULE ha_group_0,ha_group_1";
+
+    private static final String RDL_CREATE_ENCRYPT_RULE = "CREATE ENCRYPT RULE t_encrypt ("
+            + "RESOURCE=ds_1,"
+            + "COLUMNS("
+            + "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),"
+            + "(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))"
+            + "))";
+
+    private static final String RDL_ALTER_ENCRYPT_RULE = "ALTER ENCRYPT RULE t_encrypt ("
+            + "RESOURCE=ds_1,"
+            + "COLUMNS("
+            + "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),"
+            + "(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))"
+            + "))";
+
+    private static final String RDL_DROP_ENCRYPT_RULE = "DROP ENCRYPT RULE t_encrypt,t_encrypt_order";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -344,5 +365,52 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_DROP_DATABASE_DISCOVERY_RULE);
         assertTrue(sqlStatement instanceof DropDatabaseDiscoveryRuleStatement);
         assertThat(((DropDatabaseDiscoveryRuleStatement) sqlStatement).getRuleNames(), is(Arrays.asList("ha_group_0", "ha_group_1")));
+    }
+
+    @Test
+    public void assertParseCreateEncryptRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_CREATE_ENCRYPT_RULE);
+        assertTrue(sqlStatement instanceof CreateEncryptRuleStatement);
+        CreateEncryptRuleStatement createEncryptRuleStatement = (CreateEncryptRuleStatement) sqlStatement;
+        assertThat(createEncryptRuleStatement.getEncryptRules().size(), is(1));
+        EncryptRuleSegment encryptRuleSegment = createEncryptRuleStatement.getEncryptRules().iterator().next();
+        assertThat(encryptRuleSegment.getTableName(), is("t_encrypt"));
+        assertThat(encryptRuleSegment.getColumns().size(), is(2));
+        List<EncryptColumnSegment> encryptColumnSegments = new ArrayList<>(encryptRuleSegment.getColumns());
+        assertThat(encryptColumnSegments.get(0).getName(), is("user_id"));
+        assertThat(encryptColumnSegments.get(0).getCipherColumn(), is("user_cipher"));
+        assertThat(encryptColumnSegments.get(0).getPlainColumn(), is("user_plain"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmName(), is("AES"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmProps().get("aes-key-value"), is("123456abc"));
+        assertThat(encryptColumnSegments.get(1).getName(), is("order_id"));
+        assertThat(encryptColumnSegments.get(1).getCipherColumn(), is("order_cipher"));
+        assertThat(encryptColumnSegments.get(1).getEncryptor().getAlgorithmName(), is("MD5"));
+    }
+
+    @Test
+    public void assertParseAlterEncryptRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_ALTER_ENCRYPT_RULE);
+        assertTrue(sqlStatement instanceof AlterEncryptRuleStatement);
+        AlterEncryptRuleStatement alterEncryptRuleStatement = (AlterEncryptRuleStatement) sqlStatement;
+        assertThat(alterEncryptRuleStatement.getEncryptRules().size(), is(1));
+        EncryptRuleSegment encryptRuleSegment = alterEncryptRuleStatement.getEncryptRules().iterator().next();
+        assertThat(encryptRuleSegment.getTableName(), is("t_encrypt"));
+        assertThat(encryptRuleSegment.getColumns().size(), is(2));
+        List<EncryptColumnSegment> encryptColumnSegments = new ArrayList<>(encryptRuleSegment.getColumns());
+        assertThat(encryptColumnSegments.get(0).getName(), is("user_id"));
+        assertThat(encryptColumnSegments.get(0).getCipherColumn(), is("user_cipher"));
+        assertThat(encryptColumnSegments.get(0).getPlainColumn(), is("user_plain"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmName(), is("AES"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmProps().get("aes-key-value"), is("123456abc"));
+        assertThat(encryptColumnSegments.get(1).getName(), is("order_id"));
+        assertThat(encryptColumnSegments.get(1).getCipherColumn(), is("order_cipher"));
+        assertThat(encryptColumnSegments.get(1).getEncryptor().getAlgorithmName(), is("MD5"));
+    }
+
+    @Test
+    public void assertParseDropEncryptRule() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_ENCRYPT_RULE);
+        assertTrue(sqlStatement instanceof DropEncryptRuleStatement);
+        assertThat(((DropEncryptRuleStatement) sqlStatement).getTableNames(), is(Arrays.asList("t_encrypt", "t_encrypt_order")));
     }
 }

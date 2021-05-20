@@ -48,6 +48,8 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.CheckScalingJobStatement;
@@ -58,17 +60,20 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJo
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StartScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StopScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
@@ -83,6 +88,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -90,7 +96,7 @@ import java.util.stream.Collectors;
  * Dist SQL visitor.
  */
 public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
-    
+
     @Override
     public ASTNode visitAddResource(final AddResourceContext ctx) {
         Collection<DataSourceSegment> connectionInfos = new LinkedList<>();
@@ -300,6 +306,41 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         DropDatabaseDiscoveryRuleStatement result = new DropDatabaseDiscoveryRuleStatement();
         result.getRuleNames().addAll(ctx.IDENTIFIER().stream().map(TerminalNode::getText).collect(Collectors.toList()));
         return result;
+    }
+
+    @Override
+    public ASTNode visitCreateEncryptRule(final DistSQLStatementParser.CreateEncryptRuleContext ctx) {
+        return new CreateEncryptRuleStatement(ctx.encryptRuleDefinition()
+                .stream().map(each -> (EncryptRuleSegment) visit(each)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public ASTNode visitEncryptRuleDefinition(final DistSQLStatementParser.EncryptRuleDefinitionContext ctx) {
+        return new EncryptRuleSegment(ctx.tableName().getText(), ctx.columnDefinition()
+                .stream().map(each -> (EncryptColumnSegment) visit(each)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public ASTNode visitColumnDefinition(final DistSQLStatementParser.ColumnDefinitionContext ctx) {
+        EncryptColumnSegment result = new EncryptColumnSegment();
+        result.setName(ctx.columnName().getText());
+        result.setCipherColumn(ctx.cipherColumnName().getText());
+        if (Objects.nonNull(ctx.plainColumnName())) {
+            result.setPlainColumn(ctx.plainColumnName().getText());
+        }
+        result.setEncryptor((FunctionSegment) visit(ctx.functionDefinition()));
+        return result;
+    }
+
+    @Override
+    public ASTNode visitAlterEncryptRule(final DistSQLStatementParser.AlterEncryptRuleContext ctx) {
+        return new AlterEncryptRuleStatement(ctx.encryptRuleDefinition()
+                .stream().map(each -> (EncryptRuleSegment) visit(each)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public ASTNode visitDropEncryptRule(final DistSQLStatementParser.DropEncryptRuleContext ctx) {
+        return new DropEncryptRuleStatement(ctx.IDENTIFIER().stream().map(TerminalNode::getText).collect(Collectors.toList()));
     }
 
     @Override

@@ -210,3 +210,15 @@ BROADCAST
 DB_DISCOVERY
     : D B UL_ D I S C O V E R Y
     ;
+
+COLUMNS
+    : C O L U M N S
+    ;
+
+CIPHER
+    : C I P H E R
+    ;
+
+PLAIN
+    : P L A I N
+    ;

@@ -202,3 +202,31 @@ alterDatabaseDiscoveryRule
 dropDatabaseDiscoveryRule
     : DROP DB_DISCOVERY RULE IDENTIFIER (COMMA IDENTIFIER)*
     ;
+
+createEncryptRule
+    : CREATE ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
+    ;
+
+encryptRuleDefinition
+    : tableName LP RESOURCE EQ resourceName COMMA COLUMNS LP columnDefinition (COMMA columnDefinition)*  RP RP
+    ;
+
+columnDefinition
+    : LP NAME EQ columnName (COMMA PLAIN EQ plainColumnName)? COMMA CIPHER EQ cipherColumnName COMMA functionDefinition RP
+    ;
+
+alterEncryptRule
+    : ALTER ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
+    ;
+
+dropEncryptRule
+    : DROP ENCRYPT RULE IDENTIFIER (COMMA IDENTIFIER)*
+    ;
+
+plainColumnName
+    : IDENTIFIER
+    ;
+
+cipherColumnName
+    : IDENTIFIER
+    ;
