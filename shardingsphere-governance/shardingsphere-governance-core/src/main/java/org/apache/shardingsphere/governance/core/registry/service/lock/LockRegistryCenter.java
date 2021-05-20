@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.lock;
+package org.apache.shardingsphere.governance.core.registry.service.lock;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;

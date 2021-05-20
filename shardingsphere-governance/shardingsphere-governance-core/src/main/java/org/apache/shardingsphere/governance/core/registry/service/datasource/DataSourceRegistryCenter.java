@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.datasource;
+package org.apache.shardingsphere.governance.core.registry.service.datasource;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;

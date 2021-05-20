@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.rule;
+package org.apache.shardingsphere.governance.core.registry.service.rule;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
