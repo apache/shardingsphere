@@ -22,7 +22,7 @@ import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.shardingsphere.infra.executor.sql.optimize.context.CalciteContext;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 
 /**
  * Calcite data context.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.optimize.context.CalciteCont
 @RequiredArgsConstructor
 public final class CalciteDataContext implements DataContext {
     
-    private final CalciteContext context;
+    private final OptimizeContext context;
     
     @Override
     public SchemaPlus getRootSchema() {

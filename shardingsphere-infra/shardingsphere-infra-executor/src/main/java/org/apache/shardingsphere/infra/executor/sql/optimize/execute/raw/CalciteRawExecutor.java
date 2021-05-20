@@ -30,9 +30,9 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.optimize.context.CalciteContext;
 import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteExecutor;
 import org.apache.shardingsphere.infra.executor.sql.optimize.execute.raw.context.CalciteDataContext;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 
 import java.sql.ResultSet;
 import java.util.Collections;
@@ -44,7 +44,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class CalciteRawExecutor implements CalciteExecutor {
     
-    private final CalciteContext context;
+    private final OptimizeContext context;
     
     @Override
     public List<QueryResult> executeQuery(final String sql, final List<Object> parameters) {

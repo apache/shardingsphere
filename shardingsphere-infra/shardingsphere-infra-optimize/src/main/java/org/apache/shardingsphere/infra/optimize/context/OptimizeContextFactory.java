@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.optimize.context;
 
+import lombok.Getter;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
@@ -74,6 +75,7 @@ public final class OptimizeContextFactory {
     
     private final RelDataTypeFactory typeFactory;
     
+    @Getter
     private final LogicSchemaMetadatas schemaMetadatas;
     
     private final RelOptCluster cluster;
@@ -152,7 +154,7 @@ public final class OptimizeContextFactory {
         CalciteCatalogReader catalogReader = createCalciteCatalogReader(schemaName, connectionConfig, typeFactory, logicSchema);
         SqlValidator validator = createSqlValidator(connectionConfig, typeFactory, catalogReader);
         SqlToRelConverter relConverter = createSqlToRelConverter(cluster, validator, catalogReader);
-        return new OptimizeContext(properties, logicSchema, parserConfig, validator, relConverter);
+        return new OptimizeContext(properties, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
     private CalciteCatalogReader createCalciteCatalogReader(final String schemaName, final CalciteConnectionConfig config,

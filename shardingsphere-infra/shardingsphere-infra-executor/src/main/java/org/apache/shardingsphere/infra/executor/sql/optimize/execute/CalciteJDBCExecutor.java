@@ -22,7 +22,7 @@ import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.optimize.context.CalciteContext;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -45,7 +45,7 @@ public final class CalciteJDBCExecutor implements CalciteExecutor {
     
     public static final Properties PROPERTIES = new Properties();
     
-    private final CalciteContext context;
+    private final OptimizeContext context;
     
     private Statement statement;
     
@@ -57,7 +57,7 @@ public final class CalciteJDBCExecutor implements CalciteExecutor {
         }
     }
     
-    public CalciteJDBCExecutor(final CalciteContext context) {
+    public CalciteJDBCExecutor(final OptimizeContext context) {
         this.context = context;
         PROPERTIES.setProperty(CalciteConnectionProperty.LEX.camelName(), context.getConnectionProperties().getProperty(CalciteConnectionProperty.LEX.camelName()));
         PROPERTIES.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), context.getConnectionProperties().getProperty(CalciteConnectionProperty.CONFORMANCE.camelName()));
@@ -92,8 +92,8 @@ public final class CalciteJDBCExecutor implements CalciteExecutor {
         Connection result = DriverManager.getConnection(CONNECTION_URL, PROPERTIES);
         CalciteConnection calciteConnection = result.unwrap(CalciteConnection.class);
         SchemaPlus rootSchema = calciteConnection.getRootSchema();
-        rootSchema.add(context.getCalciteLogicSchema().getName(), context.getCalciteLogicSchema());
-        calciteConnection.setSchema(context.getCalciteLogicSchema().getName());
+        rootSchema.add(context.getSchemaName(), context.getLogicSchema());
+        calciteConnection.setSchema(context.getSchemaName());
         return result;
     }
     
