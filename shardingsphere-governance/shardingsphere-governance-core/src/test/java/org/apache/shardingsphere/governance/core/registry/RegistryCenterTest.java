@@ -73,7 +73,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class RegistryCenterTest {
     
-    private static final String SHARDING_RULE_YAML = "yaml/regcenter/data-sharding-rule.yaml";
+    private static final String SHARDING_RULE_YAML = "yaml/regcenter/data-schema-rule.yaml";
     
     private static final String GLOBAL_RULE_YAML = "yaml/regcenter/data-global-rule.yaml";
     
