@@ -40,7 +40,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Sw
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.config.impl.LockRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.state.LockRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
