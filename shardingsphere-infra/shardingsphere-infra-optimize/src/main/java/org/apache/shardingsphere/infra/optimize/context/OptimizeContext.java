@@ -35,6 +35,8 @@ public final class OptimizeContext {
     
     private final Properties connectionProperties;
     
+    private final String schemaName;
+    
     private final Schema logicSchema;
     
     private final SqlParser.Config parserConfig;
