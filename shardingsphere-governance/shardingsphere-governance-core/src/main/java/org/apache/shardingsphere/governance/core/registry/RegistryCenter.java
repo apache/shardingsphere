@@ -24,9 +24,6 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.core.lock.node.LockNode;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
@@ -41,7 +38,11 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Ru
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
-import org.apache.shardingsphere.governance.core.registry.lock.LockRegistryCenter;
+import org.apache.shardingsphere.governance.core.registry.service.impl.DataSourceRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.impl.GlobalRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.impl.LockRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.impl.PropertiesRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.impl.SchemaRuleRegistryService;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -62,14 +63,12 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -91,27 +90,34 @@ public final class RegistryCenter {
     
     private final RegistryCenterNode node;
     
-    private final LockNode lockNode;
-    
     private final RegistryCacheManager registryCacheManager;
     
     @Getter
-    private final LockRegistryCenter lock;
+    private final DataSourceRegistryService dataSourceService;
+    
+    @Getter
+    private final SchemaRuleRegistryService schemaRuleService;
+    
+    @Getter
+    private final GlobalRuleRegistryService globalRuleService;
+    
+    @Getter
+    private final PropertiesRegistryService propsService;
+    
+    @Getter
+    private final LockRegistryService lockService;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
         node = new RegistryCenterNode();
-        lockNode = new LockNode();
-        initLockNode();
         registryCacheManager = new RegistryCacheManager(repository, node);
-        lock = new LockRegistryCenter(repository);
+        dataSourceService = new DataSourceRegistryService(repository);
+        schemaRuleService = new SchemaRuleRegistryService(repository);
+        globalRuleService = new GlobalRuleRegistryService(repository);
+        propsService = new PropertiesRegistryService(repository);
+        lockService = new LockRegistryService(repository);
         ShardingSphereEventBus.getInstance().register(this);
-    }
-    
-    private void initLockNode() {
-        repository.persist(lockNode.getLockRootNodePath(), "");
-        repository.persist(lockNode.getLockedAckRootNodePah(), "");
     }
     
     /**
@@ -124,42 +130,10 @@ public final class RegistryCenter {
      */
     public void persistConfigurations(final String schemaName, 
                                       final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
-        persistDataSourceConfigurations(schemaName, dataSourceConfigs, isOverwrite);
-        persistRuleConfigurations(schemaName, ruleConfigs, isOverwrite);
+        dataSourceService.persist(schemaName, dataSourceConfigs, isOverwrite);
+        schemaRuleService.persist(schemaName, ruleConfigs, isOverwrite);
         // TODO Consider removing the following one.
         persistSchemaName(schemaName);
-    }
-    
-    private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {
-        if (!dataSourceConfigs.isEmpty() && (isOverwrite || !hasDataSourceConfiguration(schemaName))) {
-            persistDataSourceConfigurations(schemaName, dataSourceConfigs);
-        }
-    }
-    
-    /**
-     * Persist data source configurations.
-     *
-     * @param schemaName schema name
-     * @param dataSourceConfigs data source configurations
-     */
-    public void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigs)));
-    }
-    
-    private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
-        if (!ruleConfigs.isEmpty() && (isOverwrite || !hasRuleConfiguration(schemaName))) {
-            persistRuleConfigurations(schemaName, ruleConfigs);
-        }
-    }
-    
-    /**
-     * Persist rule configurations.
-     *
-     * @param schemaName schema name
-     * @param ruleConfigs rule configurations
-     */
-    public void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
-        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, ruleConfigs)));
     }
     
     /**
@@ -170,20 +144,8 @@ public final class RegistryCenter {
      * @param isOverwrite is overwrite config center's configuration
      */
     public void persistGlobalConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
-        persistGlobalRuleConfigurations(globalRuleConfigs, isOverwrite);
-        persistProperties(props, isOverwrite);
-    }
-    
-    private void persistGlobalRuleConfigurations(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
-        if (!globalRuleConfigs.isEmpty() && (isOverwrite || !hasGlobalRuleConfigurations())) {
-            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
-        }
-    }
-    
-    private void persistProperties(final Properties props, final boolean isOverwrite) {
-        if (!props.isEmpty() && (isOverwrite || !hasProperties())) {
-            repository.persist(node.getPropsPath(), YamlEngine.marshal(props));
-        }
+        globalRuleService.persist(globalRuleConfigs, isOverwrite);
+        propsService.persist(props, isOverwrite);
     }
     
     @SuppressWarnings("unchecked")
@@ -193,7 +155,7 @@ public final class RegistryCenter {
     }
     
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = loadDataSourceConfigurations(schemaName);
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = dataSourceService.load(schemaName);
         dataSourceConfigMap.putAll(dataSourceConfigs);
         repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigMap)));
     }
@@ -203,30 +165,10 @@ public final class RegistryCenter {
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
-        Collection<RuleConfiguration> configs = new LinkedList<>();
-        for (RuleConfiguration each : ruleConfigs) {
-            Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(each);
-            if (checker.isPresent()) {
-                checker.get().check(schemaName, each);
-                configs.add(each);
-            }
-        }
-        return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
-    }
-    
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
             repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
         }
-    }
-    
-    private boolean hasGlobalRuleConfigurations() {
-        return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
-    }
-    
-    private boolean hasProperties() {
-        return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
     }
     
     private void persistSchemaName(final String schemaName) {
@@ -243,59 +185,6 @@ public final class RegistryCenter {
         newArrayList.add(schemaName);
         repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(newArrayList));
     }
-
-    /**
-     * Load data source configurations.
-     *
-     * @param schemaName schema name
-     * @return data source configurations
-     */
-    public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
-        return hasDataSourceConfiguration(schemaName) ? getDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static Map<String, DataSourceConfiguration> getDataSourceConfigurations(final String yamlContent) {
-        Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(yamlContent, Map.class);
-        if (yamlDataSources.isEmpty()) {
-            return new LinkedHashMap<>();
-        }
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSources.size());
-        yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
-        return result;
-    }
-    
-    /**
-     * Load rule configurations.
-     *
-     * @param schemaName schema name
-     * @return rule configurations
-     */
-    @SuppressWarnings("unchecked")
-    public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
-        return hasRuleConfiguration(schemaName)
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), Collection.class)) : new LinkedList<>();
-    }
-    
-    /**
-     * Load global rule configurations.
-     * 
-     * @return global rule configurations
-     */
-    @SuppressWarnings("unchecked")
-    public Collection<RuleConfiguration> loadGlobalRuleConfigurations() {
-        return hasGlobalRuleConfigurations()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
-    }
-    
-    /**
-     * Load properties configuration.
-     *
-     * @return properties
-     */
-    public Properties loadProperties() {
-        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(node.getPropsPath()), Properties.class);
-    }
     
     /**
      * Load all schema names.
@@ -305,26 +194,6 @@ public final class RegistryCenter {
     public Collection<String> loadAllSchemaNames() {
         String schemaNames = repository.get(node.getMetadataNodePath());
         return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
-    }
-    
-    /**
-     * Judge whether schema has data source configuration.
-     *
-     * @param schemaName schema name
-     * @return has data source configuration or not
-     */
-    public boolean hasDataSourceConfiguration(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(node.getMetadataDataSourcePath(schemaName)));
-    }
-    
-    /**
-     * Judge whether schema has rule configuration.
-     *
-     * @param schemaName schema name
-     * @return has rule configuration or not
-     */
-    public boolean hasRuleConfiguration(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(node.getRulePath(schemaName)));
     }
     
     /**
@@ -398,7 +267,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final DataSourceAlteredEvent event) {
-        persistDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
+        dataSourceService.persist(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
     /**
@@ -408,8 +277,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsAlteredEvent event) {
-        //TODO
-        persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
+        schemaRuleService.persist(event.getSchemaName(), event.getRuleConfigurations());
     }
     
     /**
@@ -459,7 +327,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final SwitchRuleConfigurationEvent event) {
-        persistRuleConfigurations(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
+        schemaRuleService.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
         registryCacheManager.deleteCache(node.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
     }
     
@@ -478,18 +346,18 @@ public final class RegistryCenter {
     }
     
     /**
-     * User configuration event.
+     * Renew create user statement.
      *
-     * @param event user configuration event
+     * @param event create user statement event
      */
     @Subscribe
     public synchronized void renew(final CreateUserStatementEvent event) {
-        Collection<RuleConfiguration> globalRuleConfigs = loadGlobalRuleConfigurations();
+        Collection<RuleConfiguration> globalRuleConfigs = globalRuleService.load();
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .findAny().map(each -> (AuthorityRuleConfiguration) each);
         Preconditions.checkState(authorityRuleConfig.isPresent());
         refreshAuthorityRuleConfiguration(authorityRuleConfig.get(), event.getUsers());
-        persistGlobalRuleConfigurations(globalRuleConfigs, true);
+        globalRuleService.persist(globalRuleConfigs, true);
     }
     
     /**
@@ -618,15 +486,6 @@ public final class RegistryCenter {
      */
     public String loadInstanceData() {
         return repository.get(node.getProxyNodePath(instanceId));
-    }
-    
-    /**
-     * Load all instances.
-     *
-     * @return collection of all instances
-     */
-    public Collection<String> loadAllInstances() {
-        return repository.getChildrenKeys(node.getProxyNodesPath());
     }
     
     /**

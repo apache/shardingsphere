@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.lock;
+package org.apache.shardingsphere.governance.core.registry.service.impl;
 
-import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,43 +26,34 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.TimeUnit;
+import java.util.Properties;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class LockRegistryCenterTest {
+public final class PropertiesRegistryServiceTest {
+    
+    private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
     
-    private LockRegistryCenter lockRegistryCenter;
+    private PropertiesRegistryService propertiesRegistryService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        lockRegistryCenter = new LockRegistryCenter(registryCenterRepository);
-        Field field = lockRegistryCenter.getClass().getDeclaredField("repository");
+        propertiesRegistryService = new PropertiesRegistryService(registryCenterRepository);
+        Field field = propertiesRegistryService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
-        field.set(lockRegistryCenter, registryCenterRepository);
+        field.set(propertiesRegistryService, registryCenterRepository);
     }
     
     @Test
-    public void assertTryLock() {
-        lockRegistryCenter.tryLock("test", 50L);
-        verify(registryCenterRepository).tryLock(eq(new LockNode().getLockNodePath("test")), eq(50L), eq(TimeUnit.MILLISECONDS));
-    }
-    
-    @Test
-    public void assertReleaseLock() {
-        lockRegistryCenter.releaseLock("test");
-        verify(registryCenterRepository).releaseLock(eq(new LockNode().getLockNodePath("test")));
-    }
-    
-    @Test
-    public void assertDeleteLockAck() {
-        lockRegistryCenter.deleteLockAck("test");
-        verify(registryCenterRepository).delete(anyString());
+    public void assertLoad() {
+        when(registryCenterRepository.get("/props")).thenReturn(PROPS_YAML);
+        Properties actual = propertiesRegistryService.load();
+        assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));
     }
 }

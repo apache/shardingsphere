@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.lock;
 
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.lock.LockRegistryCenter;
+import org.apache.shardingsphere.governance.core.registry.service.impl.LockRegistryService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,29 +34,29 @@ import static org.mockito.Mockito.when;
 public final class GovernanceLockTest {
     
     @Mock
-    private LockRegistryCenter lockRegistryCenter;
+    private LockRegistryService lockRegistryService;
     
     private GovernanceLock lock;
     
     @Before
     public void setUp() {
         RegistryCenter registryCenter = mock(RegistryCenter.class);
-        when(registryCenter.getLock()).thenReturn(lockRegistryCenter);
+        when(registryCenter.getLockService()).thenReturn(lockRegistryService);
         lock = new GovernanceLock(registryCenter, 50L);
     }
     
     @Test
     public void assertTryLock() {
-        when(lockRegistryCenter.tryLock(eq("test"), eq(50L))).thenReturn(Boolean.TRUE);
+        when(lockRegistryService.tryLock(eq("test"), eq(50L))).thenReturn(Boolean.TRUE);
         lock.tryLock("test", 50L);
-        verify(lockRegistryCenter).tryLock(eq("test"), eq(50L));
+        verify(lockRegistryService).tryLock(eq("test"), eq(50L));
     }
     
     @Test
     public void assertReleaseLock() {
-        when(lockRegistryCenter.checkUnlockAck("test")).thenReturn(Boolean.TRUE);
+        when(lockRegistryService.checkUnlockAck("test")).thenReturn(Boolean.TRUE);
         lock.releaseLock("test");
-        verify(lockRegistryCenter).checkUnlockAck(eq("test"));
-        verify(lockRegistryCenter).releaseLock(eq("test"));
+        verify(lockRegistryService).checkUnlockAck(eq("test"));
+        verify(lockRegistryService).releaseLock(eq("test"));
     }
 }

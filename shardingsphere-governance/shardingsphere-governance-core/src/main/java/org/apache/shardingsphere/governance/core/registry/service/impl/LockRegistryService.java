@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.lock;
+package org.apache.shardingsphere.governance.core.registry.service.impl;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -29,9 +29,9 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Lock registry center.
+ * Lock registry service.
  */
-public final class LockRegistryCenter {
+public final class LockRegistryService {
     
     private static final int CHECK_ACK_MAXIMUM = 5;
     
@@ -45,7 +45,7 @@ public final class LockRegistryCenter {
     
     private final LockNode lockNode;
     
-    public LockRegistryCenter(final RegistryCenterRepository repository) {
+    public LockRegistryService(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
         node = new RegistryCenterNode();
