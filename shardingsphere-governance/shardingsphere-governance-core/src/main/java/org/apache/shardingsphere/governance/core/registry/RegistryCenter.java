@@ -421,15 +421,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Persist instance data.
-     * 
-     * @param instanceData instance data
-     */
-    public void persistInstanceData(final String instanceData) {
-        repository.persist(node.getProxyNodePath(instanceId), instanceData);
-    }
-    
-    /**
      * Load disabled data sources.
      * 
      * @param schemaName schema name
