@@ -293,6 +293,16 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
+     * Judge logic table is belong to sharding tables.
+     *
+     * @param logicTableName logic table name
+     * @return logic table is belong to sharding tables or not
+     */
+    public boolean isShardingTable(final String logicTableName) {
+        return findTableRule(logicTableName).isPresent();
+    }
+    
+    /**
      * Judge logic table is belong to broadcast tables.
      *
      * @param logicTableName logic table name

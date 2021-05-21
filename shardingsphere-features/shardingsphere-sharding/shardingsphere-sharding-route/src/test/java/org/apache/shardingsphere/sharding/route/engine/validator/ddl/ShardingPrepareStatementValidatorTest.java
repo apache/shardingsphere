@@ -89,7 +89,7 @@ public final class ShardingPrepareStatementValidatorTest {
     public void assertPostValidatePrepareWithEmptyRouteResultForPostgreSQL() {
         PostgreSQLPrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         when(routeContext.getRouteUnits()).thenReturn(Collections.emptyList());
-        new ShardingPrepareStatementValidator().postValidate(sqlStatement, routeContext);
+        new ShardingPrepareStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
     }
     
     @Test
@@ -98,7 +98,7 @@ public final class ShardingPrepareStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingPrepareStatementValidator().postValidate(new PostgreSQLPrepareStatement(), routeContext);
+        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PostgreSQLPrepareStatement(), routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -109,6 +109,6 @@ public final class ShardingPrepareStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_1"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingPrepareStatementValidator().postValidate(new PostgreSQLPrepareStatement(), routeContext);
+        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PostgreSQLPrepareStatement(), routeContext);
     }
 }

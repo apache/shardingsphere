@@ -76,7 +76,7 @@ public final class ShardingDropTableStatementValidatorTest {
         routeUnits.add(routeUnit);
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        validator.postValidate(sqlStatement, routeContext);
+        validator.postValidate(shardingRule, sqlStatement, routeContext);
     }
     
     private TableRule generateShardingRule(final String tableName) {

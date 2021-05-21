@@ -39,23 +39,20 @@ import java.util.stream.Collectors;
  */
 public final class ShardingDropTableStatementValidator extends ShardingDDLStatementValidator<DropTableStatement> {
     
-    private ShardingRule shardingRule;
-    
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
-        this.shardingRule = shardingRule;
         if (!DropTableStatementHandler.containsIfExistClause(sqlStatementContext.getSqlStatement())) {
             validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
         }
     }
     
     @Override
-    public void postValidate(final DropTableStatement sqlStatement, final RouteContext routeContext) {
-        checkTableInUsed(sqlStatement, routeContext);
+    public void postValidate(final ShardingRule shardingRule, final DropTableStatement sqlStatement, final RouteContext routeContext) {
+        checkTableInUsed(shardingRule, sqlStatement, routeContext);
     }
     
-    private void checkTableInUsed(final DropTableStatement sqlStatement, final RouteContext routeContext) {
+    private void checkTableInUsed(final ShardingRule shardingRule, final DropTableStatement sqlStatement, final RouteContext routeContext) {
         Collection<String> inUsedTable = new LinkedList<>();
         Set<String> dropTables = sqlStatement.getTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
         Set<String> actualTables = routeContext.getRouteUnits().stream().flatMap(each -> each.getTableMappers().stream().map(RouteMapper::getActualName)).collect(Collectors.toSet());

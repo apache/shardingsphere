@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingAlterTableStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -81,41 +82,74 @@ public final class ShardingAlterTableStatementValidatorTest {
         new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
     }
     
-    @Test(expected = ShardingSphereException.class)
-    public void assertPostValidateAlterTableWithEmptyRouteResultForPostgreSQL() {
+    @Test
+    public void assertPostValidateAlterTableWithSameRouteResultShardingTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
-        when(routeContext.getRouteUnits()).thenReturn(Collections.emptyList());
-        new ShardingAlterTableStatementValidator().postValidate(sqlStatement, routeContext);
+        when(shardingRule.isShardingTable("t_order")).thenReturn(true);
+        when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertPostValidateAlterTableWithDifferentRouteResultShardingTableForPostgreSQL() {
+        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
+        when(shardingRule.isShardingTable("t_order")).thenReturn(true);
+        when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
     }
     
     @Test
-    public void assertPostValidateAlterTableWithSingleDataNodeForPostgreSQL() {
+    public void assertPostValidateAlterTableWithSameRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
-        when(routeContext.getActualDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_config")));
+        when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
+        when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
-                Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertPostValidateAlterTableWithMultiDataNodeForPostgreSQL() {
+    public void assertPostValidateAlterTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
-        when(routeContext.getActualDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_config")));
+        when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
+        when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
-                Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
-                Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_1"))));
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
-                Arrays.asList(new RouteMapper("t_order", "t_order_1"), new RouteMapper("t_order_item", "t_order_item_0"))));
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
-                Arrays.asList(new RouteMapper("t_order", "t_order_1"), new RouteMapper("t_order_item", "t_order_item_1"))));
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+    }
+    
+    @Test
+    public void assertPostValidateAlterTableWithSameRouteResultSingleTableForPostgreSQL() {
+        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_single")));
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertPostValidateAlterTableWithDifferentRouteResultSingleTableForPostgreSQL() {
+        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_single")));
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
     }
 }
