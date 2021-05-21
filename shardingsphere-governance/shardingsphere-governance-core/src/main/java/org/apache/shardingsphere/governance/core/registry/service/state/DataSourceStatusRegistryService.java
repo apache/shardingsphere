@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.governance.core.registry.service.state;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
+import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -29,12 +32,17 @@ import java.util.stream.Collectors;
 /**
  * Data source status registry service.
  */
-@RequiredArgsConstructor
 public final class DataSourceStatusRegistryService {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node = new RegistryCenterNode();
+    private final RegistryCenterNode node;
+    
+    public DataSourceStatusRegistryService(final RegistryCenterRepository repository) {
+        this.repository = repository;
+        node = new RegistryCenterNode();
+        ShardingSphereEventBus.getInstance().register(this);
+    }
     
     /**
      * Load disabled data source names.
@@ -53,5 +61,26 @@ public final class DataSourceStatusRegistryService {
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
         return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
+    }
+    
+    /**
+     * Update data source disabled state.
+     *
+     * @param event data source disabled event
+     */
+    @Subscribe
+    public void update(final DataSourceDisabledEvent event) {
+        String value = event.isDisabled() ? RegistryCenterNodeStatus.DISABLED.toString() : "";
+        repository.persist(node.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
+    }
+    
+    /**
+     * Update primary data source state.
+     *
+     * @param event primary data source event
+     */
+    @Subscribe
+    public void update(final PrimaryDataSourceEvent event) {
+        repository.persist(node.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
     }
 }

@@ -58,8 +58,6 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlt
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
@@ -164,27 +162,6 @@ public final class RegistryCenter {
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigCacheId) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
                 YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
-    }
-    
-    /**
-     * Persist data source disabled state.
-     *
-     * @param event data source disabled event
-     */
-    @Subscribe
-    public void renew(final DataSourceDisabledEvent event) {
-        String value = event.isDisabled() ? RegistryCenterNodeStatus.DISABLED.toString() : "";
-        repository.persist(node.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
-    }
-    
-    /**
-     * Persist primary data source state.
-     *
-     * @param event primary data source event
-     */
-    @Subscribe
-    public void renew(final PrimaryDataSourceEvent event) {
-        repository.persist(node.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
     }
     
     /**
