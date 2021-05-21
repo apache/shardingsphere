@@ -17,8 +17,29 @@
   -->
 
 <sql-parser-test-cases>
-    <describe sql-case-id="explain_select" />
-    <describe sql-case-id="explain_update" />
-    <describe sql-case-id="explain_insert" />
-    <describe sql-case-id="explain_delete" />
+    <describe sql-case-id="explain_select_constant_without_table">
+        <select>
+            <projections start-index="15" stop-index="20">
+                <expression-projection text="1" alias="a" start-index="15" stop-index="20" />
+            </projections>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_update_without_condition">
+        <update>
+            <table start-index="15" stop-index="23">
+                <simple-table name="t_order" alias="o" start-index="15" stop-index="23"/>
+            </table>
+            <set start-index="17" stop-index="41">
+                <assignment start-index="21" stop-index="41">
+                    <column name="status" start-index="21" stop-index="28">
+                        <owner name="o" start-index="21" stop-index="21" />
+                    </column>
+                    <assignment-value>
+                        <literal-expression value="finished" start-index="32" stop-index="41" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
 </sql-parser-test-cases>

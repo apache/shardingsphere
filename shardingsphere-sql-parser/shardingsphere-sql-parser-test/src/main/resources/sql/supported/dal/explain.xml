@@ -17,8 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="explain_select" value="EXPLAIN SELECT 1 as a"  db-types="PostgreSQL, MySQL" />
-    <sql-case id="explain_update" value="EXPLAIN SELECT 1 as a"  db-types="PostgreSQL, MySQL" />
-    <sql-case id="explain_insert" value="EXPLAIN SELECT 1 as a"  db-types="PostgreSQL, MySQL" />
-    <sql-case id="explain_delete" value="EXPLAIN SELECT 1 as a"  db-types="PostgreSQL, MySQL" />
+    <sql-case id="explain_select_constant_without_table" value="EXPLAIN SELECT 1 as a"  db-types="MySQL" />
+    <sql-case id="explain_update_without_condition" value="EXPLAIN UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2" />
 </sql-cases>
