@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
@@ -42,6 +43,12 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
     }
     
     @Override
-    public void postValidate(final CreateTableStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final CreateTableStatement sqlStatement, final RouteContext routeContext) {
+        String primaryTable = sqlStatement.getTable().getTableName().getIdentifier().getValue();
+        int primaryTableDataNodeSize = shardingRule.isShardingTable(primaryTable) || shardingRule.isBroadcastTable(primaryTable) 
+                ? shardingRule.getTableRule(primaryTable).getActualDataNodes().size() : 1;
+        if (primaryTableDataNodeSize != routeContext.getRouteUnits().size()) {
+            throw new ShardingSphereException("CREATE TABLE ... statement route unit size must be same with primary table '%s' data node size.", primaryTable);
+        }
     }
 }

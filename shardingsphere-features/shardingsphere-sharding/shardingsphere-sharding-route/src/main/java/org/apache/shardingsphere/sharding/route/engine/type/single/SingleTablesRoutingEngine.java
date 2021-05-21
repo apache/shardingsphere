@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.single;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -28,10 +29,10 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropTableStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -46,18 +47,19 @@ public final class SingleTablesRoutingEngine implements ShardingRouteEngine {
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        if (sqlStatement instanceof CreateTableStatement || containsDropTableIfExistClause()) {
-            routeContext.getRouteUnits().add(getRandomRouteUnit(shardingRule));
+        if (sqlStatement instanceof CreateTableStatement || sqlStatement instanceof DropTableStatement) {
+            Set<String> existSingleTables = Sets.intersection(shardingRule.getSingleTableRules().keySet(), Sets.newHashSet(logicTables));
+            if (!existSingleTables.isEmpty()) {
+                fillRouteContext(shardingRule, routeContext, existSingleTables);
+            } else {
+                routeContext.getRouteUnits().add(getRandomRouteUnit(shardingRule));
+            }
         } else {
-            fillRouteContext(shardingRule, routeContext);
+            fillRouteContext(shardingRule, routeContext, logicTables);
             if (1 < routeContext.getRouteUnits().size()) {
                 routeContext.setToCalcite(true);
             }
         }
-    }
-    
-    private boolean containsDropTableIfExistClause() {
-        return sqlStatement instanceof DropTableStatement && DropTableStatementHandler.containsIfExistClause((DropTableStatement) sqlStatement);
     }
     
     private RouteUnit getRandomRouteUnit(final ShardingRule shardingRule) {
@@ -67,7 +69,7 @@ public final class SingleTablesRoutingEngine implements ShardingRouteEngine {
         return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(table, table)));
     }
     
-    private void fillRouteContext(final ShardingRule shardingRule, final RouteContext routeContext) {
+    private void fillRouteContext(final ShardingRule shardingRule, final RouteContext routeContext, final Collection<String> logicTables) {
         for (String each : logicTables) {
             if (!shardingRule.getSingleTableRules().containsKey(each)) {
                 throw new ShardingSphereException("`%s` single table does not exist.", each);

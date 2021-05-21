@@ -187,6 +187,16 @@ public final class ShardingRuleTest {
     }
     
     @Test
+    public void assertIsShardingTable() {
+        assertTrue(createMaximumShardingRule().isShardingTable("LOGIC_TABLE"));
+    }
+    
+    @Test
+    public void assertIsNotShardingTable() {
+        assertFalse(createMaximumShardingRule().isShardingTable("other_table"));
+    }
+    
+    @Test
     public void assertIsShardingColumnForDefaultDatabaseShardingStrategy() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleConfigWithAllStrategies());

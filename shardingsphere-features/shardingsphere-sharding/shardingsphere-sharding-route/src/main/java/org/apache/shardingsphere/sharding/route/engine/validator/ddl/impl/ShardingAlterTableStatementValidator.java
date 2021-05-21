@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -48,22 +46,12 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
     }
     
     @Override
-    public void postValidate(final AlterTableStatement sqlStatement, final RouteContext routeContext) {
-        if (routeContext.getRouteUnits().isEmpty()) {
-            throw new ShardingSphereException("Can not get route result, please check your sharding table config.");
+    public void postValidate(final ShardingRule shardingRule, final AlterTableStatement sqlStatement, final RouteContext routeContext) {
+        String primaryTable = sqlStatement.getTable().getTableName().getIdentifier().getValue();
+        int primaryTableDataNodeSize = shardingRule.isShardingTable(primaryTable) || shardingRule.isBroadcastTable(primaryTable)
+                ? shardingRule.getTableRule(primaryTable).getActualDataNodes().size() : 1;
+        if (primaryTableDataNodeSize != routeContext.getRouteUnits().size()) {
+            throw new ShardingSphereException("ALTER TABLE ... statement route unit size must be same with primary table '%s' data node size.", primaryTable);
         }
-        String primaryTableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        for (String each : routeContext.getActualDataSourceNames()) {
-            if (containsSameDataNodeResult(primaryTableName, each, routeContext.getRouteUnits())) { 
-                throw new ShardingSphereException("ALTER TABLE ... statement can not support unbinding sharding tables route to multiple same data nodes.");
-            }
-        }
-    }
-    
-    private boolean containsSameDataNodeResult(final String primaryTableName, final String actualDataSourceName, final Collection<RouteUnit> routeUnits) {
-        Collection<RouteMapper> tableMappers = routeUnits.stream().filter(routeUnit -> routeUnit.getDataSourceMapper()
-                .getActualName().equals(actualDataSourceName)).flatMap(routeUnit -> routeUnit.getTableMappers().stream()).collect(Collectors.toList());
-        return tableMappers.stream().filter(routeMapper -> routeMapper.getLogicName().equals(primaryTableName))
-                .collect(Collectors.groupingBy(RouteMapper::getActualName)).entrySet().stream().anyMatch(each -> each.getValue().size() > 1);
     }
 }
