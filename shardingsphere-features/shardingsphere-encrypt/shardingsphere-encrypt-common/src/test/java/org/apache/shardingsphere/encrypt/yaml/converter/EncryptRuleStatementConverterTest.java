@@ -31,11 +31,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
-public final class EncryptRuleConverterTest {
+public final class EncryptRuleStatementConverterTest {
 
     @Test
     public void assertCovert() {
-        YamlEncryptRuleConfiguration encryptRuleConfiguration = EncryptRuleConverter.convert(Collections
+        YamlEncryptRuleConfiguration encryptRuleConfiguration = EncryptRuleStatementConverter.convert(Collections
                 .singleton(new EncryptRuleSegment("t_encrypt", buildColumns())));
         assertNotNull(encryptRuleConfiguration);
         assertThat(encryptRuleConfiguration.getTables().keySet(), is(Collections.singleton("t_encrypt")));
@@ -44,7 +44,7 @@ public final class EncryptRuleConverterTest {
         assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getLogicColumn(), is("user_id"));
         assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getCipherColumn(), is("user_cipher"));
         assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getPlainColumn(), is("user_plain"));
-        assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getEncryptorName(), is("t_encrypt_user_id_MD5"));
+        assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getEncryptorName(), is("t_encrypt_user_id"));
     }
 
     private Collection<EncryptColumnSegment> buildColumns() {

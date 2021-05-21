@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleConverter;
+import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -102,7 +102,7 @@ public final class AlterEncryptRuleBackendHandler extends SchemaRequiredBackendH
     
     private YamlEncryptRuleConfiguration alter(final EncryptRuleConfiguration encryptRuleConfiguration, final AlterEncryptRuleStatement sqlStatement) {
         YamlEncryptRuleConfiguration alterYamlEncryptRuleConfiguration
-                = EncryptRuleConverter.convert(sqlStatement.getEncryptRules());
+                = EncryptRuleStatementConverter.convert(sqlStatement.getEncryptRules());
         YamlEncryptRuleConfiguration result = new YamlRuleConfigurationSwapperEngine()
                 .swapToYamlRuleConfigurations(Collections.singletonList(encryptRuleConfiguration)).stream()
                 .map(each -> (YamlEncryptRuleConfiguration) each).findFirst().get();
