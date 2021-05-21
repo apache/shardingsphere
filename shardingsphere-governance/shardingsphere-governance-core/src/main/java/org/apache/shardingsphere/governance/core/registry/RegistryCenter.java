@@ -181,12 +181,6 @@ public final class RegistryCenter {
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
-        if (!users.isEmpty()) {
-            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
-        }
-    }
-    
     /**
      * Persist data source disabled state.
      *
@@ -325,7 +319,9 @@ public final class RegistryCenter {
      */
     @Subscribe
     public void renew(final GrantStatementEvent event) {
-        persistChangedPrivilege(event.getUsers());
+        if (!event.getUsers().isEmpty()) {
+            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(event.getUsers())));
+        }
     }
     
     private void refreshAuthorityRuleConfiguration(final AuthorityRuleConfiguration authRuleConfig, final Collection<ShardingSphereUser> createUsers) {
