@@ -116,9 +116,10 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertPersistDataSourcesNode() {
-        registryCenter.persistDataNodes();
+    public void assertInitNodes() {
+        registryCenter.initNodes();
         verify(registryCenterRepository).persist("/states/datanodes", "");
+        verify(registryCenterRepository).persist("/states/primarynodes", "");
     }
     
     @Test

@@ -407,16 +407,10 @@ public final class RegistryCenter {
     }
     
     /**
-     * Initialize data nodes.
+     * Initialize nodes.
      */
-    public void persistDataNodes() {
+    public void initNodes() {
         repository.persist(node.getDataNodesPath(), "");
-    }
-    
-    /**
-     * Initialize primary nodes.
-     */
-    public void persistPrimaryNodes() {
         repository.persist(node.getPrimaryNodesPath(), "");
     }
     

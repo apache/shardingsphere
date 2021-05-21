@@ -76,8 +76,7 @@ public final class GovernanceFacadeTest {
         governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props);
         verify(registryCenter).persistConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
         verify(registryCenter).registerInstanceOnline();
-        verify(registryCenter).persistDataNodes();
-        verify(registryCenter).persistPrimaryNodes();
+        verify(registryCenter).initNodes();
         verify(listenerManager).initListeners();
     }
     
