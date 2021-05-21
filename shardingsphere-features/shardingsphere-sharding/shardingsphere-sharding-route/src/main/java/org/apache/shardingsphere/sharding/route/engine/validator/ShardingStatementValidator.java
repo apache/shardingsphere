@@ -49,5 +49,5 @@ public interface ShardingStatementValidator<T extends SQLStatement> {
      * @param sqlStatement SQL statement
      * @param routeContext route context
      */
-    void postValidate(final ShardingRule shardingRule, T sqlStatement, RouteContext routeContext);
+    void postValidate(ShardingRule shardingRule, T sqlStatement, RouteContext routeContext);
 }
