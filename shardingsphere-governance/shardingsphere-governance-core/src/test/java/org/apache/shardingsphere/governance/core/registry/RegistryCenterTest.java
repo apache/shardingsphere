@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
@@ -58,7 +56,6 @@ import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -179,20 +176,6 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertRenewDataSourceEvent() {
-        DataSourceAddedEvent event = new DataSourceAddedEvent("sharding_db", createDataSourceConfigurations());
-        registryCenter.renew(event);
-        verify(registryCenterRepository).persist(startsWith("/metadata/sharding_db/dataSources"), anyString());
-    }
-    
-    @Test
-    public void assertRenewDataSourceEventHasDataSourceConfig() {
-        DataSourceAddedEvent event = new DataSourceAddedEvent("sharding_db", createDataSourceConfigurations());
-        registryCenter.renew(event);
-        verify(registryCenterRepository).persist(startsWith("/metadata/sharding_db/dataSources"), anyString());
-    }
-    
-    @Test
     public void assertRenewRuleEvent() {
         RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent("sharding_db", createRuleConfigurations());
         registryCenter.renew(event);
@@ -248,12 +231,5 @@ public final class RegistryCenterTest {
         SwitchRuleConfigurationEvent event = new SwitchRuleConfigurationEvent("sharding_db", "testCacheId");
         registryCenter.renew(event);
         // TODO finish verify
-    }
-    
-    @Test
-    public void assertRenewDataSourceAlteredEvent() {
-        DataSourceAlteredEvent event = new DataSourceAlteredEvent("sharding_db", createDataSourceConfigurations());
-        registryCenter.renew(event);
-        verify(dataSourceService).persist(event.getSchemaName(), event.getDataSourceConfigurations());
     }
 }

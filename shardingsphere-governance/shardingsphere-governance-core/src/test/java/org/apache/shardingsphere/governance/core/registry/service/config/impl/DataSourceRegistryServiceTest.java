@@ -19,6 +19,8 @@ package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.MockDataSource;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.junit.Before;
@@ -34,11 +36,15 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,8 +69,8 @@ public final class DataSourceRegistryServiceTest {
     
     @Test
     public void assertLoad() {
-        when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAM));
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("sharding_db");
+        when(registryCenterRepository.get("/metadata/foo_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAM));
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("foo_db");
         assertThat(actual.size(), is(2));
         assertDataSourceConfiguration(actual.get("ds_0"), createDataSourceConfiguration(createDataSource("ds_0")));
         assertDataSourceConfiguration(actual.get("ds_1"), createDataSourceConfiguration(createDataSource("ds_1")));
@@ -79,18 +85,32 @@ public final class DataSourceRegistryServiceTest {
     
     @Test
     public void assertLoadWhenPathNotExist() {
-        when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn("");
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("sharding_db");
+        when(registryCenterRepository.get("/metadata/foo_db/dataSources")).thenReturn("");
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("foo_db");
         assertThat(actual.size(), is(0));
     }
     
     @Test
     public void assertLoadWithConnectionInitSQLs() {
-        when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL));
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("sharding_db");
+        when(registryCenterRepository.get("/metadata/foo_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL));
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("foo_db");
         assertThat(actual.size(), is(2));
         assertDataSourceConfigurationWithConnectionInitSQLs(actual.get("ds_0"), createDataSourceConfiguration(createDataSourceWithConnectionInitSQLs("ds_0")));
         assertDataSourceConfigurationWithConnectionInitSQLs(actual.get("ds_1"), createDataSourceConfiguration(createDataSourceWithConnectionInitSQLs("ds_1")));
+    }
+    
+    @Test
+    public void assertUpdateWithDataSourceAddedEvent() {
+        DataSourceAddedEvent event = new DataSourceAddedEvent("foo_db", createDataSourceConfigurations());
+        dataSourceRegistryService.update(event);
+        verify(registryCenterRepository).persist(startsWith("/metadata/foo_db/dataSources"), anyString());
+    }
+    
+    @Test
+    public void assertUpdateWithDataSourceAlteredEvent() {
+        DataSourceAlteredEvent event = new DataSourceAlteredEvent("foo_db", createDataSourceConfigurations());
+        dataSourceRegistryService.update(event);
+        verify(registryCenterRepository).persist(startsWith("/metadata/foo_db/dataSources"), anyString());
     }
     
     private DataSource createDataSourceWithConnectionInitSQLs(final String name) {
@@ -127,6 +147,18 @@ public final class DataSourceRegistryServiceTest {
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
         result.setPassword("root");
+        return result;
+    }
+    
+    private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
+        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry ->
+                DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        result.put("ds_0", createDataSource("ds_0"));
+        result.put("ds_1", createDataSource("ds_1"));
         return result;
     }
 }
