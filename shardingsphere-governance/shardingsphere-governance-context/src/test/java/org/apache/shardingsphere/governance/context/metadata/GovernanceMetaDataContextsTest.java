@@ -98,7 +98,7 @@ public final class GovernanceMetaDataContextsTest {
     @Before
     public void setUp() {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
-        when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
+        when(registryCenter.getDataSourceStatusService().loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
                 createMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), props), governanceFacade);
     }
