@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
 
 import java.util.Collection;
 
 /**
- * Drop encrypt rule statement.
+ * Encrypt rules not existed exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropEncryptRuleStatement extends DropRDLStatement {
-    
+public final class EncryptRulesNotExistedException extends BackendException {
+
+    private static final long serialVersionUID = -3070306238552517428L;
+
     private final Collection<String> tables;
 }
