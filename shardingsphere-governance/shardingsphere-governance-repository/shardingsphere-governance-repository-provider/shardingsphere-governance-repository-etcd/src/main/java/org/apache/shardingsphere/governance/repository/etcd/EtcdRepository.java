@@ -141,7 +141,7 @@ public final class EtcdRepository implements RegistryCenterRepository {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("etcdRepository tryLock error, key = {}, time = {}, unit = {}", key, time, unit, ex);
+            log.error("EtcdRepository tryLock error, key:{}, time:{}, unit:{}", key, time, unit, ex);
             return false;
         }
     }
@@ -153,7 +153,7 @@ public final class EtcdRepository implements RegistryCenterRepository {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("etcdRepository releaseLock error, key = {}", key, ex);
+            log.error("EtcdRepository releaseLock error, key:{}", key, ex);
         }
     }
 
