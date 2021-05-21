@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -108,8 +107,8 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
         handler.execute("test", sqlStatement);
     }
 
-    @Test(expected = ReadwriteSplittingRuleDataSourcesNotExistedException.class)
-    public void assertExecuteWithNoDroppedReadwriteSplittingRuleDataSources() {
+    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
+    public void assertExecuteWithNoDroppedReadwriteSplittingRules() {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("pr_ds"));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
         handler.execute("test", sqlStatement);

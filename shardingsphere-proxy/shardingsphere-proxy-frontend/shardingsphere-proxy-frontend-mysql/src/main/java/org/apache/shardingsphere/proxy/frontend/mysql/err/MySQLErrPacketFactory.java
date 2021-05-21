@@ -40,7 +40,6 @@ import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersExc
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
@@ -172,10 +171,8 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST, ((ShardingBroadcastTableRulesNotExistsException) cause).getSchemaName());
         }
         if (cause instanceof ReadwriteSplittingRuleNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_NOT_EXIST);
-        }
-        if (cause instanceof ReadwriteSplittingRuleDataSourcesNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST, ((ReadwriteSplittingRuleDataSourcesNotExistedException) cause).getRuleNames());
+            return new MySQLErrPacket(1, CommonErrorCode.READWRITE_SPLITTING_RULE_NOT_EXIST,
+                    ((ReadwriteSplittingRuleNotExistedException) cause).getRuleNames(), ((ReadwriteSplittingRuleNotExistedException) cause).getSchemaName());
         }
         if (cause instanceof AddReadwriteSplittingRuleDataSourcesExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ((AddReadwriteSplittingRuleDataSourcesExistedException) cause).getRuleNames());

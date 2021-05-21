@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -120,8 +119,8 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
         handler.execute("test", sqlStatement);
     }
 
-    @Test(expected = ReadwriteSplittingRuleDataSourcesNotExistedException.class)
-    public void assertExecuteWithNoAlteredReadwriteSplittingRuleDataSources() {
+    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
+    public void assertExecuteWithNoAlteredReadwriteSplittingRules() {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment();
         readwriteSplittingRuleSegment.setName("pr_ds");
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
