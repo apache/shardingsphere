@@ -37,7 +37,7 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     RESOURCE_NOT_EXIST(1104, "C1104", "Resources %s do not exist."),
     
-    READWRITE_SPLITTING_RULE_NOT_EXIST(1105, "C1105", "Readwrite splitting rules %s do not exist in schema %s."),
+    READWRITE_SPLITTING_RULES_NOT_EXIST(1105, "C1105", "Readwrite splitting rules %s do not exist in schema %s."),
     
     ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST(1107, "C1107", "Data sources %s in replica query rule already exists."),
 

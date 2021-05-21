@@ -40,7 +40,7 @@ import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersExc
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
@@ -170,9 +170,9 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingBroadcastTableRulesNotExistsException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST, ((ShardingBroadcastTableRulesNotExistsException) cause).getSchemaName());
         }
-        if (cause instanceof ReadwriteSplittingRuleNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.READWRITE_SPLITTING_RULE_NOT_EXIST,
-                    ((ReadwriteSplittingRuleNotExistedException) cause).getRuleNames(), ((ReadwriteSplittingRuleNotExistedException) cause).getSchemaName());
+        if (cause instanceof ReadwriteSplittingRulesNotExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.READWRITE_SPLITTING_RULES_NOT_EXIST,
+                    ((ReadwriteSplittingRulesNotExistedException) cause).getRuleNames(), ((ReadwriteSplittingRulesNotExistedException) cause).getSchemaName());
         }
         if (cause instanceof AddReadwriteSplittingRuleDataSourcesExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ((AddReadwriteSplittingRuleDataSourcesExistedException) cause).getRuleNames());
