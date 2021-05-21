@@ -19,6 +19,8 @@ package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.MockDataSource;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.junit.Before;
@@ -34,19 +36,19 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceRegistryServiceTest {
-    
-    private static final String DATA_SOURCE_YAM = "yaml/regcenter/data-source.yaml";
-    
-    private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL = "yaml/regcenter/data-source-init-sql.yaml";
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
@@ -63,11 +65,17 @@ public final class DataSourceRegistryServiceTest {
     
     @Test
     public void assertLoad() {
-        when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAM));
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("sharding_db");
+        when(registryCenterRepository.get("/metadata/foo_db/dataSources")).thenReturn(readDataSourceYaml());
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("foo_db");
         assertThat(actual.size(), is(2));
-        assertDataSourceConfiguration(actual.get("ds_0"), createDataSourceConfiguration(createDataSource("ds_0")));
-        assertDataSourceConfiguration(actual.get("ds_1"), createDataSourceConfiguration(createDataSource("ds_1")));
+        assertDataSourceConfiguration(actual.get("ds_0"), DataSourceConfiguration.getDataSourceConfiguration(createDataSource("ds_0")));
+        assertDataSourceConfiguration(actual.get("ds_1"), DataSourceConfiguration.getDataSourceConfiguration(createDataSource("ds_1")));
+    }
+    
+    @SneakyThrows({IOException.class, URISyntaxException.class})
+    private String readDataSourceYaml() {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/regcenter/data-source.yaml").toURI()))
+                .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
     private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
@@ -75,50 +83,40 @@ public final class DataSourceRegistryServiceTest {
         assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
         assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
         assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
+        assertThat(actual.getProps().get("connectionInitSqls"), is(expected.getProps().get("connectionInitSqls")));
     }
     
     @Test
-    public void assertLoadWhenPathNotExist() {
-        when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn("");
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("sharding_db");
+    public void assertLoadWithoutPath() {
+        when(registryCenterRepository.get("/metadata/foo_db/dataSources")).thenReturn("");
+        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("foo_db");
         assertThat(actual.size(), is(0));
     }
     
     @Test
-    public void assertLoadWithConnectionInitSQLs() {
-        when(registryCenterRepository.get("/metadata/sharding_db/dataSources")).thenReturn(readYAML(DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQL));
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("sharding_db");
-        assertThat(actual.size(), is(2));
-        assertDataSourceConfigurationWithConnectionInitSQLs(actual.get("ds_0"), createDataSourceConfiguration(createDataSourceWithConnectionInitSQLs("ds_0")));
-        assertDataSourceConfigurationWithConnectionInitSQLs(actual.get("ds_1"), createDataSourceConfiguration(createDataSourceWithConnectionInitSQLs("ds_1")));
+    public void assertUpdateWithDataSourceAddedEvent() {
+        DataSourceAddedEvent event = new DataSourceAddedEvent("foo_db", createDataSourceConfigurations());
+        dataSourceRegistryService.update(event);
+        verify(registryCenterRepository).persist(startsWith("/metadata/foo_db/dataSources"), anyString());
     }
     
-    private DataSource createDataSourceWithConnectionInitSQLs(final String name) {
-        MockDataSource result = new MockDataSource();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setUrl("jdbc:mysql://localhost:3306/" + name);
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
+    @Test
+    public void assertUpdateWithDataSourceAlteredEvent() {
+        DataSourceAlteredEvent event = new DataSourceAlteredEvent("foo_db", createDataSourceConfigurations());
+        dataSourceRegistryService.update(event);
+        verify(registryCenterRepository).persist(startsWith("/metadata/foo_db/dataSources"), anyString());
+    }
+    
+    private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
+        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry ->
+                DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        result.put("ds_0", createDataSource("ds_0"));
+        result.put("ds_1", createDataSource("ds_1"));
         return result;
-    }
-    
-    private void assertDataSourceConfigurationWithConnectionInitSQLs(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
-        assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
-        assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
-        assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
-        assertThat(actual.getProps().get("connectionInitSqls"), is(expected.getProps().get("connectionInitSqls")));
-    }
-    
-    private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
-        return DataSourceConfiguration.getDataSourceConfiguration(dataSource);
-    }
-    
-    @SneakyThrows({IOException.class, URISyntaxException.class})
-    private String readYAML(final String yamlFile) {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
-                .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
     private DataSource createDataSource(final String name) {
@@ -127,6 +125,7 @@ public final class DataSourceRegistryServiceTest {
         result.setUrl("jdbc:mysql://localhost:3306/" + name);
         result.setUsername("root");
         result.setPassword("root");
+        result.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
         return result;
     }
 }

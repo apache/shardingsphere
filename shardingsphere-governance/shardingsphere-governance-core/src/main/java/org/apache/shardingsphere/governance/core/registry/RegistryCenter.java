@@ -25,8 +25,6 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
-import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessUnitReportEvent;
@@ -63,12 +61,10 @@ import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfig
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -137,7 +133,7 @@ public final class RegistryCenter {
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
     public void persistConfigurations(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
-                               final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
+                                      final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         globalRuleService.persist(globalRuleConfigs, isOverwrite);
         propsService.persist(props, isOverwrite);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigs.entrySet()) {
@@ -170,23 +166,6 @@ public final class RegistryCenter {
                 YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
     }
     
-    private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = dataSourceService.load(schemaName);
-        dataSourceConfigMap.putAll(dataSourceConfigs);
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigMap)));
-    }
-    
-    private Map<String, Map<String, Object>> createYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        return dataSourceConfigs.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
-        if (!users.isEmpty()) {
-            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
-        }
-    }
-    
     /**
      * Persist data source disabled state.
      *
@@ -206,26 +185,6 @@ public final class RegistryCenter {
     @Subscribe
     public void renew(final PrimaryDataSourceEvent event) {
         repository.persist(node.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
-    }
-    
-    /**
-     * persist data source configurations.
-     *
-     * @param event Data source added event
-     */
-    @Subscribe
-    public void renew(final DataSourceAddedEvent event) {
-        addDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
-    }
-    
-    /**
-     * Change data source configurations.
-     *
-     * @param event Data source altered event
-     */
-    @Subscribe
-    public void renew(final DataSourceAlteredEvent event) {
-        dataSourceService.persist(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
     /**
@@ -325,7 +284,9 @@ public final class RegistryCenter {
      */
     @Subscribe
     public void renew(final GrantStatementEvent event) {
-        persistChangedPrivilege(event.getUsers());
+        if (!event.getUsers().isEmpty()) {
+            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(event.getUsers())));
+        }
     }
     
     private void refreshAuthorityRuleConfiguration(final AuthorityRuleConfiguration authRuleConfig, final Collection<ShardingSphereUser> createUsers) {
