@@ -30,6 +30,7 @@ import io.etcd.jetcd.watch.WatchEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.governance.repository.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -48,6 +49,7 @@ import java.util.stream.Collectors;
 /**
  * Registry repository of ETCD.
  */
+@Slf4j
 public final class EtcdRepository implements RegistryCenterRepository {
     
     private Client client;
@@ -139,6 +141,7 @@ public final class EtcdRepository implements RegistryCenterRepository {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            log.error("etcdRepository tryLock error, key = {}, time = {}, unit = {}", key, time, unit, ex);
             return false;
         }
     }
@@ -150,7 +153,7 @@ public final class EtcdRepository implements RegistryCenterRepository {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            // do nothing
+            log.error("etcdRepository releaseLock error, key = {}", key, ex);
         }
     }
 
