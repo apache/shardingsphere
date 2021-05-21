@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * Tables in used exception.
+ * Sharding table rules in used exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TablesInUsedException extends BackendException {
+public final class ShardingTableRulesInUsedException extends BackendException {
     
     private static final long serialVersionUID = -6958306664517015097L;
     

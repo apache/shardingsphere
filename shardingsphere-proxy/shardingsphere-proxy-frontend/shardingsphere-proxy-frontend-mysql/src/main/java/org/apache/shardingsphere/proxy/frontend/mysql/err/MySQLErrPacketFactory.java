@@ -51,10 +51,10 @@ import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableR
 import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
-import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLErrorCode;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLException;
@@ -116,8 +116,8 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingTableRuleNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED, ((ShardingTableRuleNotExistedException) cause).getTableNames());
         }
-        if (cause instanceof TablesInUsedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.TABLES_IN_USED, ((TablesInUsedException) cause).getTableNames());
+        if (cause instanceof ShardingTableRulesInUsedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE, ((ShardingTableRulesInUsedException) cause).getTableNames());
         }
         if (cause instanceof UnsupportedCommandException) {
             return new MySQLErrPacket(1, CommonErrorCode.UNSUPPORTED_COMMAND, ((UnsupportedCommandException) cause).getCommandType());

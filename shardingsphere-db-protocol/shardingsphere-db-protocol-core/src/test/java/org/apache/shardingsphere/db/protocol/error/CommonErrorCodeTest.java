@@ -40,9 +40,9 @@ public final class CommonErrorCodeTest {
     
     @Test
     public void assertTableInUsed() {
-        assertThat(CommonErrorCode.TABLES_IN_USED.getErrorCode(), is(1102));
-        assertThat(CommonErrorCode.TABLES_IN_USED.getSqlState(), is("C1102"));
-        assertThat(CommonErrorCode.TABLES_IN_USED.getErrorMessage(), is("Tables %s in the rule are still in used."));
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE.getErrorCode(), is(1102));
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE.getSqlState(), is("C1102"));
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE.getErrorMessage(), is("Sharding table rules %s are still used by binding table rule."));
     }
     
     @Test
