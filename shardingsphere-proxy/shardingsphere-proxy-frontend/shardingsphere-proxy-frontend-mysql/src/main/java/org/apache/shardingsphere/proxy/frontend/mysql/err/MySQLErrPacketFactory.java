@@ -27,9 +27,8 @@ import org.apache.shardingsphere.proxy.backend.exception.AddReadwriteSplittingRu
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleExistsException;
@@ -192,11 +191,9 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof InvalidDatabaseDiscoveryTypesException) {
             return new MySQLErrPacket(1, CommonErrorCode.INVALID_DATABASE_DISCOVERY_TYPES, ((InvalidDatabaseDiscoveryTypesException) cause).getDatabaseDiscoveryTypes());
         }
-        if (cause instanceof DatabaseDiscoveryRuleNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.DATABASE_DISCOVERY_RULE_NOT_EXIST, ((DatabaseDiscoveryRuleNotExistedException) cause).getSchemaName());
-        }
-        if (cause instanceof DatabaseDiscoveryRuleDataSourcesNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.DATABASE_DISCOVERY_RULE_DATASOURCE_NOT_EXIST, ((DatabaseDiscoveryRuleDataSourcesNotExistedException) cause).getRuleNames());
+        if (cause instanceof DatabaseDiscoveryRulesNotExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.DATABASE_DISCOVERY_RULES_NOT_EXIST, ((DatabaseDiscoveryRulesNotExistedException) cause).getRuleNames(),
+                    ((DatabaseDiscoveryRulesNotExistedException) cause).getSchemaName());
         }
         if (cause instanceof EncryptRuleExistsException) {
             return new MySQLErrPacket(1, CommonErrorCode.ENCRYPT_RULE_EXIST, ((EncryptRuleExistsException) cause).getSchemaName());
