@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,17 +62,14 @@ public final class GovernanceFacade implements AutoCloseable {
     /**
      * Online instance.
      *
-     * @param dataSourceConfigMap schema and data source configuration map
-     * @param schemaRuleMap schema and rule map
+     * @param dataSourceConfigs schema and data source configuration map
+     * @param schemaRuleConfigs schema and rule configuration map
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      */
-    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap,
-                               final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
-        registryCenter.persistGlobalConfiguration(globalRuleConfigs, props, isOverwrite);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
-            registryCenter.persistConfigurations(entry.getKey(), dataSourceConfigMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
-        }
+    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs,
+                               final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+        registryCenter.persistConfigurations(dataSourceConfigs, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         onlineInstance();
     }
     

@@ -149,27 +149,17 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertPersistConfiguration() {
+    public void assertPersistConfigurations() {
         Map<String, DataSourceConfiguration> dataSourceConfigs = createDataSourceConfigurations();
-        Collection<RuleConfiguration> ruleConfigs = createRuleConfigurations();
-        registryCenter.persistConfigurations("sharding_db", dataSourceConfigs, ruleConfigs, false);
-        verify(dataSourceService).persist("sharding_db", dataSourceConfigs, false);
-        verify(schemaRuleService).persist("sharding_db", ruleConfigs, false);
-    }
-    
-    @Test
-    public void assertPersistConfigurationWithMoreSchemas() {
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(registryCenterRepository, times(0)).persist("/metadata", "myTest1,myTest2,sharding_db");
-    }
-    
-    @Test
-    public void assertPersistGlobalConfiguration() {
+        Collection<RuleConfiguration> schemaRuleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
-        registryCenter.persistGlobalConfiguration(globalRuleConfigs, props, true);
-        verify(globalRuleService).persist(globalRuleConfigs, true);
-        verify(propsService).persist(props, true);
+        registryCenter.persistConfigurations(
+                Collections.singletonMap("sharding_db", dataSourceConfigs), Collections.singletonMap("sharding_db", schemaRuleConfigs), globalRuleConfigs, props, false);
+        verify(dataSourceService).persist("sharding_db", dataSourceConfigs, false);
+        verify(schemaRuleService).persist("sharding_db", schemaRuleConfigs, false);
+        verify(globalRuleService).persist(globalRuleConfigs, false);
+        verify(propsService).persist(props, false);
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
@@ -222,20 +212,6 @@ public final class RegistryCenterTest {
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
                 .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-    }
-    
-    @Test
-    public void assertPersistSchemaNameWithExistSchema() {
-        when(registryCenterRepository.get("/metadata")).thenReturn("sharding_db");
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(registryCenterRepository, times(0)).persist(eq("/metadata"), eq("sharding_db"));
-    }
-    
-    @Test
-    public void assertPersistSchemaNameWithExistAndNewSchema() {
-        when(registryCenterRepository.get("/metadata")).thenReturn("replica_query_db");
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(registryCenterRepository).persist(eq("/metadata"), eq("replica_query_db,sharding_db"));
     }
     
     @Test
