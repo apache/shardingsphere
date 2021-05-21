@@ -71,7 +71,7 @@ public final class DataSourceStatusRegistryServiceTest {
         assertUpdateDataSourceState(false, "");
     }
 
-    private void assertUpdateDataSourceState(boolean isDisabled, String value) {
+    private void assertUpdateDataSourceState(final boolean isDisabled, final String value) {
         String schemaName = "replica_query_db";
         String dataSourceName = "replica_ds_0";
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, isDisabled);
