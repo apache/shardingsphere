@@ -28,8 +28,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleDataSourcesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -60,30 +59,36 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends SchemaRequi
     
     @Override
     public ResponseHeader execute(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
+        Collection<String> alteredRuleNames = getAlteredRuleNames(sqlStatement);
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst();
         if (!ruleConfig.isPresent()) {
-            throw new ReadwriteSplittingRuleNotExistedException();
+            throw new ReadwriteSplittingRulesNotExistedException(schemaName, alteredRuleNames);
         }
-        check(schemaName, sqlStatement, ruleConfig.get());
+        check(schemaName, sqlStatement, ruleConfig.get(), alteredRuleNames);
         YamlReadwriteSplittingRuleConfiguration alterConfig = alter(ruleConfig.get(), sqlStatement);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(alterConfig));
         post(schemaName, rules);
         return new UpdateResponseHeader(sqlStatement);
     }
+
+    private Collection<String> getAlteredRuleNames(final AlterReadwriteSplittingRuleStatement sqlStatement) {
+        return sqlStatement.getReadwriteSplittingRules().stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toSet());
+    }
     
-    private void check(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        checkAlteredDataSources(ruleConfig, sqlStatement);
+    private void check(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement,
+                       final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<String> alteredRuleNames) {
+        checkAlteredRules(schemaName, ruleConfig, alteredRuleNames);
         checkResources(sqlStatement, schemaName);
         checkLoadBalancer(sqlStatement);
     }
 
-    private void checkAlteredDataSources(final ReadwriteSplittingRuleConfiguration ruleConfig, final AlterReadwriteSplittingRuleStatement statement) {
-        Set<String> existDataSourceNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
-        Collection<String> notExistDataSourceNames = statement.getReadwriteSplittingRules().stream().map(ReadwriteSplittingRuleSegment::getName)
-                .filter(each -> !existDataSourceNames.contains(each)).collect(Collectors.toList());
-        if (!notExistDataSourceNames.isEmpty()) {
-            throw new ReadwriteSplittingRuleDataSourcesNotExistedException(notExistDataSourceNames);
+    private void checkAlteredRules(final String schemaName, final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<String> alteredRuleNames) {
+        Set<String> existRuleNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Collection<String> notExistRuleNames = alteredRuleNames.stream()
+                .filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
+        if (!notExistRuleNames.isEmpty()) {
+            throw new ReadwriteSplittingRulesNotExistedException(schemaName, notExistRuleNames);
         }
     }
 
