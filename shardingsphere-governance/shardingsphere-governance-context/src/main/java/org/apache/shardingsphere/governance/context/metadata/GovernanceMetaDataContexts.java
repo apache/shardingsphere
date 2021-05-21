@@ -105,7 +105,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private void persistMetaData() {
-        metaDataContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getRegistryCenter().persistSchema(key, value.getSchema()));
+        metaDataContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getRegistryCenter().getSchemaService().persist(key, value.getSchema()));
     }
     
     private ShardingSphereLock createShardingSphereLock() {
@@ -181,10 +181,10 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         metaDataMap.put(event.getSchemaName(), buildMetaData(event));
         metaDataContexts = new StandardMetaDataContexts(
                 metaDataMap, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps());
-        governanceFacade.getRegistryCenter().persistSchema(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
+        governanceFacade.getRegistryCenter().getSchemaService().persist(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), 
                 metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
-        ShardingSphereEventBus.getInstance().post(new MetaDataChangedEvent(governanceFacade.getRegistryCenter().loadAllSchemaNames()));
+        ShardingSphereEventBus.getInstance().post(new MetaDataChangedEvent(governanceFacade.getRegistryCenter().getSchemaService().loadAllNames()));
     }
     
     /**
@@ -198,7 +198,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         metaDataMap.remove(event.getSchemaName());
         metaDataContexts = new StandardMetaDataContexts(
                 metaDataMap, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps());
-        governanceFacade.getRegistryCenter().deleteSchema(event.getSchemaName());
+        governanceFacade.getRegistryCenter().getSchemaService().delete(event.getSchemaName());
     }
     
     /**
@@ -259,7 +259,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         newMetaDataMap.put(schemaName, getChangedMetaData(metaDataContexts.getMetaDataMap().get(schemaName), event.getRuleConfigurations()));
         metaDataContexts = new StandardMetaDataContexts(
                 newMetaDataMap, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps());
-        governanceFacade.getRegistryCenter().persistSchema(schemaName, newMetaDataMap.get(schemaName).getSchema());
+        governanceFacade.getRegistryCenter().getSchemaService().persist(schemaName, newMetaDataMap.get(schemaName).getSchema());
     }
     
     /**

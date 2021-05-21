@@ -40,11 +40,10 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.rule.Sw
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.state.LockRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
-import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
+import org.apache.shardingsphere.governance.core.registry.service.schema.SchemaRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.state.LockRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -56,7 +55,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecu
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
@@ -105,6 +103,9 @@ public final class RegistryCenter {
     private final PropertiesRegistryService propsService;
     
     @Getter
+    private final SchemaRegistryService schemaService;
+    
+    @Getter
     private final LockRegistryService lockService;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
@@ -116,6 +117,7 @@ public final class RegistryCenter {
         schemaRuleService = new SchemaRuleRegistryService(repository);
         globalRuleService = new GlobalRuleRegistryService(repository);
         propsService = new PropertiesRegistryService(repository);
+        schemaService = new SchemaRegistryService(repository);
         lockService = new LockRegistryService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -178,49 +180,6 @@ public final class RegistryCenter {
         if (!users.isEmpty()) {
             repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
         }
-    }
-    
-    /**
-     * Load all schema names.
-     *
-     * @return all schema names
-     */
-    public Collection<String> loadAllSchemaNames() {
-        String schemaNames = repository.get(node.getMetadataNodePath());
-        return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
-    }
-    
-    /**
-     * Persist ShardingSphere schema.
-     *
-     * @param schemaName schema name
-     * @param schema ShardingSphere schema
-     */
-    public void persistSchema(final String schemaName, final ShardingSphereSchema schema) {
-        repository.persist(node.getMetadataSchemaPath(schemaName), YamlEngine.marshal(new SchemaYamlSwapper().swapToYamlConfiguration(schema)));
-    }
-    
-    /**
-     * Load ShardingSphere schema.
-     *
-     * @param schemaName schema name
-     * @return ShardingSphere schema
-     */
-    public Optional<ShardingSphereSchema> loadSchema(final String schemaName) {
-        String path = repository.get(node.getMetadataSchemaPath(schemaName));
-        if (Strings.isNullOrEmpty(path)) {
-            return Optional.empty();
-        }
-        return Optional.of(new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlSchema.class)));
-    }
-    
-    /**
-     * Delete schema.
-     *
-     * @param schemaName schema name
-     */
-    public void deleteSchema(final String schemaName) {
-        repository.delete(node.getSchemaNamePath(schemaName));
     }
     
     /**
@@ -311,7 +270,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final SchemaAlteredEvent event) {
-        persistSchema(event.getSchemaName(), event.getSchema());
+        schemaService.persist(event.getSchemaName(), event.getSchema());
     }
     
     /**
@@ -375,10 +334,7 @@ public final class RegistryCenter {
         Collection<ShardingSphereUser> result = new LinkedList<>(oldUsers);
         ShardingSphereUsers shardingSphereUsers = new ShardingSphereUsers(oldUsers);
         for (ShardingSphereUser each : newUsers) {
-            Optional<ShardingSphereUser> oldUser = shardingSphereUsers.findUser(each.getGrantee());
-            if (oldUser.isPresent()) {
-                result.remove(oldUser);
-            }
+            shardingSphereUsers.findUser(each.getGrantee()).ifPresent(result::remove);
             result.add(each);
         }
         return result;
