@@ -121,19 +121,25 @@ public final class RegistryCenter {
     }
     
     /**
-     * Persist rule configuration.
+     * Persist configurations.
      *
-     * @param schemaName schema name
-     * @param dataSourceConfigs data source configuration map
-     * @param ruleConfigs rule configurations
-     * @param isOverwrite is overwrite config center's configuration
+     * @param dataSourceConfigs schema and data source configuration map
+     * @param schemaRuleConfigs schema and rule configuration map
+     * @param globalRuleConfigs global rule configurations
+     * @param props properties
+     * @param isOverwrite whether overwrite registry center's configuration if existed
      */
-    public void persistConfigurations(final String schemaName, 
-                                      final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
-        dataSourceService.persist(schemaName, dataSourceConfigs, isOverwrite);
-        schemaRuleService.persist(schemaName, ruleConfigs, isOverwrite);
-        // TODO persistSchemaName is for etcd to get SchemaName which is for impl details, should move the logic into etcd repository, just keep reg center clear and high abstract. 
-        persistSchemaName(schemaName);
+    public void persistConfigurations(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
+                               final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
+        globalRuleService.persist(globalRuleConfigs, isOverwrite);
+        propsService.persist(props, isOverwrite);
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigs.entrySet()) {
+            String schemaName = entry.getKey();
+            dataSourceService.persist(schemaName, dataSourceConfigs.get(schemaName), isOverwrite);
+            schemaRuleService.persist(schemaName, schemaRuleConfigs.get(schemaName), isOverwrite);
+            // TODO persistSchemaName is for etcd to get SchemaName which is for impl details, should move the logic into etcd repository, just keep reg center clear and high abstract.
+            persistSchemaName(entry.getKey());
+        }
     }
     
     private void persistSchemaName(final String schemaName) {
@@ -149,18 +155,6 @@ public final class RegistryCenter {
         Collection<String> newSchemaNames = new ArrayList<>(schemaNames);
         newSchemaNames.add(schemaName);
         repository.persist(node.getMetadataNodePath(), String.join(",", newSchemaNames));
-    }
-    
-    /**
-     * Persist global configuration.
-     *
-     * @param globalRuleConfigs global rule configurations
-     * @param props properties
-     * @param isOverwrite is overwrite config center's configuration
-     */
-    public void persistGlobalConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
-        globalRuleService.persist(globalRuleConfigs, isOverwrite);
-        propsService.persist(props, isOverwrite);
     }
     
     @SuppressWarnings("unchecked")

@@ -69,13 +69,12 @@ public final class GovernanceFacadeTest {
         GovernanceListenerManager listenerManager = mock(GovernanceListenerManager.class);
         setField(governanceFacade, "registryCenter", registryCenter);
         setField(governanceFacade, "listenerManager", listenerManager);
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
-        Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
+        Map<String, DataSourceConfiguration> dataSourceConfigs = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
         Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
         Properties props = new Properties();
-        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, globalRuleConfigs, props);
-        verify(registryCenter).persistGlobalConfiguration(globalRuleConfigs, props, false);
-        verify(registryCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
+        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props);
+        verify(registryCenter).persistConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataNodes();
         verify(registryCenter).persistPrimaryNodes();
