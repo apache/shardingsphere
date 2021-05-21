@@ -25,8 +25,8 @@ import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
-import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
@@ -204,11 +204,11 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithTablesInUsedException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new TablesInUsedException(Collections.singleton("tbl")));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ShardingTableRulesInUsedException(Collections.singleton("tbl")));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1102));
         assertThat(actual.getSqlState(), is("C1102"));
-        assertThat(actual.getErrorMessage(), is("Tables [tbl] in the rule are still in used."));
+        assertThat(actual.getErrorMessage(), is("Sharding table rules [tbl] are still used by binding table rule."));
     }
 
     @Test
