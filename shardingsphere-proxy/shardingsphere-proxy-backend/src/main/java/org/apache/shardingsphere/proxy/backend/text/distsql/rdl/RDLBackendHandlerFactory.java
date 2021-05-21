@@ -32,6 +32,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
@@ -57,6 +58,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShard
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingTableRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropDatabaseDiscoveryRuleBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropEncryptRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropReadwriteSplittingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropShardingBindingTableRulesBackendHandler;
@@ -161,6 +163,9 @@ public final class RDLBackendHandlerFactory {
         }
         if (sqlStatement instanceof CreateEncryptRuleStatement) {
             return Optional.of(new CreateEncryptRuleBackendHandler((CreateEncryptRuleStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof DropEncryptRuleStatement) {
+            return Optional.of(new DropEncryptRuleBackendHandler((DropEncryptRuleStatement) sqlStatement, backendConnection));
         }
         return Optional.empty();
     }

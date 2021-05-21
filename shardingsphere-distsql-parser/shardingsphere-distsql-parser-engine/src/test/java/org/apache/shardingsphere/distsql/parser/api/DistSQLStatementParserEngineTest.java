@@ -411,6 +411,6 @@ public final class DistSQLStatementParserEngineTest {
     public void assertParseDropEncryptRule() {
         SQLStatement sqlStatement = engine.parse(RDL_DROP_ENCRYPT_RULE);
         assertTrue(sqlStatement instanceof DropEncryptRuleStatement);
-        assertThat(((DropEncryptRuleStatement) sqlStatement).getTableNames(), is(Arrays.asList("t_encrypt", "t_encrypt_order")));
+        assertThat(((DropEncryptRuleStatement) sqlStatement).getTables(), is(Arrays.asList("t_encrypt", "t_encrypt_order")));
     }
 }
