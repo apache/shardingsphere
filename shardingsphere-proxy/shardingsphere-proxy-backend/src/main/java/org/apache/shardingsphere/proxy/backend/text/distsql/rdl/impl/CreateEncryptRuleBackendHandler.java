@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleConverter;
+import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -53,7 +53,7 @@ public final class CreateEncryptRuleBackendHandler extends SchemaRequiredBackend
     @Override
     public ResponseHeader execute(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
         check(schemaName, sqlStatement);
-        YamlEncryptRuleConfiguration config = EncryptRuleConverter.convert(sqlStatement.getEncryptRules());
+        YamlEncryptRuleConfiguration config = EncryptRuleStatementConverter.convert(sqlStatement.getEncryptRules());
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         post(schemaName, rules);
         return new UpdateResponseHeader(sqlStatement);

@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Encrypt rule converter.
+ * Encrypt rule statement converter.
  */
-public final class EncryptRuleConverter {
+public final class EncryptRuleStatementConverter {
 
     /**
      * Convert collection of encrypt rule segments to YAML encrypt rule configuration.
@@ -41,11 +41,9 @@ public final class EncryptRuleConverter {
      */
     public static YamlEncryptRuleConfiguration convert(final Collection<EncryptRuleSegment> encryptRules) {
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
-        result.getTables().putAll(encryptRules.stream().map(EncryptRuleConverter::buildYamlEncryptTableRuleConfiguration)
+        result.getTables().putAll(encryptRules.stream().map(EncryptRuleStatementConverter::buildYamlEncryptTableRuleConfiguration)
                 .collect(Collectors.toMap(YamlEncryptTableRuleConfiguration::getName, each -> each)));
-        for (EncryptRuleSegment encryptRuleSegment : encryptRules) {
-            result.getEncryptors().putAll(buildYamlShardingSphereAlgorithmConfigurations(encryptRuleSegment));
-        }
+        encryptRules.forEach(each -> result.getEncryptors().putAll(buildYamlShardingSphereAlgorithmConfigurations(each)));
         return result;
     }
 
@@ -63,13 +61,13 @@ public final class EncryptRuleConverter {
         result.setLogicColumn(encryptColumnSegment.getName());
         result.setCipherColumn(encryptColumnSegment.getCipherColumn());
         result.setPlainColumn(encryptColumnSegment.getPlainColumn());
-        result.setEncryptorName(getEncryptorName(tableName, encryptColumnSegment.getName(), encryptColumnSegment.getEncryptor().getAlgorithmName()));
+        result.setEncryptorName(getEncryptorName(tableName, encryptColumnSegment.getName()));
         return result;
     }
 
     private static Map<String, YamlShardingSphereAlgorithmConfiguration> buildYamlShardingSphereAlgorithmConfigurations(final EncryptRuleSegment encryptRuleSegment) {
-        return encryptRuleSegment.getColumns().stream().collect(Collectors.toMap(EncryptColumnSegment::getName, each -> buildYamlShardingSphereAlgorithmConfiguration(each)))
-                .entrySet().stream().collect(Collectors.toMap(entry -> getEncryptorName(encryptRuleSegment.getTableName(), entry.getKey(), entry.getValue().getType()), entry -> entry.getValue()));
+        return encryptRuleSegment.getColumns().stream().collect(Collectors
+                .toMap(each -> getEncryptorName(encryptRuleSegment.getTableName(), each.getName()), each -> buildYamlShardingSphereAlgorithmConfiguration(each)));
     }
 
     private static YamlShardingSphereAlgorithmConfiguration buildYamlShardingSphereAlgorithmConfiguration(final EncryptColumnSegment encryptColumnSegment) {
@@ -79,7 +77,7 @@ public final class EncryptRuleConverter {
         return result;
     }
 
-    private static String getEncryptorName(final String tableName, final String columnName, final String encryptorAlgorithmName) {
-        return String.format("%s_%s_%s", tableName, columnName, encryptorAlgorithmName);
+    private static String getEncryptorName(final String tableName, final String columnName) {
+        return String.format("%s_%s", tableName, columnName);
     }
 }
