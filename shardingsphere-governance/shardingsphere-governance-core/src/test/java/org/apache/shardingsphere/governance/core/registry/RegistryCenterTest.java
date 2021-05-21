@@ -110,8 +110,8 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertPersistInstanceOnline() {
-        registryCenter.persistInstanceOnline();
+    public void assertRegisterInstanceOnline() {
+        registryCenter.registerInstanceOnline();
         verify(registryCenterRepository).persistEphemeral(anyString(), anyString());
     }
     

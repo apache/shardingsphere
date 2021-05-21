@@ -400,9 +400,9 @@ public final class RegistryCenter {
     }
     
     /**
-     * Persist instance online.
+     * Register instance online.
      */
-    public void persistInstanceOnline() {
+    public void registerInstanceOnline() {
         repository.persistEphemeral(node.getProxyNodePath(instanceId), "");
     }
     
