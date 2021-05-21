@@ -41,45 +41,42 @@ public final class SchemaRegistryService {
     private final RegistryCenterNode node = new RegistryCenterNode();
     
     /**
-     * Load all schema names.
+     * Persist schema.
      *
-     * @return all schema names
+     * @param schemaName schema name to be persisted
+     * @param schema schema to be persisted
      */
-    public Collection<String> loadAllSchemaNames() {
-        String schemaNames = repository.get(node.getMetadataNodePath());
-        return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
-    }
-    
-    /**
-     * Persist ShardingSphere schema.
-     *
-     * @param schemaName schema name
-     * @param schema ShardingSphere schema
-     */
-    public void persistSchema(final String schemaName, final ShardingSphereSchema schema) {
+    public void persist(final String schemaName, final ShardingSphereSchema schema) {
         repository.persist(node.getMetadataSchemaPath(schemaName), YamlEngine.marshal(new SchemaYamlSwapper().swapToYamlConfiguration(schema)));
-    }
-    
-    /**
-     * Load ShardingSphere schema.
-     *
-     * @param schemaName schema name
-     * @return ShardingSphere schema
-     */
-    public Optional<ShardingSphereSchema> loadSchema(final String schemaName) {
-        String path = repository.get(node.getMetadataSchemaPath(schemaName));
-        if (Strings.isNullOrEmpty(path)) {
-            return Optional.empty();
-        }
-        return Optional.of(new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlSchema.class)));
     }
     
     /**
      * Delete schema.
      *
-     * @param schemaName schema name
+     * @param schemaName schema name to be deleted
      */
-    public void deleteSchema(final String schemaName) {
+    public void delete(final String schemaName) {
         repository.delete(node.getSchemaNamePath(schemaName));
+    }
+    
+    /**
+     * Load schema.
+     *
+     * @param schemaName schema name to be loaded
+     * @return Loaded schema
+     */
+    public Optional<ShardingSphereSchema> load(final String schemaName) {
+        String path = repository.get(node.getMetadataSchemaPath(schemaName));
+        return Strings.isNullOrEmpty(path) ? Optional.empty() : Optional.of(new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlSchema.class)));
+    }
+    
+    /**
+     * Load all schema names.
+     *
+     * @return all schema names
+     */
+    public Collection<String> loadAllNames() {
+        String schemaNames = repository.get(node.getMetadataNodePath());
+        return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
     }
 }

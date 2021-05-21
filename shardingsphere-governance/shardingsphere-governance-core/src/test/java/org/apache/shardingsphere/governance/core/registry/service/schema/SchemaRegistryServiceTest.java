@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaRegistryServiceTest {
     
-    private static final String META_DATA_YAML = "yaml/schema.yaml";
+    private static final String YAML_DATA = "yaml/schema.yaml";
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
@@ -67,36 +67,27 @@ public final class SchemaRegistryServiceTest {
     }
     
     @Test
-    public void assertLoadAllSchemaNames() {
-        when(registryCenterRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
-        Collection<String> actual = schemaRegistryService.loadAllSchemaNames();
-        assertThat(actual.size(), is(2));
-        assertThat(actual, hasItems("sharding_db"));
-        assertThat(actual, hasItems("replica_query_db"));
-    }
-    
-    @SneakyThrows({IOException.class, URISyntaxException.class})
-    private String readYAML(final String yamlFile) {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
-                .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+    public void assertPersist() {
+        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML_DATA), YamlSchema.class));
+        schemaRegistryService.persist("foo_db", schema);
+        verify(registryCenterRepository).persist(eq("/metadata/foo_db/schema"), anyString());
     }
     
     @Test
-    public void assertPersistSchema() {
-        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlSchema.class));
-        schemaRegistryService.persistSchema("sharding_db", schema);
-        verify(registryCenterRepository).persist(eq("/metadata/sharding_db/schema"), anyString());
+    public void assertDelete() {
+        schemaRegistryService.delete("foo_db");
+        verify(registryCenterRepository).delete(eq("/metadata/foo_db"));
     }
     
     @Test
-    public void assertLoadSchema() {
-        when(registryCenterRepository.get("/metadata/sharding_db/schema")).thenReturn(readYAML(META_DATA_YAML));
-        Optional<ShardingSphereSchema> schemaOptional = schemaRegistryService.loadSchema("sharding_db");
+    public void assertLoad() {
+        when(registryCenterRepository.get("/metadata/foo_db/schema")).thenReturn(readYAML(YAML_DATA));
+        Optional<ShardingSphereSchema> schemaOptional = schemaRegistryService.load("foo_db");
         assertTrue(schemaOptional.isPresent());
-        Optional<ShardingSphereSchema> empty = schemaRegistryService.loadSchema("test");
+        Optional<ShardingSphereSchema> empty = schemaRegistryService.load("test");
         assertThat(empty, is(Optional.empty()));
         ShardingSphereSchema schema = schemaOptional.get();
-        verify(registryCenterRepository).get(eq("/metadata/sharding_db/schema"));
+        verify(registryCenterRepository).get(eq("/metadata/foo_db/schema"));
         assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
         assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(schema.getAllColumnNames("t_order").size(), is(1));
@@ -104,8 +95,17 @@ public final class SchemaRegistryServiceTest {
     }
     
     @Test
-    public void assertDeleteSchema() {
-        schemaRegistryService.deleteSchema("sharding_db");
-        verify(registryCenterRepository).delete(eq("/metadata/sharding_db"));
+    public void assertLoadAllNames() {
+        when(registryCenterRepository.get("/metadata")).thenReturn("foo_db,bar_db");
+        Collection<String> actual = schemaRegistryService.loadAllNames();
+        assertThat(actual.size(), is(2));
+        assertThat(actual, hasItems("foo_db"));
+        assertThat(actual, hasItems("bar_db"));
+    }
+    
+    @SneakyThrows({IOException.class, URISyntaxException.class})
+    private String readYAML(final String yamlFile) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
+                .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

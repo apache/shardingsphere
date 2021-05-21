@@ -270,7 +270,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final SchemaAlteredEvent event) {
-        schemaService.persistSchema(event.getSchemaName(), event.getSchema());
+        schemaService.persist(event.getSchemaName(), event.getSchema());
     }
     
     /**
@@ -334,10 +334,7 @@ public final class RegistryCenter {
         Collection<ShardingSphereUser> result = new LinkedList<>(oldUsers);
         ShardingSphereUsers shardingSphereUsers = new ShardingSphereUsers(oldUsers);
         for (ShardingSphereUser each : newUsers) {
-            Optional<ShardingSphereUser> oldUser = shardingSphereUsers.findUser(each.getGrantee());
-            if (oldUser.isPresent()) {
-                result.remove(oldUser);
-            }
+            shardingSphereUsers.findUser(each.getGrantee()).ifPresent(result::remove);
             result.add(each);
         }
         return result;
