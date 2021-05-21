@@ -137,7 +137,7 @@ public final class RegistryCenter {
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
     public void persistConfigurations(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
-                               final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
+                                      final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         globalRuleService.persist(globalRuleConfigs, isOverwrite);
         propsService.persist(props, isOverwrite);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigs.entrySet()) {
@@ -170,13 +170,13 @@ public final class RegistryCenter {
                 YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
     }
     
-    private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = dataSourceService.load(schemaName);
-        dataSourceConfigMap.putAll(dataSourceConfigs);
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfiguration(dataSourceConfigMap)));
+    private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> toBeAddedDataSourceConfigs) {
+        Map<String, DataSourceConfiguration> dataSourceConfigs = dataSourceService.load(schemaName);
+        dataSourceConfigs.putAll(toBeAddedDataSourceConfigs);
+        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(swapYamlDataSourceConfigurations(dataSourceConfigs)));
     }
     
-    private Map<String, Map<String, Object>> createYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+    private Map<String, Map<String, Object>> swapYamlDataSourceConfigurations(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
         return dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
