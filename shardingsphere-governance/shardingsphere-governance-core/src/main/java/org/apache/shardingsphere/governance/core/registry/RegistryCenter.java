@@ -430,15 +430,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load instance data.
-     * 
-     * @return instance data
-     */
-    public String loadInstanceData() {
-        return repository.get(node.getProxyNodePath(instanceId));
-    }
-    
-    /**
      * Load disabled data sources.
      * 
      * @param schemaName schema name

@@ -128,12 +128,6 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertLoadInstanceData() {
-        registryCenter.loadInstanceData();
-        verify(registryCenterRepository).get(anyString());
-    }
-    
-    @Test
     public void assertLoadDisabledDataSources() {
         List<String> disabledDataSources = Collections.singletonList("replica_ds_0");
         when(registryCenterRepository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
