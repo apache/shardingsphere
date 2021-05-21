@@ -30,16 +30,43 @@
             <table start-index="15" stop-index="23">
                 <simple-table name="t_order" alias="o" start-index="15" stop-index="23"/>
             </table>
-            <set start-index="17" stop-index="41">
-                <assignment start-index="21" stop-index="41">
-                    <column name="status" start-index="21" stop-index="28">
-                        <owner name="o" start-index="21" stop-index="21" />
+            <set start-index="25" stop-index="49">
+                <assignment start-index="29" stop-index="49">
+                    <column name="status" start-index="29" stop-index="36">
+                        <owner name="o" start-index="29" stop-index="29" />
                     </column>
                     <assignment-value>
-                        <literal-expression value="finished" start-index="32" stop-index="41" />
+                        <literal-expression value="finished" start-index="40" stop-index="49" />
                     </assignment-value>
                 </assignment>
             </set>
         </update>
+    </describe>
+
+    <describe sql-case-id="explain_insert_without_parameters">
+        <insert>
+            <table name="t_order" start-index="20" stop-index="26" />
+            <columns start-index="28" stop-index="54">
+                <column name="order_id" start-index="29" stop-index="36" />
+                <column name="user_id" start-index="39" stop-index="45" />
+                <column name="status" start-index="48" stop-index="53" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1" start-index="64" stop-index="64" />
+                    </assignment-value>
+                    <assignment-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" start-index="67" stop-index="67" />
+                    </assignment-value>
+                    <assignment-value>
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="insert" start-index="70" stop-index="77" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
     </describe>
 </sql-parser-test-cases>
