@@ -66,12 +66,7 @@ public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBac
         if (!notExistedTableNames.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(notExistedTableNames);
         }
-        // TODO
-        // 1. get binding tables by getBindingTables()
-        // 2. Check whether the dropped table rules exist in the binding table rule
-        // 3. throw ShardingTableRulesInUsedException if exist
-        // 4. refactor check() method to return void
-        // 5. add unit test in DropShardingTableRuleBackendHandlerTest.java
+        // TODO issue#10417
         return shardingRuleConfiguration.get();
     }
 
