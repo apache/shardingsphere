@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -24,7 +25,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -65,10 +66,7 @@ public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBac
         if (!notExistedTableNames.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(notExistedTableNames);
         }
-        Collection<String> inUsedTableNames = tableNames.stream().filter(each -> ProxyContext.getInstance().getMetaData(schemaName).getSchema().containsTable(each)).collect(Collectors.toList());
-        if (!inUsedTableNames.isEmpty()) {
-            throw new TablesInUsedException(inUsedTableNames);
-        }
+        // TODO issue#10417
         return shardingRuleConfiguration.get();
     }
 
@@ -94,6 +92,12 @@ public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBac
     private Optional<ShardingRuleConfiguration> getShardingRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
+    }
+
+    private Collection<String> getBindingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
+        Collection<String> bindTables = new LinkedHashSet<>();
+        shardingRuleConfiguration.getBindingTableGroups().forEach(each -> bindTables.addAll(Splitter.on(",").splitToList(each)));
+        return bindTables;
     }
 
     private void post(final String schemaName) {

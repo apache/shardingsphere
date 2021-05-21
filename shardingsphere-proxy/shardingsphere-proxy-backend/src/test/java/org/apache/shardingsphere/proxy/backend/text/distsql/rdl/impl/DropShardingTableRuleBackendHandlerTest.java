@@ -22,12 +22,10 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -74,9 +72,6 @@ public final class DropShardingTableRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
-    @Mock
-    private ShardingSphereSchema shardingSphereSchema;
     
     private DropShardingTableRuleBackendHandler handler = new DropShardingTableRuleBackendHandler(sqlStatement, backendConnection);
     
@@ -86,7 +81,6 @@ public final class DropShardingTableRuleBackendHandlerTest {
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(shardingSphereMetaData.getSchema()).thenReturn(shardingSphereSchema);
     }
     
     @Test(expected = ShardingRuleNotExistedException.class)
@@ -99,15 +93,6 @@ public final class DropShardingTableRuleBackendHandlerTest {
         TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));
         when(ruleMetaData.getConfigurations()).thenReturn(Arrays.asList(new ShardingRuleConfiguration()));
         when(sqlStatement.getTableNames()).thenReturn(Arrays.asList(tableRuleSegment));
-        handler.execute("test", sqlStatement);
-    }
-
-    @Test(expected = TablesInUsedException.class)
-    public void assertExecuteWithTableRuleInUsed() {
-        TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));
-        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        when(sqlStatement.getTableNames()).thenReturn(Arrays.asList(tableRuleSegment));
-        when(shardingSphereSchema.containsTable(eq("t_order"))).thenReturn(true);
         handler.execute("test", sqlStatement);
     }
 
