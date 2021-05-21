@@ -188,7 +188,7 @@ public final class RegistryCenter {
      * @param event data source disabled event
      */
     @Subscribe
-    public synchronized void renew(final DataSourceDisabledEvent event) {
+    public void renew(final DataSourceDisabledEvent event) {
         String value = event.isDisabled() ? RegistryCenterNodeStatus.DISABLED.toString() : "";
         repository.persist(node.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
     }
@@ -199,7 +199,7 @@ public final class RegistryCenter {
      * @param event primary data source event
      */
     @Subscribe
-    public synchronized void renew(final PrimaryDataSourceEvent event) {
+    public void renew(final PrimaryDataSourceEvent event) {
         repository.persist(node.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
     }
     
@@ -209,7 +209,7 @@ public final class RegistryCenter {
      * @param event Data source added event
      */
     @Subscribe
-    public synchronized void renew(final DataSourceAddedEvent event) {
+    public void renew(final DataSourceAddedEvent event) {
         addDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
@@ -219,7 +219,7 @@ public final class RegistryCenter {
      * @param event Data source altered event
      */
     @Subscribe
-    public synchronized void renew(final DataSourceAlteredEvent event) {
+    public void renew(final DataSourceAlteredEvent event) {
         dataSourceService.persist(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
@@ -229,7 +229,7 @@ public final class RegistryCenter {
      * @param event rule configurations altered event
      */
     @Subscribe
-    public synchronized void renew(final RuleConfigurationsAlteredEvent event) {
+    public void renew(final RuleConfigurationsAlteredEvent event) {
         schemaRuleService.persist(event.getSchemaName(), event.getRuleConfigurations());
     }
     
@@ -239,7 +239,7 @@ public final class RegistryCenter {
      * @param event meta data created event
      */
     @Subscribe
-    public synchronized void renew(final MetaDataCreatedEvent event) {
+    public void renew(final MetaDataCreatedEvent event) {
         String schemaNames = repository.get(node.getMetadataNodePath());
         Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
         if (!schemas.contains(event.getSchemaName())) {
@@ -254,7 +254,7 @@ public final class RegistryCenter {
      * @param event meta data dropped event
      */
     @Subscribe
-    public synchronized void renew(final MetaDataDroppedEvent event) {
+    public void renew(final MetaDataDroppedEvent event) {
         String schemaNames = repository.get(node.getMetadataNodePath());
         Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
         if (schemas.contains(event.getSchemaName())) {
@@ -269,7 +269,7 @@ public final class RegistryCenter {
      * @param event schema altered event
      */
     @Subscribe
-    public synchronized void renew(final SchemaAlteredEvent event) {
+    public void renew(final SchemaAlteredEvent event) {
         schemaService.persist(event.getSchemaName(), event.getSchema());
     }
     
@@ -279,7 +279,7 @@ public final class RegistryCenter {
      * @param event switch rule configuration event
      */
     @Subscribe
-    public synchronized void renew(final SwitchRuleConfigurationEvent event) {
+    public void renew(final SwitchRuleConfigurationEvent event) {
         schemaRuleService.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
         registryCacheManager.deleteCache(node.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
     }
@@ -290,7 +290,7 @@ public final class RegistryCenter {
      * @param event rule configuration cached event
      */
     @Subscribe
-    public synchronized void renew(final RuleConfigurationCachedEvent event) {
+    public void renew(final RuleConfigurationCachedEvent event) {
         StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(),
                 repository.get(node.getMetadataDataSourcePath(event.getSchemaName())),
                 repository.get(node.getRulePath(event.getSchemaName())),
@@ -304,7 +304,7 @@ public final class RegistryCenter {
      * @param event create user statement event
      */
     @Subscribe
-    public synchronized void renew(final CreateUserStatementEvent event) {
+    public void renew(final CreateUserStatementEvent event) {
         Collection<RuleConfiguration> globalRuleConfigs = globalRuleService.load();
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .findAny().map(each -> (AuthorityRuleConfiguration) each);
@@ -319,7 +319,7 @@ public final class RegistryCenter {
      * @param event grant event
      */
     @Subscribe
-    public synchronized void renew(final GrantStatementEvent event) {
+    public void renew(final GrantStatementEvent event) {
         persistChangedPrivilege(event.getUsers());
     }
     
