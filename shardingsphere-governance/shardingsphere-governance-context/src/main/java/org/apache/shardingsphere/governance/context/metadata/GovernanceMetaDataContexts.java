@@ -96,7 +96,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
-        Collection<String> disabledDataSources = governanceFacade.getRegistryCenter().loadDisabledDataSources(schemaName);
+        Collection<String> disabledDataSources = governanceFacade.getRegistryCenter().getDataSourceStatusService().loadDisabledDataSources(schemaName);
         disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true)));
     }
     

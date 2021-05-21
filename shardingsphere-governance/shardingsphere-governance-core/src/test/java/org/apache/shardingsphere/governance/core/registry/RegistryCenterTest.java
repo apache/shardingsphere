@@ -52,7 +52,6 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -110,27 +109,6 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertPersistInstanceOnline() {
-        registryCenter.persistInstanceOnline();
-        verify(registryCenterRepository).persistEphemeral(anyString(), anyString());
-    }
-    
-    @Test
-    public void assertPersistDataSourcesNode() {
-        registryCenter.persistDataNodes();
-        verify(registryCenterRepository).persist("/states/datanodes", "");
-    }
-    
-    @Test
-    public void assertLoadDisabledDataSources() {
-        List<String> disabledDataSources = Collections.singletonList("replica_ds_0");
-        when(registryCenterRepository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
-        registryCenter.loadDisabledDataSources("replica_query_db");
-        verify(registryCenterRepository).getChildrenKeys(anyString());
-        verify(registryCenterRepository).get(anyString());
-    }
-    
-    @Test
     public void assertPersistConfigurations() {
         Map<String, DataSourceConfiguration> dataSourceConfigs = createDataSourceConfigurations();
         Collection<RuleConfiguration> schemaRuleConfigs = createRuleConfigurations();
@@ -185,6 +163,19 @@ public final class RegistryCenterTest {
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
                 .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+    }
+    
+    @Test
+    public void assertRegisterInstanceOnline() {
+        registryCenter.registerInstanceOnline();
+        verify(registryCenterRepository).persistEphemeral(anyString(), anyString());
+    }
+    
+    @Test
+    public void assertInitNodes() {
+        registryCenter.initNodes();
+        verify(registryCenterRepository).persist("/states/datanodes", "");
+        verify(registryCenterRepository).persist("/states/primarynodes", "");
     }
     
     @Test

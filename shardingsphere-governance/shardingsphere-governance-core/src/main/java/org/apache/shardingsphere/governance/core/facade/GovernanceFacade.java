@@ -77,9 +77,8 @@ public final class GovernanceFacade implements AutoCloseable {
      * Online instance.
      */
     public void onlineInstance() {
-        registryCenter.persistInstanceOnline();
-        registryCenter.persistDataNodes();
-        registryCenter.persistPrimaryNodes();
+        registryCenter.registerInstanceOnline();
+        registryCenter.initNodes();
         listenerManager.initListeners();
     }
     

@@ -43,6 +43,7 @@ import org.apache.shardingsphere.governance.core.registry.service.config.impl.Gl
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.schema.SchemaRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.state.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.state.LockRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -106,6 +107,9 @@ public final class RegistryCenter {
     private final SchemaRegistryService schemaService;
     
     @Getter
+    private final DataSourceStatusRegistryService dataSourceStatusService;
+    
+    @Getter
     private final LockRegistryService lockService;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
@@ -118,6 +122,7 @@ public final class RegistryCenter {
         globalRuleService = new GlobalRuleRegistryService(repository);
         propsService = new PropertiesRegistryService(repository);
         schemaService = new SchemaRegistryService(repository);
+        dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -400,42 +405,17 @@ public final class RegistryCenter {
     }
     
     /**
-     * Persist instance online.
+     * Register instance online.
      */
-    public void persistInstanceOnline() {
+    public void registerInstanceOnline() {
         repository.persistEphemeral(node.getProxyNodePath(instanceId), "");
     }
     
     /**
-     * Initialize data nodes.
+     * Initialize nodes.
      */
-    public void persistDataNodes() {
+    public void initNodes() {
         repository.persist(node.getDataNodesPath(), "");
-    }
-    
-    /**
-     * Initialize primary nodes.
-     */
-    public void persistPrimaryNodes() {
         repository.persist(node.getPrimaryNodesPath(), "");
-    }
-    
-    /**
-     * Load disabled data sources.
-     * 
-     * @param schemaName schema name
-     * @return Collection of disabled data sources
-     */
-    public Collection<String> loadDisabledDataSources(final String schemaName) {
-        return loadDataSourcesBySchemaName(schemaName).stream().filter(each -> !Strings.isNullOrEmpty(getDataSourceNodeData(schemaName, each))
-                && RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(getDataSourceNodeData(schemaName, each))).collect(Collectors.toList());
-    }
-    
-    private Collection<String> loadDataSourcesBySchemaName(final String schemaName) {
-        return repository.getChildrenKeys(node.getSchemaPath(schemaName));
-    }
-    
-    private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
-        return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
     }
 }
