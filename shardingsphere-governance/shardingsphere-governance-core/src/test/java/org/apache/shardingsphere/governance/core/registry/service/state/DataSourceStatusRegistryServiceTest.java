@@ -70,7 +70,7 @@ public final class DataSourceStatusRegistryServiceTest {
     public void assertUpdateDataSourceEnabledState() {
         assertUpdateDataSourceState(false, "");
     }
-
+    
     private void assertUpdateDataSourceState(final boolean isDisabled, final String value) {
         String schemaName = "replica_query_db";
         String dataSourceName = "replica_ds_0";
@@ -78,7 +78,7 @@ public final class DataSourceStatusRegistryServiceTest {
         dataSourceStatusRegistryService.update(dataSourceDisabledEvent);
         verify(registryCenterRepository).persist(new RegistryCenterNode().getDataSourcePath(schemaName, dataSourceName), value);
     }
-
+    
     @Test
     public void assertUpdatePrimaryDataSourceState() {
         String schemaName = "replica_query_db";
