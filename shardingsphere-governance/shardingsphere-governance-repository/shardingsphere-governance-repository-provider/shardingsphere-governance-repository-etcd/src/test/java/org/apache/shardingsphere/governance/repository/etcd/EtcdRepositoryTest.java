@@ -25,8 +25,10 @@ import io.etcd.jetcd.KV;
 import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.Lease;
 import io.etcd.jetcd.Watch;
+import io.etcd.jetcd.Lock;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.lease.LeaseGrantResponse;
+import io.etcd.jetcd.lock.LockResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.etcd.jetcd.watch.WatchEvent;
@@ -48,6 +50,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -91,6 +94,15 @@ public final class EtcdRepositoryTest {
     
     @Mock
     private CompletableFuture putFuture;
+
+    @Mock
+    private CompletableFuture lockFuture;
+
+    @Mock
+    private Lock etcdLock;
+
+    @Mock
+    private LockResponse lockResponse;
     
     private final EtcdRepository repository = new EtcdRepository();
     
@@ -121,10 +133,12 @@ public final class EtcdRepositoryTest {
         when(kv.put(any(ByteSequence.class), any(ByteSequence.class), any(PutOption.class))).thenReturn(putFuture);
         when(getFuture.get()).thenReturn(getResponse);
         when(client.getLeaseClient()).thenReturn(lease);
+        when(client.getLockClient()).thenReturn(etcdLock);
         when(lease.grant(anyLong())).thenReturn(leaseFuture);
         when(leaseFuture.get()).thenReturn(leaseGrantResponse);
         when(leaseGrantResponse.getID()).thenReturn(123L);
         when(client.getWatchClient()).thenReturn(watch);
+        when(etcdLock.lock(any(ByteSequence.class), anyLong())).thenReturn(lockFuture);
         return client;
     }
     
@@ -287,5 +301,19 @@ public final class EtcdRepositoryTest {
         events.add(new WatchEvent(keyValue, mock(KeyValue.class), eventType));
         FieldSetter.setField(result, result.getClass().getDeclaredField("events"), events);
         return result;
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertTryLock() {
+        repository.tryLock("test", 5, TimeUnit.SECONDS);
+        verify(etcdLock).lock(ByteSequence.from("test", StandardCharsets.UTF_8), 123L);
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertReleaseLock() {
+        repository.releaseLock("test");
+        verify(etcdLock).unlock(ByteSequence.from("test", StandardCharsets.UTF_8));
     }
 }

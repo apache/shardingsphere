@@ -30,6 +30,7 @@ import io.etcd.jetcd.watch.WatchEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.governance.repository.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -48,6 +49,7 @@ import java.util.stream.Collectors;
 /**
  * Registry repository of ETCD.
  */
+@Slf4j
 public final class EtcdRepository implements RegistryCenterRepository {
     
     private Client client;
@@ -91,7 +93,7 @@ public final class EtcdRepository implements RegistryCenterRepository {
     public void persist(final String key, final String value) {
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8)).get();
     }
-    
+
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void persistEphemeral(final String key, final String value) {
@@ -99,7 +101,7 @@ public final class EtcdRepository implements RegistryCenterRepository {
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> { }));
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8), PutOption.newBuilder().withLeaseId(leaseId).build()).get();
     }
-    
+
     @Override
     public void delete(final String key) {
         client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8));
@@ -129,23 +131,37 @@ public final class EtcdRepository implements RegistryCenterRepository {
                 return Type.IGNORED;
         }
     }
-    
+
     @Override
     public boolean tryLock(final String key, final long time, final TimeUnit unit) {
-        // TODO
-        return false;
+        try {
+            long leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
+            client.getLockClient().lock(ByteSequence.from(key, StandardCharsets.UTF_8), leaseId).get(time, unit);
+            return true;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("EtcdRepository tryLock error, key:{}, time:{}, unit:{}", key, time, unit, ex);
+            return false;
+        }
     }
-    
+
     @Override
     public void releaseLock(final String key) {
-        // TODO
+        try {
+            client.getLockClient().unlock(ByteSequence.from(key, StandardCharsets.UTF_8)).get(etcdProperties.getValue(EtcdPropertyKey.CONNECTION_TIMEOUT_SECONDS), TimeUnit.SECONDS);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("EtcdRepository releaseLock error, key:{}", key, ex);
+        }
     }
-    
+
     @Override
     public void close() {
         client.close();
     }
-    
+
     @Override
     public String getType() {
         return "etcd";
