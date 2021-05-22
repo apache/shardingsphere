@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
+import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.SchemaBasedRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -36,12 +38,17 @@ import java.util.Optional;
 /**
  * Schema rule registry service.
  */
-@RequiredArgsConstructor
 public final class SchemaRuleRegistryService implements SchemaBasedRegistryService<Collection<RuleConfiguration>> {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node = new RegistryCenterNode();
+    private final RegistryCenterNode node;
+    
+    public SchemaRuleRegistryService(final RegistryCenterRepository repository) {
+        this.repository = repository;
+        node = new RegistryCenterNode();
+        ShardingSphereEventBus.getInstance().register(this);
+    }
     
     @Override
     public void persist(final String schemaName, final Collection<RuleConfiguration> configs, final boolean isOverwrite) {
@@ -77,5 +84,15 @@ public final class SchemaRuleRegistryService implements SchemaBasedRegistryServi
     @Override
     public boolean isExisted(final String schemaName) {
         return !Strings.isNullOrEmpty(repository.get(node.getRulePath(schemaName)));
+    }
+    
+    /**
+     * Update rule configurations for alter.
+     *
+     * @param event rule configurations altered event
+     */
+    @Subscribe
+    public void update(final RuleConfigurationsAlteredEvent event) {
+        persist(event.getSchemaName(), event.getRuleConfigurations());
     }
 }
