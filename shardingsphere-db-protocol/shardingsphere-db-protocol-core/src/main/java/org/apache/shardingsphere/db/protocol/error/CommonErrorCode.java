@@ -65,9 +65,7 @@ public enum CommonErrorCode implements SQLErrorCode {
 
     INVALID_DATABASE_DISCOVERY_TYPES(1119, "C1119", "Invalid database discovery types %s."),
 
-    DATABASE_DISCOVERY_RULE_NOT_EXIST(1120, "C1120", "Database discovery rule not exist in schema %s."),
-
-    DATABASE_DISCOVERY_RULE_DATASOURCE_NOT_EXIST(1121, "C1121", "Database discovery rules %s do not exist."),
+    DATABASE_DISCOVERY_RULES_NOT_EXIST(1120, "C1120", "Database discovery rules %s do not exist in schema %s."),
 
     ENCRYPT_RULE_EXIST(1122, "C1122", "Encrypt rule already exists in schema %s."),
 

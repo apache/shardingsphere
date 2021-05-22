@@ -23,13 +23,15 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * Database discovery rule data sources not existed exception.
+ * Database discovery rules not existed exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryRuleDataSourcesNotExistedException extends BackendException {
+public final class DatabaseDiscoveryRulesNotExistedException extends BackendException {
 
-    private static final long serialVersionUID = -5200865025455932005L;
+    private static final long serialVersionUID = 1293361372683913161L;
+
+    private final String schemaName;
 
     private final Collection<String> ruleNames;
 }
