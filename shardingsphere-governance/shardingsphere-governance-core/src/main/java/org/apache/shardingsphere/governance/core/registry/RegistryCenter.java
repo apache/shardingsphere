@@ -33,7 +33,6 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.invocat
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationCachedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
@@ -162,16 +161,6 @@ public final class RegistryCenter {
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigCacheId) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
                 YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
-    }
-    
-    /**
-     * Persist rule configurations.
-     *
-     * @param event rule configurations altered event
-     */
-    @Subscribe
-    public void renew(final RuleConfigurationsAlteredEvent event) {
-        schemaRuleService.persist(event.getSchemaName(), event.getRuleConfigurations());
     }
     
     /**

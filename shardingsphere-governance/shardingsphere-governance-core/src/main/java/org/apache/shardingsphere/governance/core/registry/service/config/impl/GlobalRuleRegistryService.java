@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.service.config.GlobalRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -32,12 +31,16 @@ import java.util.Collections;
 /**
  * Global rule registry service.
  */
-@RequiredArgsConstructor
 public final class GlobalRuleRegistryService implements GlobalRegistryService<Collection<RuleConfiguration>> {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node = new RegistryCenterNode();
+    private final RegistryCenterNode node;
+    
+    public GlobalRuleRegistryService(final RegistryCenterRepository repository) {
+        this.repository = repository;
+        node = new RegistryCenterNode();
+    }
     
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {

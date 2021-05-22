@@ -20,7 +20,6 @@ package org.apache.shardingsphere.governance.core.registry;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
@@ -173,13 +172,6 @@ public final class RegistryCenterTest {
         registryCenter.initNodes();
         verify(registryCenterRepository).persist("/states/datanodes", "");
         verify(registryCenterRepository).persist("/states/primarynodes", "");
-    }
-    
-    @Test
-    public void assertRenewRuleEvent() {
-        RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent("sharding_db", createRuleConfigurations());
-        registryCenter.renew(event);
-        verify(schemaRuleService).persist(event.getSchemaName(), event.getRuleConfigurations());
     }
     
     @Test
