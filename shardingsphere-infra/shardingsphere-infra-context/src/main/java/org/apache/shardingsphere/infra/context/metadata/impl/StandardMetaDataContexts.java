@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.executor.sql.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.util.Collection;
@@ -47,7 +47,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final ExecutorEngine executorEngine;
     
-    private final CalciteContextFactory calciteContextFactory;
+    private final OptimizeContextFactory optimizeContextFactory;
     
     private final ConfigurationProperties props;
     
@@ -63,7 +63,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         this.metaDataMap = new LinkedHashMap<>(metaDataMap);
         this.globalRuleMetaData = globalRuleMetaData;
         this.executorEngine = executorEngine;
-        calciteContextFactory = new CalciteContextFactory(metaDataMap);
+        optimizeContextFactory = new OptimizeContextFactory(metaDataMap);
         this.props = props;
         stateContext = new StateContext();
     }
