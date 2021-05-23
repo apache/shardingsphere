@@ -23,6 +23,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.log.SlowQueryInfo;
 import org.apache.shardingsphere.replicaquery.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -40,25 +41,25 @@ import java.util.concurrent.ExecutorService;
  */
 @Slf4j
 public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAdapter {
-    
+
     private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
-    
+
     private final BackendConnection backendConnection;
-    
+
     private volatile boolean authorized;
-    
+
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
         TransactionType transactionType = TransactionType.valueOf(ProxyContext.getInstance().getSchemaContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE));
         backendConnection = new BackendConnection(transactionType);
     }
-    
+
     @Override
     public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         backendConnection.setConnectionId(databaseProtocolFrontendEngine.getAuthEngine().handshake(context));
     }
-    
+
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
         if (!authorized) {
@@ -71,7 +72,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
                 isOccupyThreadForPerConnection, supportHint, backendConnection.getTransactionStatus().getTransactionType(), context.channel().id());
         executorService.execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
     }
-    
+
     private boolean auth(final ChannelHandlerContext context, final ByteBuf message) {
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message)) {
             AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthEngine().auth(context, payload);
@@ -88,13 +89,13 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         }
         return false;
     }
-    
+
     @Override
     public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
         closeAllResources(context);
     }
-    
+
     private void closeAllResources(final ChannelHandlerContext context) {
         databaseProtocolFrontendEngine.release(backendConnection);
         PrimaryVisitedManager.clear();
@@ -103,7 +104,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         backendConnection.closeConnections(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
-    
+
     @Override
     public void channelWritabilityChanged(final ChannelHandlerContext context) {
         if (context.channel().isWritable()) {

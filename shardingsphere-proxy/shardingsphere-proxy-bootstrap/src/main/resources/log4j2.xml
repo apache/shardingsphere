@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+
+<configuration>
+    <!--
+    集中配置属性进行管理
+    使用时通过:${name}
+    -->
+    <properties>
+        <property name="LOG_HOME">D:/logs</property>
+    </properties>
+
+    <!-- 日志处理 -->
+    <Appenders>
+        <!-- 控制台输出 appender，SYSTEM_OUT输出黑色，SYSTEM_ERR输出红色 -->
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n"/>
+        </Console>
+
+        <!-- 日志文件输出 appender -->
+        <File name="file" fileName="${LOG_HOME}/myfile.log">
+            <PatternLayout pattern="%msg%n"/>
+        </File>
+
+        <!--        &lt;!&ndash; 使用随机读写流的日志文件输出 appender，性能提高 &ndash;&gt;-->
+        <!--        <RandomAccessFile name="accessFile" fileName="${LOG_HOME}/myAcclog.log">-->
+        <!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] %l %c{36} - %m%n" />-->
+        <!--        </RandomAccessFile>-->
+
+        <!--        &lt;!&ndash; 按照一定规则拆分的日志文件的appender &ndash;&gt;  &lt;!&ndash; 拆分后的文件 &ndash;&gt;-->
+        <!--        &lt;!&ndash; filePattern="${LOG_HOME}/$${date:yyyy-MM-dd}/myrollog-%d{yyyy-MM-dd-HH-mm}-%i.log"> &ndash;&gt;-->
+        <!--        <RollingFile name="rollingFile" fileName="${LOG_HOME}/myrollog.log"-->
+        <!--                     filePattern="${LOG_HOME}/$${date:yyyy-MM-dd}/myrollog-%d{yyyy-MM-dd}-%i.log">-->
+        <!--            &lt;!&ndash; 日志级别过滤器 &ndash;&gt;-->
+        <!--            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY" />-->
+        <!--            &lt;!&ndash; 日志消息格式 &ndash;&gt;-->
+        <!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] %l %c{36} - %msg%n" />-->
+        <!--            <Policies>-->
+        <!--                &lt;!&ndash; 在系统启动时，出发拆分规则，生产一个新的日志文件 &ndash;&gt;-->
+        <!--                <OnStartupTriggeringPolicy />-->
+        <!--                &lt;!&ndash; 按照文件大小拆分，10MB &ndash;&gt;-->
+        <!--                <SizeBasedTriggeringPolicy size="2MB" />-->
+        <!--                &lt;!&ndash; 按照时间节点拆分，规则根据filePattern定义的 &ndash;&gt;-->
+        <!--                <TimeBasedTriggeringPolicy />-->
+        <!--            </Policies>-->
+        <!--            &lt;!&ndash; 在同一个目录下，文件的个限定为 30个，超过进行覆盖 &ndash;&gt;-->
+        <!--            <DefaultRolloverStrategy max="10" />-->
+        <!--        </RollingFile>-->
+
+    </Appenders>
+    <!-- logger 定义 -->
+    <Loggers>
+        <logger name="org.apache.shardingsphere" level="info" additivity="false">
+            <appender-ref ref="console"/>
+        </logger>
+
+        <logger name="com.zaxxer.hikari" level="error">
+            <appender-ref ref="console"/>
+        </logger>
+
+        <logger name="com.atomikos" level="error">
+            <appender-ref ref="console"/>
+        </logger>
+
+        <logger name="io.netty" level="error">
+            <appender-ref ref="console"/>
+        </logger>
+
+        <logger name="slow-query-log" level="info" additivity="false">
+            <appender-ref ref="file"/>
+        </logger>
+        <!-- 使用 rootLogger -->
+        <Root level="info">
+            <!-- 指定日志使用的处理器 -->
+            <AppenderRef ref="console"/>
+            <!--            <AppenderRef ref="file"/>-->
+            <!--            <AppenderRef ref="rollingFile" />-->
+            <!--            <AppenderRef ref="accessFile" />-->
+        </Root>
+    </Loggers>
+</configuration>

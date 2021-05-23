@@ -41,6 +41,8 @@ import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.SQLExecuteEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.log.SlowQueryInfo;
+import org.apache.shardingsphere.proxy.backend.log.SlowQueryLogger;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
@@ -59,32 +61,36 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {
-    
+
     private final LogicSQL logicSQL;
-    
+
     private final ShardingSphereSchema schema;
-    
+
     private final SQLExecuteEngine sqlExecuteEngine;
-    
+
     private final KernelProcessor kernelProcessor = new KernelProcessor();
-    
+
     private BackendResponse response;
-    
+
     private MergedResult mergedResult;
-    
+
     @Override
     public BackendResponse execute() throws SQLException {
         ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, schema, ProxyContext.getInstance().getSchemaContexts().getProps());
         logSQL(executionContext);
-        return doExecute(executionContext);
+        long startTime = System.currentTimeMillis();
+        BackendResponse backendResponse = doExecute(executionContext);
+        long executeTime = System.currentTimeMillis() - startTime;
+        SlowQueryLogger.slowQueryLog(startTime, logicSQL.getSql(), SlowQueryInfo.getThreadLocal().get());
+        return backendResponse;
     }
-    
+
     private void logSQL(final ExecutionContext executionContext) {
         if (ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(logicSQL, ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
     }
-    
+
     private BackendResponse doExecute(final ExecutionContext executionContext) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponse();
@@ -96,7 +102,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         refreshTableMetaData(executionContext.getSqlStatementContext().getSqlStatement(), routeDataSourceNames);
         return merge(executionContext.getSqlStatementContext());
     }
-    
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void refreshTableMetaData(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames) throws SQLException {
         if (null == sqlStatement) {
@@ -109,12 +115,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             GovernanceEventBus.getInstance().post(new MetaDataPersistEvent(schema.getName(), schema.getMetaData().getSchemaMetaData()));
         }
     }
-    
+
     private Optional<PhysicalTableMetaData> loadTableMetaData(final String tableName) throws SQLException {
         LogicSchemaMetaDataLoader loader = new LogicSchemaMetaDataLoader(schema.getRules());
         return loader.load(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(), schema.getDataSources(), tableName, ProxyContext.getInstance().getSchemaContexts().getProps());
     }
-    
+
     private BackendResponse merge(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         if (response instanceof UpdateResponse) {
             mergeUpdateCount(sqlStatementContext);
@@ -123,31 +129,31 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         mergedResult = mergeQuery(sqlStatementContext, ((QueryResponse) response).getQueryResults());
         return response;
     }
-    
+
     private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext) {
         if (isNeedAccumulate(sqlStatementContext)) {
             ((UpdateResponse) response).mergeUpdateCount();
         }
     }
-    
+
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
         Optional<DataNodeRoutedRule> dataNodeRoutedRule =
                 schema.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
-    
+
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ProxyContext.getInstance().getSchemaContexts().getDatabaseType(),
-                schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData(), 
+                schema.getMetaData().getSchemaMetaData().getConfiguredSchemaMetaData(),
                 ProxyContext.getInstance().getSchemaContexts().getProps(), schema.getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
-    
+
     @Override
     public boolean next() throws SQLException {
         return null != mergedResult && mergedResult.next();
     }
-    
+
     @Override
     public QueryData getQueryData() throws SQLException {
         List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
@@ -157,7 +163,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         return new QueryData(getColumnTypes(queryHeaders), row);
     }
-    
+
     private List<Integer> getColumnTypes(final List<QueryHeader> queryHeaders) {
         List<Integer> result = new ArrayList<>(queryHeaders.size());
         for (QueryHeader each : queryHeaders) {

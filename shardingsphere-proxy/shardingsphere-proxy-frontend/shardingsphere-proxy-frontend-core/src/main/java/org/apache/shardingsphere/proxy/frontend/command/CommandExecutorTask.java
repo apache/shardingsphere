@@ -27,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.proxy.backend.log.SlowQueryInfo;
 import org.apache.shardingsphere.replicaquery.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
@@ -46,15 +47,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public final class CommandExecutorTask implements Runnable {
-    
+
     private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
-    
+
     private final BackendConnection backendConnection;
-    
+
     private final ChannelHandlerContext context;
-    
+
     private final Object message;
-    
+
     /**
      * To make sure SkyWalking will be available at the next release of ShardingSphere,
      * a new plugin should be provided to SkyWalking project if this API changed.
@@ -73,6 +74,8 @@ public final class CommandExecutorTask implements Runnable {
                 connectionStatus.waitUntilConnectionRelease();
                 connectionStatus.switchToUsing();
             }
+            SlowQueryInfo slowQueryInfo = new SlowQueryInfo(backendConnection.getUsername(), context.channel().remoteAddress().toString(), backendConnection.getConnectionId());
+            SlowQueryInfo.setThreadLocal(slowQueryInfo);
             isNeedFlush = executeCommand(context, payload, backendConnection);
             connectionSize = backendConnection.getConnectionSize();
             // CHECKSTYLE:OFF
@@ -91,7 +94,7 @@ public final class CommandExecutorTask implements Runnable {
             rootInvokeHook.finish(connectionSize);
         }
     }
-    
+
     private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         CommandExecuteEngine commandExecuteEngine = databaseProtocolFrontendEngine.getCommandExecuteEngine();
         CommandPacketType type = commandExecuteEngine.getCommandPacketType(payload);
@@ -108,7 +111,7 @@ public final class CommandExecutorTask implements Runnable {
         }
         return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
     }
-    
+
     private void processException(final Exception cause) {
         context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause));
         Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
@@ -117,7 +120,7 @@ public final class CommandExecutorTask implements Runnable {
             log.error("Exception occur: ", cause);
         }
     }
-    
+
     private Collection<SQLException> closeExecutionResources() {
         Collection<SQLException> result = new LinkedList<>();
         PrimaryVisitedManager.clear();
@@ -125,7 +128,7 @@ public final class CommandExecutorTask implements Runnable {
         result.addAll(backendConnection.closeStatements());
         return result;
     }
-    
+
     private void processClosedExceptions(final Collection<SQLException> exceptions) {
         if (exceptions.isEmpty()) {
             return;
