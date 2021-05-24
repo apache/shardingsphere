@@ -29,9 +29,6 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.invocat
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ShowProcessListResponseEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationCachedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
@@ -54,7 +51,6 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,8 +72,6 @@ public final class RegistryCenter {
     private final RegistryCenterRepository repository;
     
     private final RegistryCenterNode node;
-    
-    private final RegistryCacheManager registryCacheManager;
     
     @Getter
     private final DataSourceRegistryService dataSourceService;
@@ -104,7 +98,6 @@ public final class RegistryCenter {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
         node = new RegistryCenterNode();
-        registryCacheManager = new RegistryCacheManager(repository, node);
         dataSourceService = new DataSourceRegistryService(repository);
         schemaRuleService = new SchemaRuleRegistryService(repository);
         globalRuleService = new GlobalRuleRegistryService(repository);
@@ -150,37 +143,6 @@ public final class RegistryCenter {
         Collection<String> newSchemaNames = new ArrayList<>(schemaNames);
         newSchemaNames.add(schemaName);
         repository.persist(node.getMetadataNodePath(), String.join(",", newSchemaNames));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigCacheId) {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
-    }
-    
-    /**
-     * Switch rule configuration.
-     *
-     * @param event switch rule configuration event
-     */
-    @Subscribe
-    public void renew(final SwitchRuleConfigurationEvent event) {
-        schemaRuleService.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
-        registryCacheManager.deleteCache(node.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
-    }
-    
-    /**
-     * Rule configuration cached.
-     *
-     * @param event rule configuration cached event
-     */
-    @Subscribe
-    public void renew(final RuleConfigurationCachedEvent event) {
-        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(),
-                repository.get(node.getMetadataDataSourcePath(event.getSchemaName())),
-                repository.get(node.getRulePath(event.getSchemaName())),
-                registryCacheManager.loadCache(node.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
-        ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
     
     /**
