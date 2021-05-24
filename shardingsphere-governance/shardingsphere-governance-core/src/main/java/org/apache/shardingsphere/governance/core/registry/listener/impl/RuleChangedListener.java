@@ -55,7 +55,7 @@ public final class RuleChangedListener extends PostGovernanceRepositoryEventList
         if (isRuleChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createRuleChangedEvent(schemaName, event));
         } else if (isRuleCachedEvent(schemaName, event.getKey())) {
-            return Optional.of(createRuleConfigurationCachedEvent(schemaName, event));
+            return Optional.of(new RuleConfigurationCachedEvent(event.getValue(), schemaName));
         }
         return Optional.empty();
     }
@@ -79,9 +79,5 @@ public final class RuleChangedListener extends PostGovernanceRepositoryEventList
         Collection<YamlRuleConfiguration> rules = YamlEngine.unmarshal(yamlContent, Collection.class);
         Preconditions.checkState(!rules.isEmpty(), "No available rule to load for governance.");
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
-    }
-    
-    private GovernanceEvent createRuleConfigurationCachedEvent(final String schemaName, final DataChangedEvent event) {
-        return new RuleConfigurationCachedEvent(event.getValue(), schemaName);
     }
 }
