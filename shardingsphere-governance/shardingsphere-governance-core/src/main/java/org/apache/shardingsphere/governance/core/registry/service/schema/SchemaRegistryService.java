@@ -17,16 +17,23 @@
 
 package org.apache.shardingsphere.governance.core.registry.service.schema;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -78,5 +85,45 @@ public final class SchemaRegistryService {
     public Collection<String> loadAllNames() {
         String schemaNames = repository.get(node.getMetadataNodePath());
         return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
+    }
+    
+    /**
+     * Update when meta data created.
+     *
+     * @param event meta data created event
+     */
+    @Subscribe
+    public void update(final MetaDataCreatedEvent event) {
+        String schemaNames = repository.get(node.getMetadataNodePath());
+        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
+        if (!schemas.contains(event.getSchemaName())) {
+            schemas.add(event.getSchemaName());
+            repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
+        }
+    }
+    
+    /**
+     * Update when meta data altered.
+     *
+     * @param event schema altered event
+     */
+    @Subscribe
+    public void update(final SchemaAlteredEvent event) {
+        persist(event.getSchemaName(), event.getSchema());
+    }
+    
+    /**
+     * Update when meta data dropped.
+     *
+     * @param event meta data dropped event
+     */
+    @Subscribe
+    public void update(final MetaDataDroppedEvent event) {
+        String schemaNames = repository.get(node.getMetadataNodePath());
+        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
+        if (schemas.contains(event.getSchemaName())) {
+            schemas.remove(event.getSchemaName());
+            repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
+        }
     }
 }
