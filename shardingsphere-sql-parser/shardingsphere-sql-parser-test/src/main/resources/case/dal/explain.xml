@@ -27,16 +27,14 @@
 
     <describe sql-case-id="explain_update_without_condition">
         <update>
-            <table start-index="15" stop-index="23">
-                <simple-table name="t_order" alias="o" start-index="15" stop-index="23"/>
+            <table start-index="15" stop-index="21">
+                <simple-table name="t_order" start-index="15" stop-index="21"/>
             </table>
-            <set start-index="25" stop-index="49">
-                <assignment start-index="29" stop-index="49">
-                    <column name="status" start-index="29" stop-index="36">
-                        <owner name="o" start-index="29" stop-index="29" />
-                    </column>
+            <set start-index="23" stop-index="45">
+                <assignment start-index="23" stop-index="45">
+                    <column name="status" start-index="27" stop-index="32" />
                     <assignment-value>
-                        <literal-expression value="finished" start-index="40" stop-index="49" />
+                        <literal-expression value="finished" start-index="36" stop-index="45" />
                     </assignment-value>
                 </assignment>
             </set>
