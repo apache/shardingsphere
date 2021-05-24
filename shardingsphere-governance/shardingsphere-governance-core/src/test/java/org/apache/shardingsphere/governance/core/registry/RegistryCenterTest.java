@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
@@ -49,9 +48,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class RegistryCenterTest {
@@ -74,9 +71,6 @@ public final class RegistryCenterTest {
     
     @Mock
     private PropertiesRegistryService propsService;
-    
-    @Mock
-    private RegistryCacheManager registryCacheManager;
     
     private RegistryCenter registryCenter;
     
@@ -164,17 +158,5 @@ public final class RegistryCenterTest {
         registryCenter.initNodes();
         verify(registryCenterRepository).persist("/states/datanodes", "");
         verify(registryCenterRepository).persist("/states/primarynodes", "");
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertRenewSwitchRuleConfigurationEvent() {
-        Field field = RegistryCenter.class.getDeclaredField("registryCacheManager");
-        field.setAccessible(true);
-        field.set(registryCenter, registryCacheManager);
-        when(registryCacheManager.loadCache(anyString(), eq("testCacheId"))).thenReturn(readYAML(SHARDING_RULE_YAML));
-        SwitchRuleConfigurationEvent event = new SwitchRuleConfigurationEvent("sharding_db", "testCacheId");
-        registryCenter.renew(event);
-        // TODO finish verify
     }
 }
