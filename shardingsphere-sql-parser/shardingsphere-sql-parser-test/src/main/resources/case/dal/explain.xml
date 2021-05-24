@@ -69,4 +69,25 @@
             </values>
         </insert>
     </describe>
+
+    <describe sql-case-id="explain_delete_without_sharding_value">
+        <delete>
+            <table name="t_order" start-index="20" stop-index="26" />
+            <where start-index="28" stop-index="41" literal-stop-index="46">
+                <expr>
+                    <binary-operation-expression start-index="34" stop-index="41" literal-stop-index="46">
+                        <left>
+                            <column name="status" start-index="34" stop-index="39" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="init" start-index="41" stop-index="46" />
+                            <parameter-marker-expression value="0" start-index="41" stop-index="41" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
+
 </sql-parser-test-cases>

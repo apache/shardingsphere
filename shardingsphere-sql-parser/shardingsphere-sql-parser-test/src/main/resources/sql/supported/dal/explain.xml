@@ -20,5 +20,5 @@
     <sql-case id="explain_select_constant_without_table" value="EXPLAIN SELECT 1 as a" />
     <sql-case id="explain_update_without_condition" value="EXPLAIN UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2" />
     <sql-case id="explain_insert_without_parameters" value="EXPLAIN INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" />
-    <sql-case id="explain_delete_without_sharding_value" value="DELETE FROM t_order WHERE status='finished'" />
+    <sql-case id="explain_delete_without_sharding_value" value="EXPLAIN DELETE FROM t_order WHERE status='init'" />
 </sql-cases>

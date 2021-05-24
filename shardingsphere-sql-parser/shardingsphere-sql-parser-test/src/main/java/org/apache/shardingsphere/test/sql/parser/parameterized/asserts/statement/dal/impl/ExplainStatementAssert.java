@@ -41,14 +41,17 @@ public final class ExplainStatementAssert {
      * @param expected expected explain statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ExplainStatement actual, final ExplainStatementTestCase expected) {
-        assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
         if (null != expected.getSelectClause()) {
+            assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getSelectClause());
         } else if (null != expected.getUpdateClause()) {
+            assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getUpdateClause());
         } else if (null != expected.getInsertClause()) {
+            assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getInsertClause());
         } else if (null != expected.getDeleteClause()) {
+            assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getDeleteClause());
         } else {
             assertFalse(assertContext.getText("Actual statement should not exist."), actual.getStatement().isPresent());
