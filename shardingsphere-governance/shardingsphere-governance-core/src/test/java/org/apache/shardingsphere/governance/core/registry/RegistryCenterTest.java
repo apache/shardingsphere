@@ -31,7 +31,9 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.junit.Before;
@@ -49,6 +51,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -223,5 +226,21 @@ public final class RegistryCenterTest {
         SwitchRuleConfigurationEvent event = new SwitchRuleConfigurationEvent("sharding_db", "testCacheId");
         registryCenter.renew(event);
         // TODO finish verify
+    }
+    
+    @Test
+    public void assertRenewCreateUser() {
+        when(registryCenterRepository.get("/rules")).thenReturn(readYAML(GLOBAL_RULE_YAML));
+        RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
+        CreateUserStatementEvent event = new CreateUserStatementEvent(getShardingSphereUsers());
+        registryCenter.renew(event);
+        verify(registryCenterRepository).persist(eq("/rules"), anyString());
+    }
+    
+    private Collection<ShardingSphereUser> getShardingSphereUsers() {
+        Collection<ShardingSphereUser> users = new LinkedList<>();
+        users.add(new ShardingSphereUser("root", "root", "%"));
+        users.add(new ShardingSphereUser("sharding", "sharding", "localhost"));
+        return users;
     }
 }
