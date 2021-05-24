@@ -35,6 +35,7 @@ import java.util.Collection;
 /**
  * Scaling registry service.
  */
+// TODO move to scaling module
 public final class ScalingRegistryService {
     
     private final RegistryCenterRepository repository;
