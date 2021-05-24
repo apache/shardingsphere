@@ -515,7 +515,7 @@ public final class RegistryCenter {
         for (ShardingSphereUser each : newUsers) {
             Optional<ShardingSphereUser> oldUser = shardingSphereUsers.findUser(each.getGrantee());
             if (oldUser.isPresent()) {
-                result.remove(oldUser);
+                result.remove(oldUser.get());
             }
             result.add(each);
         }

@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -59,6 +60,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -687,5 +689,21 @@ public final class RegistryCenterTest {
         RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
         registryCenter.renew(event);
         verify(registryCenterRepository).persist(startsWith("/metadata/sharding_db/dataSources"), anyString());
+    }
+    
+    @Test
+    public void assertRenewCreateUser() {
+        when(registryCenterRepository.get("/rules")).thenReturn(readYAML(GLOBAL_RULE_YAML));
+        RegistryCenter registryCenter = new RegistryCenter(registryCenterRepository);
+        CreateUserStatementEvent event = new CreateUserStatementEvent(getShardingSphereUsers());
+        registryCenter.renew(event);
+        verify(registryCenterRepository).persist(eq("/rules"), anyString());
+    }
+    
+    private Collection<ShardingSphereUser> getShardingSphereUsers() {
+        Collection<ShardingSphereUser> users = new LinkedList<>();
+        users.add(new ShardingSphereUser("root", "root", "%"));
+        users.add(new ShardingSphereUser("sharding", "sharding", "localhost"));
+        return users;
     }
 }
