@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.context.metadata;
 
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
@@ -92,7 +93,7 @@ public final class GovernanceMetaDataContextsTest {
     
     private GovernanceMetaDataContexts governanceMetaDataContexts;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereRuleMetaData globalRuleMetaData;
 
     @Before
@@ -100,7 +101,7 @@ public final class GovernanceMetaDataContextsTest {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
-                createMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), props), governanceFacade);
+                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -163,6 +164,18 @@ public final class GovernanceMetaDataContextsTest {
     }
     
     @Test
+    public void assertAuthorityChanged() {
+        when(globalRuleMetaData.getConfigurations()).thenReturn(createGlobalRuleConfiguration());
+        AuthorityChangedEvent event = new AuthorityChangedEvent(getShardingSphereUsers());
+        governanceMetaDataContexts.renew(event);
+        assertThat(governanceMetaDataContexts.getGlobalRuleMetaData(), not(globalRuleMetaData));
+    }
+    
+    private Collection<RuleConfiguration> createGlobalRuleConfiguration() {
+        RuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        return Collections.singleton(ruleConfig);
+    }
+    @Test
     public void assertSchemaChanged() {
         SchemaChangedEvent event = new SchemaChangedEvent("schema_changed", mock(ShardingSphereSchema.class));
         governanceMetaDataContexts.renew(event);
@@ -216,10 +229,14 @@ public final class GovernanceMetaDataContextsTest {
     }
 
     private Collection<RuleConfiguration> getChangedGlobalRuleConfigurations() {
+        RuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(getShardingSphereUsers(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        return Collections.singleton(authorityRuleConfig);
+    }
+    
+    private Collection<ShardingSphereUser> getShardingSphereUsers() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         users.add(new ShardingSphereUser("root", "root", "%"));
         users.add(new ShardingSphereUser("sharding", "sharding", "localhost"));
-        RuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
-        return Collections.singleton(authorityRuleConfig);
+        return users;
     }
 }
