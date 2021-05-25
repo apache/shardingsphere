@@ -43,6 +43,7 @@ execute
     | showResources
     | showRule
     | showShardingBindingTableRules
+    | showShardingBroadcastTableRules
     | showScalingJobList
     | showScalingJobStatus
     | startScalingJob
