@@ -33,10 +33,10 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 import java.util.Collection;
 
 /**
- * Scaling registry service.
+ * Scaling registry subscriber.
  */
 // TODO move to scaling module
-public final class ScalingRegistryService {
+public final class ScalingRegistrySubscriber {
     
     private final RegistryCenterRepository repository;
     
@@ -46,7 +46,7 @@ public final class ScalingRegistryService {
     
     private final RegistryCacheManager registryCacheManager;
     
-    public ScalingRegistryService(final RegistryCenterRepository repository, final SchemaRuleRegistryService schemaRuleService) {
+    public ScalingRegistrySubscriber(final RegistryCenterRepository repository, final SchemaRuleRegistryService schemaRuleService) {
         this.repository = repository;
         node = new RegistryCenterNode();
         this.schemaRuleService = schemaRuleService;
