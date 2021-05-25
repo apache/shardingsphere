@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.governance.core.registry;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
@@ -37,19 +34,11 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
-import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -143,50 +132,6 @@ public final class RegistryCenter {
         Collection<String> newSchemaNames = new ArrayList<>(schemaNames);
         newSchemaNames.add(schemaName);
         repository.persist(node.getMetadataNodePath(), String.join(",", newSchemaNames));
-    }
-    
-    /**
-     * Renew create user statement.
-     *
-     * @param event create user statement event
-     */
-    @Subscribe
-    public void renew(final CreateUserStatementEvent event) {
-        Collection<RuleConfiguration> globalRuleConfigs = globalRuleService.load();
-        Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
-                .findAny().map(each -> (AuthorityRuleConfiguration) each);
-        Preconditions.checkState(authorityRuleConfig.isPresent());
-        refreshAuthorityRuleConfiguration(authorityRuleConfig.get(), event.getUsers());
-        globalRuleService.persist(globalRuleConfigs, true);
-    }
-    
-    /**
-     * User with changed privilege event.
-     *
-     * @param event grant event
-     */
-    @Subscribe
-    public void renew(final GrantStatementEvent event) {
-        if (!event.getUsers().isEmpty()) {
-            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(event.getUsers())));
-        }
-    }
-    
-    private void refreshAuthorityRuleConfiguration(final AuthorityRuleConfiguration authRuleConfig, final Collection<ShardingSphereUser> createUsers) {
-        Collection<ShardingSphereUser> oldUsers = authRuleConfig.getUsers();
-        Collection<ShardingSphereUser> newUsers = oldUsers.isEmpty() ? createUsers : getChangedShardingSphereUsers(oldUsers, createUsers);
-        authRuleConfig.getUsers().removeAll(oldUsers);
-        authRuleConfig.getUsers().addAll(newUsers);
-    }
-    
-    private Collection<ShardingSphereUser> getChangedShardingSphereUsers(final Collection<ShardingSphereUser> oldUsers, final Collection<ShardingSphereUser> newUsers) {
-        Collection<ShardingSphereUser> result = new LinkedList<>(oldUsers);
-        ShardingSphereUsers shardingSphereUsers = new ShardingSphereUsers(oldUsers);
-        for (ShardingSphereUser each : newUsers) {
-            shardingSphereUsers.findUser(each.getGrantee()).ifPresent(result::remove);
-            result.add(each);
-        }
-        return result;
     }
     
     /**
