@@ -24,15 +24,12 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
-import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessReportEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessSummaryReportEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessUnitReportEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ShowProcessListRequestEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.process.ProcessRegistrySubscriber;
+import org.apache.shardingsphere.governance.core.registry.service.scaling.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.service.schema.SchemaRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.state.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.state.LockRegistryService;
@@ -40,11 +37,6 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -55,12 +47,10 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Registry center.
@@ -105,7 +95,17 @@ public final class RegistryCenter {
         schemaService = new SchemaRegistryService(repository);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
+        new ScalingRegistrySubscriber(repository, schemaRuleService);
+        new ProcessRegistrySubscriber(repository);
         ShardingSphereEventBus.getInstance().register(this);
+    }
+    
+    /**
+     * Initialize nodes.
+     */
+    public void initNodes() {
+        repository.persist(node.getDataNodesPath(), "");
+        repository.persist(node.getPrimaryNodesPath(), "");
     }
     
     /**
@@ -190,76 +190,9 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load show process list data.
-     *
-     * @param event get children request event.
-     */
-    @Subscribe
-    public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        List<String> childrenKeys = repository.getChildrenKeys(node.getExecutionNodesPath());
-        Collection<String> processListData = childrenKeys.stream().map(key -> repository.get(node.getExecutionPath(key))).collect(Collectors.toList());
-        ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(processListData));
-    }
-    
-    /**
-     * Report execute process summary.
-     *
-     * @param event execute process summary report event.
-     */
-    @Subscribe
-    public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
-        ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
-        repository.persist(node.getExecutionPath(executeProcessContext.getExecutionID()), YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
-    }
-    
-    /**
-     * Report execute process unit.
-     *
-     * @param event execute process unit report event.
-     */
-    @Subscribe
-    public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
-        // TODO lock on the same jvm
-        String executionPath = node.getExecutionPath(event.getExecutionID());
-        YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
-        ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
-        for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
-            if (unit.getUnitID().equals(executeProcessUnit.getUnitID())) {
-                unit.setStatus(executeProcessUnit.getStatus());
-            }
-        }
-        repository.persist(executionPath, YamlEngine.marshal(yamlExecuteProcessContext));
-    }
-    
-    /**
-     * Report execute process.
-     *
-     * @param event execute process report event.
-     */
-    @Subscribe
-    public void reportExecuteProcess(final ExecuteProcessReportEvent event) {
-        String executionPath = node.getExecutionPath(event.getExecutionID());
-        YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
-        for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
-            if (unit.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
-                return;
-            }
-        }
-        repository.delete(executionPath);
-    }
-    
-    /**
      * Register instance online.
      */
     public void registerInstanceOnline() {
         repository.persistEphemeral(node.getProxyNodePath(instanceId), "");
-    }
-    
-    /**
-     * Initialize nodes.
-     */
-    public void initNodes() {
-        repository.persist(node.getDataNodesPath(), "");
-        repository.persist(node.getPrimaryNodesPath(), "");
     }
 }
