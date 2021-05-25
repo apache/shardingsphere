@@ -45,9 +45,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -56,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 public final class AlterTableStatementSchemaRefresherTest {
     
-    private SchemaBuilderMaterials materials = mock(SchemaBuilderMaterials.class);
+    private final SchemaBuilderMaterials materials = mock(SchemaBuilderMaterials.class);
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -117,6 +119,18 @@ public final class AlterTableStatementSchemaRefresherTest {
         when(materials.getDatabaseType()).thenReturn(new SQLServerDatabaseType());
         refreshWithTableRule(new SQLServerAlterTableStatement());
     }
+    
+    @Test
+    public void refreshWithRenameTableForPostgreSQL() throws SQLException {
+        when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        refreshWithRenameTable(new PostgreSQLAlterTableStatement());
+    }
+    
+    @Test
+    public void refreshWithRenameTableWithTableRuleForPostgreSQL() throws SQLException {
+        when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        refreshWithRenameTableWithTableRule(new PostgreSQLAlterTableStatement());
+    }
 
     private void refresh(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
@@ -133,17 +147,17 @@ public final class AlterTableStatementSchemaRefresherTest {
         when(resultSet.next()).thenReturn(false);
         SchemaRefresher<AlterTableStatement> schemaRefresher = new AlterTableStatementSchemaRefresher();
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
-        schemaRefresher.refresh(schema, Arrays.asList("ds"), alterTableStatement, materials);
+        schemaRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
         assertTrue(schema.containsTable("t_order"));
     }
     
     private void refreshWithTableRule(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
-        ShardingSphereRule rule = mock(TableContainedRule.class);
-        Collection<ShardingSphereRule> rules = Arrays.asList(rule);
+        TableContainedRule rule = mock(TableContainedRule.class);
+        Collection<ShardingSphereRule> rules = Collections.singletonList(rule);
         when(materials.getRules()).thenReturn(rules);
-        when(((TableContainedRule) rule).getTables()).thenReturn(Arrays.asList("t_order"));
+        when(rule.getTables()).thenReturn(Collections.singletonList("t_order"));
         when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
         DataSource dataSource = mock(DataSource.class);
         when(dataSourceMap.get(eq("ds"))).thenReturn(dataSource);
@@ -156,7 +170,53 @@ public final class AlterTableStatementSchemaRefresherTest {
         when(resultSet.next()).thenReturn(false);
         SchemaRefresher<AlterTableStatement> schemaRefresher = new AlterTableStatementSchemaRefresher();
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
-        schemaRefresher.refresh(schema, Arrays.asList("ds"), alterTableStatement, materials);
+        schemaRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
         assertTrue(schema.containsTable("t_order"));
+    }
+    
+    private void refreshWithRenameTable(final AlterTableStatement alterTableStatement) throws SQLException {
+        alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        alterTableStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
+        Map<String, DataSource> dataSourceMap = mock(HashMap.class);
+        when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSourceMap.get(eq("ds"))).thenReturn(dataSource);
+        Connection connection = mock(Connection.class);
+        when(dataSource.getConnection()).thenReturn(connection);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        when(connection.getMetaData()).thenReturn(metaData);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(metaData.getTables(any(), any(), any(), any())).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        SchemaRefresher<AlterTableStatement> schemaRefresher = new AlterTableStatementSchemaRefresher();
+        ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
+        schemaRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
+        assertFalse(schema.containsTable("t_order"));
+        assertTrue(schema.containsTable("t_order_new"));
+    }
+    
+    private void refreshWithRenameTableWithTableRule(final AlterTableStatement alterTableStatement) throws SQLException {
+        alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        alterTableStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
+        Map<String, DataSource> dataSourceMap = mock(HashMap.class);
+        TableContainedRule rule = mock(TableContainedRule.class);
+        Collection<ShardingSphereRule> rules = Collections.singletonList(rule);
+        when(materials.getRules()).thenReturn(rules);
+        when(rule.getTables()).thenReturn(Arrays.asList("t_order", "t_order_new"));
+        when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSourceMap.get(eq("ds"))).thenReturn(dataSource);
+        Connection connection = mock(Connection.class);
+        when(dataSource.getConnection()).thenReturn(connection);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        when(connection.getMetaData()).thenReturn(metaData);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(metaData.getTables(any(), any(), any(), any())).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        SchemaRefresher<AlterTableStatement> schemaRefresher = new AlterTableStatementSchemaRefresher();
+        ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
+        schemaRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
+        assertFalse(schema.containsTable("t_order"));
+        assertTrue(schema.containsTable("t_order_new"));
     }
 }

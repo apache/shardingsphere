@@ -40,6 +40,8 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     
     private SimpleTableSegment table;
     
+    private SimpleTableSegment renameTable;
+    
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
     private final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions = new LinkedList<>();

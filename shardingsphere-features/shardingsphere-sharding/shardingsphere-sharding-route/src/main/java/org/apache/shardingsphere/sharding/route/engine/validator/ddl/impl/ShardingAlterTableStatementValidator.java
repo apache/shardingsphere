@@ -24,10 +24,12 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -40,9 +42,17 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
                 : sqlStatementContext.getTablesContext().getTableNames();
-        if (!shardingRule.tableRuleExists(tableNames) && !shardingRule.isSingleTablesInSameDataSource(tableNames)) {
+        Optional<SimpleTableSegment> renameTable = Optional.ofNullable(sqlStatementContext.getSqlStatement().getRenameTable());
+        if (!renameTable.isPresent() && !shardingRule.tableRuleExists(tableNames) && !shardingRule.isSingleTablesInSameDataSource(tableNames)) {
             throw new ShardingSphereException("Single tables must be in the same datasource.");
         }
+        if (renameTable.isPresent() && !validateRenameTableType(shardingRule, tableNames)) {
+            throw new ShardingSphereException("The type of rename table '%s' must be same with primary table.", renameTable.get().getTableName().getIdentifier().getValue());
+        }
+    }
+    
+    private boolean validateRenameTableType(final ShardingRule shardingRule, final Collection<String> tableNames) {
+        return shardingRule.isAllShardingTables(tableNames) || shardingRule.isAllBroadcastTables(tableNames) || !shardingRule.tableRuleExists(tableNames);
     }
     
     @Override
