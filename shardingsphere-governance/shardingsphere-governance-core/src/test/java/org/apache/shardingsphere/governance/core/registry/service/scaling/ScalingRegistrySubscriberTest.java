@@ -40,7 +40,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ScalingRegistryServiceTest {
+public final class ScalingRegistrySubscriberTest {
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
@@ -51,24 +51,25 @@ public final class ScalingRegistryServiceTest {
     @Mock
     private RegistryCacheManager registryCacheManager;
     
-    private ScalingRegistryService scalingRegistryService;
+    private ScalingRegistrySubscriber scalingRegistrySubscriber;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        scalingRegistryService = new ScalingRegistryService(registryCenterRepository, schemaRuleService);
+        scalingRegistrySubscriber = new ScalingRegistrySubscriber(registryCenterRepository, schemaRuleService);
     }
     
     @Test
     public void assertSwitchRuleConfiguration() throws ReflectiveOperationException {
-        Field field = ScalingRegistryService.class.getDeclaredField("registryCacheManager");
+        Field field = ScalingRegistrySubscriber.class.getDeclaredField("registryCacheManager");
         field.setAccessible(true);
-        field.set(scalingRegistryService, registryCacheManager);
+        field.set(scalingRegistrySubscriber, registryCacheManager);
         when(registryCacheManager.loadCache(anyString(), eq("testCacheId"))).thenReturn(readYAML());
         SwitchRuleConfigurationEvent event = new SwitchRuleConfigurationEvent("sharding_db", "testCacheId");
-        scalingRegistryService.switchRuleConfiguration(event);
+        scalingRegistrySubscriber.switchRuleConfiguration(event);
         // TODO finish verify
     }
     
+    @Test
     public void assertCacheRuleConfiguration() {
         // TODO finish test case
     }
