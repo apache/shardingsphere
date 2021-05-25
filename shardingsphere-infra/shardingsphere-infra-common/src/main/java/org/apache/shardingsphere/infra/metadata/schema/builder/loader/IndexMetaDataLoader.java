@@ -35,6 +35,8 @@ public final class IndexMetaDataLoader {
     
     private static final String INDEX_NAME = "INDEX_NAME";
     
+    private static final int ORACLE_VIEW_NOT_APPROPRIATE_VENDOR_CODE = 1702;
+    
     /**
      * Load index meta data list.
      * In a few jdbc implementation(eg. oracle), return value of getIndexInfo contains a statistics record that not a index itself and INDEX_NAME is null.
@@ -53,6 +55,10 @@ public final class IndexMetaDataLoader {
                 if (null != indexName) {
                     result.add(new IndexMetaData(indexName));
                 }
+            }
+        } catch (final SQLException ex) {
+            if (ORACLE_VIEW_NOT_APPROPRIATE_VENDOR_CODE != ex.getErrorCode()) {
+                throw ex;
             }
         }
         return result;

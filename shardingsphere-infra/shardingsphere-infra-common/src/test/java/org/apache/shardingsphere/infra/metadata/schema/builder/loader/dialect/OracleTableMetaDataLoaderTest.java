@@ -45,37 +45,80 @@ public final class OracleTableMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithoutExistedTables() throws SQLException {
+    public void assertLoadWithoutExistedTablesWithoutCollation() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN, COLLATION FROM ALL_TAB_COLUMNS WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(resultSet);
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN  FROM ALL_TAB_COLUMNS WHERE OWNER = ?").executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A INNER JOIN"
-                        + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND TABLE_SCHEMA=?").executeQuery()).thenReturn(primaryKeys);
+                        + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = ?").executeQuery()).thenReturn(primaryKeys);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
+        when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
     
     @Test
-    public void assertLoadWithExistedTables() throws SQLException {
+    public void assertLoadWithoutExistedTablesWithCollation() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN, COLLATION FROM ALL_TAB_COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME NOT IN ('existed_tbl')")
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN , COLLATION FROM ALL_TAB_COLUMNS WHERE OWNER = ?").executeQuery()).thenReturn(resultSet);
+        ResultSet indexResultSet = mockIndexMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
+        ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A INNER JOIN"
+                        + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = ?").executeQuery()).thenReturn(primaryKeys);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
+        when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
+    }
+    
+    @Test
+    public void assertLoadWithExistedTablesWithoutCollation() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        ResultSet resultSet = mockTableMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN  FROM ALL_TAB_COLUMNS WHERE OWNER = ? AND TABLE_NAME NOT IN ('existed_tbl')")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')")
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A INNER JOIN"
-                        + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND TABLE_SCHEMA=? AND TABLE_NAME NOT IN ('existed_tbl')")
+                        + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = ? AND A.TABLE_NAME NOT IN ('existed_tbl')")
                 .executeQuery()).thenReturn(primaryKeys);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
+        when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
+        assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
+    }
+    
+    @Test
+    public void assertLoadWithExistedTablesWithCollation() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        ResultSet resultSet = mockTableMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN , COLLATION FROM ALL_TAB_COLUMNS WHERE OWNER = ? AND TABLE_NAME NOT IN ('existed_tbl')")
+                .executeQuery()).thenReturn(resultSet);
+        ResultSet indexResultSet = mockIndexMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')")
+                .executeQuery()).thenReturn(indexResultSet);
+        ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A INNER JOIN"
+                        + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = ? AND A.TABLE_NAME NOT IN ('existed_tbl')")
+                .executeQuery()).thenReturn(primaryKeys);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
+        when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
     }
     
@@ -101,7 +144,7 @@ public final class OracleTableMetaDataLoaderTest {
         when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
         when(result.getString("DATA_TYPE")).thenReturn("int", "varchar");
         when(result.getString("IDENTITY_COLUMN")).thenReturn("YES", "NO");
-        when(result.getString("COLLATION_NAME")).thenReturn("BINARY_CS", "BINARY_CI");
+        when(result.getString("COLLATION")).thenReturn("BINARY_CS", "BINARY_CI");
         return result;
     }
     
