@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -37,21 +38,21 @@ import java.util.Objects;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnMetaDataLoader {
-    
+
     private static final String COLUMN_NAME = "COLUMN_NAME";
-    
+
     private static final String DATA_TYPE = "DATA_TYPE";
-    
+
     private static final String TYPE_NAME = "TYPE_NAME";
-    
+
     private static final String TABLE_NAME = "TABLE_NAME";
-    
+
     /**
      * Load column meta data list.
-     * 
-     * @param connection connection
+     *
+     * @param connection       connection
      * @param tableNamePattern table name pattern
-     * @param databaseType database type
+     * @param databaseType     database type
      * @return column meta data list
      * @throws SQLException SQL exception
      */
@@ -75,22 +76,24 @@ public final class ColumnMetaDataLoader {
                 }
             }
         }
-        try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(tableNamePattern, databaseType))) {
+        Statement statement = connection.createStatement();
+        try (ResultSet resultSet = statement.executeQuery(generateEmptyResultSQL(tableNamePattern, databaseType))) {
             for (String each : columnNames) {
                 isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each)));
             }
         }
+        statement.close();
         for (int i = 0; i < columnNames.size(); i++) {
             // TODO load auto generated from database meta data
             result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), false, isCaseSensitives.get(i)));
         }
         return result;
     }
-    
+
     private static String generateEmptyResultSQL(final String table, final DatabaseType databaseType) {
         return String.format("SELECT * FROM %s WHERE 1 != 1", databaseType.getQuoteCharacter().wrap(table));
     }
-    
+
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
         Collection<String> result = new HashSet<>();
         try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), connection.getSchema(), table)) {
