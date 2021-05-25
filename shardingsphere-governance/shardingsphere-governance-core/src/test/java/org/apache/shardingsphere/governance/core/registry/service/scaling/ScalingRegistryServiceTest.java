@@ -69,7 +69,7 @@ public final class ScalingRegistryServiceTest {
         // TODO finish verify
     }
     
-    public void  assertCacheRuleConfiguration() {
+    public void assertCacheRuleConfiguration() {
         // TODO finish test case
     }
     

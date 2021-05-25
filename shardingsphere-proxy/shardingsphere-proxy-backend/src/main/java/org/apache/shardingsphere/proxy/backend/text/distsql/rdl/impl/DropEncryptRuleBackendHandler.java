@@ -51,9 +51,9 @@ public final class DropEncryptRuleBackendHandler extends SchemaRequiredBackendHa
         Optional<EncryptRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findFirst();
         if (!ruleConfig.isPresent()) {
-            throw new EncryptRulesNotExistedException(sqlStatement.getTables());
+            throw new EncryptRulesNotExistedException(schemaName, sqlStatement.getTables());
         }
-        check(ruleConfig.get(), sqlStatement.getTables());
+        check(schemaName, ruleConfig.get(), sqlStatement.getTables());
         YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig.get())).stream()
                 .map(each -> (YamlEncryptRuleConfiguration) each).findFirst().get();
@@ -63,11 +63,11 @@ public final class DropEncryptRuleBackendHandler extends SchemaRequiredBackendHa
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final EncryptRuleConfiguration ruleConfig, final Collection<String> droppedTables) {
+    private void check(final String schemaName, final EncryptRuleConfiguration ruleConfig, final Collection<String> droppedTables) {
         Collection<String> encryptTables = ruleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTables = droppedTables.stream().filter(each -> !encryptTables.contains(each)).collect(Collectors.toList());
         if (!notExistedTables.isEmpty()) {
-            throw new EncryptRulesNotExistedException(notExistedTables);
+            throw new EncryptRulesNotExistedException(schemaName, notExistedTables);
         }
     }
 
