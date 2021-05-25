@@ -240,10 +240,10 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
-     * Judge logic tables is all belong to binding encryptors.
+     * Judge whether all logic tables belongs to binding encryptors.
      *
      * @param logicTableNames logic table names
-     * @return logic tables is all belong to binding encryptors or not
+     * @return The result of judging whether all logic tables belongs to binding encryptors
      */
     public boolean isAllBindingTables(final Collection<String> logicTableNames) {
         if (logicTableNames.isEmpty()) {
@@ -273,40 +273,40 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
-     * Judge logic tables is all belong to broadcast encryptors.
+     * Judge whether all logic tables belongs to broadcast encryptors.
      *
      * @param logicTableNames logic table names
-     * @return logic tables is all belong to broadcast encryptors or not
+     * @return The result of judging whether all logic tables belongs to binding encryptors
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
         return !logicTableNames.isEmpty() && logicTableNames.stream().allMatch(this::isBroadcastTable);
     }
     
     /**
-     * Judge logic tables is all belong to sharding tables.
+     * Judge whether all logic tables belongs to sharding tables.
      *
      * @param logicTableNames logic table names
-     * @return logic tables is all belong to sharding tables or not
+     * @return The result of judging whether all logic tables belongs to sharding tables
      */
     public boolean isAllShardingTables(final Collection<String> logicTableNames) {
         return logicTableNames.stream().allMatch(each -> findTableRule(each).isPresent());
     }
     
     /**
-     * Judge logic table is belong to sharding tables.
+     * Judge whether logic table is sharding table
      *
      * @param logicTableName logic table name
-     * @return logic table is belong to sharding tables or not
+     * @return The result of judging whether logic table is sharding table
      */
     public boolean isShardingTable(final String logicTableName) {
         return findTableRule(logicTableName).isPresent();
     }
     
     /**
-     * Judge logic table is belong to broadcast tables.
+     * Judge whether logic table belongs to broadcast tables.
      *
      * @param logicTableName logic table name
-     * @return logic table is belong to broadcast tables or not
+     * @return The result of judging whether logic table belongs to broadcast tables
      */
     public boolean isBroadcastTable(final String logicTableName) {
         return broadcastTables.stream().anyMatch(each -> each.equalsIgnoreCase(logicTableName));
@@ -346,7 +346,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
-     * Judge is sharding column or not.
+     * Judge if a column is sharding column or not.
      *
      * @param columnName column name
      * @param tableName table name
