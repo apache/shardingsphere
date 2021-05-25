@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.fixture.MethodInvocationFixture;
-import org.junit.Test;
+import java.sql.Connection;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MethodInvocationTest {
+/**
+ * Connection post processor.
+ */
+@FunctionalInterface
+public interface ConnectionPostProcessor {
     
-    @Test
-    public void assertInvoke() throws NoSuchMethodException {
-        MethodInvocationFixture methodInvocationFixture = new MethodInvocationFixture();
-        MethodInvocation methodInvocation = new MethodInvocation(MethodInvocationFixture.class.getMethod("setId", Integer.class), new Object[]{1});
-        methodInvocation.invoke(methodInvocationFixture);
-        assertThat(methodInvocationFixture.getId(), is(1));
-    }
+    /**
+     * Process connection.
+     *
+     * @param target target connection
+     */
+    void process(Connection target);
 }

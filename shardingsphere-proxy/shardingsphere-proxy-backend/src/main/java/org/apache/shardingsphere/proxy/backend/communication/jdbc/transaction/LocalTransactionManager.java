@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.MethodInvocation;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,7 +35,13 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void begin() {
-        recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{false});
+        connection.getConnectionPostProcessors().add(target -> {
+            try {
+                target.setAutoCommit(false);
+            } catch (final SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
     
     @Override
@@ -89,10 +93,5 @@ public final class LocalTransactionManager implements TransactionManager {
             ex.setNextException(each);
         }
         throw ex;
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
-        connection.getMethodInvocations().add(new MethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
     }
 }
