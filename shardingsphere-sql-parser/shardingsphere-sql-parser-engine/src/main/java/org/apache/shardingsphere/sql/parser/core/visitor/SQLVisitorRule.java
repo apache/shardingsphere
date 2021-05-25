@@ -138,7 +138,11 @@ public enum SQLVisitorRule {
     
     ROLLBACK("Rollback", SQLStatementType.TCL),
     
-    SAVE_POINT("Savepoint", SQLStatementType.TCL),
+    SAVEPOINT("Savepoint", SQLStatementType.TCL),
+    
+    RELEASE_SAVEPOINT("ReleaseSavepoint", SQLStatementType.TCL),
+    
+    ROLLBACK_TO_SAVEPOINT("RollbackToSavepoint", SQLStatementType.TCL),
     
     GRANT("Grant", SQLStatementType.DCL),
     

@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
+
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Transaction operation type.
+ * PostgreSQL release savepoint statement.
  */
-public enum TransactionOperationType {
-    
-    BEGIN, COMMIT, ROLLBACK, SAVEPOINT, ROLLBACK_TO_SAVEPOINT, RELEASE_SAVEPOINT
+public final class PostgreSQLReleaseSavepointStatement extends ReleaseSavepointStatement implements PostgreSQLStatement {
 }

@@ -67,6 +67,8 @@ public final class LocalTransactionManager implements TransactionManager {
                 each.commit();
             } catch (final SQLException ex) {
                 result.add(ex);
+            } finally {
+                ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
         }
         return result;
@@ -79,6 +81,8 @@ public final class LocalTransactionManager implements TransactionManager {
                 each.rollback();
             } catch (final SQLException ex) {
                 result.add(ex);
+            } finally {
+                ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
         }
         return result;
@@ -93,5 +97,42 @@ public final class LocalTransactionManager implements TransactionManager {
             ex.setNextException(each);
         }
         throw ex;
+    }
+    
+    @Override
+    public void setSavepoint(final String savepointName) throws SQLException {
+        if (!connection.getTransactionStatus().isInTransaction()) {
+            return;
+        }
+        for (Connection each : connection.getCachedConnections().values()) {
+            ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
+        }
+        connection.getConnectionPostProcessors().add(target -> {
+            try {
+                ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName);
+            } catch (final SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+    }
+    
+    @Override
+    public void rollbackTo(final String savepointName) throws SQLException {
+        if (!connection.getTransactionStatus().isInTransaction()) {
+            return;
+        }
+        for (Connection each : connection.getCachedConnections().values()) {
+            ConnectionSavepointManager.getInstance().rollbackToSavepoint(each, savepointName);
+        }
+    }
+    
+    @Override
+    public void releaseSavepoint(final String savepointName) throws SQLException {
+        if (!connection.getTransactionStatus().isInTransaction()) {
+            return;
+        }
+        for (Connection each : connection.getCachedConnections().values()) {
+            ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepointName);
+        }
     }
 }
