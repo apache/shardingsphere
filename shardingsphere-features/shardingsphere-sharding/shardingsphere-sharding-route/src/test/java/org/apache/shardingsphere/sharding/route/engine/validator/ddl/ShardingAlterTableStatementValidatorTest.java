@@ -97,11 +97,10 @@ public final class ShardingAlterTableStatementValidatorTest {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setRenameTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_new")));
-        SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
         when(shardingRule.isAllShardingTables(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
         when(shardingRule.isAllBroadcastTables(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
         when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
-        new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+        new ShardingAlterTableStatementValidator().preValidate(shardingRule, new AlterTableStatementContext(sqlStatement), Collections.emptyList(), schema);
     }
     
     @Test
@@ -109,10 +108,9 @@ public final class ShardingAlterTableStatementValidatorTest {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setRenameTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_new")));
-        SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
         when(shardingRule.isAllShardingTables(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
         when(shardingRule.isAllBroadcastTables(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
-        new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+        new ShardingAlterTableStatementValidator().preValidate(shardingRule, new AlterTableStatementContext(sqlStatement), Collections.emptyList(), schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -120,11 +118,10 @@ public final class ShardingAlterTableStatementValidatorTest {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setRenameTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_new")));
-        SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
         when(shardingRule.isAllShardingTables(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
         when(shardingRule.isAllBroadcastTables(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
         when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
-        new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+        new ShardingAlterTableStatementValidator().preValidate(shardingRule, new AlterTableStatementContext(sqlStatement), Collections.emptyList(), schema);
     }
     
     @Test
@@ -132,11 +129,10 @@ public final class ShardingAlterTableStatementValidatorTest {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setRenameTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_new")));
-        SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
         when(shardingRule.isAllShardingTables(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
         when(shardingRule.isAllBroadcastTables(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
         when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
-        new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+        new ShardingAlterTableStatementValidator().preValidate(shardingRule, new AlterTableStatementContext(sqlStatement), Collections.emptyList(), schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -144,11 +140,10 @@ public final class ShardingAlterTableStatementValidatorTest {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setRenameTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_new")));
-        SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
         when(shardingRule.isAllShardingTables(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
         when(shardingRule.isAllBroadcastTables(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
         when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
-        new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+        new ShardingAlterTableStatementValidator().preValidate(shardingRule, new AlterTableStatementContext(sqlStatement), Collections.emptyList(), schema);
     }
     
     @Test
