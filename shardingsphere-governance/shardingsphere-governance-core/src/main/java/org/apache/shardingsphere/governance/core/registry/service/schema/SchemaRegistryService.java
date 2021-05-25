@@ -21,13 +21,13 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -40,13 +40,18 @@ import java.util.Optional;
 /**
  * Schema registry service.
  */
-@RequiredArgsConstructor
 public final class SchemaRegistryService {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node = new RegistryCenterNode();
-    
+    private final RegistryCenterNode node;
+
+    public SchemaRegistryService(final RegistryCenterRepository repository) {
+        this.repository = repository;
+        node = new RegistryCenterNode();
+        ShardingSphereEventBus.getInstance().register(this);
+    }
+
     /**
      * Persist schema.
      *
