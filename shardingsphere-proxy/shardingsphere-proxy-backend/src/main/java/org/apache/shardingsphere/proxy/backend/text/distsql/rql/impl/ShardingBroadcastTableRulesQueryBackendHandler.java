@@ -65,7 +65,6 @@ public final class ShardingBroadcastTableRulesQueryBackendHandler extends Schema
         Collection<String> result = new LinkedList<>();
         Optional<ShardingRuleConfiguration> shardingRuleConfiguration = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-
         return shardingRuleConfiguration.isPresent() ? shardingRuleConfiguration.get().getBroadcastTables().iterator() : result.iterator();
     }
     
