@@ -42,6 +42,7 @@ execute
     | dropEncryptRule
     | showResources
     | showRule
+    | showShardingBindingTableRules
     | showScalingJobList
     | showScalingJobStatus
     | startScalingJob
