@@ -72,7 +72,6 @@ public final class ShardingBindingTableRulesQueryBackendHandler extends SchemaRe
         if (shardingRuleConfiguration.isPresent()) {
             result = shardingRuleConfiguration.get().getBindingTableGroups();
         }
-        
         return result.iterator();
     }
     
