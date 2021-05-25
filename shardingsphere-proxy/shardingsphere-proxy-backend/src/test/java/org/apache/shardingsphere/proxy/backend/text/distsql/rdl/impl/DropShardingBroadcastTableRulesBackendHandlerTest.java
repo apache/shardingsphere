@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -79,7 +78,7 @@ public final class DropShardingBroadcastTableRulesBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
-    @Test(expected = ShardingRuleNotExistedException.class)
+    @Test(expected = ShardingBroadcastTableRulesNotExistsException.class)
     public void assertExecuteWithoutShardingRule() {
         handler.execute("test", sqlStatement);
     }

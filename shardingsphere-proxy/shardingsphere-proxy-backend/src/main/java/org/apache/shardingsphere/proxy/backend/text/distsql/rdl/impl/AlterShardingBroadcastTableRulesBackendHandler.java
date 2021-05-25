@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -46,7 +46,7 @@ public final class AlterShardingBroadcastTableRulesBackendHandler extends Schema
         Optional<ShardingRuleConfiguration> shardingRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
         if (!shardingRuleConfig.isPresent()) {
-            throw new ShardingRuleNotExistedException();
+            throw new ShardingBroadcastTableRulesNotExistsException(schemaName);
         }
         shardingRuleConfig.get().getBroadcastTables().clear();
         shardingRuleConfig.get().getBroadcastTables().addAll(sqlStatement.getTables());
