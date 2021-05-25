@@ -56,7 +56,7 @@ public final class IndexMetaDataLoader {
                     result.add(new IndexMetaData(indexName));
                 }
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             if (ORACLE_VIEW_NOT_APPROPRIATE_VENDOR_CODE != ex.getErrorCode()) {
                 throw ex;
             }
