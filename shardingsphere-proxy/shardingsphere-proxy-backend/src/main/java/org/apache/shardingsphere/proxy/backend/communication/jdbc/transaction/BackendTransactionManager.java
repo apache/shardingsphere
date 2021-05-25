@@ -117,6 +117,9 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void releaseSavepoint(final String savepointName) throws SQLException {
+        if (!connection.getTransactionStatus().isInTransaction()) {
+            return;
+        }
         if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
             localTransactionManager.releaseSavepoint(savepointName);
         }
