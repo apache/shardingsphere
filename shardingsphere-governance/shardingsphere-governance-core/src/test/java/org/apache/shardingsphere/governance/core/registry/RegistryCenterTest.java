@@ -18,20 +18,14 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
-import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.junit.Before;
@@ -54,10 +48,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class RegistryCenterTest {
@@ -65,8 +56,6 @@ public final class RegistryCenterTest {
     private static final String SHARDING_RULE_YAML = "yaml/regcenter/data-schema-rule.yaml";
     
     private static final String GLOBAL_RULE_YAML = "yaml/regcenter/data-global-rule.yaml";
-    
-    private static final String META_DATA_YAML = "yaml/schema.yaml";
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
@@ -82,9 +71,6 @@ public final class RegistryCenterTest {
     
     @Mock
     private PropertiesRegistryService propsService;
-    
-    @Mock
-    private RegistryCacheManager registryCacheManager;
     
     private RegistryCenter registryCenter;
     
@@ -172,56 +158,5 @@ public final class RegistryCenterTest {
         registryCenter.initNodes();
         verify(registryCenterRepository).persist("/states/datanodes", "");
         verify(registryCenterRepository).persist("/states/primarynodes", "");
-    }
-    
-    @Test
-    public void assertRenewSchemaNameEventWithDrop() {
-        MetaDataDroppedEvent event = new MetaDataDroppedEvent("sharding_db");
-        when(registryCenterRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
-        registryCenter.renew(event);
-        verify(registryCenterRepository).persist(eq("/metadata"), eq("replica_query_db"));
-    }
-    
-    @Test
-    public void assertRenewSchemaNameEventWithDropAndNotExist() {
-        MetaDataDroppedEvent event = new MetaDataDroppedEvent("sharding_db");
-        when(registryCenterRepository.get("/metadata")).thenReturn("replica_query_db");
-        registryCenter.renew(event);
-        verify(registryCenterRepository, times(0)).persist(eq("/metadata"), eq("replica_query_db"));
-    }
-    
-    @Test
-    public void assertRenewSchemaNameEventWithAdd() {
-        MetaDataCreatedEvent event = new MetaDataCreatedEvent("sharding_db");
-        when(registryCenterRepository.get("/metadata")).thenReturn("replica_query_db");
-        registryCenter.renew(event);
-        verify(registryCenterRepository).persist(eq("/metadata"), eq("replica_query_db,sharding_db"));
-    }
-    
-    @Test
-    public void assertRenewSchemaNameEventWithAddAndExist() {
-        MetaDataCreatedEvent event = new MetaDataCreatedEvent("sharding_db");
-        when(registryCenterRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
-        registryCenter.renew(event);
-        verify(registryCenterRepository, times(0)).persist(eq("/metadata"), eq("sharding_db,replica_query_db"));
-    }
-    
-    @Test
-    public void assertRenewSchemaAlteredEvent() {
-        SchemaAlteredEvent event = new SchemaAlteredEvent("sharding_db", new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlSchema.class)));
-        registryCenter.renew(event);
-        verify(registryCenterRepository).persist(eq("/metadata/sharding_db/schema"), anyString());
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertRenewSwitchRuleConfigurationEvent() {
-        Field field = RegistryCenter.class.getDeclaredField("registryCacheManager");
-        field.setAccessible(true);
-        field.set(registryCenter, registryCacheManager);
-        when(registryCacheManager.loadCache(anyString(), eq("testCacheId"))).thenReturn(readYAML(SHARDING_RULE_YAML));
-        SwitchRuleConfigurationEvent event = new SwitchRuleConfigurationEvent("sharding_db", "testCacheId");
-        registryCenter.renew(event);
-        // TODO finish verify
     }
 }

@@ -44,13 +44,13 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.executor.sql.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.lock.InnerLockReleasedEvent;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
@@ -144,8 +144,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
-    public CalciteContextFactory getCalciteContextFactory() {
-        return metaDataContexts.getCalciteContextFactory();
+    public OptimizeContextFactory getOptimizeContextFactory() {
+        return metaDataContexts.getOptimizeContextFactory();
     }
     
     @Override

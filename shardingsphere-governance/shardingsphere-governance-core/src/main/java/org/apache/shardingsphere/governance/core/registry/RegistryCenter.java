@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -30,11 +29,6 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.invocat
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ShowProcessListResponseEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationCachedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
@@ -53,16 +47,13 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecu
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -81,8 +72,6 @@ public final class RegistryCenter {
     private final RegistryCenterRepository repository;
     
     private final RegistryCenterNode node;
-    
-    private final RegistryCacheManager registryCacheManager;
     
     @Getter
     private final DataSourceRegistryService dataSourceService;
@@ -109,7 +98,6 @@ public final class RegistryCenter {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
         node = new RegistryCenterNode();
-        registryCacheManager = new RegistryCacheManager(repository, node);
         dataSourceService = new DataSourceRegistryService(repository);
         schemaRuleService = new SchemaRuleRegistryService(repository);
         globalRuleService = new GlobalRuleRegistryService(repository);
@@ -155,77 +143,6 @@ public final class RegistryCenter {
         Collection<String> newSchemaNames = new ArrayList<>(schemaNames);
         newSchemaNames.add(schemaName);
         repository.persist(node.getMetadataNodePath(), String.join(",", newSchemaNames));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigCacheId) {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
-    }
-    
-    /**
-     * Persist meta data.
-     *
-     * @param event meta data created event
-     */
-    @Subscribe
-    public void renew(final MetaDataCreatedEvent event) {
-        String schemaNames = repository.get(node.getMetadataNodePath());
-        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
-        if (!schemas.contains(event.getSchemaName())) {
-            schemas.add(event.getSchemaName());
-            repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
-        }
-    }
-    
-    /**
-     * Delete meta data.
-     *
-     * @param event meta data dropped event
-     */
-    @Subscribe
-    public void renew(final MetaDataDroppedEvent event) {
-        String schemaNames = repository.get(node.getMetadataNodePath());
-        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
-        if (schemas.contains(event.getSchemaName())) {
-            schemas.remove(event.getSchemaName());
-            repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
-        }
-    }
-    
-    /**
-     * Persist schema.
-     *
-     * @param event schema altered event
-     */
-    @Subscribe
-    public void renew(final SchemaAlteredEvent event) {
-        schemaService.persist(event.getSchemaName(), event.getSchema());
-    }
-    
-    /**
-     * Switch rule configuration.
-     *
-     * @param event switch rule configuration event
-     */
-    @Subscribe
-    public void renew(final SwitchRuleConfigurationEvent event) {
-        schemaRuleService.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
-        registryCacheManager.deleteCache(node.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
-    }
-    
-    /**
-     * Rule configuration cached.
-     *
-     * @param event rule configuration cached event
-     */
-    @Subscribe
-    public void renew(final RuleConfigurationCachedEvent event) {
-        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(),
-                repository.get(node.getMetadataDataSourcePath(event.getSchemaName())),
-                repository.get(node.getRulePath(event.getSchemaName())),
-                registryCacheManager.loadCache(node.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
-        ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
     
     /**

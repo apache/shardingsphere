@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteExecutor;
 import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteJDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.CalciteLogicSchema;
 import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -144,7 +145,8 @@ public final class ProxySQLExecutor {
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(type, metaData.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType(), 
                 executionContext.getSqlStatementContext().getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true);
         CalciteRowExecutor executor = new CalciteRowExecutor(rules, maxConnectionsSizePerQuery, backendConnection, jdbcExecutor.getJdbcExecutor(), executionContext, callback);
-        CalciteExecutor calciteExecutor = new CalciteJDBCExecutor(metaData.getCalciteContextFactory().create(backendConnection.getSchemaName(), executor));
+        CalciteLogicSchema logicSchema = new CalciteLogicSchema(metaData.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(backendConnection.getSchemaName()), executor);
+        CalciteExecutor calciteExecutor = new CalciteJDBCExecutor(metaData.getOptimizeContextFactory().create(backendConnection.getSchemaName(), logicSchema));
         backendConnection.setCalciteExecutor(calciteExecutor);
         SQLUnit sqlUnit = executionContext.getExecutionUnits().iterator().next().getSqlUnit();
         return calciteExecutor.executeQuery(sqlUnit.getSql(), sqlUnit.getParameters()).stream().map(each -> (ExecuteResult) each).collect(Collectors.toList());
