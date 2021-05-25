@@ -24,13 +24,17 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EndContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackToSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.StartTransactionContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackToSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSetTransactionStatement;
 
@@ -68,7 +72,26 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new PostgreSQLSavepointStatement();
+        String savepointName = ctx.colId().getText();
+        PostgreSQLSavepointStatement result = new PostgreSQLSavepointStatement();
+        result.setSavepointName(savepointName);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRollbackToSavepoint(final RollbackToSavepointContext ctx) {
+        String savepointName = ctx.colId().getText();
+        PostgreSQLRollbackToSavepointStatement result = new PostgreSQLRollbackToSavepointStatement();
+        result.setSavepointName(savepointName);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
+        String savepointName = ctx.colId().getText();
+        PostgreSQLReleaseSavepointStatement result = new PostgreSQLReleaseSavepointStatement();
+        result.setSavepointName(savepointName);
+        return result;
     }
     
     @Override

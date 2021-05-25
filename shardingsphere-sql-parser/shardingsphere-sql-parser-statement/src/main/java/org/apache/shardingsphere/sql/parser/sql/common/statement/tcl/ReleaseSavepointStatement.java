@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Transaction operation type.
+ * Release savepoint statement.
  */
-public enum TransactionOperationType {
+@Getter
+@Setter
+public abstract class ReleaseSavepointStatement extends AbstractSQLStatement implements TCLStatement {
     
-    BEGIN, COMMIT, ROLLBACK, SAVEPOINT, ROLLBACK_TO_SAVEPOINT, RELEASE_SAVEPOINT
+    private String savepointName;
 }

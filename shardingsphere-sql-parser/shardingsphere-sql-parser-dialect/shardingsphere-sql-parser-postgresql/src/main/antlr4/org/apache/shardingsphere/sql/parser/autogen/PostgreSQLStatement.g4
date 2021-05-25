@@ -38,6 +38,8 @@ execute
     | commit
     | rollback
     | savepoint
+    | releaseSavepoint
+    | rollbackToSavepoint
     | grant
     | revoke
     | createUser
