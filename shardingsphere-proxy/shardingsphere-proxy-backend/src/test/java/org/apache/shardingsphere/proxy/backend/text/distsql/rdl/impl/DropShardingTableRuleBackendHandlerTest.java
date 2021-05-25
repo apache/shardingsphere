@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -44,6 +45,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
@@ -107,12 +109,15 @@ public final class DropShardingTableRuleBackendHandlerTest {
                 .getMetaData("test").getRuleMetaData().getConfigurations().iterator().next();
         Collection<String> shardingTables = getShardingTables(shardingRuleConfiguration);
         assertTrue(!shardingTables.contains("t_order"));
+        Collection<String> bindingTables = getBindingTables(shardingRuleConfiguration);
+        assertTrue(!bindingTables.contains("t_order"));
     }
     
     private Collection<RuleConfiguration> buildShardingConfigurations() {
         ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
         configuration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
         configuration.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
+        configuration.setBindingTableGroups(Collections.singletonList("t_order_test"));
         return new ArrayList<>(Collections.singletonList(configuration));
     }
 
@@ -121,5 +126,11 @@ public final class DropShardingTableRuleBackendHandlerTest {
         result.addAll(shardingRuleConfiguration.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         result.addAll(shardingRuleConfiguration.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         return result;
+    }
+
+    private Collection<String> getBindingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
+        Collection<String> bindTables = new LinkedHashSet<>();
+        shardingRuleConfiguration.getBindingTableGroups().forEach(each -> bindTables.addAll(Splitter.on(",").splitToList(each)));
+        return bindTables;
     }
 }

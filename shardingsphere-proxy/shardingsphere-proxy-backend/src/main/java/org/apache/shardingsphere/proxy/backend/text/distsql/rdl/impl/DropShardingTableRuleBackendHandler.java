@@ -49,24 +49,24 @@ public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBac
     @Override
     public ResponseHeader execute(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
-        ShardingRuleConfiguration shardingRuleConfiguration = check(schemaName, tableNames);
-        drop(shardingRuleConfiguration, tableNames);
+        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
+        check(schemaName, shardingRuleConfiguration, tableNames);
+        drop(shardingRuleConfiguration.get(), tableNames);
         post(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private ShardingRuleConfiguration check(final String schemaName, final Collection<String> tableNames) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
+    private void check(final String schemaName, final Optional<ShardingRuleConfiguration> shardingRuleConfiguration, final Collection<String> tableNames) {
         if (!shardingRuleConfiguration.isPresent()) {
             throw new ShardingTableRuleNotExistedException(schemaName, tableNames);
         }
         Collection<String> shardingTableNames = getShardingTables(shardingRuleConfiguration.get());
+        Collection<String> bindingTables = getBindingTables(shardingRuleConfiguration.get());
         Collection<String> notExistedTableNames = tableNames.stream().filter(each -> !shardingTableNames.contains(each)).collect(Collectors.toList());
-        if (!notExistedTableNames.isEmpty()) {
+        Collection<String> existBindingTableNames = tableNames.stream().filter(bindingTables::contains).collect(Collectors.toList());
+        if (!notExistedTableNames.isEmpty() || !existBindingTableNames.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(schemaName, notExistedTableNames);
         }
-        // TODO issue#10417
-        return shardingRuleConfiguration.get();
     }
 
     private Collection<String> getShardingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
