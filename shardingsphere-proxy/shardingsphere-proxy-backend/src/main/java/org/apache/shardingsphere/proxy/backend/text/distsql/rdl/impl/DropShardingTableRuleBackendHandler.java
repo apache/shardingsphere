@@ -62,10 +62,9 @@ public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBac
         }
         Collection<String> shardingTableNames = getShardingTables(shardingRuleConfiguration.get());
         Collection<String> bindingTables = getBindingTables(shardingRuleConfiguration.get());
-        Collection<String> notExistedTableNames = tableNames.stream().filter(each -> !shardingTableNames.contains(each)).collect(Collectors.toList());
-        Collection<String> existBindingTableNames = tableNames.stream().filter(bindingTables::contains).collect(Collectors.toList());
-        if (!notExistedTableNames.isEmpty() || !existBindingTableNames.isEmpty()) {
-            throw new ShardingTableRuleNotExistedException(schemaName, notExistedTableNames);
+        Collection<String> notSatisfiedTableNames = tableNames.stream().filter(each -> !shardingTableNames.contains(each) || bindingTables.contains(each)).collect(Collectors.toList());
+        if (!notSatisfiedTableNames.isEmpty()) {
+            throw new ShardingTableRuleNotExistedException(schemaName, notSatisfiedTableNames);
         }
     }
 

@@ -73,6 +73,9 @@ public final class DropShardingTableRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
+
+    @Mock
+    private ShardingRuleConfiguration shardingRuleConfiguration;
     
     private DropShardingTableRuleBackendHandler handler = new DropShardingTableRuleBackendHandler(sqlStatement, backendConnection);
     
@@ -93,6 +96,15 @@ public final class DropShardingTableRuleBackendHandlerTest {
     public void assertExecuteWithNotExistTableRule() {
         TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));
         when(ruleMetaData.getConfigurations()).thenReturn(Arrays.asList(new ShardingRuleConfiguration()));
+        when(sqlStatement.getTableNames()).thenReturn(Arrays.asList(tableRuleSegment));
+        handler.execute("test", sqlStatement);
+    }
+
+    @Test(expected = ShardingTableRuleNotExistedException.class)
+    public void assertExecuteWithBindingTableRule() {
+        TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order_bind"));
+        when(ruleMetaData.getConfigurations()).thenReturn(Arrays.asList(shardingRuleConfiguration));
+        when(shardingRuleConfiguration.getBindingTableGroups()).thenReturn(Collections.singletonList("t_order_bind"));
         when(sqlStatement.getTableNames()).thenReturn(Arrays.asList(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
