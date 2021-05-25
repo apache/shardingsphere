@@ -24,5 +24,4 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
  * PostgreSQL rollback to savepoint statement.
  */
 public final class PostgreSQLRollbackToSavepointStatement extends RollbackToSavepointStatement implements PostgreSQLStatement {
-
 }
