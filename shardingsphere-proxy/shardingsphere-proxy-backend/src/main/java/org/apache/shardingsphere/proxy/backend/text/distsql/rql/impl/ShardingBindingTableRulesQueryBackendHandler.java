@@ -45,11 +45,7 @@ public final class ShardingBindingTableRulesQueryBackendHandler extends SchemaRe
 
     public ShardingBindingTableRulesQueryBackendHandler(final ShowShardingBindingTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
-        if (sqlStatement.getSchema().isPresent()) {
-            schema = sqlStatement.getSchema().get().getIdentifier().getValue();
-        } else {
-            schema = backendConnection.getSchemaName();
-        }
+        schema = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : backendConnection.getSchemaName();
     }
     
     @Override
@@ -58,7 +54,7 @@ public final class ShardingBindingTableRulesQueryBackendHandler extends SchemaRe
         data = loadRuleConfiguration();
         return new QueryResponseHeader(queryHeader);
     }
-    
+
     private List<QueryHeader> getQueryHeader() {
         List<QueryHeader> result = new LinkedList<>();
         result.add(new QueryHeader(schema, "", "shardingBindingTable", "shardingBindingTable", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
