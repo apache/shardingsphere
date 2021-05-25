@@ -21,11 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRuleQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.RuleQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBindingTableRulesQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingRuleQueryBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -62,6 +64,9 @@ public final class RQLBackendHandlerFactory {
         }
         if (sqlStatement instanceof ShowResourcesStatement) {
             return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof ShowShardingBindingTableRulesStatement) {
+            return Optional.of(new ShardingBindingTableRulesQueryBackendHandler((ShowShardingBindingTableRulesStatement) sqlStatement, backendConnection));
         }
         return Optional.empty();
     }

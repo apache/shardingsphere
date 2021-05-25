@@ -43,6 +43,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReso
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
@@ -149,6 +150,8 @@ public final class DistSQLStatementParserEngineTest {
             + "))";
 
     private static final String RDL_DROP_ENCRYPT_RULE = "DROP ENCRYPT RULE t_encrypt,t_encrypt_order";
+
+    private static final String RQL_SHOW_SHARDING_BINDING_TABLE_RULES = "SHOW SHARDING BINDING TABLE RULES FROM sharding_db";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -412,5 +415,12 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_DROP_ENCRYPT_RULE);
         assertTrue(sqlStatement instanceof DropEncryptRuleStatement);
         assertThat(((DropEncryptRuleStatement) sqlStatement).getTables(), is(Arrays.asList("t_encrypt", "t_encrypt_order")));
+    }
+
+    @Test
+    public void assertParseShowShardingBindingTableRules() {
+        SQLStatement sqlStatement = engine.parse(RQL_SHOW_SHARDING_BINDING_TABLE_RULES);
+        assertTrue(sqlStatement instanceof ShowShardingBindingTableRulesStatement);
+        assertThat(((ShowShardingBindingTableRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("sharding_db"));
     }
 }

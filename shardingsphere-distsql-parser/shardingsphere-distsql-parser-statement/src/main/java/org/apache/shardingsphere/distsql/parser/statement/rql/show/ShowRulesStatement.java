@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import Keyword, Literals, Symbol;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
-showResources
-    : SHOW RESOURCES (FROM schemaName)?
-    ;
+import java.util.Optional;
 
-showRule
-    : SHOW ruleType RULE (FROM schemaName)?
-    ;
+/**
+ * Show rules statement.
+ */
+@RequiredArgsConstructor
+public class ShowRulesStatement extends RQLStatement implements FromSchemaAvailable {
 
-showShardingBindingTableRules
-    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
-    ;
-
-ruleType
-    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+    private final SchemaSegment schema;
+    
+    @Override
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
+}
