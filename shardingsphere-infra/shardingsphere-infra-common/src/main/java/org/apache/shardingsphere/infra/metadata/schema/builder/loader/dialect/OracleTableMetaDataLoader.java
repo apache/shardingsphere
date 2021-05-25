@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,18 +42,22 @@ import java.util.stream.Collectors;
  * Table meta data loader for Oracle.
  */
 public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoader {
-
-    private static final String TABLE_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN, COLLATION FROM ALL_TAB_COLUMNS WHERE TABLE_SCHEMA=?";
+    
+    private static final String TABLE_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
     
     private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = TABLE_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
     
-    private static final String INDEX_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE TABLE_SCHEMA=? and TABLE_NAME IN (%s)";
-
+    private static final String INDEX_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN (%s)";
+    
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A INNER JOIN"
-            + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND TABLE_SCHEMA=?";
-
-    private static final String PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
-
+            + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = ?";
+    
+    private static final String PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND A.TABLE_NAME NOT IN (%s)";
+    
+    private static final int COLLATION_START_MAJOR_VERSION = 12;
+    
+    private static final int COLLATION_START_MINOR_VERSION = 2;
+    
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         return loadTableMetaDataMap(dataSource, existedTables);
@@ -70,9 +75,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables, connection.getMetaData()))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, existedTables);
             preparedStatement.setString(1, connection.getCatalog());
@@ -95,21 +98,20 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         String dataType = resultSet.getString("DATA_TYPE");
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
-        String collationName = resultSet.getString("COLLATION_NAME");
+        String collationName = resultSet.getString("COLLATION");
         boolean caseSensitive = null != collationName && collationName.endsWith("_CS");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
 
-    private String getTableMetaDataSQL(final Collection<String> existedTables) {
-        return existedTables.isEmpty() ? TABLE_META_DATA_SQL
-                : String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    private String getTableMetaDataSQL(final Collection<String> existedTables, final DatabaseMetaData metaData) throws SQLException {
+        String collation = metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && metaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION ? ", COLLATION" : "";
+        return existedTables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
+                : String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, collation, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
             preparedStatement.setString(1, connection.getCatalog());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
