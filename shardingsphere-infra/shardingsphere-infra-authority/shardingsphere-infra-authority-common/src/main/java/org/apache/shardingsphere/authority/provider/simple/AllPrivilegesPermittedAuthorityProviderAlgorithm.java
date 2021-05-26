@@ -30,11 +30,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Permit all privileges authority provider algorithm.
+ * All privileges permitted authority provider algorithm.
  */
-public final class PermitAllPrivilegesAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+public final class AllPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
     
-    private static final ShardingSpherePrivileges INSTANCE = new PermitAllPrivileges();
+    private static final ShardingSpherePrivileges INSTANCE = new AllPrivilegesPermittedShardingSpherePrivileges();
     
     @Override
     public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
@@ -51,10 +51,10 @@ public final class PermitAllPrivilegesAuthorityProviderAlgorithm implements Auth
     
     @Override
     public String getType() {
-        return "PERMIT_ALL_PRIVILEGES";
+        return "ALL_PRIVILEGES_PERMITTED";
     }
     
-    private static class PermitAllPrivileges implements ShardingSpherePrivileges {
+    private static class AllPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
     
         @Override
         public void setSuperPrivilege() {
