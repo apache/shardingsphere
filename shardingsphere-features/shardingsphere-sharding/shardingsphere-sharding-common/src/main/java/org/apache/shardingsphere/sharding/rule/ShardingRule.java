@@ -293,7 +293,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
-     * Judge whether logic table is sharding table
+     * Judge whether logic table is sharding table.
      *
      * @param logicTableName logic table name
      * @return The result of judging whether logic table is sharding table
