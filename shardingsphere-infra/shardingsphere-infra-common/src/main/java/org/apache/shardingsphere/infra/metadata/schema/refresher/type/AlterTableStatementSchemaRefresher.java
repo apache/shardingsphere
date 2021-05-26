@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTab
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.DropTableEvent;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import javax.sql.DataSource;
@@ -46,9 +45,8 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
     public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, 
                         final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        Optional<SimpleTableSegment> renameTable = Optional.ofNullable(sqlStatement.getRenameTable());
-        if (renameTable.isPresent()) {
-            putTableMetaData(schema, routeDataSourceNames, materials, renameTable.get().getTableName().getIdentifier().getValue());
+        if (sqlStatement.getRenameTable().isPresent()) {
+            putTableMetaData(schema, routeDataSourceNames, materials, sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue());
             removeTableMetaData(schema, tableName);
         } else {
             putTableMetaData(schema, routeDataSourceNames, materials, tableName);
