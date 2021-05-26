@@ -15,42 +15,16 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import Keyword, Literals, Symbol;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
-showResources
-    : SHOW RESOURCES (FROM schemaName)?
-    ;
+/**
+ * Show encrypt rules statement.
+ */
+public final class ShowEncryptRulesStatement extends ShowRulesStatement {
 
-showRule
-    : SHOW ruleType RULE (FROM schemaName)?
-    ;
-
-showShardingBindingTableRules
-    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
-    ;
-
-showShardingBroadcastTableRules
-    : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
-    ;
-
-showReadwriteSplittingRules
-    : SHOW READWRITE_SPLITTING RULES (FROM schemaName)?
-    ;
-
-showDatabaseDiscoveryRules
-    : SHOW DB_DISCOVERY RULES (FROM schemaName)?
-    ;
-
-showEncryptRules
-    : SHOW ENCRYPT RULES (FROM schemaName)?
-    ;
-
-ruleType
-    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
+    public ShowEncryptRulesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
+}

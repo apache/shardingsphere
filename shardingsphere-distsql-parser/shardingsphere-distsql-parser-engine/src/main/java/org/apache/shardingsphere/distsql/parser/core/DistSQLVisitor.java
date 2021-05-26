@@ -45,6 +45,9 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StopScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingBroadcastTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowReadwriteSplittingRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowDatabaseDiscoveryRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowEncryptRulesContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
@@ -80,6 +83,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReso
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDatabaseDiscoveryRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowEncryptRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBindingTableRulesStatement;
@@ -415,7 +421,22 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     public ASTNode visitDropScalingJob(final DropScalingJobContext ctx) {
         return new DropScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
     }
-    
+
+    @Override
+    public ASTNode visitShowReadwriteSplittingRules(final ShowReadwriteSplittingRulesContext ctx) {
+        return new ShowReadwriteSplittingRulesStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
+    }
+
+    @Override
+    public ASTNode visitShowDatabaseDiscoveryRules(final ShowDatabaseDiscoveryRulesContext ctx) {
+        return new ShowDatabaseDiscoveryRulesStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
+    }
+
+    @Override
+    public ASTNode visitShowEncryptRules(final ShowEncryptRulesContext ctx) {
+        return new ShowEncryptRulesStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
+    }
+
     @Override
     public ASTNode visitResetScalingJob(final ResetScalingJobContext ctx) {
         return new ResetScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
