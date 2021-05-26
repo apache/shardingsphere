@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.integer;
-
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
-import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+package org.apache.shardingsphere.scaling.mysql.component.column.value;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
-/**
- * TINY integer type value of MySQL binlog protocol.
- */
-public final class MySQLTinyBinlogProtocolValue implements MySQLBinlogProtocolValue {
+public final class UnsignedBigintHandler implements ValueHandler {
+    
+    private static final BigInteger BIGINT_MODULO = new BigInteger("18446744073709551616");
     
     @Override
-    public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        return payload.getByteBuf().readByte();
+    public String getTypeName() {
+        return "BIGINT UNSIGNED";
+    }
+    
+    @Override
+    public Serializable handle(final Serializable value) {
+        long longValue = (long) value;
+        return 0 > longValue ? BIGINT_MODULO.add(BigInteger.valueOf(longValue)) : longValue;
     }
 }

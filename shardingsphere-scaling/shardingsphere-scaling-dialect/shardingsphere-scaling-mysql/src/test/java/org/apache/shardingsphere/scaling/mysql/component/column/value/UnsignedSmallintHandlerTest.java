@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.integer;
+package org.apache.shardingsphere.scaling.mysql.component.column.value;
 
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
-import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.junit.Test;
 
 import java.io.Serializable;
 
-/**
- * TINY integer type value of MySQL binlog protocol.
- */
-public final class MySQLTinyBinlogProtocolValue implements MySQLBinlogProtocolValue {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class UnsignedSmallintHandlerTest {
     
-    @Override
-    public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        return payload.getByteBuf().readByte();
+    private final UnsignedSmallintHandler handler = new UnsignedSmallintHandler();
+    
+    @Test
+    public void assertHandle() {
+        Serializable actual = handler.handle((short) 1);
+        assertThat(actual, is(1));
+        actual = handler.handle((short) -1);
+        assertThat(actual, is(65535));
     }
 }
