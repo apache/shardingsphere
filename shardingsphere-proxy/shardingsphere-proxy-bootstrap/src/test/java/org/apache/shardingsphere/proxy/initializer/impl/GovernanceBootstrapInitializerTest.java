@@ -67,8 +67,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private static final String SHARDING_RULE_YAML = "conf/reg_center/sharding-rule.yaml";
     
-    private static final String USERS_YAML = "conf/reg_center/users.yaml";
-    
     private static final String PROPS_YAML = "conf/reg_center/props.yaml";
     
     private final FixtureRegistryCenterRepository registryCenterRepository = new FixtureRegistryCenterRepository();
@@ -83,7 +81,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private void initConfigCenter() {
         RegistryCenterNode node = new RegistryCenterNode();
-        registryCenterRepository.persist(node.getUsersNode(), readYAML(USERS_YAML));
         registryCenterRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
         registryCenterRepository.persist(node.getMetadataNodePath(), "db");
         registryCenterRepository.persist(node.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
@@ -189,15 +186,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         Properties props = shardingAlgorithm.getProps();
         assertNotNull(props);
         assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
-    }
-    
-    private void assertUsers(final ShardingSphereUsers actual) {
-        Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
-        assertTrue(rootUser.isPresent());
-        assertThat(rootUser.get().getPassword(), is("root"));
-        Optional<ShardingSphereUser> shardingUser = actual.findUser(new Grantee("sharding", ""));
-        assertTrue(shardingUser.isPresent());
-        assertThat(shardingUser.get().getPassword(), is("sharding"));
     }
     
     @Test

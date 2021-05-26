@@ -88,11 +88,6 @@ public final class RegistryCenterNodeTest {
     }
     
     @Test
-    public void assertGetUsersNodePath() {
-        assertThat(registryCenterNode.getUsersNode(), is("/users"));
-    }
-    
-    @Test
     public void assertGetGlobalRuleNodePath() {
         assertThat(registryCenterNode.getGlobalRuleNode(), is("/rules"));
     }
