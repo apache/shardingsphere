@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -73,9 +74,6 @@ public final class DropShardingTableRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
-    @Mock
-    private ShardingRuleConfiguration shardingRuleConfiguration;
     
     private DropShardingTableRuleBackendHandler handler = new DropShardingTableRuleBackendHandler(sqlStatement, backendConnection);
     
@@ -100,11 +98,10 @@ public final class DropShardingTableRuleBackendHandlerTest {
         handler.execute("test", sqlStatement);
     }
 
-    @Test(expected = ShardingTableRuleNotExistedException.class)
+    @Test(expected = ShardingTableRulesInUsedException.class)
     public void assertExecuteWithBindingTableRule() {
-        TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order_bind"));
-        when(ruleMetaData.getConfigurations()).thenReturn(Arrays.asList(shardingRuleConfiguration));
-        when(shardingRuleConfiguration.getBindingTableGroups()).thenReturn(Collections.singletonList("t_order_bind"));
+        TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));
+        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getTableNames()).thenReturn(Arrays.asList(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
@@ -129,7 +126,7 @@ public final class DropShardingTableRuleBackendHandlerTest {
         ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
         configuration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
         configuration.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
-        configuration.setBindingTableGroups(Collections.singletonList("t_order_test"));
+        configuration.setBindingTableGroups(Collections.singletonList("t_order"));
         return new ArrayList<>(Collections.singletonList(configuration));
     }
 

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -61,10 +62,14 @@ public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBac
             throw new ShardingTableRuleNotExistedException(schemaName, tableNames);
         }
         Collection<String> shardingTableNames = getShardingTables(shardingRuleConfiguration.get());
+        Collection<String> notExistedTableNames = tableNames.stream().filter(each -> !shardingTableNames.contains(each)).collect(Collectors.toList());
+        if (!notExistedTableNames.isEmpty()) {
+            throw new ShardingTableRuleNotExistedException(schemaName, notExistedTableNames);
+        }
         Collection<String> bindingTables = getBindingTables(shardingRuleConfiguration.get());
-        Collection<String> notSatisfiedTableNames = tableNames.stream().filter(each -> !shardingTableNames.contains(each) || bindingTables.contains(each)).collect(Collectors.toList());
-        if (!notSatisfiedTableNames.isEmpty()) {
-            throw new ShardingTableRuleNotExistedException(schemaName, notSatisfiedTableNames);
+        Collection<String> usedTableNames = tableNames.stream().filter(bindingTables::contains).collect(Collectors.toList());
+        if (!usedTableNames.isEmpty()) {
+            throw new ShardingTableRulesInUsedException(usedTableNames);
         }
     }
 
