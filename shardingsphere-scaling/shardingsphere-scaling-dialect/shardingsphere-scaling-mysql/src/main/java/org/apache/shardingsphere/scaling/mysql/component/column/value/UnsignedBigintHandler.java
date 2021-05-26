@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.mysql.component.column.value;
 import java.io.Serializable;
 import java.math.BigInteger;
 
-public class UnsignedBigintHandler implements ValueHandler {
+public final class UnsignedBigintHandler implements ValueHandler {
     
     private static final BigInteger BIGINT_MODULO = new BigInteger("18446744073709551616");
     
