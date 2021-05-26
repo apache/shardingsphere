@@ -30,9 +30,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Simple authority provider algorithm.
+ * Permit all privileges authority provider algorithm.
  */
 public final class PermitAllPrivilegesAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+    
+    private static final ShardingSpherePrivileges INSTANCE = new PermitAllPrivileges();
     
     @Override
     public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
@@ -44,31 +46,33 @@ public final class PermitAllPrivilegesAuthorityProviderAlgorithm implements Auth
     
     @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return Optional.of(new ShardingSpherePrivileges() {
-    
-            @Override
-            public void setSuperPrivilege() {
-            }
-    
-            @Override
-            public boolean hasPrivileges(final String schema) {
-                return true;
-            }
-    
-            @Override
-            public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-                return true;
-            }
-    
-            @Override
-            public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
-                return true;
-            }
-        });
+        return Optional.of(INSTANCE);
     }
     
     @Override
     public String getType() {
         return "PERMIT_ALL_PRIVILEGES";
+    }
+    
+    private static class PermitAllPrivileges implements ShardingSpherePrivileges {
+    
+        @Override
+        public void setSuperPrivilege() {
+        }
+    
+        @Override
+        public boolean hasPrivileges(final String schema) {
+            return true;
+        }
+    
+        @Override
+        public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+            return true;
+        }
+    
+        @Override
+        public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
+            return true;
+        }
     }
 }
