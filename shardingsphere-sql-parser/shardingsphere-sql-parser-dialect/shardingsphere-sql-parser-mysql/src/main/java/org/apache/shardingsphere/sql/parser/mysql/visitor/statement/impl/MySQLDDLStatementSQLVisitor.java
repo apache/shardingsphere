@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterLi
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterListItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterLogfileGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterRenameTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableDropContext;
@@ -95,6 +96,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -248,6 +250,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
                     result.getAddConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                } else if (each instanceof RenameTableDefinitionSegment) {
+                    result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 }
             }
         }
@@ -285,7 +289,17 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             if (each instanceof AddTableConstraintContext) {
                 result.getValue().add((ConstraintDefinitionSegment) visit(((AddTableConstraintContext) each).tableConstraintDef()));
             }
+            if (each instanceof AlterRenameTableContext) {
+                result.getValue().add((RenameTableDefinitionSegment) visit(each));
+            }
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterRenameTable(final AlterRenameTableContext ctx) {
+        RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setRenameTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     

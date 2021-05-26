@@ -50,12 +50,12 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Dr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropViewContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrepareContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameTableSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNameClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesClauseContext;
@@ -69,6 +69,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.RenameColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -165,11 +166,9 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
                     result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
                     result.getAddConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                } else if (each instanceof RenameTableDefinitionSegment) {
+                    result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 }
-            }
-            if (null != ctx.alterDefinitionClause().renameTableSpecification()) {
-                IdentifierContext identifier = ctx.alterDefinitionClause().renameTableSpecification().identifier();
-                result.setRenameTable(new SimpleTableSegment(identifier.start.getStartIndex(), identifier.stop.getStopIndex(), (IdentifierValue) visit(identifier)));
             }
         }
         return result;
@@ -196,6 +195,16 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
                 }
             }
         }
+        if (null != ctx.renameTableSpecification()) {
+            result.getValue().add((RenameTableDefinitionSegment) visit(ctx.renameTableSpecification()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRenameTableSpecification(final RenameTableSpecificationContext ctx) {
+        RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setRenameTable(new SimpleTableSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier())));
         return result;
     }
     
