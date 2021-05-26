@@ -53,7 +53,6 @@ public final class MySQLColumnMetaDataLoader {
      *
      * @param tableNamePattern table name pattern
      * @return column meta data list
-     * @throws SQLException SQL exception
      */
     public List<MySQLColumnMetaData> load(final String tableNamePattern) {
         if (!columnMetaDataMap.containsKey(tableNamePattern)) {
