@@ -27,6 +27,7 @@ import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleStatementConv
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -48,6 +49,10 @@ import java.util.stream.Collectors;
  * Alter encrypt rule backend handler.
  */
 public final class AlterEncryptRuleBackendHandler extends SchemaRequiredBackendHandler<AlterEncryptRuleStatement> {
+
+    static {
+        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
+    }
 
     public AlterEncryptRuleBackendHandler(final AlterEncryptRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
