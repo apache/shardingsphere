@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Show encrypt rules statement.
+ * Show encrypt table rule statement.
  */
 @Getter
 public final class ShowEncryptTableRuleStatement extends ShowRulesStatement {
