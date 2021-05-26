@@ -194,9 +194,9 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
                     result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnSpecification()));
                 }
             }
-            if (null != ctx.renameTableSpecification()) {
-                result.getValue().add((RenameTableDefinitionSegment) visit(ctx.renameTableSpecification()));
-            }
+        }
+        if (null != ctx.renameTableSpecification()) {
+            result.getValue().add((RenameTableDefinitionSegment) visit(ctx.renameTableSpecification()));
         }
         return result;
     }
