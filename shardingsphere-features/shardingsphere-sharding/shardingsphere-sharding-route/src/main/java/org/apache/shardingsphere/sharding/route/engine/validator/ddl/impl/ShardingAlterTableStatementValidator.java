@@ -46,13 +46,13 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
         if (!renameTable.isPresent() && !shardingRule.tableRuleExists(tableNames) && !shardingRule.isSingleTablesInSameDataSource(tableNames)) {
             throw new ShardingSphereException("Single tables must be in the same datasource.");
         }
-        if (renameTable.isPresent() && !validateRenameTableType(shardingRule, tableNames)) {
-            throw new ShardingSphereException("The type of rename table '%s' must be same with primary table.", renameTable.get().getTableName().getIdentifier().getValue());
+        if (renameTable.isPresent() && containsShardingBroadcastTable(shardingRule, tableNames)) {
+            throw new ShardingSphereException("ALTER TABLE ... RENAME TO ... statement can not support sharding tables and broadcast tables.");
         }
     }
     
-    private boolean validateRenameTableType(final ShardingRule shardingRule, final Collection<String> tableNames) {
-        return shardingRule.isAllShardingTables(tableNames) || shardingRule.isAllBroadcastTables(tableNames) || !shardingRule.tableRuleExists(tableNames);
+    private boolean containsShardingBroadcastTable(final ShardingRule shardingRule, final Collection<String> tableNames) {
+        return shardingRule.tableRuleExists(tableNames) || tableNames.stream().anyMatch(shardingRule::isBroadcastTable);
     }
     
     @Override
