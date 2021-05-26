@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
@@ -47,7 +48,7 @@ public final class SingleTablesRoutingEngine implements ShardingRouteEngine {
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        if (sqlStatement instanceof CreateTableStatement || sqlStatement instanceof DropTableStatement) {
+        if (sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement) {
             Set<String> existSingleTables = Sets.intersection(shardingRule.getSingleTableRules().keySet(), Sets.newHashSet(logicTables));
             if (!existSingleTables.isEmpty()) {
                 fillRouteContext(shardingRule, routeContext, existSingleTables);

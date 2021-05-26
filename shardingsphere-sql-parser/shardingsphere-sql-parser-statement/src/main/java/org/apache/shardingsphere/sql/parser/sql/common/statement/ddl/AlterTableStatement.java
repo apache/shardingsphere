@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Alter table statement.
@@ -40,6 +41,8 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     
     private SimpleTableSegment table;
     
+    private SimpleTableSegment renameTable;
+    
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
     private final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions = new LinkedList<>();
@@ -47,4 +50,13 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     private final Collection<DropColumnDefinitionSegment> dropColumnDefinitions = new LinkedList<>();
     
     private final Collection<ConstraintDefinitionSegment> addConstraintDefinitions = new LinkedList<>();
+    
+    /**
+     * Get rename table.
+     *
+     * @return rename table
+     */
+    public Optional<SimpleTableSegment> getRenameTable() {
+        return Optional.ofNullable(renameTable);
+    }
 }

@@ -50,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Dr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ModifyColumnSpecificationContext;
@@ -165,6 +166,10 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
                 } else if (each instanceof ConstraintDefinitionSegment) {
                     result.getAddConstraintDefinitions().add((ConstraintDefinitionSegment) each);
                 }
+            }
+            if (null != ctx.alterDefinitionClause().renameTableSpecification()) {
+                IdentifierContext identifier = ctx.alterDefinitionClause().renameTableSpecification().identifier();
+                result.setRenameTable(new SimpleTableSegment(identifier.start.getStartIndex(), identifier.stop.getStopIndex(), (IdentifierValue) visit(identifier)));
             }
         }
         return result;
