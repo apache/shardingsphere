@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import com.google.gson.Gson;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
+import com.google.common.collect.Maps;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -35,44 +36,43 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
- * Backend handler for show readwrite-splitting rule.
+ * Backend handler for show readwrite splitting rules.
  */
-public final class ReadwriteSplittingRuleQueryBackendHandler extends SchemaRequiredBackendHandler<ShowRuleStatement> {
+public final class ReadwriteSplittingRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowReadwriteSplittingRulesStatement> {
     
     private Iterator<ReadwriteSplittingDataSourceRuleConfiguration> data;
+
+    private Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers;
     
-    private final String schema;
-    
-    public ReadwriteSplittingRuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final BackendConnection backendConnection) {
+    public ReadwriteSplittingRulesQueryBackendHandler(final ShowReadwriteSplittingRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
-        if (sqlStatement.getSchema().isPresent()) {
-            schema = sqlStatement.getSchema().get().getIdentifier().getValue();
-        } else {
-            schema = backendConnection.getSchemaName();
-        }
     }
     
     @Override
-    protected ResponseHeader execute(final String schemaName, final ShowRuleStatement sqlStatement) {
-        loadRuleConfiguration(schema);
-        return new QueryResponseHeader(getQueryHeader());
+    protected ResponseHeader execute(final String schemaName, final ShowReadwriteSplittingRulesStatement sqlStatement) {
+        loadRuleConfiguration(schemaName);
+        return new QueryResponseHeader(getQueryHeader(schemaName));
     }
     
     private void loadRuleConfiguration(final String schemaName) {
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findAny();
         data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElse(Collections.emptyIterator());
+        loadBalancers = ruleConfig.map(ReadwriteSplittingRuleConfiguration::getLoadBalancers).orElse(Maps.newHashMap());
     }
     
-    private List<QueryHeader> getQueryHeader() {
+    private List<QueryHeader> getQueryHeader(final String schemaName) {
         List<QueryHeader> result = new LinkedList<>();
-        result.add(new QueryHeader(schema, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "writeDataSourceName", "writeDataSourceName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "readDataSourceNames", "readDataSourceNames", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "loadBalancerName", "loadBalancerName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "autoAwareDataSourceName", "autoAwareDataSourceName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "writeDataSourceName", "writeDataSourceName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "readDataSourceNames", "readDataSourceNames", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "loadBalancerType", "loadBalancerType", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "loadBalancerProps", "loadBalancerProps", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return result;
     }
     
@@ -84,10 +84,9 @@ public final class ReadwriteSplittingRuleQueryBackendHandler extends SchemaRequi
     @Override
     public Collection<Object> getRowData() {
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = data.next();
-        String name = ruleConfig.getName();
-        String writeDataSourceName = ruleConfig.getWriteDataSourceName();
-        String readDataSourceNames = (new Gson()).toJson(ruleConfig.getReadDataSourceNames());
-        String loadBalancerName = ruleConfig.getLoadBalancerName();
-        return Arrays.asList(name, writeDataSourceName, readDataSourceNames, loadBalancerName);
+        return Arrays.asList(ruleConfig.getName(), ruleConfig.getAutoAwareDataSourceName(),
+                ruleConfig.getWriteDataSourceName(), ruleConfig.getReadDataSourceNames(),
+                loadBalancers.get(ruleConfig.getLoadBalancerName()).getType(),
+                loadBalancers.get(ruleConfig.getLoadBalancerName()).getProps());
     }
 }

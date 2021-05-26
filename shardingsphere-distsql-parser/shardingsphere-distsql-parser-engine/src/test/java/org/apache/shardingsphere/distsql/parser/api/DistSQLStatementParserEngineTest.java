@@ -43,6 +43,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReso
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDatabaseDiscoveryRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowEncryptRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -155,6 +158,12 @@ public final class DistSQLStatementParserEngineTest {
     private static final String RQL_SHOW_SHARDING_BINDING_TABLE_RULES = "SHOW SHARDING BINDING TABLE RULES FROM sharding_db";
 
     private static final String RQL_SHOW_SHARDING_BROADCAST_TABLE_RULES = "SHOW SHARDING BROADCAST TABLE RULES FROM sharding_db";
+
+    private static final String RQL_SHOW_READWRITE_SPLITTING_RULES = "SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db";
+
+    private static final String RQL_SHOW_DB_DISCOVERY_RULES = "SHOW DB_DISCOVERY RULES FROM db_discovery_db";
+
+    private static final String RQL_SHOW_ENCRYPT_RULES = "SHOW ENCRYPT RULES FROM encrypt_db";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -432,5 +441,26 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RQL_SHOW_SHARDING_BROADCAST_TABLE_RULES);
         assertTrue(sqlStatement instanceof ShowShardingBroadcastTableRulesStatement);
         assertThat(((ShowShardingBroadcastTableRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("sharding_db"));
+    }
+
+    @Test
+    public void assertParseShowReadwriteSplittingRules() {
+        SQLStatement sqlStatement = engine.parse(RQL_SHOW_READWRITE_SPLITTING_RULES);
+        assertTrue(sqlStatement instanceof ShowReadwriteSplittingRulesStatement);
+        assertThat(((ShowReadwriteSplittingRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("readwrite_splitting_db"));
+    }
+
+    @Test
+    public void assertParseShowDatabaseDiscoveryRules() {
+        SQLStatement sqlStatement = engine.parse(RQL_SHOW_DB_DISCOVERY_RULES);
+        assertTrue(sqlStatement instanceof ShowDatabaseDiscoveryRulesStatement);
+        assertThat(((ShowDatabaseDiscoveryRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("db_discovery_db"));
+    }
+
+    @Test
+    public void assertParseShowEncryptRules() {
+        SQLStatement sqlStatement = engine.parse(RQL_SHOW_ENCRYPT_RULES);
+        assertTrue(sqlStatement instanceof ShowEncryptRulesStatement);
+        assertThat(((ShowEncryptRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("encrypt_db"));
     }
 }

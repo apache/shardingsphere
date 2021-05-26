@@ -44,6 +44,9 @@ execute
     | showRule
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules
+    | showReadwriteSplittingRules
+    | showDatabaseDiscoveryRules
+    | showEncryptRules
     | showScalingJobList
     | showScalingJobStatus
     | startScalingJob
