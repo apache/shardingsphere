@@ -45,6 +45,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShar
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowEncryptRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowEncryptTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBroadcastTableRulesStatement;
@@ -164,6 +165,8 @@ public final class DistSQLStatementParserEngineTest {
     private static final String RQL_SHOW_DB_DISCOVERY_RULES = "SHOW DB_DISCOVERY RULES FROM db_discovery_db";
 
     private static final String RQL_SHOW_ENCRYPT_RULES = "SHOW ENCRYPT RULES FROM encrypt_db";
+
+    private static final String RQL_SHOW_ENCRYPT_TABLE_RULE = "SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db";
 
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -462,5 +465,13 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RQL_SHOW_ENCRYPT_RULES);
         assertTrue(sqlStatement instanceof ShowEncryptRulesStatement);
         assertThat(((ShowEncryptRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("encrypt_db"));
+    }
+
+    @Test
+    public void assertParseShowEncryptTableRule() {
+        SQLStatement sqlStatement = engine.parse(RQL_SHOW_ENCRYPT_TABLE_RULE);
+        assertTrue(sqlStatement instanceof ShowEncryptTableRuleStatement);
+        assertThat(((ShowEncryptTableRuleStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("encrypt_db"));
+        assertThat(((ShowEncryptTableRuleStatement) sqlStatement).getTableName(), is("t_encrypt"));
     }
 }

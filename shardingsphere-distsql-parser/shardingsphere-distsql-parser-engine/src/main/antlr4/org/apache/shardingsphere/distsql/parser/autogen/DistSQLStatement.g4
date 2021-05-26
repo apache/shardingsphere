@@ -47,6 +47,7 @@ execute
     | showReadwriteSplittingRules
     | showDatabaseDiscoveryRules
     | showEncryptRules
+    | showEncryptTableRule
     | showScalingJobList
     | showScalingJobStatus
     | startScalingJob

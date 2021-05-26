@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDatabaseDiscoveryRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowEncryptRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowEncryptTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBindingTableRulesStatement;
@@ -28,6 +30,8 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DatabaseDiscoveryRulesQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.EncryptRulesQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.EncryptTableRuleQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRulesQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBindingTableRulesQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBroadcastTableRulesQueryBackendHandler;
@@ -63,6 +67,12 @@ public final class RQLBackendHandlerFactory {
         }
         if (sqlStatement instanceof ShowDatabaseDiscoveryRulesStatement) {
             return Optional.of(new DatabaseDiscoveryRulesQueryBackendHandler((ShowDatabaseDiscoveryRulesStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof ShowEncryptRulesStatement) {
+            return Optional.of(new EncryptRulesQueryBackendHandler((ShowEncryptRulesStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof ShowEncryptTableRuleStatement) {
+            return Optional.of(new EncryptTableRuleQueryBackendHandler((ShowEncryptTableRuleStatement) sqlStatement, backendConnection));
         }
         return Optional.empty();
     }
