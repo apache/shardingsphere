@@ -45,9 +45,7 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
     @Override
     public void postValidate(final ShardingRule shardingRule, final CreateTableStatement sqlStatement, final RouteContext routeContext) {
         String primaryTable = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        int primaryTableDataNodeSize = shardingRule.isShardingTable(primaryTable) || shardingRule.isBroadcastTable(primaryTable) 
-                ? shardingRule.getTableRule(primaryTable).getActualDataNodes().size() : 1;
-        if (primaryTableDataNodeSize != routeContext.getRouteUnits().size()) {
+        if (isRouteUnitPrimaryTableDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
             throw new ShardingSphereException("CREATE TABLE ... statement route unit size must be same with primary table '%s' data node size.", primaryTable);
         }
     }
