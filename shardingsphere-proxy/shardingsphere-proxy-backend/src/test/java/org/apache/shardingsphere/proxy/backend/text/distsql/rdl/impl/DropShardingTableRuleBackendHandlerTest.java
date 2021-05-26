@@ -122,7 +122,7 @@ public final class DropShardingTableRuleBackendHandlerTest {
         Collection<String> shardingTables = getShardingTables(shardingRuleConfiguration);
         assertTrue(!shardingTables.contains("t_order"));
         Collection<String> bindingTables = getBindingTables(shardingRuleConfiguration);
-        assertTrue(!bindingTables.contains("t_order"));
+        assertTrue(bindingTables.contains("t_order_test"));
     }
     
     private Collection<RuleConfiguration> buildShardingConfigurations() {
