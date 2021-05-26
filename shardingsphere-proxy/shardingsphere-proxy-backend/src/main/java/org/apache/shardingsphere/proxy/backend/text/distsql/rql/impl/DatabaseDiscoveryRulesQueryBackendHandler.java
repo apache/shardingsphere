@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
@@ -37,7 +38,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Backend handler for show database discovery rules.
@@ -82,8 +86,10 @@ public final class DatabaseDiscoveryRulesQueryBackendHandler extends SchemaRequi
     @Override
     public Collection<Object> getRowData() {
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = data.next();
-        return Arrays.asList(ruleConfig.getName(), ruleConfig.getDataSourceNames(),
+        Properties discoverProps = discoverTypes.get(ruleConfig.getDiscoveryTypeName()).getProps();
+        return Arrays.asList(ruleConfig.getName(), Joiner.on(",").join(ruleConfig.getDataSourceNames()),
                 discoverTypes.get(ruleConfig.getDiscoveryTypeName()).getType(),
-                discoverTypes.get(ruleConfig.getDiscoveryTypeName()).getProps());
+                Objects.nonNull(discoverProps) ? Joiner.on(",").join(discoverProps.entrySet().stream()
+                        .map(each -> Joiner.on(":").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
     }
 }

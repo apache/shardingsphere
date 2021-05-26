@@ -90,7 +90,7 @@ public final class DatabaseDiscoveryRulesQueryBackendHandlerTest {
         Collection<Object> rowData = handler.getRowData();
         assertThat(rowData.size(), is(4));
         assertTrue(rowData.contains("ms_group"));
-        assertTrue(rowData.contains(Arrays.asList("ds_0", "ds_1")));
+        assertTrue(rowData.contains("ds_0,ds_1"));
         assertTrue(rowData.contains("MGR"));
     }
 
