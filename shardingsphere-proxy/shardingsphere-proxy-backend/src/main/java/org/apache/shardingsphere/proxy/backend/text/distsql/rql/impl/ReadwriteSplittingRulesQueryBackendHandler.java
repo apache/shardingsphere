@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -37,7 +38,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Backend handler for show readwrite splitting rules.
@@ -84,9 +88,11 @@ public final class ReadwriteSplittingRulesQueryBackendHandler extends SchemaRequ
     @Override
     public Collection<Object> getRowData() {
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = data.next();
+        Properties loadBalancerProps = loadBalancers.get(ruleConfig.getLoadBalancerName()).getProps();
         return Arrays.asList(ruleConfig.getName(), ruleConfig.getAutoAwareDataSourceName(),
-                ruleConfig.getWriteDataSourceName(), ruleConfig.getReadDataSourceNames(),
+                ruleConfig.getWriteDataSourceName(), Joiner.on(",").join(ruleConfig.getReadDataSourceNames()),
                 loadBalancers.get(ruleConfig.getLoadBalancerName()).getType(),
-                loadBalancers.get(ruleConfig.getLoadBalancerName()).getProps());
+                Objects.nonNull(loadBalancerProps) ? Joiner.on(",").join(loadBalancerProps.entrySet().stream()
+                        .map(each -> Joiner.on(":").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
     }
 }
