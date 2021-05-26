@@ -238,12 +238,12 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         }
         throw new ShardingSphereConfigurationException("Cannot find table rule with logic table: '%s'", logicTableName);
     }
-    
+
     /**
-     * Judge whether all logic tables belongs to binding encryptors.
+     * Judge whether all logic tables are binding encryptors or not.
      *
      * @param logicTableNames logic table names
-     * @return The result of judging whether all logic tables belongs to binding encryptors
+     * @return whether all logic tables are binding encryptors or not
      */
     public boolean isAllBindingTables(final Collection<String> logicTableNames) {
         if (logicTableNames.isEmpty()) {
@@ -273,50 +273,50 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
-     * Judge whether all logic tables belongs to broadcast encryptors.
+     * Judge whether all logic tables are broadcast encryptors or not.
      *
      * @param logicTableNames logic table names
-     * @return The result of judging whether all logic tables belongs to binding encryptors
+     * @return whether all logic tables are binding encryptors or not
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
         return !logicTableNames.isEmpty() && logicTableNames.stream().allMatch(this::isBroadcastTable);
     }
     
     /**
-     * Judge whether all logic tables belongs to sharding tables.
+     * Judge whether all logic tables are sharding tables or not.
      *
      * @param logicTableNames logic table names
-     * @return The result of judging whether all logic tables belongs to sharding tables
+     * @return whether all logic tables are sharding tables or not
      */
     public boolean isAllShardingTables(final Collection<String> logicTableNames) {
         return logicTableNames.stream().allMatch(each -> findTableRule(each).isPresent());
     }
     
     /**
-     * Judge whether logic table is sharding table.
+     * Judge whether logic table is sharding table or not.
      *
      * @param logicTableName logic table name
-     * @return The result of judging whether logic table is sharding table
+     * @return whether logic table is sharding table or not
      */
     public boolean isShardingTable(final String logicTableName) {
         return findTableRule(logicTableName).isPresent();
     }
     
     /**
-     * Judge whether logic table belongs to broadcast tables.
+     * Judge whether logic table are broadcast tables or not.
      *
      * @param logicTableName logic table name
-     * @return The result of judging whether logic table belongs to broadcast tables
+     * @return whether logic table are broadcast tables or not
      */
     public boolean isBroadcastTable(final String logicTableName) {
         return broadcastTables.stream().anyMatch(each -> each.equalsIgnoreCase(logicTableName));
     }
     
     /**
-     * Judge if all single tables exist in same data source.
+     * Judge if all single tables exist in same data source or not.
      *
      * @param logicTableNames logic table names
-     * @return all single tables exist in same data source or not
+     * @return whether all single tables exist in same data source or not
      */
     public boolean isSingleTablesInSameDataSource(final Collection<String> logicTableNames) {
         if (!singleTableRules.keySet().containsAll(logicTableNames)) {
@@ -326,10 +326,10 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
-     * Judge if there is at least one table rule for logic tables.
+     * Judge if there is at least one table rule for logic tables or not.
      *
      * @param logicTableNames logic table names
-     * @return whether a table rule exists for logic tables
+     * @return whether a table rule exists for logic tables or not
      */
     public boolean tableRuleExists(final Collection<String> logicTableNames) {
         return logicTableNames.stream().anyMatch(each -> findTableRule(each).isPresent() || isBroadcastTable(each));
@@ -339,7 +339,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * Judge if single table rule exists or not.
      *
      * @param logicTableNames logic table names
-     * @return whether single table rule exists for logic tables
+     * @return whether single table rule exists for logic tables or not
      */
     public boolean singleTableRuleExists(final Collection<String> logicTableNames) {
         return singleTableRules.keySet().stream().anyMatch(logicTableNames::contains);
@@ -350,7 +350,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      *
      * @param columnName column name
      * @param tableName table name
-     * @return is sharding column or not
+     * @return whether a column is sharding column or not
      */
     public boolean isShardingColumn(final String columnName, final String tableName) {
         return tableRules.stream().anyMatch(each -> each.getLogicTable().equalsIgnoreCase(tableName) && isShardingColumn(each, columnName));
