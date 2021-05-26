@@ -100,7 +100,7 @@ public final class DropShardingTableRuleBackendHandlerTest {
 
     @Test(expected = ShardingTableRulesInUsedException.class)
     public void assertExecuteWithBindingTableRule() {
-        TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));
+        TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order_item"));
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getTableNames()).thenReturn(Arrays.asList(tableRuleSegment));
         handler.execute("test", sqlStatement);
@@ -119,14 +119,14 @@ public final class DropShardingTableRuleBackendHandlerTest {
         Collection<String> shardingTables = getShardingTables(shardingRuleConfiguration);
         assertTrue(!shardingTables.contains("t_order"));
         Collection<String> bindingTables = getBindingTables(shardingRuleConfiguration);
-        assertTrue(bindingTables.contains("t_order_test"));
+        assertTrue(bindingTables.contains("t_order_item"));
     }
     
     private Collection<RuleConfiguration> buildShardingConfigurations() {
         ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
         configuration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
         configuration.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
-        configuration.setBindingTableGroups(Collections.singletonList("t_order"));
+        configuration.setBindingTableGroups(Collections.singletonList("t_order_item"));
         return new ArrayList<>(Collections.singletonList(configuration));
     }
 
