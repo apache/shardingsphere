@@ -24,7 +24,7 @@ import java.io.Serializable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class UnsignedSmallintHandlerTest {
+public final class UnsignedSmallintHandlerTest {
     
     private final UnsignedSmallintHandler handler = new UnsignedSmallintHandler();
     

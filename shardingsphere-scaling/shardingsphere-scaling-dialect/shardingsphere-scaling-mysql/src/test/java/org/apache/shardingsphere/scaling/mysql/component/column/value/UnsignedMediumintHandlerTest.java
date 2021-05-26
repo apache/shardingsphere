@@ -24,7 +24,7 @@ import java.io.Serializable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class UnsignedMediumintHandlerTest {
+public final class UnsignedMediumintHandlerTest {
     
     private final UnsignedMediumintHandler handler = new UnsignedMediumintHandler();
     

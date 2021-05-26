@@ -25,7 +25,7 @@ import java.math.BigInteger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class UnsignedBigintHandlerTest {
+public final class UnsignedBigintHandlerTest {
     
     private final UnsignedBigintHandler handler = new UnsignedBigintHandler();
     

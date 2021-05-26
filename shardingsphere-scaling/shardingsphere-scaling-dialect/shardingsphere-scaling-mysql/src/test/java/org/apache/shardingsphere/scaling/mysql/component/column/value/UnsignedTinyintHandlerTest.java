@@ -24,7 +24,7 @@ import java.io.Serializable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class UnsignedTinyintHandlerTest {
+public final class UnsignedTinyintHandlerTest {
     
     private final UnsignedTinyintHandler handler = new UnsignedTinyintHandler();
     

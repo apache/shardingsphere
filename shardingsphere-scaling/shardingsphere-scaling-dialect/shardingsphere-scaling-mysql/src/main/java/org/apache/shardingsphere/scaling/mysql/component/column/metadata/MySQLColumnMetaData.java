@@ -29,7 +29,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class MySQLColumnMetaData {
+public final class MySQLColumnMetaData {
     
     private final String name;
     
