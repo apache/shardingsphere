@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -44,7 +43,7 @@ public final class DropShardingBindingTableRulesBackendHandler extends SchemaReq
     public ResponseHeader execute(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
         if (!shardingRuleConfiguration.isPresent()) {
-            throw new ShardingRuleNotExistedException();
+            throw new ShardingBindingTableRulesNotExistsException(schemaName);
         }
         if (shardingRuleConfiguration.get().getBindingTableGroups().isEmpty()) {
             throw new ShardingBindingTableRulesNotExistsException(schemaName);

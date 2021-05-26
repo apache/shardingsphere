@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -47,6 +48,10 @@ import java.util.stream.Collectors;
  * Create database discovery rule backend handler.
  */
 public final class CreateDatabaseDiscoveryRuleBackendHandler extends SchemaRequiredBackendHandler<CreateDatabaseDiscoveryRuleStatement> {
+
+    static {
+        ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
+    }
 
     public CreateDatabaseDiscoveryRuleBackendHandler(final CreateDatabaseDiscoveryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);

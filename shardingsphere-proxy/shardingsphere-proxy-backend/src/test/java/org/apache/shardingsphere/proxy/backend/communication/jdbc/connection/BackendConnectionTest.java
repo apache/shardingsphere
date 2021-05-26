@@ -168,24 +168,24 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionWithMethodInvocation() throws SQLException {
+    public void assertGetConnectionWithConnectionPostProcessors() throws SQLException {
         backendConnection.getTransactionStatus().setInTransaction(true);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
-        setMethodInvocation();
+        setConnectionPostProcessors();
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
-        verify(backendConnection.getMethodInvocations().iterator().next(), times(2)).invoke(any());
+        verify(backendConnection.getConnectionPostProcessors().iterator().next(), times(2)).process(any());
         assertThat(actualConnections.size(), is(2));
         assertTrue(backendConnection.getTransactionStatus().isInTransaction());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setMethodInvocation() {
-        MethodInvocation invocation = mock(MethodInvocation.class);
-        Collection<MethodInvocation> methodInvocations = new LinkedList<>();
-        methodInvocations.add(invocation);
-        Field field = backendConnection.getClass().getDeclaredField("methodInvocations");
+    private void setConnectionPostProcessors() {
+        ConnectionPostProcessor invocation = mock(ConnectionPostProcessor.class);
+        Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
+        connectionPostProcessors.add(invocation);
+        Field field = backendConnection.getClass().getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
-        field.set(backendConnection, methodInvocations);
+        field.set(backendConnection, connectionPostProcessors);
     }
     
     @Test
@@ -343,7 +343,7 @@ public final class BackendConnectionTest {
         backendConnection.closeConnections(false);
         verify(connection, times(1)).close();
         assertTrue(cachedConnections.isEmpty());
-        verifyMethodInvocationsEmpty();
+        verifyConnectionPostProcessorsEmpty();
         verify(connectionStatus, times(1)).switchToReleased();
     }
     
@@ -429,10 +429,10 @@ public final class BackendConnectionTest {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private void verifyMethodInvocationsEmpty() {
-        Field field = backendConnection.getClass().getDeclaredField("methodInvocations");
+    private void verifyConnectionPostProcessorsEmpty() {
+        Field field = backendConnection.getClass().getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
-        Collection<MethodInvocation> methodInvocations = (Collection<MethodInvocation>) field.get(backendConnection);
-        assertTrue(methodInvocations.isEmpty());
+        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) field.get(backendConnection);
+        assertTrue(connectionPostProcessors.isEmpty());
     }
 }

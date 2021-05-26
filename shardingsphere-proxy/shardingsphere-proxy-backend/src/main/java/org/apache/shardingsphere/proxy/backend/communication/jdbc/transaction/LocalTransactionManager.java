@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.MethodInvocation;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,7 +35,13 @@ public final class LocalTransactionManager implements TransactionManager {
     
     @Override
     public void begin() {
-        recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{false});
+        connection.getConnectionPostProcessors().add(target -> {
+            try {
+                target.setAutoCommit(false);
+            } catch (final SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
     
     @Override
@@ -63,6 +67,8 @@ public final class LocalTransactionManager implements TransactionManager {
                 each.commit();
             } catch (final SQLException ex) {
                 result.add(ex);
+            } finally {
+                ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
         }
         return result;
@@ -75,6 +81,8 @@ public final class LocalTransactionManager implements TransactionManager {
                 each.rollback();
             } catch (final SQLException ex) {
                 result.add(ex);
+            } finally {
+                ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
         }
         return result;
@@ -91,8 +99,40 @@ public final class LocalTransactionManager implements TransactionManager {
         throw ex;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
-        connection.getMethodInvocations().add(new MethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
+    @Override
+    public void setSavepoint(final String savepointName) throws SQLException {
+        if (!connection.getTransactionStatus().isInTransaction()) {
+            return;
+        }
+        for (Connection each : connection.getCachedConnections().values()) {
+            ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
+        }
+        connection.getConnectionPostProcessors().add(target -> {
+            try {
+                ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName);
+            } catch (final SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+    }
+    
+    @Override
+    public void rollbackTo(final String savepointName) throws SQLException {
+        if (!connection.getTransactionStatus().isInTransaction()) {
+            return;
+        }
+        for (Connection each : connection.getCachedConnections().values()) {
+            ConnectionSavepointManager.getInstance().rollbackToSavepoint(each, savepointName);
+        }
+    }
+    
+    @Override
+    public void releaseSavepoint(final String savepointName) throws SQLException {
+        if (!connection.getTransactionStatus().isInTransaction()) {
+            return;
+        }
+        for (Connection each : connection.getCachedConnections().values()) {
+            ConnectionSavepointManager.getInstance().releaseSavepoint(each, savepointName);
+        }
     }
 }

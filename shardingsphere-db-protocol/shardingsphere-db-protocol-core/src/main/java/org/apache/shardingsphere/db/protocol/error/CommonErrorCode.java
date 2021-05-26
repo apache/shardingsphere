@@ -29,7 +29,7 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     CIRCUIT_BREAK_MODE(1000, "C1000", "Circuit break mode is ON."),
     
-    SHARDING_TABLE_RULES_NOT_EXISTED(1101, "C1101", "Sharding table rule %s is not exist."),
+    SHARDING_TABLE_RULES_NOT_EXISTED(1101, "C1101", "Sharding table rules %s do not exist in schema %s."),
     
     SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE(1102, "C1102", "Sharding table rules %s are still used by binding table rule."),
 
@@ -43,10 +43,6 @@ public enum CommonErrorCode implements SQLErrorCode {
 
     READWRITE_SPLITTING_RULE_EXIST(1108, "C1108", "Readwrite splitting rule already exists in schema %s."),
     
-    SHARDING_RULE_NOT_EXIST(1109, "C1109", "Sharding rule does not exist."),
-    
-    SHARDING_TABLE_RULE_EXIST(1110, "C1110", "Sharding table rules: [%s] already exists."),
-    
     INVALID_RESOURCE(1111, "C1111", "Can not add invalid resources %s."),
     
     DUPLICATE_RESOURCE(1112, "C1112", "Duplicate resource names %s."),
@@ -55,9 +51,9 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     SHARDING_BROADCAST_EXIST(1114, "C1114", "Sharding broadcast table rules already exists in schema %s."),
 
-    SHARDING_BINDING_TABLE_RULES_NOT_EXIST(1115, "C1115", "Sharding binding table rules not exist in schema %s."),
+    SHARDING_BINDING_TABLE_RULES_NOT_EXIST(1115, "C1115", "Sharding binding table rules do not exist in schema %s."),
 
-    SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST(1116, "C1116", "Sharding broadcast table rules not exist in schema %s."),
+    SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST(1116, "C1116", "Sharding broadcast table rules do not exist in schema %s."),
 
     INVALID_LOAD_BALANCERS(1117, "C1117", "Invalid load balancers %s."),
 
@@ -71,7 +67,7 @@ public enum CommonErrorCode implements SQLErrorCode {
 
     INVALID_ENCRYPTORS(1123, "C1123", "Invalid encryptors %s."),
 
-    ENCRYPT_RULES_NOT_EXIST(1124, "C1124", "Encrypt rules %s do not exist."),
+    ENCRYPT_RULES_NOT_EXIST(1124, "C1124", "Encrypt rules %s do not exist in schema %s."),
 
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     

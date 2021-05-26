@@ -27,6 +27,14 @@ showRule
     : SHOW ruleType RULE (FROM schemaName)?
     ;
 
+showShardingBindingTableRules
+    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
+    ;
+
+showShardingBroadcastTableRules
+    : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
+    ;
+
 ruleType
     : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
     ;

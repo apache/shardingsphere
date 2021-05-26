@@ -27,6 +27,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDatabas
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -51,6 +52,10 @@ import java.util.stream.Collectors;
  * Alter database discovery rule backend handler.
  */
 public final class AlterDatabaseDiscoveryRuleBackendHandler extends SchemaRequiredBackendHandler<AlterDatabaseDiscoveryRuleStatement> {
+
+    static {
+        ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
+    }
 
     public AlterDatabaseDiscoveryRuleBackendHandler(final AlterDatabaseDiscoveryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);

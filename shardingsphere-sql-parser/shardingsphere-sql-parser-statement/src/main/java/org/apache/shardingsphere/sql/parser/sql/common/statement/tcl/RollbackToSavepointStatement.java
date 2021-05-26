@@ -15,33 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-
-import java.lang.reflect.Method;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Reflective method invocation.
+ * Rollback to savepoint statement.
  */
-@RequiredArgsConstructor
-public final class MethodInvocation {
+@Getter
+@Setter
+public abstract class RollbackToSavepointStatement extends AbstractSQLStatement implements TCLStatement {
     
-    @Getter
-    private final Method method;
-    
-    @Getter
-    private final Object[] arguments;
-    
-    /**
-     * Invoke method.
-     * 
-     * @param target target object
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void invoke(final Object target) {
-        method.invoke(target, arguments);
-    }
+    private String savepointName;
 }

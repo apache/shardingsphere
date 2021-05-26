@@ -35,7 +35,7 @@ public final class CommonErrorCodeTest {
     public void assertSharingTableRulesNotExisted() {
         assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getErrorCode(), is(1101));
         assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getSqlState(), is("C1101"));
-        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getErrorMessage(), is("Sharding table rule %s is not exist."));
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getErrorMessage(), is("Sharding table rules %s do not exist in schema %s."));
     }
     
     @Test

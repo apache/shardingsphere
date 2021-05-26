@@ -17,10 +17,33 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Describe statement test case.
  */
+@Getter
+@Setter
 public final class ExplainStatementTestCase extends SQLParserTestCase {
+
+    @XmlElement(name = "select")
+    private SelectStatementTestCase selectClause;
+
+    @XmlElement(name = "insert")
+    private InsertStatementTestCase insertClause;
+
+    @XmlElement(name = "update")
+    private UpdateStatementTestCase updateClause;
+
+    @XmlElement(name = "delete")
+    private DeleteStatementTestCase deleteClause;
+
 }

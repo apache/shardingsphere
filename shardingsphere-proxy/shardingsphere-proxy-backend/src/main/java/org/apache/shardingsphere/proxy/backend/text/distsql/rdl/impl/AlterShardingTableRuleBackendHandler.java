@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -37,12 +35,9 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConverter;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,64 +52,68 @@ public final class AlterShardingTableRuleBackendHandler extends SchemaRequiredBa
     
     @Override
     public ResponseHeader execute(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
-        if (!getShardingRuleConfiguration(schemaName).isPresent()) {
-            throw new ShardingRuleNotExistedException();
-        }
         check(schemaName, sqlStatement);
-        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = new YamlRuleConfigurationSwapperEngine()
-                .swapToYamlRuleConfigurations(Collections.singleton(getShardingRuleConfiguration(schemaName).get())).stream()
-                .filter(each -> each instanceof YamlShardingRuleConfiguration).map(each -> (YamlShardingRuleConfiguration) each).findFirst();
-        if (!yamlShardingRuleConfig.isPresent()) {
-            throw new ShardingRuleNotExistedException();
-        }
-        YamlShardingRuleConfiguration existYamlShardingRuleConfiguration = yamlShardingRuleConfig.get();
-        YamlShardingRuleConfiguration yamlShardingRuleConfiguration = ShardingRuleStatementConverter.convert(sqlStatement);
-        existYamlShardingRuleConfiguration.getShardingAlgorithms().putAll(yamlShardingRuleConfiguration.getShardingAlgorithms());
-        yamlShardingRuleConfiguration.getTables().keySet().forEach(each -> {
-            if (existYamlShardingRuleConfiguration.getTables().keySet().contains(each)) {
-                existYamlShardingRuleConfiguration.getTables().remove(each);
-            }
-        });
-        existYamlShardingRuleConfiguration.getAutoTables().putAll(yamlShardingRuleConfiguration.getAutoTables());
-        post(schemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(existYamlShardingRuleConfiguration)));
+        YamlShardingRuleConfiguration yamlShardingRuleConfiguration = alter(schemaName, sqlStatement);
+        post(schemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(yamlShardingRuleConfiguration)));
         return new UpdateResponseHeader(sqlStatement);
     }
 
     private void check(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
-        Collection<String> logicTableNames = new ArrayList<>(sqlStatement.getTables().size());
-        Set<String> duplicateTableNames = new HashSet<>(sqlStatement.getTables().size(), 1);
-        for (TableRuleSegment tableRuleSegment : sqlStatement.getTables()) {
-            if (logicTableNames.contains(tableRuleSegment.getLogicTable())) {
-                duplicateTableNames.add(tableRuleSegment.getLogicTable());
-            }
-            logicTableNames.add(tableRuleSegment.getLogicTable());
+        Collection<String> duplicateTables = getDuplicateTables(sqlStatement);
+        if (!duplicateTables.isEmpty()) {
+            throw new DuplicateTablesException(duplicateTables);
         }
-        if (!duplicateTableNames.isEmpty()) {
-            throw new DuplicateTablesException(duplicateTableNames);
+        Collection<String> alteredTables = getAlteredTables(sqlStatement);
+        if (!getShardingRuleConfiguration(schemaName).isPresent()) {
+            throw new ShardingTableRuleNotExistedException(schemaName, alteredTables);
         }
-        Collection<String> existTables = getLogicTables(schemaName);
-        Collection<String> notExistTables = logicTableNames.stream().filter(each -> !existTables.contains(each)).collect(Collectors.toList());
+        Collection<String> existTables = getShardingTables(getShardingRuleConfiguration(schemaName).get());
+        Collection<String> notExistTables = alteredTables.stream().filter(each -> !existTables.contains(each)).collect(Collectors.toList());
         if (!notExistTables.isEmpty()) {
-            throw new ShardingTableRuleNotExistedException(notExistTables);
+            throw new ShardingTableRuleNotExistedException(schemaName, notExistTables);
         }
     }
 
-    private Collection<String> getLogicTables(final String schemaName) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
-        Collection<String> result = new LinkedList<>();
-        if (!shardingRuleConfiguration.isPresent()) {
-            return result;
-        }
-        result.addAll(shardingRuleConfiguration.get().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
-        result.addAll(shardingRuleConfiguration.get().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
-        return result;
+    private Collection<String> getDuplicateTables(final AlterShardingTableRuleStatement sqlStatement) {
+        return sqlStatement.getTables().stream()
+                .collect(Collectors.toMap(e -> e.getLogicTable(), e -> 1, (a, b) -> a + b))
+                .entrySet().stream()
+                .filter(entry -> entry.getValue() > 1)
+                .map(entry -> entry.getKey())
+                .collect(Collectors.toList());
+    }
+
+    private Collection<String> getAlteredTables(final AlterShardingTableRuleStatement sqlStatement) {
+        return sqlStatement.getTables().stream().map(each -> each.getLogicTable()).collect(Collectors.toList());
     }
 
     private Optional<ShardingRuleConfiguration> getShardingRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
     }
-    
+
+    private Collection<String> getShardingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
+        Collection<String> result = new LinkedList<>();
+        result.addAll(shardingRuleConfiguration.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        result.addAll(shardingRuleConfiguration.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        return result;
+    }
+
+    private YamlShardingRuleConfiguration alter(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
+        YamlShardingRuleConfiguration result = new YamlRuleConfigurationSwapperEngine()
+                .swapToYamlRuleConfigurations(Collections.singleton(getShardingRuleConfiguration(schemaName).get())).stream()
+                .filter(each -> each instanceof YamlShardingRuleConfiguration).map(each -> (YamlShardingRuleConfiguration) each).findFirst().get();
+        YamlShardingRuleConfiguration yamlShardingRuleConfiguration = ShardingRuleStatementConverter.convert(sqlStatement);
+        result.getShardingAlgorithms().putAll(yamlShardingRuleConfiguration.getShardingAlgorithms());
+        yamlShardingRuleConfiguration.getTables().keySet().forEach(each -> {
+            if (result.getTables().keySet().contains(each)) {
+                result.getTables().remove(each);
+            }
+        });
+        result.getAutoTables().putAll(yamlShardingRuleConfiguration.getAutoTables());
+        return result;
+    }
+
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {
         ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, rules));
     }

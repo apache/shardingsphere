@@ -78,7 +78,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
     
-    private final Collection<MethodInvocation> methodInvocations = new LinkedList<>();
+    private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
     private final ResourceLock resourceLock = new ResourceLock();
     
@@ -151,9 +151,9 @@ public final class BackendConnection implements ExecutorJDBCManager {
         return result;
     }
     
-    private void replayMethodsInvocation(final Object target) {
-        for (MethodInvocation each : methodInvocations) {
-            each.invoke(target);
+    private void replayMethodsInvocation(final Connection target) {
+        for (ConnectionPostProcessor each : connectionPostProcessors) {
+            each.process(target);
         }
     }
     
@@ -285,7 +285,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
             }
         }
         cachedConnections.clear();
-        methodInvocations.clear();
+        connectionPostProcessors.clear();
         connectionStatus.switchToReleased();
         return result;
     }

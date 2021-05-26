@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.governance.core.registry.service.schema;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,13 +48,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaRegistryServiceTest {
-    
-    private static final String YAML_DATA = "yaml/schema.yaml";
     
     @Mock
     private RegistryCenterRepository registryCenterRepository;
@@ -68,7 +70,7 @@ public final class SchemaRegistryServiceTest {
     
     @Test
     public void assertPersist() {
-        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML_DATA), YamlSchema.class));
+        ShardingSphereSchema schema = new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlSchema.class));
         schemaRegistryService.persist("foo_db", schema);
         verify(registryCenterRepository).persist(eq("/metadata/foo_db/schema"), anyString());
     }
@@ -81,7 +83,7 @@ public final class SchemaRegistryServiceTest {
     
     @Test
     public void assertLoad() {
-        when(registryCenterRepository.get("/metadata/foo_db/schema")).thenReturn(readYAML(YAML_DATA));
+        when(registryCenterRepository.get("/metadata/foo_db/schema")).thenReturn(readYAML());
         Optional<ShardingSphereSchema> schemaOptional = schemaRegistryService.load("foo_db");
         assertTrue(schemaOptional.isPresent());
         Optional<ShardingSphereSchema> empty = schemaRegistryService.load("test");
@@ -103,9 +105,48 @@ public final class SchemaRegistryServiceTest {
         assertThat(actual, hasItems("bar_db"));
     }
     
+    @Test
+    public void assertUpdateWithMetaDataCreatedEvent() {
+        MetaDataCreatedEvent event = new MetaDataCreatedEvent("bar_db");
+        when(registryCenterRepository.get("/metadata")).thenReturn("foo_db");
+        schemaRegistryService.update(event);
+        verify(registryCenterRepository).persist("/metadata", "foo_db,bar_db");
+    }
+    
+    @Test
+    public void assertUpdateWithMetaDataCreatedEventAndExist() {
+        MetaDataCreatedEvent event = new MetaDataCreatedEvent("bar_db");
+        when(registryCenterRepository.get("/metadata")).thenReturn("foo_db,bar_db");
+        schemaRegistryService.update(event);
+        verify(registryCenterRepository, times(0)).persist("/metadata", "foo_db,bar_db");
+    }
+    
+    @Test
+    public void assertUpdateWithMetaDataAlteredEvent() {
+        SchemaAlteredEvent event = new SchemaAlteredEvent("foo_db", new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlSchema.class)));
+        schemaRegistryService.update(event);
+        verify(registryCenterRepository).persist(eq("/metadata/foo_db/schema"), anyString());
+    }
+    
+    @Test
+    public void assertUpdateWithMetaDataDroppedEvent() {
+        MetaDataDroppedEvent event = new MetaDataDroppedEvent("foo_db");
+        when(registryCenterRepository.get("/metadata")).thenReturn("foo_db,bar_db");
+        schemaRegistryService.update(event);
+        verify(registryCenterRepository).persist("/metadata", "bar_db");
+    }
+    
+    @Test
+    public void assertUpdateWithMetaDataDroppedEventAndNotExist() {
+        MetaDataDroppedEvent event = new MetaDataDroppedEvent("foo_db");
+        when(registryCenterRepository.get("/metadata")).thenReturn("bar_db");
+        schemaRegistryService.update(event);
+        verify(registryCenterRepository, times(0)).persist("/metadata", "bar_db");
+    }
+    
     @SneakyThrows({IOException.class, URISyntaxException.class})
-    private String readYAML(final String yamlFile) {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
+    private String readYAML() {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/schema.yaml").toURI()))
                 .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

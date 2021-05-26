@@ -46,8 +46,6 @@ import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
@@ -112,7 +110,8 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE);
         }
         if (cause instanceof ShardingTableRuleNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED, ((ShardingTableRuleNotExistedException) cause).getTableNames());
+            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED, ((ShardingTableRuleNotExistedException) cause).getTableNames(),
+                    ((ShardingTableRuleNotExistedException) cause).getSchemaName());
         }
         if (cause instanceof ShardingTableRulesInUsedException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE, ((ShardingTableRulesInUsedException) cause).getTableNames());
@@ -157,12 +156,6 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingBroadcastTableRulesExistsException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_EXIST, ((ShardingBroadcastTableRulesExistsException) cause).getSchemaName());
         }
-        if (cause instanceof ShardingRuleNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_RULE_NOT_EXIST);
-        }
-        if (cause instanceof ShardingTableRuleExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULE_EXIST, ((ShardingTableRuleExistedException) cause).getTableNames());
-        }
         if (cause instanceof ShardingBindingTableRulesNotExistsException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BINDING_TABLE_RULES_NOT_EXIST, ((ShardingBindingTableRulesNotExistsException) cause).getSchemaName());
         }
@@ -202,7 +195,8 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.INVALID_ENCRYPTORS, ((InvalidEncryptorsException) cause).getEncryptors());
         }
         if (cause instanceof EncryptRulesNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.ENCRYPT_RULES_NOT_EXIST, ((EncryptRulesNotExistedException) cause).getTables());
+            return new MySQLErrPacket(1, CommonErrorCode.ENCRYPT_RULES_NOT_EXIST, ((EncryptRulesNotExistedException) cause).getTables(),
+                    ((EncryptRulesNotExistedException) cause).getSchemaName());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }

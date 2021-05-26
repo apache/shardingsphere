@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Sharding table rule existed exception.
+ * Show sharding broadcast table rules statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingTableRuleExistedException extends BackendException {
-    
-    private static final long serialVersionUID = 258686465701003401L;
-    
-    private final Collection<String> tableNames;
+public final class ShowShardingBroadcastTableRulesStatement extends ShowRulesStatement {
+
+    public ShowShardingBroadcastTableRulesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
 }

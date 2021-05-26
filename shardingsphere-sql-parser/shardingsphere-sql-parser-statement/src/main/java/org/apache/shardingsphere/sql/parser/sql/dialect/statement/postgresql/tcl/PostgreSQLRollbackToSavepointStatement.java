@@ -15,17 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackToSavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Sharding rule not existed exception.
+ * PostgreSQL rollback to savepoint statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingRuleNotExistedException extends BackendException {
-    
-    private static final long serialVersionUID = -875932845262766838L;
+public final class PostgreSQLRollbackToSavepointStatement extends RollbackToSavepointStatement implements PostgreSQLStatement {
 }
