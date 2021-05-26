@@ -32,7 +32,7 @@ import java.util.Optional;
 /**
  * Simple authority provider algorithm.
  */
-public final class SimpleAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+public final class PermitAllPrivilegesAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
     
     @Override
     public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
@@ -69,6 +69,6 @@ public final class SimpleAuthorityProviderAlgorithm implements AuthorityProvideA
     
     @Override
     public String getType() {
-        return "SIMPLE";
+        return "PERMIT_ALL_PRIVILEGES";
     }
 }
