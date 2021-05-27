@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.service.state;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;

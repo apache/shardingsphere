@@ -21,10 +21,10 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
+import org.apache.shardingsphere.governance.core.registry.util.SchemaNameUtil;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -87,7 +87,7 @@ public final class SchemaRegistryService {
      */
     public Collection<String> loadAllNames() {
         String schemaNames = repository.get(SchemaMetadataNode.getMetadataNodePath());
-        return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : RegistryCenterNode.splitSchemaName(schemaNames);
+        return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : SchemaNameUtil.splitSchemaName(schemaNames);
     }
     
     /**

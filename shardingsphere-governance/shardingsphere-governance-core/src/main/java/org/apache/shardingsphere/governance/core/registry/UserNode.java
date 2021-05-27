@@ -18,46 +18,23 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
- * Registry center node.
+ * User node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryCenterNode {
+public final class UserNode {
     
-    private static final String EXECUTION_NODE_NAME = "executionnodes";
-    
-    private static final String USERS_NODE = "users";
-    
-    private static final String COMMA_SEPARATOR = ",";
+    private static final String ROOT_NODE = "users";
     
     /**
      * Get users path.
      *
      * @return users path
      */
-    public static String getUsersNode() {
-        return getFullPath(USERS_NODE);
-    }
-    
-    private static String getFullPath(final String node) {
-        return Joiner.on("/").join("", node);
-    }
-    
-    /**
-     * Split schema name.
-     *
-     * @param schemaNames schema names
-     * @return schema names
-     */
-    public static Collection<String> splitSchemaName(final String schemaNames) {
-        return Strings.isNullOrEmpty(schemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(schemaNames);
+    public static String getRootNode() {
+        return Joiner.on("/").join("", ROOT_NODE);
     }
 }

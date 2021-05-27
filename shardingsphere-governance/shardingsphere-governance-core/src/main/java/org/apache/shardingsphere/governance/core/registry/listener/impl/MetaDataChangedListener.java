@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.commons.collections4.SetUtils;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
+import org.apache.shardingsphere.governance.core.registry.util.SchemaNameUtil;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
@@ -49,7 +49,7 @@ public final class MetaDataChangedListener extends PostGovernanceRepositoryEvent
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
         if (SchemaMetadataNode.getMetadataNodePath().equals(event.getKey())) {
-            Collection<String> persistedSchemaNames = RegistryCenterNode.splitSchemaName(event.getValue());
+            Collection<String> persistedSchemaNames = SchemaNameUtil.splitSchemaName(event.getValue());
             Set<String> addedSchemaNames = SetUtils.difference(new HashSet<>(persistedSchemaNames), new HashSet<>(existedSchemaNames));
             if (!addedSchemaNames.isEmpty()) {
                 // TODO support multiple schemaNames

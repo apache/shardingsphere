@@ -15,17 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.governance.core.registry.util;
 
-import org.junit.Test;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Collection;
+import java.util.Collections;
 
-public final class RegistryCenterNodeTest {
+/**
+ * Schema name utility.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SchemaNameUtil {
     
-    @Test
-    public void assertGetUsersNodePath() {
-        assertThat(RegistryCenterNode.getUsersNode(), is("/users"));
+    private static final String COMMA_SEPARATOR = ",";
+    
+    /**
+     * Split schema name.
+     *
+     * @param schemaNames schema names
+     * @return schema names
+     */
+    public static Collection<String> splitSchemaName(final String schemaNames) {
+        return Strings.isNullOrEmpty(schemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(schemaNames);
     }
 }

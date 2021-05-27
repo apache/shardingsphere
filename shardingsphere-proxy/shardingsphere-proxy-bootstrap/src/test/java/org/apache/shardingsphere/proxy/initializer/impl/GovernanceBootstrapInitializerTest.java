@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
+import org.apache.shardingsphere.governance.core.registry.UserNode;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.GlobalNode;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -84,7 +84,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     private void initConfigCenter() {
-        registryCenterRepository.persist(RegistryCenterNode.getUsersNode(), readYAML(USERS_YAML));
+        registryCenterRepository.persist(UserNode.getRootNode(), readYAML(USERS_YAML));
         registryCenterRepository.persist(GlobalNode.getPropsPath(), readYAML(PROPS_YAML));
         registryCenterRepository.persist(SchemaMetadataNode.getMetadataNodePath(), "db");
         registryCenterRepository.persist(SchemaMetadataNode.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
