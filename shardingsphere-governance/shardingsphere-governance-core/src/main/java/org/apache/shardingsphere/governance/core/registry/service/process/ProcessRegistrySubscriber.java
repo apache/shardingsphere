@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.service.process;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.invocation.ExecuteProcessUnitReportEvent;
@@ -56,8 +55,8 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        List<String> childrenKeys = repository.getChildrenKeys(RegistryCenterNode.getExecutionNodesPath());
-        Collection<String> processListData = childrenKeys.stream().map(key -> repository.get(RegistryCenterNode.getExecutionPath(key))).collect(Collectors.toList());
+        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getExecutionNodesPath());
+        Collection<String> processListData = childrenKeys.stream().map(key -> repository.get(ProcessNode.getExecutionPath(key))).collect(Collectors.toList());
         ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(processListData));
     }
     
@@ -69,7 +68,7 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
         ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
-        repository.persist(RegistryCenterNode.getExecutionPath(executeProcessContext.getExecutionID()), YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
+        repository.persist(ProcessNode.getExecutionPath(executeProcessContext.getExecutionID()), YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
     }
     
     /**
@@ -80,7 +79,7 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
         // TODO lock on the same jvm
-        String executionPath = RegistryCenterNode.getExecutionPath(event.getExecutionID());
+        String executionPath = ProcessNode.getExecutionPath(event.getExecutionID());
         YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
         ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
         for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
@@ -98,7 +97,7 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void reportExecuteProcess(final ExecuteProcessReportEvent event) {
-        String executionPath = RegistryCenterNode.getExecutionPath(event.getExecutionID());
+        String executionPath = ProcessNode.getExecutionPath(event.getExecutionID());
         YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
         for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
             if (unit.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {

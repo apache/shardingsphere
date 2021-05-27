@@ -15,49 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.governance.core.registry.service.process;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
- * Registry center node.
+ * Process node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryCenterNode {
+public final class ProcessNode {
     
     private static final String EXECUTION_NODE_NAME = "executionnodes";
     
-    private static final String USERS_NODE = "users";
-    
-    private static final String COMMA_SEPARATOR = ",";
-    
     /**
-     * Get users path.
+     * Get execution nodes path.
      *
-     * @return users path
+     * @return execution nodes path
      */
-    public static String getUsersNode() {
-        return getFullPath(USERS_NODE);
-    }
-    
-    private static String getFullPath(final String node) {
-        return Joiner.on("/").join("", node);
+    public static String getExecutionNodesPath() {
+        return Joiner.on("/").join("", EXECUTION_NODE_NAME);
     }
     
     /**
-     * Split schema name.
+     * Get execution path.
      *
-     * @param schemaNames schema names
-     * @return schema names
+     * @param executionId execution id
+     * @return execution path
      */
-    public static Collection<String> splitSchemaName(final String schemaNames) {
-        return Strings.isNullOrEmpty(schemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(schemaNames);
+    public static String getExecutionPath(final String executionId) {
+        return Joiner.on("/").join("", EXECUTION_NODE_NAME, executionId);
     }
 }
