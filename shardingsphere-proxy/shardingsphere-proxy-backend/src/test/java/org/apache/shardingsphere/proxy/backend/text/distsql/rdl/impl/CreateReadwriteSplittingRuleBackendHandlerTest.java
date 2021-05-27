@@ -143,7 +143,9 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
         when(dataSourceMap.containsKey(anyString())).thenReturn(true);
-        handler.execute("test", sqlStatement);
+        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
+        assertNotNull(responseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @Test(expected = ResourceNotExistedException.class)
