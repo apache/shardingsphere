@@ -60,7 +60,8 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load() {
         return isExisted()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(RegistryCenterNode.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(RegistryCenterNode.getGlobalRuleNode()), Collection.class))
+                : Collections.emptyList();
     }
     
     private boolean isExisted() {
