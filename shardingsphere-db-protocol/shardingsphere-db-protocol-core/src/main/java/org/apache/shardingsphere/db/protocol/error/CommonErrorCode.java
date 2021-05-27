@@ -40,8 +40,6 @@ public enum CommonErrorCode implements SQLErrorCode {
     READWRITE_SPLITTING_RULES_NOT_EXIST(1105, "C1105", "Readwrite splitting rules %s do not exist in schema %s."),
     
     ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST(1107, "C1107", "Data sources %s in replica query rule already exists."),
-
-    READWRITE_SPLITTING_RULE_EXIST(1108, "C1108", "Readwrite splitting rule already exists in schema %s."),
     
     INVALID_RESOURCE(1111, "C1111", "Can not add invalid resources %s."),
     
@@ -68,6 +66,8 @@ public enum CommonErrorCode implements SQLErrorCode {
     INVALID_ENCRYPTORS(1123, "C1123", "Invalid encryptors %s."),
 
     ENCRYPT_RULES_NOT_EXIST(1124, "C1124", "Encrypt rules %s do not exist in schema %s."),
+
+    DUPLICATE_RULE_NAMES(1125, "C1125", "Duplicate rule names %s in schema %s"),
 
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     

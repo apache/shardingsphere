@@ -20,14 +20,18 @@ package org.apache.shardingsphere.proxy.backend.exception;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
- * Readwrite-splitting rule create exists exception.
+ * Duplicate rule names exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReadwriteSplittingRuleCreateExistsException extends BackendException {
-    
-    private static final long serialVersionUID = -6902287715467426449L;
+public final class DuplicateRuleNamesException extends BackendException {
+
+    private static final long serialVersionUID = -1738699538105858939L;
 
     private final String schemaName;
+
+    private final Collection<String> ruleNames;
 }
