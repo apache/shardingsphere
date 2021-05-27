@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.registry.service.config.GlobalRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.config.GlobalRuleNode;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.GlobalNode;
 import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -53,7 +53,7 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
         if (!globalRuleConfigs.isEmpty() && (isOverwrite || !isExisted())) {
-            repository.persist(GlobalRuleNode.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
+            repository.persist(GlobalNode.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
         }
     }
     
@@ -61,12 +61,12 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load() {
         return isExisted()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(GlobalRuleNode.getGlobalRuleNode()), Collection.class))
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(GlobalNode.getGlobalRuleNode()), Collection.class))
                 : Collections.emptyList();
     }
     
     private boolean isExisted() {
-        return !Strings.isNullOrEmpty(repository.get(GlobalRuleNode.getGlobalRuleNode()));
+        return !Strings.isNullOrEmpty(repository.get(GlobalNode.getGlobalRuleNode()));
     }
     
     

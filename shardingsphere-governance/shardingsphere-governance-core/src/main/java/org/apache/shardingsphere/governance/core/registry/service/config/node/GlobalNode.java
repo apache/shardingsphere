@@ -15,18 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.service.config;
+package org.apache.shardingsphere.governance.core.registry.service.config.node;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
-import org.junit.Test;
+import com.google.common.base.Joiner;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class PropertiesNodeTest {
+/**
+ * Global node.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class GlobalNode {
     
-    @Test
-    public void assertGetPropsPath() {
-        assertThat(PropertiesNode.getPropsPath(), is("/props"));
+    private static final String RULE_NODE = "rules";
+    
+    private static final String PROPS_NODE = "props";
+    
+    /**
+     * Get global rule node path.
+     *
+     * @return global rule node path
+     */
+    public static String getGlobalRuleNode() {
+        return Joiner.on("/").join("", RULE_NODE);
+    }
+    
+    /**
+     * Get properties path.
+     *
+     * @return properties path
+     */
+    public static String getPropsPath() {
+        return Joiner.on("/").join("", PROPS_NODE);
     }
 }
