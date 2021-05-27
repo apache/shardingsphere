@@ -40,16 +40,13 @@ import java.util.stream.Collectors;
  */
 public final class DataSourceChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    private final RegistryCenterNode registryCenterNode;
-    
     public DataSourceChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        super(registryCenterRepository, new RegistryCenterNode().getAllDataSourcePaths(schemaNames));
-        registryCenterNode = new RegistryCenterNode();
+        super(registryCenterRepository, RegistryCenterNode.getAllDataSourcePaths(schemaNames));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        String schemaName = new RegistryCenterNode().getSchemaName(event.getKey());
+        String schemaName = RegistryCenterNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(schemaName) || !isDataSourceChangedEvent(schemaName, event.getKey()) 
                 || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
@@ -58,7 +55,7 @@ public final class DataSourceChangedListener extends PostGovernanceRepositoryEve
     }
     
     private boolean isDataSourceChangedEvent(final String schemaName, final String eventPath) {
-        return registryCenterNode.getMetadataDataSourcePath(schemaName).equals(eventPath);
+        return RegistryCenterNode.getMetadataDataSourcePath(schemaName).equals(eventPath);
     }
     
     @SuppressWarnings("unchecked")

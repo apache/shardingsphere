@@ -36,12 +36,12 @@ import java.util.Optional;
 public final class SchemaChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public SchemaChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        super(registryCenterRepository, new RegistryCenterNode().getAllMetadataSchemaPaths(schemaNames));
+        super(registryCenterRepository, RegistryCenterNode.getAllMetadataSchemaPaths(schemaNames));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        String schemaName = new RegistryCenterNode().getSchemaName(event.getKey());
+        String schemaName = RegistryCenterNode.getSchemaName(event.getKey());
         return Optional.of(new SchemaChangedEvent(schemaName, new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlSchema.class))));
     }
 }

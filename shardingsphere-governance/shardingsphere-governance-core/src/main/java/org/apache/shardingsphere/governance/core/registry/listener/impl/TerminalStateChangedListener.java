@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class TerminalStateChangedListener extends PostGovernanceRepositoryEventListener<StateEvent> {
     
     public TerminalStateChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singleton(new RegistryCenterNode().getProxyNodePath(GovernanceInstance.getInstance().getId())));
+        super(registryCenterRepository, Collections.singleton(RegistryCenterNode.getProxyNodePath(GovernanceInstance.getInstance().getId())));
     }
     
     @Override

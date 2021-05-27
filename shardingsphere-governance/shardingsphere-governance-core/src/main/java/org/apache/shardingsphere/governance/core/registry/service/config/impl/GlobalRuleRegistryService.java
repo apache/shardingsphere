@@ -45,17 +45,14 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     public GlobalRuleRegistryService(final RegistryCenterRepository repository) {
         this.repository = repository;
-        node = new RegistryCenterNode();
     }
     
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
         if (!globalRuleConfigs.isEmpty() && (isOverwrite || !isExisted())) {
-            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
+            repository.persist(RegistryCenterNode.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
         }
     }
     
@@ -63,11 +60,11 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load() {
         return isExisted()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(RegistryCenterNode.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
     }
     
     private boolean isExisted() {
-        return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
+        return !Strings.isNullOrEmpty(repository.get(RegistryCenterNode.getGlobalRuleNode()));
     }
     
     
@@ -94,7 +91,7 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     @Subscribe
     public void update(final GrantStatementEvent event) {
         if (!event.getUsers().isEmpty()) {
-            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(event.getUsers())));
+            repository.persist(RegistryCenterNode.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(event.getUsers())));
         }
     }
     

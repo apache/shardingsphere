@@ -34,21 +34,19 @@ public final class PropertiesRegistryService implements GlobalRegistryService<Pr
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node = new RegistryCenterNode();
-    
     @Override
     public void persist(final Properties props, final boolean isOverwrite) {
         if (!props.isEmpty() && (isOverwrite || !isExisted())) {
-            repository.persist(node.getPropsPath(), YamlEngine.marshal(props));
+            repository.persist(RegistryCenterNode.getPropsPath(), YamlEngine.marshal(props));
         }
     }
     
     private boolean isExisted() {
-        return !Strings.isNullOrEmpty(repository.get(node.getPropsPath()));
+        return !Strings.isNullOrEmpty(repository.get(RegistryCenterNode.getPropsPath()));
     }
     
     @Override
     public Properties load() {
-        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(node.getPropsPath()), Properties.class);
+        return Strings.isNullOrEmpty(repository.get(RegistryCenterNode.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(RegistryCenterNode.getPropsPath()), Properties.class);
     }
 }

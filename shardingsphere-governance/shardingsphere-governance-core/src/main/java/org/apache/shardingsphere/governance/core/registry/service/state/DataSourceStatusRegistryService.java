@@ -36,11 +36,8 @@ public final class DataSourceStatusRegistryService {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     public DataSourceStatusRegistryService(final RegistryCenterRepository repository) {
         this.repository = repository;
-        node = new RegistryCenterNode();
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -56,11 +53,11 @@ public final class DataSourceStatusRegistryService {
     }
     
     private Collection<String> loadDataSources(final String schemaName) {
-        return repository.getChildrenKeys(node.getSchemaPath(schemaName));
+        return repository.getChildrenKeys(RegistryCenterNode.getSchemaPath(schemaName));
     }
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
-        return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
+        return repository.get(RegistryCenterNode.getDataSourcePath(schemaName, dataSourceName));
     }
     
     /**
@@ -71,7 +68,7 @@ public final class DataSourceStatusRegistryService {
     @Subscribe
     public void update(final DataSourceDisabledEvent event) {
         String value = event.isDisabled() ? RegistryCenterNodeStatus.DISABLED.toString() : "";
-        repository.persist(node.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
+        repository.persist(RegistryCenterNode.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
     }
     
     /**
@@ -81,6 +78,6 @@ public final class DataSourceStatusRegistryService {
      */
     @Subscribe
     public void update(final PrimaryDataSourceEvent event) {
-        repository.persist(node.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
+        repository.persist(RegistryCenterNode.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
     }
 }

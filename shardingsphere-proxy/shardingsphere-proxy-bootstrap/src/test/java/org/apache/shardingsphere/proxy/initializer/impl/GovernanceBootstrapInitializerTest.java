@@ -82,12 +82,11 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     private void initConfigCenter() {
-        RegistryCenterNode node = new RegistryCenterNode();
-        registryCenterRepository.persist(node.getUsersNode(), readYAML(USERS_YAML));
-        registryCenterRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
-        registryCenterRepository.persist(node.getMetadataNodePath(), "db");
-        registryCenterRepository.persist(node.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
-        registryCenterRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
+        registryCenterRepository.persist(RegistryCenterNode.getUsersNode(), readYAML(USERS_YAML));
+        registryCenterRepository.persist(RegistryCenterNode.getPropsPath(), readYAML(PROPS_YAML));
+        registryCenterRepository.persist(RegistryCenterNode.getMetadataNodePath(), "db");
+        registryCenterRepository.persist(RegistryCenterNode.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
+        registryCenterRepository.persist(RegistryCenterNode.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})

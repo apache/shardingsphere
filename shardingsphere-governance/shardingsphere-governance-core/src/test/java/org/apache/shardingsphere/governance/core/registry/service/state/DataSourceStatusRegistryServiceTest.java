@@ -76,7 +76,7 @@ public final class DataSourceStatusRegistryServiceTest {
         String dataSourceName = "replica_ds_0";
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, isDisabled);
         dataSourceStatusRegistryService.update(dataSourceDisabledEvent);
-        verify(registryCenterRepository).persist(new RegistryCenterNode().getDataSourcePath(schemaName, dataSourceName), value);
+        verify(registryCenterRepository).persist(RegistryCenterNode.getDataSourcePath(schemaName, dataSourceName), value);
     }
     
     @Test
@@ -86,6 +86,6 @@ public final class DataSourceStatusRegistryServiceTest {
         String dataSourceName = "replica_ds_0";
         PrimaryDataSourceEvent primaryDataSourceEvent = new PrimaryDataSourceEvent(schemaName, groupName, dataSourceName);
         dataSourceStatusRegistryService.update(primaryDataSourceEvent);
-        verify(registryCenterRepository).persist(new RegistryCenterNode().getPrimaryDataSourcePath(schemaName, groupName), dataSourceName);
+        verify(registryCenterRepository).persist(RegistryCenterNode.getPrimaryDataSourcePath(schemaName, groupName), dataSourceName);
     }
 }

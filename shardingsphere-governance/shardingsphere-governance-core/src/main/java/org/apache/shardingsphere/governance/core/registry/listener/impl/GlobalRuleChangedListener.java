@@ -39,7 +39,7 @@ import java.util.Optional;
 public final class GlobalRuleChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public GlobalRuleChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singleton(new RegistryCenterNode().getGlobalRuleNode()));
+        super(registryCenterRepository, Collections.singleton(RegistryCenterNode.getGlobalRuleNode()));
     }
     
     @Override

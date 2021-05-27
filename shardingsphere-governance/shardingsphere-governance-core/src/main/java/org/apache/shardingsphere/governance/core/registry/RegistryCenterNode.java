@@ -20,6 +20,8 @@ package org.apache.shardingsphere.governance.core.registry;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Registry center node.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RegistryCenterNode {
     
     private static final String ROOT = "states";
@@ -73,7 +76,7 @@ public final class RegistryCenterNode {
      * @param instanceId instance id
      * @return proxy node path
      */
-    public String getProxyNodePath(final String instanceId) {
+    public static String getProxyNodePath(final String instanceId) {
         return Joiner.on("/").join("", ROOT, PROXY_NODES_NAME, instanceId);
     }
     
@@ -82,7 +85,7 @@ public final class RegistryCenterNode {
      *
      * @return data nodes path
      */
-    public String getDataNodesPath() {
+    public static String getDataNodesPath() {
         return Joiner.on("/").join("", ROOT, DATA_NODES_NAME);
     }
     
@@ -91,7 +94,7 @@ public final class RegistryCenterNode {
      *
      * @return primary nodes path
      */
-    public String getPrimaryNodesPath() {
+    public static String getPrimaryNodesPath() {
         return Joiner.on("/").join("", ROOT, PRIMARY_NODES_NAME);
     }
     
@@ -101,7 +104,7 @@ public final class RegistryCenterNode {
      * @param schemaName schema name
      * @return schema path
      */
-    public String getSchemaPath(final String schemaName) {
+    public static String getSchemaPath(final String schemaName) {
         return Joiner.on("/").join("", ROOT, DATA_NODES_NAME, schemaName);
     }
     
@@ -111,7 +114,7 @@ public final class RegistryCenterNode {
      * @param schemaName schema name
      * @return schema path
      */
-    public String getPrimaryNodesSchemaPath(final String schemaName) {
+    public static String getPrimaryNodesSchemaPath(final String schemaName) {
         return Joiner.on("/").join("", ROOT, PRIMARY_NODES_NAME, schemaName);
     }
     
@@ -122,7 +125,7 @@ public final class RegistryCenterNode {
      * @param dataSourceName data source name
      * @return data source path
      */
-    public String getDataSourcePath(final String schemaName, final String dataSourceName) {
+    public static String getDataSourcePath(final String schemaName, final String dataSourceName) {
         return Joiner.on("/").join("", ROOT, DATA_NODES_NAME, schemaName, dataSourceName);
     }
     
@@ -132,7 +135,7 @@ public final class RegistryCenterNode {
      * @param schemaName schema name
      * @return data source path
      */
-    public String getMetadataDataSourcePath(final String schemaName) {
+    public static String getMetadataDataSourcePath(final String schemaName) {
         return getFullMetadataPath(schemaName, DATA_SOURCES_NODE);
     }
     
@@ -143,7 +146,7 @@ public final class RegistryCenterNode {
      * @param groupName group name
      * @return data source path
      */
-    public String getPrimaryDataSourcePath(final String schemaName, final String groupName) {
+    public static String getPrimaryDataSourcePath(final String schemaName, final String groupName) {
         return Joiner.on("/").join("", ROOT, PRIMARY_NODES_NAME, schemaName, groupName);
     }
     
@@ -153,7 +156,7 @@ public final class RegistryCenterNode {
      * @param dataSourceNodeFullPath data source node full path
      * @return governance schema
      */
-    public Optional<GovernanceSchema> getGovernanceSchema(final String dataSourceNodeFullPath) {
+    public static Optional<GovernanceSchema> getGovernanceSchema(final String dataSourceNodeFullPath) {
         Pattern pattern = Pattern.compile(getDataNodesPath() + "/" + "(\\w+)/(\\S+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
@@ -165,7 +168,7 @@ public final class RegistryCenterNode {
      * @param dataSourceNodeFullPath data source node full path
      * @return primary nodes governance schema
      */
-    public Optional<GovernanceSchema> getPrimaryNodesGovernanceSchema(final String dataSourceNodeFullPath) {
+    public static Optional<GovernanceSchema> getPrimaryNodesGovernanceSchema(final String dataSourceNodeFullPath) {
         Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
@@ -177,7 +180,7 @@ public final class RegistryCenterNode {
      * @param dataSourceNodeFullPath data source node full path
      * @return is primary data source path
      */
-    public boolean isPrimaryDataSourcePath(final String dataSourceNodeFullPath) {
+    public static boolean isPrimaryDataSourcePath(final String dataSourceNodeFullPath) {
         Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find();
@@ -189,7 +192,7 @@ public final class RegistryCenterNode {
      * @param schemaNames collection of schema name
      * @return collection of schema path
      */
-    public Collection<String> getAllSchemaPaths(final Collection<String> schemaNames) {
+    public static Collection<String> getAllSchemaPaths(final Collection<String> schemaNames) {
         Collection<String> result = new ArrayList<>(schemaNames.size());
         for (String schemaName : schemaNames) {
             result.add(getSchemaPath(schemaName));
@@ -203,7 +206,7 @@ public final class RegistryCenterNode {
      *
      * @return proxy nodes path
      */
-    public String getProxyNodesPath() {
+    public static String getProxyNodesPath() {
         return Joiner.on("/").join("", ROOT, PROXY_NODES_NAME);
     }
     
@@ -212,7 +215,7 @@ public final class RegistryCenterNode {
      *
      * @return metadata node path
      */
-    public String getMetadataNodePath() {
+    public static String getMetadataNodePath() {
         return Joiner.on(PATH_SEPARATOR).join("", METADATA_NODE);
     }
     
@@ -222,7 +225,7 @@ public final class RegistryCenterNode {
      * @param schemaName schema name
      * @return schema name path
      */
-    public String getSchemaNamePath(final String schemaName) {
+    public static String getSchemaNamePath(final String schemaName) {
         return Joiner.on(PATH_SEPARATOR).join("", METADATA_NODE, schemaName);
     }
     
@@ -232,7 +235,7 @@ public final class RegistryCenterNode {
      * @param schemaName schema name
      * @return rule path
      */
-    public String getRulePath(final String schemaName) {
+    public static String getRulePath(final String schemaName) {
         return getFullMetadataPath(schemaName, RULES_NODE);
     }
     
@@ -242,7 +245,7 @@ public final class RegistryCenterNode {
      * @param schemaName schema name
      * @return schema path
      */
-    public String getMetadataSchemaPath(final String schemaName) {
+    public static String getMetadataSchemaPath(final String schemaName) {
         return getFullMetadataPath(schemaName, SCHEMA_NODE);
     }
 
@@ -251,7 +254,7 @@ public final class RegistryCenterNode {
      *
      * @return users path
      */
-    public String getUsersNode() {
+    public static String getUsersNode() {
         return getFullPath(USERS_NODE);
     }
     
@@ -260,7 +263,7 @@ public final class RegistryCenterNode {
      *
      * @return global rule node path
      */
-    public String getGlobalRuleNode() {
+    public static String getGlobalRuleNode() {
         return getFullPath(GLOBAL_RULE_NODE);
     }
     
@@ -269,7 +272,7 @@ public final class RegistryCenterNode {
      *
      * @return privilege node path
      */
-    public String getPrivilegeNodePath() {
+    public static String getPrivilegeNodePath() {
         return Joiner.on(PATH_SEPARATOR).join("", ROOT, PRIVILEGE_NODE);
     }
     
@@ -278,15 +281,15 @@ public final class RegistryCenterNode {
      *
      * @return properties path
      */
-    public String getPropsPath() {
+    public static String getPropsPath() {
         return getFullPath(PROPS_NODE);
     }
     
-    private String getFullMetadataPath(final String schemaName, final String node) {
+    private static String getFullMetadataPath(final String schemaName, final String node) {
         return Joiner.on(PATH_SEPARATOR).join("", METADATA_NODE, schemaName, node);
     }
     
-    private String getFullPath(final String node) {
+    private static String getFullPath(final String node) {
         return Joiner.on(PATH_SEPARATOR).join("", node);
     }
     
@@ -296,7 +299,7 @@ public final class RegistryCenterNode {
      * @param configurationNodeFullPath configuration node full path
      * @return schema name
      */
-    public String getSchemaName(final String configurationNodeFullPath) {
+    public static String getSchemaName(final String configurationNodeFullPath) {
         Pattern pattern = Pattern.compile(getMetadataNodePath() + "/(\\w+)" + "(/datasource|/rule)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configurationNodeFullPath);
         return matcher.find() ? matcher.group(1) : "";
@@ -308,7 +311,7 @@ public final class RegistryCenterNode {
      * @param schemaNames schema names
      * @return schema names
      */
-    public Collection<String> splitSchemaName(final String schemaNames) {
+    public static Collection<String> splitSchemaName(final String schemaNames) {
         return Strings.isNullOrEmpty(schemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(schemaNames);
     }
     
@@ -318,7 +321,7 @@ public final class RegistryCenterNode {
      * @param schemaNames schema names
      * @return config paths list
      */
-    public Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
+    public static Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
         Collection<String> result = new ArrayList<>(Collections.singleton(getMetadataNodePath()));
         for (String schemaName : schemaNames) {
             result.add(getRulePath(schemaName));
@@ -334,7 +337,7 @@ public final class RegistryCenterNode {
      * @param path path
      * @return cache path
      */
-    public String getCachePath(final String path) {
+    public static String getCachePath(final String path) {
         return Joiner.on(PATH_SEPARATOR).join(path, CACHE_NODE);
     }
     
@@ -344,8 +347,8 @@ public final class RegistryCenterNode {
      * @param schemaNames schema names
      * @return list of schema path
      */
-    public Collection<String> getAllMetadataSchemaPaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(this::getMetadataSchemaPath).collect(Collectors.toList());
+    public static Collection<String> getAllMetadataSchemaPaths(final Collection<String> schemaNames) {
+        return schemaNames.stream().map(RegistryCenterNode::getMetadataSchemaPath).collect(Collectors.toList());
     }
     
     /**
@@ -354,8 +357,8 @@ public final class RegistryCenterNode {
      * @param schemaNames schema names
      * @return list of rule path
      */
-    public Collection<String> getAllRulePaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(this::getRulePath).collect(Collectors.toList());
+    public static Collection<String> getAllRulePaths(final Collection<String> schemaNames) {
+        return schemaNames.stream().map(RegistryCenterNode::getRulePath).collect(Collectors.toList());
     }
     
     /**
@@ -364,8 +367,8 @@ public final class RegistryCenterNode {
      * @param schemaNames schema names
      * @return list of data source path
      */
-    public Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(this::getMetadataDataSourcePath).collect(Collectors.toList());
+    public static Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
+        return schemaNames.stream().map(RegistryCenterNode::getMetadataDataSourcePath).collect(Collectors.toList());
     }
     
     /**
@@ -373,7 +376,7 @@ public final class RegistryCenterNode {
      *
      * @return execution nodes path
      */
-    public String getExecutionNodesPath() {
+    public static String getExecutionNodesPath() {
         return Joiner.on("/").join("", EXECUTION_NODES_NAME);
     }
     
@@ -383,7 +386,7 @@ public final class RegistryCenterNode {
      * @param executionId execution id
      * @return execution path
      */
-    public String getExecutionPath(final String executionId) {
+    public static String getExecutionPath(final String executionId) {
         return Joiner.on("/").join("", EXECUTION_NODES_NAME, executionId);
     }
 }

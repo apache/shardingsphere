@@ -42,11 +42,8 @@ public final class SchemaRuleRegistryService implements SchemaBasedRegistryServi
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     public SchemaRuleRegistryService(final RegistryCenterRepository repository) {
         this.repository = repository;
-        node = new RegistryCenterNode();
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -59,7 +56,7 @@ public final class SchemaRuleRegistryService implements SchemaBasedRegistryServi
     
     @Override
     public void persist(final String schemaName, final Collection<RuleConfiguration> configs) {
-        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, configs)));
+        repository.persist(RegistryCenterNode.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, configs)));
     }
     
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
@@ -78,12 +75,13 @@ public final class SchemaRuleRegistryService implements SchemaBasedRegistryServi
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load(final String schemaName) {
         return isExisted(schemaName)
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), Collection.class)) : new LinkedList<>();
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(RegistryCenterNode.getRulePath(schemaName)), Collection.class))
+                : new LinkedList<>();
     }
     
     @Override
     public boolean isExisted(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(node.getRulePath(schemaName)));
+        return !Strings.isNullOrEmpty(repository.get(RegistryCenterNode.getRulePath(schemaName)));
     }
     
     /**

@@ -35,7 +35,7 @@ import java.util.Properties;
 public final class PropertiesChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public PropertiesChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singletonList(new RegistryCenterNode().getPropsPath()));
+        super(registryCenterRepository, Collections.singletonList(RegistryCenterNode.getPropsPath()));
     }
     
     @Override

@@ -33,8 +33,6 @@ public final class RegistryCacheManager {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     /**
      * Cache configuration.
      * 
@@ -74,6 +72,6 @@ public final class RegistryCacheManager {
     }
     
     private String getCachePath(final String path, final String cacheId) {
-        return Joiner.on(PATH_SEPARATOR).join(node.getCachePath(path), cacheId);
+        return Joiner.on(PATH_SEPARATOR).join(RegistryCenterNode.getCachePath(path), cacheId);
     }
 }

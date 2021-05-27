@@ -39,16 +39,13 @@ import java.util.Optional;
  */
 public final class RuleChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    private final RegistryCenterNode registryCenterNode;
-    
     public RuleChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        super(registryCenterRepository, new RegistryCenterNode().getAllRulePaths(schemaNames));
-        registryCenterNode = new RegistryCenterNode();
+        super(registryCenterRepository, RegistryCenterNode.getAllRulePaths(schemaNames));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        String schemaName = registryCenterNode.getSchemaName(event.getKey());
+        String schemaName = RegistryCenterNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(schemaName) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
@@ -61,12 +58,12 @@ public final class RuleChangedListener extends PostGovernanceRepositoryEventList
     }
     
     private boolean isRuleChangedEvent(final String schemaName, final String eventPath) {
-        String rulePath = registryCenterNode.getRulePath(schemaName);
+        String rulePath = RegistryCenterNode.getRulePath(schemaName);
         return rulePath.equals(eventPath);
     }
     
     private boolean isRuleCachedEvent(final String schemaName, final String key) {
-        String ruleCachePath = registryCenterNode.getCachePath(registryCenterNode.getRulePath(schemaName));
+        String ruleCachePath = RegistryCenterNode.getCachePath(RegistryCenterNode.getRulePath(schemaName));
         return ruleCachePath.equals(key);
     }
     

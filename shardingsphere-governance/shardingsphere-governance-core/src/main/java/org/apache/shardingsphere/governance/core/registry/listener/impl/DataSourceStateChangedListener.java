@@ -35,19 +35,16 @@ import java.util.Optional;
  */
 public final class DataSourceStateChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    private final RegistryCenterNode registryCenterNode;
-    
     public DataSourceStateChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        super(registryCenterRepository, new RegistryCenterNode().getAllSchemaPaths(schemaNames));
-        registryCenterNode = new RegistryCenterNode();
+        super(registryCenterRepository, RegistryCenterNode.getAllSchemaPaths(schemaNames));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        if (registryCenterNode.isPrimaryDataSourcePath(event.getKey())) {
-            return registryCenterNode.getPrimaryNodesGovernanceSchema(event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
+        if (RegistryCenterNode.isPrimaryDataSourcePath(event.getKey())) {
+            return RegistryCenterNode.getPrimaryNodesGovernanceSchema(event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
         }
-        return registryCenterNode.getGovernanceSchema(event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
+        return RegistryCenterNode.getGovernanceSchema(event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {

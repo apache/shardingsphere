@@ -41,14 +41,11 @@ public final class LockRegistryService {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     private final LockNode lockNode;
     
     public LockRegistryService(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
-        node = new RegistryCenterNode();
         lockNode = new LockNode();
         initLockNode();
     }
@@ -130,7 +127,7 @@ public final class LockRegistryService {
     }
     
     private boolean checkAck(final String lockName, final String ackValue) {
-        Collection<String> instanceIds = repository.getChildrenKeys(node.getProxyNodesPath());
+        Collection<String> instanceIds = repository.getChildrenKeys(RegistryCenterNode.getProxyNodesPath());
         for (int i = 0; i < CHECK_ACK_MAXIMUM; i++) {
             if (check(instanceIds, lockName, ackValue)) {
                 return true;

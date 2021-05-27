@@ -50,8 +50,6 @@ public final class RegistryCenter {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     @Getter
     private final DataSourceRegistryService dataSourceService;
     
@@ -76,7 +74,6 @@ public final class RegistryCenter {
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
-        node = new RegistryCenterNode();
         dataSourceService = new DataSourceRegistryService(repository);
         schemaRuleService = new SchemaRuleRegistryService(repository);
         globalRuleService = new GlobalRuleRegistryService(repository);
@@ -93,8 +90,8 @@ public final class RegistryCenter {
      * Initialize nodes.
      */
     public void initNodes() {
-        repository.persist(node.getDataNodesPath(), "");
-        repository.persist(node.getPrimaryNodesPath(), "");
+        repository.persist(RegistryCenterNode.getDataNodesPath(), "");
+        repository.persist(RegistryCenterNode.getPrimaryNodesPath(), "");
     }
     
     /**
@@ -120,9 +117,9 @@ public final class RegistryCenter {
     }
     
     private void persistSchemaName(final String schemaName) {
-        String schemaNamesStr = repository.get(node.getMetadataNodePath());
+        String schemaNamesStr = repository.get(RegistryCenterNode.getMetadataNodePath());
         if (Strings.isNullOrEmpty(schemaNamesStr)) {
-            repository.persist(node.getMetadataNodePath(), schemaName);
+            repository.persist(RegistryCenterNode.getMetadataNodePath(), schemaName);
             return;
         }
         Collection<String> schemaNames = Splitter.on(",").splitToList(schemaNamesStr);
@@ -131,13 +128,13 @@ public final class RegistryCenter {
         }
         Collection<String> newSchemaNames = new ArrayList<>(schemaNames);
         newSchemaNames.add(schemaName);
-        repository.persist(node.getMetadataNodePath(), String.join(",", newSchemaNames));
+        repository.persist(RegistryCenterNode.getMetadataNodePath(), String.join(",", newSchemaNames));
     }
     
     /**
      * Register instance online.
      */
     public void registerInstanceOnline() {
-        repository.persistEphemeral(node.getProxyNodePath(instanceId), "");
+        repository.persistEphemeral(RegistryCenterNode.getProxyNodePath(instanceId), "");
     }
 }

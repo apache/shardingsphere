@@ -40,17 +40,14 @@ public final class ScalingRegistrySubscriber {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     private final SchemaRuleRegistryService schemaRuleService;
     
     private final RegistryCacheManager registryCacheManager;
     
     public ScalingRegistrySubscriber(final RegistryCenterRepository repository, final SchemaRuleRegistryService schemaRuleService) {
         this.repository = repository;
-        node = new RegistryCenterNode();
         this.schemaRuleService = schemaRuleService;
-        registryCacheManager = new RegistryCacheManager(repository, node);
+        registryCacheManager = new RegistryCacheManager(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -62,13 +59,13 @@ public final class ScalingRegistrySubscriber {
     @Subscribe
     public void switchRuleConfiguration(final SwitchRuleConfigurationEvent event) {
         schemaRuleService.persist(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
-        registryCacheManager.deleteCache(node.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
+        registryCacheManager.deleteCache(RegistryCenterNode.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
     }
     
     @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigCacheId) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(registryCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
+                YamlEngine.unmarshal(registryCacheManager.loadCache(RegistryCenterNode.getRulePath(schemaName), ruleConfigCacheId), Collection.class));
     }
     
     /**
@@ -79,9 +76,9 @@ public final class ScalingRegistrySubscriber {
     @Subscribe
     public void cacheRuleConfiguration(final RuleConfigurationCachedEvent event) {
         StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(),
-                repository.get(node.getMetadataDataSourcePath(event.getSchemaName())),
-                repository.get(node.getRulePath(event.getSchemaName())),
-                registryCacheManager.loadCache(node.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
+                repository.get(RegistryCenterNode.getMetadataDataSourcePath(event.getSchemaName())),
+                repository.get(RegistryCenterNode.getRulePath(event.getSchemaName())),
+                registryCacheManager.loadCache(RegistryCenterNode.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
         ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
 }

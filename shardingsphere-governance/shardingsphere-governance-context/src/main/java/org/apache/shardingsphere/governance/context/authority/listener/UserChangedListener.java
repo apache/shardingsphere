@@ -36,7 +36,7 @@ import java.util.Optional;
 public final class UserChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public UserChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singletonList(new RegistryCenterNode().getUsersNode()));
+        super(registryCenterRepository, Collections.singletonList(RegistryCenterNode.getUsersNode()));
     }
     
     @Override

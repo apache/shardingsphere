@@ -44,11 +44,8 @@ public final class SchemaRegistryService {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-
     public SchemaRegistryService(final RegistryCenterRepository repository) {
         this.repository = repository;
-        node = new RegistryCenterNode();
         ShardingSphereEventBus.getInstance().register(this);
     }
 
@@ -59,7 +56,7 @@ public final class SchemaRegistryService {
      * @param schema schema to be persisted
      */
     public void persist(final String schemaName, final ShardingSphereSchema schema) {
-        repository.persist(node.getMetadataSchemaPath(schemaName), YamlEngine.marshal(new SchemaYamlSwapper().swapToYamlConfiguration(schema)));
+        repository.persist(RegistryCenterNode.getMetadataSchemaPath(schemaName), YamlEngine.marshal(new SchemaYamlSwapper().swapToYamlConfiguration(schema)));
     }
     
     /**
@@ -68,7 +65,7 @@ public final class SchemaRegistryService {
      * @param schemaName schema name to be deleted
      */
     public void delete(final String schemaName) {
-        repository.delete(node.getSchemaNamePath(schemaName));
+        repository.delete(RegistryCenterNode.getSchemaNamePath(schemaName));
     }
     
     /**
@@ -78,7 +75,7 @@ public final class SchemaRegistryService {
      * @return Loaded schema
      */
     public Optional<ShardingSphereSchema> load(final String schemaName) {
-        String path = repository.get(node.getMetadataSchemaPath(schemaName));
+        String path = repository.get(RegistryCenterNode.getMetadataSchemaPath(schemaName));
         return Strings.isNullOrEmpty(path) ? Optional.empty() : Optional.of(new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlSchema.class)));
     }
     
@@ -88,8 +85,8 @@ public final class SchemaRegistryService {
      * @return all schema names
      */
     public Collection<String> loadAllNames() {
-        String schemaNames = repository.get(node.getMetadataNodePath());
-        return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
+        String schemaNames = repository.get(RegistryCenterNode.getMetadataNodePath());
+        return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : RegistryCenterNode.splitSchemaName(schemaNames);
     }
     
     /**
@@ -99,11 +96,11 @@ public final class SchemaRegistryService {
      */
     @Subscribe
     public void update(final MetaDataCreatedEvent event) {
-        String schemaNames = repository.get(node.getMetadataNodePath());
+        String schemaNames = repository.get(RegistryCenterNode.getMetadataNodePath());
         Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
         if (!schemas.contains(event.getSchemaName())) {
             schemas.add(event.getSchemaName());
-            repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
+            repository.persist(RegistryCenterNode.getMetadataNodePath(), Joiner.on(",").join(schemas));
         }
     }
     
@@ -124,11 +121,11 @@ public final class SchemaRegistryService {
      */
     @Subscribe
     public void update(final MetaDataDroppedEvent event) {
-        String schemaNames = repository.get(node.getMetadataNodePath());
+        String schemaNames = repository.get(RegistryCenterNode.getMetadataNodePath());
         Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
         if (schemas.contains(event.getSchemaName())) {
             schemas.remove(event.getSchemaName());
-            repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
+            repository.persist(RegistryCenterNode.getMetadataNodePath(), Joiner.on(",").join(schemas));
         }
     }
 }
