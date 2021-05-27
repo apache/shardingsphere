@@ -15,31 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
+package org.apache.shardingsphere.infra.metadata.schema.builder.loader.util;
 
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
-
-import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * PostgreSQL alter index statement.
+ * Table meta data loader utility class.
  */
-@Setter
-@ToString
-public final class PostgreSQLAlterIndexStatement extends AlterIndexStatement implements PostgreSQLStatement {
-    
-    private IndexSegment renameIndex;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class TableMetaDataLoaderUtil {
     
     /**
-     * Get rename index segment.
-     *
-     * @return rename index segment
+     * Get logic index name.
+     * 
+     * @param actualIndexName actual index name
+     * @param actualTableName actual table name
+     * @return logic index
      */
-    public Optional<IndexSegment> getRenameIndex() {
-        return Optional.ofNullable(renameIndex);
+    public static String getLogicIndexName(final String actualIndexName, final String actualTableName) {
+        String indexNameSuffix = "_" + actualTableName;
+        return actualIndexName.endsWith(indexNameSuffix) ? actualIndexName.replace(indexNameSuffix, "") : actualIndexName;
     }
 }

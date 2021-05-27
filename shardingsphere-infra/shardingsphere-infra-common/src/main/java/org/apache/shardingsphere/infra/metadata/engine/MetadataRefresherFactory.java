@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterIndexStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateIndexStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateTableStatementSchemaRefresher;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropIndexS
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropViewStatementSchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -53,6 +55,7 @@ public final class MetadataRefresherFactory {
         REGISTRY.put(AlterTableStatement.class, new AlterTableStatementSchemaRefresher());
         REGISTRY.put(DropTableStatement.class, new DropTableStatementSchemaRefresher());
         REGISTRY.put(CreateIndexStatement.class, new CreateIndexStatementSchemaRefresher());
+        REGISTRY.put(AlterIndexStatement.class, new AlterIndexStatementSchemaRefresher());
         REGISTRY.put(DropIndexStatement.class, new DropIndexStatementSchemaRefresher());
         REGISTRY.put(CreateViewStatement.class, new CreateViewStatementSchemaRefresher());
         REGISTRY.put(DropViewStatement.class, new DropViewStatementSchemaRefresher());
