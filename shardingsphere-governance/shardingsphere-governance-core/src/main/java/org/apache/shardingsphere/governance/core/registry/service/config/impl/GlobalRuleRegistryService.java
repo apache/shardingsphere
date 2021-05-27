@@ -98,14 +98,14 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
         }
     }
     
-    private void refreshAuthorityRuleConfiguration(final AuthorityRuleConfiguration authRuleConfig, final Collection<ShardingSphereUser> createUsers) {
-        Collection<ShardingSphereUser> oldUsers = authRuleConfig.getUsers();
-        Collection<ShardingSphereUser> newUsers = oldUsers.isEmpty() ? createUsers : getChangedShardingSphereUsers(oldUsers, createUsers);
-        authRuleConfig.getUsers().removeAll(oldUsers);
-        authRuleConfig.getUsers().addAll(newUsers);
+    private void refreshAuthorityRuleConfiguration(final AuthorityRuleConfiguration authorityRuleConfig, final Collection<ShardingSphereUser> createdUsers) {
+        Collection<ShardingSphereUser> oldUsers = authorityRuleConfig.getUsers();
+        Collection<ShardingSphereUser> newUsers = oldUsers.isEmpty() ? createdUsers : getChangedUsers(oldUsers, createdUsers);
+        authorityRuleConfig.getUsers().removeAll(oldUsers);
+        authorityRuleConfig.getUsers().addAll(newUsers);
     }
     
-    private Collection<ShardingSphereUser> getChangedShardingSphereUsers(final Collection<ShardingSphereUser> oldUsers, final Collection<ShardingSphereUser> newUsers) {
+    private Collection<ShardingSphereUser> getChangedUsers(final Collection<ShardingSphereUser> oldUsers, final Collection<ShardingSphereUser> newUsers) {
         Collection<ShardingSphereUser> result = new LinkedList<>(oldUsers);
         ShardingSphereUsers shardingSphereUsers = new ShardingSphereUsers(oldUsers);
         for (ShardingSphereUser each : newUsers) {
