@@ -19,12 +19,12 @@ package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
+import org.apache.shardingsphere.governance.core.registry.cache.CacheNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -64,7 +64,7 @@ public final class RuleChangedListener extends PostGovernanceRepositoryEventList
     }
     
     private boolean isRuleCachedEvent(final String schemaName, final String key) {
-        String ruleCachePath = RegistryCenterNode.getCachePath(SchemaMetadataNode.getRulePath(schemaName));
+        String ruleCachePath = CacheNode.getCachePath(SchemaMetadataNode.getRulePath(schemaName));
         return ruleCachePath.equals(key);
     }
     

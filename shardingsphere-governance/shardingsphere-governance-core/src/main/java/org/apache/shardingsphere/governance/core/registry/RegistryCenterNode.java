@@ -40,8 +40,6 @@ public final class RegistryCenterNode {
     
     private static final String PATH_SEPARATOR = "/";
     
-    private static final String CACHE_NODE = "cache";
-    
     /**
      * Get users path.
      *
@@ -63,16 +61,6 @@ public final class RegistryCenterNode {
      */
     public static Collection<String> splitSchemaName(final String schemaNames) {
         return Strings.isNullOrEmpty(schemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(schemaNames);
-    }
-    
-    /**
-     * Get cache path.
-     *
-     * @param path path
-     * @return cache path
-     */
-    public static String getCachePath(final String path) {
-        return Joiner.on(PATH_SEPARATOR).join(path, CACHE_NODE);
     }
     
     /**
