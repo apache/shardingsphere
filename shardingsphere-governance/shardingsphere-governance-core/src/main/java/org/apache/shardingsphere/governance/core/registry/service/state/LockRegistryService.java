@@ -21,7 +21,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.governance.core.lock.node.LockAck;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
@@ -41,14 +40,11 @@ public final class LockRegistryService {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     private final LockNode lockNode;
     
     public LockRegistryService(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
-        node = new RegistryCenterNode();
         lockNode = new LockNode();
         initLockNode();
     }
@@ -130,7 +126,7 @@ public final class LockRegistryService {
     }
     
     private boolean checkAck(final String lockName, final String ackValue) {
-        Collection<String> instanceIds = repository.getChildrenKeys(node.getProxyNodesPath());
+        Collection<String> instanceIds = repository.getChildrenKeys(StatesNode.getProxyNodesPath());
         for (int i = 0; i < CHECK_ACK_MAXIMUM; i++) {
             if (check(instanceIds, lockName, ackValue)) {
                 return true;

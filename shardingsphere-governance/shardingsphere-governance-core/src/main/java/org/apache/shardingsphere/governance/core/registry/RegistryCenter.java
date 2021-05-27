@@ -25,11 +25,13 @@ import org.apache.shardingsphere.governance.core.registry.service.config.impl.Da
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.registry.service.process.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.service.scaling.ScalingRegistrySubscriber;
+import org.apache.shardingsphere.governance.core.registry.cache.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.service.schema.SchemaRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.state.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.state.LockRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -49,8 +51,6 @@ public final class RegistryCenter {
     private final String instanceId;
     
     private final RegistryCenterRepository repository;
-    
-    private final RegistryCenterNode node;
     
     @Getter
     private final DataSourceRegistryService dataSourceService;
@@ -76,7 +76,6 @@ public final class RegistryCenter {
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
-        node = new RegistryCenterNode();
         dataSourceService = new DataSourceRegistryService(repository);
         schemaRuleService = new SchemaRuleRegistryService(repository);
         globalRuleService = new GlobalRuleRegistryService(repository);
@@ -90,11 +89,11 @@ public final class RegistryCenter {
     }
     
     /**
-     * Initialize nodes.
+     * Initialize state nodes.
      */
-    public void initNodes() {
-        repository.persist(node.getDataNodesPath(), "");
-        repository.persist(node.getPrimaryNodesPath(), "");
+    public void initStateNodes() {
+        repository.persist(StatesNode.getDataNodesPath(), "");
+        repository.persist(StatesNode.getPrimaryNodesPath(), "");
     }
     
     /**
@@ -120,9 +119,9 @@ public final class RegistryCenter {
     }
     
     private void persistSchemaName(final String schemaName) {
-        String schemaNamesStr = repository.get(node.getMetadataNodePath());
+        String schemaNamesStr = repository.get(SchemaMetadataNode.getMetadataNodePath());
         if (Strings.isNullOrEmpty(schemaNamesStr)) {
-            repository.persist(node.getMetadataNodePath(), schemaName);
+            repository.persist(SchemaMetadataNode.getMetadataNodePath(), schemaName);
             return;
         }
         Collection<String> schemaNames = Splitter.on(",").splitToList(schemaNamesStr);
@@ -131,13 +130,13 @@ public final class RegistryCenter {
         }
         Collection<String> newSchemaNames = new ArrayList<>(schemaNames);
         newSchemaNames.add(schemaName);
-        repository.persist(node.getMetadataNodePath(), String.join(",", newSchemaNames));
+        repository.persist(SchemaMetadataNode.getMetadataNodePath(), String.join(",", newSchemaNames));
     }
     
     /**
      * Register instance online.
      */
     public void registerInstanceOnline() {
-        repository.persistEphemeral(node.getProxyNodePath(instanceId), "");
+        repository.persistEphemeral(StatesNode.getProxyNodePath(instanceId), "");
     }
 }

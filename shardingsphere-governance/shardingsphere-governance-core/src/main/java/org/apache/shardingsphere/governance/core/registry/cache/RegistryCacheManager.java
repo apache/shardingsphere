@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.governance.core.registry.cache;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +32,6 @@ public final class RegistryCacheManager {
     private static final String PATH_SEPARATOR = "/";
     
     private final RegistryCenterRepository repository;
-    
-    private final RegistryCenterNode node;
     
     /**
      * Cache configuration.
@@ -74,6 +72,6 @@ public final class RegistryCacheManager {
     }
     
     private String getCachePath(final String path, final String cacheId) {
-        return Joiner.on(PATH_SEPARATOR).join(node.getCachePath(path), cacheId);
+        return Joiner.on(PATH_SEPARATOR).join(CacheNode.getCachePath(path), cacheId);
     }
 }
