@@ -18,15 +18,12 @@
 package org.apache.shardingsphere.governance.core.registry.service.state;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,25 +34,15 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StatesNode {
     
-    private static final String STATES_NODE = "states";
+    private static final String ROOT_NODE_NAME = "states";
     
     private static final String PROXY_NODES_NAME = "proxynodes";
     
     private static final String DATA_NODES_NAME = "datanodes";
     
     private static final String PRIMARY_NODES_NAME = "primarynodes";
-    
-    private static final String EXECUTION_NODES_NAME = "executionnodes";
-    
-    private static final String USERS_NODE = "users";
 
-    private static final String PRIVILEGE_NODE = "privilegenode";
-    
-    private static final String COMMA_SEPARATOR = ",";
-    
-    private static final String PATH_SEPARATOR = "/";
-    
-    private static final String CACHE_NODE = "cache";
+    private static final String PRIVILEGE_NODE_NAME = "privilegenode";
     
     /**
      * Get proxy node path.
@@ -64,7 +51,7 @@ public final class StatesNode {
      * @return proxy node path
      */
     public static String getProxyNodePath(final String instanceId) {
-        return Joiner.on("/").join("", STATES_NODE, PROXY_NODES_NAME, instanceId);
+        return Joiner.on("/").join("", ROOT_NODE_NAME, PROXY_NODES_NAME, instanceId);
     }
     
     /**
@@ -73,7 +60,7 @@ public final class StatesNode {
      * @return data nodes path
      */
     public static String getDataNodesPath() {
-        return Joiner.on("/").join("", STATES_NODE, DATA_NODES_NAME);
+        return Joiner.on("/").join("", ROOT_NODE_NAME, DATA_NODES_NAME);
     }
     
     /**
@@ -82,7 +69,7 @@ public final class StatesNode {
      * @return primary nodes path
      */
     public static String getPrimaryNodesPath() {
-        return Joiner.on("/").join("", STATES_NODE, PRIMARY_NODES_NAME);
+        return Joiner.on("/").join("", ROOT_NODE_NAME, PRIMARY_NODES_NAME);
     }
     
     /**
@@ -92,7 +79,7 @@ public final class StatesNode {
      * @return schema path
      */
     public static String getSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", STATES_NODE, DATA_NODES_NAME, schemaName);
+        return Joiner.on("/").join("", ROOT_NODE_NAME, DATA_NODES_NAME, schemaName);
     }
     
     /**
@@ -102,7 +89,7 @@ public final class StatesNode {
      * @return schema path
      */
     public static String getPrimaryNodesSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", STATES_NODE, PRIMARY_NODES_NAME, schemaName);
+        return Joiner.on("/").join("", ROOT_NODE_NAME, PRIMARY_NODES_NAME, schemaName);
     }
     
     /**
@@ -113,7 +100,7 @@ public final class StatesNode {
      * @return data source path
      */
     public static String getDataSourcePath(final String schemaName, final String dataSourceName) {
-        return Joiner.on("/").join("", STATES_NODE, DATA_NODES_NAME, schemaName, dataSourceName);
+        return Joiner.on("/").join("", ROOT_NODE_NAME, DATA_NODES_NAME, schemaName, dataSourceName);
     }
     
     /**
@@ -124,7 +111,7 @@ public final class StatesNode {
      * @return data source path
      */
     public static String getPrimaryDataSourcePath(final String schemaName, final String groupName) {
-        return Joiner.on("/").join("", STATES_NODE, PRIMARY_NODES_NAME, schemaName, groupName);
+        return Joiner.on("/").join("", ROOT_NODE_NAME, PRIMARY_NODES_NAME, schemaName, groupName);
     }
     
     /**
@@ -184,16 +171,7 @@ public final class StatesNode {
      * @return proxy nodes path
      */
     public static String getProxyNodesPath() {
-        return Joiner.on("/").join("", STATES_NODE, PROXY_NODES_NAME);
-    }
-
-    /**
-     * Get users path.
-     *
-     * @return users path
-     */
-    public static String getUsersNode() {
-        return getFullPath(USERS_NODE);
+        return Joiner.on("/").join("", ROOT_NODE_NAME, PROXY_NODES_NAME);
     }
     
     /**
@@ -202,49 +180,6 @@ public final class StatesNode {
      * @return privilege node path
      */
     public static String getPrivilegeNodePath() {
-        return Joiner.on(PATH_SEPARATOR).join("", STATES_NODE, PRIVILEGE_NODE);
-    }
-    
-    private static String getFullPath(final String node) {
-        return Joiner.on(PATH_SEPARATOR).join("", node);
-    }
-    
-    /**
-     * Split schema name.
-     *
-     * @param schemaNames schema names
-     * @return schema names
-     */
-    public static Collection<String> splitSchemaName(final String schemaNames) {
-        return Strings.isNullOrEmpty(schemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(schemaNames);
-    }
-    
-    /**
-     * Get cache path.
-     *
-     * @param path path
-     * @return cache path
-     */
-    public static String getCachePath(final String path) {
-        return Joiner.on(PATH_SEPARATOR).join(path, CACHE_NODE);
-    }
-    
-    /**
-     * Get execution nodes path.
-     *
-     * @return execution nodes path
-     */
-    public static String getExecutionNodesPath() {
-        return Joiner.on("/").join("", EXECUTION_NODES_NAME);
-    }
-    
-    /**
-     * Get execution path.
-     *
-     * @param executionId execution id
-     * @return execution path
-     */
-    public static String getExecutionPath(final String executionId) {
-        return Joiner.on("/").join("", EXECUTION_NODES_NAME, executionId);
+        return Joiner.on("/").join("", ROOT_NODE_NAME, PRIVILEGE_NODE_NAME);
     }
 }
