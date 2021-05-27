@@ -47,9 +47,7 @@ public final class RegistryCenterNode {
     private static final String SCHEMA_NODE = "schema";
     
     private static final String USERS_NODE = "users";
-
-    private static final String GLOBAL_RULE_NODE = "rules";
-
+    
     private static final String COMMA_SEPARATOR = ",";
     
     private static final String PATH_SEPARATOR = "/";
@@ -112,15 +110,6 @@ public final class RegistryCenterNode {
      */
     public static String getUsersNode() {
         return getFullPath(USERS_NODE);
-    }
-    
-    /**
-     * Get global rule node path.
-     *
-     * @return global rule node path
-     */
-    public static String getGlobalRuleNode() {
-        return getFullPath(GLOBAL_RULE_NODE);
     }
     
     private static String getFullMetadataPath(final String schemaName, final String node) {

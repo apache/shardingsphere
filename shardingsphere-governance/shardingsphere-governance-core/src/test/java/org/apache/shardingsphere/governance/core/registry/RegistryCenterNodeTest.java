@@ -40,11 +40,6 @@ public final class RegistryCenterNodeTest {
     }
     
     @Test
-    public void assertGetGlobalRuleNodePath() {
-        assertThat(RegistryCenterNode.getGlobalRuleNode(), is("/rules"));
-    }
-    
-    @Test
     public void assertGetSchemaName() {
         assertThat(RegistryCenterNode.getSchemaName("/metadata/logic_db/rules"), is(DefaultSchema.LOGIC_NAME));
     }
