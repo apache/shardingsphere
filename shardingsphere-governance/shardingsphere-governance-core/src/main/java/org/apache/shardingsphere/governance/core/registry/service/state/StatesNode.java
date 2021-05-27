@@ -34,15 +34,15 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StatesNode {
     
-    private static final String ROOT_NODE_NAME = "states";
+    private static final String ROOT_NODE = "states";
     
-    private static final String PROXY_NODES_NAME = "proxynodes";
+    private static final String PROXY_NODE = "proxynodes";
     
-    private static final String DATA_NODES_NAME = "datanodes";
+    private static final String DATA_NODE = "datanodes";
     
-    private static final String PRIMARY_NODES_NAME = "primarynodes";
+    private static final String PRIMARY_NODE = "primarynodes";
     
-    private static final String PRIVILEGE_NODE_NAME = "privilegenode";
+    private static final String PRIVILEGE_NODE = "privilegenode";
     
     /**
      * Get proxy node path.
@@ -51,7 +51,7 @@ public final class StatesNode {
      * @return proxy node path
      */
     public static String getProxyNodePath(final String instanceId) {
-        return Joiner.on("/").join("", ROOT_NODE_NAME, PROXY_NODES_NAME, instanceId);
+        return Joiner.on("/").join("", ROOT_NODE, PROXY_NODE, instanceId);
     }
     
     /**
@@ -60,7 +60,7 @@ public final class StatesNode {
      * @return data nodes path
      */
     public static String getDataNodesPath() {
-        return Joiner.on("/").join("", ROOT_NODE_NAME, DATA_NODES_NAME);
+        return Joiner.on("/").join("", ROOT_NODE, DATA_NODE);
     }
     
     /**
@@ -69,7 +69,7 @@ public final class StatesNode {
      * @return primary nodes path
      */
     public static String getPrimaryNodesPath() {
-        return Joiner.on("/").join("", ROOT_NODE_NAME, PRIMARY_NODES_NAME);
+        return Joiner.on("/").join("", ROOT_NODE, PRIMARY_NODE);
     }
     
     /**
@@ -79,7 +79,7 @@ public final class StatesNode {
      * @return schema path
      */
     public static String getSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", ROOT_NODE_NAME, DATA_NODES_NAME, schemaName);
+        return Joiner.on("/").join("", ROOT_NODE, DATA_NODE, schemaName);
     }
     
     /**
@@ -89,7 +89,7 @@ public final class StatesNode {
      * @return schema path
      */
     public static String getPrimaryNodesSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", ROOT_NODE_NAME, PRIMARY_NODES_NAME, schemaName);
+        return Joiner.on("/").join("", ROOT_NODE, PRIMARY_NODE, schemaName);
     }
     
     /**
@@ -100,7 +100,7 @@ public final class StatesNode {
      * @return data source path
      */
     public static String getDataSourcePath(final String schemaName, final String dataSourceName) {
-        return Joiner.on("/").join("", ROOT_NODE_NAME, DATA_NODES_NAME, schemaName, dataSourceName);
+        return Joiner.on("/").join("", ROOT_NODE, DATA_NODE, schemaName, dataSourceName);
     }
     
     /**
@@ -111,7 +111,7 @@ public final class StatesNode {
      * @return data source path
      */
     public static String getPrimaryDataSourcePath(final String schemaName, final String groupName) {
-        return Joiner.on("/").join("", ROOT_NODE_NAME, PRIMARY_NODES_NAME, schemaName, groupName);
+        return Joiner.on("/").join("", ROOT_NODE, PRIMARY_NODE, schemaName, groupName);
     }
     
     /**
@@ -171,7 +171,7 @@ public final class StatesNode {
      * @return proxy nodes path
      */
     public static String getProxyNodesPath() {
-        return Joiner.on("/").join("", ROOT_NODE_NAME, PROXY_NODES_NAME);
+        return Joiner.on("/").join("", ROOT_NODE, PROXY_NODE);
     }
     
     /**
@@ -180,6 +180,6 @@ public final class StatesNode {
      * @return privilege node path
      */
     public static String getPrivilegeNodePath() {
-        return Joiner.on("/").join("", ROOT_NODE_NAME, PRIVILEGE_NODE_NAME);
+        return Joiner.on("/").join("", ROOT_NODE, PRIVILEGE_NODE);
     }
 }
