@@ -40,11 +40,7 @@ showDatabaseDiscoveryRules
     ;
 
 showEncryptRules
-    : SHOW ENCRYPT RULES (FROM schemaName)?
-    ;
-
-showEncryptTableRule
-    : SHOW ENCRYPT TABLE RULE tableName (FROM schemaName)?
+    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
     ;
 
 showShardingTableRules
