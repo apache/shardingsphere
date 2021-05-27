@@ -22,12 +22,10 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -37,14 +35,6 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RegistryCenterNode {
-    
-    private static final String STATES_NODE = "states";
-    
-    private static final String PROXY_NODES_NAME = "proxynodes";
-    
-    private static final String DATA_NODES_NAME = "datanodes";
-    
-    private static final String PRIMARY_NODES_NAME = "primarynodes";
     
     private static final String EXECUTION_NODES_NAME = "executionnodes";
     
@@ -60,8 +50,6 @@ public final class RegistryCenterNode {
 
     private static final String GLOBAL_RULE_NODE = "rules";
 
-    private static final String PRIVILEGE_NODE = "privilegenode";
-    
     private static final String PROPS_NODE = "props";
     
     private static final String COMMA_SEPARATOR = ",";
@@ -71,65 +59,6 @@ public final class RegistryCenterNode {
     private static final String CACHE_NODE = "cache";
     
     /**
-     * Get proxy node path.
-     *
-     * @param instanceId instance id
-     * @return proxy node path
-     */
-    public static String getProxyNodePath(final String instanceId) {
-        return Joiner.on("/").join("", STATES_NODE, PROXY_NODES_NAME, instanceId);
-    }
-    
-    /**
-     * Get data nodes path.
-     *
-     * @return data nodes path
-     */
-    public static String getDataNodesPath() {
-        return Joiner.on("/").join("", STATES_NODE, DATA_NODES_NAME);
-    }
-    
-    /**
-     * Get primary nodes path.
-     *
-     * @return primary nodes path
-     */
-    public static String getPrimaryNodesPath() {
-        return Joiner.on("/").join("", STATES_NODE, PRIMARY_NODES_NAME);
-    }
-    
-    /**
-     * Get schema path.
-     * 
-     * @param schemaName schema name
-     * @return schema path
-     */
-    public static String getSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", STATES_NODE, DATA_NODES_NAME, schemaName);
-    }
-    
-    /**
-     * Get primary nodes schema path.
-     *
-     * @param schemaName schema name
-     * @return schema path
-     */
-    public static String getPrimaryNodesSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", STATES_NODE, PRIMARY_NODES_NAME, schemaName);
-    }
-    
-    /**
-     * Get data source path.
-     * 
-     * @param schemaName schema name
-     * @param dataSourceName data source name
-     * @return data source path
-     */
-    public static String getDataSourcePath(final String schemaName, final String dataSourceName) {
-        return Joiner.on("/").join("", STATES_NODE, DATA_NODES_NAME, schemaName, dataSourceName);
-    }
-    
-    /**
      * Get metadata data source path.
      *
      * @param schemaName schema name
@@ -137,77 +66,6 @@ public final class RegistryCenterNode {
      */
     public static String getMetadataDataSourcePath(final String schemaName) {
         return getFullMetadataPath(schemaName, DATA_SOURCES_NODE);
-    }
-    
-    /**
-     * Get primary data source path.
-     *
-     * @param schemaName schema name
-     * @param groupName group name
-     * @return data source path
-     */
-    public static String getPrimaryDataSourcePath(final String schemaName, final String groupName) {
-        return Joiner.on("/").join("", STATES_NODE, PRIMARY_NODES_NAME, schemaName, groupName);
-    }
-    
-    /**
-     * Get governance schema.
-     *
-     * @param dataSourceNodeFullPath data source node full path
-     * @return governance schema
-     */
-    public static Optional<GovernanceSchema> getGovernanceSchema(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getDataNodesPath() + "/" + "(\\w+)/(\\S+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
-    }
-    
-    /**
-     * Get primary nodes governance schema.
-     *
-     * @param dataSourceNodeFullPath data source node full path
-     * @return primary nodes governance schema
-     */
-    public static Optional<GovernanceSchema> getPrimaryNodesGovernanceSchema(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
-    }
-    
-    /**
-     * Is primary data source path.
-     *
-     * @param dataSourceNodeFullPath data source node full path
-     * @return is primary data source path
-     */
-    public static boolean isPrimaryDataSourcePath(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
-        return matcher.find();
-    }
-    
-    /**
-     * Get all schema path.
-     * 
-     * @param schemaNames collection of schema name
-     * @return collection of schema path
-     */
-    public static Collection<String> getAllSchemaPaths(final Collection<String> schemaNames) {
-        Collection<String> result = new ArrayList<>(schemaNames.size());
-        for (String schemaName : schemaNames) {
-            result.add(getSchemaPath(schemaName));
-            result.add(getPrimaryNodesSchemaPath(schemaName));
-        }
-        return result;
-    }
-    
-    /**
-     * Get proxy nodes path.
-     *
-     * @return proxy nodes path
-     */
-    public static String getProxyNodesPath() {
-        return Joiner.on("/").join("", STATES_NODE, PROXY_NODES_NAME);
     }
     
     /**
@@ -265,15 +123,6 @@ public final class RegistryCenterNode {
      */
     public static String getGlobalRuleNode() {
         return getFullPath(GLOBAL_RULE_NODE);
-    }
-    
-    /**
-     * Get privilege node path.
-     *
-     * @return privilege node path
-     */
-    public static String getPrivilegeNodePath() {
-        return Joiner.on(PATH_SEPARATOR).join("", STATES_NODE, PRIVILEGE_NODE);
     }
     
     /**

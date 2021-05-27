@@ -30,6 +30,7 @@ import org.apache.shardingsphere.governance.core.registry.service.scaling.Scalin
 import org.apache.shardingsphere.governance.core.registry.service.schema.SchemaRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.state.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.state.LockRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -87,11 +88,11 @@ public final class RegistryCenter {
     }
     
     /**
-     * Initialize nodes.
+     * Initialize state nodes.
      */
-    public void initNodes() {
-        repository.persist(RegistryCenterNode.getDataNodesPath(), "");
-        repository.persist(RegistryCenterNode.getPrimaryNodesPath(), "");
+    public void initStateNodes() {
+        repository.persist(StatesNode.getDataNodesPath(), "");
+        repository.persist(StatesNode.getPrimaryNodesPath(), "");
     }
     
     /**
@@ -135,6 +136,6 @@ public final class RegistryCenter {
      * Register instance online.
      */
     public void registerInstanceOnline() {
-        repository.persistEphemeral(RegistryCenterNode.getProxyNodePath(instanceId), "");
+        repository.persistEphemeral(StatesNode.getProxyNodePath(instanceId), "");
     }
 }

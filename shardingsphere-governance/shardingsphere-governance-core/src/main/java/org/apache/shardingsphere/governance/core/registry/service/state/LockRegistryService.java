@@ -127,7 +127,7 @@ public final class LockRegistryService {
     }
     
     private boolean checkAck(final String lockName, final String ackValue) {
-        Collection<String> instanceIds = repository.getChildrenKeys(RegistryCenterNode.getProxyNodesPath());
+        Collection<String> instanceIds = repository.getChildrenKeys(StatesNode.getProxyNodesPath());
         for (int i = 0; i < CHECK_ACK_MAXIMUM; i++) {
             if (check(instanceIds, lockName, ackValue)) {
                 return true;

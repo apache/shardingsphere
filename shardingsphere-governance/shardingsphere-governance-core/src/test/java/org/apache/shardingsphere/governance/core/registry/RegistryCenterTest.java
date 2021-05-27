@@ -92,7 +92,7 @@ public final class RegistryCenterTest {
     
     @Test
     public void assertInitNodes() {
-        registryCenter.initNodes();
+        registryCenter.initStateNodes();
         verify(registryCenterRepository).persist("/states/datanodes", "");
         verify(registryCenterRepository).persist("/states/primarynodes", "");
     }

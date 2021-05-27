@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.PrimaryStateChangedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -36,15 +36,15 @@ import java.util.Optional;
 public final class DataSourceStateChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public DataSourceStateChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        super(registryCenterRepository, RegistryCenterNode.getAllSchemaPaths(schemaNames));
+        super(registryCenterRepository, StatesNode.getAllSchemaPaths(schemaNames));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        if (RegistryCenterNode.isPrimaryDataSourcePath(event.getKey())) {
-            return RegistryCenterNode.getPrimaryNodesGovernanceSchema(event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
+        if (StatesNode.isPrimaryDataSourcePath(event.getKey())) {
+            return StatesNode.getPrimaryNodesGovernanceSchema(event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
         }
-        return RegistryCenterNode.getGovernanceSchema(event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
+        return StatesNode.getGovernanceSchema(event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {

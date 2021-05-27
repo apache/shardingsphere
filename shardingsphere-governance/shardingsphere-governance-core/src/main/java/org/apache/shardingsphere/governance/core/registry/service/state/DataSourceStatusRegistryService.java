@@ -53,11 +53,11 @@ public final class DataSourceStatusRegistryService {
     }
     
     private Collection<String> loadDataSources(final String schemaName) {
-        return repository.getChildrenKeys(RegistryCenterNode.getSchemaPath(schemaName));
+        return repository.getChildrenKeys(StatesNode.getSchemaPath(schemaName));
     }
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
-        return repository.get(RegistryCenterNode.getDataSourcePath(schemaName, dataSourceName));
+        return repository.get(StatesNode.getDataSourcePath(schemaName, dataSourceName));
     }
     
     /**
@@ -68,7 +68,7 @@ public final class DataSourceStatusRegistryService {
     @Subscribe
     public void update(final DataSourceDisabledEvent event) {
         String value = event.isDisabled() ? RegistryCenterNodeStatus.DISABLED.toString() : "";
-        repository.persist(RegistryCenterNode.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
+        repository.persist(StatesNode.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
     }
     
     /**
@@ -78,6 +78,6 @@ public final class DataSourceStatusRegistryService {
      */
     @Subscribe
     public void update(final PrimaryDataSourceEvent event) {
-        repository.persist(RegistryCenterNode.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
+        repository.persist(StatesNode.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
     }
 }

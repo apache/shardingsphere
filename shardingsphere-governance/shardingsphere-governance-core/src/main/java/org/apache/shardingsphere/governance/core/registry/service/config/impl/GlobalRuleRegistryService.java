@@ -23,6 +23,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.service.config.GlobalRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
@@ -92,7 +93,7 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     @Subscribe
     public void update(final GrantStatementEvent event) {
         if (!event.getUsers().isEmpty()) {
-            repository.persist(RegistryCenterNode.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(event.getUsers())));
+            repository.persist(StatesNode.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(event.getUsers())));
         }
     }
     
