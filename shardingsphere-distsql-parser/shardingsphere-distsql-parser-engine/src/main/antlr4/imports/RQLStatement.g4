@@ -47,10 +47,18 @@ showEncryptRules
     : SHOW ENCRYPT RULES (FROM schemaName)?
     ;
 
+showEncryptTableRule
+    : SHOW ENCRYPT TABLE RULE tableName (FROM schemaName)?
+    ;
+
 ruleType
     : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
     ;
 
 schemaName
+    : IDENTIFIER
+    ;
+
+tableName
     : IDENTIFIER
     ;
