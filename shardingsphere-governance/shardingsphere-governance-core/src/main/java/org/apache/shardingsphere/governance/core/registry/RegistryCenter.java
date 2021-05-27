@@ -25,6 +25,7 @@ import org.apache.shardingsphere.governance.core.registry.service.config.impl.Da
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.registry.service.process.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.service.scaling.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.service.schema.SchemaRegistryService;
@@ -118,9 +119,9 @@ public final class RegistryCenter {
     }
     
     private void persistSchemaName(final String schemaName) {
-        String schemaNamesStr = repository.get(RegistryCenterNode.getMetadataNodePath());
+        String schemaNamesStr = repository.get(SchemaMetadataNode.getMetadataNodePath());
         if (Strings.isNullOrEmpty(schemaNamesStr)) {
-            repository.persist(RegistryCenterNode.getMetadataNodePath(), schemaName);
+            repository.persist(SchemaMetadataNode.getMetadataNodePath(), schemaName);
             return;
         }
         Collection<String> schemaNames = Splitter.on(",").splitToList(schemaNamesStr);
@@ -129,7 +130,7 @@ public final class RegistryCenter {
         }
         Collection<String> newSchemaNames = new ArrayList<>(schemaNames);
         newSchemaNames.add(schemaName);
-        repository.persist(RegistryCenterNode.getMetadataNodePath(), String.join(",", newSchemaNames));
+        repository.persist(SchemaMetadataNode.getMetadataNodePath(), String.join(",", newSchemaNames));
     }
     
     /**

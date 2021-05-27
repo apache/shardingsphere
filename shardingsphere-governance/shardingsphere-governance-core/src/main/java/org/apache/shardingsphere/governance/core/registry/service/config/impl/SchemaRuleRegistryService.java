@@ -19,11 +19,11 @@ package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.SchemaBasedRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -56,7 +56,7 @@ public final class SchemaRuleRegistryService implements SchemaBasedRegistryServi
     
     @Override
     public void persist(final String schemaName, final Collection<RuleConfiguration> configs) {
-        repository.persist(RegistryCenterNode.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, configs)));
+        repository.persist(SchemaMetadataNode.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, configs)));
     }
     
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
@@ -75,13 +75,13 @@ public final class SchemaRuleRegistryService implements SchemaBasedRegistryServi
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load(final String schemaName) {
         return isExisted(schemaName)
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(RegistryCenterNode.getRulePath(schemaName)), Collection.class))
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(SchemaMetadataNode.getRulePath(schemaName)), Collection.class))
                 : new LinkedList<>();
     }
     
     @Override
     public boolean isExisted(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(RegistryCenterNode.getRulePath(schemaName)));
+        return !Strings.isNullOrEmpty(repository.get(SchemaMetadataNode.getRulePath(schemaName)));
     }
     
     /**

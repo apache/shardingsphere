@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.service.config.node;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -31,28 +29,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Registry center node.
+ * Schema metadata node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaRuleNode {
+public final class SchemaMetadataNode {
     
-    private static final String EXECUTION_NODES_NAME = "executionnodes";
+    private static final String ROOT_NODE = "metadata";
     
-    private static final String METADATA_NODE = "metadata";
+    private static final String DATA_SOURCE_NODE = "dataSources";
     
-    private static final String DATA_SOURCES_NODE = "dataSources";
-    
-    private static final String RULES_NODE = "rules";
+    private static final String RULE_NODE = "rules";
     
     private static final String SCHEMA_NODE = "schema";
-    
-    private static final String USERS_NODE = "users";
-    
-    private static final String COMMA_SEPARATOR = ",";
-    
-    private static final String PATH_SEPARATOR = "/";
-    
-    private static final String CACHE_NODE = "cache";
     
     /**
      * Get metadata data source path.
@@ -61,7 +49,7 @@ public final class SchemaRuleNode {
      * @return data source path
      */
     public static String getMetadataDataSourcePath(final String schemaName) {
-        return getFullMetadataPath(schemaName, DATA_SOURCES_NODE);
+        return getFullMetadataPath(schemaName, DATA_SOURCE_NODE);
     }
     
     /**
@@ -70,7 +58,7 @@ public final class SchemaRuleNode {
      * @return metadata node path
      */
     public static String getMetadataNodePath() {
-        return Joiner.on(PATH_SEPARATOR).join("", METADATA_NODE);
+        return Joiner.on("/").join("", ROOT_NODE);
     }
     
     /**
@@ -80,7 +68,7 @@ public final class SchemaRuleNode {
      * @return schema name path
      */
     public static String getSchemaNamePath(final String schemaName) {
-        return Joiner.on(PATH_SEPARATOR).join("", METADATA_NODE, schemaName);
+        return Joiner.on("/").join("", ROOT_NODE, schemaName);
     }
     
     /**
@@ -90,7 +78,7 @@ public final class SchemaRuleNode {
      * @return rule path
      */
     public static String getRulePath(final String schemaName) {
-        return getFullMetadataPath(schemaName, RULES_NODE);
+        return getFullMetadataPath(schemaName, RULE_NODE);
     }
     
     /**
@@ -102,22 +90,9 @@ public final class SchemaRuleNode {
     public static String getMetadataSchemaPath(final String schemaName) {
         return getFullMetadataPath(schemaName, SCHEMA_NODE);
     }
-
-    /**
-     * Get users path.
-     *
-     * @return users path
-     */
-    public static String getUsersNode() {
-        return getFullPath(USERS_NODE);
-    }
     
     private static String getFullMetadataPath(final String schemaName, final String node) {
-        return Joiner.on(PATH_SEPARATOR).join("", METADATA_NODE, schemaName, node);
-    }
-    
-    private static String getFullPath(final String node) {
-        return Joiner.on(PATH_SEPARATOR).join("", node);
+        return Joiner.on("/").join("", ROOT_NODE, schemaName, node);
     }
     
     /**
@@ -130,16 +105,6 @@ public final class SchemaRuleNode {
         Pattern pattern = Pattern.compile(getMetadataNodePath() + "/(\\w+)" + "(/datasource|/rule)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configurationNodeFullPath);
         return matcher.find() ? matcher.group(1) : "";
-    }
-    
-    /**
-     * Split schema name.
-     *
-     * @param schemaNames schema names
-     * @return schema names
-     */
-    public static Collection<String> splitSchemaName(final String schemaNames) {
-        return Strings.isNullOrEmpty(schemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(schemaNames);
     }
     
     /**
@@ -159,23 +124,13 @@ public final class SchemaRuleNode {
     }
     
     /**
-     * Get cache path.
-     *
-     * @param path path
-     * @return cache path
-     */
-    public static String getCachePath(final String path) {
-        return Joiner.on(PATH_SEPARATOR).join(path, CACHE_NODE);
-    }
-    
-    /**
      * Get all metadata schema paths.
      *
      * @param schemaNames schema names
      * @return list of schema path
      */
     public static Collection<String> getAllMetadataSchemaPaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(SchemaRuleNode::getMetadataSchemaPath).collect(Collectors.toList());
+        return schemaNames.stream().map(SchemaMetadataNode::getMetadataSchemaPath).collect(Collectors.toList());
     }
     
     /**
@@ -185,7 +140,7 @@ public final class SchemaRuleNode {
      * @return list of rule path
      */
     public static Collection<String> getAllRulePaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(SchemaRuleNode::getRulePath).collect(Collectors.toList());
+        return schemaNames.stream().map(SchemaMetadataNode::getRulePath).collect(Collectors.toList());
     }
     
     /**
@@ -195,25 +150,6 @@ public final class SchemaRuleNode {
      * @return list of data source path
      */
     public static Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(SchemaRuleNode::getMetadataDataSourcePath).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get execution nodes path.
-     *
-     * @return execution nodes path
-     */
-    public static String getExecutionNodesPath() {
-        return Joiner.on("/").join("", EXECUTION_NODES_NAME);
-    }
-    
-    /**
-     * Get execution path.
-     *
-     * @param executionId execution id
-     * @return execution path
-     */
-    public static String getExecutionPath(final String executionId) {
-        return Joiner.on("/").join("", EXECUTION_NODES_NAME, executionId);
+        return schemaNames.stream().map(SchemaMetadataNode::getMetadataDataSourcePath).collect(Collectors.toList());
     }
 }

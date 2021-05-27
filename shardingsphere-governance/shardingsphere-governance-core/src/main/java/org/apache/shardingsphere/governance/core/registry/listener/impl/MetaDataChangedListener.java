@@ -23,8 +23,9 @@ import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanc
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,13 +42,13 @@ public final class MetaDataChangedListener extends PostGovernanceRepositoryEvent
     private final Collection<String> existedSchemaNames;
     
     public MetaDataChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        super(registryCenterRepository, Collections.singleton(RegistryCenterNode.getMetadataNodePath()));
+        super(registryCenterRepository, Collections.singleton(SchemaMetadataNode.getMetadataNodePath()));
         existedSchemaNames = new LinkedHashSet<>(schemaNames);
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        if (RegistryCenterNode.getMetadataNodePath().equals(event.getKey())) {
+        if (SchemaMetadataNode.getMetadataNodePath().equals(event.getKey())) {
             Collection<String> persistedSchemaNames = RegistryCenterNode.splitSchemaName(event.getValue());
             Set<String> addedSchemaNames = SetUtils.difference(new HashSet<>(persistedSchemaNames), new HashSet<>(existedSchemaNames));
             if (!addedSchemaNames.isEmpty()) {

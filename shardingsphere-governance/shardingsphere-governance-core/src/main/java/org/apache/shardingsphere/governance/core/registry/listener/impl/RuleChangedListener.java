@@ -24,6 +24,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanc
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -40,12 +41,12 @@ import java.util.Optional;
 public final class RuleChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public RuleChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        super(registryCenterRepository, RegistryCenterNode.getAllRulePaths(schemaNames));
+        super(registryCenterRepository, SchemaMetadataNode.getAllRulePaths(schemaNames));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        String schemaName = RegistryCenterNode.getSchemaName(event.getKey());
+        String schemaName = SchemaMetadataNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(schemaName) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
@@ -58,12 +59,12 @@ public final class RuleChangedListener extends PostGovernanceRepositoryEventList
     }
     
     private boolean isRuleChangedEvent(final String schemaName, final String eventPath) {
-        String rulePath = RegistryCenterNode.getRulePath(schemaName);
+        String rulePath = SchemaMetadataNode.getRulePath(schemaName);
         return rulePath.equals(eventPath);
     }
     
     private boolean isRuleCachedEvent(final String schemaName, final String key) {
-        String ruleCachePath = RegistryCenterNode.getCachePath(RegistryCenterNode.getRulePath(schemaName));
+        String ruleCachePath = RegistryCenterNode.getCachePath(SchemaMetadataNode.getRulePath(schemaName));
         return ruleCachePath.equals(key);
     }
     

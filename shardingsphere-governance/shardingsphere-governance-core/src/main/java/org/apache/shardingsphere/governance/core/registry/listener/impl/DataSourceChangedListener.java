@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -41,12 +41,12 @@ import java.util.stream.Collectors;
 public final class DataSourceChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public DataSourceChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        super(registryCenterRepository, RegistryCenterNode.getAllDataSourcePaths(schemaNames));
+        super(registryCenterRepository, SchemaMetadataNode.getAllDataSourcePaths(schemaNames));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        String schemaName = RegistryCenterNode.getSchemaName(event.getKey());
+        String schemaName = SchemaMetadataNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(schemaName) || !isDataSourceChangedEvent(schemaName, event.getKey()) 
                 || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
@@ -55,7 +55,7 @@ public final class DataSourceChangedListener extends PostGovernanceRepositoryEve
     }
     
     private boolean isDataSourceChangedEvent(final String schemaName, final String eventPath) {
-        return RegistryCenterNode.getMetadataDataSourcePath(schemaName).equals(eventPath);
+        return SchemaMetadataNode.getMetadataDataSourcePath(schemaName).equals(eventPath);
     }
     
     @SuppressWarnings("unchecked")
