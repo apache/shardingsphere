@@ -62,24 +62,31 @@ public final class EncryptRulesQueryBackendHandler extends SchemaRequiredBackend
     
     @Override
     protected ResponseHeader execute(final String schemaName, final ShowEncryptRulesStatement sqlStatement) {
-        loadRuleConfiguration(schemaName);
+        loadRuleConfiguration(schemaName, sqlStatement.getTableName());
         return new QueryResponseHeader(getQueryHeader(schemaName));
     }
     
-    private void loadRuleConfiguration(final String schemaName) {
+    private void loadRuleConfiguration(final String schemaName, final String tableName) {
         Optional<EncryptRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findAny();
-        data = ruleConfig.map(optional -> getAllEncryptColumns(optional).entrySet().iterator()).orElse(Collections.emptyIterator());
+        data = ruleConfig.map(optional -> getAllEncryptColumns(optional, tableName).entrySet().iterator()).orElse(Collections.emptyIterator());
         encryptors = ruleConfig.map(EncryptRuleConfiguration::getEncryptors).orElse(Maps.newHashMap());
     }
 
-    private Map<String, EncryptColumnRuleConfiguration> getAllEncryptColumns(final EncryptRuleConfiguration encryptRuleConfiguration) {
+    private Map<String, EncryptColumnRuleConfiguration> getAllEncryptColumns(final EncryptRuleConfiguration encryptRuleConfiguration, final String tableName) {
         Map<String, EncryptColumnRuleConfiguration> result = new HashMap<>();
-        for (EncryptTableRuleConfiguration encryptTableRuleConfiguration : encryptRuleConfiguration.getTables()) {
-            encryptTableRuleConfiguration.getColumns().forEach(each -> result.put(Joiner.on(".")
-                    .join(encryptTableRuleConfiguration.getName(), each.getLogicColumn()), each));
+        if (Objects.nonNull(tableName)) {
+            encryptRuleConfiguration.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getName()))
+                    .findAny().ifPresent(each -> result.putAll(buildEncryptColumnRuleConfigurationMap(each)));
+        } else {
+            encryptRuleConfiguration.getTables().forEach(each -> result.putAll(buildEncryptColumnRuleConfigurationMap(each)));
         }
         return result;
+    }
+
+    private Map<String, EncryptColumnRuleConfiguration> buildEncryptColumnRuleConfigurationMap(final EncryptTableRuleConfiguration encryptTableRuleConfiguration) {
+        return encryptTableRuleConfiguration.getColumns().stream().collect(Collectors.toMap(each -> Joiner.on(".")
+                .join(encryptTableRuleConfiguration.getName(), each.getLogicColumn()), each -> each));
     }
     
     private List<QueryHeader> getQueryHeader(final String schemaName) {
@@ -105,6 +112,6 @@ public final class EncryptRulesQueryBackendHandler extends SchemaRequiredBackend
         return Arrays.asList(Splitter.on(".").splitToList(entry.getKey()).get(0), entry.getValue().getLogicColumn(),
                 entry.getValue().getCipherColumn(), entry.getValue().getPlainColumn(), encryptors.get(entry.getValue().getEncryptorName()).getType(),
                 Objects.nonNull(encryptProps) ? Joiner.on(",").join(encryptProps.entrySet().stream()
-                        .map(each -> Joiner.on(":").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
+                        .map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
     }
 }
