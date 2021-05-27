@@ -1189,6 +1189,11 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             result.setAlias(alias);
             return result;
         }
+        if (exprProjection instanceof ExistsSubqueryExpression) {
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment(((ExistsSubqueryExpression) exprProjection).getSubquery());
+            result.setAlias(alias);
+            return result;
+        }
         return createProjection(ctx, alias, exprProjection);
     }
     
