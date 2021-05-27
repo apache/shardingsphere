@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RegistryCenterNode {
     
-    private static final String ROOT = "states";
+    private static final String STATES_NODE = "states";
     
     private static final String PROXY_NODES_NAME = "proxynodes";
     
@@ -77,7 +77,7 @@ public final class RegistryCenterNode {
      * @return proxy node path
      */
     public static String getProxyNodePath(final String instanceId) {
-        return Joiner.on("/").join("", ROOT, PROXY_NODES_NAME, instanceId);
+        return Joiner.on("/").join("", STATES_NODE, PROXY_NODES_NAME, instanceId);
     }
     
     /**
@@ -86,7 +86,7 @@ public final class RegistryCenterNode {
      * @return data nodes path
      */
     public static String getDataNodesPath() {
-        return Joiner.on("/").join("", ROOT, DATA_NODES_NAME);
+        return Joiner.on("/").join("", STATES_NODE, DATA_NODES_NAME);
     }
     
     /**
@@ -95,7 +95,7 @@ public final class RegistryCenterNode {
      * @return primary nodes path
      */
     public static String getPrimaryNodesPath() {
-        return Joiner.on("/").join("", ROOT, PRIMARY_NODES_NAME);
+        return Joiner.on("/").join("", STATES_NODE, PRIMARY_NODES_NAME);
     }
     
     /**
@@ -105,7 +105,7 @@ public final class RegistryCenterNode {
      * @return schema path
      */
     public static String getSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", ROOT, DATA_NODES_NAME, schemaName);
+        return Joiner.on("/").join("", STATES_NODE, DATA_NODES_NAME, schemaName);
     }
     
     /**
@@ -115,7 +115,7 @@ public final class RegistryCenterNode {
      * @return schema path
      */
     public static String getPrimaryNodesSchemaPath(final String schemaName) {
-        return Joiner.on("/").join("", ROOT, PRIMARY_NODES_NAME, schemaName);
+        return Joiner.on("/").join("", STATES_NODE, PRIMARY_NODES_NAME, schemaName);
     }
     
     /**
@@ -126,7 +126,7 @@ public final class RegistryCenterNode {
      * @return data source path
      */
     public static String getDataSourcePath(final String schemaName, final String dataSourceName) {
-        return Joiner.on("/").join("", ROOT, DATA_NODES_NAME, schemaName, dataSourceName);
+        return Joiner.on("/").join("", STATES_NODE, DATA_NODES_NAME, schemaName, dataSourceName);
     }
     
     /**
@@ -147,7 +147,7 @@ public final class RegistryCenterNode {
      * @return data source path
      */
     public static String getPrimaryDataSourcePath(final String schemaName, final String groupName) {
-        return Joiner.on("/").join("", ROOT, PRIMARY_NODES_NAME, schemaName, groupName);
+        return Joiner.on("/").join("", STATES_NODE, PRIMARY_NODES_NAME, schemaName, groupName);
     }
     
     /**
@@ -207,7 +207,7 @@ public final class RegistryCenterNode {
      * @return proxy nodes path
      */
     public static String getProxyNodesPath() {
-        return Joiner.on("/").join("", ROOT, PROXY_NODES_NAME);
+        return Joiner.on("/").join("", STATES_NODE, PROXY_NODES_NAME);
     }
     
     /**
@@ -273,7 +273,7 @@ public final class RegistryCenterNode {
      * @return privilege node path
      */
     public static String getPrivilegeNodePath() {
-        return Joiner.on(PATH_SEPARATOR).join("", ROOT, PRIVILEGE_NODE);
+        return Joiner.on(PATH_SEPARATOR).join("", STATES_NODE, PRIVILEGE_NODE);
     }
     
     /**
