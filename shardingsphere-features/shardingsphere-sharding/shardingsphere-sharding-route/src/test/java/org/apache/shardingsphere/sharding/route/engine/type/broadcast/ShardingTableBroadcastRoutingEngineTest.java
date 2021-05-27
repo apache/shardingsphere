@@ -108,7 +108,6 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         when(segment.getIdentifier().getValue()).thenReturn("t_order");
         DropIndexStatement dropIndexStatement = mock(DropIndexStatement.class, RETURNS_DEEP_STUBS);
         SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(dropIndexStatement);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         when(((TableAvailable) sqlStatementContext).getAllTables()).thenReturn(Collections.emptyList());
         when(((IndexAvailable) sqlStatementContext).getIndexes()).thenReturn(Collections.singletonList(segment));
@@ -129,15 +128,12 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
     @Test
     public void assertRouteForDropIndexStatementDoNotFoundTables() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(schema.getAllTableNames()).thenReturn(Sets.newHashSet("t_order"));
         when(schema.get(anyString()).getIndexes().containsKey(anyString())).thenReturn(false);
 
         IndexSegment segment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         when(segment.getIdentifier().getValue()).thenReturn("t_order");
         DropIndexStatement dropIndexStatement = mock(DropIndexStatement.class, RETURNS_DEEP_STUBS);
-        when(dropIndexStatement.getIndexes()).thenReturn(Collections.singletonList(segment));
         SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(dropIndexStatement);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         when(((TableAvailable) sqlStatementContext).getAllTables()).thenReturn(Collections.emptyList());
 
