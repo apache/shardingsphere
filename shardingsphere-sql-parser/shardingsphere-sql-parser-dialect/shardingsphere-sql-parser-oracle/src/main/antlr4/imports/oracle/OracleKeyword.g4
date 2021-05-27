@@ -1958,3 +1958,15 @@ NULLS
 LAST
     : L A S T
     ;
+
+ISOLATION
+    : I S O L A T I O N
+    ;
+
+SERIALIZABLE
+    : S E R I A L I Z A B L E
+    ;
+
+COMMITTED
+    : C O M M I T T E D
+    ;
