@@ -61,7 +61,7 @@ public final class MetadataRefresherFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithSQLStatementNotNeedRefresh() {
-        assertFalse(MetadataRefresherFactory.newInstance(mock(AlterIndexStatement.class)).isPresent());
+    public void assertNewInstanceWithAlterIndexStatement() {
+        assertTrue(MetadataRefresherFactory.newInstance(mock(AlterIndexStatement.class)).isPresent());
     }
 }
