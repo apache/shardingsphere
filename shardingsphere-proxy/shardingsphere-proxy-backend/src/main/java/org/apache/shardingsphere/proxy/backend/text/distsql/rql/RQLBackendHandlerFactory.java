@@ -26,6 +26,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowReadwrite
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryBackendHandler;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.EncryptTabl
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRulesQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBindingTableRulesQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBroadcastTableRulesQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingTableRulesQueryBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Optional;
@@ -73,6 +75,9 @@ public final class RQLBackendHandlerFactory {
         }
         if (sqlStatement instanceof ShowEncryptTableRuleStatement) {
             return Optional.of(new EncryptTableRuleQueryBackendHandler((ShowEncryptTableRuleStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof ShowShardingTableRulesStatement) {
+            return Optional.of(new ShardingTableRulesQueryBackendHandler((ShowShardingTableRulesStatement) sqlStatement, backendConnection));
         }
         return Optional.empty();
     }

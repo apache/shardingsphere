@@ -23,10 +23,6 @@ showResources
     : SHOW RESOURCES (FROM schemaName)?
     ;
 
-showRule
-    : SHOW ruleType RULE (FROM schemaName)?
-    ;
-
 showShardingBindingTableRules
     : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
     ;
@@ -51,8 +47,12 @@ showEncryptTableRule
     : SHOW ENCRYPT TABLE RULE tableName (FROM schemaName)?
     ;
 
-ruleType
-    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
+showShardingTableRules
+    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
+    ;
+
+tableRule
+    : RULE tableName
     ;
 
 schemaName
