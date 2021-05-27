@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PropertiesNode {
 
-    private static final String PROPS_NODE = "props";
+    private static final String ROOT_NODE = "props";
     
     /**
      * Get properties path.
@@ -35,6 +35,6 @@ public final class PropertiesNode {
      * @return properties path
      */
     public static String getPropsPath() {
-        return Joiner.on("/").join("", PROPS_NODE);
+        return Joiner.on("/").join("", ROOT_NODE);
     }
 }
