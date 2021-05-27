@@ -45,8 +45,12 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +59,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaBuilder {
     
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
+            0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new SchemaBuilderThreadFactory());
     
     static {
         ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
@@ -121,7 +126,6 @@ public final class SchemaBuilder {
                 throw new ShardingSphereException(ex);
             }
         }
-        EXECUTOR_SERVICE.shutdown();
     }
     
     private static void appendDefaultRemainTables(final SchemaBuilderMaterials materials, final ShardingSphereSchema schema) throws SQLException {
@@ -156,5 +160,17 @@ public final class SchemaBuilder {
         }
         result.addAll(schema.getAllTableNames());
         return result;
+    }
+    
+    private static class SchemaBuilderThreadFactory implements ThreadFactory {
+        
+        private final AtomicInteger threadSequence = new AtomicInteger(0);
+    
+        @Override
+        public Thread newThread(final Runnable runnable) {
+            Thread result = new Thread(runnable, String.format("SchemaBuilderExecutor-%d", threadSequence.getAndIncrement()));
+            result.setDaemon(true);
+            return result;
+        }
     }
 }
