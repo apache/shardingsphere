@@ -41,7 +41,7 @@ public final class StatesNode {
     private static final String DATA_NODES_NAME = "datanodes";
     
     private static final String PRIMARY_NODES_NAME = "primarynodes";
-
+    
     private static final String PRIVILEGE_NODE_NAME = "privilegenode";
     
     /**
