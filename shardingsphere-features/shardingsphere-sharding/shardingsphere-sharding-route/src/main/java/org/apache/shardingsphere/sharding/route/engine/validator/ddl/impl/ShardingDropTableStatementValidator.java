@@ -50,6 +50,10 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     @Override
     public void postValidate(final ShardingRule shardingRule, final DropTableStatement sqlStatement, final RouteContext routeContext) {
         checkTableInUsed(shardingRule, sqlStatement, routeContext);
+        String primaryTable = sqlStatement.getTables().iterator().next().getTableName().getIdentifier().getValue();
+        if (isRouteUnitPrimaryTableDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
+            throw new ShardingSphereException("DROP TABLE ... statement route unit size must be same with primary table '%s' data node size.", primaryTable);
+        }
     }
     
     private void checkTableInUsed(final ShardingRule shardingRule, final DropTableStatement sqlStatement, final RouteContext routeContext) {

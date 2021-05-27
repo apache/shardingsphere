@@ -19,9 +19,11 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
@@ -75,5 +77,19 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
                 throw new TableExistsException(tableName);
             }
         }
+    }
+    
+    /**
+     * Judge whether route unit and primary table data node are different size or not.
+     * 
+     * @param shardingRule sharding rule
+     * @param routeContext route context
+     * @param primaryTable primary table
+     * @return whether route unit and primary table data node are different size or not
+     */
+    protected boolean isRouteUnitPrimaryTableDataNodeDifferentSize(final ShardingRule shardingRule, final RouteContext routeContext, final String primaryTable) {
+        int primaryTableDataNodeSize = shardingRule.isShardingTable(primaryTable) || shardingRule.isBroadcastTable(primaryTable)
+                ? shardingRule.getTableRule(primaryTable).getActualDataNodes().size() : 1;
+        return primaryTableDataNodeSize != routeContext.getRouteUnits().size();
     }
 }
