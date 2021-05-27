@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.governance.core.registry.service.config;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * Registry center node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryCenterNode {
+public final class RuleNode {
     
     private static final String EXECUTION_NODES_NAME = "executionnodes";
     
@@ -50,6 +50,8 @@ public final class RegistryCenterNode {
 
     private static final String GLOBAL_RULE_NODE = "rules";
 
+    private static final String PROPS_NODE = "props";
+    
     private static final String COMMA_SEPARATOR = ",";
     
     private static final String PATH_SEPARATOR = "/";
@@ -123,6 +125,15 @@ public final class RegistryCenterNode {
         return getFullPath(GLOBAL_RULE_NODE);
     }
     
+    /**
+     * Get properties path.
+     *
+     * @return properties path
+     */
+    public static String getPropsPath() {
+        return getFullPath(PROPS_NODE);
+    }
+    
     private static String getFullMetadataPath(final String schemaName, final String node) {
         return Joiner.on(PATH_SEPARATOR).join("", METADATA_NODE, schemaName, node);
     }
@@ -186,7 +197,7 @@ public final class RegistryCenterNode {
      * @return list of schema path
      */
     public static Collection<String> getAllMetadataSchemaPaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(RegistryCenterNode::getMetadataSchemaPath).collect(Collectors.toList());
+        return schemaNames.stream().map(RuleNode::getMetadataSchemaPath).collect(Collectors.toList());
     }
     
     /**
@@ -196,7 +207,7 @@ public final class RegistryCenterNode {
      * @return list of rule path
      */
     public static Collection<String> getAllRulePaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(RegistryCenterNode::getRulePath).collect(Collectors.toList());
+        return schemaNames.stream().map(RuleNode::getRulePath).collect(Collectors.toList());
     }
     
     /**
@@ -206,7 +217,7 @@ public final class RegistryCenterNode {
      * @return list of data source path
      */
     public static Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(RegistryCenterNode::getMetadataDataSourcePath).collect(Collectors.toList());
+        return schemaNames.stream().map(RuleNode::getMetadataDataSourcePath).collect(Collectors.toList());
     }
     
     /**

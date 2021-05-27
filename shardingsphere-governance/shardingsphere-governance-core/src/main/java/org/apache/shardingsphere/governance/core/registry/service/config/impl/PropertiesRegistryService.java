@@ -19,8 +19,8 @@ package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.service.config.GlobalRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.config.PropertiesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
@@ -37,16 +37,16 @@ public final class PropertiesRegistryService implements GlobalRegistryService<Pr
     @Override
     public void persist(final Properties props, final boolean isOverwrite) {
         if (!props.isEmpty() && (isOverwrite || !isExisted())) {
-            repository.persist(RegistryCenterNode.getPropsPath(), YamlEngine.marshal(props));
+            repository.persist(PropertiesNode.getPropsPath(), YamlEngine.marshal(props));
         }
     }
     
     private boolean isExisted() {
-        return !Strings.isNullOrEmpty(repository.get(RegistryCenterNode.getPropsPath()));
+        return !Strings.isNullOrEmpty(repository.get(PropertiesNode.getPropsPath()));
     }
     
     @Override
     public Properties load() {
-        return Strings.isNullOrEmpty(repository.get(RegistryCenterNode.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(RegistryCenterNode.getPropsPath()), Properties.class);
+        return Strings.isNullOrEmpty(repository.get(PropertiesNode.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(PropertiesNode.getPropsPath()), Properties.class);
     }
 }

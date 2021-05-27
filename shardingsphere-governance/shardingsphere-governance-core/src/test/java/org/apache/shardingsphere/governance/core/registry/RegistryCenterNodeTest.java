@@ -45,11 +45,6 @@ public final class RegistryCenterNodeTest {
     }
     
     @Test
-    public void assertGetPropsPath() {
-        assertThat(RegistryCenterNode.getPropsPath(), is("/props"));
-    }
-    
-    @Test
     public void assertGetSchemaName() {
         assertThat(RegistryCenterNode.getSchemaName("/metadata/logic_db/rules"), is(DefaultSchema.LOGIC_NAME));
     }
