@@ -31,7 +31,7 @@ import java.util.Collections;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaNameUtil {
     
-    private static final String COMMA_SEPARATOR = ",";
+    private static final String SEPARATOR = ",";
     
     /**
      * Split schema name.
@@ -40,6 +40,6 @@ public final class SchemaNameUtil {
      * @return schema names
      */
     public static Collection<String> splitSchemaName(final String schemaNames) {
-        return Strings.isNullOrEmpty(schemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(schemaNames);
+        return Strings.isNullOrEmpty(schemaNames) ? Collections.emptyList() : Splitter.on(SEPARATOR).splitToList(schemaNames);
     }
 }
