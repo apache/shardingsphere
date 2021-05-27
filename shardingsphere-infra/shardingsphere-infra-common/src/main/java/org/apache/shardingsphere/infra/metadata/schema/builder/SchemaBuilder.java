@@ -121,6 +121,7 @@ public final class SchemaBuilder {
                 throw new ShardingSphereException(ex);
             }
         }
+        EXECUTOR_SERVICE.shutdown();
     }
     
     private static void appendDefaultRemainTables(final SchemaBuilderMaterials materials, final ShardingSphereSchema schema) throws SQLException {
