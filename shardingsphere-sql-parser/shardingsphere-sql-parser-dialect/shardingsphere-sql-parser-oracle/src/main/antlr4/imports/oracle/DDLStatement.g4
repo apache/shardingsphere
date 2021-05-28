@@ -1008,6 +1008,7 @@ addRangeSubpartition
 dependentTablesClause
     : DEPENDENT TABLES LP_ tableName LP_ partitionSpec (COMMA_ partitionSpec)* RP_
     (tableName LP_ partitionSpec (COMMA_ partitionSpec)* RP_)* RP_
+    (COMMA_ tableName LP_ partitionSpec (COMMA_ partitionSpec)* RP_)* RP_
     ;
 
 addHashSubpartition
@@ -1035,7 +1036,7 @@ deallocateUnusedClause
     ;
 
 allocateExtentClause
-    : ALLOCATE EXTENT (LP_ (SIZE sizeClause | DATAFILE SQ_ fileName SQ_ | INSTANCE NUMBER_) RP_)?
+    : ALLOCATE EXTENT (LP_ (SIZE sizeClause | DATAFILE SQ_ fileName SQ_ | INSTANCE NUMBER_)* RP_)?
     ;
 
 partitionSpec
@@ -1043,8 +1044,8 @@ partitionSpec
     ;
 
 partitionAttributes
-    : (physicalAttributesClause | loggingClause | allocateExtentClause | deallocateUnusedClause | shrinkClause)?
-      (OVERFLOW (physicalAttributesClause | loggingClause | allocateExtentClause | deallocateUnusedClause)?)?
+    : (physicalAttributesClause | loggingClause | allocateExtentClause | deallocateUnusedClause | shrinkClause)*
+      (OVERFLOW (physicalAttributesClause | loggingClause | allocateExtentClause | deallocateUnusedClause)*)?
       tableCompression? inmemoryClause?
     ;
 
@@ -1072,20 +1073,25 @@ addTablePartition
     : ADD ((PARTITION partitionName? addRangePartitionClause (COMMA_ PARTITION partitionName? addRangePartitionClause)*)
         |  (PARTITION partitionName? addListPartitionClause (COMMA_ PARTITION partitionName? addListPartitionClause)*)
         |  (PARTITION partitionName? addSystemPartitionClause (COMMA_ PARTITION partitionName? addSystemPartitionClause)*)
-        |  (PARTITION partitionName? addHashPartitionClause (COMMA_ PARTITION partitionName? addHashPartitionClause)*)
+        (BEFORE (partitionName | NUMBER_))?
+        |  (PARTITION partitionName? addHashPartitionClause)
         ) dependentTablesClause?
     ;
 
 addRangePartitionClause
     : rangeValuesClause tablePartitionDescription? externalPartSubpartDataProps?
-    ((LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
-    | hashSubpartitionQuantity)? updateIndexClauses?
+    ((LP_? (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_?)
+    | hashSubpartsByQuantity)? updateIndexClauses?
     ;
 
 addListPartitionClause
     : listValuesClause tablePartitionDescription? externalPartSubpartDataProps?
-    ((LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
-    | hashSubpartitionQuantity)? updateIndexClauses?
+    ((LP_? (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_?)
+    | hashSubpartsByQuantity)? updateIndexClauses?
+    ;
+
+hashSubpartsByQuantity
+    : SUBPARTITIONS NUMBER_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)?
     ;
 
 addSystemPartitionClause
