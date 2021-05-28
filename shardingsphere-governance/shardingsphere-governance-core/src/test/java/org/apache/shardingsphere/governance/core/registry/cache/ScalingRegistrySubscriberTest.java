@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.cache;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Before;
@@ -27,16 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Collectors;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ScalingRegistrySubscriberTest {
@@ -62,9 +51,10 @@ public final class ScalingRegistrySubscriberTest {
         Field field = ScalingRegistrySubscriber.class.getDeclaredField("registryCacheManager");
         field.setAccessible(true);
         field.set(scalingRegistrySubscriber, registryCacheManager);
-        when(registryCacheManager.loadCache(anyString(), eq("testCacheId"))).thenReturn(readYAML());
-        SwitchRuleConfigurationEvent event = new SwitchRuleConfigurationEvent("sharding_db", "testCacheId");
-        scalingRegistrySubscriber.switchRuleConfiguration(event);
+        // Move to scaling module
+//        when(registryCacheManager.loadCache(anyString(), eq("testCacheId"))).thenReturn(readYAML());
+//        SwitchRuleConfigurationEvent event = new SwitchRuleConfigurationEvent("sharding_db", "testCacheId");
+//        scalingRegistrySubscriber.switchRuleConfiguration(event);
         // TODO finish verify
     }
     
@@ -73,9 +63,9 @@ public final class ScalingRegistrySubscriberTest {
         // TODO finish test case
     }
     
-    @SneakyThrows({IOException.class, URISyntaxException.class})
-    private String readYAML() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/regcenter/data-schema-rule.yaml").toURI()))
-                .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-    }
+//    @SneakyThrows({IOException.class, URISyntaxException.class})
+//    private String readYAML() {
+//        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/regcenter/data-schema-rule.yaml").toURI()))
+//                .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+//    }
 }

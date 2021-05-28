@@ -54,7 +54,7 @@ public final class SchemaRuleRegistryServiceTest {
     
     @Test
     public void assertLoadWithExistedNode() {
-        // TODO use RuleConfigurationFixture instead of ShardingRuleConfiguration for load test
+        // TODO use RuleConfigurationFixture instead of ShardingRuleConfiguration for test case
 //        when(registryCenterRepository.get("/metadata/foo_db/rules")).thenReturn(readYAML());
 //        Collection<RuleConfiguration> actual = schemaRuleRegistryService.load("foo_db");
 //        assertThat(actual.size(), is(1));
