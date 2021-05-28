@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 
 /**
  * Encrypt rule configuration checker.
@@ -28,5 +29,15 @@ public final class EncryptRuleConfigurationChecker extends AbstractEncryptRuleCo
     @Override
     public void check(final String schemaName, final EncryptRuleConfiguration config) {
         Preconditions.checkState(checkEncryptorsNotEmpty(config), "No available encrypt rule configuration in `%s` for governance.", schemaName);
+    }
+    
+    @Override
+    public int getOrder() {
+        return EncryptOrder.ORDER;
+    }
+    
+    @Override
+    public Class<EncryptRuleConfiguration> getTypeClass() {
+        return EncryptRuleConfiguration.class;
     }
 }

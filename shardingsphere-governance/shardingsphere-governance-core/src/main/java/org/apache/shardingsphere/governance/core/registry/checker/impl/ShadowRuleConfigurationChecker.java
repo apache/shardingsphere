@@ -20,6 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.checker.impl;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 
 /**
  * Shadow rule configuration checker.
@@ -30,5 +31,15 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
     public void check(final String schemaName, final ShadowRuleConfiguration config) {
         boolean isShadow = !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
         Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
+    }
+    
+    @Override
+    public int getOrder() {
+        return ShadowOrder.ORDER;
+    }
+    
+    @Override
+    public Class<ShadowRuleConfiguration> getTypeClass() {
+        return ShadowRuleConfiguration.class;
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.common.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 
 /**
@@ -30,5 +31,15 @@ public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConf
     public void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration config) {
         config.getDataSources().forEach(each -> Preconditions.checkState(
                 !each.getDiscoveryTypeName().isEmpty(), "No available DatabaseDiscovery rule configuration in `%s` for governance.", schemaName));
+    }
+    
+    @Override
+    public int getOrder() {
+        return DatabaseDiscoveryOrder.ORDER;
+    }
+    
+    @Override
+    public Class<DatabaseDiscoveryRuleConfiguration> getTypeClass() {
+        return DatabaseDiscoveryRuleConfiguration.class;
     }
 }

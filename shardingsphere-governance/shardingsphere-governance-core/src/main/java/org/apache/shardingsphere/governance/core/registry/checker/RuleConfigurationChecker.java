@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.governance.core.registry.checker;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
  * Rule configuration checker.
  * 
  * @param <T> type of rule configuration
  */
-public interface RuleConfigurationChecker<T extends RuleConfiguration> {
+public interface RuleConfigurationChecker<T extends RuleConfiguration> extends OrderedSPI<T> {
     
     /**
      * Check rule configuration.

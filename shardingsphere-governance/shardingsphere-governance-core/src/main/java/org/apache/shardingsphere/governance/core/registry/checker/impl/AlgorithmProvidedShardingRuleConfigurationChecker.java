@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 
 /**
  * Algorithm provided sharding ruleConfiguration checker.
@@ -28,5 +29,15 @@ public final class AlgorithmProvidedShardingRuleConfigurationChecker extends Abs
     @Override
     public void check(final String schemaName, final AlgorithmProvidedShardingRuleConfiguration config) {
         Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in `%s` for governance.", schemaName);
+    }
+    
+    @Override
+    public int getOrder() {
+        return ShardingOrder.ALGORITHM_PROVIDER_SHARDING_ORDER;
+    }
+    
+    @Override
+    public Class<AlgorithmProvidedShardingRuleConfiguration> getTypeClass() {
+        return AlgorithmProvidedShardingRuleConfiguration.class;
     }
 }

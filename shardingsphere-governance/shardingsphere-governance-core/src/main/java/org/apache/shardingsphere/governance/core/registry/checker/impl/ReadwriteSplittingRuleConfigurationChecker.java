@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.constant.ReadwriteSplittingOrder;
 
 /**
  * Readwrite-splitting rule configuration checker.
@@ -27,5 +28,15 @@ public final class ReadwriteSplittingRuleConfigurationChecker extends AbstractRe
     @Override
     public void check(final String schemaName, final ReadwriteSplittingRuleConfiguration config) {
         checkDataSources(schemaName, config.getDataSources());
+    }
+    
+    @Override
+    public int getOrder() {
+        return ReadwriteSplittingOrder.ORDER;
+    }
+    
+    @Override
+    public Class<ReadwriteSplittingRuleConfiguration> getTypeClass() {
+        return ReadwriteSplittingRuleConfiguration.class;
     }
 }

@@ -20,28 +20,12 @@ package org.apache.shardingsphere.governance.core.registry.checker;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.registry.checker.impl.AlgorithmProvidedEncryptRuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.impl.AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.impl.AlgorithmProvidedShardingRuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.impl.DatabaseDiscoveryRuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.impl.EncryptRuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.impl.ReadwriteSplittingRuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.impl.ShadowRuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.impl.ShardingRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Rule configuration checker factory.
@@ -49,17 +33,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuleConfigurationCheckerFactory {
     
-    private static final Map<Class<? extends RuleConfiguration>, RuleConfigurationChecker<?>> REGISTRY = new HashMap<>();
-    
     static {
-        REGISTRY.put(ShardingRuleConfiguration.class, new ShardingRuleConfigurationChecker());
-        REGISTRY.put(AlgorithmProvidedShardingRuleConfiguration.class, new AlgorithmProvidedShardingRuleConfigurationChecker());
-        REGISTRY.put(ReadwriteSplittingRuleConfiguration.class, new ReadwriteSplittingRuleConfigurationChecker());
-        REGISTRY.put(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class, new AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker());
-        REGISTRY.put(EncryptRuleConfiguration.class, new EncryptRuleConfigurationChecker());
-        REGISTRY.put(AlgorithmProvidedEncryptRuleConfiguration.class, new AlgorithmProvidedEncryptRuleConfigurationChecker());
-        REGISTRY.put(ShadowRuleConfiguration.class, new ShadowRuleConfigurationChecker());
-        REGISTRY.put(DatabaseDiscoveryRuleConfiguration.class, new DatabaseDiscoveryRuleConfigurationChecker());
+        ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
     
     /**
@@ -70,8 +45,8 @@ public final class RuleConfigurationCheckerFactory {
      */
     @SuppressWarnings("rawtypes")
     public static RuleConfigurationChecker newInstance(final RuleConfiguration config) {
-        Optional<RuleConfigurationChecker> result = REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(config.getClass())).findFirst().map(Entry::getValue);
-        Preconditions.checkArgument(result.isPresent(), "Can not find rule configuration checker for rule type: `%s`", config.getClass());
-        return result.get();
+        Map<Class<?>, RuleConfigurationChecker> checkers = OrderedSPIRegistry.getRegisteredServicesByClass(Collections.singleton(config.getClass()), RuleConfigurationChecker.class);
+        Preconditions.checkArgument(checkers.containsKey(config.getClass()), "Can not find rule configuration checker for rule type: `%s`", config.getClass());
+        return checkers.get(config.getClass());
     }
 }
