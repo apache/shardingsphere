@@ -26,7 +26,7 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 public final class AlgorithmProvidedEncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<AlgorithmProvidedEncryptRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final AlgorithmProvidedEncryptRuleConfiguration ruleConfiguration) {
-        Preconditions.checkState(checkEncryptorsNotEmpty(ruleConfiguration), "No available encrypt rule configuration in `%s` for governance.", schemaName);
+    public void check(final String schemaName, final AlgorithmProvidedEncryptRuleConfiguration config) {
+        Preconditions.checkState(checkEncryptorsNotEmpty(config), "No available encrypt rule configuration in `%s` for governance.", schemaName);
     }
 }

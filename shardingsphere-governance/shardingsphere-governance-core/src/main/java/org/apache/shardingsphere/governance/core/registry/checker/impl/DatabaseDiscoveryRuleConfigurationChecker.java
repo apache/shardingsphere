@@ -27,8 +27,8 @@ import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurat
 public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConfigurationChecker<DatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration ruleConfiguration) {
-        ruleConfiguration.getDataSources().forEach(each -> Preconditions.checkState(
+    public void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration config) {
+        config.getDataSources().forEach(each -> Preconditions.checkState(
                 !each.getDiscoveryTypeName().isEmpty(), "No available DatabaseDiscovery rule configuration in `%s` for governance.", schemaName));
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 public final class ReadwriteSplittingRuleConfigurationChecker extends AbstractReadwriteSplittingRuleConfigurationChecker<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final ReadwriteSplittingRuleConfiguration ruleConfiguration) {
-        checkDataSources(schemaName, ruleConfiguration.getDataSources());
+    public void check(final String schemaName, final ReadwriteSplittingRuleConfiguration config) {
+        checkDataSources(schemaName, config.getDataSources());
     }
 }

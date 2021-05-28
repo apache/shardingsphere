@@ -42,6 +42,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+/**
+ * Rule configuration checker factory.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuleConfigurationCheckerFactory {
     
@@ -59,12 +62,12 @@ public final class RuleConfigurationCheckerFactory {
     }
     
     /**
-     * Get rule configuration checker.
+     * Create new instance of rule configuration checker.
      * 
-     * @param ruleConfiguration rule configuration
-     * @return rule configuration checker
+     * @param config rule configuration
+     * @return new instance of rule configuration checker
      */
-    public static Optional<RuleConfigurationChecker> newInstance(final RuleConfiguration ruleConfiguration) {
-        return REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(ruleConfiguration.getClass())).findFirst().map(Entry::getValue);
+    public static Optional<RuleConfigurationChecker> newInstance(final RuleConfiguration config) {
+        return REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(config.getClass())).findFirst().map(Entry::getValue);
     }
 }

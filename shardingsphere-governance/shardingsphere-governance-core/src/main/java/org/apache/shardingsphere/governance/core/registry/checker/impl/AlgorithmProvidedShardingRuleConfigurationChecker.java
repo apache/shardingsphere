@@ -26,8 +26,8 @@ import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShar
 public final class AlgorithmProvidedShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<AlgorithmProvidedShardingRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final AlgorithmProvidedShardingRuleConfiguration ruleConfiguration) {
-        Preconditions.checkState(hasAvailableTableConfigurations(ruleConfiguration),
+    public void check(final String schemaName, final AlgorithmProvidedShardingRuleConfiguration config) {
+        Preconditions.checkState(hasAvailableTableConfigurations(config),
                 "No available rule configs in `%s` for governance.", schemaName);
     }
 }

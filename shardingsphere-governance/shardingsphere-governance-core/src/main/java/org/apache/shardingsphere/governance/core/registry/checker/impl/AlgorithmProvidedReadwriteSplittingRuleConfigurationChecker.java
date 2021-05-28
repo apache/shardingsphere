@@ -25,7 +25,7 @@ import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.Algo
 public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker extends AbstractReadwriteSplittingRuleConfigurationChecker<AlgorithmProvidedReadwriteSplittingRuleConfiguration> { 
     
     @Override
-    public void check(final String schemaName, final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfiguration) {
-        checkDataSources(schemaName, ruleConfiguration.getDataSources());
+    public void check(final String schemaName, final AlgorithmProvidedReadwriteSplittingRuleConfiguration config) {
+        checkDataSources(schemaName, config.getDataSources());
     }
 }

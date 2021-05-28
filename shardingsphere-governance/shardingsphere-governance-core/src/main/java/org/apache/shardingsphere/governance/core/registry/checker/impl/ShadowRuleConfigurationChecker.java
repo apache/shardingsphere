@@ -27,8 +27,8 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final ShadowRuleConfiguration ruleConfiguration) {
-        boolean isShadow = !ruleConfiguration.getColumn().isEmpty() && null != ruleConfiguration.getSourceDataSourceNames() && null != ruleConfiguration.getShadowDataSourceNames();
+    public void check(final String schemaName, final ShadowRuleConfiguration config) {
+        boolean isShadow = !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
         Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
     }
 }

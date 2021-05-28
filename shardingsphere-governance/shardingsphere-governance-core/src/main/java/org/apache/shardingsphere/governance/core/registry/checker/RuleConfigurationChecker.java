@@ -29,8 +29,8 @@ public interface RuleConfigurationChecker<T extends RuleConfiguration> {
     /**
      * Check rule configuration.
      * 
-     * @param schemaName schema name
-     * @param ruleConfiguration rule configuration
+     * @param schemaName schema name to be checked
+     * @param config rule configuration  to be checked
      */
-    void check(String schemaName, T ruleConfiguration);
+    void check(String schemaName, T config);
 }
