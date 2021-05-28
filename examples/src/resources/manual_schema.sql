@@ -19,9 +19,9 @@ DROP SCHEMA IF EXISTS demo_ds;
 DROP SCHEMA IF EXISTS demo_ds_0;
 DROP SCHEMA IF EXISTS demo_ds_1;
 
-CREATE SCHEMA IF EXISTS demo_write_ds;
-CREATE SCHEMA IF EXISTS demo_read_ds_0;
-CREATE SCHEMA IF EXISTS demo_read_ds_1;
+DROP SCHEMA IF EXISTS demo_write_ds;
+DROP SCHEMA IF EXISTS demo_read_ds_0;
+DROP SCHEMA IF EXISTS demo_read_ds_1;
 
 DROP SCHEMA IF EXISTS demo_write_ds_0;
 DROP SCHEMA IF EXISTS demo_write_ds_0_read_0;
