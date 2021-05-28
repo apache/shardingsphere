@@ -78,7 +78,7 @@ public final class LockRegistryService {
      * @param lockName lock name
      */
     public void ackLock(final String lockName) {
-        repository.persistEphemeral(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.LOCKED.getValue());
+        repository.persistEphemeral(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.LOCKED.name());
     }
     
     /**
@@ -87,7 +87,7 @@ public final class LockRegistryService {
      * @param lockName lock name
      */
     public void ackUnlock(final String lockName) {
-        repository.persistEphemeral(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.UNLOCKED.getValue());
+        repository.persistEphemeral(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.UNLOCKED.name());
     }
     
     /**
@@ -106,7 +106,7 @@ public final class LockRegistryService {
      * @return true if all instances ack lock, false if not
      */
     public boolean checkLockAck(final String lockName) {
-        boolean result = checkAck(lockName, LockAck.LOCKED.getValue());
+        boolean result = checkAck(lockName, LockAck.LOCKED.name());
         if (!result) {
             releaseLock(lockName);
         }
@@ -120,7 +120,7 @@ public final class LockRegistryService {
      * @return true if all instances ack unlock, false if not
      */
     public boolean checkUnlockAck(final String lockName) {
-        return checkAck(lockName, LockAck.UNLOCKED.getValue());
+        return checkAck(lockName, LockAck.UNLOCKED.name());
     }
     
     private boolean checkAck(final String lockName, final String ackValue) {
