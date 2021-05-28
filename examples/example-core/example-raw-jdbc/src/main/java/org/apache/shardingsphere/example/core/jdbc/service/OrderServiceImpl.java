@@ -122,7 +122,8 @@ public final class OrderServiceImpl implements ExampleService {
         order.setUserId(i);
         order.setAddressId(i);
         order.setStatus("INSERT_TEST");
-        orderRepository.insert(order);
+        Long lon = orderRepository.insert(order);
+        System.out.println("order id " +lon);
         return order;
     }
     
