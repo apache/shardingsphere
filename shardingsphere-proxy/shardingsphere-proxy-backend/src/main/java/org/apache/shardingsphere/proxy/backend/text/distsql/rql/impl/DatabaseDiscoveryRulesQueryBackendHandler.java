@@ -90,6 +90,6 @@ public final class DatabaseDiscoveryRulesQueryBackendHandler extends SchemaRequi
         return Arrays.asList(ruleConfig.getName(), Joiner.on(",").join(ruleConfig.getDataSourceNames()),
                 discoverTypes.get(ruleConfig.getDiscoveryTypeName()).getType(),
                 Objects.nonNull(discoverProps) ? Joiner.on(",").join(discoverProps.entrySet().stream()
-                        .map(each -> Joiner.on(":").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
+                        .map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
     }
 }
