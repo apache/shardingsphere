@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.facade;
+package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
