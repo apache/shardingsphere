@@ -94,6 +94,7 @@ chapter = true
     <li><a href="https://4pyun.com/" rel="nofollow">P云+</a></li>
     <li><a href="https://www.supersoco.com/" rel="nofollow">速珂智能</a></li>
     <li><a href="http://www.jtkjbike.com/" rel="nofollow">金通科技</a></li>
+    <li><a href="http://ubinavi.com.cn/" rel="nofollow">普适导航</a></li>
 </ul>
 
 ### 物流

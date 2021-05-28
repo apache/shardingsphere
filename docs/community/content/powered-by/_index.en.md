@@ -94,6 +94,7 @@ Total: 167 companies.
     <li><a href="https://4pyun.com/" rel="nofollow">4pyun</a></li>
     <li><a href="https://www.supersoco.com/" rel="nofollow">Super SOCO</a></li>
     <li><a href="http://www.jtkjbike.com/" rel="nofollow">JTKJBike</a></li>
+    <li><a href="http://ubinavi.com.cn/" rel="nofollow">UbiNavi</a></li>
 </ul>
 
 ### Logistics
