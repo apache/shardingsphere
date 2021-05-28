@@ -33,12 +33,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GovernanceLockTest {
+public final class ShardingSphereDistributeLockTest {
     
     @Mock
     private LockRegistryService lockService;
     
-    private final GovernanceLock lock = new GovernanceLock(mock(RegistryCenterRepository.class), 50L);
+    private final ShardingSphereDistributeLock lock = new ShardingSphereDistributeLock(mock(RegistryCenterRepository.class), 50L);
     
     @Before
     public void setUp() throws ReflectiveOperationException {

@@ -33,9 +33,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Governance lock.
+ * ShardingSphere distribute lock.
  */
-public final class GovernanceLock implements ShardingSphereLock {
+public final class ShardingSphereDistributeLock implements ShardingSphereLock {
     
     private final LockRegistryService lockService;
     
@@ -43,7 +43,7 @@ public final class GovernanceLock implements ShardingSphereLock {
     
     private final Collection<String> lockedResources = new ArrayList<>();
     
-    public GovernanceLock(final RegistryCenterRepository registryCenterRepository, final long lockTimeoutMilliseconds) {
+    public ShardingSphereDistributeLock(final RegistryCenterRepository registryCenterRepository, final long lockTimeoutMilliseconds) {
         lockService = new LockRegistryService(registryCenterRepository);
         this.lockTimeoutMilliseconds = lockTimeoutMilliseconds;
         ShardingSphereEventBus.getInstance().register(this);

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Inner lock released event.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public final class InnerLockReleasedEvent {
     
-    private String lockName;
+    private final String lockName;
 }
