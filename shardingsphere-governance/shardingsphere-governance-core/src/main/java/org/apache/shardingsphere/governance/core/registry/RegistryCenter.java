@@ -89,14 +89,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Initialize state nodes.
-     */
-    public void initStateNodes() {
-        repository.persist(StatesNode.getDataNodesPath(), "");
-        repository.persist(StatesNode.getPrimaryNodesPath(), "");
-    }
-    
-    /**
      * Persist configurations.
      *
      * @param dataSourceConfigs schema and data source configuration map
@@ -137,6 +129,8 @@ public final class RegistryCenter {
      * Register instance online.
      */
     public void registerInstanceOnline() {
+        repository.persist(StatesNode.getDataNodesPath(), "");
+        repository.persist(StatesNode.getPrimaryNodesPath(), "");
         repository.persistEphemeral(StatesNode.getProxyNodePath(instanceId), "");
     }
 }
