@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.checker;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
@@ -67,7 +68,10 @@ public final class RuleConfigurationCheckerFactory {
      * @param config rule configuration
      * @return new instance of rule configuration checker
      */
-    public static Optional<RuleConfigurationChecker> newInstance(final RuleConfiguration config) {
-        return REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(config.getClass())).findFirst().map(Entry::getValue);
+    @SuppressWarnings("rawtypes")
+    public static RuleConfigurationChecker newInstance(final RuleConfiguration config) {
+        Optional<RuleConfigurationChecker> result = REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(config.getClass())).findFirst().map(Entry::getValue);
+        Preconditions.checkArgument(result.isPresent(), "Can not find rule configuration checker for `%s`", config.getClass());
+        return result.get();
     }
 }
