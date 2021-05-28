@@ -124,7 +124,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -136,7 +136,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test
@@ -149,7 +149,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -161,7 +161,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test
@@ -171,7 +171,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -182,6 +182,6 @@ public final class ShardingAlterTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
 }

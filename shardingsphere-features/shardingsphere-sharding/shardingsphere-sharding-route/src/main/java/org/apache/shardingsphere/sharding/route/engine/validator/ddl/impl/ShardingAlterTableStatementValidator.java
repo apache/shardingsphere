@@ -38,7 +38,8 @@ import java.util.stream.Collectors;
 public final class ShardingAlterTableStatementValidator extends ShardingDDLStatementValidator<AlterTableStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterTableStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereSchema schema) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterTableStatement> sqlStatementContext, 
+                            final List<Object> parameters, final ShardingSphereSchema schema) {
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
                 : sqlStatementContext.getTablesContext().getTableNames();
@@ -56,10 +57,11 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final AlterTableStatement sqlStatement, final RouteContext routeContext) {
-        String primaryTable = sqlStatement.getTable().getTableName().getIdentifier().getValue();
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterTableStatement> sqlStatementContext, 
+                             final RouteContext routeContext, final ShardingSphereSchema schema) {
+        String primaryTable = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (isRouteUnitPrimaryTableDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
-            throw new ShardingSphereException("ALTER TABLE ... statement route unit size must be same with primary table '%s' data node size.", primaryTable);
+            throw new ShardingSphereException("ALTER TABLE ... statement can not route correctly for tables %s.", sqlStatementContext.getTablesContext().getTableNames());
         }
     }
 }
