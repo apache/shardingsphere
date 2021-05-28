@@ -27,7 +27,6 @@ public final class AlgorithmProvidedShardingRuleConfigurationChecker extends Abs
     
     @Override
     public void check(final String schemaName, final AlgorithmProvidedShardingRuleConfiguration config) {
-        Preconditions.checkState(hasAvailableTableConfigurations(config),
-                "No available rule configs in `%s` for governance.", schemaName);
+        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in `%s` for governance.", schemaName);
     }
 }

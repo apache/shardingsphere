@@ -27,7 +27,6 @@ public final class ShardingRuleConfigurationChecker extends AbstractShardingRule
     
     @Override
     public void check(final String schemaName, final ShardingRuleConfiguration config) {
-        Preconditions.checkState(hasAvailableTableConfigurations(config),
-                "No available rule configs in `%s` for governance.", schemaName);
+        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in `%s` for governance.", schemaName);
     }
 }

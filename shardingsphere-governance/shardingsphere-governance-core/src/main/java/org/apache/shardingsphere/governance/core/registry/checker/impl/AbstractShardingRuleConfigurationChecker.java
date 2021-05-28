@@ -29,11 +29,11 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
  */
 public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
-    protected boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration config) {
+    protected final boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration config) {
         return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
     
-    protected boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
+    protected final boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
         return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
 }

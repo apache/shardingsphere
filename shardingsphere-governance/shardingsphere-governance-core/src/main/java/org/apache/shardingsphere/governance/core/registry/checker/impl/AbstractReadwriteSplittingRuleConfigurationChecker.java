@@ -32,11 +32,10 @@ import java.util.Collection;
  */
 public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
-    protected void checkDataSources(final String schemaName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
+    protected final void checkDataSources(final String schemaName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
         dataSources.forEach(each -> {
             if (Strings.isNullOrEmpty(each.getAutoAwareDataSourceName())) {
-                Preconditions.checkState(
-                        !each.getWriteDataSourceName().isEmpty(), "No available readwrite-splitting rule configuration in `%s` for governance.", schemaName);
+                Preconditions.checkState(!each.getWriteDataSourceName().isEmpty(), "No available readwrite-splitting rule configuration in `%s` for governance.", schemaName);
             }
         });
     }

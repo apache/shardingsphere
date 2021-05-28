@@ -29,11 +29,11 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
  */
 public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
-    protected boolean checkEncryptorsNotEmpty(final EncryptRuleConfiguration ruleConfiguration) {
+    protected final boolean checkEncryptorsNotEmpty(final EncryptRuleConfiguration ruleConfiguration) {
         return !ruleConfiguration.getEncryptors().isEmpty();
     }
     
-    protected boolean checkEncryptorsNotEmpty(final AlgorithmProvidedEncryptRuleConfiguration ruleConfiguration) {
+    protected final boolean checkEncryptorsNotEmpty(final AlgorithmProvidedEncryptRuleConfiguration ruleConfiguration) {
         return !ruleConfiguration.getEncryptors().isEmpty();
     }
 }
