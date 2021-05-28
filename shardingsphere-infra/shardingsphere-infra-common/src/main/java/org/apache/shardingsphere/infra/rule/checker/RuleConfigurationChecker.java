@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.infra.rule.checker;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;

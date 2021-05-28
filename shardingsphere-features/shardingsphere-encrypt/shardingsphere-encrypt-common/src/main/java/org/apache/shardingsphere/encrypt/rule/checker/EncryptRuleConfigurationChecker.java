@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker.impl;
+package org.apache.shardingsphere.encrypt.rule.checker;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.constant.ShardingOrder;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 
 /**
- * Algorithm provided sharding ruleConfiguration checker.
+ * Encrypt rule configuration checker.
  */
-public final class AlgorithmProvidedShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<AlgorithmProvidedShardingRuleConfiguration> {
+public final class EncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<EncryptRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final AlgorithmProvidedShardingRuleConfiguration config) {
-        Preconditions.checkState(hasAvailableTableConfigurations(config), "No available rule configs in `%s` for governance.", schemaName);
+    public void check(final String schemaName, final EncryptRuleConfiguration config) {
+        Preconditions.checkState(checkEncryptorsNotEmpty(config), "No available encrypt rule configuration in `%s` for governance.", schemaName);
     }
     
     @Override
     public int getOrder() {
-        return ShardingOrder.ALGORITHM_PROVIDER_SHARDING_ORDER;
+        return EncryptOrder.ORDER;
     }
     
     @Override
-    public Class<AlgorithmProvidedShardingRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedShardingRuleConfiguration.class;
+    public Class<EncryptRuleConfiguration> getTypeClass() {
+        return EncryptRuleConfiguration.class;
     }
 }

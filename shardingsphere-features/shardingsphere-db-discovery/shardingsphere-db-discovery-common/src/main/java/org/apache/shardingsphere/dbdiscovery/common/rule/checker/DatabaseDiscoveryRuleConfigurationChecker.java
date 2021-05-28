@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker.impl;
+package org.apache.shardingsphere.dbdiscovery.common.rule.checker;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.common.constant.DatabaseDiscoveryOrder;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 
 /**
  * Database discovery rule configuration checker.

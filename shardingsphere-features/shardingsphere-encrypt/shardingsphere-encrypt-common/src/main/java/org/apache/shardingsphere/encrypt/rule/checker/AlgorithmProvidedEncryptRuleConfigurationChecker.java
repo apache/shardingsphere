@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker.impl;
+package org.apache.shardingsphere.encrypt.rule.checker;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 
 /**
- * Shadow rule configuration checker.
+ * Algorithm provided encrypt rule configuration checker.
  */
-public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
+public final class AlgorithmProvidedEncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<AlgorithmProvidedEncryptRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final ShadowRuleConfiguration config) {
-        boolean isShadow = !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
-        Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
+    public void check(final String schemaName, final AlgorithmProvidedEncryptRuleConfiguration config) {
+        Preconditions.checkState(checkEncryptorsNotEmpty(config), "No available encrypt rule configuration in `%s` for governance.", schemaName);
     }
     
     @Override
     public int getOrder() {
-        return ShadowOrder.ORDER;
+        return EncryptOrder.ALGORITHM_PROVIDER_ENCRYPT_ORDER;
     }
     
     @Override
-    public Class<ShadowRuleConfiguration> getTypeClass() {
-        return ShadowRuleConfiguration.class;
+    public Class<AlgorithmProvidedEncryptRuleConfiguration> getTypeClass() {
+        return AlgorithmProvidedEncryptRuleConfiguration.class;
     }
 }

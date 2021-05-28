@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.infra.rule.checker;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
