@@ -32,7 +32,6 @@ import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesN
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateRuleNamesException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
-import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
@@ -184,9 +183,6 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof DatabaseDiscoveryRulesNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.DATABASE_DISCOVERY_RULES_NOT_EXIST, ((DatabaseDiscoveryRulesNotExistedException) cause).getRuleNames(),
                     ((DatabaseDiscoveryRulesNotExistedException) cause).getSchemaName());
-        }
-        if (cause instanceof EncryptRuleExistsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.ENCRYPT_RULE_EXIST, ((EncryptRuleExistsException) cause).getSchemaName());
         }
         if (cause instanceof InvalidEncryptorsException) {
             return new MySQLErrPacket(1, CommonErrorCode.INVALID_ENCRYPTORS, ((InvalidEncryptorsException) cause).getEncryptors());
