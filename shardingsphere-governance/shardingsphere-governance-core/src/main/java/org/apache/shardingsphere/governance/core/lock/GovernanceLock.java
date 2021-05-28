@@ -49,46 +49,22 @@ public final class GovernanceLock implements ShardingSphereLock {
         ShardingSphereEventBus.getInstance().register(this);
     }
     
-    /**
-     * Try to get lock with default time out.
-     *
-     * @param lockName lock name
-     * @return true if get the lock, false if not
-     */
     @Override
     public boolean tryLock(final String lockName) {
         return lockService.tryLock(lockName, lockTimeoutMilliseconds) && lockService.checkLockAck(lockName);
     }
     
-    /**
-     * Try to get lock.
-     * 
-     * @param lockName lock name
-     * @param timeoutMilliseconds time out milliseconds to acquire lock
-     * @return true if get the lock, false if not
-     */
     @Override
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
         return lockService.tryLock(lockName, timeoutMilliseconds) && lockService.checkLockAck(lockName);
     }
     
-    /**
-     * Release lock.
-     * 
-     * @param lockName lock name
-     */
     @Override
     public void releaseLock(final String lockName) {
         lockService.releaseLock(lockName);
         lockService.checkUnlockAck(lockName);
     }
     
-    /**
-     * Check if the lock is exist.
-     * 
-     * @param lockName lockName
-     * @return true if exist, false if not
-     */
     @Override
     public boolean isLocked(final String lockName) {
         return lockedResources.contains(lockName);
