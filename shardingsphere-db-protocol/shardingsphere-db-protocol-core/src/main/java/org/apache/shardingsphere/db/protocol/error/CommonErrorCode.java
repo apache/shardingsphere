@@ -55,8 +55,6 @@ public enum CommonErrorCode implements SQLErrorCode {
 
     INVALID_LOAD_BALANCERS(1117, "C1117", "Invalid load balancers %s."),
 
-    DATABASE_DISCOVERY_RULE_EXIST(1118, "C1118", "Database discovery rule already exists in schema %s."),
-
     INVALID_DATABASE_DISCOVERY_TYPES(1119, "C1119", "Invalid database discovery types %s."),
 
     DATABASE_DISCOVERY_RULES_NOT_EXIST(1120, "C1120", "Database discovery rules %s do not exist in schema %s."),
