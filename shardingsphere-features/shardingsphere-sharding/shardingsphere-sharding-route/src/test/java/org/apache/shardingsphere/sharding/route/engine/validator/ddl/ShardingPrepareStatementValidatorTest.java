@@ -104,13 +104,13 @@ public final class ShardingPrepareStatementValidatorTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertPostValidatePrepareWithSameDataSourceForPostgreSQL() {
-        PostgreSQLPrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_1"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        PostgreSQLPrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), routeContext, schema);
     }
 }
