@@ -27,8 +27,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleDataSourcesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -49,26 +48,36 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends SchemaRequire
     
     @Override
     public ResponseHeader execute(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName, sqlStatement.getRuleNames());
+        check(schemaName, databaseDiscoveryRuleConfiguration, sqlStatement);
+        YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration = getYamlDatabaseDiscoveryRuleConfiguration(databaseDiscoveryRuleConfiguration);
+        drop(yamlDatabaseDiscoveryRuleConfiguration, sqlStatement);
+        post(schemaName, new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(yamlDatabaseDiscoveryRuleConfiguration.getDataSources()
+                        .isEmpty() ? Collections.emptyList() : Collections.singletonList(yamlDatabaseDiscoveryRuleConfiguration)));
+        return new UpdateResponseHeader(sqlStatement);
+    }
+
+    private DatabaseDiscoveryRuleConfiguration getDatabaseDiscoveryRuleConfiguration(final String schemaName, final Collection<String> droppedRuleNames) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst();
         if (!ruleConfig.isPresent()) {
-            throw new DatabaseDiscoveryRuleNotExistedException(schemaName);
+            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, droppedRuleNames);
         }
-        check(ruleConfig.get(), sqlStatement);
-        YamlDatabaseDiscoveryRuleConfiguration yamlConfig = new YamlRuleConfigurationSwapperEngine()
-                .swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig.get())).stream()
+        return ruleConfig.get();
+    }
+
+    private YamlDatabaseDiscoveryRuleConfiguration getYamlDatabaseDiscoveryRuleConfiguration(final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration) {
+        return new YamlRuleConfigurationSwapperEngine()
+                .swapToYamlRuleConfigurations(Collections.singletonList(databaseDiscoveryRuleConfiguration)).stream()
                 .map(each -> (YamlDatabaseDiscoveryRuleConfiguration) each).findFirst().get();
-        drop(yamlConfig, sqlStatement);
-        post(schemaName, new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(yamlConfig.getDataSources().isEmpty() ? Collections.emptyList() : Collections.singletonList(yamlConfig)));
-        return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final DatabaseDiscoveryRuleConfiguration ruleConfig, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
-        Collection<String> databaseDiscoveryDataSourceNames = ruleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
-        Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !databaseDiscoveryDataSourceNames.contains(each)).collect(Collectors.toList());
+    private void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
+        Collection<String> existRuleNames = databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
-            throw new DatabaseDiscoveryRuleDataSourcesNotExistedException(notExistedRuleNames);
+            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistedRuleNames);
         }
     }
 

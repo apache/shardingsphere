@@ -51,6 +51,6 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     }
     
     @Override
-    public void postValidate(final CreateProcedureStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final CreateProcedureStatement sqlStatement, final RouteContext routeContext) {
     }
 }

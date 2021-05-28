@@ -62,6 +62,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteExecutor;
 import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteJDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.optimize.schema.CalciteLogicSchema;
 import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
@@ -224,7 +225,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         CalciteRowExecutor executor = new CalciteRowExecutor(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(),
                 maxConnectionsSizePerQuery, connection, driverJDBCExecutor.getJdbcExecutor(), executionContext, callback);
         // TODO Consider CalciteRawExecutor
-        return new CalciteJDBCExecutor(metaDataContexts.getCalciteContextFactory().create(DefaultSchema.LOGIC_NAME, executor));
+        CalciteLogicSchema logicSchema = new CalciteLogicSchema(metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(DefaultSchema.LOGIC_NAME), executor);
+        return new CalciteJDBCExecutor(metaDataContexts.getOptimizeContextFactory().create(DefaultSchema.LOGIC_NAME, logicSchema));
     }
     
     @Override

@@ -96,7 +96,8 @@
     <sql-case id="alter_table_add_foreign_key_with_cascade" value="ALTER TABLE t_order_item ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="PostgreSQL" />
     <sql-case id="alter_table_drop_constraints_postgresql" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, DROP CONSTRAINT uk_order_id, DROP CONSTRAINT order_index" db-types="PostgreSQL" />
     <sql-case id="alter_table_rename_constraints" value="ALTER TABLE t_order RENAME CONSTRAINT order_index_bak TO order_index" db-types="PostgreSQL" />
-    <sql-case id="alter_table_rename_table" value="ALTER TABLE t_order RENAME to t_order1" db-types="PostgreSQL" />
+    <sql-case id="alter_table_rename_table" value="ALTER TABLE t_order RENAME TO t_order1" db-types="MySQL,PostgreSQL" />
+    <sql-case id="alter_table_rename_multi_tables" value="ALTER TABLE t_order RENAME TO t_order1, RENAME TO t_order2" db-types="MySQL" />
     <sql-case id="alter_table_rename_column" value="ALTER TABLE t_order RENAME COLUMN user_id to user_id1" db-types="PostgreSQL" />
     <sql-case id="alter_table_with_exist_index" value="ALTER TABLE t_order ADD PRIMARY KEY USING INDEX order_index" db-types="PostgreSQL" />
     <sql-case id="alter_table_with_bracket" value="ALTER TABLE [t_order] REBUILD" db-types="SQLServer" />

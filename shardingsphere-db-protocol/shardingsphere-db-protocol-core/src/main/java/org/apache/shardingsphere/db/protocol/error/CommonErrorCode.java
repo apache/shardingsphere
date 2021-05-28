@@ -29,25 +29,17 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     CIRCUIT_BREAK_MODE(1000, "C1000", "Circuit break mode is ON."),
     
-    SHARDING_TABLE_RULES_NOT_EXISTED(1101, "C1101", "Sharding table rule %s is not exist."),
+    SHARDING_TABLE_RULES_NOT_EXISTED(1101, "C1101", "Sharding table rules %s do not exist in schema %s."),
     
-    TABLES_IN_USED(1102, "C1102", "Tables %s in the rule are still in used."),
+    SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE(1102, "C1102", "Sharding table rules %s are still used by binding table rule."),
 
     RESOURCE_IN_USED(1103, "C1103", "Resources %s in the rule are still in used."),
     
     RESOURCE_NOT_EXIST(1104, "C1104", "Resources %s do not exist."),
     
-    REPLICA_QUERY_RULE_NOT_EXIST(1105, "C1105", "Replica query rule does not exist."),
-    
-    REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST(1106, "C1106", "Data sources %s in replica query rule do not exist."),
+    READWRITE_SPLITTING_RULES_NOT_EXIST(1105, "C1105", "Readwrite splitting rules %s do not exist in schema %s."),
     
     ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST(1107, "C1107", "Data sources %s in replica query rule already exists."),
-
-    READWRITE_SPLITTING_RULE_EXIST(1108, "C1108", "Readwrite splitting rule already exists in schema %s."),
-    
-    SHARDING_RULE_NOT_EXIST(1109, "C1109", "Sharding rule does not exist."),
-    
-    SHARDING_TABLE_RULE_EXIST(1110, "C1110", "Sharding table rules: [%s] already exists."),
     
     INVALID_RESOURCE(1111, "C1111", "Can not add invalid resources %s."),
     
@@ -57,9 +49,9 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     SHARDING_BROADCAST_EXIST(1114, "C1114", "Sharding broadcast table rules already exists in schema %s."),
 
-    SHARDING_BINDING_TABLE_RULES_NOT_EXIST(1115, "C1115", "Sharding binding table rules not exist in schema %s."),
+    SHARDING_BINDING_TABLE_RULES_NOT_EXIST(1115, "C1115", "Sharding binding table rules do not exist in schema %s."),
 
-    SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST(1116, "C1116", "Sharding broadcast table rules not exist in schema %s."),
+    SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST(1116, "C1116", "Sharding broadcast table rules do not exist in schema %s."),
 
     INVALID_LOAD_BALANCERS(1117, "C1117", "Invalid load balancers %s."),
 
@@ -67,15 +59,13 @@ public enum CommonErrorCode implements SQLErrorCode {
 
     INVALID_DATABASE_DISCOVERY_TYPES(1119, "C1119", "Invalid database discovery types %s."),
 
-    DATABASE_DISCOVERY_RULE_NOT_EXIST(1120, "C1120", "Database discovery rule not exist in schema %s."),
-
-    DATABASE_DISCOVERY_RULE_DATASOURCE_NOT_EXIST(1121, "C1121", "Database discovery rules %s do not exist."),
-
-    ENCRYPT_RULE_EXIST(1122, "C1122", "Encrypt rule already exists in schema %s."),
+    DATABASE_DISCOVERY_RULES_NOT_EXIST(1120, "C1120", "Database discovery rules %s do not exist in schema %s."),
 
     INVALID_ENCRYPTORS(1123, "C1123", "Invalid encryptors %s."),
 
-    ENCRYPT_RULES_NOT_EXIST(1124, "C1124", "Encrypt rules %s do not exist."),
+    ENCRYPT_RULES_NOT_EXIST(1124, "C1124", "Encrypt rules %s do not exist in schema %s."),
+
+    DUPLICATE_RULE_NAMES(1125, "C1125", "Duplicate rule names %s in schema %s"),
 
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     

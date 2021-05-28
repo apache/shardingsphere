@@ -22,14 +22,14 @@ import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -42,28 +42,24 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
                 : sqlStatementContext.getTablesContext().getTableNames();
-        if (!shardingRule.tableRuleExists(tableNames) && !shardingRule.isSingleTablesInSameDataSource(tableNames)) {
+        Optional<SimpleTableSegment> renameTable = sqlStatementContext.getSqlStatement().getRenameTable();
+        if (!renameTable.isPresent() && !shardingRule.tableRuleExists(tableNames) && !shardingRule.isSingleTablesInSameDataSource(tableNames)) {
             throw new ShardingSphereException("Single tables must be in the same datasource.");
         }
+        if (renameTable.isPresent() && containsShardingBroadcastTable(shardingRule, tableNames)) {
+            throw new ShardingSphereException("ALTER TABLE ... RENAME TO ... statement can not support sharding tables and broadcast tables.");
+        }
+    }
+    
+    private boolean containsShardingBroadcastTable(final ShardingRule shardingRule, final Collection<String> tableNames) {
+        return shardingRule.tableRuleExists(tableNames) || tableNames.stream().anyMatch(shardingRule::isBroadcastTable);
     }
     
     @Override
-    public void postValidate(final AlterTableStatement sqlStatement, final RouteContext routeContext) {
-        if (routeContext.getRouteUnits().isEmpty()) {
-            throw new ShardingSphereException("Can not get route result, please check your sharding table config.");
+    public void postValidate(final ShardingRule shardingRule, final AlterTableStatement sqlStatement, final RouteContext routeContext) {
+        String primaryTable = sqlStatement.getTable().getTableName().getIdentifier().getValue();
+        if (isRouteUnitPrimaryTableDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
+            throw new ShardingSphereException("ALTER TABLE ... statement route unit size must be same with primary table '%s' data node size.", primaryTable);
         }
-        String primaryTableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        for (String each : routeContext.getActualDataSourceNames()) {
-            if (containsSameDataNodeResult(primaryTableName, each, routeContext.getRouteUnits())) { 
-                throw new ShardingSphereException("ALTER TABLE ... statement can not support unbinding sharding tables route to multiple same data nodes.");
-            }
-        }
-    }
-    
-    private boolean containsSameDataNodeResult(final String primaryTableName, final String actualDataSourceName, final Collection<RouteUnit> routeUnits) {
-        Collection<RouteMapper> tableMappers = routeUnits.stream().filter(routeUnit -> routeUnit.getDataSourceMapper()
-                .getActualName().equals(actualDataSourceName)).flatMap(routeUnit -> routeUnit.getTableMappers().stream()).collect(Collectors.toList());
-        return tableMappers.stream().filter(routeMapper -> routeMapper.getLogicName().equals(primaryTableName))
-                .collect(Collectors.groupingBy(RouteMapper::getActualName)).entrySet().stream().anyMatch(each -> each.getValue().size() > 1);
     }
 }

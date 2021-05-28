@@ -28,8 +28,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleDataSourcesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -114,14 +113,14 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
+    @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
     public void assertExecuteWithNotExistReadwriteSplittingRule() {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
     }
 
-    @Test(expected = ReadwriteSplittingRuleDataSourcesNotExistedException.class)
-    public void assertExecuteWithNoAlteredReadwriteSplittingRuleDataSources() {
+    @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
+    public void assertExecuteWithNoAlteredReadwriteSplittingRules() {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment();
         readwriteSplittingRuleSegment.setName("pr_ds");
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");

@@ -27,12 +27,13 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.DuplicateRuleNamesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
@@ -43,7 +44,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
@@ -105,10 +109,43 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    @Test(expected = ReadwriteSplittingRuleCreateExistsException.class)
-    public void assertExecuteWithExistReadwriteSplittingRule() {
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
+    @Test(expected = DuplicateRuleNamesException.class)
+    public void assertExecuteWithDuplicateRuleNames() {
+        ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration
+                = new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "",
+                "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "test");
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new ReadwriteSplittingRuleConfiguration(Collections
+                .singleton(readwriteSplittingDataSourceRuleConfiguration), Maps.newHashMap())));
+        ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment();
+        readwriteSplittingRuleSegment.setName("pr_ds");
+        readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
+        readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
+        readwriteSplittingRuleSegment.setLoadBalancer("TEST");
+        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         handler.execute("test", sqlStatement);
+    }
+
+    @Test
+    public void assertExecuteWithExistReadwriteConfiguration() {
+        ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration
+                = new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds_1", "",
+                "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "test");
+        Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+        dataSources.add(readwriteSplittingDataSourceRuleConfiguration);
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new ReadwriteSplittingRuleConfiguration(dataSources, new HashMap<>())));
+        ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment();
+        readwriteSplittingRuleSegment.setName("pr_ds");
+        readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
+        readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
+        readwriteSplittingRuleSegment.setLoadBalancer("TEST");
+        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
+        Map<String, DataSource> dataSourceMap = mock(Map.class);
+        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
+        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
+        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
+        assertNotNull(responseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @Test(expected = ResourceNotExistedException.class)

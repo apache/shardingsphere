@@ -26,8 +26,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleDataSourcesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -102,14 +101,14 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
+    @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
     public void assertExecuteWithNotExistReadwriteSplittingRule() {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
     }
 
-    @Test(expected = ReadwriteSplittingRuleDataSourcesNotExistedException.class)
-    public void assertExecuteWithNoDroppedReadwriteSplittingRuleDataSources() {
+    @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
+    public void assertExecuteWithNoDroppedReadwriteSplittingRules() {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("pr_ds"));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
         handler.execute("test", sqlStatement);

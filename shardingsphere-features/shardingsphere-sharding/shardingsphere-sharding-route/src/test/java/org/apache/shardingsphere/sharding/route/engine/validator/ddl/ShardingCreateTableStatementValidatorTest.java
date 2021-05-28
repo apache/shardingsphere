@@ -19,10 +19,15 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingCreateTableStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -32,17 +37,26 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class ShardingCreateTableStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
+    
+    @Mock
+    private RouteContext routeContext;
     
     @Test(expected = TableExistsException.class)
     public void assertValidateMySQLCreateTable() {
@@ -107,7 +121,77 @@ public final class ShardingCreateTableStatementValidatorTest {
     private void assertValidateCreateTableIfNotExists(final CreateTableStatement sqlStatement) {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable("t_order")).thenReturn(true);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+    }
+    
+    @Test
+    public void assertPostValidateCreateTableWithSameRouteResultShardingTableForPostgreSQL() {
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
+        when(shardingRule.isShardingTable("t_order")).thenReturn(true);
+        when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertPostValidateCreateTableWithDifferentRouteResultShardingTableForPostgreSQL() {
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
+        when(shardingRule.isShardingTable("t_order")).thenReturn(true);
+        when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+    }
+    
+    @Test
+    public void assertPostValidateCreateTableWithSameRouteResultBroadcastTableForPostgreSQL() {
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_config")));
+        when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
+        when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertPostValidateCreateTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_config")));
+        when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
+        when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+    }
+    
+    @Test
+    public void assertPostValidateCreateTableWithSameRouteResultSingleTableForPostgreSQL() {
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_single")));
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertPostValidateCreateTableWithDifferentRouteResultSingleTableForPostgreSQL() {
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_single")));
+        Collection<RouteUnit> routeUnits = new LinkedList<>();
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
+        routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
+        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        new ShardingCreateTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
     }
 }

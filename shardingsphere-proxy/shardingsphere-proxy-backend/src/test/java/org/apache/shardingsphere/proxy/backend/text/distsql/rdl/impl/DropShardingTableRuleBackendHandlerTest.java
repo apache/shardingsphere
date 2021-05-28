@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -47,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
@@ -74,9 +74,6 @@ public final class DropShardingTableRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
-    @Mock
-    private ShardingSphereSchema shardingSphereSchema;
     
     private DropShardingTableRuleBackendHandler handler = new DropShardingTableRuleBackendHandler(sqlStatement, backendConnection);
     
@@ -86,10 +83,9 @@ public final class DropShardingTableRuleBackendHandlerTest {
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(shardingSphereMetaData.getSchema()).thenReturn(shardingSphereSchema);
     }
     
-    @Test(expected = ShardingRuleNotExistedException.class)
+    @Test(expected = ShardingTableRuleNotExistedException.class)
     public void assertExecuteWithoutShardingRule() {
         handler.execute("test", sqlStatement);
     }
@@ -102,12 +98,11 @@ public final class DropShardingTableRuleBackendHandlerTest {
         handler.execute("test", sqlStatement);
     }
 
-    @Test(expected = TablesInUsedException.class)
-    public void assertExecuteWithTableRuleInUsed() {
-        TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));
+    @Test(expected = ShardingTableRulesInUsedException.class)
+    public void assertExecuteWithBindingTableRule() {
+        TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order_item"));
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getTableNames()).thenReturn(Arrays.asList(tableRuleSegment));
-        when(shardingSphereSchema.containsTable(eq("t_order"))).thenReturn(true);
         handler.execute("test", sqlStatement);
     }
 
@@ -123,12 +118,15 @@ public final class DropShardingTableRuleBackendHandlerTest {
                 .getMetaData("test").getRuleMetaData().getConfigurations().iterator().next();
         Collection<String> shardingTables = getShardingTables(shardingRuleConfiguration);
         assertTrue(!shardingTables.contains("t_order"));
+        Collection<String> bindingTables = getBindingTables(shardingRuleConfiguration);
+        assertTrue(bindingTables.contains("t_order_item"));
     }
     
     private Collection<RuleConfiguration> buildShardingConfigurations() {
         ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
         configuration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
         configuration.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
+        configuration.setBindingTableGroups(Collections.singletonList("t_order_item"));
         return new ArrayList<>(Collections.singletonList(configuration));
     }
 
@@ -137,5 +135,11 @@ public final class DropShardingTableRuleBackendHandlerTest {
         result.addAll(shardingRuleConfiguration.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         result.addAll(shardingRuleConfiguration.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         return result;
+    }
+
+    private Collection<String> getBindingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
+        Collection<String> bindTables = new LinkedHashSet<>();
+        shardingRuleConfiguration.getBindingTableGroups().forEach(each -> bindTables.addAll(Splitter.on(",").splitToList(each)));
+        return bindTables;
     }
 }

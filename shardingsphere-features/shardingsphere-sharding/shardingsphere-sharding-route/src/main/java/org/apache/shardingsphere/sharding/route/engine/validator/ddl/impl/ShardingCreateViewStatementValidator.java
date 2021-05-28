@@ -47,6 +47,6 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     }
     
     @Override
-    public void postValidate(final CreateViewStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final CreateViewStatement sqlStatement, final RouteContext routeContext) {
     }
 }

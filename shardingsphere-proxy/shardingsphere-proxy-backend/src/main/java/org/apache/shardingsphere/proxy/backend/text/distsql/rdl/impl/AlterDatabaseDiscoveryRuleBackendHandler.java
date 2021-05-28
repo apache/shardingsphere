@@ -27,12 +27,12 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDatabas
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleDataSourcesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -53,36 +53,51 @@ import java.util.stream.Collectors;
  */
 public final class AlterDatabaseDiscoveryRuleBackendHandler extends SchemaRequiredBackendHandler<AlterDatabaseDiscoveryRuleStatement> {
 
+    static {
+        ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
+    }
+
     public AlterDatabaseDiscoveryRuleBackendHandler(final AlterDatabaseDiscoveryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
     public ResponseHeader execute(final String schemaName, final AlterDatabaseDiscoveryRuleStatement statement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst();
-        if (!ruleConfig.isPresent()) {
-            throw new DatabaseDiscoveryRuleNotExistedException(schemaName);
-        }
-        check(schemaName, statement, ruleConfig.get());
-        YamlDatabaseDiscoveryRuleConfiguration config = alter(ruleConfig.get(), statement);
-        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
+        Collection<String> alteredRuleNames = getAlteredRuleNames(statement);
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName, alteredRuleNames);
+        check(schemaName, statement, databaseDiscoveryRuleConfiguration, alteredRuleNames);
+        YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration = alter(databaseDiscoveryRuleConfiguration, statement);
+        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(yamlDatabaseDiscoveryRuleConfiguration));
         post(schemaName, rules);
         return new UpdateResponseHeader(statement);
     }
+
+    private Collection<String> getAlteredRuleNames(final AlterDatabaseDiscoveryRuleStatement statement) {
+        return statement.getDatabaseDiscoveryRules().stream().map(DatabaseDiscoveryRuleSegment::getName).collect(Collectors.toList());
+    }
+
+    private DatabaseDiscoveryRuleConfiguration getDatabaseDiscoveryRuleConfiguration(final String schemaName, final Collection<String> alteredRuleNames) {
+        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
+                .filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst();
+        if (!ruleConfig.isPresent()) {
+            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, alteredRuleNames);
+        }
+        return ruleConfig.get();
+    }
     
-    private void check(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration) {
-        checkAlteredDataSources(databaseDiscoveryRuleConfiguration, sqlStatement);
+    private void check(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
+                       final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration, final Collection<String> alteredRuleNames) {
+        checkAlteredRules(schemaName, databaseDiscoveryRuleConfiguration, alteredRuleNames);
         checkResources(schemaName, sqlStatement);
         checkDiscoveryType(sqlStatement);
     }
 
-    private void checkAlteredDataSources(final DatabaseDiscoveryRuleConfiguration ruleConfig, final AlterDatabaseDiscoveryRuleStatement statement) {
-        Set<String> existDataSourceNames = ruleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
-        Collection<String> notExistDataSourceNames = statement.getDatabaseDiscoveryRules().stream().map(DatabaseDiscoveryRuleSegment::getName)
-                .filter(each -> !existDataSourceNames.contains(each)).collect(Collectors.toList());
-        if (!notExistDataSourceNames.isEmpty()) {
-            throw new DatabaseDiscoveryRuleDataSourcesNotExistedException(notExistDataSourceNames);
+    private void checkAlteredRules(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration, final Collection<String> alteredRuleNames) {
+        Set<String> existRuleNames = databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Collection<String> notExistRuleNames = alteredRuleNames.stream()
+                .filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
+        if (!notExistRuleNames.isEmpty()) {
+            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistRuleNames);
         }
     }
 
