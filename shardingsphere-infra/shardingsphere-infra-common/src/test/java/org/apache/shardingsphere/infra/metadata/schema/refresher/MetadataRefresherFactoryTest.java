@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -61,7 +60,7 @@ public final class MetadataRefresherFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithSQLStatementNotNeedRefresh() {
-        assertFalse(MetadataRefresherFactory.newInstance(mock(AlterIndexStatement.class)).isPresent());
+    public void assertNewInstanceWithAlterIndexStatement() {
+        assertTrue(MetadataRefresherFactory.newInstance(mock(AlterIndexStatement.class)).isPresent());
     }
 }

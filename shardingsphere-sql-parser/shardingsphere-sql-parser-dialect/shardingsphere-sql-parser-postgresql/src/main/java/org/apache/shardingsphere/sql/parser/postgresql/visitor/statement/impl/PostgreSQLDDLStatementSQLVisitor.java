@@ -307,6 +307,9 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
         PostgreSQLAlterIndexStatement result = new PostgreSQLAlterIndexStatement();
         result.setIndex((IndexSegment) visit(ctx.indexName()));
+        if (null != ctx.alterIndexDefinitionClause().renameIndexSpecification()) {
+            result.setRenameIndex((IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName()));
+        }
         return result;
     }
     
