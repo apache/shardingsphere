@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.governance.core.lock.impl;
 
 /**
- * Inner lock released event.
+ * Lock ack.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InnerLockReleasedEvent {
+public enum LockAck {
     
-    private final String lockName;
+    LOCKED, UNLOCKED
 }

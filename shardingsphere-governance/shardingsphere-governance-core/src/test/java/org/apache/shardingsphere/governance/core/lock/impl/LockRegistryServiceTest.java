@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.service.state;
+package org.apache.shardingsphere.governance.core.lock.impl;
 
-import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,13 +49,13 @@ public final class LockRegistryServiceTest {
     @Test
     public void assertTryLock() {
         lockRegistryService.tryLock("test", 50L);
-        verify(registryCenterRepository).tryLock(eq(new LockNode().getLockNodePath("test")), eq(50L), eq(TimeUnit.MILLISECONDS));
+        verify(registryCenterRepository).tryLock(LockNode.getLockNodePath("test"), 50L, TimeUnit.MILLISECONDS);
     }
     
     @Test
     public void assertReleaseLock() {
         lockRegistryService.releaseLock("test");
-        verify(registryCenterRepository).releaseLock(eq(new LockNode().getLockNodePath("test")));
+        verify(registryCenterRepository).releaseLock(LockNode.getLockNodePath("test"));
     }
     
     @Test

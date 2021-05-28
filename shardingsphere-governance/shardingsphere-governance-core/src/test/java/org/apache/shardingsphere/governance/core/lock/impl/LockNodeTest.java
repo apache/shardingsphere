@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.lock.node;
+package org.apache.shardingsphere.governance.core.lock.impl;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,30 +24,23 @@ import static org.junit.Assert.assertThat;
 
 public final class LockNodeTest {
     
-    private LockNode lockNode;
-    
-    @Before
-    public void setUp() {
-        lockNode = new LockNode();
-    }
-    
     @Test
     public void assertGetLockNodePath() {
-        assertThat(lockNode.getLockNodePath("test"), is("/lock/locks/test"));
+        assertThat(LockNode.getLockNodePath("test"), is("/lock/locks/test"));
     }
     
     @Test
     public void assertGetLockName() {
-        assertThat(lockNode.getLockName("/lock/locks/sharding_db.test/_c_c2d-lock-00000").get(), is("sharding_db.test"));
+        assertThat(LockNode.getLockName("/lock/locks/sharding_db.test/_c_c2d-lock-00000").orElse(null), is("sharding_db.test"));
     }
     
     @Test
     public void assertGetLockAckNodePath() {
-        assertThat(lockNode.getLockedAckNodePath("test"), is("/lock/ack/test"));
+        assertThat(LockNode.getLockedAckNodePath("test"), is("/lock/ack/test"));
     }
     
     @Test
     public void assertGetLockedAckRootNodePah() {
-        assertThat(lockNode.getLockedAckRootNodePah(), is("/lock/ack"));
+        assertThat(LockNode.getLockedAckRootNodePah(), is("/lock/ack"));
     }
 }

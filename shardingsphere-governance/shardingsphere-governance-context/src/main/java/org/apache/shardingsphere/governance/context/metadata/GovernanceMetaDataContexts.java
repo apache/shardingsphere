@@ -21,7 +21,7 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.lock.GovernanceLock;
+import org.apache.shardingsphere.governance.core.lock.ShardingSphereDistributeLock;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataChangedEvent;
@@ -109,8 +109,9 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private ShardingSphereLock createShardingSphereLock() {
-        return metaDataContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.LOCK_ENABLED) ? new GovernanceLock(governanceFacade.getRegistryCenter(),
-                metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS)) : null;
+        return metaDataContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.LOCK_ENABLED)
+                ? new ShardingSphereDistributeLock(governanceFacade.getRegistryCenterRepository(), metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS))
+                : null;
     }
     
     @Override

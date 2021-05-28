@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.service.state;
+package org.apache.shardingsphere.governance.core.lock.impl;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.governance.core.lock.node.LockAck;
-import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
+import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Collection;
@@ -40,18 +39,15 @@ public final class LockRegistryService {
     
     private final RegistryCenterRepository repository;
     
-    private final LockNode lockNode;
-    
     public LockRegistryService(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
-        lockNode = new LockNode();
         initLockNode();
     }
     
     private void initLockNode() {
-        repository.persist(lockNode.getLockRootNodePath(), "");
-        repository.persist(lockNode.getLockedAckRootNodePah(), "");
+        repository.persist(LockNode.getLockRootNodePath(), "");
+        repository.persist(LockNode.getLockedAckRootNodePah(), "");
     }
     
     /**
@@ -62,7 +58,7 @@ public final class LockRegistryService {
      * @return true if get the lock, false if not
      */
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
-        return repository.tryLock(lockNode.getLockNodePath(lockName), timeoutMilliseconds, TimeUnit.MILLISECONDS);
+        return repository.tryLock(LockNode.getLockNodePath(lockName), timeoutMilliseconds, TimeUnit.MILLISECONDS);
     }
     
     /**
@@ -71,7 +67,7 @@ public final class LockRegistryService {
      * @param lockName lock name
      */
     public void releaseLock(final String lockName) {
-        repository.releaseLock(lockNode.getLockNodePath(lockName));
+        repository.releaseLock(LockNode.getLockNodePath(lockName));
     }
     
     /**
@@ -80,7 +76,7 @@ public final class LockRegistryService {
      * @param lockName lock name
      */
     public void ackLock(final String lockName) {
-        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.LOCKED.getValue());
+        repository.persistEphemeral(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.LOCKED.name());
     }
     
     /**
@@ -89,7 +85,7 @@ public final class LockRegistryService {
      * @param lockName lock name
      */
     public void ackUnlock(final String lockName) {
-        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.UNLOCKED.getValue());
+        repository.persistEphemeral(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)), LockAck.UNLOCKED.name());
     }
     
     /**
@@ -98,7 +94,7 @@ public final class LockRegistryService {
      * @param lockName lock name
      */
     public void deleteLockAck(final String lockName) {
-        repository.delete(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)));
+        repository.delete(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName)));
     }
     
     /**
@@ -108,7 +104,7 @@ public final class LockRegistryService {
      * @return true if all instances ack lock, false if not
      */
     public boolean checkLockAck(final String lockName) {
-        boolean result = checkAck(lockName, LockAck.LOCKED.getValue());
+        boolean result = checkAck(lockName, LockAck.LOCKED.name());
         if (!result) {
             releaseLock(lockName);
         }
@@ -122,7 +118,7 @@ public final class LockRegistryService {
      * @return true if all instances ack unlock, false if not
      */
     public boolean checkUnlockAck(final String lockName) {
-        return checkAck(lockName, LockAck.UNLOCKED.getValue());
+        return checkAck(lockName, LockAck.UNLOCKED.name());
     }
     
     private boolean checkAck(final String lockName, final String ackValue) {
@@ -146,6 +142,6 @@ public final class LockRegistryService {
     }
     
     private String loadLockAck(final String instanceId, final String lockName) {
-        return Strings.nullToEmpty(repository.get(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName))));
+        return Strings.nullToEmpty(repository.get(LockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName))));
     }
 }

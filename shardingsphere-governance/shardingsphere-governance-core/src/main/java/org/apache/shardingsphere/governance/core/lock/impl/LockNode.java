@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.lock.node;
+package org.apache.shardingsphere.governance.core.lock.impl;
 
 import com.google.common.base.Joiner;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -26,6 +28,7 @@ import java.util.regex.Pattern;
 /**
  * Lock node.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LockNode {
     
     private static final String LOCK_NODE_ROOT = "lock";
@@ -39,7 +42,7 @@ public final class LockNode {
      * 
      * @return lock root node path
      */
-    public String getLockRootNodePath() {
+    public static String getLockRootNodePath() {
         return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKS_NODE);
     }
     
@@ -49,7 +52,7 @@ public final class LockNode {
      * @param lockName lock name
      * @return lock node path
      */
-    public String getLockNodePath(final String lockName) {
+    public static String getLockNodePath(final String lockName) {
         return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKS_NODE, lockName);
     }
     
@@ -58,7 +61,7 @@ public final class LockNode {
      * 
      * @return locked ack root node path
      */
-    public String getLockedAckRootNodePah() {
+    public static String getLockedAckRootNodePah() {
         return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_ACK_NODE);
     }
     
@@ -68,7 +71,7 @@ public final class LockNode {
      * @param ackLockName ack lock name
      * @return locked ack node path
      */
-    public String getLockedAckNodePath(final String ackLockName) {
+    public static String getLockedAckNodePath(final String ackLockName) {
         return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_ACK_NODE, ackLockName);
     }
     
@@ -78,7 +81,7 @@ public final class LockNode {
      * @param lockNodePath lock node path
      * @return lock name
      */
-    public Optional<String> getLockName(final String lockNodePath) {
+    public static Optional<String> getLockName(final String lockNodePath) {
         Pattern pattern = Pattern.compile(getLockRootNodePath() + "/" + "(.+)/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(lockNodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();

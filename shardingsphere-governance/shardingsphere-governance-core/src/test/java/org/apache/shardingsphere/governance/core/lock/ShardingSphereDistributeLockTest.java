@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.governance.core.lock;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.service.state.LockRegistryService;
+import org.apache.shardingsphere.governance.core.lock.impl.LockRegistryService;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.lang.reflect.Field;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -31,32 +33,32 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GovernanceLockTest {
+public final class ShardingSphereDistributeLockTest {
     
     @Mock
-    private LockRegistryService lockRegistryService;
+    private LockRegistryService lockService;
     
-    private GovernanceLock lock;
+    private final ShardingSphereDistributeLock lock = new ShardingSphereDistributeLock(mock(RegistryCenterRepository.class), 50L);
     
     @Before
-    public void setUp() {
-        RegistryCenter registryCenter = mock(RegistryCenter.class);
-        when(registryCenter.getLockService()).thenReturn(lockRegistryService);
-        lock = new GovernanceLock(registryCenter, 50L);
+    public void setUp() throws ReflectiveOperationException {
+        Field field = lock.getClass().getDeclaredField("lockService");
+        field.setAccessible(true);
+        field.set(lock, lockService);
     }
     
     @Test
     public void assertTryLock() {
-        when(lockRegistryService.tryLock(eq("test"), eq(50L))).thenReturn(Boolean.TRUE);
+        when(lockService.tryLock(eq("test"), eq(50L))).thenReturn(Boolean.TRUE);
         lock.tryLock("test", 50L);
-        verify(lockRegistryService).tryLock(eq("test"), eq(50L));
+        verify(lockService).tryLock(eq("test"), eq(50L));
     }
     
     @Test
     public void assertReleaseLock() {
-        when(lockRegistryService.checkUnlockAck("test")).thenReturn(Boolean.TRUE);
+        when(lockService.checkUnlockAck("test")).thenReturn(Boolean.TRUE);
         lock.releaseLock("test");
-        verify(lockRegistryService).checkUnlockAck(eq("test"));
-        verify(lockRegistryService).releaseLock(eq("test"));
+        verify(lockService).checkUnlockAck(eq("test"));
+        verify(lockService).releaseLock(eq("test"));
     }
 }
