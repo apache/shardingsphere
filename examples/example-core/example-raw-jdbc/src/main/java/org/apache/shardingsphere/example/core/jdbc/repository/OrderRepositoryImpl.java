@@ -100,13 +100,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     
     protected List<Order> getOrders(final String sql) throws SQLException {
         List<Order> result = new LinkedList<>();
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-             connection = dataSource.getConnection();
-             preparedStatement = connection.prepareStatement(sql);
-             resultSet = preparedStatement.executeQuery();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
                 Order order = new Order();
                 order.setOrderId(resultSet.getLong(1));
@@ -114,16 +110,6 @@ public class OrderRepositoryImpl implements OrderRepository {
                 order.setAddressId(resultSet.getLong(3));
                 order.setStatus(resultSet.getString(4));
                 result.add(order);
-            }
-        } finally {
-            if (resultSet != null) {
-                resultSet.close();
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
             }
         }
         return result;
