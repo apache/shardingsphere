@@ -51,13 +51,13 @@ public final class LockRegistryServiceTest {
     @Test
     public void assertTryLock() {
         lockRegistryService.tryLock("test", 50L);
-        verify(registryCenterRepository).tryLock(eq(new LockNode().getLockNodePath("test")), eq(50L), eq(TimeUnit.MILLISECONDS));
+        verify(registryCenterRepository).tryLock(eq(LockNode.getLockNodePath("test")), eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test
     public void assertReleaseLock() {
         lockRegistryService.releaseLock("test");
-        verify(registryCenterRepository).releaseLock(eq(new LockNode().getLockNodePath("test")));
+        verify(registryCenterRepository).releaseLock(eq(LockNode.getLockNodePath("test")));
     }
     
     @Test
