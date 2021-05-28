@@ -46,6 +46,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShar
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -159,6 +160,12 @@ public final class DistSQLStatementParserEngineTest {
     private static final String RQL_SHOW_SHARDING_BINDING_TABLE_RULES = "SHOW SHARDING BINDING TABLE RULES FROM sharding_db";
 
     private static final String RQL_SHOW_SHARDING_BROADCAST_TABLE_RULES = "SHOW SHARDING BROADCAST TABLE RULES FROM sharding_db";
+
+    private static final String RQL_SHOW_SHARDING_TABLE_RULES = "SHOW SHARDING TABLE RULES FROM schemaName";
+
+    private static final String RQL_SHOW_SHARDING_TABLE_RULE = "SHOW SHARDING TABLE RULE t_order";
+
+    private static final String RQL_SHOW_SHARDING_TABLE_RULE_FROM = "SHOW SHARDING TABLE RULE t_order FROM schemaName";
 
     private static final String RQL_SHOW_READWRITE_SPLITTING_RULES = "SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db";
 
@@ -430,6 +437,28 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_DROP_ENCRYPT_RULE);
         assertTrue(sqlStatement instanceof DropEncryptRuleStatement);
         assertThat(((DropEncryptRuleStatement) sqlStatement).getTables(), is(Arrays.asList("t_encrypt", "t_encrypt_order")));
+    }
+
+    @Test
+    public void assertParseShowShardingTableRules() {
+        SQLStatement sqlStatement = engine.parse(RQL_SHOW_SHARDING_TABLE_RULES);
+        assertTrue(sqlStatement instanceof ShowShardingTableRulesStatement);
+        assertThat(((ShowShardingTableRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("schemaName"));
+    }
+
+    @Test
+    public void assertParseShowShardingTableRule() {
+        SQLStatement sqlStatement = engine.parse(RQL_SHOW_SHARDING_TABLE_RULE);
+        assertTrue(sqlStatement instanceof ShowShardingTableRulesStatement);
+        assertThat(((ShowShardingTableRulesStatement) sqlStatement).getTableName(), is("t_order"));
+    }
+
+    @Test
+    public void assertParseShowShardingTableRuleFrom() {
+        SQLStatement sqlStatement = engine.parse(RQL_SHOW_SHARDING_TABLE_RULE_FROM);
+        assertTrue(sqlStatement instanceof ShowShardingTableRulesStatement);
+        assertThat(((ShowShardingTableRulesStatement) sqlStatement).getTableName(), is("t_order"));
+        assertThat(((ShowShardingTableRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("schemaName"));
     }
 
     @Test
