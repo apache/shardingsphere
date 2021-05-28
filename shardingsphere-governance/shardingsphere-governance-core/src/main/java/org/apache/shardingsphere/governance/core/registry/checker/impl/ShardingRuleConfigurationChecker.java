@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 /**
- * Algorithm provided sharding ruleConfiguration checker.
+ * Sharding rule configuration checker.
  */
-public final class AlgorithmProvidedShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<AlgorithmProvidedShardingRuleConfiguration> {
+public final class ShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<ShardingRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final AlgorithmProvidedShardingRuleConfiguration ruleConfiguration) {
+    public void check(final String schemaName, final ShardingRuleConfiguration ruleConfiguration) {
         Preconditions.checkState(hasAvailableTableConfigurations(ruleConfiguration),
                 "No available rule configs in `%s` for governance.", schemaName);
     }

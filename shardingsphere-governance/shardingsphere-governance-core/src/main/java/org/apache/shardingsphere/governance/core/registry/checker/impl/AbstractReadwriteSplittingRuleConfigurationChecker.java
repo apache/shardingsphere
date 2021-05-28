@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 

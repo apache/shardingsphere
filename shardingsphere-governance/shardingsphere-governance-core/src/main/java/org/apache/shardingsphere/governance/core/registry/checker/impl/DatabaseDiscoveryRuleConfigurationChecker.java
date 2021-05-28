@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
-import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 
 /**
- * Algorithm provided readwrite-splitting ruleConfiguration checker.
+ * Database discovery rule configuration checker.
  */
-public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker extends AbstractReadwriteSplittingRuleConfigurationChecker<AlgorithmProvidedReadwriteSplittingRuleConfiguration> { 
+public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConfigurationChecker<DatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfiguration) {
-        checkDataSources(schemaName, ruleConfiguration.getDataSources());
+    public void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration ruleConfiguration) {
+        ruleConfiguration.getDataSources().forEach(each -> Preconditions.checkState(
+                !each.getDiscoveryTypeName().isEmpty(), "No available DatabaseDiscovery rule configuration in `%s` for governance.", schemaName));
     }
 }

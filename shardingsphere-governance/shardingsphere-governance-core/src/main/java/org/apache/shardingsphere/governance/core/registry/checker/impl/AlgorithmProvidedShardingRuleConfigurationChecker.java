@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 
 /**
- * Shadow rule configuration checker.
+ * Algorithm provided sharding ruleConfiguration checker.
  */
-public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
+public final class AlgorithmProvidedShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<AlgorithmProvidedShardingRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final ShadowRuleConfiguration ruleConfiguration) {
-        boolean isShadow = !ruleConfiguration.getColumn().isEmpty() && null != ruleConfiguration.getSourceDataSourceNames() && null != ruleConfiguration.getShadowDataSourceNames();
-        Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
+    public void check(final String schemaName, final AlgorithmProvidedShardingRuleConfiguration ruleConfiguration) {
+        Preconditions.checkState(hasAvailableTableConfigurations(ruleConfiguration),
+                "No available rule configs in `%s` for governance.", schemaName);
     }
 }
