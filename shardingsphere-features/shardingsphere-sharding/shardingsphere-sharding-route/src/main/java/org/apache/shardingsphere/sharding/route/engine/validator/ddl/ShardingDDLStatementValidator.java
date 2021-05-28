@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableExce
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
@@ -91,5 +92,15 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
         int primaryTableDataNodeSize = shardingRule.isShardingTable(primaryTable) || shardingRule.isBroadcastTable(primaryTable)
                 ? shardingRule.getTableRule(primaryTable).getActualDataNodes().size() : 1;
         return primaryTableDataNodeSize != routeContext.getRouteUnits().size();
+    }
+    
+    /**
+     * Judge whether schema contains index or not.
+     *
+     * @param schema ShardingSphere schema
+     * @param index index
+     */
+    protected boolean isSchemaContainsIndex(final ShardingSphereSchema schema, final IndexSegment index) {
+        return schema.getAllTableNames().stream().anyMatch(each -> schema.get(each).getIndexes().containsKey(index.getIdentifier().getValue()));
     }
 }

@@ -47,6 +47,7 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final AlterViewStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext, 
+                             final RouteContext routeContext, final ShardingSphereSchema schema) {
     }
 }

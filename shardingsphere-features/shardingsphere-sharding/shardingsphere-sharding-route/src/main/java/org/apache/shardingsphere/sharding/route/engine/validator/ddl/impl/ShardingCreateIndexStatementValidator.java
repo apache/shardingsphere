@@ -21,37 +21,31 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Sharding prepare statement validator.
+ * Sharding create index statement validator.
  */
-public final class ShardingPrepareStatementValidator extends ShardingDDLStatementValidator<PostgreSQLPrepareStatement> {
+public final class ShardingCreateIndexStatementValidator extends ShardingDDLStatementValidator<CreateIndexStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<PostgreSQLPrepareStatement> sqlStatementContext, 
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateIndexStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        if (!shardingRule.tableRuleExists(tableNames) && !shardingRule.isSingleTablesInSameDataSource(tableNames)) {
-            throw new ShardingSphereException("Single tables must be in the same datasource.");
+        validateTableExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        String indexName = sqlStatementContext.getSqlStatement().getIndex().getIdentifier().getValue();
+        if (schema.get(tableName).getIndexes().containsKey(indexName)) {
+            throw new ShardingSphereException("Index '%s' already exists.", indexName);
         }
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PostgreSQLPrepareStatement> sqlStatementContext, 
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateIndexStatement> sqlStatementContext, 
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
-        if (routeContext.getRouteUnits().isEmpty()) {
-            throw new ShardingSphereException("Can not get route result, please check your sharding table config.");
-        }
-        if (routeContext.getRouteUnits().stream().collect(Collectors.groupingBy(RouteUnit::getDataSourceMapper)).entrySet().stream().anyMatch(each -> each.getValue().size() > 1)) {
-            throw new ShardingSphereException("Prepare ... statement can not support sharding tables route to same data sources.");
-        }
     }
 }
