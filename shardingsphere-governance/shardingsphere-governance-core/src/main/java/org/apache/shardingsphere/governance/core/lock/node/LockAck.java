@@ -1,16 +1,16 @@
 package org.apache.shardingsphere.governance.core.lock.node;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Lock ack.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public enum LockAck {
     
     LOCKED("LOCKED"), UNLOCKED("UNLOCKED");
     
-    private String value;
+    private final String value;
 }
