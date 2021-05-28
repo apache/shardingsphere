@@ -19,8 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.SchemaBasedRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Schema rule registry service.
@@ -59,14 +57,12 @@ public final class SchemaRuleRegistryService implements SchemaBasedRegistryServi
         repository.persist(SchemaMetadataNode.getRulePath(schemaName), YamlEngine.marshal(createYamlRuleConfigurations(schemaName, configs)));
     }
     
+    @SuppressWarnings("unchecked")
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigs) {
         Collection<RuleConfiguration> configs = new LinkedList<>();
         for (RuleConfiguration each : ruleConfigs) {
-            Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(each);
-            if (checker.isPresent()) {
-                checker.get().check(schemaName, each);
-                configs.add(each);
-            }
+            RuleConfigurationCheckerFactory.newInstance(each).check(schemaName, each);
+            configs.add(each);
         }
         return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
     }

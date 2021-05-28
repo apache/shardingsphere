@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker.impl;
+package org.apache.shardingsphere.readwritesplitting.common.rule.checker;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
@@ -32,11 +32,10 @@ import java.util.Collection;
  */
 public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
-    protected void checkDataSources(final String schemaName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
+    protected final void checkDataSources(final String schemaName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
         dataSources.forEach(each -> {
             if (Strings.isNullOrEmpty(each.getAutoAwareDataSourceName())) {
-                Preconditions.checkState(
-                        !each.getWriteDataSourceName().isEmpty(), "No available readwrite-splitting rule configuration in `%s` for governance.", schemaName);
+                Preconditions.checkState(!each.getWriteDataSourceName().isEmpty(), "No available readwrite-splitting rule configuration in `%s` for governance.", schemaName);
             }
         });
     }

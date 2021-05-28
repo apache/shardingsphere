@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker.impl;
+package org.apache.shardingsphere.sharding.rule.checker;
 
-import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -29,11 +29,11 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
  */
 public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
-    protected boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration config) {
+    protected final boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration config) {
         return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
     
-    protected boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
+    protected final boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
         return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
 }

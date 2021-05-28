@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.driver.governance.api;
 
+import org.apache.shardingsphere.driver.governance.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -45,14 +45,14 @@ public final class GovernanceShardingSphereDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceWhenRuleConfigurationsNotEmpty() throws SQLException {
-        DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singletonList(mock(RuleConfiguration.class)),
+        DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singletonList(new TestRuleConfiguration()),
                 new Properties(), createGovernanceConfiguration());
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
     }
     
     @Test
     public void assertCreateDataSourceWithGivenDataSource() throws SQLException {
-        DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSource(), Collections.singletonList(mock(RuleConfiguration.class)),
+        DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(createDataSource(), Collections.singletonList(new TestRuleConfiguration()),
                 new Properties(), createGovernanceConfiguration());
         assertTrue(dataSource instanceof GovernanceShardingSphereDataSource);
     }

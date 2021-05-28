@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker.impl;
+package org.apache.shardingsphere.encrypt.rule.checker;
 
-import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 /**
- * Encrypt rule configuration checker.
+ * Abstract encrypt rule configuration checker.
+ * 
+ * @param <T> rule configuration
  */
-public final class EncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<EncryptRuleConfiguration> {
+public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
-    @Override
-    public void check(final String schemaName, final EncryptRuleConfiguration ruleConfiguration) {
-        Preconditions.checkState(checkEncryptorsNotEmpty(ruleConfiguration), "No available encrypt rule configuration in `%s` for governance.", schemaName);
+    protected final boolean checkEncryptorsNotEmpty(final EncryptRuleConfiguration ruleConfiguration) {
+        return !ruleConfiguration.getEncryptors().isEmpty();
+    }
+    
+    protected final boolean checkEncryptorsNotEmpty(final AlgorithmProvidedEncryptRuleConfiguration ruleConfiguration) {
+        return !ruleConfiguration.getEncryptors().isEmpty();
     }
 }

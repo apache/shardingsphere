@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker.impl;
+package org.apache.shardingsphere.driver.governance.fixture;
 
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 
-/**
- * Readwrite-splitting rule configuration checker.
- */
-public final class ReadwriteSplittingRuleConfigurationChecker extends AbstractReadwriteSplittingRuleConfigurationChecker<ReadwriteSplittingRuleConfiguration> {
+public final class TestRuleConfigurationChecker implements RuleConfigurationChecker<TestRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final ReadwriteSplittingRuleConfiguration ruleConfiguration) {
-        checkDataSources(schemaName, ruleConfiguration.getDataSources());
+    public void check(final String schemaName, final TestRuleConfiguration config) {
+    }
+    
+    @Override
+    public int getOrder() {
+        return 10080;
+    }
+    
+    @Override
+    public Class<TestRuleConfiguration> getTypeClass() {
+        return TestRuleConfiguration.class;
     }
 }

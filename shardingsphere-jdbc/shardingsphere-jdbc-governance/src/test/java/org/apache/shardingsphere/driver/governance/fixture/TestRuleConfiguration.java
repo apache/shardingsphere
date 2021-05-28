@@ -15,22 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.driver.governance.fixture;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-/**
- * Rule configuration checker.
- * 
- * @param <T> type of rule configuration
- */
-public interface RuleConfigurationChecker<T extends RuleConfiguration> {
-    
-    /**
-     * Check rule configuration.
-     * 
-     * @param schemaName schema name
-     * @param ruleConfiguration rule configuration
-     */
-    void check(String schemaName, T ruleConfiguration);
+public final class TestRuleConfiguration implements RuleConfiguration {
 }
