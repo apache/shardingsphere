@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 
 /**
- * Sharding rule configuration checker.
+ * Encrypt rule configuration checker.
  */
-public final class ShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<ShardingRuleConfiguration> {
+public final class EncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<EncryptRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final ShardingRuleConfiguration ruleConfiguration) {
-        Preconditions.checkState(hasAvailableTableConfigurations(ruleConfiguration),
-                "No available rule configs in `%s` for governance.", schemaName);
+    public void check(final String schemaName, final EncryptRuleConfiguration ruleConfiguration) {
+        Preconditions.checkState(checkEncryptorsNotEmpty(ruleConfiguration), "No available encrypt rule configuration in `%s` for governance.", schemaName);
     }
 }

@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.common.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 
 /**
- * Encrypt rule configuration checker.
+ * Algorithm provided readwrite-splitting ruleConfiguration checker.
  */
-public final class EncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<EncryptRuleConfiguration> {
+public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker extends AbstractReadwriteSplittingRuleConfigurationChecker<AlgorithmProvidedReadwriteSplittingRuleConfiguration> { 
     
     @Override
-    public void check(final String schemaName, final EncryptRuleConfiguration ruleConfiguration) {
-        Preconditions.checkState(checkEncryptorsNotEmpty(ruleConfiguration), "No available encrypt rule configuration in `%s` for governance.", schemaName);
+    public void check(final String schemaName, final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfiguration) {
+        checkDataSources(schemaName, ruleConfiguration.getDataSources());
     }
 }

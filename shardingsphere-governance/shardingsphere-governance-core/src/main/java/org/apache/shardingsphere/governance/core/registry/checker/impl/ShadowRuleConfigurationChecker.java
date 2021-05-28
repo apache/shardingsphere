@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.checker;
+package org.apache.shardingsphere.governance.core.registry.checker.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
+import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 /**
- * Algorithm provided encrypt rule configuration checker.
+ * Shadow rule configuration checker.
  */
-public final class AlgorithmProvidedEncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<AlgorithmProvidedEncryptRuleConfiguration> {
+public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
     
     @Override
-    public void check(final String schemaName, final AlgorithmProvidedEncryptRuleConfiguration ruleConfiguration) {
-        Preconditions.checkState(checkEncryptorsNotEmpty(ruleConfiguration), "No available encrypt rule configuration in `%s` for governance.", schemaName);
+    public void check(final String schemaName, final ShadowRuleConfiguration ruleConfiguration) {
+        boolean isShadow = !ruleConfiguration.getColumn().isEmpty() && null != ruleConfiguration.getSourceDataSourceNames() && null != ruleConfiguration.getShadowDataSourceNames();
+        Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
     }
 }
