@@ -71,7 +71,7 @@ public final class RuleConfigurationCheckerFactory {
     @SuppressWarnings("rawtypes")
     public static RuleConfigurationChecker newInstance(final RuleConfiguration config) {
         Optional<RuleConfigurationChecker> result = REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(config.getClass())).findFirst().map(Entry::getValue);
-        Preconditions.checkArgument(result.isPresent(), "Can not find rule configuration checker for `%s`", config.getClass());
+        Preconditions.checkArgument(result.isPresent(), "Can not find rule configuration checker for rule type: `%s`", config.getClass());
         return result.get();
     }
 }
