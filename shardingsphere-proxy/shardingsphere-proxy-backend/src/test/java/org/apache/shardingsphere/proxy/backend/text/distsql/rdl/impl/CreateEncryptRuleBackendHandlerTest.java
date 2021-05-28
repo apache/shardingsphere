@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment
 import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -30,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DuplicateRuleNamesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -90,9 +91,13 @@ public final class CreateEncryptRuleBackendHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    @Test(expected = EncryptRuleExistsException.class)
-    public void assertExecuteWithExistEncryptRule() {
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
+    @Test(expected = DuplicateRuleNamesException.class)
+    public void assertExecuteWithDuplicateEncryptRule() {
+        EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList());
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections
+                .singleton(encryptTableRuleConfiguration), Maps.newHashMap())));
+        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("MD5"));
+        when(sqlStatement.getEncryptRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         handler.execute("test", sqlStatement);
     }
 
