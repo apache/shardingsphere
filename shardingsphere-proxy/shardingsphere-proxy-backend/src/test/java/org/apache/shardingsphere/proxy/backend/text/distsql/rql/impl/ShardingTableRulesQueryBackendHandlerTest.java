@@ -99,14 +99,14 @@ public final class ShardingTableRulesQueryBackendHandlerTest {
         assertThat(rowDataList.get(3), is("INLINE"));
         assertThat(rowDataList.get(4), is("user_id"));
         assertThat(rowDataList.get(5), is("INLINE"));
-        assertThat(rowDataList.get(6), is("algorithm-expression:ds_${user_id % 2}"));
+        assertThat(rowDataList.get(6), is("algorithm-expression=ds_${user_id % 2}"));
         assertThat(rowDataList.get(7), is("INLINE"));
         assertThat(rowDataList.get(8), is("order_id"));
         assertThat(rowDataList.get(9), is("INLINE"));
-        assertThat(rowDataList.get(10), is("algorithm-expression:t_order_${order_id % 2}"));
+        assertThat(rowDataList.get(10), is("algorithm-expression=t_order_${order_id % 2}"));
         assertThat(rowDataList.get(11), is("order_id"));
         assertThat(rowDataList.get(12), is("SNOWFLAKE"));
-        assertThat(rowDataList.get(13), is("worker-id:123"));
+        assertThat(rowDataList.get(13), is("worker-id=123"));
     }
 
     private Collection<RuleConfiguration> buildShardingConfiguration() {

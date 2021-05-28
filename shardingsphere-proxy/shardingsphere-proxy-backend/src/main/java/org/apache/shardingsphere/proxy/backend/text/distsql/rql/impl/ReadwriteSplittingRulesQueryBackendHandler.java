@@ -93,6 +93,6 @@ public final class ReadwriteSplittingRulesQueryBackendHandler extends SchemaRequ
                 ruleConfig.getWriteDataSourceName(), Joiner.on(",").join(ruleConfig.getReadDataSourceNames()),
                 loadBalancers.get(ruleConfig.getLoadBalancerName()).getType(),
                 Objects.nonNull(loadBalancerProps) ? Joiner.on(",").join(loadBalancerProps.entrySet().stream()
-                        .map(each -> Joiner.on(":").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
+                        .map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
     }
 }

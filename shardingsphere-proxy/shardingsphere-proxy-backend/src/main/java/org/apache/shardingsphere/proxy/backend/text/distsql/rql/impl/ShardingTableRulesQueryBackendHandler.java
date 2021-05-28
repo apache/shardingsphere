@@ -233,6 +233,6 @@ public final class ShardingTableRulesQueryBackendHandler extends SchemaRequiredB
 
     private String buildProperties(final Properties properties) {
         return Objects.nonNull(properties) ? Joiner.on(",").join(properties.entrySet().stream()
-                .map(each -> Joiner.on(":").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "";
+                .map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "";
     }
 }
