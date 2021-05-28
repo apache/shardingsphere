@@ -50,7 +50,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     private final ShardingSphereSchema schema;
     
     public IndexToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, 
-                      final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule, ShardingSphereSchema schema) {
+                      final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule, final ShardingSphereSchema schema) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.identifier = identifier;
@@ -68,7 +68,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
         StringBuilder result = new StringBuilder(identifier.getValue());
         Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
         Optional<String> actualTableName = findLogicTableNameFromMetaData(identifier.getValue()).map(tableName 
-                -> Optional.of(logicAndActualTables.get(tableName))).orElseGet(() -> logicAndActualTables.values().stream().findFirst());
+            -> Optional.of(logicAndActualTables.get(tableName))).orElseGet(() -> logicAndActualTables.values().stream().findFirst());
         actualTableName.ifPresent(tableName -> result.append("_").append(tableName));
         return result.toString();
     }
