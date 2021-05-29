@@ -303,7 +303,7 @@ public final class TableExtractor {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (ValidStatementSegment each : routineBody.getValidStatements()) {
             Optional<CreateTableStatement> createTable = each.getCreateTable();
-            if (createTable.isPresent() && !CreateTableStatementHandler.containsIfNotExistClause(createTable.get())) {
+            if (createTable.isPresent() && !CreateTableStatementHandler.containsNotExistClause(createTable.get())) {
                 result.add(createTable.get().getTable());
             }
         }

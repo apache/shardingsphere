@@ -65,7 +65,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     public void assertValidateMySQLCreateTable() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
-        sqlStatement.setNotExisted(false);
+        sqlStatement.setContainsNotExistClause(false);
         assertValidateCreateTable(sqlStatement);
     }
     
@@ -80,7 +80,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     public void assertValidatePostgreSQLCreateTable() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
-        sqlStatement.setNotExisted(false);
+        sqlStatement.setContainsNotExistClause(false);
         assertValidateCreateTable(sqlStatement);
     }
     
@@ -109,7 +109,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     public void assertValidateMySQLCreateTableIfNotExists() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
-        sqlStatement.setNotExisted(true);
+        sqlStatement.setContainsNotExistClause(true);
         assertValidateCreateTableIfNotExists(sqlStatement);
     }
     
@@ -117,7 +117,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     public void assertValidatePostgreSQLCreateTableIfNotExists() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(1, 2, new IdentifierValue("t_order")));
-        sqlStatement.setNotExisted(true);
+        sqlStatement.setContainsNotExistClause(true);
         assertValidateCreateTableIfNotExists(sqlStatement);
     }
     

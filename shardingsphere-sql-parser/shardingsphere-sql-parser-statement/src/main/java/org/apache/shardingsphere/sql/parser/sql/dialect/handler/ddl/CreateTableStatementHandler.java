@@ -33,17 +33,17 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 public final class CreateTableStatementHandler implements SQLStatementHandler {
     
     /**
-     * Judge whether contains if not exist clause.
+     * Judge whether contains not exist clause or not.
      *
      * @param createTableStatement create table statement
-     * @return contains if not exist clause or not
+     * @return whether contains not exist clause or not
      */
-    public static boolean containsIfNotExistClause(final CreateTableStatement createTableStatement) {
+    public static boolean containsNotExistClause(final CreateTableStatement createTableStatement) {
         if (createTableStatement instanceof MySQLStatement) {
-            return ((MySQLCreateTableStatement) createTableStatement).isNotExisted();
+            return ((MySQLCreateTableStatement) createTableStatement).isContainsNotExistClause();
         }
         if (createTableStatement instanceof PostgreSQLStatement) {
-            return ((PostgreSQLCreateTableStatement) createTableStatement).isNotExisted();
+            return ((PostgreSQLCreateTableStatement) createTableStatement).isContainsNotExistClause();
         }
         return false;
     }

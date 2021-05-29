@@ -81,17 +81,17 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     }
     
     /**
-     * Judge whether route unit and primary table data node are different size or not.
+     * Judge whether route unit and data node are different size or not.
      * 
      * @param shardingRule sharding rule
      * @param routeContext route context
-     * @param primaryTable primary table
-     * @return whether route unit and primary table data node are different size or not
+     * @param tableName table name
+     * @return whether route unit and data node are different size or not
      */
-    protected boolean isRouteUnitPrimaryTableDataNodeDifferentSize(final ShardingRule shardingRule, final RouteContext routeContext, final String primaryTable) {
-        int primaryTableDataNodeSize = shardingRule.isShardingTable(primaryTable) || shardingRule.isBroadcastTable(primaryTable)
-                ? shardingRule.getTableRule(primaryTable).getActualDataNodes().size() : 1;
-        return primaryTableDataNodeSize != routeContext.getRouteUnits().size();
+    protected boolean isRouteUnitDataNodeDifferentSize(final ShardingRule shardingRule, final RouteContext routeContext, final String tableName) {
+        int dataNodeSize = shardingRule.isShardingTable(tableName) || shardingRule.isBroadcastTable(tableName) 
+                ? shardingRule.getTableRule(tableName).getActualDataNodes().size() : 1;
+        return dataNodeSize != routeContext.getRouteUnits().size();
     }
     
     /**
