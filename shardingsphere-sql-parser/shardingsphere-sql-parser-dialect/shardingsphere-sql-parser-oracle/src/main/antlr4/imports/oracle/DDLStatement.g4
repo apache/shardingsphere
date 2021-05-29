@@ -1007,7 +1007,6 @@ addRangeSubpartition
 
 dependentTablesClause
     : DEPENDENT TABLES LP_ tableName LP_ partitionSpec (COMMA_ partitionSpec)* RP_
-    (tableName LP_ partitionSpec (COMMA_ partitionSpec)* RP_)* RP_
     (COMMA_ tableName LP_ partitionSpec (COMMA_ partitionSpec)* RP_)* RP_
     ;
 
