@@ -89,7 +89,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends SchemaRequ
     private void checkResources(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
         Collection<String> notExistResources = getResources(sqlStatement).stream().filter(each -> !this.isValidResource(schemaName, each)).collect(Collectors.toList());
         if (!notExistResources.isEmpty()) {
-            throw new ResourceNotExistedException(notExistResources);
+            throw new ResourceNotExistedException(schemaName, notExistResources);
         }
     }
 

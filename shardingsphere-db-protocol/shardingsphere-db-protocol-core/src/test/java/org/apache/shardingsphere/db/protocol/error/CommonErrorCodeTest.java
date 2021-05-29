@@ -33,15 +33,15 @@ public final class CommonErrorCodeTest {
     
     @Test
     public void assertSharingTableRulesNotExisted() {
-        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getErrorCode(), is(1101));
-        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getSqlState(), is("C1101"));
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getErrorCode(), is(1106));
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getSqlState(), is("C1106"));
         assertThat(CommonErrorCode.SHARDING_TABLE_RULES_NOT_EXISTED.getErrorMessage(), is("Sharding table rules %s do not exist in schema %s."));
     }
     
     @Test
     public void assertTableInUsed() {
-        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE.getErrorCode(), is(1102));
-        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE.getSqlState(), is("C1102"));
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE.getErrorCode(), is(1107));
+        assertThat(CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE.getSqlState(), is("C1107"));
         assertThat(CommonErrorCode.SHARDING_TABLE_RULES_IN_USED_BY_BINDING_TABLE.getErrorMessage(), is("Sharding table rules %s are still used by binding table rule."));
     }
     

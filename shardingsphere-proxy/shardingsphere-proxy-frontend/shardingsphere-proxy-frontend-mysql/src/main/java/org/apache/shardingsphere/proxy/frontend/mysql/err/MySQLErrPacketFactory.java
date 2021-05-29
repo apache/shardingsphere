@@ -23,7 +23,6 @@ import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.proxy.backend.exception.AddReadwriteSplittingRuleDataSourcesExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
@@ -137,7 +136,8 @@ public final class MySQLErrPacketFactory {
                     exception.getSchemaName());
         }
         if (cause instanceof ResourceNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_NOT_EXIST, ((ResourceNotExistedException) cause).getResourceNames());
+            return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_NOT_EXIST, ((ResourceNotExistedException) cause).getResourceNames(),
+                    ((ResourceNotExistedException) cause).getSchemaName());
         }
         if (cause instanceof ResourceInUsedException) {
             return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_IN_USED, ((ResourceInUsedException) cause).getResourceNames());
@@ -163,9 +163,6 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ReadwriteSplittingRulesNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.READWRITE_SPLITTING_RULES_NOT_EXIST,
                     ((ReadwriteSplittingRulesNotExistedException) cause).getRuleNames(), ((ReadwriteSplittingRulesNotExistedException) cause).getSchemaName());
-        }
-        if (cause instanceof AddReadwriteSplittingRuleDataSourcesExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ((AddReadwriteSplittingRuleDataSourcesExistedException) cause).getRuleNames());
         }
         if (cause instanceof ScalingJobNotFoundException) {
             return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((ScalingJobNotFoundException) cause).getJobId());
