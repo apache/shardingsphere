@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropTableStatementHandler;
 
@@ -42,7 +43,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
-        if (!DropTableStatementHandler.containsIfExistClause(sqlStatementContext.getSqlStatement())) {
+        if (!DropTableStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
             validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
         }
     }
@@ -51,9 +52,10 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext, 
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
         checkTableInUsed(shardingRule, sqlStatementContext.getSqlStatement(), routeContext);
-        String primaryTable = sqlStatementContext.getSqlStatement().getTables().iterator().next().getTableName().getIdentifier().getValue();
-        if (isRouteUnitPrimaryTableDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
-            throw new ShardingSphereException("DROP TABLE ... statement can not route correctly for tables %s.", sqlStatementContext.getTablesContext().getTableNames());
+        for (SimpleTableSegment each : sqlStatementContext.getSqlStatement().getTables()) {
+            if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, each.getTableName().getIdentifier().getValue())) {
+                throw new ShardingSphereException("DROP TABLE ... statement can not route correctly for tables %s.", sqlStatementContext.getTablesContext().getTableNames());
+            }
         }
     }
     

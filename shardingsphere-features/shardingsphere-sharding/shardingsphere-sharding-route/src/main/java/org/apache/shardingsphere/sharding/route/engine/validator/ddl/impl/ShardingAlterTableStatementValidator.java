@@ -60,7 +60,7 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterTableStatement> sqlStatementContext, 
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
         String primaryTable = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        if (isRouteUnitPrimaryTableDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
+        if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
             throw new ShardingSphereException("ALTER TABLE ... statement can not route correctly for tables %s.", sqlStatementContext.getTablesContext().getTableNames());
         }
     }

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDL
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +40,9 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
+        if (DropIndexStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
+            return;
+        }
         for (IndexSegment each : sqlStatementContext.getSqlStatement().getIndexes()) {
             if (!isSchemaContainsIndex(schema, each)) {
                 throw new ShardingSphereException("Index '%s' does not exist.", each.getIdentifier().getValue());
@@ -50,9 +54,11 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, 
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
         Collection<String> indexNames = sqlStatementContext.getSqlStatement().getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
-        Optional<String> primaryTable = schema.getAllTableNames().stream().filter(each -> schema.get(each).getIndexes().containsKey(indexNames.iterator().next())).findFirst();
-        if (primaryTable.isPresent() && isRouteUnitPrimaryTableDataNodeDifferentSize(shardingRule, routeContext, primaryTable.get())) {
-            throw new ShardingSphereException("DROP INDEX ... statement can not route correctly for indexes %s.", indexNames);
+        for (String each : indexNames) {
+            Optional<String> logicTableName = schema.getAllTableNames().stream().filter(tableName -> schema.get(tableName).getIndexes().containsKey(each)).findFirst();
+            if (logicTableName.isPresent() && isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, logicTableName.get())) {
+                throw new ShardingSphereException("DROP INDEX ... statement can not route correctly for indexes %s.", indexNames);
+            }
         }
     }
 }
