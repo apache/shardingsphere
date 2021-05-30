@@ -19,10 +19,10 @@ package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.SchemaBasedRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -41,11 +41,8 @@ public final class DataSourceRegistryService implements SchemaBasedRegistryServi
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     public DataSourceRegistryService(final RegistryCenterRepository repository) {
         this.repository = repository;
-        node = new RegistryCenterNode();
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -58,7 +55,7 @@ public final class DataSourceRegistryService implements SchemaBasedRegistryServi
     
     @Override
     public void persist(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
+        repository.persist(SchemaMetadataNode.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
     private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
@@ -68,7 +65,7 @@ public final class DataSourceRegistryService implements SchemaBasedRegistryServi
     
     @Override
     public Map<String, DataSourceConfiguration> load(final String schemaName) {
-        return isExisted(schemaName) ? getDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
+        return isExisted(schemaName) ? getDataSourceConfigurations(repository.get(SchemaMetadataNode.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
     @SuppressWarnings("unchecked")
@@ -84,7 +81,7 @@ public final class DataSourceRegistryService implements SchemaBasedRegistryServi
     
     @Override
     public boolean isExisted(final String schemaName) {
-        return !Strings.isNullOrEmpty(repository.get(node.getMetadataDataSourcePath(schemaName)));
+        return !Strings.isNullOrEmpty(repository.get(SchemaMetadataNode.getMetadataDataSourcePath(schemaName)));
     }
     
     /**

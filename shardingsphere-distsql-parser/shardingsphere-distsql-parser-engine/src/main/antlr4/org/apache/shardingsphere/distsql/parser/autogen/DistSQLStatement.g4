@@ -41,9 +41,12 @@ execute
     | alterEncryptRule
     | dropEncryptRule
     | showResources
-    | showRule
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules
+    | showReadwriteSplittingRules
+    | showDatabaseDiscoveryRules
+    | showEncryptRules
+    | showShardingTableRules
     | showScalingJobList
     | showScalingJobStatus
     | startScalingJob

@@ -22,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
+/**
+ * Duplicate tables exception.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class DuplicateTablesException extends BackendException {

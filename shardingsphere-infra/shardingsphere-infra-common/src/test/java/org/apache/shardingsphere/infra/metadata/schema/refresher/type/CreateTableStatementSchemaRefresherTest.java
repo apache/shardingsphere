@@ -62,7 +62,7 @@ public final class CreateTableStatementSchemaRefresherTest {
     @Test
     public void refreshForMySQL() throws SQLException {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
-        createTableStatement.setNotExisted(false);
+        createTableStatement.setContainsNotExistClause(false);
         when(materials.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         refresh(createTableStatement);
     }
@@ -77,7 +77,7 @@ public final class CreateTableStatementSchemaRefresherTest {
     @Test
     public void refreshForPostgreSQL() throws SQLException {
         PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
-        createTableStatement.setNotExisted(false);
+        createTableStatement.setContainsNotExistClause(false);
         when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         refresh(createTableStatement);
     }
@@ -99,7 +99,7 @@ public final class CreateTableStatementSchemaRefresherTest {
     @Test
     public void refreshWithTableRuleForMySQL() throws SQLException {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
-        createTableStatement.setNotExisted(false);
+        createTableStatement.setContainsNotExistClause(false);
         when(materials.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         refreshWithTableRule(createTableStatement);
     }
@@ -114,7 +114,7 @@ public final class CreateTableStatementSchemaRefresherTest {
     @Test
     public void refreshWithTableRuleForPostgreSQL() throws SQLException {
         PostgreSQLCreateTableStatement createTableStatement = new PostgreSQLCreateTableStatement();
-        createTableStatement.setNotExisted(false);
+        createTableStatement.setContainsNotExistClause(false);
         when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         refreshWithTableRule(createTableStatement);
     }

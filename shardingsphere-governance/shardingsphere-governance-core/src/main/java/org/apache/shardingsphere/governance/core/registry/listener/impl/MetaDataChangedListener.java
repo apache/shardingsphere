@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.commons.collections4.SetUtils;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
+import org.apache.shardingsphere.governance.core.registry.util.SchemaNameUtil;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,18 +41,15 @@ public final class MetaDataChangedListener extends PostGovernanceRepositoryEvent
     
     private final Collection<String> existedSchemaNames;
     
-    private final RegistryCenterNode registryCenterNode;
-    
     public MetaDataChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        super(registryCenterRepository, Collections.singleton(new RegistryCenterNode().getMetadataNodePath()));
-        registryCenterNode = new RegistryCenterNode();
+        super(registryCenterRepository, Collections.singleton(SchemaMetadataNode.getMetadataNodePath()));
         existedSchemaNames = new LinkedHashSet<>(schemaNames);
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        if (registryCenterNode.getMetadataNodePath().equals(event.getKey())) {
-            Collection<String> persistedSchemaNames = registryCenterNode.splitSchemaName(event.getValue());
+        if (SchemaMetadataNode.getMetadataNodePath().equals(event.getKey())) {
+            Collection<String> persistedSchemaNames = SchemaNameUtil.splitSchemaName(event.getValue());
             Set<String> addedSchemaNames = SetUtils.difference(new HashSet<>(persistedSchemaNames), new HashSet<>(existedSchemaNames));
             if (!addedSchemaNames.isEmpty()) {
                 // TODO support multiple schemaNames

@@ -89,16 +89,17 @@ public final class ShardingPrepareStatementValidatorTest {
     public void assertPostValidatePrepareWithEmptyRouteResultForPostgreSQL() {
         PostgreSQLPrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         when(routeContext.getRouteUnits()).thenReturn(Collections.emptyList());
-        new ShardingPrepareStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test
     public void assertPostValidatePrepareWithDifferentDataSourceForPostgreSQL() {
+        PostgreSQLPrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PostgreSQLPrepareStatement(), routeContext);
+        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -109,6 +110,7 @@ public final class ShardingPrepareStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_1"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PostgreSQLPrepareStatement(), routeContext);
+        PostgreSQLPrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
+        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), routeContext, schema);
     }
 }

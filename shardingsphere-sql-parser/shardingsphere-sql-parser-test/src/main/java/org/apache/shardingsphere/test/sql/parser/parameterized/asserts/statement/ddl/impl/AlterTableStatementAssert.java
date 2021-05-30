@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
@@ -40,11 +41,14 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Alter table statement assert.
@@ -61,10 +65,21 @@ public final class AlterTableStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
+        assertRenameTable(assertContext, actual, expected);
         assertAddColumnDefinitions(assertContext, actual, expected);
         assertAddConstraintDefinitions(assertContext, actual, expected);
         assertModifyColumnDefinitions(assertContext, actual, expected);
         assertDropColumns(assertContext, actual, expected);
+    }
+    
+    private static void assertRenameTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        Optional<SimpleTableSegment> tableSegment = actual.getRenameTable();
+        if (null != expected.getRenameTable()) {
+            assertTrue(assertContext.getText("Actual table segment should exist."), tableSegment.isPresent());
+            TableAssert.assertIs(assertContext, tableSegment.get(), expected.getRenameTable());
+        } else {
+            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
+        }
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {

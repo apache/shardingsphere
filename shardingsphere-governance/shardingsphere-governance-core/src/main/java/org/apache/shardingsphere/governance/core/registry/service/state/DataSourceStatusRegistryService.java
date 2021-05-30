@@ -19,7 +19,6 @@ package org.apache.shardingsphere.governance.core.registry.service.state;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -36,11 +35,8 @@ public final class DataSourceStatusRegistryService {
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     public DataSourceStatusRegistryService(final RegistryCenterRepository repository) {
         this.repository = repository;
-        node = new RegistryCenterNode();
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -56,11 +52,11 @@ public final class DataSourceStatusRegistryService {
     }
     
     private Collection<String> loadDataSources(final String schemaName) {
-        return repository.getChildrenKeys(node.getSchemaPath(schemaName));
+        return repository.getChildrenKeys(StatesNode.getSchemaPath(schemaName));
     }
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
-        return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
+        return repository.get(StatesNode.getDataSourcePath(schemaName, dataSourceName));
     }
     
     /**
@@ -71,7 +67,7 @@ public final class DataSourceStatusRegistryService {
     @Subscribe
     public void update(final DataSourceDisabledEvent event) {
         String value = event.isDisabled() ? RegistryCenterNodeStatus.DISABLED.toString() : "";
-        repository.persist(node.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
+        repository.persist(StatesNode.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
     }
     
     /**
@@ -81,6 +77,6 @@ public final class DataSourceStatusRegistryService {
      */
     @Subscribe
     public void update(final PrimaryDataSourceEvent event) {
-        repository.persist(node.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
+        repository.persist(StatesNode.getPrimaryDataSourcePath(event.getSchemaName(), event.getGroupName()), event.getDataSourceName());
     }
 }

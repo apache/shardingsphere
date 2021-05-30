@@ -50,7 +50,7 @@ dataSources:
     maintenanceIntervalMilliseconds: 30000
 
 rules:
-- !read_QUERY
+- !READWRITE_SPLITTING
   dataSources:
     pr_ds:
       writeDataSourceName: write_ds

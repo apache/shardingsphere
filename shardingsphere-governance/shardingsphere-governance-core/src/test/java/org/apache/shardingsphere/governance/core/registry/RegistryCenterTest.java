@@ -53,7 +53,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class RegistryCenterTest {
     
-    private static final String SHARDING_RULE_YAML = "yaml/regcenter/data-schema-rule.yaml";
+    private static final String SCHEMA_RULE_YAML = "yaml/regcenter/data-schema-rule.yaml";
     
     private static final String GLOBAL_RULE_YAML = "yaml/regcenter/data-global-rule.yaml";
     
@@ -91,22 +91,15 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertInitNodes() {
-        registryCenter.initNodes();
-        verify(registryCenterRepository).persist("/states/datanodes", "");
-        verify(registryCenterRepository).persist("/states/primarynodes", "");
-    }
-    
-    @Test
     public void assertPersistConfigurations() {
         Map<String, DataSourceConfiguration> dataSourceConfigs = createDataSourceConfigurations();
         Collection<RuleConfiguration> schemaRuleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
         registryCenter.persistConfigurations(
-                Collections.singletonMap("sharding_db", dataSourceConfigs), Collections.singletonMap("sharding_db", schemaRuleConfigs), globalRuleConfigs, props, false);
-        verify(dataSourceService).persist("sharding_db", dataSourceConfigs, false);
-        verify(schemaRuleService).persist("sharding_db", schemaRuleConfigs, false);
+                Collections.singletonMap("foo_db", dataSourceConfigs), Collections.singletonMap("foo_db", schemaRuleConfigs), globalRuleConfigs, props, false);
+        verify(dataSourceService).persist("foo_db", dataSourceConfigs, false);
+        verify(schemaRuleService).persist("foo_db", schemaRuleConfigs, false);
         verify(globalRuleService).persist(globalRuleConfigs, false);
         verify(propsService).persist(props, false);
     }
@@ -132,9 +125,10 @@ public final class RegistryCenterTest {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> createRuleConfigurations() {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHARDING_RULE_YAML), Collection.class));
+        // TODO use RuleConfigurationFixture instead of ShardingRuleConfiguration for test case
+        return Collections.emptyList();
+//        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SCHEMA_RULE_YAML), Collection.class));
     }
     
     @SuppressWarnings("unchecked")
@@ -157,6 +151,8 @@ public final class RegistryCenterTest {
     @Test
     public void assertRegisterInstanceOnline() {
         registryCenter.registerInstanceOnline();
+        verify(registryCenterRepository).persist("/states/datanodes", "");
+        verify(registryCenterRepository).persist("/states/primarynodes", "");
         verify(registryCenterRepository).persistEphemeral(anyString(), anyString());
     }
 }

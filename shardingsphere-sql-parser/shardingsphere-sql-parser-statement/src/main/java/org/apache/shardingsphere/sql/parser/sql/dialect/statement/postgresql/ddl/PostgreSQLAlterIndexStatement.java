@@ -17,13 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+
+import java.util.Optional;
 
 /**
  * PostgreSQL alter index statement.
  */
+@Setter
 @ToString
 public final class PostgreSQLAlterIndexStatement extends AlterIndexStatement implements PostgreSQLStatement {
+    
+    private IndexSegment renameIndex;
+    
+    /**
+     * Get rename index segment.
+     *
+     * @return rename index segment
+     */
+    public Optional<IndexSegment> getRenameIndex() {
+        return Optional.ofNullable(renameIndex);
+    }
 }

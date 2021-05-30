@@ -31,5 +31,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 @ToString
 public final class PostgreSQLCreateTableStatement extends CreateTableStatement implements PostgreSQLStatement {
 
-    private boolean isNotExisted;
+    private boolean containsNotExistClause;
 }

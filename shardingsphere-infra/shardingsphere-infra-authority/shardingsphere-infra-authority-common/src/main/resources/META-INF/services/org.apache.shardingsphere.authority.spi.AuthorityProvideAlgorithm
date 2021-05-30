@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.authority.provider.natived.NativeAuthorityProviderAlgorithm
+org.apache.shardingsphere.authority.provider.simple.AllPrivilegesPermittedAuthorityProviderAlgorithm
