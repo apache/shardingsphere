@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingCart
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -113,12 +113,12 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         if (!tableNamesInSQL.isEmpty()) {
             return tableNamesInSQL;
         }
-        return sqlStatementContext.getSqlStatement() instanceof DropIndexStatement ? getTableNamesFromMetaData((DropIndexStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
+        return sqlStatementContext instanceof IndexAvailable ? getTableNamesFromMetaData(((IndexAvailable) sqlStatementContext).getIndexes()) : Collections.emptyList();
     }
     
-    private Collection<String> getTableNamesFromMetaData(final DropIndexStatement dropIndexStatement) {
+    private Collection<String> getTableNamesFromMetaData(final Collection<IndexSegment> indexes) {
         Collection<String> result = new LinkedList<>();
-        for (IndexSegment each : dropIndexStatement.getIndexes()) {
+        for (IndexSegment each : indexes) {
             findLogicTableNameFromMetaData(each.getIdentifier().getValue()).ifPresent(result::add);
         }
         return result;

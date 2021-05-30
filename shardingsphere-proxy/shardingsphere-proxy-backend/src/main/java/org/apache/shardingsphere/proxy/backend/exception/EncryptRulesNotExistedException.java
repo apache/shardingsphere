@@ -31,5 +31,7 @@ public final class EncryptRulesNotExistedException extends BackendException {
 
     private static final long serialVersionUID = -3070306238552517428L;
 
+    private final String schemaName;
+
     private final Collection<String> tables;
 }

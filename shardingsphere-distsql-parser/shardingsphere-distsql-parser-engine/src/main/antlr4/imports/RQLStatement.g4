@@ -23,14 +23,38 @@ showResources
     : SHOW RESOURCES (FROM schemaName)?
     ;
 
-showRule
-    : SHOW ruleType RULE (FROM schemaName)?
+showShardingBindingTableRules
+    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
     ;
 
-ruleType
-    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
+showShardingBroadcastTableRules
+    : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
+    ;
+
+showReadwriteSplittingRules
+    : SHOW READWRITE_SPLITTING RULES (FROM schemaName)?
+    ;
+
+showDatabaseDiscoveryRules
+    : SHOW DB_DISCOVERY RULES (FROM schemaName)?
+    ;
+
+showEncryptRules
+    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
+    ;
+
+showShardingTableRules
+    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
+    ;
+
+tableRule
+    : RULE tableName
     ;
 
 schemaName
+    : IDENTIFIER
+    ;
+
+tableName
     : IDENTIFIER
     ;

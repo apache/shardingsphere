@@ -195,19 +195,19 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithShardingTableRuleNotExistedException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ShardingTableRuleNotExistedException(Collections.singleton("tbl")));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ShardingTableRuleNotExistedException("test", Collections.singleton("tbl")));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1101));
-        assertThat(actual.getSqlState(), is("C1101"));
-        assertThat(actual.getErrorMessage(), is("Sharding table rule [tbl] is not exist."));
+        assertThat(actual.getErrorCode(), is(1106));
+        assertThat(actual.getSqlState(), is("C1106"));
+        assertThat(actual.getErrorMessage(), is("Sharding table rules [tbl] do not exist in schema test."));
     }
     
     @Test
     public void assertNewInstanceWithTablesInUsedException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ShardingTableRulesInUsedException(Collections.singleton("tbl")));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1102));
-        assertThat(actual.getSqlState(), is("C1102"));
+        assertThat(actual.getErrorCode(), is(1107));
+        assertThat(actual.getSqlState(), is("C1107"));
         assertThat(actual.getErrorMessage(), is("Sharding table rules [tbl] are still used by binding table rule."));
     }
 

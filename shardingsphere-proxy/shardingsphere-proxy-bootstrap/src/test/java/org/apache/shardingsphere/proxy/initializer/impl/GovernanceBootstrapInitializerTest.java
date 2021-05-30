@@ -20,13 +20,18 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
+import org.apache.shardingsphere.governance.core.registry.UserNode;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -45,6 +50,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -63,6 +69,8 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private static final String SHARDING_RULE_YAML = "conf/reg_center/sharding-rule.yaml";
     
+    private static final String USERS_YAML = "conf/reg_center/users.yaml";
+    
     private static final String PROPS_YAML = "conf/reg_center/props.yaml";
     
     private final FixtureRegistryCenterRepository registryCenterRepository = new FixtureRegistryCenterRepository();
@@ -76,11 +84,11 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     private void initConfigCenter() {
-        RegistryCenterNode node = new RegistryCenterNode();
-        registryCenterRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
-        registryCenterRepository.persist(node.getMetadataNodePath(), "db");
-        registryCenterRepository.persist(node.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
-        registryCenterRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
+        registryCenterRepository.persist(UserNode.getRootNode(), readYAML(USERS_YAML));
+        registryCenterRepository.persist(GlobalNode.getPropsPath(), readYAML(PROPS_YAML));
+        registryCenterRepository.persist(SchemaMetadataNode.getMetadataNodePath(), "db");
+        registryCenterRepository.persist(SchemaMetadataNode.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
+        registryCenterRepository.persist(SchemaMetadataNode.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})
@@ -182,6 +190,15 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         Properties props = shardingAlgorithm.getProps();
         assertNotNull(props);
         assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
+    }
+    
+    private void assertUsers(final ShardingSphereUsers actual) {
+        Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
+        assertTrue(rootUser.isPresent());
+        assertThat(rootUser.get().getPassword(), is("root"));
+        Optional<ShardingSphereUser> shardingUser = actual.findUser(new Grantee("sharding", ""));
+        assertTrue(shardingUser.isPresent());
+        assertThat(shardingUser.get().getPassword(), is("sharding"));
     }
     
     @Test

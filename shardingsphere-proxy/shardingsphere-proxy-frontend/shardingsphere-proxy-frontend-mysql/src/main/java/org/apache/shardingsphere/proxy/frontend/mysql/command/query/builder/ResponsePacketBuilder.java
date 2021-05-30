@@ -50,9 +50,9 @@ public final class ResponsePacketBuilder {
     public static Collection<DatabasePacket<?>> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         int sequenceId = 0;
-        List<QueryHeader> queryHeader = queryResponseHeader.getQueryHeaders();
-        result.add(new MySQLFieldCountPacket(++sequenceId, queryHeader.size()));
-        for (QueryHeader each : queryHeader) {
+        List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
+        result.add(new MySQLFieldCountPacket(++sequenceId, queryHeaders.size()));
+        for (QueryHeader each : queryHeaders) {
             result.add(new MySQLColumnDefinition41Packet(++sequenceId, getColumnFieldDetailFlag(each), each.getSchema(), each.getTable(), each.getTable(),
                     each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
         }

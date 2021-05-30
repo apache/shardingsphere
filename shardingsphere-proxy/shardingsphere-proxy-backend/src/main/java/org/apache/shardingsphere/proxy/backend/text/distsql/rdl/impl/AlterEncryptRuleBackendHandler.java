@@ -27,6 +27,7 @@ import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleStatementConv
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -49,6 +50,10 @@ import java.util.stream.Collectors;
  */
 public final class AlterEncryptRuleBackendHandler extends SchemaRequiredBackendHandler<AlterEncryptRuleStatement> {
 
+    static {
+        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
+    }
+
     public AlterEncryptRuleBackendHandler(final AlterEncryptRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
@@ -58,9 +63,9 @@ public final class AlterEncryptRuleBackendHandler extends SchemaRequiredBackendH
         Optional<EncryptRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findFirst();
         if (!ruleConfig.isPresent()) {
-            throw new EncryptRulesNotExistedException(getAlteredTables(sqlStatement));
+            throw new EncryptRulesNotExistedException(schemaName, getAlteredTables(sqlStatement));
         }
-        check(sqlStatement, ruleConfig.get());
+        check(schemaName, sqlStatement, ruleConfig.get());
         YamlEncryptRuleConfiguration alterConfig = alter(ruleConfig.get(), sqlStatement);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(alterConfig));
         post(schemaName, rules);
@@ -71,17 +76,18 @@ public final class AlterEncryptRuleBackendHandler extends SchemaRequiredBackendH
         return sqlStatement.getEncryptRules().stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toList());
     }
 
-    private void check(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration encryptRuleConfiguration) {
-        checkAlteredTables(encryptRuleConfiguration, sqlStatement);
+    private void check(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration encryptRuleConfiguration) {
+        checkAlteredTables(schemaName, encryptRuleConfiguration, sqlStatement);
         checkEncryptors(sqlStatement);
     }
 
-    private void checkAlteredTables(final EncryptRuleConfiguration encryptRuleConfiguration, final AlterEncryptRuleStatement sqlStatement) {
+    private void checkAlteredTables(final String schemaName, final EncryptRuleConfiguration encryptRuleConfiguration,
+                                    final AlterEncryptRuleStatement sqlStatement) {
         Collection<String> existTables = getExistTables(encryptRuleConfiguration);
         Collection<String> notExistTables = getAlteredTables(sqlStatement).stream()
                 .filter(each -> !existTables.contains(each)).collect(Collectors.toList());
         if (!notExistTables.isEmpty()) {
-            throw new EncryptRulesNotExistedException(notExistTables);
+            throw new EncryptRulesNotExistedException(schemaName, notExistTables);
         }
     }
 

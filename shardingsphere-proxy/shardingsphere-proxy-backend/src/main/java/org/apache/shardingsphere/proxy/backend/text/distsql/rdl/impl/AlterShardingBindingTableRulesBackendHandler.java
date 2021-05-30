@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -52,23 +52,17 @@ public final class AlterShardingBindingTableRulesBackendHandler extends SchemaRe
     @Override
     public ResponseHeader execute(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement) {
         YamlShardingRuleConfiguration config = ShardingRuleStatementConverter.convert(sqlStatement);
-        ShardingRuleConfiguration shardingRuleConfiguration = check(schemaName, config);
+        check(schemaName, config);
+        ShardingRuleConfiguration shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
         shardingRuleConfiguration.getBindingTableGroups().clear();
         shardingRuleConfiguration.getBindingTableGroups().addAll(config.getBindingTables());
         post(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations());
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private ShardingRuleConfiguration check(final String schemaName, final YamlShardingRuleConfiguration configuration) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-        if (!shardingRuleConfig.isPresent()) {
-            throw new ShardingRuleNotExistedException();
-        }
+    private void check(final String schemaName, final YamlShardingRuleConfiguration configuration) {
         Collection<String> invalidBindingTables = new HashSet<>();
-        Collection<String> existLogicTables = new HashSet<>();
-        existLogicTables.addAll(shardingRuleConfig.get().getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        existLogicTables.addAll(shardingRuleConfig.get().getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        Collection<String> existLogicTables = getLogicTables(schemaName);
         for (String bindingTable : configuration.getBindingTables()) {
             for (String logicTable : Splitter.on(",").splitToList(bindingTable)) {
                 if (!existLogicTables.contains(logicTable.trim())) {
@@ -77,7 +71,23 @@ public final class AlterShardingBindingTableRulesBackendHandler extends SchemaRe
             }
         }
         if (!invalidBindingTables.isEmpty()) {
-            throw new ShardingTableRuleNotExistedException(invalidBindingTables);
+            throw new ShardingTableRuleNotExistedException(schemaName, invalidBindingTables);
+        }
+    }
+
+    private Collection<String> getLogicTables(final String schemaName) {
+        ShardingRuleConfiguration shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
+        Collection<String> existLogicTables = new HashSet<>();
+        existLogicTables.addAll(shardingRuleConfiguration.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        existLogicTables.addAll(shardingRuleConfiguration.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        return existLogicTables;
+    }
+
+    private ShardingRuleConfiguration getShardingRuleConfiguration(final String schemaName) {
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
+                .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
+        if (!shardingRuleConfig.isPresent()) {
+            throw new ShardingBindingTableRulesNotExistsException(schemaName);
         }
         return shardingRuleConfig.get();
     }

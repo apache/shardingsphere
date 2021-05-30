@@ -1922,3 +1922,39 @@ USE_STORED_OUTLINES
 GLOBAL_TOPIC_ENABLED
     : G L O B A L UL_ T O P I C UL_ E N A B L E D
     ;
+
+INTERSECT
+    : I N T E R S E C T
+    ;
+
+MINUS
+    : M I N U S
+    ;
+
+LOCKED
+    : L O C K E D
+    ;
+
+FETCH
+    : F E T C H
+    ;
+
+PERCENT
+    : P E R C E N T
+    ;
+
+TIES
+    : T I E S
+    ;
+
+SIBLINGS
+    : S I B L I N G S
+    ;
+
+NULLS
+    : N U L L S
+    ;
+
+LAST
+    : L A S T
+    ;

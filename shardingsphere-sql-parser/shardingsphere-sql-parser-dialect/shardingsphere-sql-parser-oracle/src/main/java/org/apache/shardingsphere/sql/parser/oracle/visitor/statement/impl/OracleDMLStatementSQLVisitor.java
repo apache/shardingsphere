@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;
@@ -31,6 +32,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Delete
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForUpdateClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForUpdateClauseListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertContext;
@@ -38,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Insert
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinedTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeContext;
@@ -47,11 +49,14 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeU
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParenthesisSelectSubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QualifiedShorthandContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectSubqueryContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectUnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryContext;
@@ -244,19 +249,38 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        OracleSelectStatement result = (OracleSelectStatement) visit(ctx.unionClause());
+        OracleSelectStatement result = (OracleSelectStatement) visit(ctx.selectSubquery());
         result.setParameterCount(getCurrentParameterIndex());
+        if (null != ctx.forUpdateClause()) {
+            result.setLock((LockSegment) visit(ctx.forUpdateClause()));
+        }
         return result;
     }
     
     @Override
     public ASTNode visitUnionClause(final UnionClauseContext ctx) {
         // TODO :Unsupported for union SQL.
-        return visit(ctx.selectClause(0));
+        return visit(ctx.queryBlock(0));
     }
     
     @Override
-    public ASTNode visitSelectClause(final SelectClauseContext ctx) {
+    public ASTNode visitSelectSubquery(final SelectSubqueryContext ctx) {
+        OracleSelectStatement result;
+        if (null != ctx.queryBlock()) {
+            result = (OracleSelectStatement) visit(ctx.queryBlock());
+        } else if (null != ctx.selectUnionClause()) {
+            result = (OracleSelectStatement) visit(ctx.selectUnionClause());
+        } else {
+            result = (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitQueryBlock(final QueryBlockContext ctx) {
         OracleSelectStatement result = new OracleSelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.duplicateSpecification()) {
@@ -272,16 +296,32 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         if (null != ctx.groupByClause()) {
             result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSelectUnionClause(final SelectUnionClauseContext ctx) {
+        OracleSelectStatement result;
+        if (null != ctx.queryBlock()) {
+            result = (OracleSelectStatement) visit(ctx.queryBlock());
+        } else {
+            result = (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
+        }
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
-        if (null != ctx.lockClause()) {
-            result.setLock((LockSegment) visit(ctx.lockClause()));
+        for (SelectSubqueryContext each : ctx.selectSubquery()) {
+            visit(each);
         }
         return result;
     }
-
-    private boolean isDistinct(final SelectClauseContext ctx) {
+    
+    @Override
+    public ASTNode visitParenthesisSelectSubquery(final ParenthesisSelectSubqueryContext ctx) {
+        return visit(ctx.selectSubquery());
+    }
+    
+    private boolean isDistinct(final QueryBlockContext ctx) {
         return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
     }
     
@@ -478,12 +518,37 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
-        return visit(ctx.unionClause());
+        return visit(ctx.selectSubquery());
     }
     
     @Override
-    public ASTNode visitLockClause(final LockClauseContext ctx) {
-        return new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    public ASTNode visitForUpdateClause(final ForUpdateClauseContext ctx) {
+        LockSegment result = new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.forUpdateClauseList()) {
+            result.getTables().addAll(generateTablesFromforUpdateClauseOption(ctx.forUpdateClauseList()));
+            result.getColumns().addAll(generateColumnsFromforUpdateClauseOption(ctx.forUpdateClauseList()));
+        }
+        return result;
+    }
+    
+    private List<SimpleTableSegment> generateTablesFromforUpdateClauseOption(final ForUpdateClauseListContext ctx) {
+        List<SimpleTableSegment> result = new LinkedList<>();
+        for (OracleStatementParser.ForUpdateClauseOptionContext each : ctx.forUpdateClauseOption()) {
+            if (null != each.tableName()) {
+                result.add((SimpleTableSegment) visit(each.tableName()));
+            }
+        }
+        return result;
+    }
+    
+    private List<ColumnSegment> generateColumnsFromforUpdateClauseOption(final ForUpdateClauseListContext ctx) {
+        List<ColumnSegment> result = new LinkedList<>();
+        for (OracleStatementParser.ForUpdateClauseOptionContext each : ctx.forUpdateClauseOption()) {
+            if (null != each.columnName()) {
+                result.add((ColumnSegment) visit(each.columnName()));
+            }
+        }
+        return result;
     }
     
     @Override

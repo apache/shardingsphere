@@ -21,12 +21,11 @@ import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariConfig;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
-import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;
@@ -47,11 +46,17 @@ import org.apache.shardingsphere.scaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.client.ConnectInfo;
 import org.apache.shardingsphere.scaling.mysql.client.MySQLClient;
+import org.apache.shardingsphere.scaling.mysql.component.column.metadata.MySQLColumnMetaData;
+import org.apache.shardingsphere.scaling.mysql.component.column.metadata.MySQLColumnMetaDataLoader;
+import org.apache.shardingsphere.scaling.mysql.component.column.value.ValueHandler;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * MySQL incremental dumper.
@@ -59,22 +64,30 @@ import java.util.Random;
 @Slf4j
 public final class MySQLIncrementalDumper extends AbstractScalingExecutor implements IncrementalDumper {
     
+    private static final Map<String, ValueHandler> VALUE_HANDLER_MAP;
+    
     private final BinlogPosition binlogPosition;
     
     private final DumperConfiguration dumperConfig;
     
-    private final MetaDataManager metaDataManager;
+    private final MySQLColumnMetaDataLoader columnMetaDataLoader;
     
     private final Random random = new SecureRandom();
     
     @Setter
     private Channel channel;
     
+    static {
+        ShardingSphereServiceLoader.register(ValueHandler.class);
+        VALUE_HANDLER_MAP = ShardingSphereServiceLoader.getSingletonServiceInstances(ValueHandler.class)
+                .stream().collect(Collectors.toMap(ValueHandler::getTypeName, v -> v));
+    }
+    
     public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<BinlogPosition> binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.dumperConfig = dumperConfig;
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardJDBCDataSourceConfiguration, "MySQLBinlogDumper only support StandardJDBCDataSourceConfiguration");
-        metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
+        columnMetaDataLoader = new MySQLColumnMetaDataLoader(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     
     @Override
@@ -117,46 +130,54 @@ public final class MySQLIncrementalDumper extends AbstractScalingExecutor implem
     }
     
     private void handleWriteRowsEvent(final WriteRowsEvent event) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
+        List<MySQLColumnMetaData> tableMetaData = columnMetaDataLoader.load(event.getTableName());
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType(ScalingConstant.INSERT);
             for (int i = 0; i < each.length; i++) {
-                record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), each[i], true, tableMetaData.isPrimaryKey(i)));
+                record.addColumn(new Column(tableMetaData.get(i).getName(), handleValue(tableMetaData.get(i), each[i]), true, tableMetaData.get(i).isPrimaryKey()));
             }
             pushRecord(record);
         }
     }
     
     private void handleUpdateRowsEvent(final UpdateRowsEvent event) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
+        List<MySQLColumnMetaData> tableMetaData = columnMetaDataLoader.load(event.getTableName());
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
             DataRecord record = createDataRecord(event, beforeValues.length);
             record.setType(ScalingConstant.UPDATE);
             for (int j = 0; j < beforeValues.length; j++) {
-                Object oldValue = beforeValues[j];
-                Object newValue = afterValues[j];
+                Serializable oldValue = beforeValues[j];
+                Serializable newValue = afterValues[j];
                 boolean updated = !Objects.equals(newValue, oldValue);
-                record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getName(),
-                        (tableMetaData.isPrimaryKey(j) && updated) ? oldValue : null,
-                        newValue, updated, tableMetaData.isPrimaryKey(j)));
+                record.addColumn(new Column(tableMetaData.get(j).getName(),
+                        (tableMetaData.get(j).isPrimaryKey() && updated) ? handleValue(tableMetaData.get(j), oldValue) : null,
+                        handleValue(tableMetaData.get(j), newValue), updated, tableMetaData.get(j).isPrimaryKey()));
             }
             pushRecord(record);
         }
     }
     
     private void handleDeleteRowsEvent(final DeleteRowsEvent event) {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
+        List<MySQLColumnMetaData> tableMetaData = columnMetaDataLoader.load(event.getTableName());
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType(ScalingConstant.DELETE);
             for (int i = 0; i < each.length; i++) {
-                record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), each[i], true, tableMetaData.isPrimaryKey(i)));
+                record.addColumn(new Column(tableMetaData.get(i).getName(), handleValue(tableMetaData.get(i), each[i]), true, tableMetaData.get(i).isPrimaryKey()));
             }
             pushRecord(record);
         }
+    }
+    
+    private Serializable handleValue(final MySQLColumnMetaData columnMetaData, final Serializable value) {
+        ValueHandler valueHandler = VALUE_HANDLER_MAP.get(columnMetaData.getDataTypeName());
+        if (null != valueHandler) {
+            return valueHandler.handle(value);
+        }
+        return value;
     }
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
