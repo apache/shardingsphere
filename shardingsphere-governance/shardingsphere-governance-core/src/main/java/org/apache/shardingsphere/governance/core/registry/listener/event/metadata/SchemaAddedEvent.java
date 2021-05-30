@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.governance.core.registry.listener.event.metadata;
 
-import com.google.common.base.Joiner;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 
 /**
- * User node.
+ * Schema added event.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UserNode {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaAddedEvent implements GovernanceEvent {
     
-    private static final String ROOT_NODE = "users";
-    
-    /**
-     * Get users path.
-     *
-     * @return users path
-     */
-    public static String getRootNode() {
-        return Joiner.on("/").join("", ROOT_NODE);
-    }
+    private final String schemaName;
 }

@@ -31,7 +31,10 @@ DROP SCHEMA IF EXISTS demo_write_ds_1_read_0;
 DROP SCHEMA IF EXISTS demo_write_ds_1_read_1;
 
 DROP SCHEMA IF EXISTS shadow_demo_ds;
+DROP SCHEMA IF EXISTS shadow_demo_ds_0;
+DROP SCHEMA IF EXISTS shadow_demo_ds_1;
 
+DROP SCHEMA IF EXISTS demo_shadow_write_ds;
 DROP SCHEMA IF EXISTS demo_shadow_read_ds;
 DROP SCHEMA IF EXISTS demo_read_ds;
 
@@ -51,7 +54,10 @@ CREATE SCHEMA IF NOT EXISTS demo_write_ds_1_read_0;
 CREATE SCHEMA IF NOT EXISTS demo_write_ds_1_read_1;
 
 CREATE SCHEMA IF NOT EXISTS shadow_demo_ds;
+CREATE SCHEMA IF NOT EXISTS shadow_demo_ds_0;
+CREATE SCHEMA IF NOT EXISTS shadow_demo_ds_1;
 
+CREATE SCHEMA IF NOT EXISTS demo_shadow_write_ds;
 CREATE SCHEMA IF NOT EXISTS demo_shadow_read_ds;
 CREATE SCHEMA IF NOT EXISTS demo_read_ds;
 

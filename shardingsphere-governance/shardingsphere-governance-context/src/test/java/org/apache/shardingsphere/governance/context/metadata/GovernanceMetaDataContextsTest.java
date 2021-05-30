@@ -21,8 +21,8 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.governance.core.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.GlobalRuleConfigurationsChangedEvent;
@@ -122,7 +122,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Test
     public void assertSchemaAdd() throws SQLException {
-        MetaDataPersistedEvent event = new MetaDataPersistedEvent("schema_add");
+        SchemaAddedEvent event = new SchemaAddedEvent("schema_add");
         when(registryCenter.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
         governanceMetaDataContexts.renew(event);
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
@@ -140,7 +140,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Test
     public void assertSchemaDelete() {
-        MetaDataDeletedEvent event = new MetaDataDeletedEvent("schema");
+        SchemaDeletedEvent event = new SchemaDeletedEvent("schema");
         governanceMetaDataContexts.renew(event);
         assertNull(governanceMetaDataContexts.getMetaData("schema"));
     }

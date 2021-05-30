@@ -37,6 +37,7 @@ import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -48,7 +49,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -98,7 +98,7 @@ public final class SchemaRegistryServiceTest {
     
     @Test
     public void assertLoadAllNames() {
-        when(registryCenterRepository.get("/metadata")).thenReturn("foo_db,bar_db");
+        when(registryCenterRepository.getChildrenKeys("/metadata")).thenReturn(Arrays.asList("foo_db", "bar_db"));
         Collection<String> actual = schemaRegistryService.loadAllNames();
         assertThat(actual.size(), is(2));
         assertThat(actual, hasItems("foo_db"));
@@ -108,17 +108,8 @@ public final class SchemaRegistryServiceTest {
     @Test
     public void assertUpdateWithMetaDataCreatedEvent() {
         MetaDataCreatedEvent event = new MetaDataCreatedEvent("bar_db");
-        when(registryCenterRepository.get("/metadata")).thenReturn("foo_db");
         schemaRegistryService.update(event);
-        verify(registryCenterRepository).persist("/metadata", "foo_db,bar_db");
-    }
-    
-    @Test
-    public void assertUpdateWithMetaDataCreatedEventAndExist() {
-        MetaDataCreatedEvent event = new MetaDataCreatedEvent("bar_db");
-        when(registryCenterRepository.get("/metadata")).thenReturn("foo_db,bar_db");
-        schemaRegistryService.update(event);
-        verify(registryCenterRepository, times(0)).persist("/metadata", "foo_db,bar_db");
+        verify(registryCenterRepository).persist("/metadata/bar_db", "");
     }
     
     @Test
@@ -129,19 +120,10 @@ public final class SchemaRegistryServiceTest {
     }
     
     @Test
-    public void assertUpdateWithMetaDataDroppedEvent() {
+    public void assertUpdateWithMetadataDroppedEvent() {
         MetaDataDroppedEvent event = new MetaDataDroppedEvent("foo_db");
-        when(registryCenterRepository.get("/metadata")).thenReturn("foo_db,bar_db");
         schemaRegistryService.update(event);
-        verify(registryCenterRepository).persist("/metadata", "bar_db");
-    }
-    
-    @Test
-    public void assertUpdateWithMetaDataDroppedEventAndNotExist() {
-        MetaDataDroppedEvent event = new MetaDataDroppedEvent("foo_db");
-        when(registryCenterRepository.get("/metadata")).thenReturn("bar_db");
-        schemaRegistryService.update(event);
-        verify(registryCenterRepository, times(0)).persist("/metadata", "bar_db");
+        verify(registryCenterRepository).delete("/metadata/foo_db");
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})

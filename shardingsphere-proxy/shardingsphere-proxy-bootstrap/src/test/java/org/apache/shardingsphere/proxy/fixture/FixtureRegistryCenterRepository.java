@@ -42,7 +42,7 @@ public final class FixtureRegistryCenterRepository implements RegistryCenterRepo
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        return Collections.emptyList();
+        return Collections.singletonList("db");
     }
     
     @Override

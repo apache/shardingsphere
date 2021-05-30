@@ -667,6 +667,10 @@ percent
     : numberLiterals | expr | nullValueLiterals
     ;
 
+rollbackSegment
+    : identifier
+    ;
+
 queryName
     : (owner DOT_)? name
     ;

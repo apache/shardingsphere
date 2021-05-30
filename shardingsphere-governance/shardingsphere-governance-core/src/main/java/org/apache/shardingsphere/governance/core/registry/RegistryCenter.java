@@ -17,27 +17,23 @@
 
 package org.apache.shardingsphere.governance.core.registry;
 
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.governance.core.lock.impl.LockRegistryService;
+import org.apache.shardingsphere.governance.core.registry.cache.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.registry.service.process.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.cache.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.service.schema.SchemaRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.state.DataSourceStatusRegistryService;
-import org.apache.shardingsphere.governance.core.lock.impl.LockRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -105,24 +101,7 @@ public final class RegistryCenter {
             String schemaName = entry.getKey();
             dataSourceService.persist(schemaName, dataSourceConfigs.get(schemaName), isOverwrite);
             schemaRuleService.persist(schemaName, schemaRuleConfigs.get(schemaName), isOverwrite);
-            // TODO persistSchemaName is for etcd to get SchemaName which is for impl details, should move the logic into etcd repository, just keep reg center clear and high abstract.
-            persistSchemaName(entry.getKey());
         }
-    }
-    
-    private void persistSchemaName(final String schemaName) {
-        String schemaNamesStr = repository.get(SchemaMetadataNode.getMetadataNodePath());
-        if (Strings.isNullOrEmpty(schemaNamesStr)) {
-            repository.persist(SchemaMetadataNode.getMetadataNodePath(), schemaName);
-            return;
-        }
-        Collection<String> schemaNames = Splitter.on(",").splitToList(schemaNamesStr);
-        if (schemaNames.contains(schemaName)) {
-            return;
-        }
-        Collection<String> newSchemaNames = new ArrayList<>(schemaNames);
-        newSchemaNames.add(schemaName);
-        repository.persist(SchemaMetadataNode.getMetadataNodePath(), String.join(",", newSchemaNames));
     }
     
     /**

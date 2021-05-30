@@ -21,12 +21,8 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Schema metadata node.
@@ -102,54 +98,20 @@ public final class SchemaMetadataNode {
      * @return schema name
      */
     public static String getSchemaName(final String configurationNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetadataNodePath() + "/(\\w+)" + "(/datasource|/rule)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetadataNodePath() + "/(\\w+)" + "(/datasource|/rule|/schema)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configurationNodeFullPath);
         return matcher.find() ? matcher.group(1) : "";
     }
-    
+
     /**
-     * Get all schema config paths.
+     * Get schema name by schema path.
      *
-     * @param schemaNames schema names
-     * @return config paths list
+     * @param schemaPath schema path
+     * @return schema name
      */
-    public static Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
-        Collection<String> result = new ArrayList<>(Collections.singleton(getMetadataNodePath()));
-        for (String schemaName : schemaNames) {
-            result.add(getRulePath(schemaName));
-            result.add(getMetadataDataSourcePath(schemaName));
-            result.add(getMetadataSchemaPath(schemaName));
-        }
-        return result;
-    }
-    
-    /**
-     * Get all metadata schema paths.
-     *
-     * @param schemaNames schema names
-     * @return list of schema path
-     */
-    public static Collection<String> getAllMetadataSchemaPaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(SchemaMetadataNode::getMetadataSchemaPath).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get all rule paths.
-     *
-     * @param schemaNames schema names
-     * @return list of rule path
-     */
-    public static Collection<String> getAllRulePaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(SchemaMetadataNode::getRulePath).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get all data source paths.
-     *
-     * @param schemaNames schema names
-     * @return list of data source path
-     */
-    public static Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
-        return schemaNames.stream().map(SchemaMetadataNode::getMetadataDataSourcePath).collect(Collectors.toList());
+    public static String getSchemaNameBySchemaPath(final String schemaPath) {
+        Pattern pattern = Pattern.compile(getMetadataNodePath() + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(schemaPath);
+        return matcher.find() ? matcher.group(1) : "";
     }
 }
