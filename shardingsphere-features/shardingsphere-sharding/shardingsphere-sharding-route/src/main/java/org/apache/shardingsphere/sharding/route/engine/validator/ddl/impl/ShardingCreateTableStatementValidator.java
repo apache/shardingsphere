@@ -37,16 +37,17 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateTableStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
-        if (!CreateTableStatementHandler.containsIfNotExistClause(sqlStatementContext.getSqlStatement())) {
+        if (!CreateTableStatementHandler.containsNotExistClause(sqlStatementContext.getSqlStatement())) {
             validateTableNotExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         }
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final CreateTableStatement sqlStatement, final RouteContext routeContext) {
-        String primaryTable = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        if (isRouteUnitPrimaryTableDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
-            throw new ShardingSphereException("CREATE TABLE ... statement route unit size must be same with primary table '%s' data node size.", primaryTable);
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateTableStatement> sqlStatementContext, 
+                             final RouteContext routeContext, final ShardingSphereSchema schema) {
+        String primaryTable = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
+            throw new ShardingSphereException("CREATE TABLE ... statement can not route correctly for tables %s.", sqlStatementContext.getTablesContext().getTableNames());
         }
     }
 }

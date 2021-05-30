@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
-import org.apache.shardingsphere.governance.core.lock.node.LockNode;
+import org.apache.shardingsphere.governance.core.lock.impl.LockNode;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.lock.LockNotificationEvent;
@@ -34,20 +34,17 @@ import java.util.Optional;
  */
 public final class LockChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    private final LockNode lockNode;
-    
     public LockChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singleton(new LockNode().getLockRootNodePath()));
-        lockNode = new LockNode();
+        super(registryCenterRepository, Collections.singleton(LockNode.getLockRootNodePath()));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        if (!event.getKey().equals(lockNode.getLockRootNodePath()) && lockNode.getLockName(event.getKey()).isPresent()) {
+        if (!event.getKey().equals(LockNode.getLockRootNodePath()) && LockNode.getLockName(event.getKey()).isPresent()) {
             if (event.getType() == Type.ADDED) {
-                return Optional.of(new LockNotificationEvent(lockNode.getLockName(event.getKey()).get()));
+                return Optional.of(new LockNotificationEvent(LockNode.getLockName(event.getKey()).get()));
             } else if (event.getType() == Type.DELETED) {
-                return Optional.of(new LockReleasedEvent(lockNode.getLockName(event.getKey()).get()));
+                return Optional.of(new LockReleasedEvent(LockNode.getLockName(event.getKey()).get()));
             }
         }
         return Optional.empty();

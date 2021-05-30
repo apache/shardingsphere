@@ -45,7 +45,8 @@ public final class ShardingPrepareStatementValidator extends ShardingDDLStatemen
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final PostgreSQLPrepareStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<PostgreSQLPrepareStatement> sqlStatementContext, 
+                             final RouteContext routeContext, final ShardingSphereSchema schema) {
         if (routeContext.getRouteUnits().isEmpty()) {
             throw new ShardingSphereException("Can not get route result, please check your sharding table config.");
         }
