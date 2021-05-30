@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 
 import java.util.Collections;
@@ -38,10 +39,18 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         validateTableExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        String indexName = sqlStatementContext.getSqlStatement().getIndex().getIdentifier().getValue();
+        IndexSegment indexSegment = sqlStatementContext.getSqlStatement().getIndex();
+        if (isUnnamedIndex(indexSegment)) {
+            return;
+        }
+        String indexName = indexSegment.getIdentifier().getValue();
         if (schema.get(tableName).getIndexes().containsKey(indexName)) {
             throw new ShardingSphereException("Index '%s' already exists.", indexName);
         }
+    }
+    
+    private boolean isUnnamedIndex(final IndexSegment indexSegment) {
+        return null == indexSegment;
     }
     
     @Override

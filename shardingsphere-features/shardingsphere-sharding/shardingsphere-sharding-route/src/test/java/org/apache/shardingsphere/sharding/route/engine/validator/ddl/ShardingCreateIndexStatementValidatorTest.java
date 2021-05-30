@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -64,14 +65,21 @@ public final class ShardingCreateIndexStatementValidatorTest {
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), schema);
     }
     
+    @Test
+    public void assertPreValidateCreateUnnamedIndexWhenTableExistForPostgreSQL() {
+        PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
+        sqlStatement.setIndex(null);
+        when(schema.containsTable("t_order")).thenReturn(true);
+        new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), schema);
+    }
+    
     @Test(expected = NoSuchTableException.class)
     public void assertPreValidateCreateIndexWhenTableNotExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
         when(schema.containsTable("t_order")).thenReturn(false);
-        TableMetaData tableMetaData = mock(TableMetaData.class);
-        Map<String, IndexMetaData> indexes = mock(HashMap.class);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), schema);
     }
     
