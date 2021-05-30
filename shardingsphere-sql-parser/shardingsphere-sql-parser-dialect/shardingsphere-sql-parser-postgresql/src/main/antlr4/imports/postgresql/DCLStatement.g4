@@ -120,7 +120,7 @@ alterOptRoleElem
     ;
 
 dropUser
-    : DROP USER (IF EXISTS)? roleList
+    : DROP USER existClause? roleList
     ;
 
 alterUser
@@ -143,7 +143,7 @@ createRole
     ;
 
 dropRole
-    : DROP ROLE (IF EXISTS)? roleList
+    : DROP ROLE existClause? roleList
     ;
 
 alterRole
@@ -159,7 +159,7 @@ createGroup
     ;
 
 createSchema
-    : CREATE SCHEMA (IF NOT EXISTS)? createSchemaClauses
+    : CREATE SCHEMA notExistClause? createSchemaClauses
     ;
 
 createSchemaClauses
@@ -176,11 +176,11 @@ schemaStmt
     ;
 
 dropDroup
-    : DROP GROUP (IF EXISTS)? roleList
+    : DROP GROUP existClause? roleList
     ;
 
 dropSchema
-    : DROP SCHEMA (IF EXISTS)? nameList dropBehavior?
+    : DROP SCHEMA existClause? nameList dropBehavior?
     ;
 
 reassignOwned

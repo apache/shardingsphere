@@ -34,7 +34,7 @@
         <prop key="operation-timeout-milliseconds">1000</prop>
     </util:properties>
     
-    <governance:reg-center id="registryCenterRepository" type="TestRegistry" server-lists="localhost:3181">
+    <governance:reg-center id="registryCenterRepository" type="TestRegistry" server-lists="localhost:3182">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>

@@ -20,7 +20,9 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
+import org.apache.shardingsphere.governance.core.registry.UserNode;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -82,12 +84,11 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     private void initConfigCenter() {
-        RegistryCenterNode node = new RegistryCenterNode();
-        registryCenterRepository.persist(node.getUsersNode(), readYAML(USERS_YAML));
-        registryCenterRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
-        registryCenterRepository.persist(node.getMetadataNodePath(), "db");
-        registryCenterRepository.persist(node.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
-        registryCenterRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
+        registryCenterRepository.persist(UserNode.getRootNode(), readYAML(USERS_YAML));
+        registryCenterRepository.persist(GlobalNode.getPropsPath(), readYAML(PROPS_YAML));
+        registryCenterRepository.persist(SchemaMetadataNode.getMetadataNodePath(), "db");
+        registryCenterRepository.persist(SchemaMetadataNode.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
+        registryCenterRepository.persist(SchemaMetadataNode.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.governance.core.facade.fixture.RegistryCenterRepositoryFixture
+org.apache.shardingsphere.governance.core.registry.fixture.RegistryCenterRepositoryFixture

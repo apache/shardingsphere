@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Standard JDBC data source configuration.
@@ -54,8 +56,16 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
     public StandardJDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
         HikariConfig hikariConfig = getHikariConfig(jdbcUrl, username, password);
         this.hikariConfig = hikariConfig;
-        this.parameter = YamlEngine.marshal(hikariConfig);
+        this.parameter = wrapParameter(jdbcUrl, username, password);
         databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
+    }
+    
+    private String wrapParameter(final String jdbcUrl, final String username, final String password) {
+        Map<String, String> parameter = new HashMap<>(3);
+        parameter.put("jdbcUrl", jdbcUrl);
+        parameter.put("username", username);
+        parameter.put("password", password);
+        return YamlEngine.marshal(parameter);
     }
     
     private HikariConfig getHikariConfig(final String jdbcUrl, final String username, final String password) {

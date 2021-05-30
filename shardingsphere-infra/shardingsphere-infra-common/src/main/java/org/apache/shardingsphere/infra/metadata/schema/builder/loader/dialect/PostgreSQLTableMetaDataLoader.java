@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.util.TableMetaDataLoaderUtil;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -130,7 +131,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
                     String tableName = resultSet.getString("tablename");
                     Collection<IndexMetaData> indexes = result.computeIfAbsent(tableName, k -> new LinkedList<>());
                     String indexName = resultSet.getString("indexname");
-                    indexes.add(new IndexMetaData(indexName));
+                    indexes.add(new IndexMetaData(TableMetaDataLoaderUtil.getLogicIndexName(indexName, tableName)));
                 }
             }
         }

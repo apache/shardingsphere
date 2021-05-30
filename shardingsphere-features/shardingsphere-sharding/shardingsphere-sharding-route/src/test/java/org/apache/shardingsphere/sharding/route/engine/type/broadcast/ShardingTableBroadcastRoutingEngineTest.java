@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -106,11 +107,10 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         IndexSegment segment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         when(segment.getIdentifier().getValue()).thenReturn("t_order");
         DropIndexStatement dropIndexStatement = mock(DropIndexStatement.class, RETURNS_DEEP_STUBS);
-        when(dropIndexStatement.getIndexes()).thenReturn(Collections.singletonList(segment));
         SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(dropIndexStatement);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         when(((TableAvailable) sqlStatementContext).getAllTables()).thenReturn(Collections.emptyList());
+        when(((IndexAvailable) sqlStatementContext).getIndexes()).thenReturn(Collections.singletonList(segment));
 
         ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schema, sqlStatementContext);
         
@@ -128,15 +128,12 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
     @Test
     public void assertRouteForDropIndexStatementDoNotFoundTables() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(schema.getAllTableNames()).thenReturn(Sets.newHashSet("t_order"));
         when(schema.get(anyString()).getIndexes().containsKey(anyString())).thenReturn(false);
 
         IndexSegment segment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         when(segment.getIdentifier().getValue()).thenReturn("t_order");
         DropIndexStatement dropIndexStatement = mock(DropIndexStatement.class, RETURNS_DEEP_STUBS);
-        when(dropIndexStatement.getIndexes()).thenReturn(Collections.singletonList(segment));
         SQLStatementContext<DropIndexStatement> sqlStatementContext = mock(DropIndexStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(dropIndexStatement);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         when(((TableAvailable) sqlStatementContext).getAllTables()).thenReturn(Collections.emptyList());
 

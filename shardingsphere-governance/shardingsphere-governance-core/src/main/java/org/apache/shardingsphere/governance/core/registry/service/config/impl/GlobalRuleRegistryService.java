@@ -21,8 +21,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.service.config.GlobalRegistryService;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
@@ -45,17 +46,14 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     
     private final RegistryCenterRepository repository;
     
-    private final RegistryCenterNode node;
-    
     public GlobalRuleRegistryService(final RegistryCenterRepository repository) {
         this.repository = repository;
-        node = new RegistryCenterNode();
     }
     
     @Override
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
         if (!globalRuleConfigs.isEmpty() && (isOverwrite || !isExisted())) {
-            repository.persist(node.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
+            repository.persist(GlobalNode.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
         }
     }
     
@@ -63,11 +61,12 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load() {
         return isExisted()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(node.getGlobalRuleNode()), Collection.class)) : Collections.emptyList();
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(GlobalNode.getGlobalRuleNode()), Collection.class))
+                : Collections.emptyList();
     }
     
     private boolean isExisted() {
-        return !Strings.isNullOrEmpty(repository.get(node.getGlobalRuleNode()));
+        return !Strings.isNullOrEmpty(repository.get(GlobalNode.getGlobalRuleNode()));
     }
     
     
@@ -94,18 +93,18 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     @Subscribe
     public void update(final GrantStatementEvent event) {
         if (!event.getUsers().isEmpty()) {
-            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(event.getUsers())));
+            repository.persist(StatesNode.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(event.getUsers())));
         }
     }
     
-    private void refreshAuthorityRuleConfiguration(final AuthorityRuleConfiguration authRuleConfig, final Collection<ShardingSphereUser> createUsers) {
-        Collection<ShardingSphereUser> oldUsers = authRuleConfig.getUsers();
-        Collection<ShardingSphereUser> newUsers = oldUsers.isEmpty() ? createUsers : getChangedShardingSphereUsers(oldUsers, createUsers);
-        authRuleConfig.getUsers().removeAll(oldUsers);
-        authRuleConfig.getUsers().addAll(newUsers);
+    private void refreshAuthorityRuleConfiguration(final AuthorityRuleConfiguration authorityRuleConfig, final Collection<ShardingSphereUser> createdUsers) {
+        Collection<ShardingSphereUser> oldUsers = authorityRuleConfig.getUsers();
+        Collection<ShardingSphereUser> newUsers = oldUsers.isEmpty() ? createdUsers : getChangedUsers(oldUsers, createdUsers);
+        authorityRuleConfig.getUsers().removeAll(oldUsers);
+        authorityRuleConfig.getUsers().addAll(newUsers);
     }
     
-    private Collection<ShardingSphereUser> getChangedShardingSphereUsers(final Collection<ShardingSphereUser> oldUsers, final Collection<ShardingSphereUser> newUsers) {
+    private Collection<ShardingSphereUser> getChangedUsers(final Collection<ShardingSphereUser> oldUsers, final Collection<ShardingSphereUser> newUsers) {
         Collection<ShardingSphereUser> result = new LinkedList<>(oldUsers);
         ShardingSphereUsers shardingSphereUsers = new ShardingSphereUsers(oldUsers);
         for (ShardingSphereUser each : newUsers) {

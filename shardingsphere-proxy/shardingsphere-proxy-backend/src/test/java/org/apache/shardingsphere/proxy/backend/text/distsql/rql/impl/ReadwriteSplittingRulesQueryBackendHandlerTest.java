@@ -94,7 +94,7 @@ public final class ReadwriteSplittingRulesQueryBackendHandlerTest {
         assertTrue(rowData.contains("ds_primary"));
         assertTrue(rowData.contains("ds_slave_0,ds_slave_1"));
         assertTrue(rowData.contains("random"));
-        assertTrue(rowData.contains("read_weight:2:1"));
+        assertTrue(rowData.contains("read_weight=2:1"));
     }
 
     private ReadwriteSplittingRuleConfiguration buildReadwriteSplittingRuleConfiguration() {
