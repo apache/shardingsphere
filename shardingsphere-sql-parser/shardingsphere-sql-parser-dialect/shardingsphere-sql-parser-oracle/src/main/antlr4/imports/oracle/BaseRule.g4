@@ -666,3 +666,55 @@ rowcount
 percent
     : numberLiterals | expr | nullValueLiterals
     ;
+
+queryName
+    : (owner DOT_)? name
+    ;
+
+cycleValue
+    : STRING_
+    ;
+
+noCycleValue
+    : STRING_
+    ;
+
+orderingColumn
+    : columnName
+    ;
+
+subavName
+    : (owner DOT_)? name
+    ;
+
+baseAvName
+    : (owner DOT_)? name
+    ;
+
+measName
+    : identifier
+    ;
+
+levelRef
+    : identifier
+    ;
+
+offsetExpr
+    : expr | numberLiterals
+    ;
+
+memberKeyExpr
+    : identifier
+    ;
+
+depthExpression
+    : identifier
+    ;
+
+unitName
+    : (owner DOT_)? name
+    ;
+
+procedureName
+    : identifier
+    ;

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_with_subquery_factoring">
+        <with start-index="0" stop-index="110">
+            <common-table-expression name="dept_costs" start-index="5" stop-index="110">
+                <subquery-expression start-index="5" stop-index="110">
+                    <select>
+                        <from>
+                            <simple-table name="departments" alias="d" start-index="72" stop-index="84" />
+                        </from>
+                        <projections start-index="27" stop-index="65">
+                            <column-projection name="department_name" start-index="27" stop-index="41" />
+                            <aggregation-projection type="SUM" alias="dept_total" inner-expression="(salary)" start-index="44" stop-index="54" />
+                        </projections>
+                        <group-by>
+                            <column-item name="department_name" start-index="95" stop-index="109" />
+                        </group-by>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <from>
+            <simple-table name="dept_costs" start-index="126" stop-index="135" />
+        </from>
+        <projections start-index="119" stop-index="119">
+            <shorthand-projection start-index="119" stop-index="119" />
+        </projections>
+        <where start-index="137" stop-index="161">
+            <expr>
+                <binary-operation-expression start-index="143" stop-index="161">
+                    <left>
+                        <column name="dept_total" start-index="143" stop-index="152" />
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression value="304500" start-index="156" stop-index="161" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="department_name" start-index="172" stop-index="186" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_subquery_factoring_with_binding_tables_without_join">
+        <with start-index="0" stop-index="230">
+            <common-table-expression name = "dept_costs" start-index="5" stop-index="163">
+                <subquery-expression start-index="5" stop-index="163">
+                    <select>
+                        <from>
+                            <join-table>
+                                <left>
+                                    <simple-table name="employees" alias="e" start-index="72" stop-index="82" />
+                                </left>
+                                <right>
+                                    <simple-table name="departments" alias="d" start-index="85" stop-index="97" />
+                                </right>
+                            </join-table>
+                        </from>
+                        <projections start-index="27" stop-index="65">
+                            <column-projection name="department_name" start-index="27" stop-index="41" />
+                            <aggregation-projection type="SUM" alias="dept_total" inner-expression="(salary)" start-index="44" stop-index="54" />
+                        </projections>
+                        <where start-index="99" stop-index="137">
+                            <expr>
+                                <binary-operation-expression start-index="105" stop-index="137">
+                                    <left>
+                                        <column name="department_id" start-index="105" stop-index="119" >
+                                            <owner name="e" start-index="105" stop-index="105" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <column name="department_id" start-index="123" stop-index="137" >
+                                            <owner name="d" start-index="123" stop-index="123" />
+                                        </column>
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                        <group-by>
+                            <column-item name="department_name" start-index="148" stop-index="162" />
+                        </group-by>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+            <common-table-expression name="avg_cost" start-index="166" stop-index="230">
+                <subquery-expression start-index="166" stop-index="230">
+                    <select>
+                        <from>
+                            <simple-table name="dept_costs" start-index="220" stop-index="229" />
+                        </from>
+                        <projections start-index="186" stop-index="213">
+                            <expression-projection text="SUM(dept_total)/COUNT(*)" alias="avg" start-index="186" stop-index="213" />
+                        </projections>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <from>
+            <simple-table name="dept_costs" start-index="246" stop-index="255" />
+        </from>
+        <projections start-index="239" stop-index="239">
+            <shorthand-projection start-index="239" stop-index="239" />
+        </projections>
+        <where start-index="257" stop-index="301">
+            <expr>
+                <binary-operation-expression start-index="263" stop-index="301">
+                    <left>
+                        <column name="dept_total" start-index="263" stop-index="272" />
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <subquery start-index="276" stop-index="301">
+                            <select>
+                                <from start-index="293" stop-index="300">
+                                    <simple-table name="avg_cost" start-index="293" stop-index="300"/>
+                                </from>
+                                <projections start-index="284" stop-index="286">
+                                    <column-projection name="avg" start-index="284" stop-index="286"/>
+                                </projections>
+                            </select>
+                        </subquery>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="department_name" start-index="312" stop-index="326" />
+        </order-by>
+    </select>
+</sql-parser-test-cases>
