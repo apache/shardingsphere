@@ -21,6 +21,10 @@
     <sql-case id="setGlobalTransaction" value="SET GLOBAL TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL" />
     <sql-case id="setSessionTransaction" value="SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL" />
     <sql-case id="setTransactionReadOnly" value="SET TRANSACTION READ ONLY" db-types="MySQL,Oracle" />
+    <sql-case id="setTransactionReadWriteWithName" value="SET TRANSACTION READ WRITE NAME 'Toronto'" db-types="Oracle" />
+    <sql-case id="setTransactionIsolationLevelSerializable" value="SET TRANSACTION ISOLATION LEVEL SERIALIZABLE" db-types="Oracle" />
+    <sql-case id="setTransactionIsolationLevelReadCommitted" value="SET TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="Oracle" />
+    <sql-case id="setTransactionUseRollbackSegment" value="SET TRANSACTION USE ROLLBACK SEGMENT rbs_ts" db-types="Oracle" />
     <sql-case id="setTransactionWithName" value="SET TRANSACTION NAME 'comment1'" db-types="Oracle,SQLServer" />
     <sql-case id="setTransactionSnapshot" value="SET TRANSACTION SNAPSHOT 'snapshot1'" db-types="PostgreSQL" />
     <sql-case id="xa-recover" value="XA RECOVER" db-types="MySQL" />

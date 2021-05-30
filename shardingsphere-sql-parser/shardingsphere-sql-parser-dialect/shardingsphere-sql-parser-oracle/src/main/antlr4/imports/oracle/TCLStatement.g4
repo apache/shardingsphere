@@ -20,7 +20,10 @@ grammar TCLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 setTransaction
-    : SET TRANSACTION
+    : SET TRANSACTION ((READ (ONLY | WRITE)
+    | ISOLATION LEVEL (SERIALIZABLE | READ COMMITTED)
+    | USE ROLLBACK SEGMENT rollbackSegment) (NAME stringLiterals)?
+    | NAME stringLiterals)
     ;
 
 commit
