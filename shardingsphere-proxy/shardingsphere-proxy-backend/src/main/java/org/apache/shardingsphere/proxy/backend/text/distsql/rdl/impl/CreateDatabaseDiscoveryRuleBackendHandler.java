@@ -100,7 +100,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends SchemaRequi
         sqlStatement.getDatabaseDiscoveryRules().forEach(each -> resources.addAll(each.getDataSources()));
         Collection<String> notExistResources = resources.stream().filter(each -> !this.isValidResource(schemaName, each)).collect(Collectors.toList());
         if (!notExistResources.isEmpty()) {
-            throw new ResourceNotExistedException(notExistResources);
+            throw new ResourceNotExistedException(schemaName, notExistResources);
         }
     }
 

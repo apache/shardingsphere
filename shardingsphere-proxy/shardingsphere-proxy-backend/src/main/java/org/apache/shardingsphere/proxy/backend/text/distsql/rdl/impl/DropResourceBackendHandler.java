@@ -63,11 +63,11 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     private void check(final String schemaName, final Collection<String> resourceNames) {
         Map<String, DataSource> resourceMap = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
         if (null == resourceMap || resourceMap.isEmpty()) {
-            throw new ResourceNotExistedException(resourceNames);
+            throw new ResourceNotExistedException(schemaName, resourceNames);
         }
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resourceMap.containsKey(each)).collect(Collectors.toList());
         if (!notExistedResourceNames.isEmpty()) {
-            throw new ResourceNotExistedException(notExistedResourceNames);
+            throw new ResourceNotExistedException(schemaName, notExistedResourceNames);
         }
         Collection<ShardingSphereRule> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getRules();
         Set<String> useResources = new HashSet<>();
