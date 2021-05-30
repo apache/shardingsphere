@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.integration.scaling.test.mysql.util;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import groovy.lang.Tuple2;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.scaling.web.entity.ResponseContent;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertNotNull;
@@ -40,7 +40,7 @@ public final class ScalingUtil {
     
     private static final ScalingUtil OK_HTTP_UTILS = new ScalingUtil();
     
-    private static final Gson GSON = new Gson();
+    private static final JsonParser JSON_PARSER = new JsonParser();
     
     private final OkHttpClient client;
     
@@ -64,45 +64,72 @@ public final class ScalingUtil {
         return OK_HTTP_UTILS;
     }
     
-    private <T> T get(final String url, final Type type) throws IOException {
+    private JsonElement get(final String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
         Response response = client.newCall(request).execute();
         assertNotNull(response.body());
         String result = response.body().string();
-        return GSON.fromJson(result, type);
+        return JSON_PARSER.parse(result);
     }
     
-    private <T> T post(final String url, final String body, final Type type) throws IOException {
+    private JsonElement post(final String url, final String body) throws IOException {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), body);
         Request request = new Request.Builder().url(url).post(requestBody).build();
         Response response = client.newCall(request).execute();
         assertNotNull(response.body());
         String result = response.body().string();
-        return GSON.fromJson(result, type);
+        return JSON_PARSER.parse(result);
     }
     
     /**
      * Start job.
      *
      * @param configuration configuration
-     * @return response
+     * @return result
      * @throws IOException io exception
      */
-    public ResponseContent<String> startJob(final String configuration) throws IOException {
-        return getInstance().post(scalingUrl + "/scaling/job/start", configuration, new TypeToken<ResponseContent<String>>() {
-        
-        }.getType());
+    public Tuple2<Boolean, String> startJob(final String configuration) throws IOException {
+        JsonObject response = getInstance().post(scalingUrl + "/scaling/job/start", configuration).getAsJsonObject();
+        return new Tuple2<>(response.get("success").getAsBoolean(), response.get("model").getAsString());
+    }
+    
+    /**
+     * Get job status.
+     *
+     * @param jobId job id
+     * @return job status
+     */
+    public String getJobStatus(final String jobId) {
+        try {
+            JsonElement response = getInstance().get(scalingUrl + "/scaling/job/progress/" + jobId);
+            return response.getAsJsonObject().getAsJsonObject("model").getAsJsonObject("0").get("status").getAsString();
+            //CHECKSTYLE:OFF
+        } catch (Exception ignored) {
+            //CHECKSTYLE:ON
+        }
+        return null;
+    }
+    
+    /**
+     * Check job.
+     *
+     * @param jobId job id
+     * @return check result
+     * @throws IOException io exception
+     */
+    public Tuple2<Boolean, Boolean> getJobCheckResult(final String jobId) throws IOException {
+        JsonElement response = getInstance().get(scalingUrl + "/scaling/job/check/" + jobId);
+        JsonObject result = response.getAsJsonObject().getAsJsonObject("model").getAsJsonObject("t1");
+        return new Tuple2<>(result.get("countValid").getAsBoolean(), result.get("dataValid").getAsBoolean());
     }
     
     /**
      * Get job list.
      *
-     * @return job list
+     * @return result
      * @throws IOException io exception
      */
-    public ResponseContent<String> getJobList() throws IOException {
-        return getInstance().get(scalingUrl + "/scaling/job/list", new TypeToken<ResponseContent<Object[]>>() {
-        
-        }.getType());
+    public JsonElement getJobList() throws IOException {
+        return getInstance().get(scalingUrl + "/scaling/job/list");
     }
 }
