@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -42,6 +43,8 @@ public final class RawExecutor {
     
     private final boolean serial;
     
+    private final ConfigurationProperties props;
+    
     /**
      * Execute.
      *
@@ -55,7 +58,7 @@ public final class RawExecutor {
                                              final SQLStatementContext<?> sqlStatementContext,
                                              final RawSQLExecutorCallback callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
+            ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext, props);
             // TODO Load query header for first query
             List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());

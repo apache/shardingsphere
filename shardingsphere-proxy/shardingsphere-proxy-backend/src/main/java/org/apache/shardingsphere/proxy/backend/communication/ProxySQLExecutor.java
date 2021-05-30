@@ -80,7 +80,8 @@ public final class ProxySQLExecutor {
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         boolean isSerialExecute = backendConnection.isSerialExecute();
         jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection, new JDBCExecutor(executorEngine, isSerialExecute));
-        rawExecutor = new RawExecutor(executorEngine, isSerialExecute);
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
+        rawExecutor = new RawExecutor(executorEngine, isSerialExecute, metaDataContexts.getProps());
     }
     
     /**
@@ -119,7 +120,7 @@ public final class ProxySQLExecutor {
             return rawExecute(executionContext, rules, maxConnectionsSizePerQuery);
         }
         if (executionContext.getRouteContext().isToCalcite()) {
-            return useCalciteToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
+            return useCalciteToExecute(executionContext, rules, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
         }
         return useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
     }
@@ -137,14 +138,14 @@ public final class ProxySQLExecutor {
     }
     
     private Collection<ExecuteResult> useCalciteToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,
-                                                          final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+                                                          final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return Collections.emptyList();
         }
         MetaDataContexts metaData = ProxyContext.getInstance().getMetaDataContexts();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(type, metaData.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType(), 
                 executionContext.getSqlStatementContext().getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true);
-        CalciteRowExecutor executor = new CalciteRowExecutor(rules, maxConnectionsSizePerQuery, backendConnection, jdbcExecutor.getJdbcExecutor(), executionContext, callback);
+        CalciteRowExecutor executor = new CalciteRowExecutor(rules, metaData.getProps(), backendConnection, jdbcExecutor.getJdbcExecutor(), executionContext, callback);
         CalciteLogicSchema logicSchema = new CalciteLogicSchema(metaData.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(backendConnection.getSchemaName()), executor);
         CalciteExecutor calciteExecutor = new CalciteJDBCExecutor(metaData.getOptimizeContextFactory().create(backendConnection.getSchemaName(), logicSchema));
         backendConnection.setCalciteExecutor(calciteExecutor);

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.executor.sql.optimize.schema.row;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -48,7 +50,7 @@ public final class CalciteRowExecutor {
     // TODO Consider use emptyList
     private final Collection<ShardingSphereRule> rules;
     
-    private final int maxConnectionsSizePerQuery;
+    private final ConfigurationProperties props;
     
     private final ExecutorJDBCManager jdbcManager;
     
@@ -68,7 +70,7 @@ public final class CalciteRowExecutor {
     public Collection<QueryResult> execute(final ExecutionContext context) {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(context);
-            ExecuteProcessEngine.initialize(context.getSqlStatementContext(), executionGroupContext);
+            ExecuteProcessEngine.initialize(context.getSqlStatementContext(), executionGroupContext, props);
             Collection<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return result;
@@ -81,6 +83,7 @@ public final class CalciteRowExecutor {
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext(final ExecutionContext executionContext) throws SQLException {
         // TODO Set parameters for StatementOption
+        int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
                 JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, jdbcManager, new StatementOption(true), rules);
         return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
