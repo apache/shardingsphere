@@ -15,11 +15,11 @@ weight = 1
 
 ## 注册中心数据结构
 
-在定义的命名空间下， `users` 、 `props` 和 `metadata` 节点以 YAML 格式存储配置，可通过修改节点来实现对于配置的动态管理。 `states` 存储数据库访问对象运行节点，用于区分不同数据库访问实例。
+在定义的命名空间下， `rules` 、 `props` 和 `metadata` 节点以 YAML 格式存储配置，可通过修改节点来实现对于配置的动态管理。 `states` 存储数据库访问对象运行节点，用于区分不同数据库访问实例。
 
 ```
 namespace
-   ├──users                                     # 权限配置
+   ├──rules                                     # 全局规则配置
    ├──props                                     # 属性配置
    ├──metadata                                  # Metadata 配置
    ├      ├──${schema_1}                        # Schema 名称1
@@ -45,13 +45,17 @@ namespace
    ├    ├     ├──....
 ```
 
-### /users
+### /rules
 
-权限配置，可配置访问 ShardingSphere-Proxy 的用户名和密码。
+全局规则配置，可包括访问 ShardingSphere-Proxy 用户名和密码的权限配置。
 
 ```yaml
-- root@127.0.0.1:root
-- sharding@%:sharding
+- !AUTHORITY
+users:
+  - root@%:root
+  - sharding@127.0.0.1:sharding
+provider:
+  type: NATIVE
 ```
 
 ### /props
