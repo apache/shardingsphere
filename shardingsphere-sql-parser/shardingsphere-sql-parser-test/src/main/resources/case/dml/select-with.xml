@@ -20,7 +20,7 @@
     <select sql-case-id="select_with_subquery_factoring">
         <with start-index="0" stop-index="110">
             <common-table-expression name="dept_costs" start-index="5" stop-index="110">
-                <subquery-expression start-index="5" stop-index="110">
+                <subquery-expression start-index="20" stop-index="109">
                     <select>
                         <from>
                             <simple-table name="departments" alias="d" start-index="72" stop-index="84" />
@@ -63,7 +63,7 @@
     <select sql-case-id="select_with_subquery_factoring_with_binding_tables_without_join">
         <with start-index="0" stop-index="230">
             <common-table-expression name = "dept_costs" start-index="5" stop-index="163">
-                <subquery-expression start-index="5" stop-index="163">
+                <subquery-expression start-index="20" stop-index="162">
                     <select>
                         <from>
                             <join-table>
@@ -103,7 +103,7 @@
                 </subquery-expression>
             </common-table-expression>
             <common-table-expression name="avg_cost" start-index="166" stop-index="230">
-                <subquery-expression start-index="166" stop-index="230">
+                <subquery-expression start-index="179" stop-index="229">
                     <select>
                         <from>
                             <simple-table name="dept_costs" start-index="220" stop-index="229" />

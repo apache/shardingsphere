@@ -333,7 +333,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
         if (null != ctx.subqueryFactoringClause()) {
             for (SubqueryFactoringClauseContext each : ctx.subqueryFactoringClause()) {
-                SubquerySegment subquery = new SubquerySegment(each.start.getStartIndex(), each.stop.getStopIndex(), (OracleSelectStatement) visit(each));
+                SubquerySegment subquery = new SubquerySegment(each.selectSubquery().start.getStartIndex(), each.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(each));
                 IdentifierValue identifier = (IdentifierValue) visit(each.queryName().name().identifier());
                 CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
                 if (null != each.searchClause()) {
