@@ -25,8 +25,8 @@ import org.apache.shardingsphere.governance.core.lock.ShardingSphereDistributeLo
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.PrimaryStateChangedEvent;
@@ -173,11 +173,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     /**
      * Renew to persist meta data.
      *
-     * @param event meta data persisted event
+     * @param event schma added event
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final MetaDataPersistedEvent event) throws SQLException {
+    public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         metaDataMap.put(event.getSchemaName(), buildMetaData(event));
         metaDataContexts = new StandardMetaDataContexts(
@@ -189,12 +189,12 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     /**
-     * Renew to delete new schema.
+     * Renew to delete schema.
      *
      * @param event schema delete event
      */
     @Subscribe
-    public synchronized void renew(final MetaDataDeletedEvent event) {
+    public synchronized void renew(final SchemaDeletedEvent event) {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         metaDataMap.remove(event.getSchemaName());
         metaDataContexts = new StandardMetaDataContexts(
@@ -329,7 +329,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         }
     }
     
-    private ShardingSphereMetaData buildMetaData(final MetaDataPersistedEvent event) throws SQLException {
+    private ShardingSphereMetaData buildMetaData(final SchemaAddedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
         if (!governanceFacade.getRegistryCenter().getDataSourceService().isExisted(schemaName)) {
             governanceFacade.getRegistryCenter().getDataSourceService().persist(schemaName, new LinkedHashMap<>());

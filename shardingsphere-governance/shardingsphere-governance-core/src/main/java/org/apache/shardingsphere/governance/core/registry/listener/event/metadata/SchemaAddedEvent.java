@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 
 /**
- * Meta data persisted event.
+ * Schema added event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataPersistedEvent implements GovernanceEvent {
+public final class SchemaAddedEvent implements GovernanceEvent {
     
     private final String schemaName;
 }

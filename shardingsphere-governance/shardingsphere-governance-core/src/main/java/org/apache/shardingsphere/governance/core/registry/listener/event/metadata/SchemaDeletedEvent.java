@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 
 /**
- * Meta data deleted event.
+ * Schema deleted event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataDeletedEvent implements GovernanceEvent {
+public final class SchemaDeletedEvent implements GovernanceEvent {
     
     private final String schemaName;
 }
