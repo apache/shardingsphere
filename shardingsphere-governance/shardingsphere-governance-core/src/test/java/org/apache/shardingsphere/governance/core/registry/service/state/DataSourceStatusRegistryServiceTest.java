@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.service.state;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
@@ -76,7 +75,7 @@ public final class DataSourceStatusRegistryServiceTest {
         String dataSourceName = "replica_ds_0";
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, isDisabled);
         dataSourceStatusRegistryService.update(dataSourceDisabledEvent);
-        verify(registryCenterRepository).persist(new RegistryCenterNode().getDataSourcePath(schemaName, dataSourceName), value);
+        verify(registryCenterRepository).persist(StatesNode.getDataSourcePath(schemaName, dataSourceName), value);
     }
     
     @Test
@@ -86,6 +85,6 @@ public final class DataSourceStatusRegistryServiceTest {
         String dataSourceName = "replica_ds_0";
         PrimaryDataSourceEvent primaryDataSourceEvent = new PrimaryDataSourceEvent(schemaName, groupName, dataSourceName);
         dataSourceStatusRegistryService.update(primaryDataSourceEvent);
-        verify(registryCenterRepository).persist(new RegistryCenterNode().getPrimaryDataSourcePath(schemaName, groupName), dataSourceName);
+        verify(registryCenterRepository).persist(StatesNode.getPrimaryDataSourcePath(schemaName, groupName), dataSourceName);
     }
 }

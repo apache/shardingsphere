@@ -57,7 +57,7 @@ public final class ShardingAlterTableStatementValidatorTest {
     private RouteContext routeContext;
     
     @Test
-    public void assertPreValidateAlterTableWithSameDatasourceSingleTablesForPostgreSQL() {
+    public void assertPreValidateAlterTableWithoutRenameTableWithSameDatasourceSingleTablesForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         ConstraintDefinitionSegment definitionSegment = new ConstraintDefinitionSegment(0, 0);
@@ -70,7 +70,7 @@ public final class ShardingAlterTableStatementValidatorTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertPreValidateAlterTableWithDifferentDatasourceSingleTablesForPostgreSQL() {
+    public void assertPreValidateAlterTableWithoutRenameTableWithDifferentDatasourceSingleTablesForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         ConstraintDefinitionSegment definitionSegment = new ConstraintDefinitionSegment(0, 0);
@@ -80,6 +80,38 @@ public final class ShardingAlterTableStatementValidatorTest {
         when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_item"))).thenReturn(false);
         when(shardingRule.isSingleTablesInSameDataSource(Arrays.asList("t_order", "t_order_item"))).thenReturn(false);
         new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertPreValidateAlterTableWithRenameTableWithShardingTableForPostgreSQL() {
+        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
+        sqlStatement.setRenameTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_new")));
+        SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
+        when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
+        new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertPreValidateAlterTableWithRenameTableWithBroadcastTableForPostgreSQL() {
+        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
+        sqlStatement.setRenameTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_new")));
+        SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
+        when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
+        when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
+        new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
+    }
+    
+    @Test
+    public void assertPreValidateAlterTableWithRenameTableWithSingleTableForPostgreSQL() {
+        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
+        sqlStatement.setRenameTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_new")));
+        when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_new"))).thenReturn(false);
+        when(shardingRule.isBroadcastTable("t_order")).thenReturn(false);
+        when(shardingRule.isBroadcastTable("t_order_new")).thenReturn(false);
+        new ShardingAlterTableStatementValidator().preValidate(shardingRule, new AlterTableStatementContext(sqlStatement), Collections.emptyList(), schema);
     }
     
     @Test
@@ -92,7 +124,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -104,7 +136,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test
@@ -117,7 +149,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -129,7 +161,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test
@@ -139,7 +171,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -150,6 +182,6 @@ public final class ShardingAlterTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingAlterTableStatementValidator().postValidate(shardingRule, sqlStatement, routeContext);
+        new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement), routeContext, schema);
     }
 }

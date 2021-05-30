@@ -101,15 +101,27 @@ multipleTableNames
     ;
 
 select 
-    : unionClause
+    : selectSubquery forUpdateClause?
+    ;
+
+selectSubquery
+    : (queryBlock | selectUnionClause | parenthesisSelectSubquery) orderByClause? rowLimitingClause
+    ;
+
+selectUnionClause
+    : ((queryBlock | parenthesisSelectSubquery) orderByClause? rowLimitingClause) ((UNION ALL? | INTERSECT | MINUS) selectSubquery)+
+    ;
+
+parenthesisSelectSubquery
+    : LP_ selectSubquery RP_
     ;
 
 unionClause
-    : selectClause (UNION (ALL | DISTINCT)? selectClause)*
+    : queryBlock (UNION (ALL | DISTINCT)? queryBlock)*
     ;
 
-selectClause
-    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? lockClause?
+queryBlock
+    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause?
     ;
 
 duplicateSpecification
@@ -174,11 +186,23 @@ havingClause
     ;
 
 subquery
-    : LP_ unionClause RP_
+    : LP_ selectSubquery RP_
     ;
 
-lockClause
-    : FOR UPDATE 
+forUpdateClause
+    : FOR UPDATE (OF forUpdateClauseList)? ((NOWAIT | WAIT INTEGER_) | SKIP_SYMBOL LOCKED)?
+    ;
+
+forUpdateClauseList
+    : forUpdateClauseOption (COMMA_ forUpdateClauseOption)*
+    ;
+
+forUpdateClauseOption
+    : ((tableName | viewName) DOT_)? columnName
+    ;
+
+rowLimitingClause
+    : (OFFSET offset (ROW | ROWS))? (FETCH (FIRST | NEXT) (rowcount | percent PERCENT)? (ROW | ROWS) (ONLY | WITH TIES))?
     ;
 
 merge

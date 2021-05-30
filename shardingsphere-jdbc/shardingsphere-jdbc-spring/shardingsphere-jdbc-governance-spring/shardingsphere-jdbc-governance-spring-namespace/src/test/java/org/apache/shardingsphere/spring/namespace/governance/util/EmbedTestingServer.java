@@ -30,7 +30,7 @@ import java.io.IOException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EmbedTestingServer {
     
-    private static final int PORT = 3181;
+    private static final int PORT = 3182;
     
     private static volatile TestingServer testingServer;
     

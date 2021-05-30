@@ -48,6 +48,9 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext<
     public Collection<SimpleTableSegment> getAllTables() {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         result.add(getSqlStatement().getTable());
+        if (getSqlStatement().getRenameTable().isPresent()) {
+            result.add(getSqlStatement().getRenameTable().get());
+        }
         for (AddColumnDefinitionSegment each : getSqlStatement().getAddColumnDefinitions()) {
             for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
                 result.addAll(columnDefinition.getReferencedTables());

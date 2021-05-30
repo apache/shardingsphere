@@ -45,9 +45,11 @@ rules:
     t_order:
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       databaseStrategy:
-        shardingAlgorithmName: hint_test
+        hint:
+          shardingAlgorithmName: hint_test
       tableStrategy:
-        shardingAlgorithmName: hint_test
+        hint:
+          shardingAlgorithmName: hint_test
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake

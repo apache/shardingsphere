@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 
@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class TerminalStateChangedListener extends PostGovernanceRepositoryEventListener<StateEvent> {
     
     public TerminalStateChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singleton(new RegistryCenterNode().getProxyNodePath(GovernanceInstance.getInstance().getId())));
+        super(registryCenterRepository, Collections.singleton(StatesNode.getProxyNodePath(GovernanceInstance.getInstance().getId())));
     }
     
     @Override

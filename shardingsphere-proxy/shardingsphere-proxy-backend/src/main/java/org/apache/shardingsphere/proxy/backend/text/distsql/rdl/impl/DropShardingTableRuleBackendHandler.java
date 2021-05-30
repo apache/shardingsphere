@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -49,14 +50,14 @@ public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBac
     @Override
     public ResponseHeader execute(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
-        ShardingRuleConfiguration shardingRuleConfiguration = check(schemaName, tableNames);
-        drop(shardingRuleConfiguration, tableNames);
+        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
+        check(schemaName, shardingRuleConfiguration, tableNames);
+        drop(shardingRuleConfiguration.get(), tableNames);
         post(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private ShardingRuleConfiguration check(final String schemaName, final Collection<String> tableNames) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
+    private void check(final String schemaName, final Optional<ShardingRuleConfiguration> shardingRuleConfiguration, final Collection<String> tableNames) {
         if (!shardingRuleConfiguration.isPresent()) {
             throw new ShardingTableRuleNotExistedException(schemaName, tableNames);
         }
@@ -65,8 +66,11 @@ public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBac
         if (!notExistedTableNames.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(schemaName, notExistedTableNames);
         }
-        // TODO issue#10417
-        return shardingRuleConfiguration.get();
+        Collection<String> bindingTables = getBindingTables(shardingRuleConfiguration.get());
+        Collection<String> usedTableNames = tableNames.stream().filter(bindingTables::contains).collect(Collectors.toList());
+        if (!usedTableNames.isEmpty()) {
+            throw new ShardingTableRulesInUsedException(usedTableNames);
+        }
     }
 
     private Collection<String> getShardingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {

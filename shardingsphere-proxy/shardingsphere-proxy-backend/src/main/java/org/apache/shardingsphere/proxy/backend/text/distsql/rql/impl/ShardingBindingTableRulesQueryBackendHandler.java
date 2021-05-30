@@ -57,7 +57,7 @@ public final class ShardingBindingTableRulesQueryBackendHandler extends SchemaRe
 
     private List<QueryHeader> getQueryHeader() {
         List<QueryHeader> result = new LinkedList<>();
-        result.add(new QueryHeader(schema, "", "shardingBindingTable", "shardingBindingTable", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schema, "", "shardingBindingTables", "shardingBindingTables", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return result;
     }
     
