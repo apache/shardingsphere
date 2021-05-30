@@ -27,7 +27,6 @@ import io.etcd.jetcd.Lock;
 import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.lease.LeaseGrantResponse;
-import io.etcd.jetcd.lock.LockResponse;
 import io.etcd.jetcd.options.DeleteOption;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
@@ -102,9 +101,6 @@ public final class EtcdRepositoryTest {
 
     @Mock
     private Lock etcdLock;
-
-    @Mock
-    private LockResponse lockResponse;
     
     private final EtcdRepository repository = new EtcdRepository();
     
