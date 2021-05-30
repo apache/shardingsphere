@@ -425,6 +425,9 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     private ShardingSphereRuleMetaData getChangedGlobalRuleMetaData(final AuthorityChangedEvent event) {
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = metaDataContexts.getGlobalRuleMetaData().getConfigurations().stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .findAny().map(each -> (AuthorityRuleConfiguration) each);
+        if (!authorityRuleConfig.isPresent()) {
+            return metaDataContexts.getGlobalRuleMetaData();
+        }
         Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>(metaDataContexts.getGlobalRuleMetaData().getConfigurations());
         globalRuleConfigs.remove(authorityRuleConfig.get());
         globalRuleConfigs.add(getChangedAuthorityRuleConfiguration(authorityRuleConfig.get(), event));

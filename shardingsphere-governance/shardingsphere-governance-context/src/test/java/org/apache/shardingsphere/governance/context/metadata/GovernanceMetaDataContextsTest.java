@@ -93,7 +93,7 @@ public final class GovernanceMetaDataContextsTest {
     
     private GovernanceMetaDataContexts governanceMetaDataContexts;
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock
     private ShardingSphereRuleMetaData globalRuleMetaData;
 
     @Before
@@ -222,10 +222,10 @@ public final class GovernanceMetaDataContextsTest {
     }
     
     private Collection<ShardingSphereUser> getShardingSphereUsers() {
-        Collection<ShardingSphereUser> users = new LinkedList<>();
-        users.add(new ShardingSphereUser("root", "root", "%"));
-        users.add(new ShardingSphereUser("sharding", "sharding", "localhost"));
-        return users;
+        Collection<ShardingSphereUser> result = new LinkedList<>();
+        result.add(new ShardingSphereUser("root", "root", "%"));
+        result.add(new ShardingSphereUser("sharding", "sharding", "localhost"));
+        return result;
     }
     
     @Test
