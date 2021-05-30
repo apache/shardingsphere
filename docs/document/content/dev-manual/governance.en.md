@@ -28,5 +28,4 @@ chapter = true
 | DataSourceStateChangedListenerFactory | Data source state changed listener factory |
 | LockChangedListenerFactory            | Lock changed listener factory              |
 | PropertiesChangedListenerFactory      | Properties changed listener factory        |
-| UserChangedListenerFactory            | User changed listener factory              |
 | PrivilegeNodeChangedListenerFactory   | Privilege changed listener factory         |
