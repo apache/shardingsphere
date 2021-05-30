@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
+import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,14 +58,8 @@ public final class IntegrationTestEnvironment {
      */
     public void waitForEnvironmentReady() {
         log.info("wait begin scaling environment");
-        int retryCount = 0;
-        while (!isScalingReady(engineEnvProps) && retryCount < Integer.parseInt(engineEnvProps.getProperty("scaling.retry", "30"))) {
-            try {
-                Thread.sleep(Long.parseLong(engineEnvProps.getProperty("scaling.waitMs", "1000")));
-            } catch (final InterruptedException ignore) {
-            }
-            retryCount++;
-        }
+        new ExecuteUtil(() -> isScalingReady(engineEnvProps), Integer.parseInt(engineEnvProps.getProperty("scaling.retry", "30")),
+                Long.parseLong(engineEnvProps.getProperty("scaling.waitMs", "1000"))).execute();
     }
     
     private boolean isScalingReady(final Properties engineEnvProps) {
