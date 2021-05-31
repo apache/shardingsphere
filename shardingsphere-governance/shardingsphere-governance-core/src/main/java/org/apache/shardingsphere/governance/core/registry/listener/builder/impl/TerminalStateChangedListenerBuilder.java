@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener.builder.impl;
 
-import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.core.registry.listener.impl.TerminalStateChangedListener;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -32,7 +31,7 @@ import java.util.Collections;
 public final class TerminalStateChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
+    public TerminalStateChangedListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
         return new TerminalStateChangedListener(repository);
     }
     

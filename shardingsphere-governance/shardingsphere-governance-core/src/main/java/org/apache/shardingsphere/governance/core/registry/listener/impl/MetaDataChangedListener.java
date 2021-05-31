@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.listener.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.governance.core.registry.cache.CacheNode;
-import org.apache.shardingsphere.governance.core.registry.listener.AbstractGovernanceListener;
+import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.SchemaAddedEvent;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 /**
  * Metadata changed listener.
  */
-public final class MetaDataChangedListener extends AbstractGovernanceListener<GovernanceEvent> {
+public final class MetaDataChangedListener extends GovernanceListener<GovernanceEvent> {
     
     public MetaDataChangedListener(final RegistryCenterRepository registryCenterRepository) {
         super(registryCenterRepository, Collections.singleton(SchemaMetadataNode.getMetadataNodePath()));

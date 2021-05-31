@@ -39,14 +39,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AbstractGovernanceListenerTest {
+public final class GovernanceListenerTest {
     
     @Mock
     private RegistryCenterRepository repository;
     
     @Test
     public void assertWatch() {
-        AbstractGovernanceListener<GovernanceEvent> postEventListener = new AbstractGovernanceListener<GovernanceEvent>(repository, Collections.singletonList("test")) {
+        GovernanceListener<GovernanceEvent> postEventListener = new GovernanceListener<GovernanceEvent>(repository, Collections.singletonList("test")) {
             
             @Override
             protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
@@ -64,7 +64,7 @@ public final class AbstractGovernanceListenerTest {
     
     @Test
     public void assertWatchMultipleKeys() {
-        AbstractGovernanceListener<GovernanceEvent> postEventListener = new AbstractGovernanceListener<GovernanceEvent>(repository, Arrays.asList("test", "dev")) {
+        GovernanceListener<GovernanceEvent> postEventListener = new GovernanceListener<GovernanceEvent>(repository, Arrays.asList("test", "dev")) {
             
             @Override
             protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {

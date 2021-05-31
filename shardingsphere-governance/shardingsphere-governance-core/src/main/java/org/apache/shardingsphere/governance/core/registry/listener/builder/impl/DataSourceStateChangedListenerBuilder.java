@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener.builder.impl;
 
-import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.core.registry.listener.impl.DataSourceStateChangedListener;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +31,7 @@ import java.util.Collection;
 public final class DataSourceStateChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
+    public DataSourceStateChangedListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
         return new DataSourceStateChangedListener(repository, schemaNames);
     }
     
