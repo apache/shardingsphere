@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
+import org.apache.shardingsphere.governance.core.registry.listener.AbstractGovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.GlobalNode;
@@ -36,7 +36,7 @@ import java.util.Optional;
 /**
  * Global rule changed listener.
  */
-public final class GlobalRuleChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
+public final class GlobalRuleChangedListener extends AbstractGovernanceListener<GovernanceEvent> {
     
     public GlobalRuleChangedListener(final RegistryCenterRepository registryCenterRepository) {
         super(registryCenterRepository, Collections.singleton(GlobalNode.getGlobalRuleNode()));

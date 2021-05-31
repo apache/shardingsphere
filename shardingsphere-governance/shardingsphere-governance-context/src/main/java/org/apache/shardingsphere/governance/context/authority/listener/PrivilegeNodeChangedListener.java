@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.context.authority.listener;
 
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
+import org.apache.shardingsphere.governance.core.registry.listener.AbstractGovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * Privilege changed listener.
  */
-public final class PrivilegeNodeChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
+public final class PrivilegeNodeChangedListener extends AbstractGovernanceListener<GovernanceEvent> {
     
     public PrivilegeNodeChangedListener(final RegistryCenterRepository registryCenterRepository) {
         super(registryCenterRepository, Collections.singletonList(StatesNode.getPrivilegeNodePath()));

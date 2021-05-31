@@ -28,12 +28,12 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Post governance repository event listener.
+ * Abstract governance listener.
  * 
  * @param <T> type of event
  */
 @RequiredArgsConstructor
-public abstract class PostGovernanceRepositoryEventListener<T> implements GovernanceListener {
+public abstract class AbstractGovernanceListener<T> implements GovernanceListener {
     
     private final RegistryCenterRepository registryCenterRepository;
     

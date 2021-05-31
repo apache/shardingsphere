@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
-import org.apache.shardingsphere.governance.core.registry.listener.PostGovernanceRepositoryEventListener;
+import org.apache.shardingsphere.governance.core.registry.listener.AbstractGovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.PrimaryStateChangedEvent;
@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * Data source state changed listener.
  */
-public final class DataSourceStateChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
+public final class DataSourceStateChangedListener extends AbstractGovernanceListener<GovernanceEvent> {
     
     public DataSourceStateChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
         super(registryCenterRepository, StatesNode.getAllSchemaPaths(schemaNames));
