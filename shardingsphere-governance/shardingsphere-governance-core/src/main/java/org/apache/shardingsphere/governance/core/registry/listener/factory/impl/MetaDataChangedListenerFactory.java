@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.factory;
+package org.apache.shardingsphere.governance.core.registry.listener.factory.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
-import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerFactory;
-import org.apache.shardingsphere.governance.core.registry.listener.impl.LockChangedListener;
+import org.apache.shardingsphere.governance.core.registry.listener.factory.GovernanceListenerFactory;
+import org.apache.shardingsphere.governance.core.registry.listener.impl.MetaDataChangedListener;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
@@ -27,17 +27,17 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Lock changed listener factory.
+ * Meta data changed listener factory.
  */
-public final class LockChangedListenerFactory implements GovernanceListenerFactory {
+public final class MetaDataChangedListenerFactory implements GovernanceListenerFactory {
     
     @Override
     public GovernanceListener create(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        return new LockChangedListener(registryCenterRepository);
+        return new MetaDataChangedListener(registryCenterRepository);
     }
     
     @Override
     public Collection<Type> getWatchTypes() {
-        return Arrays.asList(Type.ADDED, Type.DELETED);
+        return Arrays.asList(Type.UPDATED, Type.ADDED, Type.DELETED);
     }
 }

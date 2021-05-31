@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.context.authority.listener.factory;
 
 import org.apache.shardingsphere.governance.context.authority.listener.PrivilegeNodeChangedListener;
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
-import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerFactory;
+import org.apache.shardingsphere.governance.core.registry.listener.factory.GovernanceListenerFactory;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 

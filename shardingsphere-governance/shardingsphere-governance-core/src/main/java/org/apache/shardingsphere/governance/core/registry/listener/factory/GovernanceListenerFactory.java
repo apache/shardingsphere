@@ -18,26 +18,29 @@
 package org.apache.shardingsphere.governance.core.registry.listener.factory;
 
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
-import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerFactory;
-import org.apache.shardingsphere.governance.core.registry.listener.impl.PropertiesChangedListener;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * Properties changed listener factory.
+ * Governance listener factory.
  */
-public final class PropertiesChangedListenerFactory implements GovernanceListenerFactory {
+public interface GovernanceListenerFactory {
     
-    @Override
-    public GovernanceListener create(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        return new PropertiesChangedListener(registryCenterRepository);
-    }
+    /**
+     * Create governance listener.
+     * 
+     * @param registryCenterRepository governance repository
+     * @param schemaNames schema names
+     * @return governance listener
+     */
+    GovernanceListener create(RegistryCenterRepository registryCenterRepository, Collection<String> schemaNames);
     
-    @Override
-    public Collection<Type> getWatchTypes() {
-        return Collections.singleton(Type.UPDATED);
-    }
+    /**
+     * Get watch types.
+     * 
+     * @return watch types
+     */
+    Collection<Type> getWatchTypes();
 }
