@@ -128,11 +128,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateShardingTableRule(final CreateShardingTableRuleContext ctx) {
-        CreateShardingTableRuleStatement result = new CreateShardingTableRuleStatement();
-        for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
-            result.getTables().add((TableRuleSegment) visit(each));
-        }
-        return result;
+        return new CreateShardingTableRuleStatement(ctx.shardingTableRuleDefinition().stream().map(each -> (TableRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -140,8 +136,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         CreateShardingBindingTableRulesStatement result = new CreateShardingBindingTableRulesStatement();
         for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
             ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
-            segment.setTables(Joiner.on(",")
-                    .join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
+            segment.setTables(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
             result.getRules().add(segment);
         }
         return result;

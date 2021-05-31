@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,8 +53,7 @@ public final class ShardingRuleStatementConverterTest {
         props.setProperty("sharding_count", "2");
         functionSegment.setAlgorithmProps(props);
         segment.setTableStrategy(functionSegment);
-        sqlStatement = new CreateShardingTableRuleStatement();
-        sqlStatement.getTables().add(segment);
+        sqlStatement = new CreateShardingTableRuleStatement(Collections.singleton(segment));
     }
     
     @Test
