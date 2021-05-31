@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryH
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -103,8 +104,7 @@ public final class PostgreSQLComQueryExecutorTest {
     
     @Test
     public void assertExecuteUpdate() throws SQLException {
-        UpdateResponseHeader updateResponseHeader = mock(UpdateResponseHeader.class);
-        when(textProtocolBackendHandler.execute()).thenReturn(updateResponseHeader);
+        when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(InsertStatement.class)));
         Collection<DatabasePacket<?>> actual = queryExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLCommandCompletePacket.class)));

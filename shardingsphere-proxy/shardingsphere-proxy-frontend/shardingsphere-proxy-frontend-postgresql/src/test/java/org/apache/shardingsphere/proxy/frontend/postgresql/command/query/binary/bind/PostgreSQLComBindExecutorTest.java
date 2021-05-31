@@ -33,6 +33,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -139,8 +140,7 @@ public final class PostgreSQLComBindExecutorTest {
     
     @Test
     public void assertExecuteBindPacketWithUpdateSQL() throws SQLException {
-        UpdateResponseHeader updateResponseHeader = mock(UpdateResponseHeader.class);
-        when(databaseCommunicationEngine.execute()).thenReturn(updateResponseHeader);
+        when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponseHeader(mock(InsertStatement.class)));
         PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(bindPacket, backendConnection);
         setMockFieldIntoExecutor(executor);
         Collection<DatabasePacket<?>> actual = executor.execute();
@@ -149,8 +149,6 @@ public final class PostgreSQLComBindExecutorTest {
         assertThat(actualPackets.next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
         assertThat(actualPackets.next(), is(instanceOf(PostgreSQLCommandCompletePacket.class)));
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
-        verify(updateResponseHeader).getSqlStatement();
-        verify(updateResponseHeader).getUpdateCount();
     }
     
     @SneakyThrows
