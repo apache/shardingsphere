@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.governance.core.registry.listener.builder.impl.TerminalStateChangedListenerBuilder
-org.apache.shardingsphere.governance.core.registry.listener.builder.impl.DataSourceStateChangedListenerBuilder
-org.apache.shardingsphere.governance.core.registry.listener.builder.impl.LockChangedListenerBuilder
-org.apache.shardingsphere.governance.core.registry.listener.builder.impl.PropertiesChangedListenerBuilder
-org.apache.shardingsphere.governance.core.registry.listener.builder.impl.MetaDataChangedListenerBuilder
-org.apache.shardingsphere.governance.core.registry.listener.builder.impl.GlobalRuleChangedListenerBuilder
+org.apache.shardingsphere.governance.core.registry.listener.impl.DataSourceStateChangedListener
+org.apache.shardingsphere.governance.core.registry.listener.impl.MetaDataChangedListener
+org.apache.shardingsphere.governance.core.registry.listener.impl.GlobalRuleChangedListener
+org.apache.shardingsphere.governance.core.registry.listener.impl.PropertiesChangedListener
+org.apache.shardingsphere.governance.core.registry.listener.impl.TerminalStateChangedListener
+org.apache.shardingsphere.governance.core.registry.listener.impl.LockChangedListener

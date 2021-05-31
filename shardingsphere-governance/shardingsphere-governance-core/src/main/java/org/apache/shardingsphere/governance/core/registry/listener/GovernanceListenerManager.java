@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -28,42 +27,35 @@ import java.util.Collection;
 /**
  * Governance listener manager.
  */
+@RequiredArgsConstructor
 public final class GovernanceListenerManager {
     
     static {
-        ShardingSphereServiceLoader.register(GovernanceListenerBuilder.class);
+        ShardingSphereServiceLoader.register(GovernanceListener.class);
     }
     
     private final RegistryCenterRepository repository;
     
     private final Collection<String> schemaNames;
     
-    private final Collection<GovernanceListenerBuilder> governanceListenerBuilders;
-    
-    public GovernanceListenerManager(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
-        this.repository = repository;
-        this.schemaNames = schemaNames;
-        governanceListenerBuilders = ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceListenerBuilder.class);
-    }
-    
     /**
      * Watch listeners.
      */
     public void watchListeners() {
-        for (GovernanceListenerBuilder each : governanceListenerBuilders) {
-            watch(each.create());
+        for (GovernanceListener<?> each : ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceListener.class)) {
+            watch(each);
         }
     }
     
     private void watch(final GovernanceListener<?> listener) {
         for (String each : listener.getWatchingKeys(schemaNames)) {
-            watch(each, listener.getWatchingTypes(), listener);
+            watch(each, listener);
         }
     }
     
-    private void watch(final String watchKey, final Collection<Type> types, final GovernanceListener<?> listener) {
-        repository.watch(watchKey, dataChangedEventListener -> {
-            if (types.contains(dataChangedEventListener.getType())) {
+    private void watch(final String watchingKey, final GovernanceListener<?> listener) {
+        repository.watch(watchingKey, dataChangedEventListener -> {
+            if (listener.getWatchingTypes().contains(dataChangedEventListener.getType())) {
                 listener.createEvent(dataChangedEventListener).ifPresent(ShardingSphereEventBus.getInstance()::post);
             }
         });
