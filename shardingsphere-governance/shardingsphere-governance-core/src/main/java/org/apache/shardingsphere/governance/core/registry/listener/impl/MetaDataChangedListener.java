@@ -43,21 +43,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Schemas changed listener.
+ * Metadata changed listener.
  */
 public final class MetaDataChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    private final Collection<String> existedSchemaNames;
-    
-    public MetaDataChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
+    public MetaDataChangedListener(final RegistryCenterRepository registryCenterRepository) {
         super(registryCenterRepository, Collections.singleton(SchemaMetadataNode.getMetadataNodePath()));
-        existedSchemaNames = new LinkedHashSet<>(schemaNames);
     }
     
     @Override

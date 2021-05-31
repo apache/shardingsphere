@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
@@ -37,7 +36,7 @@ public final class MetaDataChangedListenerTest extends GovernanceListenerTest {
     
     @Before
     public void setUp() {
-        metaDataChangedListener = new MetaDataChangedListener(getRegistryCenterRepository(), Arrays.asList("sharding_db", "readwrite_splitting_db"));
+        metaDataChangedListener = new MetaDataChangedListener(getRegistryCenterRepository());
     }
     
     @Test
