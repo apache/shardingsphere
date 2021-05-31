@@ -24,8 +24,10 @@ import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.Observers;
 import io.etcd.jetcd.Util;
 import io.etcd.jetcd.Watch;
+import io.etcd.jetcd.options.DeleteOption;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
+import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.watch.WatchEvent;
 import lombok.Getter;
 import lombok.Setter;
@@ -104,7 +106,8 @@ public final class EtcdRepository implements RegistryCenterRepository {
 
     @Override
     public void delete(final String key) {
-        client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8));
+        client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8),
+                DeleteOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build());
     }
     
     @Override
@@ -118,7 +121,8 @@ public final class EtcdRepository implements RegistryCenterRepository {
                 }
             }
         });
-        client.getWatchClient().watch(ByteSequence.from(key, StandardCharsets.UTF_8), listener);
+        client.getWatchClient().watch(ByteSequence.from(key, StandardCharsets.UTF_8),
+                WatchOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build(), listener);
     }
     
     private Type getEventChangedType(final WatchEvent event) {

@@ -33,11 +33,11 @@ public final class MetaDataChangedListenerFactory implements GovernanceListenerF
     
     @Override
     public GovernanceListener create(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        return new MetaDataChangedListener(registryCenterRepository, schemaNames);
+        return new MetaDataChangedListener(registryCenterRepository);
     }
     
     @Override
     public Collection<Type> getWatchTypes() {
-        return Arrays.asList(Type.UPDATED, Type.ADDED);
+        return Arrays.asList(Type.UPDATED, Type.ADDED, Type.DELETED);
     }
 }

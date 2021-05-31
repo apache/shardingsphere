@@ -135,7 +135,8 @@ public final class JDBCBackendDataSourceTest {
             try {
                 actual.addAll(each.get());
             } catch (final InterruptedException | ExecutionException ex) {
-                assertThat(ex.getMessage(), containsString("Can not get 6 connections one time, partition succeed connection(5) have released!"));
+                assertThat(ex.getMessage(), containsString("Could not get 6 connections at once. The 5 obtained connections have been released. "
+                        + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in props."));
             }
         }
         assertTrue(actual.isEmpty());

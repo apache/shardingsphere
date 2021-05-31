@@ -36,7 +36,7 @@ public final class DataSourceFactory {
                 return new ShardingShadowDatabasesConfiguration().getDataSource();
             case ENCRYPT_SHADOW:
                 return new EncryptShadowDatabasesConfiguration().getDataSource();
-            case READWRITE_SPLITTING:
+            case READWRITE_SPLITTING_SHADOW:
                 return new ReadwriteSplittingShadowDatabasesConfiguration().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());

@@ -23,6 +23,10 @@ showResources
     : SHOW RESOURCES (FROM schemaName)?
     ;
 
+showShardingTableRules
+    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
+    ;
+
 showShardingBindingTableRules
     : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
     ;
@@ -41,10 +45,6 @@ showDatabaseDiscoveryRules
 
 showEncryptRules
     : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
-    ;
-
-showShardingTableRules
-    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
     ;
 
 tableRule

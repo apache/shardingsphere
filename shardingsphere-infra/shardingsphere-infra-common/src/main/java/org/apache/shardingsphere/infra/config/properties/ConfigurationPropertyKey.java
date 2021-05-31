@@ -114,6 +114,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
+     * Whether enable show process list.
+     */
+    SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(false), boolean.class),
+    
+    /**
      * The length of time in milliseconds an SQL waits for a global lock before giving up.
      */
     LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class),

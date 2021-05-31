@@ -105,7 +105,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends SchemaRequi
         });
         Collection<String> notExistResources = resources.stream().filter(each -> !this.isValidResource(schemaName, each)).collect(Collectors.toList());
         if (!notExistResources.isEmpty()) {
-            throw new ResourceNotExistedException(notExistResources);
+            throw new ResourceNotExistedException(schemaName, notExistResources);
         }
     }
 

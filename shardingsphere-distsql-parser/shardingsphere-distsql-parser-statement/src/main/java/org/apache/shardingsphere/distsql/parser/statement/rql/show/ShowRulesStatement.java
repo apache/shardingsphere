@@ -29,11 +29,11 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public class ShowRulesStatement extends RQLStatement implements FromSchemaAvailable {
-
+    
     private final SchemaSegment schema;
     
     @Override
-    public Optional<SchemaSegment> getSchema() {
+    public final Optional<SchemaSegment> getSchema() {
         return Optional.ofNullable(schema);
     }
 }

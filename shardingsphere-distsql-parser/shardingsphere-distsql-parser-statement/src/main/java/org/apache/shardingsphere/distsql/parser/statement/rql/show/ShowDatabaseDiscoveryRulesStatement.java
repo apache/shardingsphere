@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
  * Show database discovery rules statement.
  */
 public final class ShowDatabaseDiscoveryRulesStatement extends ShowRulesStatement {
-
+    
     public ShowDatabaseDiscoveryRulesStatement(final SchemaSegment schema) {
         super(schema);
     }

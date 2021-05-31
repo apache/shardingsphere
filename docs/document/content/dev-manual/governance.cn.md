@@ -28,5 +28,4 @@ chapter = true
 | DataSourceStateChangedListenerFactory | 数据源状态变化监听器   |
 | LockChangedListenerFactory            | 锁状态变化监听器      |
 | PropertiesChangedListenerFactory      | 属性变化监听器        |
-| UserChangedListenerFactory            | 用户变化监听器        |
 | PrivilegeNodeChangedListenerFactory   | 权限变化监听器        |
