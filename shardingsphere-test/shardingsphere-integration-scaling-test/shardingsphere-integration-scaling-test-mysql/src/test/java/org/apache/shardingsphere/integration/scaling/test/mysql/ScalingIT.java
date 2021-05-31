@@ -19,17 +19,18 @@ package org.apache.shardingsphere.integration.scaling.test.mysql;
 
 import groovy.lang.Tuple2;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.scaling.test.mysql.fixture.FixtureWriteThread;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.TargetDataSourceUtil;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
 
-@Slf4j
 public final class ScalingIT {
     
     private static final long TIMEOUT_MS = 2 * 60 * 1000;
@@ -40,9 +41,9 @@ public final class ScalingIT {
     
     private final FixtureWriteThread fixtureWriteThread = new FixtureWriteThread(TIMEOUT_MS, 1000);
     
-    @SneakyThrows
+    @Ignore
     @Test
-    public void assertScaling() {
+    public void assertScaling() throws InterruptedException {
         if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
             IntegrationTestEnvironment.getInstance().waitForEnvironmentReady();
             fixtureWriteThread.start();
@@ -55,7 +56,7 @@ public final class ScalingIT {
         }
     }
     
-    @SneakyThrows
+    @SneakyThrows(IOException.class)
     private String assertStartJob() {
         String configurations = TargetDataSourceUtil.createDockerConfigurations();
         Tuple2<Boolean, String> response = ScalingUtil.getInstance().startJob(configurations);
@@ -69,7 +70,7 @@ public final class ScalingIT {
         }, (int) (TIMEOUT_MS - WAIT_MS_BEFORE_START_JOB) / (10 * 1000), 10 * 1000).execute();
     }
     
-    @SneakyThrows
+    @SneakyThrows(IOException.class)
     private void assertJobCheck(final String jobId) {
         Tuple2<Boolean, Boolean> checkResult = ScalingUtil.getInstance().getJobCheckResult(jobId);
         assertTrue(checkResult.getFirst());
