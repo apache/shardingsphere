@@ -22,6 +22,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.GovernanceLis
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
@@ -37,6 +38,11 @@ public final class PrivilegeNodeChangedListener implements GovernanceListener<Go
     @Override
     public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
         return Collections.singletonList(StatesNode.getPrivilegeNodePath());
+    }
+    
+    @Override
+    public Collection<Type> getWatchingTypes() {
+        return Collections.singleton(Type.UPDATED);
     }
     
     @Override

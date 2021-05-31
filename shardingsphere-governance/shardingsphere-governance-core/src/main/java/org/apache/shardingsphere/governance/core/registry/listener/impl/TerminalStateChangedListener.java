@@ -22,6 +22,7 @@ import org.apache.shardingsphere.governance.core.registry.instance.GovernanceIns
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 
@@ -37,6 +38,11 @@ public final class TerminalStateChangedListener implements GovernanceListener<St
     @Override
     public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
         return Collections.singleton(StatesNode.getProxyNodePath(GovernanceInstance.getInstance().getId()));
+    }
+    
+    @Override
+    public Collection<Type> getWatchingTypes() {
+        return Collections.singleton(Type.UPDATED);
     }
     
     @Override

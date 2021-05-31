@@ -23,6 +23,7 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.Governa
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.GlobalNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -40,6 +41,11 @@ public final class GlobalRuleChangedListener implements GovernanceListener<Gover
     @Override
     public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
         return Collections.singleton(GlobalNode.getGlobalRuleNode());
+    }
+    
+    @Override
+    public Collection<Type> getWatchingTypes() {
+        return Collections.singleton(Type.UPDATED);
     }
     
     @Override

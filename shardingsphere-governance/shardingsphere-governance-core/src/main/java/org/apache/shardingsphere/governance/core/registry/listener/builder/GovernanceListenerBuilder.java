@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.listener.builder;
 
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-
-import java.util.Collection;
 
 /**
  * Governance listener builder.
@@ -33,11 +30,4 @@ public interface GovernanceListenerBuilder {
      * @return governance listener
      */
     GovernanceListener<?> create();
-    
-    /**
-     * Get watch types.
-     * 
-     * @return watch types
-     */
-    Collection<Type> getWatchTypes();
 }

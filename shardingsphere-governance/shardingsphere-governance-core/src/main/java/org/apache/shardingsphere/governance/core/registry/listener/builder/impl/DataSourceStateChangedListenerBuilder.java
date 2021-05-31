@@ -19,10 +19,6 @@ package org.apache.shardingsphere.governance.core.registry.listener.builder.impl
 
 import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.core.registry.listener.impl.DataSourceStateChangedListener;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Data source state changed listener builder.
@@ -34,8 +30,4 @@ public final class DataSourceStateChangedListenerBuilder implements GovernanceLi
         return new DataSourceStateChangedListener();
     }
     
-    @Override
-    public Collection<Type> getWatchTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
-    }
 }

@@ -32,12 +32,14 @@ import org.apache.shardingsphere.governance.core.registry.service.config.node.Sc
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,6 +56,11 @@ public final class MetaDataChangedListener implements GovernanceListener<Governa
     @Override
     public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
         return Collections.singleton(SchemaMetadataNode.getMetadataNodePath());
+    }
+    
+    @Override
+    public Collection<Type> getWatchingTypes() {
+        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override

@@ -19,10 +19,6 @@ package org.apache.shardingsphere.governance.core.registry.listener.builder.impl
 
 import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.core.registry.listener.impl.MetaDataChangedListener;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Meta data changed listener builder.
@@ -34,8 +30,4 @@ public final class MetaDataChangedListenerBuilder implements GovernanceListenerB
         return new MetaDataChangedListener();
     }
     
-    @Override
-    public Collection<Type> getWatchTypes() {
-        return Arrays.asList(Type.UPDATED, Type.ADDED, Type.DELETED);
-    }
 }

@@ -19,10 +19,6 @@ package org.apache.shardingsphere.governance.core.registry.listener.builder.impl
 
 import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.core.registry.listener.impl.PropertiesChangedListener;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Properties changed listener builder.
@@ -34,8 +30,4 @@ public final class PropertiesChangedListenerBuilder implements GovernanceListene
         return new PropertiesChangedListener();
     }
     
-    @Override
-    public Collection<Type> getWatchTypes() {
-        return Collections.singleton(Type.UPDATED);
-    }
 }

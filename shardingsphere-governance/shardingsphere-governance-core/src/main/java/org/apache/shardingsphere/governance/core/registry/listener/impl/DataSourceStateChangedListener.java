@@ -26,6 +26,7 @@ import org.apache.shardingsphere.governance.core.registry.service.state.StatesNo
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -37,6 +38,11 @@ public final class DataSourceStateChangedListener implements GovernanceListener<
     @Override
     public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
         return StatesNode.getAllSchemaPaths(schemaNames);
+    }
+    
+    @Override
+    public Collection<Type> getWatchingTypes() {
+        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
     @Override

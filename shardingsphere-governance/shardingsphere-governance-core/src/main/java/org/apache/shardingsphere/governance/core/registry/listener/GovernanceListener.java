@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.listener;
 
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -36,6 +37,13 @@ public interface GovernanceListener<T> {
      * @return watching keys
      */
     Collection<String> getWatchingKeys(Collection<String> schemaNames);
+    
+    /**
+     * Get watching types.
+     *
+     * @return watching types
+     */
+    Collection<Type> getWatchingTypes();
     
     /**
      * Create event.
