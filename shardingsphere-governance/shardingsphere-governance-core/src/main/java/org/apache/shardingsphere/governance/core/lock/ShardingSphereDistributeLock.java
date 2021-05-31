@@ -19,9 +19,9 @@ package org.apache.shardingsphere.governance.core.lock;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.lock.impl.LockRegistryService;
-import org.apache.shardingsphere.governance.core.registry.listener.event.lock.LockNotificationEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.lock.LockReleasedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.lock.LockNotificationEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.lock.LockReleasedEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;

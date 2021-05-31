@@ -19,8 +19,8 @@ package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.MockDataSource;
-import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.junit.Before;

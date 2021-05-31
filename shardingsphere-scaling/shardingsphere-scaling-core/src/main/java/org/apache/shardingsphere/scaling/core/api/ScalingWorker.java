@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.api;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.scaling.StartScalingEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.SwitchRuleConfigurationEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.scaling.StartScalingEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;

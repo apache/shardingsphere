@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerFactory;
+import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcherFactory;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -57,8 +57,8 @@ public final class GovernanceFacadeTest {
         assertThat(getField(governanceFacade, "registryCenterRepository"), instanceOf(RegistryCenterRepository.class));
         RegistryCenterRepository repository = (RegistryCenterRepository) getField(governanceFacade, "registryCenterRepository");
         assertEquals(repository.getType(), "TEST");
-        assertThat(getField(governanceFacade, "listenerFactory"), instanceOf(GovernanceListenerFactory.class));
-        GovernanceListenerFactory listenerFactory = (GovernanceListenerFactory) getField(governanceFacade, "listenerFactory");
+        assertThat(getField(governanceFacade, "listenerFactory"), instanceOf(GovernanceWatcherFactory.class));
+        GovernanceWatcherFactory listenerFactory = (GovernanceWatcherFactory) getField(governanceFacade, "listenerFactory");
         assertThat(getField(listenerFactory, "repository"), is(repository));
         assertThat(getField(listenerFactory, "schemaNames"), is(Arrays.asList("schema_0", "schema_1")));
     }
@@ -66,7 +66,7 @@ public final class GovernanceFacadeTest {
     @Test
     public void assertOnlineInstance() {
         RegistryCenter registryCenter = mock(RegistryCenter.class);
-        GovernanceListenerFactory listenerFactory = mock(GovernanceListenerFactory.class);
+        GovernanceWatcherFactory listenerFactory = mock(GovernanceWatcherFactory.class);
         setField(governanceFacade, "registryCenter", registryCenter);
         setField(governanceFacade, "listenerFactory", listenerFactory);
         Map<String, DataSourceConfiguration> dataSourceConfigs = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
