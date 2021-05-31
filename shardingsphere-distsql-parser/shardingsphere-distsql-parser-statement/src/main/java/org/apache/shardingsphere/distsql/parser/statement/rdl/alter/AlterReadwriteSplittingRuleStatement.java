@@ -30,6 +30,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class AlterReadwriteSplittingRuleStatement extends RDLStatement {
-
+    
     private final Collection<ReadwriteSplittingRuleSegment> readwriteSplittingRules;
 }

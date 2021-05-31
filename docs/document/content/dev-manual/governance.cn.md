@@ -29,3 +29,4 @@ chapter = true
 | LockChangedListenerFactory            | 锁状态变化监听器      |
 | PropertiesChangedListenerFactory      | 属性变化监听器        |
 | PrivilegeNodeChangedListenerFactory   | 权限变化监听器        |
+| GlobalRuleChangedListenerFactory      | 全局规则配置变化监听器 |
