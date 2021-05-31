@@ -38,6 +38,6 @@ public final class MetaDataChangedListenerFactory implements GovernanceListenerF
     
     @Override
     public Collection<Type> getWatchTypes() {
-        return Arrays.asList(Type.UPDATED, Type.ADDED);
+        return Arrays.asList(Type.UPDATED, Type.ADDED, Type.DELETED);
     }
 }

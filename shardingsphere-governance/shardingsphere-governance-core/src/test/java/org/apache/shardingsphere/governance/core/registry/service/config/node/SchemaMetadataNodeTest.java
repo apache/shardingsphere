@@ -20,10 +20,6 @@ package org.apache.shardingsphere.governance.core.registry.service.config.node;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -40,16 +36,6 @@ public class SchemaMetadataNodeTest {
     }
     
     @Test
-    public void assertGetAllSchemaConfigPaths() {
-        Collection<String> actual = SchemaMetadataNode.getAllSchemaConfigPaths(Collections.singletonList(DefaultSchema.LOGIC_NAME));
-        assertThat(actual.size(), is(4));
-        assertThat(actual, hasItems("/metadata"));
-        assertThat(actual, hasItems("/metadata/logic_db/rules"));
-        assertThat(actual, hasItems("/metadata/logic_db/dataSources"));
-        assertThat(actual, hasItems("/metadata/logic_db/schema"));
-    }
-    
-    @Test
     public void assertGetSchemaNamePath() {
         assertThat(SchemaMetadataNode.getSchemaNamePath("sharding_db"), is("/metadata/sharding_db"));
     }
@@ -57,5 +43,10 @@ public class SchemaMetadataNodeTest {
     @Test
     public void assertGetMetadataSchemaPath() {
         assertThat(SchemaMetadataNode.getMetadataSchemaPath("sharding_db"), is("/metadata/sharding_db/schema"));
+    }
+
+    @Test
+    public void assertGetSchemaNameBySchemaPath() {
+        assertThat(SchemaMetadataNode.getSchemaNameBySchemaPath("/metadata/logic_db"), is(DefaultSchema.LOGIC_NAME));
     }
 }

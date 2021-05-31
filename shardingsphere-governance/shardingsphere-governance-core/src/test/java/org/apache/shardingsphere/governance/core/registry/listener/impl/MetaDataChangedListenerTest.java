@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Before;
@@ -30,11 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataChangedListenerTest extends GovernanceListenerTest {
@@ -48,26 +42,8 @@ public final class MetaDataChangedListenerTest extends GovernanceListenerTest {
     
     @Test
     public void assertCreateEventWithInvalidPath() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata/sharding_db", "encrypt_db", Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata_invalid/sharding_db", "encrypt_db", Type.UPDATED);
         Optional<GovernanceEvent> actual = metaDataChangedListener.createEvent(dataChangedEvent);
         assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    public void assertCreateAddedEvent() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata", "sharding_db,readwrite_splitting_db,encrypt_db", Type.UPDATED);
-        Optional<GovernanceEvent> actual = metaDataChangedListener.createEvent(dataChangedEvent);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(MetaDataPersistedEvent.class));
-        assertThat(((MetaDataPersistedEvent) actual.get()).getSchemaName(), is("encrypt_db"));
-    }
-    
-    @Test
-    public void assertCreateDeletedEvent() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata", "sharding_db", Type.UPDATED);
-        Optional<GovernanceEvent> actual = metaDataChangedListener.createEvent(dataChangedEvent);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(MetaDataDeletedEvent.class));
-        assertThat(((MetaDataDeletedEvent) actual.get()).getSchemaName(), is("readwrite_splitting_db"));
     }
 }
