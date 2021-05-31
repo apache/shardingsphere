@@ -25,20 +25,22 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.lock.Lo
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
 /**
  * Lock changed listener.
  */
-public final class LockChangedListener extends GovernanceListener<GovernanceEvent> {
+public final class LockChangedListener implements GovernanceListener<GovernanceEvent> {
     
-    public LockChangedListener() {
-        super(Collections.singleton(LockNode.getLockRootNodePath()));
+    @Override
+    public Collection<String> getWatchKeys() {
+        return Collections.singleton(LockNode.getLockRootNodePath());
     }
     
     @Override
-    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
         if (!event.getKey().equals(LockNode.getLockRootNodePath()) && LockNode.getLockName(event.getKey()).isPresent()) {
             if (event.getType() == Type.ADDED) {
                 return Optional.of(new LockNotificationEvent(LockNode.getLockName(event.getKey()).get()));

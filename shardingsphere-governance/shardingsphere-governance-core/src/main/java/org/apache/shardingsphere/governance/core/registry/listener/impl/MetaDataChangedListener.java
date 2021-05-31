@@ -49,14 +49,15 @@ import java.util.stream.Collectors;
 /**
  * Metadata changed listener.
  */
-public final class MetaDataChangedListener extends GovernanceListener<GovernanceEvent> {
+public final class MetaDataChangedListener implements GovernanceListener<GovernanceEvent> {
     
-    public MetaDataChangedListener() {
-        super(Collections.singleton(SchemaMetadataNode.getMetadataNodePath()));
+    @Override
+    public Collection<String> getWatchKeys() {
+        return Collections.singleton(SchemaMetadataNode.getMetadataNodePath());
     }
     
     @Override
-    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
         String schemaName = SchemaMetadataNode.getSchemaNameBySchemaPath(event.getKey());
         if (!Strings.isNullOrEmpty(schemaName)) {
             return buildSchemaEvent(schemaName, event);

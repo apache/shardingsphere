@@ -25,20 +25,22 @@ import org.apache.shardingsphere.governance.repository.api.listener.DataChangedE
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
 /**
  * Terminal state changed listener.
  */
-public final class TerminalStateChangedListener extends GovernanceListener<StateEvent> {
+public final class TerminalStateChangedListener implements GovernanceListener<StateEvent> {
     
-    public TerminalStateChangedListener() {
-        super(Collections.singleton(StatesNode.getProxyNodePath(GovernanceInstance.getInstance().getId())));
+    @Override
+    public Collection<String> getWatchKeys() {
+        return Collections.singleton(StatesNode.getProxyNodePath(GovernanceInstance.getInstance().getId()));
     }
     
     @Override
-    protected Optional<StateEvent> createEvent(final DataChangedEvent event) {
+    public Optional<StateEvent> createEvent(final DataChangedEvent event) {
         return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.governance.core.registry.service.config.node.Gl
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
@@ -31,14 +32,15 @@ import java.util.Properties;
 /**
  * Properties changed listener.
  */
-public final class PropertiesChangedListener extends GovernanceListener<GovernanceEvent> {
+public final class PropertiesChangedListener implements GovernanceListener<GovernanceEvent> {
     
-    public PropertiesChangedListener() {
-        super(Collections.singletonList(GlobalNode.getPropsPath()));
+    @Override
+    public Collection<String> getWatchKeys() {
+        return Collections.singleton(GlobalNode.getPropsPath());
     }
     
     @Override
-    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
         return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class)));
     }
 }

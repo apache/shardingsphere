@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 
 import java.util.Collection;
@@ -29,11 +27,20 @@ import java.util.Optional;
  * 
  * @param <T> type of event
  */
-@RequiredArgsConstructor
-public abstract class GovernanceListener<T> {
+public interface GovernanceListener<T> {
     
-    @Getter
-    private final Collection<String> watchKeys;
+    /**
+     * Get watch keys.
+     * 
+     * @return watch keys
+     */
+    Collection<String> getWatchKeys();
     
-    protected abstract Optional<T> createEvent(DataChangedEvent event);
+    /**
+     * Create event.
+     * 
+     * @param event data changed event
+     * @return event
+     */
+    Optional<T> createEvent(DataChangedEvent event);
 }

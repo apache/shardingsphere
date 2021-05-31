@@ -35,14 +35,15 @@ import java.util.Optional;
 /**
  * Global rule changed listener.
  */
-public final class GlobalRuleChangedListener extends GovernanceListener<GovernanceEvent> {
+public final class GlobalRuleChangedListener implements GovernanceListener<GovernanceEvent> {
     
-    public GlobalRuleChangedListener() {
-        super(Collections.singleton(GlobalNode.getGlobalRuleNode()));
+    @Override
+    public Collection<String> getWatchKeys() {
+        return Collections.singleton(GlobalNode.getGlobalRuleNode());
     }
     
     @Override
-    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
         return Optional.of(new GlobalRuleConfigurationsChangedEvent("", getGlobalRuleConfigurations(event)));
     }
     

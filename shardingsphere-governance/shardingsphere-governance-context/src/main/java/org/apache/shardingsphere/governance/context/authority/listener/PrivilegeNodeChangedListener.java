@@ -32,14 +32,15 @@ import java.util.Optional;
 /**
  * Privilege changed listener.
  */
-public final class PrivilegeNodeChangedListener extends GovernanceListener<GovernanceEvent> {
+public final class PrivilegeNodeChangedListener implements GovernanceListener<GovernanceEvent> {
     
-    public PrivilegeNodeChangedListener() {
-        super(Collections.singletonList(StatesNode.getPrivilegeNodePath()));
+    @Override
+    public Collection<String> getWatchKeys() {
+        return Collections.singletonList(StatesNode.getPrivilegeNodePath());
     }
     
     @Override
-    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
         return Optional.of(new AuthorityChangedEvent(YamlUsersConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(event.getValue(), Collection.class))));
     }
 }
