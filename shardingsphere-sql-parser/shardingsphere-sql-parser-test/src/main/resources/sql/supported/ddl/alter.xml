@@ -133,6 +133,13 @@
     <sql-case id="alter_table_drop_partition_update_all_index_subpartition" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES (order_index (SUBPARTITION))" db-types="Oracle" />
     <sql-case id="alter_table_drop_partition_update_global_index_parallel" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE GLOBAL INDEXES PARALLEL" db-types="Oracle" />
     <sql-case id="alter_table_drop_partition_update_all_index_noparallel" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES NOPARALLEL" db-types="Oracle" />
+    <sql-case id="alter_table_add_hash_partition1" value="ALTER TABLE t_order ADD PARTITION hash_partition TABLESPACE spaceName" db-types="Oracle" />
+    <sql-case id="alter_table_add_hash_partition2" value="ALTER TABLE t_order ADD PARTITION hash_partition OVERFLOW TABLESPACE spaceName" db-types="Oracle" />
+    <sql-case id="alter_table_modify_hash_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition READ ONLY" db-types="Oracle" />
+    <sql-case id="alter_table_modify_list_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition INDEXING ON" db-types="Oracle" />
+    <sql-case id="alter_table_modify_range_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition ADD SUBPARTITION P1 VALUES('COMPLETE');" db-types="Oracle" />
+    <sql-case id="alter_table_move_partition" value="ALTER TABLE t_order MOVE PARTITION p0 TABLESPACE space0" db-types="Oracle" />
+    <sql-case id="alter_table_coalesce_partition" value="ALTER TABLE t_order COALESCE PARTITION" db-types="Oracle" />
 <!--    alter index test-->
     <sql-case id="alter_index" value="ALTER INDEX order_index REBUILD PARALLEL" db-types="Oracle" />
     <sql-case id="alter_index_with_space" value="    ALTER INDEX

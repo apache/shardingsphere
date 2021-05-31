@@ -1094,4 +1094,33 @@
     <alter-table sql-case-id="alter_table_drop_partition_update_all_index_noparallel">
         <table name="t_order" start-index="12" stop-index="18"/>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_hash_partition1">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_hash_partition2">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_hash_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_list_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_range_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_move_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_coalesce_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
 </sql-parser-test-cases>
