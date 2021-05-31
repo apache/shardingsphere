@@ -25,11 +25,6 @@
         <input sql="DROP TABLE IF EXISTS t_order, t_order_extend" />
         <output sql="DROP TABLE IF EXISTS t_order_0, t_order_extend_0" />
     </rewrite-assertion>
-    <rewrite-assertion id="drop_table_with_multi_data_node_and_single_data_node_table_for_postgresql" db-type="PostgreSQL">
-        <input sql="DROP TABLE IF EXISTS t_account_detail, t_order" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_0, t_order_0" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_1, t_order_0" />
-    </rewrite-assertion>
     <rewrite-assertion id="drop_table_with_multi_data_node_binding_table_for_postgresql" db-type="PostgreSQL">
         <input sql="DROP TABLE IF EXISTS t_account_detail, t_account_detail" />
         <output sql="DROP TABLE IF EXISTS t_account_detail_0, t_account_detail_0" />
@@ -39,19 +34,9 @@
         <input sql="DROP TABLE IF EXISTS t_order, t_config" />
         <output sql="DROP TABLE IF EXISTS t_order_0, t_config" />
     </rewrite-assertion>
-    <rewrite-assertion id="drop_table_with_multi_data_node_and_broadcast_table_for_postgresql" db-type="PostgreSQL">
-        <input sql="DROP TABLE IF EXISTS t_account_detail, t_config" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_0, t_config" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_1, t_config" />
-    </rewrite-assertion>
     <rewrite-assertion id="drop_table_with_single_data_node_and_single_table_for_postgresql" db-type="PostgreSQL">
         <input sql="DROP TABLE IF EXISTS t_order, t_single" />
         <output sql="DROP TABLE IF EXISTS t_order_0, t_single" />
-    </rewrite-assertion>
-    <rewrite-assertion id="drop_table_with_multi_data_node_and_single_table_for_postgresql" db-type="PostgreSQL">
-        <input sql="DROP TABLE IF EXISTS t_account_detail, t_single" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_0, t_single" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_1, t_single" />
     </rewrite-assertion>
     <rewrite-assertion id="drop_table_with_broadcast_and_single_data_node_table_for_postgresql" db-type="PostgreSQL">
         <input sql="DROP TABLE IF EXISTS t_config, t_order" />
@@ -85,11 +70,6 @@
         <input sql="DROP TABLE IF EXISTS t_order, t_order_extend" />
         <output sql="DROP TABLE IF EXISTS t_order_0, t_order_extend_0" />
     </rewrite-assertion>
-    <rewrite-assertion id="drop_table_with_multi_data_node_and_single_data_node_table_for_mysql" db-type="MySQL">
-        <input sql="DROP TABLE IF EXISTS t_account_detail, t_order" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_0, t_order_0" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_1, t_order_0" />
-    </rewrite-assertion>
     <rewrite-assertion id="drop_table_with_multi_data_node_binding_table_for_mysql" db-type="MySQL">
         <input sql="DROP TABLE IF EXISTS t_account_detail, t_account_detail" />
         <output sql="DROP TABLE IF EXISTS t_account_detail_0, t_account_detail_0" />
@@ -99,19 +79,9 @@
         <input sql="DROP TABLE IF EXISTS t_order, t_config" />
         <output sql="DROP TABLE IF EXISTS t_order_0, t_config" />
     </rewrite-assertion>
-    <rewrite-assertion id="drop_table_with_multi_data_node_and_broadcast_table_for_mysql" db-type="MySQL">
-        <input sql="DROP TABLE IF EXISTS t_account_detail, t_config" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_0, t_config" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_1, t_config" />
-    </rewrite-assertion>
     <rewrite-assertion id="drop_table_with_single_data_node_and_single_table_for_mysql" db-type="MySQL">
         <input sql="DROP TABLE IF EXISTS t_order, t_single" />
         <output sql="DROP TABLE IF EXISTS t_order_0, t_single" />
-    </rewrite-assertion>
-    <rewrite-assertion id="drop_table_with_multi_data_node_and_single_table_for_mysql" db-type="MySQL">
-        <input sql="DROP TABLE IF EXISTS t_account_detail, t_single" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_0, t_single" />
-        <output sql="DROP TABLE IF EXISTS t_account_detail_1, t_single" />
     </rewrite-assertion>
     <rewrite-assertion id="drop_table_with_broadcast_and_single_data_node_table_for_mysql" db-type="MySQL">
         <input sql="DROP TABLE IF EXISTS t_config, t_order" />

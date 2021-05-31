@@ -19,14 +19,15 @@ package org.apache.shardingsphere.governance.context.metadata;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.lock.GovernanceLock;
+import org.apache.shardingsphere.governance.core.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.lock.ShardingSphereDistributeLock;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDeletedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataPersistedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.readwritesplitting.PrimaryStateChangedEvent;
@@ -50,6 +51,8 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
@@ -63,6 +66,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -109,8 +113,9 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private ShardingSphereLock createShardingSphereLock() {
-        return metaDataContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.LOCK_ENABLED) ? new GovernanceLock(governanceFacade.getRegistryCenter(),
-                metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS)) : null;
+        return metaDataContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.LOCK_ENABLED)
+                ? new ShardingSphereDistributeLock(governanceFacade.getRegistryCenterRepository(), metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS))
+                : null;
     }
     
     @Override
@@ -172,11 +177,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     /**
      * Renew to persist meta data.
      *
-     * @param event meta data persisted event
+     * @param event schma added event
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final MetaDataPersistedEvent event) throws SQLException {
+    public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         metaDataMap.put(event.getSchemaName(), buildMetaData(event));
         metaDataContexts = new StandardMetaDataContexts(
@@ -188,12 +193,12 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     /**
-     * Renew to delete new schema.
+     * Renew to delete schema.
      *
      * @param event schema delete event
      */
     @Subscribe
-    public synchronized void renew(final MetaDataDeletedEvent event) {
+    public synchronized void renew(final SchemaDeletedEvent event) {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         metaDataMap.remove(event.getSchemaName());
         metaDataContexts = new StandardMetaDataContexts(
@@ -220,7 +225,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Subscribe
     public synchronized void renew(final AuthorityChangedEvent event) {
         metaDataContexts = new StandardMetaDataContexts(
-                metaDataContexts.getMetaDataMap(), metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps());
+                metaDataContexts.getMetaDataMap(), getChangedGlobalRuleMetaData(event), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps());
     }
     
     /**
@@ -328,7 +333,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         }
     }
     
-    private ShardingSphereMetaData buildMetaData(final MetaDataPersistedEvent event) throws SQLException {
+    private ShardingSphereMetaData buildMetaData(final SchemaAddedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
         if (!governanceFacade.getRegistryCenter().getDataSourceService().isExisted(schemaName)) {
             governanceFacade.getRegistryCenter().getDataSourceService().persist(schemaName, new LinkedHashMap<>());
@@ -416,6 +421,33 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
             result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
         }
         return result;
+    }
+    
+    private ShardingSphereRuleMetaData getChangedGlobalRuleMetaData(final AuthorityChangedEvent event) {
+        Optional<AuthorityRuleConfiguration> authorityRuleConfig = metaDataContexts.getGlobalRuleMetaData().getConfigurations().stream().filter(each -> each instanceof AuthorityRuleConfiguration)
+                .findAny().map(each -> (AuthorityRuleConfiguration) each);
+        if (!authorityRuleConfig.isPresent()) {
+            return metaDataContexts.getGlobalRuleMetaData();
+        }
+        Collection<RuleConfiguration> globalRuleConfigs = new LinkedList<>(metaDataContexts.getGlobalRuleMetaData().getConfigurations());
+        globalRuleConfigs.remove(authorityRuleConfig.get());
+        globalRuleConfigs.add(getChangedAuthorityRuleConfiguration(authorityRuleConfig.get(), event));
+        return new ShardingSphereRuleMetaData(globalRuleConfigs, ShardingSphereRulesBuilder.buildGlobalRules(globalRuleConfigs, metaDataContexts.getMetaDataMap()));
+    }
+    
+    private AuthorityRuleConfiguration getChangedAuthorityRuleConfiguration(final AuthorityRuleConfiguration oldAuthorityRuleConfig, final AuthorityChangedEvent event) {
+        ShardingSphereUsers oldUsers = new ShardingSphereUsers(oldAuthorityRuleConfig.getUsers());
+        Collection<ShardingSphereUser> users = new HashSet<>(getNewUsers(oldUsers, event.getUsers()));
+        users.addAll(getModifiedUsers(oldUsers, event.getUsers()));
+        return new AuthorityRuleConfiguration(users, oldAuthorityRuleConfig.getProvider());
+    }
+    
+    private Collection<ShardingSphereUser> getNewUsers(final ShardingSphereUsers oldUsers, final Collection<ShardingSphereUser> users) {
+        return users.stream().filter(each -> !oldUsers.findUser(each.getGrantee()).isPresent()).collect(Collectors.toSet());
+    }
+    
+    private Collection<ShardingSphereUser> getModifiedUsers(final ShardingSphereUsers oldUsers, final Collection<ShardingSphereUser> users) {
+        return users.stream().filter(each -> oldUsers.findUser(each.getGrantee()).isPresent()).collect(Collectors.toSet());
     }
     
     // TODO subscribe for global rules changed

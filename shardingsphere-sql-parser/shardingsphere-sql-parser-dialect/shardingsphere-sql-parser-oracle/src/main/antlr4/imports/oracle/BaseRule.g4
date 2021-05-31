@@ -666,3 +666,8 @@ rowcount
 percent
     : numberLiterals | expr | nullValueLiterals
     ;
+
+rollbackSegment
+    : identifier
+    ;
+

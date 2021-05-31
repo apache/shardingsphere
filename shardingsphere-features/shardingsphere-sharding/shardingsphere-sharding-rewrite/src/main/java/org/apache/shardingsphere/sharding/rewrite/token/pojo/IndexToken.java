@@ -18,18 +18,20 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Index token.
@@ -45,12 +47,16 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     private final ShardingRule shardingRule;
     
-    public IndexToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
+    private final ShardingSphereSchema schema;
+    
+    public IndexToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, 
+                      final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule, final ShardingSphereSchema schema) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.identifier = identifier;
         this.sqlStatementContext = sqlStatementContext;
         this.shardingRule = shardingRule;
+        this.schema = schema;
     }
     
     @Override
@@ -61,10 +67,19 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     private String getIndexValue(final RouteUnit routeUnit) {
         StringBuilder result = new StringBuilder(identifier.getValue());
         Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
-        if (!logicAndActualTables.isEmpty()) {
-            result.append("_").append(logicAndActualTables.values().iterator().next());
-        }
+        Optional<String> actualTableName = findLogicTableNameFromMetaData(identifier.getValue()).map(tableName 
+            -> Optional.of(logicAndActualTables.get(tableName))).orElseGet(() -> logicAndActualTables.values().stream().findFirst());
+        actualTableName.ifPresent(tableName -> result.append("_").append(tableName));
         return result.toString();
+    }
+    
+    private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
+        for (String each : schema.getAllTableNames()) {
+            if (schema.get(each).getIndexes().containsKey(logicIndexName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {

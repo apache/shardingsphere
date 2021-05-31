@@ -51,6 +51,7 @@ public final class ShardingCreateFunctionStatementValidator extends ShardingDDLS
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final CreateFunctionStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateFunctionStatement> sqlStatementContext, 
+                             final RouteContext routeContext, final ShardingSphereSchema schema) {
     }
 }

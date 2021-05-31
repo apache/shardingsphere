@@ -7,7 +7,11 @@ weight = 2
 配置用户名、密码、可访问的数据库后，必须使用正确的用户名、密码才可登录。
 
 ```yaml
-  users:
-  - root@:root # <username>@<hostname>:<password>
-  - sharding@%:sharding
+rules:
+  - !AUTHORITY
+    users:
+      - root@localhost:root  # <username>@<hostname>:<password>
+      - sharding@:sharding
+    provider:
+      type: NATIVE
 ```

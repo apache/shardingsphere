@@ -56,6 +56,17 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Test
+    public void assertSplitInventoryDataWithEmptyTable() throws SQLException {
+        taskConfig.getHandleConfig().setShardingSize(10);
+        initEmptyTablePrimaryEnvironment(taskConfig.getDumperConfig());
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
+        assertNotNull(actual);
+        assertThat(actual.size(), is(1));
+        assertThat(((PrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getBeginValue(), is(0L));
+        assertThat(((PrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getEndValue(), is(0L));
+    }
+    
+    @Test
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
         taskConfig.getHandleConfig().setShardingSize(10);
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
@@ -93,6 +104,15 @@ public final class InventoryTaskSplitterTest {
     @After
     public void tearDown() {
         dataSourceManager.close();
+    }
+    
+    private void initEmptyTablePrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (id INT PRIMARY KEY, user_id VARCHAR(12))");
+        }
     }
     
     private void initIntPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {

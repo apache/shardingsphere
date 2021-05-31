@@ -239,7 +239,7 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     public ASTNode visitDropTable(final DropTableContext ctx) {
         SQLServerDropTableStatement result = new SQLServerDropTableStatement();
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
-        result.setContainsIfExistClause(null != ctx.ifExist());
+        result.setContainsExistClause(null != ctx.ifExist());
         return result;
     }
     
@@ -273,6 +273,7 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         SQLServerDropIndexStatement result = new SQLServerDropIndexStatement();
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setContainsExistClause(null != ctx.ifExist());
         return result;
     }
 }

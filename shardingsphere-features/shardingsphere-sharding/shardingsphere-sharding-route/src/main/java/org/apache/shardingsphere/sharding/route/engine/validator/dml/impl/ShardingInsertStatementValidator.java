@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -31,8 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDupl
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
-
-import com.google.common.base.Preconditions;
 
 import java.util.Collection;
 import java.util.List;
@@ -93,7 +92,8 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final InsertStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<InsertStatement> sqlStatementContext, 
+                             final RouteContext routeContext, final ShardingSphereSchema schema) {
         if (needCheckDatabaseInstance) {
             Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
         }

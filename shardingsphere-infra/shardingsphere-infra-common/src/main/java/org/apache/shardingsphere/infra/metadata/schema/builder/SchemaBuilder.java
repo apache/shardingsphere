@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -47,10 +48,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +59,7 @@ import java.util.stream.Collectors;
 public final class SchemaBuilder {
     
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
-            0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new SchemaBuilderThreadFactory());
+            0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaBuilder-%d").build());
     
     static {
         ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
@@ -160,17 +159,5 @@ public final class SchemaBuilder {
         }
         result.addAll(schema.getAllTableNames());
         return result;
-    }
-    
-    private static class SchemaBuilderThreadFactory implements ThreadFactory {
-        
-        private final AtomicInteger threadSequence = new AtomicInteger(0);
-    
-        @Override
-        public Thread newThread(final Runnable runnable) {
-            Thread result = new Thread(runnable, String.format("SchemaBuilderExecutor-%d", threadSequence.getAndIncrement()));
-            result.setDaemon(true);
-            return result;
-        }
     }
 }

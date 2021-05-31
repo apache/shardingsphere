@@ -15,11 +15,11 @@ weight = 1
 
 ## Data Structure in Registry Center
 
-Under defined namespace, `users`, `props` and `metadata` nodes persist in YAML, modifying nodes can dynamically refresh configurations. `states` node persist the runtime node of database access object, to distinguish different database access instances.
+Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML, modifying nodes can dynamically refresh configurations. `states` node persist the runtime node of database access object, to distinguish different database access instances.
 
 ```
 namespace
-   ├──users                                     # Users configuration
+   ├──rules                                     # Global rule configuration
    ├──props                                     # Properties configuration
    ├──metadata                                  # Metadata configuration
    ├      ├──${schema_1}                        # Schema name 1
@@ -45,13 +45,17 @@ namespace
    ├    ├     ├──....
 ```
 
-### /users
+### /rules
 
-user configurations. Can configure the username and password for ShardingSphere-Proxy.
+global rule configurations， including configure the username and password for ShardingSphere-Proxy.
 
 ```yaml
-- root@127.0.0.1:root
-- sharding@%:sharding
+- !AUTHORITY
+users:
+  - root@%:root
+  - sharding@127.0.0.1:sharding
+provider:
+  type: NATIVE
 ```
 
 ### /props

@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.governance.repository.etcd;
 
-import java.nio.charset.StandardCharsets;
 import com.google.protobuf.ByteString;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KV;
 import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.Lease;
-import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.Lock;
+import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.lease.LeaseGrantResponse;
-import io.etcd.jetcd.lock.LockResponse;
+import io.etcd.jetcd.options.DeleteOption;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
+import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.watch.WatchEvent;
 import io.etcd.jetcd.watch.WatchResponse;
 import io.grpc.stub.StreamObserver;
@@ -43,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -100,9 +101,6 @@ public final class EtcdRepositoryTest {
 
     @Mock
     private Lock etcdLock;
-
-    @Mock
-    private LockResponse lockResponse;
     
     private final EtcdRepository repository = new EtcdRepository();
     
@@ -139,6 +137,7 @@ public final class EtcdRepositoryTest {
         when(leaseGrantResponse.getID()).thenReturn(123L);
         when(client.getWatchClient()).thenReturn(watch);
         when(etcdLock.lock(any(ByteSequence.class), anyLong())).thenReturn(lockFuture);
+        when(etcdLock.unlock(any(ByteSequence.class))).thenReturn(lockFuture);
         return client;
     }
     
@@ -179,43 +178,43 @@ public final class EtcdRepositoryTest {
     @Test
     public void assertWatchUpdate() {
         doAnswer(invocationOnMock -> {
-            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
+            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[2];
             listener.onNext(buildWatchResponse(WatchEvent.EventType.PUT));
             return mock(Watch.Watcher.class);
-        }).when(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
+        }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
         repository.watch("key1", dataChangedEvent -> {
         });
-        verify(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
+        verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
     @Test
     public void assertWatchDelete() {
         doAnswer(invocationOnMock -> {
-            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
+            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[2];
             listener.onNext(buildWatchResponse(WatchEvent.EventType.DELETE));
             return mock(Watch.Watcher.class);
-        }).when(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
+        }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
         repository.watch("key1", dataChangedEvent -> {
         });
-        verify(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
+        verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
     @Test
     public void assertWatchIgnored() {
         doAnswer(invocationOnMock -> {
-            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
+            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[2];
             listener.onNext(buildWatchResponse(WatchEvent.EventType.UNRECOGNIZED));
             return mock(Watch.Watcher.class);
-        }).when(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
+        }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
         repository.watch("key1", dataChangedEvent -> {
         });
-        verify(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
+        verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
     @Test
     public void assertDelete() {
         repository.delete("key");
-        verify(kv).delete(ByteSequence.from("key", StandardCharsets.UTF_8));
+        verify(kv).delete(any(ByteSequence.class), any(DeleteOption.class));
     }
     
     @Test
