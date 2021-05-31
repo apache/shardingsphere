@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -37,27 +35,8 @@ public abstract class GovernanceListener<T> {
     
     private final RegistryCenterRepository repository;
     
+    @Getter
     private final Collection<String> watchKeys;
-    
-    /**
-     * Start to watch.
-     *
-     * @param types watched data change types
-     */
-    public final void watch(final Type... types) {
-        Collection<Type> typeList = Arrays.asList(types);
-        for (String each : watchKeys) {
-            watch(each, typeList);
-        }
-    }
-    
-    private void watch(final String watchKey, final Collection<Type> types) {
-        repository.watch(watchKey, dataChangedEvent -> {
-            if (types.contains(dataChangedEvent.getType())) {
-                createEvent(dataChangedEvent).ifPresent(ShardingSphereEventBus.getInstance()::post);
-            }
-        });
-    }
     
     protected abstract Optional<T> createEvent(DataChangedEvent event);
 }

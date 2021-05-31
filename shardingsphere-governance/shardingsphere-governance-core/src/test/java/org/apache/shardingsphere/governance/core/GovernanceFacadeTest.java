@@ -55,11 +55,11 @@ public final class GovernanceFacadeTest {
         assertThat(getField(governanceFacade, "isOverwrite"), instanceOf(Boolean.class));
         assertFalse((Boolean) getField(governanceFacade, "isOverwrite"));
         assertThat(getField(governanceFacade, "registryCenterRepository"), instanceOf(RegistryCenterRepository.class));
-        RegistryCenterRepository registryCenterRepository = (RegistryCenterRepository) getField(governanceFacade, "registryCenterRepository");
-        assertEquals(registryCenterRepository.getType(), "TEST");
+        RegistryCenterRepository repository = (RegistryCenterRepository) getField(governanceFacade, "registryCenterRepository");
+        assertEquals(repository.getType(), "TEST");
         assertThat(getField(governanceFacade, "listenerManager"), instanceOf(GovernanceListenerManager.class));
         GovernanceListenerManager listenerManager = (GovernanceListenerManager) getField(governanceFacade, "listenerManager");
-        assertThat(getField(listenerManager, "registryCenterRepository"), is(registryCenterRepository));
+        assertThat(getField(listenerManager, "repository"), is(repository));
         assertThat(getField(listenerManager, "schemaNames"), is(Arrays.asList("schema_0", "schema_1")));
     }
     
@@ -76,7 +76,7 @@ public final class GovernanceFacadeTest {
         governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props);
         verify(registryCenter).persistConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
         verify(registryCenter).registerInstanceOnline();
-        verify(listenerManager).initListeners();
+        verify(listenerManager).watchListeners();
     }
     
     @Test

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.listener;
 import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
@@ -46,11 +47,25 @@ public final class GovernanceListenerManager {
     }
     
     /**
-     * Initialize all listeners.
+     * Watch listeners.
      */
-    public void initListeners() {
+    public void watchListeners() {
         for (GovernanceListenerBuilder each : governanceListenerBuilders) {
-            each.create(repository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
+            watch(each, each.create(repository, schemaNames));
         }
+    }
+    
+    private void watch(final GovernanceListenerBuilder builder, final GovernanceListener<?> listener) {
+        for (String each : listener.getWatchKeys()) {
+            watch(each, builder.getWatchTypes(), listener);
+        }
+    }
+    
+    private void watch(final String watchKey, final Collection<Type> types, final GovernanceListener<?> listener) {
+        repository.watch(watchKey, dataChangedEventListener -> {
+            if (types.contains(dataChangedEventListener.getType())) {
+                listener.createEvent(dataChangedEventListener).ifPresent(ShardingSphereEventBus.getInstance()::post);
+            }
+        });
     }
 }
