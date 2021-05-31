@@ -33,14 +33,14 @@ public final class GovernanceListenerManager {
         ShardingSphereServiceLoader.register(GovernanceListenerBuilder.class);
     }
     
-    private final RegistryCenterRepository registryCenterRepository;
+    private final RegistryCenterRepository repository;
     
     private final Collection<String> schemaNames;
     
     private final Collection<GovernanceListenerBuilder> governanceListenerFactories;
     
-    public GovernanceListenerManager(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        this.registryCenterRepository = registryCenterRepository;
+    public GovernanceListenerManager(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
+        this.repository = repository;
         this.schemaNames = schemaNames;
         governanceListenerFactories = ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceListenerBuilder.class);
     }
@@ -50,7 +50,7 @@ public final class GovernanceListenerManager {
      */
     public void initListeners() {
         for (GovernanceListenerBuilder each : governanceListenerFactories) {
-            each.create(registryCenterRepository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
+            each.create(repository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
         }
     }
 }
