@@ -39,7 +39,7 @@ public final class DataSourceStateChangedListener implements GovernanceListener<
     private final Collection<String> schemaNames;
     
     @Override
-    public Collection<String> getWatchKeys() {
+    public Collection<String> getWatchingKeys() {
         return StatesNode.getAllSchemaPaths(schemaNames);
     }
     

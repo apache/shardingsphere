@@ -56,7 +56,7 @@ public final class GovernanceListenerManager {
     }
     
     private void watch(final GovernanceListenerBuilder builder, final GovernanceListener<?> listener) {
-        for (String each : listener.getWatchKeys()) {
+        for (String each : listener.getWatchingKeys()) {
             watch(each, builder.getWatchTypes(), listener);
         }
     }

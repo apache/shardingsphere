@@ -30,11 +30,11 @@ import java.util.Optional;
 public interface GovernanceListener<T> {
     
     /**
-     * Get watch keys.
+     * Get watching keys.
      * 
-     * @return watch keys
+     * @return watching keys
      */
-    Collection<String> getWatchKeys();
+    Collection<String> getWatchingKeys();
     
     /**
      * Create event.

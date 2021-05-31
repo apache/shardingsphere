@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class PrivilegeNodeChangedListener implements GovernanceListener<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchKeys() {
+    public Collection<String> getWatchingKeys() {
         return Collections.singletonList(StatesNode.getPrivilegeNodePath());
     }
     

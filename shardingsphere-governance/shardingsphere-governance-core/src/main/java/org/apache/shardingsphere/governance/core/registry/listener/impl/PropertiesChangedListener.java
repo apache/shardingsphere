@@ -35,7 +35,7 @@ import java.util.Properties;
 public final class PropertiesChangedListener implements GovernanceListener<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchKeys() {
+    public Collection<String> getWatchingKeys() {
         return Collections.singleton(GlobalNode.getPropsPath());
     }
     

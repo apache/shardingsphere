@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class TerminalStateChangedListener implements GovernanceListener<StateEvent> {
     
     @Override
-    public Collection<String> getWatchKeys() {
+    public Collection<String> getWatchingKeys() {
         return Collections.singleton(StatesNode.getProxyNodePath(GovernanceInstance.getInstance().getId()));
     }
     

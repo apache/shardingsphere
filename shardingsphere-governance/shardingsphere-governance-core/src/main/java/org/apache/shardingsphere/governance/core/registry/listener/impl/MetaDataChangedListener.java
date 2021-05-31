@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 public final class MetaDataChangedListener implements GovernanceListener<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchKeys() {
+    public Collection<String> getWatchingKeys() {
         return Collections.singleton(SchemaMetadataNode.getMetadataNodePath());
     }
     
