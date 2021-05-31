@@ -42,7 +42,7 @@ public final class MetaDataChangedListenerTest extends GovernanceListenerTest {
     @Test
     public void assertCreateEventWithInvalidPath() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata_invalid/sharding_db", "encrypt_db", Type.UPDATED);
-        Optional<GovernanceEvent> actual = metaDataChangedListener.createEvent(dataChangedEvent);
+        Optional<GovernanceEvent> actual = metaDataChangedListener.createGovernanceEvent(dataChangedEvent);
         assertFalse(actual.isPresent());
     }
 }

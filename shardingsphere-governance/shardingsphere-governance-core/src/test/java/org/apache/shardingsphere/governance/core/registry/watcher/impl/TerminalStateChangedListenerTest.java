@@ -34,14 +34,14 @@ public final class TerminalStateChangedListenerTest {
     
     @Test
     public void assertCreateEventWhenEnabled() {
-        Optional<StateEvent> actual = terminalStateChangedListener.createEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
+        Optional<StateEvent> actual = terminalStateChangedListener.createGovernanceEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertFalse(actual.get().isOn());
     }
     
     @Test
     public void assertCreateEventWhenDisabled() {
-        Optional<StateEvent> actual = terminalStateChangedListener.createEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), Type.UPDATED));
+        Optional<StateEvent> actual = terminalStateChangedListener.createGovernanceEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertTrue(actual.get().isOn());
     }

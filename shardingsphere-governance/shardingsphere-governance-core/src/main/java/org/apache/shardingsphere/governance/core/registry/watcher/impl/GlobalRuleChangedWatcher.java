@@ -49,7 +49,7 @@ public final class GlobalRuleChangedWatcher implements GovernanceWatcher<Governa
     }
     
     @Override
-    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         return Optional.of(new GlobalRuleConfigurationsChangedEvent("", getGlobalRuleConfigurations(event)));
     }
     

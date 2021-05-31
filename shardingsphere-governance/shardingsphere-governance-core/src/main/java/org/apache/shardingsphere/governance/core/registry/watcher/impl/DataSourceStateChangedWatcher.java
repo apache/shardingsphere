@@ -46,7 +46,7 @@ public final class DataSourceStateChangedWatcher implements GovernanceWatcher<Go
     }
     
     @Override
-    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         if (StatesNode.isPrimaryDataSourcePath(event.getKey())) {
             return StatesNode.getPrimaryNodesGovernanceSchema(event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
         }

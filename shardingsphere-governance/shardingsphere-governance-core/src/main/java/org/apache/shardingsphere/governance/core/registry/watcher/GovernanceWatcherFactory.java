@@ -56,7 +56,7 @@ public final class GovernanceWatcherFactory {
     private void watch(final String watchingKey, final GovernanceWatcher<?> listener) {
         repository.watch(watchingKey, dataChangedEventListener -> {
             if (listener.getWatchingTypes().contains(dataChangedEventListener.getType())) {
-                listener.createEvent(dataChangedEventListener).ifPresent(ShardingSphereEventBus.getInstance()::post);
+                listener.createGovernanceEvent(dataChangedEventListener).ifPresent(ShardingSphereEventBus.getInstance()::post);
             }
         });
     }

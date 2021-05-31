@@ -64,7 +64,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     @Override
-    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         String schemaName = SchemaMetadataNode.getSchemaNameBySchemaPath(event.getKey());
         if (!Strings.isNullOrEmpty(schemaName)) {
             return buildSchemaEvent(schemaName, event);

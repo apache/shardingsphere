@@ -46,7 +46,7 @@ public final class PropertiesChangedWatcher implements GovernanceWatcher<Governa
     }
     
     @Override
-    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class)));
     }
 }

@@ -46,7 +46,7 @@ public final class TerminalStateChangedWatcher implements GovernanceWatcher<Stat
     }
     
     @Override
-    public Optional<StateEvent> createEvent(final DataChangedEvent event) {
+    public Optional<StateEvent> createGovernanceEvent(final DataChangedEvent event) {
         return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

@@ -30,7 +30,7 @@ public final class LockChangedListenerTest {
     
     @Test
     public void assertCreateEventWithInvalidPath() {
-        Optional<GovernanceEvent> actual = new LockChangedWatcher().createEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
+        Optional<GovernanceEvent> actual = new LockChangedWatcher().createGovernanceEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }
 }

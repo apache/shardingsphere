@@ -33,7 +33,7 @@ public final class GlobalRuleChangedListenerTest extends GovernanceListenerTest 
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> event = new GlobalRuleChangedWatcher().createEvent(new DataChangedEvent("rule", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
+        Optional<GovernanceEvent> event = new GlobalRuleChangedWatcher().createGovernanceEvent(new DataChangedEvent("rule", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
         assertTrue(event.isPresent());
         assertThat(event.get(), instanceOf(GlobalRuleConfigurationsChangedEvent.class));
     }

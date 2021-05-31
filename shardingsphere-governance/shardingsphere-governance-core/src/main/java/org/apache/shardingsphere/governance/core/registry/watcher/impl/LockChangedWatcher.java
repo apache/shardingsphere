@@ -46,7 +46,7 @@ public final class LockChangedWatcher implements GovernanceWatcher<GovernanceEve
     }
     
     @Override
-    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         if (!event.getKey().equals(LockNode.getLockRootNodePath()) && LockNode.getLockName(event.getKey()).isPresent()) {
             if (event.getType() == Type.ADDED) {
                 return Optional.of(new LockNotificationEvent(LockNode.getLockName(event.getKey()).get()));

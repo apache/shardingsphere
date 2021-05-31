@@ -46,10 +46,10 @@ public interface GovernanceWatcher<T> {
     Collection<Type> getWatchingTypes();
     
     /**
-     * Create event.
+     * Create governance event.
      * 
-     * @param event data changed event
-     * @return event
+     * @param event registry center data changed event
+     * @return governance event
      */
-    Optional<T> createEvent(DataChangedEvent event);
+    Optional<T> createGovernanceEvent(DataChangedEvent event);
 }

@@ -46,7 +46,7 @@ public final class PrivilegeNodeChangedWatcher implements GovernanceWatcher<Gove
     }
     
     @Override
-    public Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         return Optional.of(new AuthorityChangedEvent(YamlUsersConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(event.getValue(), Collection.class))));
     }
 }
