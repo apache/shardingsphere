@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import java.util.Collection;
 
 /**
- * Governance listener manager.
+ * Governance listener factory.
  */
 @RequiredArgsConstructor
-public final class GovernanceListenerManager {
+public final class GovernanceListenerFactory {
     
     static {
         ShardingSphereServiceLoader.register(GovernanceListener.class);

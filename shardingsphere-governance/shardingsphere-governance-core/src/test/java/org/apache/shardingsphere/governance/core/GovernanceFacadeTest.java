@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerManager;
+import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerFactory;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -57,18 +57,18 @@ public final class GovernanceFacadeTest {
         assertThat(getField(governanceFacade, "registryCenterRepository"), instanceOf(RegistryCenterRepository.class));
         RegistryCenterRepository repository = (RegistryCenterRepository) getField(governanceFacade, "registryCenterRepository");
         assertEquals(repository.getType(), "TEST");
-        assertThat(getField(governanceFacade, "listenerManager"), instanceOf(GovernanceListenerManager.class));
-        GovernanceListenerManager listenerManager = (GovernanceListenerManager) getField(governanceFacade, "listenerManager");
-        assertThat(getField(listenerManager, "repository"), is(repository));
-        assertThat(getField(listenerManager, "schemaNames"), is(Arrays.asList("schema_0", "schema_1")));
+        assertThat(getField(governanceFacade, "listenerFactory"), instanceOf(GovernanceListenerFactory.class));
+        GovernanceListenerFactory listenerFactory = (GovernanceListenerFactory) getField(governanceFacade, "listenerFactory");
+        assertThat(getField(listenerFactory, "repository"), is(repository));
+        assertThat(getField(listenerFactory, "schemaNames"), is(Arrays.asList("schema_0", "schema_1")));
     }
     
     @Test
     public void assertOnlineInstance() {
         RegistryCenter registryCenter = mock(RegistryCenter.class);
-        GovernanceListenerManager listenerManager = mock(GovernanceListenerManager.class);
+        GovernanceListenerFactory listenerFactory = mock(GovernanceListenerFactory.class);
         setField(governanceFacade, "registryCenter", registryCenter);
-        setField(governanceFacade, "listenerManager", listenerManager);
+        setField(governanceFacade, "listenerFactory", listenerFactory);
         Map<String, DataSourceConfiguration> dataSourceConfigs = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
         Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
@@ -76,7 +76,7 @@ public final class GovernanceFacadeTest {
         governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props);
         verify(registryCenter).persistConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
         verify(registryCenter).registerInstanceOnline();
-        verify(listenerManager).watchListeners();
+        verify(listenerFactory).watchListeners();
     }
     
     @Test
