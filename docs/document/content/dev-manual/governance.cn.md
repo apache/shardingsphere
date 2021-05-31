@@ -7,14 +7,14 @@ chapter = true
 
 ## RegistryCenterRepository
 
-| *SPI 名称*                       | *详细说明*               |
-| -------------------------------- | ----------------------- |
-| RegistryCenterRepository         | 注册中心                 |
+| *SPI 名称*                     | *详细说明*               |
+| ----------------------------- | ----------------------- |
+| RegistryCenterRepository      | 注册中心                 |
 
-| *已知实现类*                      | *详细说明*               |
-| -------------------------------- | ----------------------- |
-| CuratorZookeeperRepository       | 基于 ZooKeeper 的注册中心 |
-| EtcdRepository                   | 基于 etcd 的注册中心      |
+| *已知实现类*                    | *详细说明*               |
+| ----------------------------- | ----------------------- |
+| CuratorZookeeperRepository    | 基于 ZooKeeper 的注册中心 |
+| EtcdRepository                | 基于 etcd 的注册中心      |
 
 ## GovernanceWatcher
 
