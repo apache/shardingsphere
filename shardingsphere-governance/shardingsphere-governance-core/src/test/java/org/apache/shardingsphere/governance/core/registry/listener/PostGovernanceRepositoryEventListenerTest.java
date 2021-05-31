@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostRegistryCenterRepositoryEventListenerTest {
+public final class PostGovernanceRepositoryEventListenerTest {
     
     @Mock
     private RegistryCenterRepository repository;
@@ -63,7 +63,7 @@ public final class PostRegistryCenterRepositoryEventListenerTest {
     }
     
     @Test
-    public void assertWatchMultipleKey() {
+    public void assertWatchMultipleKeys() {
         PostGovernanceRepositoryEventListener<GovernanceEvent> postEventListener = new PostGovernanceRepositoryEventListener<GovernanceEvent>(repository, Arrays.asList("test", "dev")) {
             
             @Override
