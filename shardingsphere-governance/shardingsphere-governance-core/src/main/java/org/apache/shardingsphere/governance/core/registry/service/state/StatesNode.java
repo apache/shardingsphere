@@ -151,16 +151,16 @@ public final class StatesNode {
     }
     
     /**
-     * Get all schema path.
+     * Get all schema paths.
      * 
-     * @param schemaNames collection of schema name
-     * @return collection of schema path
+     * @param schemaNames schema names
+     * @return schema paths
      */
     public static Collection<String> getAllSchemaPaths(final Collection<String> schemaNames) {
         Collection<String> result = new ArrayList<>(schemaNames.size());
-        for (String schemaName : schemaNames) {
-            result.add(getSchemaPath(schemaName));
-            result.add(getPrimaryNodesSchemaPath(schemaName));
+        for (String each : schemaNames) {
+            result.add(getSchemaPath(each));
+            result.add(getPrimaryNodesSchemaPath(each));
         }
         return result;
     }

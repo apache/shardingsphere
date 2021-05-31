@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
-import org.apache.shardingsphere.governance.core.registry.listener.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;

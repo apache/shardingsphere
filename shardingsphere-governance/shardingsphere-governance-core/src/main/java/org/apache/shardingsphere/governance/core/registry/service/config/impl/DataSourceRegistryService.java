@@ -19,8 +19,8 @@ package org.apache.shardingsphere.governance.core.registry.service.config.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.SchemaBasedRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;

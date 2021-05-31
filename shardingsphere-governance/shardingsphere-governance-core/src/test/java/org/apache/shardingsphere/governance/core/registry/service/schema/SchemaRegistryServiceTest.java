@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.governance.core.registry.service.schema;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataCreatedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.metadata.MetaDataDroppedEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.MetaDataCreatedEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
