@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
  * Show readwrite splitting rules statement.
  */
 public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement {
-
+    
     public ShowReadwriteSplittingRulesStatement(final SchemaSegment schema) {
         super(schema);
     }
