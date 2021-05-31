@@ -30,10 +30,9 @@ public interface GovernanceListenerBuilder {
     /**
      * Create governance listener.
      * 
-     * @param schemaNames schema names
      * @return governance listener
      */
-    GovernanceListener<?> create(Collection<String> schemaNames);
+    GovernanceListener<?> create();
     
     /**
      * Get watch types.

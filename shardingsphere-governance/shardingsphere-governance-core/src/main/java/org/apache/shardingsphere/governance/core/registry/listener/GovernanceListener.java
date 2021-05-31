@@ -32,9 +32,10 @@ public interface GovernanceListener<T> {
     /**
      * Get watching keys.
      * 
+     * @param schemaNames schema names
      * @return watching keys
      */
-    Collection<String> getWatchingKeys();
+    Collection<String> getWatchingKeys(Collection<String> schemaNames);
     
     /**
      * Create event.

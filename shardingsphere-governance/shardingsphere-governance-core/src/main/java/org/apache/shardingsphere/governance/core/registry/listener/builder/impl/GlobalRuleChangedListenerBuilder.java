@@ -30,7 +30,7 @@ import java.util.Collections;
 public final class GlobalRuleChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public GlobalRuleChangedListener create(final Collection<String> schemaNames) {
+    public GlobalRuleChangedListener create() {
         return new GlobalRuleChangedListener();
     }
     

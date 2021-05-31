@@ -30,8 +30,8 @@ import java.util.Collection;
 public final class DataSourceStateChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public DataSourceStateChangedListener create(final Collection<String> schemaNames) {
-        return new DataSourceStateChangedListener(schemaNames);
+    public DataSourceStateChangedListener create() {
+        return new DataSourceStateChangedListener();
     }
     
     @Override

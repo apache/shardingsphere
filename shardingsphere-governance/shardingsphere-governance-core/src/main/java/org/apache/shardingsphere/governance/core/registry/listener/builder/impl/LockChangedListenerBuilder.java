@@ -30,7 +30,7 @@ import java.util.Collection;
 public final class LockChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public LockChangedListener create(final Collection<String> schemaNames) {
+    public LockChangedListener create() {
         return new LockChangedListener();
     }
     

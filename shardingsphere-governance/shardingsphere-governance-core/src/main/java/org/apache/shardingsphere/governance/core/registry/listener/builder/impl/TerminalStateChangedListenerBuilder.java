@@ -30,7 +30,7 @@ import java.util.Collections;
 public final class TerminalStateChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public TerminalStateChangedListener create(final Collection<String> schemaNames) {
+    public TerminalStateChangedListener create() {
         return new TerminalStateChangedListener();
     }
     

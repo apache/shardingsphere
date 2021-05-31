@@ -30,7 +30,7 @@ import java.util.Collection;
 public final class MetaDataChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public MetaDataChangedListener create(final Collection<String> schemaNames) {
+    public MetaDataChangedListener create() {
         return new MetaDataChangedListener();
     }
     

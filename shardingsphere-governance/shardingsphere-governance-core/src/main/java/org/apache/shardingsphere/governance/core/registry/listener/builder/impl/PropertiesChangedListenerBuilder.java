@@ -30,7 +30,7 @@ import java.util.Collections;
 public final class PropertiesChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public PropertiesChangedListener create(final Collection<String> schemaNames) {
+    public PropertiesChangedListener create() {
         return new PropertiesChangedListener();
     }
     

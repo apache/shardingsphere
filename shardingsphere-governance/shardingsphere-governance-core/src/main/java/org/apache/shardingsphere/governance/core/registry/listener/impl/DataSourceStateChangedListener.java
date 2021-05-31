@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
@@ -33,13 +32,10 @@ import java.util.Optional;
 /**
  * Data source state changed listener.
  */
-@RequiredArgsConstructor
 public final class DataSourceStateChangedListener implements GovernanceListener<GovernanceEvent> {
     
-    private final Collection<String> schemaNames;
-    
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
         return StatesNode.getAllSchemaPaths(schemaNames);
     }
     

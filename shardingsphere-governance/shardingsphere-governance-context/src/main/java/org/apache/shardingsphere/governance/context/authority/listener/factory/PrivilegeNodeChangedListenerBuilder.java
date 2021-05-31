@@ -30,7 +30,7 @@ import java.util.Collections;
 public final class PrivilegeNodeChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public PrivilegeNodeChangedListener create(final Collection<String> schemaNames) {
+    public PrivilegeNodeChangedListener create() {
         return new PrivilegeNodeChangedListener();
     }
     

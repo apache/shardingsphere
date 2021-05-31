@@ -38,7 +38,7 @@ import java.util.Optional;
 public final class GlobalRuleChangedListener implements GovernanceListener<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
         return Collections.singleton(GlobalNode.getGlobalRuleNode());
     }
     

@@ -51,12 +51,12 @@ public final class GovernanceListenerManager {
      */
     public void watchListeners() {
         for (GovernanceListenerBuilder each : governanceListenerBuilders) {
-            watch(each, each.create(schemaNames));
+            watch(each, each.create());
         }
     }
     
     private void watch(final GovernanceListenerBuilder builder, final GovernanceListener<?> listener) {
-        for (String each : listener.getWatchingKeys()) {
+        for (String each : listener.getWatchingKeys(schemaNames)) {
             watch(each, builder.getWatchTypes(), listener);
         }
     }
