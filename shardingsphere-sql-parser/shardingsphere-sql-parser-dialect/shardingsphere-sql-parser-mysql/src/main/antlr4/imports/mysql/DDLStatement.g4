@@ -26,8 +26,6 @@ alterStatement
     | alterFunction
     | alterEvent
     | alterView
-    | alterTablespaceInnodb
-    | alterTablespaceNdb
     | alterLogfileGroup
     | alterInstance
     | alterServer
@@ -341,6 +339,10 @@ dropView
     : DROP VIEW existClause? viewNames restrict?
     ;
 
+createTablespace
+    : createTablespaceInnodb | createTablespaceNdb
+    ;
+
 createTablespaceInnodb
     : CREATE (UNDO)? TABLESPACE identifier
       ADD DATAFILE string_
@@ -361,6 +363,10 @@ createTablespaceNdb
       WAIT?
       (COMMENT EQ_? string_)?
       (ENGINE EQ_? identifier)?
+    ;
+
+alterTablespace
+    : alterTablespaceInnodb | alterTablespaceNdb
     ;
 
 alterTablespaceNdb

@@ -101,9 +101,11 @@ public final class ShardingRouteEngineFactory {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
         boolean procedureStatement = sqlStatement instanceof CreateProcedureStatement || sqlStatement instanceof AlterProcedureStatement || sqlStatement instanceof DropProcedureStatement;
-        boolean tablespaceStatement = sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement;
-        if (functionStatement || procedureStatement || tablespaceStatement) {
+        if (functionStatement || procedureStatement) {
             return new ShardingDatabaseBroadcastRoutingEngine();
+        }
+        if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
+            return new ShardingInstanceBroadcastRoutingEngine(metaData.getResource().getDataSourcesMetaData());
         }
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
