@@ -7,26 +7,26 @@ chapter = true
 
 ## RegistryCenterRepository
 
-| *SPI 名称*                       | *详细说明*               |
-| -------------------------------- | ----------------------- |
-| RegistryCenterRepository         | 注册中心                 |
+| *SPI 名称*                     | *详细说明*               |
+| ----------------------------- | ----------------------- |
+| RegistryCenterRepository      | 注册中心                 |
 
-| *已知实现类*                      | *详细说明*               |
-| -------------------------------- | ----------------------- |
-| CuratorZookeeperRepository       | 基于 ZooKeeper 的注册中心 |
-| EtcdRepository                   | 基于 etcd 的注册中心      |
+| *已知实现类*                    | *详细说明*               |
+| ----------------------------- | ----------------------- |
+| CuratorZookeeperRepository    | 基于 ZooKeeper 的注册中心 |
+| EtcdRepository                | 基于 etcd 的注册中心      |
 
-## GovernanceListenerFactory
+## GovernanceWatcher
 
-| *SPI 名称*                       | *详细说明*               |
-| -------------------------------- | ----------------------- |
-| GovernanceListenerFactory        | 治理监听器工厂            |
+| *SPI 名称*                     | *详细说明*          |
+| ----------------------------- | ------------------ |
+| GovernanceWatcher             | 治理监听器           |
 
-| *已知实现类*                           | *详细说明*           |
-| ------------------------------------- | ------------------- |
-| TerminalStateChangedListenerFactory   | 终端节点状态变化监听器 |
-| DataSourceStateChangedListenerFactory | 数据源状态变化监听器   |
-| LockChangedListenerFactory            | 锁状态变化监听器      |
-| PropertiesChangedListenerFactory      | 属性变化监听器        |
-| PrivilegeNodeChangedListenerFactory   | 权限变化监听器        |
-| GlobalRuleChangedListenerFactory      | 全局规则配置变化监听器 |
+| *已知实现类*                    | *详细说明*          |
+| ----------------------------- | ------------------ |
+| TerminalStateChangedWatcher   | 终端节点状态变化监听器 |
+| DataSourceStateChangedWatcher | 数据源状态变化监听器   |
+| LockChangedWatcher            | 锁状态变化监听器      |
+| PropertiesChangedWatcher      | 属性变化监听器        |
+| PrivilegeNodeChangedWatcher   | 权限变化监听器        |
+| GlobalRuleChangedWatcher      | 全局规则配置变化监听器 |
