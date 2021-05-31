@@ -28,12 +28,12 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 @Getter
 @Setter
 public final class EncryptColumnSegment implements ASTNode {
-
+    
     private String name;
-
+    
     private String plainColumn;
-
+    
     private String cipherColumn;
-
+    
     private FunctionSegment encryptor;
 }

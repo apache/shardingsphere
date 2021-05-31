@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
  */
 @Getter
 public final class ShowEncryptRulesStatement extends ShowRulesStatement {
-
+    
     private final String tableName;
-
+    
     public ShowEncryptRulesStatement(final String tableName, final SchemaSegment schema) {
         super(schema);
         this.tableName = tableName;

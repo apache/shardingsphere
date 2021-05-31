@@ -30,6 +30,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class CreateEncryptRuleStatement extends CreateRDLStatement {
-
+    
     private final Collection<EncryptRuleSegment> encryptRules;
 }
