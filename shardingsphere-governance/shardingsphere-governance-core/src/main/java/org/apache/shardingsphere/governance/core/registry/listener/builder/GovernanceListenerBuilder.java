@@ -35,7 +35,7 @@ public interface GovernanceListenerBuilder {
      * @param schemaNames schema names
      * @return governance listener
      */
-    GovernanceListener create(RegistryCenterRepository repository, Collection<String> schemaNames);
+    GovernanceListener<?> create(RegistryCenterRepository repository, Collection<String> schemaNames);
     
     /**
      * Get watch types.

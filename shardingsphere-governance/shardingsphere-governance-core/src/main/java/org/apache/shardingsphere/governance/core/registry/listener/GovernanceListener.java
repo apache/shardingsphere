@@ -35,7 +35,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class GovernanceListener<T> {
     
-    private final RegistryCenterRepository registryCenterRepository;
+    private final RegistryCenterRepository repository;
     
     private final Collection<String> watchKeys;
     
@@ -52,7 +52,7 @@ public abstract class GovernanceListener<T> {
     }
     
     private void watch(final String watchKey, final Collection<Type> types) {
-        registryCenterRepository.watch(watchKey, dataChangedEvent -> {
+        repository.watch(watchKey, dataChangedEvent -> {
             if (types.contains(dataChangedEvent.getType())) {
                 createEvent(dataChangedEvent).ifPresent(ShardingSphereEventBus.getInstance()::post);
             }
