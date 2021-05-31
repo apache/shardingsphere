@@ -20,3 +20,4 @@ org.apache.shardingsphere.governance.core.registry.listener.factory.DataSourceSt
 org.apache.shardingsphere.governance.core.registry.listener.factory.LockChangedListenerFactory
 org.apache.shardingsphere.governance.core.registry.listener.factory.PropertiesChangedListenerFactory
 org.apache.shardingsphere.governance.core.registry.listener.factory.MetaDataChangedListenerFactory
+org.apache.shardingsphere.governance.core.registry.listener.factory.GlobalRuleChangedListenerFactory

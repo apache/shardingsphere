@@ -29,3 +29,4 @@ chapter = true
 | LockChangedListenerFactory            | Lock changed listener factory              |
 | PropertiesChangedListenerFactory      | Properties changed listener factory        |
 | PrivilegeNodeChangedListenerFactory   | Privilege changed listener factory         |
+| GlobalRuleChangedListenerFactory      | Global rule changed listener factory       |
