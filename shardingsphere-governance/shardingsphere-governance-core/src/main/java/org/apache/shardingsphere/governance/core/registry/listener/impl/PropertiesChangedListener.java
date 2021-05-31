@@ -22,7 +22,6 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.Governa
 import org.apache.shardingsphere.governance.core.registry.listener.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.GlobalNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collections;
@@ -34,8 +33,8 @@ import java.util.Properties;
  */
 public final class PropertiesChangedListener extends GovernanceListener<GovernanceEvent> {
     
-    public PropertiesChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singletonList(GlobalNode.getPropsPath()));
+    public PropertiesChangedListener() {
+        super(Collections.singletonList(GlobalNode.getPropsPath()));
     }
     
     @Override

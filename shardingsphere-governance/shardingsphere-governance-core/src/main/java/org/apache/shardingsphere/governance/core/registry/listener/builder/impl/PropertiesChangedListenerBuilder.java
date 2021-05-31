@@ -19,7 +19,6 @@ package org.apache.shardingsphere.governance.core.registry.listener.builder.impl
 
 import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.core.registry.listener.impl.PropertiesChangedListener;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
 import java.util.Collection;
@@ -31,8 +30,8 @@ import java.util.Collections;
 public final class PropertiesChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public PropertiesChangedListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
-        return new PropertiesChangedListener(repository);
+    public PropertiesChangedListener create(final Collection<String> schemaNames) {
+        return new PropertiesChangedListener();
     }
     
     @Override

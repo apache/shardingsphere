@@ -22,7 +22,6 @@ import org.apache.shardingsphere.governance.core.registry.instance.GovernanceIns
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
 import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 
@@ -34,8 +33,8 @@ import java.util.Optional;
  */
 public final class TerminalStateChangedListener extends GovernanceListener<StateEvent> {
     
-    public TerminalStateChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singleton(StatesNode.getProxyNodePath(GovernanceInstance.getInstance().getId())));
+    public TerminalStateChangedListener() {
+        super(Collections.singleton(StatesNode.getProxyNodePath(GovernanceInstance.getInstance().getId())));
     }
     
     @Override

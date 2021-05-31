@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.mockito.Mock;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -28,11 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
-@Getter
 public class GovernanceListenerTest {
-    
-    @Mock
-    private RegistryCenterRepository registryCenterRepository;
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
     protected String readYAML(final String yamlFile) {

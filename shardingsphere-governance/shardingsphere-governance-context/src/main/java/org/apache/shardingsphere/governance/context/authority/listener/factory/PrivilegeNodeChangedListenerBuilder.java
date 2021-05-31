@@ -20,7 +20,6 @@ package org.apache.shardingsphere.governance.context.authority.listener.factory;
 import org.apache.shardingsphere.governance.context.authority.listener.PrivilegeNodeChangedListener;
 import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,8 +30,8 @@ import java.util.Collections;
 public final class PrivilegeNodeChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public PrivilegeNodeChangedListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
-        return new PrivilegeNodeChangedListener(repository);
+    public PrivilegeNodeChangedListener create(final Collection<String> schemaNames) {
+        return new PrivilegeNodeChangedListener();
     }
     
     @Override

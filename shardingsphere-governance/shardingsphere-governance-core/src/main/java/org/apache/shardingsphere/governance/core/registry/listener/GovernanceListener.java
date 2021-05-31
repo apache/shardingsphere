@@ -20,7 +20,6 @@ package org.apache.shardingsphere.governance.core.registry.listener;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -32,8 +31,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public abstract class GovernanceListener<T> {
-    
-    private final RegistryCenterRepository repository;
     
     @Getter
     private final Collection<String> watchKeys;

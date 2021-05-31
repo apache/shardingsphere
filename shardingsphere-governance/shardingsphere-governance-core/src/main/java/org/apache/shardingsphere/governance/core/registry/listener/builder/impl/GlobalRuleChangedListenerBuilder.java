@@ -20,7 +20,6 @@ package org.apache.shardingsphere.governance.core.registry.listener.builder.impl
 import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.core.registry.listener.impl.GlobalRuleChangedListener;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,8 +30,8 @@ import java.util.Collections;
 public final class GlobalRuleChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public GlobalRuleChangedListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
-        return new GlobalRuleChangedListener(repository);
+    public GlobalRuleChangedListener create(final Collection<String> schemaNames) {
+        return new GlobalRuleChangedListener();
     }
     
     @Override

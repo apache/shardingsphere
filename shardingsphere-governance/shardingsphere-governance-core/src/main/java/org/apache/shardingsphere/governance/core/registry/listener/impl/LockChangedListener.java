@@ -22,7 +22,6 @@ import org.apache.shardingsphere.governance.core.registry.listener.GovernanceLis
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.lock.LockNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.lock.LockReleasedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
@@ -34,8 +33,8 @@ import java.util.Optional;
  */
 public final class LockChangedListener extends GovernanceListener<GovernanceEvent> {
     
-    public LockChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singleton(LockNode.getLockRootNodePath()));
+    public LockChangedListener() {
+        super(Collections.singleton(LockNode.getLockRootNodePath()));
     }
     
     @Override

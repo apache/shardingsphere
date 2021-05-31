@@ -32,7 +32,6 @@ import org.apache.shardingsphere.governance.core.registry.service.config.node.Sc
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -52,8 +51,8 @@ import java.util.stream.Collectors;
  */
 public final class MetaDataChangedListener extends GovernanceListener<GovernanceEvent> {
     
-    public MetaDataChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singleton(SchemaMetadataNode.getMetadataNodePath()));
+    public MetaDataChangedListener() {
+        super(Collections.singleton(SchemaMetadataNode.getMetadataNodePath()));
     }
     
     @Override

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.governance.core.registry.listener.builder.impl
 
 import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.core.registry.listener.impl.MetaDataChangedListener;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
 import java.util.Arrays;
@@ -31,8 +30,8 @@ import java.util.Collection;
 public final class MetaDataChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
-    public MetaDataChangedListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
-        return new MetaDataChangedListener(repository);
+    public MetaDataChangedListener create(final Collection<String> schemaNames) {
+        return new MetaDataChangedListener();
     }
     
     @Override

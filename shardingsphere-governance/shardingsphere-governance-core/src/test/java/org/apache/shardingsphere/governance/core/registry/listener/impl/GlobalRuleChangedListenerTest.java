@@ -19,12 +19,9 @@ package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.listener.event.rule.GlobalRuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import java.util.Optional;
 
@@ -34,19 +31,9 @@ import static org.junit.Assert.assertTrue;
 
 public final class GlobalRuleChangedListenerTest extends GovernanceListenerTest {
     
-    private GlobalRuleChangedListener globalRuleChangedListener;
-    
-    @Mock
-    private RegistryCenterRepository registryCenterRepository;
-    
-    @Before
-    public void setUp() {
-        globalRuleChangedListener = new GlobalRuleChangedListener(registryCenterRepository);
-    }
-    
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> event = globalRuleChangedListener.createEvent(new DataChangedEvent("rule", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
+        Optional<GovernanceEvent> event = new GlobalRuleChangedListener().createEvent(new DataChangedEvent("rule", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
         assertTrue(event.isPresent());
         assertThat(event.get(), instanceOf(GlobalRuleConfigurationsChangedEvent.class));
     }

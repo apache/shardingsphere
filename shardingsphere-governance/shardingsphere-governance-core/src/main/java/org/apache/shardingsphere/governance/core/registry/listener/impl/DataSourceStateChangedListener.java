@@ -25,7 +25,6 @@ import org.apache.shardingsphere.governance.core.registry.listener.event.readwri
 import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -35,8 +34,8 @@ import java.util.Optional;
  */
 public final class DataSourceStateChangedListener extends GovernanceListener<GovernanceEvent> {
     
-    public DataSourceStateChangedListener(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        super(registryCenterRepository, StatesNode.getAllSchemaPaths(schemaNames));
+    public DataSourceStateChangedListener(final Collection<String> schemaNames) {
+        super(StatesNode.getAllSchemaPaths(schemaNames));
     }
     
     @Override

@@ -51,7 +51,7 @@ public final class GovernanceListenerManager {
      */
     public void watchListeners() {
         for (GovernanceListenerBuilder each : governanceListenerBuilders) {
-            watch(each, each.create(repository, schemaNames));
+            watch(each, each.create(schemaNames));
         }
     }
     

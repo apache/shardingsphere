@@ -22,7 +22,6 @@ import org.apache.shardingsphere.governance.core.registry.listener.GovernanceLis
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
@@ -35,8 +34,8 @@ import java.util.Optional;
  */
 public final class PrivilegeNodeChangedListener extends GovernanceListener<GovernanceEvent> {
     
-    public PrivilegeNodeChangedListener(final RegistryCenterRepository registryCenterRepository) {
-        super(registryCenterRepository, Collections.singletonList(StatesNode.getPrivilegeNodePath()));
+    public PrivilegeNodeChangedListener() {
+        super(Collections.singletonList(StatesNode.getPrivilegeNodePath()));
     }
     
     @Override

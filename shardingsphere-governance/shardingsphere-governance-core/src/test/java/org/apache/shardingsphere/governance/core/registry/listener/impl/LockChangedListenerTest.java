@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.listener.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -26,13 +25,12 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
 
 public final class LockChangedListenerTest {
     
     @Test
     public void assertCreateEventWithInvalidPath() {
-        Optional<GovernanceEvent> actual = new LockChangedListener(mock(RegistryCenterRepository.class)).createEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
+        Optional<GovernanceEvent> actual = new LockChangedListener().createEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }
 }

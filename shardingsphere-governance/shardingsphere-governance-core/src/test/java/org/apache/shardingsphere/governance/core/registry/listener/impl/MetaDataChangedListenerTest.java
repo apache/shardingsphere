@@ -36,7 +36,7 @@ public final class MetaDataChangedListenerTest extends GovernanceListenerTest {
     
     @Before
     public void setUp() {
-        metaDataChangedListener = new MetaDataChangedListener(getRegistryCenterRepository());
+        metaDataChangedListener = new MetaDataChangedListener();
     }
     
     @Test
