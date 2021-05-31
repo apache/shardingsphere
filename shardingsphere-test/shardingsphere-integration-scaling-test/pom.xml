@@ -30,6 +30,7 @@
     <name>${project.artifactId}</name>
 
     <modules>
+        <module>shardingsphere-integration-scaling-test-mysql</module>
     </modules>
 
     <properties>

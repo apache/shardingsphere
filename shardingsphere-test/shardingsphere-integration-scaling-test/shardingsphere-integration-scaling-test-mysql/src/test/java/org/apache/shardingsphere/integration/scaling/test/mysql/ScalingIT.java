@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.integration.scaling.test.mysql;
 
+import groovy.lang.Tuple2;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.scaling.test.mysql.fixture.FixtureWriteThread;
+import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.TargetDataSourceUtil;
-import org.apache.shardingsphere.scaling.web.entity.ResponseContent;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -30,14 +32,47 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public final class ScalingIT {
     
+    private static final long TIMEOUT_MS = 2 * 60 * 1000;
+    
+    private static final long WAIT_MS_BEFORE_START_JOB = 10 * 1000;
+    
+    private static final long WAIT_MS_BEFORE_CHECK_JOB = 15 * 1000;
+    
+    private final FixtureWriteThread fixtureWriteThread = new FixtureWriteThread(TIMEOUT_MS, 1000);
+    
     @SneakyThrows
     @Test
     public void assertScaling() {
         if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
             IntegrationTestEnvironment.getInstance().waitForEnvironmentReady();
-            String body = TargetDataSourceUtil.createDockerConfigurations();
-            ResponseContent<String> startResponse = ScalingUtil.getInstance().startJob(body);
-            assertTrue(startResponse.isSuccess());
+            fixtureWriteThread.start();
+            Thread.sleep(WAIT_MS_BEFORE_START_JOB);
+            String jobId = assertStartJob();
+            waitInventoryFinish(jobId);
+            fixtureWriteThread.stop();
+            Thread.sleep(WAIT_MS_BEFORE_CHECK_JOB);
+            assertJobCheck(jobId);
         }
+    }
+    
+    @SneakyThrows
+    private String assertStartJob() {
+        String configurations = TargetDataSourceUtil.createDockerConfigurations();
+        Tuple2<Boolean, String> response = ScalingUtil.getInstance().startJob(configurations);
+        assertTrue(response.getFirst());
+        return response.getSecond();
+    }
+    
+    private void waitInventoryFinish(final String jobId) {
+        new ExecuteUtil(() -> {
+            return "EXECUTE_INCREMENTAL_TASK".equals(ScalingUtil.getInstance().getJobStatus(jobId));
+        }, (int) (TIMEOUT_MS - WAIT_MS_BEFORE_START_JOB) / (10 * 1000), 10 * 1000).execute();
+    }
+    
+    @SneakyThrows
+    private void assertJobCheck(final String jobId) {
+        Tuple2<Boolean, Boolean> checkResult = ScalingUtil.getInstance().getJobCheckResult(jobId);
+        assertTrue(checkResult.getFirst());
+        assertTrue(checkResult.getSecond());
     }
 }
