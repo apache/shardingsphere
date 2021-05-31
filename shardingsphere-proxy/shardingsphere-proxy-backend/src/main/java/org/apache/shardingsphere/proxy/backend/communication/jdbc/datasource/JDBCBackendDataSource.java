@@ -102,7 +102,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
                     each.close();
                 }
                 throw new SQLException(String.format("Could not get %d connections at once. The %d obtained connections have been released. "
-                        + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties.", connectionSize, result.size()), ex);
+                        + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in props.", connectionSize, result.size()), ex);
             }
         }
         return result;
