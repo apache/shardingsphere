@@ -30,12 +30,12 @@ import java.util.Properties;
 @Getter
 @Setter
 public final class DatabaseDiscoveryRuleSegment implements ASTNode {
-
+    
     private String name;
-
+    
     private Collection<String> dataSources;
-
+    
     private String discoveryTypeName;
-
+    
     private Properties props;
 }
