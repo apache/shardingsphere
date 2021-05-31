@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -30,44 +29,42 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransa
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+
 /**
  * PostgreSQL command.
  */
-@RequiredArgsConstructor
-public final class PostgreSQLCommand {
+public enum PostgreSQLCommand {
     
-    private final SQLStatement sqlStatement;
+    INSERT(InsertStatement.class),
+    UPDATE(UpdateStatement.class),
+    DELETE(DeleteStatement.class),
+    CREATE(CreateDatabaseStatement.class, AddResourceStatement.class, CreateShardingTableRuleStatement.class),
+    DROP(DropDatabaseStatement.class),
+    BEGIN(BeginTransactionStatement.class),
+    COMMIT(CommitStatement.class),
+    ROLLBACK(RollbackStatement.class);
+    
+    private final Collection<Class<? extends SQLStatement>> sqlStatementClasses;
+    
+    @SafeVarargs
+    PostgreSQLCommand(final Class<? extends SQLStatement>... sqlStatementClasses) {
+        this.sqlStatementClasses = Arrays.asList(sqlStatementClasses);
+    }
     
     /**
-     * Get SQL command.
+     * Value of PostgreSQL command via SQL statement class.
      * 
-     * @return SQL command
+     * @param sqlStatementClass SQL statement class
+     * @return PostgreSQL command
      */
-    public String getSQLCommand() {
-        if (sqlStatement instanceof InsertStatement) {
-            return "INSERT";
-        }
-        if (sqlStatement instanceof DeleteStatement) {
-            return "DELETE";
-        }
-        if (sqlStatement instanceof UpdateStatement) {
-            return "UPDATE";
-        }
-        if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof AddResourceStatement || sqlStatement instanceof CreateShardingTableRuleStatement) {
-            return "CREATE";
-        }
-        if (sqlStatement instanceof DropDatabaseStatement) {
-            return "DROP";
-        }
-        if (sqlStatement instanceof BeginTransactionStatement) {
-            return "BEGIN";
-        }
-        if (sqlStatement instanceof CommitStatement) {
-            return "COMMIT";
-        }
-        if (sqlStatement instanceof RollbackStatement) {
-            return "ROLLBACK";
-        }
-        return "";
+    public static Optional<PostgreSQLCommand> valueOf(final Class<? extends SQLStatement> sqlStatementClass) {
+        return Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(sqlStatementClass, each)).findAny();
+    }
+    
+    private static boolean matches(final Class<? extends SQLStatement> sqlStatementClass, final PostgreSQLCommand postgreSQLCommand) {
+        return postgreSQLCommand.sqlStatementClasses.stream().anyMatch(each -> each.isAssignableFrom(sqlStatementClass));
     }
 }
