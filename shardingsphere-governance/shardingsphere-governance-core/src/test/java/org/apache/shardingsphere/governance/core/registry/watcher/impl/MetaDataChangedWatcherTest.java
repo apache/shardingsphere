@@ -18,23 +18,20 @@
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
 import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Test;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
-public final class GlobalRuleChangedListenerTest extends GovernanceListenerTest {
+public final class MetaDataChangedWatcherTest {
     
     @Test
-    public void assertCreateEvent() {
-        Optional<GovernanceEvent> event = new GlobalRuleChangedWatcher().createGovernanceEvent(new DataChangedEvent("rule", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
-        assertTrue(event.isPresent());
-        assertThat(event.get(), instanceOf(GlobalRuleConfigurationsChangedEvent.class));
+    public void assertCreateEventWithInvalidPath() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata_invalid/sharding_db", "encrypt_db", Type.UPDATED);
+        Optional<GovernanceEvent> actual = new MetaDataChangedWatcher().createGovernanceEvent(dataChangedEvent);
+        assertFalse(actual.isPresent());
     }
 }

@@ -17,32 +17,30 @@
 
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.junit.Before;
+import org.apache.shardingsphere.infra.state.StateEvent;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class MetaDataChangedListenerTest extends GovernanceListenerTest {
+public final class TerminalStateChangedWatcherTest {
     
-    private MetaDataChangedWatcher metaDataChangedListener;
-    
-    @Before
-    public void setUp() {
-        metaDataChangedListener = new MetaDataChangedWatcher();
+    @Test
+    public void assertCreateEventWhenEnabled() {
+        Optional<StateEvent> actual = new TerminalStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
+        assertTrue(actual.isPresent());
+        assertFalse(actual.get().isOn());
     }
     
     @Test
-    public void assertCreateEventWithInvalidPath() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata_invalid/sharding_db", "encrypt_db", Type.UPDATED);
-        Optional<GovernanceEvent> actual = metaDataChangedListener.createGovernanceEvent(dataChangedEvent);
-        assertFalse(actual.isPresent());
+    public void assertCreateEventWhenDisabled() {
+        Optional<StateEvent> actual = new TerminalStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), Type.UPDATED));
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get().isOn());
     }
 }

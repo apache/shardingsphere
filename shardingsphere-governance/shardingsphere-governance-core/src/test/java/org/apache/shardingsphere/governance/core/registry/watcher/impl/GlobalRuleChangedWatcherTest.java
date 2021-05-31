@@ -17,27 +17,35 @@
 
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class PropertiesChangedListenerTest {
-    
-    private static final String PROPERTIES_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": true";
+public final class GlobalRuleChangedWatcherTest {
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = new PropertiesChangedWatcher().createGovernanceEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
+        Optional<GovernanceEvent> event = new GlobalRuleChangedWatcher().createGovernanceEvent(new DataChangedEvent("rule", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
+        assertTrue(event.isPresent());
+        assertThat(event.get(), instanceOf(GlobalRuleConfigurationsChangedEvent.class));
+    }
+    
+    @SneakyThrows({IOException.class, URISyntaxException.class})
+    protected String readYAML(final String yamlFile) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

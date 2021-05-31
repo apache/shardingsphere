@@ -18,19 +18,26 @@
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
 import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public final class LockChangedListenerTest {
+public final class PropertiesChangedWatcherTest {
+    
+    private static final String PROPERTIES_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": true";
     
     @Test
-    public void assertCreateEventWithInvalidPath() {
-        Optional<GovernanceEvent> actual = new LockChangedWatcher().createGovernanceEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
-        assertFalse(actual.isPresent());
+    public void assertCreateEvent() {
+        Optional<GovernanceEvent> actual = new PropertiesChangedWatcher().createGovernanceEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
+        assertTrue(actual.isPresent());
+        assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
     }
 }
