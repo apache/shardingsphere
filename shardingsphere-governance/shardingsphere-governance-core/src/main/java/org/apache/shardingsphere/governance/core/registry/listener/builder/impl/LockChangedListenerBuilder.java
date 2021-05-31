@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.factory.impl;
+package org.apache.shardingsphere.governance.core.registry.listener.builder.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
-import org.apache.shardingsphere.governance.core.registry.listener.factory.GovernanceListenerFactory;
-import org.apache.shardingsphere.governance.core.registry.listener.impl.GlobalRuleChangedListener;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
+import org.apache.shardingsphere.governance.core.registry.listener.impl.LockChangedListener;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- *  Global rule changed listener factory.
+ * Lock changed listener builder.
  */
-public final class GlobalRuleChangedListenerFactory implements GovernanceListenerFactory {
+public final class LockChangedListenerBuilder implements GovernanceListenerBuilder {
+    
     @Override
     public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
-        return new GlobalRuleChangedListener(repository);
+        return new LockChangedListener(repository);
     }
     
     @Override
     public Collection<Type> getWatchTypes() {
-        return Collections.singleton(Type.UPDATED);
+        return Arrays.asList(Type.ADDED, Type.DELETED);
     }
 }

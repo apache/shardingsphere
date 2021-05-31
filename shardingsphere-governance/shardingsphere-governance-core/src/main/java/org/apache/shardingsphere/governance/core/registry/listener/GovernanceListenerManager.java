@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import org.apache.shardingsphere.governance.core.registry.listener.factory.GovernanceListenerFactory;
+import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -30,26 +30,26 @@ import java.util.Collection;
 public final class GovernanceListenerManager {
     
     static {
-        ShardingSphereServiceLoader.register(GovernanceListenerFactory.class);
+        ShardingSphereServiceLoader.register(GovernanceListenerBuilder.class);
     }
     
     private final RegistryCenterRepository registryCenterRepository;
     
     private final Collection<String> schemaNames;
     
-    private final Collection<GovernanceListenerFactory> governanceListenerFactories;
+    private final Collection<GovernanceListenerBuilder> governanceListenerFactories;
     
     public GovernanceListenerManager(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
         this.registryCenterRepository = registryCenterRepository;
         this.schemaNames = schemaNames;
-        governanceListenerFactories = ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceListenerFactory.class);
+        governanceListenerFactories = ShardingSphereServiceLoader.getSingletonServiceInstances(GovernanceListenerBuilder.class);
     }
     
     /**
      * Initialize all state changed listeners.
      */
     public void initListeners() {
-        for (GovernanceListenerFactory each : governanceListenerFactories) {
+        for (GovernanceListenerBuilder each : governanceListenerFactories) {
             each.create(registryCenterRepository, schemaNames).watch(each.getWatchTypes().toArray(new Type[0]));
         }
     }

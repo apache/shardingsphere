@@ -15,9 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.governance.core.registry.listener.factory.impl.TerminalStateChangedListenerFactory
-org.apache.shardingsphere.governance.core.registry.listener.factory.impl.DataSourceStateChangedListenerFactory
-org.apache.shardingsphere.governance.core.registry.listener.factory.impl.LockChangedListenerFactory
-org.apache.shardingsphere.governance.core.registry.listener.factory.impl.PropertiesChangedListenerFactory
-org.apache.shardingsphere.governance.core.registry.listener.factory.impl.MetaDataChangedListenerFactory
-org.apache.shardingsphere.governance.core.registry.listener.factory.impl.GlobalRuleChangedListenerFactory
+org.apache.shardingsphere.governance.context.authority.listener.factory.PrivilegeNodeChangedListenerBuilder

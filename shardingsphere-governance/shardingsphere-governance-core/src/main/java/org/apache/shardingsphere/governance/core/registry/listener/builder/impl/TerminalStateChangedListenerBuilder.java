@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.factory.impl;
+package org.apache.shardingsphere.governance.core.registry.listener.builder.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
-import org.apache.shardingsphere.governance.core.registry.listener.factory.GovernanceListenerFactory;
-import org.apache.shardingsphere.governance.core.registry.listener.impl.LockChangedListener;
+import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
+import org.apache.shardingsphere.governance.core.registry.listener.impl.TerminalStateChangedListener;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Lock changed listener factory.
+ * Terminal state changed listener builder.
  */
-public final class LockChangedListenerFactory implements GovernanceListenerFactory {
+public final class TerminalStateChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
     public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
-        return new LockChangedListener(repository);
+        return new TerminalStateChangedListener(repository);
     }
     
     @Override
     public Collection<Type> getWatchTypes() {
-        return Arrays.asList(Type.ADDED, Type.DELETED);
+        return Collections.singleton(Type.UPDATED);
     }
 }

@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.listener.factory.impl;
+package org.apache.shardingsphere.governance.core.registry.listener.builder.impl;
 
 import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListener;
-import org.apache.shardingsphere.governance.core.registry.listener.factory.GovernanceListenerFactory;
-import org.apache.shardingsphere.governance.core.registry.listener.impl.DataSourceStateChangedListener;
+import org.apache.shardingsphere.governance.core.registry.listener.builder.GovernanceListenerBuilder;
+import org.apache.shardingsphere.governance.core.registry.listener.impl.PropertiesChangedListener;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Data source state changed listener factory.
+ * Properties changed listener builder.
  */
-public final class DataSourceStateChangedListenerFactory implements GovernanceListenerFactory {
+public final class PropertiesChangedListenerBuilder implements GovernanceListenerBuilder {
     
     @Override
     public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
-        return new DataSourceStateChangedListener(repository, schemaNames);
+        return new PropertiesChangedListener(repository);
     }
     
     @Override
     public Collection<Type> getWatchTypes() {
-        return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
+        return Collections.singleton(Type.UPDATED);
     }
 }
