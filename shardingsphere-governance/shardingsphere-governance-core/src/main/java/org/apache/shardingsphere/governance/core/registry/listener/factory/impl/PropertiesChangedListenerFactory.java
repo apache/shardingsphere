@@ -32,8 +32,8 @@ import java.util.Collections;
 public final class PropertiesChangedListenerFactory implements GovernanceListenerFactory {
     
     @Override
-    public GovernanceListener create(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        return new PropertiesChangedListener(registryCenterRepository);
+    public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
+        return new PropertiesChangedListener(repository);
     }
     
     @Override

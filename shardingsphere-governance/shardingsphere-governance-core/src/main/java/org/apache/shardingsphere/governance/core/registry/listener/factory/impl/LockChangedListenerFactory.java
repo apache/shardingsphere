@@ -32,8 +32,8 @@ import java.util.Collection;
 public final class LockChangedListenerFactory implements GovernanceListenerFactory {
     
     @Override
-    public GovernanceListener create(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        return new LockChangedListener(registryCenterRepository);
+    public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
+        return new LockChangedListener(repository);
     }
     
     @Override

@@ -32,8 +32,8 @@ import java.util.Collections;
 public final class PrivilegeNodeChangedListenerFactory implements GovernanceListenerFactory {
     
     @Override
-    public GovernanceListener create(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        return new PrivilegeNodeChangedListener(registryCenterRepository);
+    public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
+        return new PrivilegeNodeChangedListener(repository);
     }
     
     @Override

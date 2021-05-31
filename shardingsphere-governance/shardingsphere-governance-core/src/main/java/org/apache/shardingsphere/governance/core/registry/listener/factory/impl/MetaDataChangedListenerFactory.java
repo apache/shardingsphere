@@ -32,8 +32,8 @@ import java.util.Collection;
 public final class MetaDataChangedListenerFactory implements GovernanceListenerFactory {
     
     @Override
-    public GovernanceListener create(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        return new MetaDataChangedListener(registryCenterRepository);
+    public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
+        return new MetaDataChangedListener(repository);
     }
     
     @Override

@@ -32,8 +32,8 @@ import java.util.Collections;
 public final class TerminalStateChangedListenerFactory implements GovernanceListenerFactory {
     
     @Override
-    public GovernanceListener create(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        return new TerminalStateChangedListener(registryCenterRepository);
+    public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
+        return new TerminalStateChangedListener(repository);
     }
     
     @Override

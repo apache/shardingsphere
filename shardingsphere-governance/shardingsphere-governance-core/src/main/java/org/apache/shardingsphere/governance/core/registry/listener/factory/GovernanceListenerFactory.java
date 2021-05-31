@@ -31,11 +31,11 @@ public interface GovernanceListenerFactory {
     /**
      * Create governance listener.
      * 
-     * @param registryCenterRepository governance repository
+     * @param repository registry center repository
      * @param schemaNames schema names
      * @return governance listener
      */
-    GovernanceListener create(RegistryCenterRepository registryCenterRepository, Collection<String> schemaNames);
+    GovernanceListener create(RegistryCenterRepository repository, Collection<String> schemaNames);
     
     /**
      * Get watch types.

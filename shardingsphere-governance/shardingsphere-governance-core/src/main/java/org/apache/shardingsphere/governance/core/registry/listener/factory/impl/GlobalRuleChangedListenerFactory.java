@@ -31,8 +31,8 @@ import java.util.Collections;
  */
 public final class GlobalRuleChangedListenerFactory implements GovernanceListenerFactory {
     @Override
-    public GovernanceListener create(final RegistryCenterRepository registryCenterRepository, final Collection<String> schemaNames) {
-        return new GlobalRuleChangedListener(registryCenterRepository);
+    public GovernanceListener create(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
+        return new GlobalRuleChangedListener(repository);
     }
     
     @Override
