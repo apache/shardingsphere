@@ -18,19 +18,15 @@
 package org.apache.shardingsphere.infra.executor.sql.federate.execute.raw;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.interpreter.InterpretableConvention;
 import org.apache.calcite.interpreter.InterpretableConverter;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.parser.SqlParseException;
-import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
+import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 
 import java.sql.ResultSet;
@@ -43,7 +39,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class FederateRawExecutor implements FederateExecutor {
     
-    private final OptimizeContext context;
+    private final ShardingSphereOptimizer optimizer;
+    
+    public FederateRawExecutor(final OptimizeContext context) {
+        optimizer = new ShardingSphereOptimizer(context);
+    }
     
     @Override
     public List<QueryResult> executeQuery(final String sql, final List<Object> parameters) {
@@ -61,24 +61,14 @@ public final class FederateRawExecutor implements FederateExecutor {
         return null;
     }
     
-    private Enumerable<Object[]> execute(final String sql) throws SqlParseException {
-        // TODO The below will be replaced by SqlNodeConverter.
-        SqlNode sqlNode = SqlParser.create(sql, context.getParserConfig()).parseQuery();
-        SqlNode validNode = context.getValidator().validate(sqlNode);
-        RelNode logicPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;
-        RelNode bestPlan = optimize(logicPlan);
-        return execute(bestPlan);
+    private Enumerable<Object[]> execute(final String sql) {
+        // TODO
+        return execute(optimizer.optimize(sql));
     }
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
-        RelOptCluster cluster = context.getRelConverter().getCluster();
-        return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new FederateExecuteDataContext(context));
-    }
-    
-    private RelNode optimize(final RelNode logicPlan) {
-        RelOptPlanner planner = context.getRelConverter().getCluster().getPlanner();
-        planner.setRoot(planner.changeTraits(logicPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
-        return planner.findBestExp();
+        RelOptCluster cluster = optimizer.getContext().getRelConverter().getCluster();
+        return new FederateInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new FederateExecuteDataContext(optimizer.getContext()));
     }
     
     public static final class FederateInterpretableConverter extends InterpretableConverter {
