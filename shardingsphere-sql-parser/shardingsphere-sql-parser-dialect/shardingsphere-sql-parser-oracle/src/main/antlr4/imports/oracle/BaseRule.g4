@@ -127,6 +127,10 @@ indexName
     : identifier
     ;
 
+constraintName
+    : identifier
+    ;
+
 savepointName
     : identifier
     ;
@@ -670,4 +674,3 @@ percent
 rollbackSegment
     : identifier
     ;
-

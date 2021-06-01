@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ConstraintTokenGenerator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
@@ -74,6 +75,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new OrderByTokenGenerator());
         addSQLTokenGenerator(result, new AggregationDistinctTokenGenerator());
         addSQLTokenGenerator(result, new IndexTokenGenerator());
+        addSQLTokenGenerator(result, new ConstraintTokenGenerator());
         addSQLTokenGenerator(result, new OffsetTokenGenerator());
         addSQLTokenGenerator(result, new RowCountTokenGenerator());
         addSQLTokenGenerator(result, new GeneratedKeyInsertColumnTokenGenerator());

@@ -88,11 +88,11 @@ encryptedOptions
     ;
 
 columnConstraint
-    : (CONSTRAINT ignoredIdentifier)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT constraintName)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
     ;
 
 computedColumnConstraint
-    : (CONSTRAINT ignoredIdentifier)? (primaryKeyConstraint | computedColumnForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT constraintName)? (primaryKeyConstraint | computedColumnForeignKeyConstraint | checkConstraint)
     ;
 
 computedColumnForeignKeyConstraint
@@ -193,7 +193,7 @@ columnSetDefinition
     ;
 
 tableConstraint 
-    : (CONSTRAINT ignoredIdentifier)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT constraintName)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
     ;
 
 tablePrimaryConstraint
@@ -329,7 +329,7 @@ alterColumnAddOption
     ;
 
 constraintForColumn
-    : (CONSTRAINT ignoredIdentifier)? DEFAULT simpleExpr FOR columnName
+    : (CONSTRAINT constraintName)? DEFAULT simpleExpr FOR columnName
     ;
 
 generatedColumnNamesClause
@@ -353,7 +353,7 @@ alterTableDropConstraint
     ;
 
 dropConstraintName
-    : ignoredIdentifier dropConstraintWithClause?
+    : constraintName dropConstraintWithClause?
     ;
 
 dropConstraintWithClause
@@ -377,7 +377,7 @@ dropIndexSpecification
     ;
 
 alterCheckConstraint 
-    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | ignoredIdentifiers)
+    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | constraintName)
     ;
 
 alterTrigger 

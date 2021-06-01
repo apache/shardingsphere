@@ -198,7 +198,7 @@ columnConstraint
     ;
 
 constraintClause
-    : CONSTRAINT ignoredIdentifier
+    : CONSTRAINT constraintName
     ;
 
 columnConstraintOption
@@ -374,9 +374,9 @@ alterTableAction
     | dropColumnSpecification
     | modifyColumnSpecification
     | addConstraintSpecification
-    | ALTER CONSTRAINT ignoredIdentifier constraintOptionalParam
-    | VALIDATE CONSTRAINT ignoredIdentifier
-    | DROP CONSTRAINT existClause? ignoredIdentifier (RESTRICT | CASCADE)?
+    | modifyConstraintSpecification
+    | validateConstraintSpecification
+    | dropConstraintSpecification
     | (DISABLE | ENABLE) TRIGGER (ignoredIdentifier | ALL | USER)?
     | ENABLE (REPLICA | ALWAYS) TRIGGER ignoredIdentifier
     | (DISABLE | ENABLE) RULE ignoredIdentifier
@@ -440,7 +440,19 @@ addConstraintSpecification
     ;
 
 tableConstraintUsingIndex
-    : (CONSTRAINT ignoredIdentifier)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
+    : (CONSTRAINT constraintName)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
+    ;
+
+modifyConstraintSpecification
+    : ALTER CONSTRAINT constraintName constraintOptionalParam
+    ;
+
+validateConstraintSpecification
+    : VALIDATE CONSTRAINT constraintName
+    ;
+
+dropConstraintSpecification
+    : DROP CONSTRAINT existClause? constraintName (RESTRICT | CASCADE)?
     ;
 
 storageParameterWithValue
@@ -799,10 +811,6 @@ alterDomainClause
     | anyName RENAME TO anyName
     | anyName SET SCHEMA name
     | anyName alterColumnDefault
-    ;
-
-constraintName
-    : colId
     ;
 
 alterEventTrigger
