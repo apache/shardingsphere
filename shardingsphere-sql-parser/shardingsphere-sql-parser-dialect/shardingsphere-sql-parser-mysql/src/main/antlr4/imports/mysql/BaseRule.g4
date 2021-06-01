@@ -636,7 +636,11 @@ columnName
 indexName
     : identifier
     ;
-    
+
+constraintName
+    : identifier
+    ;
+
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?
     ;
