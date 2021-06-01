@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,7 +49,11 @@ public final class ConstraintTokenGenerator implements CollectionSQLTokenGenerat
         Collection<ConstraintToken> result = new LinkedList<>();
         if (sqlStatementContext instanceof ConstraintAvailable) {
             for (SQLSegment each : ((ConstraintAvailable) sqlStatementContext).getConstraints()) {
-                result.add(new ConstraintToken(each.getStartIndex(), each.getStopIndex(), ((ConstraintSegment) each).getIdentifier(), sqlStatementContext, shardingRule));
+                IdentifierValue constraintIdentifier = ((ConstraintSegment) each).getIdentifier();
+                if (null == constraintIdentifier) {
+                    continue;
+                }
+                result.add(new ConstraintToken(each.getStartIndex(), each.getStopIndex(), constraintIdentifier, sqlStatementContext, shardingRule));
             }
         }
         return result;
