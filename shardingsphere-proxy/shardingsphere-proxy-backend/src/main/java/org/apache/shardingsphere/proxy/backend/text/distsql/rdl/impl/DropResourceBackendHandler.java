@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * Drop resource backend handler.
  */
 public final class DropResourceBackendHandler extends SchemaRequiredBackendHandler<DropResourceStatement> {
-
+    
     public DropResourceBackendHandler(final DropResourceStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
@@ -87,7 +87,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
             throw new ResourceInUsedException(conflictResources);
         }
     }
-
+    
     private Set<String> getResources(final DataSourceContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<String> each : rule.getDataSourceMapper().values()) {
@@ -95,7 +95,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         }
         return result;
     }
-
+    
     private Set<String> getResources(final DataNodeContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
@@ -103,7 +103,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         }
         return result;
     }
-
+    
     private Map<String, DataSource> drop(final String schemaName, final Collection<String> resourceNames) {
         Map<String, DataSource> result = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
         for (String each : resourceNames) {
