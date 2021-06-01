@@ -116,7 +116,7 @@ public final class CommandExecutorTask implements Runnable {
         PrimaryVisitedManager.clear();
         result.addAll(backendConnection.closeResultSets());
         result.addAll(backendConnection.closeStatements());
-        result.addAll(backendConnection.closeCalciteExecutor());
+        result.addAll(backendConnection.closeFederateExecutor());
         return result;
     }
     

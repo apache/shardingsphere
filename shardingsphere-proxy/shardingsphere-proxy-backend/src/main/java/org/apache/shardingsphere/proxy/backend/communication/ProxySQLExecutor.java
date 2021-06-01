@@ -32,10 +32,10 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawExecut
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteExecutor;
-import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteJDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.optimize.schema.CalciteLogicSchema;
-import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateJDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederateLogicSchema;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
@@ -119,8 +119,8 @@ public final class ProxySQLExecutor {
         if (rules.stream().anyMatch(each -> each instanceof RawExecutionRule)) {
             return rawExecute(executionContext, rules, maxConnectionsSizePerQuery);
         }
-        if (executionContext.getRouteContext().isToCalcite()) {
-            return useCalciteToExecute(executionContext, rules, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
+        if (executionContext.getRouteContext().isFederated()) {
+            return federateExecute(executionContext, rules, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
         }
         return useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
     }
@@ -137,20 +137,20 @@ public final class ProxySQLExecutor {
         return rawExecutor.execute(executionGroupContext, executionContext.getSqlStatementContext(), new RawSQLExecutorCallback());
     }
     
-    private Collection<ExecuteResult> useCalciteToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,
-                                                          final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+    private Collection<ExecuteResult> federateExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,
+                                                      final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return Collections.emptyList();
         }
         MetaDataContexts metaData = ProxyContext.getInstance().getMetaDataContexts();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(type, metaData.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType(), 
                 executionContext.getSqlStatementContext().getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true);
-        CalciteRowExecutor executor = new CalciteRowExecutor(rules, metaData.getProps(), backendConnection, jdbcExecutor.getJdbcExecutor(), executionContext, callback);
-        CalciteLogicSchema logicSchema = new CalciteLogicSchema(metaData.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(backendConnection.getSchemaName()), executor);
-        CalciteExecutor calciteExecutor = new CalciteJDBCExecutor(metaData.getOptimizeContextFactory().create(backendConnection.getSchemaName(), logicSchema));
-        backendConnection.setCalciteExecutor(calciteExecutor);
+        FederateRowExecutor executor = new FederateRowExecutor(rules, metaData.getProps(), backendConnection, jdbcExecutor.getJdbcExecutor(), executionContext, callback);
+        FederateLogicSchema logicSchema = new FederateLogicSchema(metaData.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(backendConnection.getSchemaName()), executor);
+        FederateExecutor federateExecutor = new FederateJDBCExecutor(metaData.getOptimizeContextFactory().create(backendConnection.getSchemaName(), logicSchema));
+        backendConnection.setFederateExecutor(federateExecutor);
         SQLUnit sqlUnit = executionContext.getExecutionUnits().iterator().next().getSqlUnit();
-        return calciteExecutor.executeQuery(sqlUnit.getSql(), sqlUnit.getParameters()).stream().map(each -> (ExecuteResult) each).collect(Collectors.toList());
+        return federateExecutor.executeQuery(sqlUnit.getSql(), sqlUnit.getParameters()).stream().map(each -> (ExecuteResult) each).collect(Collectors.toList());
     }
     
     private Collection<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules, 
