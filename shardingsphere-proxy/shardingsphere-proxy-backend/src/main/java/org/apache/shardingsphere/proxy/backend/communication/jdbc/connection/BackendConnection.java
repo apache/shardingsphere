@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParamet
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -70,7 +70,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     private volatile Grantee grantee;
     
     @Setter
-    private volatile CalciteExecutor calciteExecutor;
+    private volatile FederateExecutor federateExecutor;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -291,15 +291,15 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     /**
-     * Close calcite executor.
+     * Close federate executor.
      * 
-     * @return SQL exception when calcite executor close
+     * @return SQL exception when federate executor close
      */
-    public synchronized Collection<SQLException> closeCalciteExecutor() {
+    public synchronized Collection<SQLException> closeFederateExecutor() {
         Collection<SQLException> result = new LinkedList<>();
-        if (null != calciteExecutor) {
+        if (null != federateExecutor) {
             try {
-                calciteExecutor.close();
+                federateExecutor.close();
             } catch (final SQLException ex) {
                 result.add(ex);
             }
