@@ -19,8 +19,9 @@ package org.apache.shardingsphere.governance.core.registry.watcher.event.datasou
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
+import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+
 import java.util.Map;
 
 /**
@@ -28,7 +29,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceAlteredEvent {
+public final class DataSourceAlteredEvent implements GovernanceEvent {
     
     private final String schemaName;
     

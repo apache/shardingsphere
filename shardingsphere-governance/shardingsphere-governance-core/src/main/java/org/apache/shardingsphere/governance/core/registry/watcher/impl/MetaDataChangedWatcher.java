@@ -20,20 +20,21 @@ package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.governance.core.registry.cache.CacheNode;
+import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.schema.SchemaChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
@@ -78,7 +79,8 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     private Optional<GovernanceEvent> buildSchemaEvent(final String schemaName, final DataChangedEvent event) {
         if (event.getType() == DataChangedEvent.Type.ADDED || event.getType() == DataChangedEvent.Type.UPDATED) {
             return Optional.of(new SchemaAddedEvent(schemaName));
-        } else if (event.getType() == DataChangedEvent.Type.DELETED) {
+        }
+        if (event.getType() == DataChangedEvent.Type.DELETED) {
             return Optional.of(new SchemaDeletedEvent(schemaName));
         }
         return Optional.empty();
@@ -106,12 +108,12 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
 
     @SuppressWarnings("unchecked")
-    private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
+    private DataSourceAlteredEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
-        return yamlDataSources.isEmpty() ? new DataSourceChangedEvent(schemaName, new HashMap<>())
-                : new DataSourceChangedEvent(schemaName, yamlDataSources.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
-                        .swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = yamlDataSources.isEmpty() ? new HashMap<>()
+                : yamlDataSources.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
+                .swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return new DataSourceAlteredEvent(schemaName, dataSourceConfigurations);
     }
 
     private boolean isRuleChangedEvent(final String schemaName, final String eventPath) {
