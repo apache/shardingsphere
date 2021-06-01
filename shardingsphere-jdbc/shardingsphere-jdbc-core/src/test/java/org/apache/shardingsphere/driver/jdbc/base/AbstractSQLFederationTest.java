@@ -32,17 +32,17 @@ public abstract class AbstractSQLFederationTest {
     
     private static final Map<String, DataSource> ACTUAL_DATA_SOURCES = new HashMap<>();
     
-    private static final String INIT_CALCITE_DATABASE_0 = "sql/jdbc_init_calcite_0.sql";
+    private static final String INIT_FEDERATE_DATABASE_0 = "sql/jdbc_init_federate_0.sql";
     
-    private static final String INIT_CALCITE_DATABASE_1 = "sql/jdbc_init_calcite_1.sql";
+    private static final String INIT_FEDERATE_DATABASE_1 = "sql/jdbc_init_federate_1.sql";
 
-    private static final String INIT_CALCITE_DATABASE_2 = "sql/jdbc_init_calcite_1.sql";
+    private static final String INIT_FEDERATE_DATABASE_2 = "sql/jdbc_init_federate_1.sql";
 
     @BeforeClass
     public static synchronized void initializeDataSource() throws SQLException {
-        createDataSources("calcite_jdbc_0", INIT_CALCITE_DATABASE_0);
-        createDataSources("calcite_jdbc_1", INIT_CALCITE_DATABASE_1);
-        createDataSources("calcite_jdbc_2", INIT_CALCITE_DATABASE_2);
+        createDataSources("federate_jdbc_0", INIT_FEDERATE_DATABASE_0);
+        createDataSources("federate_jdbc_1", INIT_FEDERATE_DATABASE_1);
+        createDataSources("federate_jdbc_2", INIT_FEDERATE_DATABASE_2);
     }
     
     private static void createDataSources(final String dataSourceName, final String initSql) throws SQLException {

@@ -15,18 +15,7 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order_calcite;
-DELETE FROM t_user_info;
-DELETE FROM t_order_calcite_sharding_0;
-DELETE FROM t_order_calcite_sharding_1;
-INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 11, 'init');
-
-INSERT INTO t_user_info VALUES(0, 'description0');
-INSERT INTO t_user_info VALUES(1, 'description1');
-INSERT INTO t_user_info VALUES(2, 'description2');
-INSERT INTO t_user_info VALUES(3, 'description3');
-INSERT INTO t_order_calcite_sharding_0 VALUES(1010, 10, 'init');
-INSERT INTO t_order_calcite_sharding_1 VALUES(1011, 11, 'init');
-INSERT INTO t_order_calcite_sharding_0 VALUES(1100, 10, 'init');
-INSERT INTO t_order_calcite_sharding_1 VALUES(1101, 11, 'init');
+CREATE TABLE IF NOT EXISTS t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_user_info (user_id INT NOT NULL,  information VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE IF NOT EXISTS t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
+CREATE TABLE IF NOT EXISTS t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));

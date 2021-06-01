@@ -42,16 +42,16 @@ public abstract class AbstractShardingSphereDataSourceForFederateTest extends Ab
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("calcite_jdbc_0", "calcite_jdbc_1", "calcite_jdbc_2");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("federate_jdbc_0", "federate_jdbc_1", "federate_jdbc_2");
     
-    private static final String CONFIG_CALCITE = "config/config-calcite.yaml";
+    private static final String CONFIG_FEDERATE = "config/config-federate.yaml";
     
     @BeforeClass
-    public static void initCalciteDataSource() throws IOException, SQLException {
+    public static void initFederateDataSource() throws IOException, SQLException {
         if (null != dataSource) {
             return;
         }
-        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_CALCITE));
+        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_FEDERATE));
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
@@ -63,12 +63,12 @@ public abstract class AbstractShardingSphereDataSourceForFederateTest extends Ab
         try {
             ShardingSphereConnection conn = dataSource.getConnection();
             Map<String, DataSource> dataSourceMap = conn.getDataSourceMap();
-            Connection database0 = dataSourceMap.get("calcite_jdbc_0").getConnection();
-            Connection database1 = dataSourceMap.get("calcite_jdbc_1").getConnection();
-            Connection database2 = dataSourceMap.get("calcite_jdbc_2").getConnection();
-            RunScript.execute(database0, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/calcite_data_0.sql"))));
-            RunScript.execute(database1, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/calcite_data_1.sql"))));
-            RunScript.execute(database2, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/calcite_data_2.sql"))));
+            Connection database0 = dataSourceMap.get("federate_jdbc_0").getConnection();
+            Connection database1 = dataSourceMap.get("federate_jdbc_1").getConnection();
+            Connection database2 = dataSourceMap.get("federate_jdbc_2").getConnection();
+            RunScript.execute(database0, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/federate_data_0.sql"))));
+            RunScript.execute(database1, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/federate_data_1.sql"))));
+            RunScript.execute(database2, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/federate_data_2.sql"))));
             conn.close();
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);

@@ -32,42 +32,42 @@ import static org.junit.Assert.assertTrue;
 public final class FederateStatementTest extends AbstractShardingSphereDataSourceForFederateTest {
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES =
-            "select o.*, i.* from t_order_calcite o, t_order_item_calcite i "
+            "select o.*, i.* from t_order_federate o, t_order_item_federate i "
             + "where o.order_id = 1000 and i.item_id = 100000";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES =
-            "select t_order_calcite.*, t_order_item_calcite_sharding.* from t_order_calcite, "
-                    + "t_order_item_calcite_sharding where t_order_calcite.order_id = "
-                    + "t_order_item_calcite_sharding.item_id";
+            "select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, "
+                    + "t_order_item_federate_sharding where t_order_federate.order_id = "
+                    + "t_order_item_federate_sharding.item_id";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS = "select o.*, i.* from"
-            + " t_order_calcite o, t_order_item_calcite_sharding i where o.order_id = i.item_id";
+            + " t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_REWRITE =
-            "select t_order_calcite.*, t_order_item_calcite_sharding.* from "
-                    + "t_order_calcite, t_order_item_calcite_sharding "
-                    + "where t_order_calcite.order_id = t_order_item_calcite_sharding.item_id "
-                    + "AND t_order_item_calcite_sharding.remarks = 't_order_item_calcite_sharding'";
+            "select t_order_federate.*, t_order_item_federate_sharding.* from "
+                    + "t_order_federate, t_order_item_federate_sharding "
+                    + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
+                    + "AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding'";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ORDER_BY =
-            "select t_order_calcite.* from t_order_calcite, t_order_item_calcite_sharding "
-                    + "where t_order_calcite.order_id = t_order_item_calcite_sharding.item_id "
-                    + "ORDER BY t_order_item_calcite_sharding.user_id";
+            "select t_order_federate.* from t_order_federate, t_order_item_federate_sharding "
+                    + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
+                    + "ORDER BY t_order_item_federate_sharding.user_id";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT =
-            "select t_user_encrypt_calcite.user_id, t_user_encrypt_calcite.pwd, t_user_info.information from t_user_encrypt_calcite, t_user_info "
-            + "where t_user_encrypt_calcite.user_id = t_user_info.user_id ";
+            "select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info "
+            + "where t_user_encrypt_federate.user_id = t_user_info.user_id ";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_WITH_ENCRYPT =
-            "select t_user_encrypt_calcite_sharding.user_id, t_user_encrypt_calcite_sharding.pwd, t_user_info.information from t_user_encrypt_calcite_sharding, t_user_info "
-                    + "where t_user_encrypt_calcite_sharding.user_id = t_user_info.user_id ";
+            "select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info "
+                    + "where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id ";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_TWO_SHARDING_TABLES =
-            "select o.order_id_sharding, i.order_id from t_order_calcite_sharding o, t_order_item_calcite_sharding i "
+            "select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i "
                     + "where o.order_id_sharding = i.item_id";
 
     @Test
-    public void assertQueryWithCalciteInSingleTables() throws SQLException {
+    public void assertQueryWithFederateInSingleTables() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES);
         assertNotNull(resultSet);
@@ -83,7 +83,7 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
     }
 
     @Test
-    public void assertQueryWithCalciteInSingleAndShardingTable() throws SQLException {
+    public void assertQueryWithFederateInSingleAndShardingTable() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES);
         assertNotNull(resultSet);
@@ -103,7 +103,7 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
     }
 
     @Test
-    public void assertQueryWithCalciteInSingleAndShardingTableWithAlias() throws SQLException {
+    public void assertQueryWithFederateInSingleAndShardingTableWithAlias() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS);
         assertNotNull(resultSet);
@@ -123,7 +123,7 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
     }
 
     @Test
-    public void assertQueryWithCalciteInSingleAndShardingTableRewrite() throws SQLException {
+    public void assertQueryWithFederateInSingleAndShardingTableRewrite() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_REWRITE);
         assertNotNull(resultSet);
@@ -143,7 +143,7 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
     }
 
     @Test
-    public void assertQueryWithCalciteInSingleAndShardingTableOrderBy() throws SQLException {
+    public void assertQueryWithFederateInSingleAndShardingTableOrderBy() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ORDER_BY);
         assertNotNull(resultSet);
@@ -159,7 +159,7 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
     }
 
     @Test
-    public void assertQueryWithCalciteInSingleTablesWithEncryptRule() throws SQLException {
+    public void assertQueryWithFederateInSingleTablesWithEncryptRule() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT);
         assertNotNull(resultSet);
@@ -183,7 +183,7 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
     }
 
     @Test
-    public void assertQueryWithCalciteInSingleAndShardingTablesWithEncryptRule() throws SQLException {
+    public void assertQueryWithFederateInSingleAndShardingTablesWithEncryptRule() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_WITH_ENCRYPT);
         assertNotNull(resultSet);
@@ -207,7 +207,7 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
     }
 
     @Test
-    public void assertQueryWithCalciteBetweenTwoShardingTables() throws SQLException {
+    public void assertQueryWithFederateBetweenTwoShardingTables() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_TWO_SHARDING_TABLES);
         assertNotNull(resultSet);

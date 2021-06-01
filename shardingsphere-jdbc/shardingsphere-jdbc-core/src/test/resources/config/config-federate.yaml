@@ -18,20 +18,20 @@
 rules:
   - !SHARDING
     tables:
-      t_order_item_calcite_sharding:
-        actualDataNodes: calcite_ds.t_order_item_calcite_sharding_${0..1}
+      t_order_item_federate_sharding:
+        actualDataNodes: federate_ds.t_order_item_federate_sharding_${0..1}
         tableStrategy:
           standard:
             shardingColumn: item_id
             shardingAlgorithmName: table_inline_item_id
-      t_user_encrypt_calcite_sharding:
-        actualDataNodes: calcite_ds.t_user_encrypt_calcite_sharding_${0..1}
+      t_user_encrypt_federate_sharding:
+        actualDataNodes: federate_ds.t_user_encrypt_federate_sharding_${0..1}
         tableStrategy:
           standard:
             shardingColumn: user_id
             shardingAlgorithmName: table_inline_user_id
-      t_order_calcite_sharding:
-        actualDataNodes: calcite_jdbc_0.t_order_calcite_sharding_${0..1}
+      t_order_federate_sharding:
+        actualDataNodes: federate_jdbc_0.t_order_federate_sharding_${0..1}
         tableStrategy:
           standard:
             shardingColumn: order_id_sharding
@@ -40,15 +40,15 @@ rules:
       table_inline_item_id:
         type: INLINE
         props:
-          algorithm-expression: t_order_item_calcite_sharding_${item_id % 2}
+          algorithm-expression: t_order_item_federate_sharding_${item_id % 2}
       table_inline_user_id:
         type: INLINE
         props:
-          algorithm-expression: t_user_encrypt_calcite_sharding_${user_id % 2}
+          algorithm-expression: t_user_encrypt_federate_sharding_${user_id % 2}
       table_inline_order_id:
         type: INLINE
         props:
-          algorithm-expression: t_order_calcite_sharding_${order_id_sharding % 2}
+          algorithm-expression: t_order_federate_sharding_${order_id_sharding % 2}
   - !ENCRYPT
     encryptors:
       encryptor_aes:
@@ -58,13 +58,13 @@ rules:
       test:
         type: test
     tables:
-      t_user_encrypt_calcite:
+      t_user_encrypt_federate:
         columns:
           pwd:
             plainColumn: plain_pwd
             cipherColumn: cipher_pwd
             encryptorName: test
-      t_user_encrypt_calcite_sharding:
+      t_user_encrypt_federate_sharding:
         columns:
           pwd:
             plainColumn: plain_pwd
@@ -72,11 +72,11 @@ rules:
             encryptorName: test
   - !READWRITE_SPLITTING
     dataSources:
-      calcite_ds:
+      federate_ds:
         writeDataSourceName:
-          - calcite_jdbc_1
+          - federate_jdbc_1
         readDataSourceNames:
-          - calcite_jdbc_2
+          - federate_jdbc_2
         loadBalancerName: roundRobin
     loadBalancers:
       roundRobin:
