@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParserFacade
+org.apache.shardingsphere.sql.parser.postgresql.parser.OpenGaussParserFacade
