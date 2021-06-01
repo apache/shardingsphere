@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.impl;
+package org.apache.shardingsphere.governance.core.registry.state.watcher;
 
 import org.apache.shardingsphere.governance.core.registry.ResourceState;
 import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.readwritesplitting.DisabledStateChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.readwritesplitting.PrimaryStateChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
+import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.state.event.PrimaryStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.state.service.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 

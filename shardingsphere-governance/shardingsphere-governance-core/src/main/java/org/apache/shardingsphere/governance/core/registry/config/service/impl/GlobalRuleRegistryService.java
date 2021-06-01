@@ -23,7 +23,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.registry.config.service.GlobalRegistryService;
 import org.apache.shardingsphere.governance.core.registry.config.service.node.GlobalNode;
-import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
+import org.apache.shardingsphere.governance.core.registry.state.service.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;

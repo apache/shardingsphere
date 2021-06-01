@@ -30,8 +30,8 @@ import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata
 import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.readwritesplitting.DisabledStateChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.readwritesplitting.PrimaryStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.state.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.schema.SchemaChangedEvent;

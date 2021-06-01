@@ -27,8 +27,8 @@ import org.apache.shardingsphere.governance.core.registry.config.service.impl.Pr
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.service.process.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.service.schema.SchemaRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.state.DataSourceStatusRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
+import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
+import org.apache.shardingsphere.governance.core.registry.state.service.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;

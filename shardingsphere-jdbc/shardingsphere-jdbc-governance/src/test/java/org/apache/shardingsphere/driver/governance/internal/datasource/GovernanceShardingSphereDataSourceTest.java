@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataC
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.readwritesplitting.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;

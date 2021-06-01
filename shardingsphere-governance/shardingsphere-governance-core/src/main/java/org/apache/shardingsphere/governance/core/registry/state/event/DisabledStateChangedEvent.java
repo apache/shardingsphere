@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.event.readwritesplitting;
+package org.apache.shardingsphere.governance.core.registry.state.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +23,13 @@ import org.apache.shardingsphere.governance.core.registry.watcher.event.Governan
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 
 /**
- * Primary state event.
+ * Disabled state event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PrimaryStateChangedEvent implements GovernanceEvent {
+public final class DisabledStateChangedEvent implements GovernanceEvent {
     
     private final GovernanceSchema governanceSchema;
     
-    private final String primaryDataSourceName;
+    private final boolean disabled;
 }

@@ -15,32 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.impl;
+package org.apache.shardingsphere.governance.core.registry.state.watcher;
 
 import org.apache.shardingsphere.governance.core.registry.ResourceState;
+import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
+import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
+import org.apache.shardingsphere.governance.core.registry.state.service.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.state.StateEvent;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.state.StateType;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public final class TerminalStateChangedWatcherTest {
+/**
+ * Terminal state changed watcher.
+ */
+public final class TerminalStateChangedWatcher implements GovernanceWatcher<StateEvent> {
     
-    @Test
-    public void assertCreateEventWhenEnabled() {
-        Optional<StateEvent> actual = new TerminalStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds", "", Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertFalse(actual.get().isOn());
+    @Override
+    public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
+        return Collections.singleton(StatesNode.getProxyNodePath(GovernanceInstance.getInstance().getId()));
     }
     
-    @Test
-    public void assertCreateEventWhenDisabled() {
-        Optional<StateEvent> actual = new TerminalStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds", ResourceState.DISABLED.name(), Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertTrue(actual.get().isOn());
+    @Override
+    public Collection<Type> getWatchingTypes() {
+        return Collections.singleton(Type.UPDATED);
+    }
+    
+    @Override
+    public Optional<StateEvent> createGovernanceEvent(final DataChangedEvent event) {
+        return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, ResourceState.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

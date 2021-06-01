@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.service.state;
+package org.apache.shardingsphere.governance.core.registry.state.service;
 
 import org.apache.shardingsphere.governance.core.registry.ResourceState;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
