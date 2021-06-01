@@ -19,23 +19,30 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.ConstraintAvailable;
+import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Alter table statement context.
  */
 @Getter
-public final class AlterTableStatementContext extends CommonSQLStatementContext<AlterTableStatement> implements TableAvailable {
+public final class AlterTableStatementContext extends CommonSQLStatementContext<AlterTableStatement> implements TableAvailable, IndexAvailable, ConstraintAvailable {
     
     private final TablesContext tablesContext;
     
@@ -59,11 +66,29 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext<
         for (ModifyColumnDefinitionSegment each : getSqlStatement().getModifyColumnDefinitions()) {
             result.addAll(each.getColumnDefinition().getReferencedTables());
         }
-        for (ConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
-            if (each.getReferencedTable().isPresent()) {
-                result.add(each.getReferencedTable().get());
-            }
+        for (AddConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
+            each.getConstraintDefinition().getReferencedTable().ifPresent(result::add);
         }
+        return result;
+    }
+    
+    @Override
+    public Collection<IndexSegment> getIndexes() {
+        Collection<IndexSegment> result = new LinkedList<>();
+        for (AddConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
+            each.getConstraintDefinition().getIndexName().ifPresent(result::add);
+        }
+        return result;
+    }
+    
+    @Override
+    public Collection<ConstraintSegment> getConstraints() {
+        List<ConstraintSegment> result = new LinkedList<>();
+        for (AddConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
+            each.getConstraintDefinition().getConstraintName().ifPresent(result::add);
+        }
+        getSqlStatement().getValidateConstraintDefinitions().stream().map(ValidateConstraintDefinitionSegment::getConstraintName).forEach(result::add);
+        getSqlStatement().getDropConstraintDefinitions().stream().map(DropConstraintDefinitionSegment::getConstraintName).forEach(result::add);
         return result;
     }
 }

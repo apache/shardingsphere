@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.event.rule;
+package org.apache.shardingsphere.infra.binder.type;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 
 import java.util.Collection;
 
 /**
- * Global rule configurations event.
+ * Constraint available.
  */
-@RequiredArgsConstructor
-@Getter
-public final class GlobalRuleConfigurationsChangedEvent implements GovernanceEvent {
+public interface ConstraintAvailable {
     
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    /**
+     * Get constraint segments.
+     *
+     * @return constraint segments
+     */
+    Collection<ConstraintSegment> getConstraints();
 }

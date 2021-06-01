@@ -15,7 +15,23 @@
  * limitations under the License.
  */
 
-CREATE TABLE IF NOT EXISTS t_order_calcite (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
-CREATE TABLE IF NOT EXISTS t_user_info (user_id INT NOT NULL,  information VARCHAR(45) NULL, PRIMARY KEY (user_id));
-CREATE TABLE IF NOT EXISTS t_order_calcite_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
-CREATE TABLE IF NOT EXISTS t_order_calcite_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+
+/**
+ * Constraint segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ConstraintSegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final IdentifierValue identifier;
+}

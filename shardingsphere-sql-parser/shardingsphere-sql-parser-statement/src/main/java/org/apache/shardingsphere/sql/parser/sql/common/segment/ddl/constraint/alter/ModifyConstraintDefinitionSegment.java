@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.event.rule;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 
 /**
- * Global rule configurations event.
+ * Modify constraint definition segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class GlobalRuleConfigurationsChangedEvent implements GovernanceEvent {
+public final class ModifyConstraintDefinitionSegment implements AlterDefinitionSegment {
     
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final ConstraintSegment constraintName;
 }

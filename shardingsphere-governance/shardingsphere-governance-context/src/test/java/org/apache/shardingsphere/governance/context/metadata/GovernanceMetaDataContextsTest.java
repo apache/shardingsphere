@@ -202,7 +202,7 @@ public final class GovernanceMetaDataContextsTest {
 
     @Test
     public void assertGlobalRuleConfigurationsChanged() {
-        GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent("", getChangedGlobalRuleConfigurations());
+        GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
         governanceMetaDataContexts.renew(event);
         assertThat(governanceMetaDataContexts.getGlobalRuleMetaData(), not(globalRuleMetaData));
     }

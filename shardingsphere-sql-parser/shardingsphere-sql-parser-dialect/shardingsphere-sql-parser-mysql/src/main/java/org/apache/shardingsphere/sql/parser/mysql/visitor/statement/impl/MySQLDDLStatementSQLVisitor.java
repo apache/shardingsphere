@@ -25,6 +25,8 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddTableConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterCheckContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterFunctionContext;
@@ -96,6 +98,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.positi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnFirstPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
@@ -254,8 +260,10 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
                 } else if (each instanceof DropColumnDefinitionSegment) {
                     result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
-                } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getAddConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                } else if (each instanceof AddConstraintDefinitionSegment) {
+                    result.getAddConstraintDefinitions().add((AddConstraintDefinitionSegment) each);
+                } else if (each instanceof DropConstraintDefinitionSegment) {
+                    result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
                 } else if (each instanceof RenameTableDefinitionSegment) {
                     result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 }
@@ -271,6 +279,11 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     @Override
+    public ASTNode visitAlterConstraint(final AlterConstraintContext ctx) {
+        return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintName()));
+    }
+    
+    @Override
     public ASTNode visitAlterList(final AlterListContext ctx) {
         CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
         if (ctx.alterListItem().isEmpty()) {
@@ -280,6 +293,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             if (each instanceof AddColumnContext) {
                 result.getValue().add((AddColumnDefinitionSegment) visit(each));
             }
+            if (each instanceof AlterConstraintContext || each instanceof AlterCheckContext) {
+                result.getValue().add((AlterDefinitionSegment) visit(each));
+            }
             if (each instanceof ChangeColumnContext) {
                 result.getValue().add(generateModifyColumnDefinitionSegment((ChangeColumnContext) each));
             }
@@ -288,18 +304,30 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             }
             if (each instanceof AlterTableDropContext) {
                 AlterTableDropContext alterTableDrop = (AlterTableDropContext) each;
-                if (null == alterTableDrop.KEY() && null == alterTableDrop.CHECK() && null == alterTableDrop.CONSTRAINT() && null == alterTableDrop.keyOrIndex()) {
+                if (null != alterTableDrop.CHECK() || null != alterTableDrop.CONSTRAINT()) {
+                    return new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(alterTableDrop.identifier()));
+                } else if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
                     result.getValue().add(generateDropColumnDefinitionSegment(alterTableDrop));
                 }
             }
             if (each instanceof AddTableConstraintContext) {
-                result.getValue().add((ConstraintDefinitionSegment) visit(((AddTableConstraintContext) each).tableConstraintDef()));
+                result.getValue().add((AddConstraintDefinitionSegment) visit(each));
             }
             if (each instanceof AlterRenameTableContext) {
                 result.getValue().add((RenameTableDefinitionSegment) visit(each));
             }
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitAddTableConstraint(final AddTableConstraintContext ctx) {
+        return new AddConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintDefinitionSegment) visit(ctx.tableConstraintDef()));
+    }
+    
+    @Override
+    public ASTNode visitAlterCheck(final AlterCheckContext ctx) {
+        return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintName()));
     }
     
     @Override
@@ -385,6 +413,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitTableConstraintDef(final TableConstraintDefContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.constraintClause() && null != ctx.constraintClause().constraintName()) {
+            result.setConstraintName((ConstraintSegment) visit(ctx.constraintClause().constraintName()));
+        }
         if (null != ctx.KEY() && null != ctx.PRIMARY()) {
             result.getPrimaryKeyColumns().addAll(getKeyColumnsFromKeyListWithExpression(ctx.keyListWithExpression()));
             return result;

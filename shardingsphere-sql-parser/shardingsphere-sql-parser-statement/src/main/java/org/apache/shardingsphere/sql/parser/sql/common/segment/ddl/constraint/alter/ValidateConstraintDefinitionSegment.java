@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter;
 
-import org.apache.calcite.DataContext;
-import org.apache.calcite.rex.RexNode;
-
-import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 
 /**
- * Federate execute sql generator.
+ * Validate constraint definition segment.
  */
-public final class FederateExecuteSQLGenerator {
+@RequiredArgsConstructor
+@Getter
+public final class ValidateConstraintDefinitionSegment implements AlterDefinitionSegment {
     
-    public FederateExecuteSQLGenerator(final DataContext root, final List<RexNode> filters, final int[] projects) {
-        // TODO
-    }
+    private final int startIndex;
     
-    /**
-     * Create sql.
-     *
-     * @param table table
-     * @return sql
-     */
-    public String generate(final String table) {
-        // TODO
-        return String.format("SELECT * FROM %s", table);
-    }
+    private final int stopIndex;
+    
+    private final ConstraintSegment constraintName;
 }

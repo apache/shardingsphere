@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.event.rule;
+DELETE FROM t_order_federate;
+DELETE FROM t_user_info;
+DELETE FROM t_order_federate_sharding_0;
+DELETE FROM t_order_federate_sharding_1;
+INSERT INTO t_order_federate VALUES(1000, 10, 'init');
+INSERT INTO t_order_federate VALUES(1001, 11, 'init');
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
-
-/**
- * Global rule configurations event.
- */
-@RequiredArgsConstructor
-@Getter
-public final class GlobalRuleConfigurationsChangedEvent implements GovernanceEvent {
-    
-    private final Collection<RuleConfiguration> ruleConfigurations;
-}
+INSERT INTO t_user_info VALUES(0, 'description0');
+INSERT INTO t_user_info VALUES(1, 'description1');
+INSERT INTO t_user_info VALUES(2, 'description2');
+INSERT INTO t_user_info VALUES(3, 'description3');
+INSERT INTO t_order_federate_sharding_0 VALUES(1010, 10, 'init');
+INSERT INTO t_order_federate_sharding_1 VALUES(1011, 11, 'init');
+INSERT INTO t_order_federate_sharding_0 VALUES(1100, 10, 'init');
+INSERT INTO t_order_federate_sharding_1 VALUES(1101, 11, 'init');

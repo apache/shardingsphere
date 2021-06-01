@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.optimize;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.RelOptPlanner;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 @RequiredArgsConstructor
 public final class ShardingSphereOptimizer {
     
+    @Getter
     private final OptimizeContext context;
     
     /**

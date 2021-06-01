@@ -221,7 +221,7 @@ virtualColumnDefinition
     ;
 
 outOfLineConstraint
-    : (CONSTRAINT ignoredIdentifier)?
+    : (CONSTRAINT constraintName)?
     (UNIQUE columnNames
     | primaryKey columnNames 
     | FOREIGN KEY columnNames referencesClause
@@ -232,7 +232,7 @@ outOfLineConstraint
 outOfLineRefConstraint
     : SCOPE FOR LP_ lobItem RP_ IS tableName
     | REF LP_ lobItem RP_ WITH ROWID
-    | (CONSTRAINT ignoredIdentifier)? FOREIGN KEY lobItemList referencesClause constraintState?
+    | (CONSTRAINT constraintName)? FOREIGN KEY lobItemList referencesClause constraintState?
     ;
 
 createIndexSpecification
@@ -380,7 +380,7 @@ modifyConstraintClause
     ;
 
 constraintWithName
-    : CONSTRAINT ignoredIdentifier
+    : CONSTRAINT constraintName
     ;
 
 constraintOption
@@ -398,7 +398,7 @@ renameConstraintClause
 dropConstraintClause
     : DROP
     (
-    constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)? | (CONSTRAINT ignoredIdentifier CASCADE?)
+    constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)? | (CONSTRAINT constraintName CASCADE?)
     ) 
     ;
 

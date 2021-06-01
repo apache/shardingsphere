@@ -44,6 +44,9 @@ public final class ExpectedConstraintDefinition extends AbstractExpectedSQLSegme
     @XmlElement(name = "index-column")
     private List<ExpectedColumn> indexColumns = new LinkedList<>();
     
+    @XmlAttribute(name = "constraint-name")
+    private String constraintName;
+    
     @XmlAttribute(name = "index-name")
     private String indexName;
 }

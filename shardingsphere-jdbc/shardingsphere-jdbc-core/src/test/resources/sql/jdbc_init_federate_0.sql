@@ -15,21 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.event.rule;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
-
-/**
- * Global rule configurations event.
- */
-@RequiredArgsConstructor
-@Getter
-public final class GlobalRuleConfigurationsChangedEvent implements GovernanceEvent {
-    
-    private final Collection<RuleConfiguration> ruleConfigurations;
-}
+CREATE TABLE IF NOT EXISTS t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_user_info (user_id INT NOT NULL,  information VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE IF NOT EXISTS t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
+CREATE TABLE IF NOT EXISTS t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));

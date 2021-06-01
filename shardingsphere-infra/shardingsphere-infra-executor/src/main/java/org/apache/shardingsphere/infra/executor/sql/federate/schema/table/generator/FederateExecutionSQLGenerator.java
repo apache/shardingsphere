@@ -15,18 +15,34 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order_calcite;
-DELETE FROM t_user_info;
-DELETE FROM t_order_calcite_sharding_0;
-DELETE FROM t_order_calcite_sharding_1;
-INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 11, 'init');
+package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator;
 
-INSERT INTO t_user_info VALUES(0, 'description0');
-INSERT INTO t_user_info VALUES(1, 'description1');
-INSERT INTO t_user_info VALUES(2, 'description2');
-INSERT INTO t_user_info VALUES(3, 'description3');
-INSERT INTO t_order_calcite_sharding_0 VALUES(1010, 10, 'init');
-INSERT INTO t_order_calcite_sharding_1 VALUES(1011, 11, 'init');
-INSERT INTO t_order_calcite_sharding_0 VALUES(1100, 10, 'init');
-INSERT INTO t_order_calcite_sharding_1 VALUES(1101, 11, 'init');
+import lombok.RequiredArgsConstructor;
+import org.apache.calcite.DataContext;
+import org.apache.calcite.rex.RexNode;
+
+import java.util.List;
+
+/**
+ * Federate execution sql generator.
+ */
+@RequiredArgsConstructor
+public final class FederateExecutionSQLGenerator {
+    
+    private final DataContext root;
+    
+    private final List<RexNode> filters;
+    
+    private final int[] projects;
+    
+    /**
+     * Generate sql.
+     *
+     * @param table table
+     * @return sql
+     */
+    public String generate(final String table) {
+        // TODO
+        return String.format("SELECT * FROM %s", table);
+    }
+}
