@@ -75,7 +75,7 @@
 #      shardingAlgorithmName: database_inline
 #  defaultTableStrategy:
 #    none:
-#  
+#
 #  shardingAlgorithms:
 #    database_inline:
 #      type: INLINE
@@ -89,7 +89,7 @@
 #      type: INLINE
 #      props:
 #        algorithm-expression: t_order_item_${order_id % 2}
-#  
+#
 #  keyGenerators:
 #    snowflake:
 #      type: SNOWFLAKE

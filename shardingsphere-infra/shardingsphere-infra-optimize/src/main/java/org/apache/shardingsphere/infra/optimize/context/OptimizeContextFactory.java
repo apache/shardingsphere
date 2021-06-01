@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
@@ -117,7 +118,8 @@ public final class OptimizeContextFactory {
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.ORACLE_12.name());
             return;
         }
-        if (databaseType instanceof PostgreSQLDatabaseType) {
+        if (databaseType instanceof PostgreSQLDatabaseType
+            || databaseType instanceof OpenGaussDatabaseType) {
             // TODO No suitable type of Lex and conformance
             properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.DEFAULT.name());

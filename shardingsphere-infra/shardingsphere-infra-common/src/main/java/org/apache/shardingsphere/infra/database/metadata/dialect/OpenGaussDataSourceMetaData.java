@@ -42,7 +42,7 @@ public final class OpenGaussDataSourceMetaData implements DataSourceMetaData {
     private final String schema;
     
     // TODO fix OpenGauss's url pattern
-    private final Pattern pattern = Pattern.compile("jdbc:openguass://([\\w\\-\\.]+):?([0-9]*),?.*?/([\\w\\-]+)?\\S*", Pattern.CASE_INSENSITIVE);
+    private final Pattern pattern = Pattern.compile("jdbc:opengauss://([\\w\\-\\.]+):?([0-9]*),?.*?/([\\w\\-]+)?\\S*", Pattern.CASE_INSENSITIVE);
     
     public OpenGaussDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);

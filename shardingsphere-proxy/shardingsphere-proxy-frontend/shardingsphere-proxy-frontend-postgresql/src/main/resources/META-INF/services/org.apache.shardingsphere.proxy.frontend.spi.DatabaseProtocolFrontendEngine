@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLFrontendEngine
+org.apache.shardingsphere.proxy.frontend.postgresql.OpenGaussFrontendEngine

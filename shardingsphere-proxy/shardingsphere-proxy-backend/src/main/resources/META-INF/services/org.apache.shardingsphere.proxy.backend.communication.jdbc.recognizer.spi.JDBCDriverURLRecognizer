@@ -17,6 +17,7 @@
 
 org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.MySQLRecognizer
 org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.PostgreSQLRecognizer
+org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.OpenGaussRecognizer
 org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.OracleRecognizer
 org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.SQLServerRecognizer
 org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl.H2Recognizer

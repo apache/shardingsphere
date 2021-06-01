@@ -18,5 +18,6 @@
 org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.MySQLTableMetaDataLoader
 org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.OracleTableMetaDataLoader
 org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.PostgreSQLTableMetaDataLoader
+org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.OpenGaussTableMetaDataLoader
 org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.SQLServerTableMetaDataLoader
 org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.H2TableMetaDataLoader
