@@ -17,22 +17,26 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.rex.RexNode;
 
 import java.util.List;
 
 /**
- * Federate execute sql generator.
+ * Federate execution sql generator.
  */
-public final class FederateExecuteSQLGenerator {
+@RequiredArgsConstructor
+public final class FederateExecutionSQLGenerator {
     
-    public FederateExecuteSQLGenerator(final DataContext root, final List<RexNode> filters, final int[] projects) {
-        // TODO
-    }
+    private final DataContext root;
+    
+    private final List<RexNode> filters;
+    
+    private final int[] projects;
     
     /**
-     * Create sql.
+     * Generate sql.
      *
      * @param table table
      * @return sql
