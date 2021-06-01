@@ -46,7 +46,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseSta
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CompoundStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConstraintClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateEventContext;
@@ -281,7 +280,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitAlterConstraint(final AlterConstraintContext ctx) {
-        return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintName().identifier()));
+        return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintName()));
     }
     
     @Override
@@ -312,13 +311,18 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                 }
             }
             if (each instanceof AddTableConstraintContext) {
-                result.getValue().add((ConstraintDefinitionSegment) visit(((AddTableConstraintContext) each).tableConstraintDef()));
+                result.getValue().add((AddConstraintDefinitionSegment) visit(each));
             }
             if (each instanceof AlterRenameTableContext) {
                 result.getValue().add((RenameTableDefinitionSegment) visit(each));
             }
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitAddTableConstraint(final AddTableConstraintContext ctx) {
+        return new AddConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintDefinitionSegment) visit(ctx.tableConstraintDef()));
     }
     
     @Override
