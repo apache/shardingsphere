@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 /**
- * Resource status.
+ * Resource state.
  */
-public enum ResourceStatus {
+public enum ResourceState {
     
     /**
      * Disabled state.
