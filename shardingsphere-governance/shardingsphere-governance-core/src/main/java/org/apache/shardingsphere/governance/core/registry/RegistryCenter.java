@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.lock.impl.LockRegistryService;
+import org.apache.shardingsphere.governance.core.lock.service.LockRegistryService;
 import org.apache.shardingsphere.governance.core.registry.cache.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
-import org.apache.shardingsphere.governance.core.registry.service.config.impl.DataSourceRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.config.impl.GlobalRuleRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.config.impl.PropertiesRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.process.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.service.schema.SchemaRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.state.DataSourceStatusRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourceRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.process.service.ProcessRegistrySubscriber;
+import org.apache.shardingsphere.governance.core.registry.metadata.service.SchemaRegistryService;
+import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
+import org.apache.shardingsphere.governance.core.registry.state.service.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;

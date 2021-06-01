@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.lock;
 
-import org.apache.shardingsphere.governance.core.lock.impl.LockRegistryService;
+import org.apache.shardingsphere.governance.core.lock.service.LockRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;

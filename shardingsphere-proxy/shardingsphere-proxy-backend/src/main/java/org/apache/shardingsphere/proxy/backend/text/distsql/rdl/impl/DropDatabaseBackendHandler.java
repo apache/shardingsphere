@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.MetaDataDroppedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataDroppedEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabas
 public final class DropDatabaseBackendHandler implements TextProtocolBackendHandler {
     
     private final DropDatabaseStatement sqlStatement;
-
+    
     private final BackendConnection backendConnection;
     
     @Override
@@ -54,7 +54,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
             throw new DBDropExistsException(sqlStatement.getDatabaseName());
         }
     }
-
+    
     private boolean isDropCurrentDatabase(final String databaseName) {
         return !Strings.isNullOrEmpty(backendConnection.getSchemaName())
                 && backendConnection.getSchemaName().equals(databaseName);

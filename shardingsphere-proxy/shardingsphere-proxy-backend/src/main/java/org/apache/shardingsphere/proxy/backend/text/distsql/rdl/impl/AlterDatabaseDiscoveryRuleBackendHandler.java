@@ -24,7 +24,7 @@ import org.apache.shardingsphere.dbdiscovery.common.yaml.converter.DatabaseDisco
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -52,11 +52,11 @@ import java.util.stream.Collectors;
  * Alter database discovery rule backend handler.
  */
 public final class AlterDatabaseDiscoveryRuleBackendHandler extends SchemaRequiredBackendHandler<AlterDatabaseDiscoveryRuleStatement> {
-
+    
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
     }
-
+    
     public AlterDatabaseDiscoveryRuleBackendHandler(final AlterDatabaseDiscoveryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
@@ -71,11 +71,11 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends SchemaRequir
         post(schemaName, rules);
         return new UpdateResponseHeader(statement);
     }
-
+    
     private Collection<String> getAlteredRuleNames(final AlterDatabaseDiscoveryRuleStatement statement) {
         return statement.getDatabaseDiscoveryRules().stream().map(DatabaseDiscoveryRuleSegment::getName).collect(Collectors.toList());
     }
-
+    
     private DatabaseDiscoveryRuleConfiguration getDatabaseDiscoveryRuleConfiguration(final String schemaName, final Collection<String> alteredRuleNames) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst();
@@ -91,7 +91,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends SchemaRequir
         checkResources(schemaName, sqlStatement);
         checkDiscoveryType(sqlStatement);
     }
-
+    
     private void checkAlteredRules(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration, final Collection<String> alteredRuleNames) {
         Set<String> existRuleNames = databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistRuleNames = alteredRuleNames.stream()
@@ -100,7 +100,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends SchemaRequir
             throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistRuleNames);
         }
     }
-
+    
     private void checkResources(final String schemaName, final AlterDatabaseDiscoveryRuleStatement statement) {
         Collection<String> resources = new LinkedHashSet<>();
         statement.getDatabaseDiscoveryRules().forEach(each -> resources.addAll(each.getDataSources()));
@@ -109,21 +109,21 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends SchemaRequir
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
     }
-
+    
     private void checkDiscoveryType(final AlterDatabaseDiscoveryRuleStatement statement) {
-        Collection<String> invalidDiscoveryTypes = statement.getDatabaseDiscoveryRules().stream().map(each -> each.getDiscoveryTypeName()).distinct()
+        Collection<String> invalidDiscoveryTypes = statement.getDatabaseDiscoveryRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidDiscoveryTypes.isEmpty()) {
             throw new InvalidDatabaseDiscoveryTypesException(invalidDiscoveryTypes);
         }
     }
-
+    
     private boolean isValidResource(final String schemaName, final String resourceName) {
         return Objects.nonNull(ProxyContext.getInstance().getMetaData(schemaName).getResource())
                 && ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(resourceName);
     }
-
+    
     private YamlDatabaseDiscoveryRuleConfiguration alter(final DatabaseDiscoveryRuleConfiguration ruleConfig, final AlterDatabaseDiscoveryRuleStatement statement) {
         YamlDatabaseDiscoveryRuleConfiguration alterYamlDatabaseDiscoveryRuleConfiguration = DatabaseDiscoveryRuleStatementConverter.convert(statement.getDatabaseDiscoveryRules());
         YamlDatabaseDiscoveryRuleConfiguration result = new YamlRuleConfigurationSwapperEngine()
@@ -135,7 +135,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends SchemaRequir
         result.getDiscoveryTypes().putAll(alterYamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes());
         return result;
     }
-
+    
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {
         ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, rules));
     }

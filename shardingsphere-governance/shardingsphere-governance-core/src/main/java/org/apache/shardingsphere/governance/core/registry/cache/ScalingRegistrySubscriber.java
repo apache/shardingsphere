@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.governance.core.registry.cache;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationCachedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.scaling.StartScalingEvent;
-import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
-import org.apache.shardingsphere.governance.core.registry.service.config.node.SchemaMetadataNode;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationCachedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.SwitchRuleConfigurationEvent;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;

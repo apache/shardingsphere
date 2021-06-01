@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropEncr
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * Drop encrypt rule backend handler.
  */
 public final class DropEncryptRuleBackendHandler extends SchemaRequiredBackendHandler<DropEncryptRuleStatement> {
-
+    
     public DropEncryptRuleBackendHandler(final DropEncryptRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
@@ -70,14 +70,14 @@ public final class DropEncryptRuleBackendHandler extends SchemaRequiredBackendHa
             throw new EncryptRulesNotExistedException(schemaName, notExistedTables);
         }
     }
-
+    
     private void drop(final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration, final Collection<String> droppedTables) {
         for (String each : droppedTables) {
             dropEncryptors(each, yamlEncryptRuleConfiguration);
             yamlEncryptRuleConfiguration.getTables().remove(each);
         }
     }
-
+    
     private void dropEncryptors(final String droppedTable, final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration) {
         yamlEncryptRuleConfiguration.getTables().get(droppedTable).getColumns()
                 .values().forEach(value -> yamlEncryptRuleConfiguration.getEncryptors().remove(value.getEncryptorName()));
