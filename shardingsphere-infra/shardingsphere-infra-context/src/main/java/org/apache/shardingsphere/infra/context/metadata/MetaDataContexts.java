@@ -81,7 +81,7 @@ public interface MetaDataContexts extends Closeable {
     /**
      * Get optimize context factory.
      *
-     * @return calcite context factory
+     * @return optimize context factory
      */
     OptimizeContextFactory getOptimizeContextFactory();
     

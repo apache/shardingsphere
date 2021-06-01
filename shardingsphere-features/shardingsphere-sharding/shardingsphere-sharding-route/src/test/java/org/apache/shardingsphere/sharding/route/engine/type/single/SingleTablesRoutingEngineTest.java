@@ -62,7 +62,7 @@ public final class SingleTablesRoutingEngineTest {
         RouteMapper tableMapper1 = tableMappers.next();
         assertThat(tableMapper1.getActualName(), is("t_order_item"));
         assertThat(tableMapper1.getLogicName(), is("t_order_item"));
-        assertThat(routeContext.isToCalcite(), is(false));
+        assertThat(routeContext.isFederated(), is(false));
     }
     
     @Test
@@ -86,7 +86,7 @@ public final class SingleTablesRoutingEngineTest {
         RouteMapper tableMapper1 = routeUnits.get(1).getTableMappers().iterator().next();
         assertThat(tableMapper1.getActualName(), is("t_order_item"));
         assertThat(tableMapper1.getLogicName(), is("t_order_item"));
-        assertThat(routeContext.isToCalcite(), is(true));
+        assertThat(routeContext.isFederated(), is(true));
     }
     
     @Test

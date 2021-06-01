@@ -58,7 +58,7 @@ public final class SingleTablesRoutingEngine implements ShardingRouteEngine {
         } else {
             fillRouteContext(shardingRule, routeContext, logicTables);
             if (1 < routeContext.getRouteUnits().size()) {
-                routeContext.setToCalcite(true);
+                routeContext.setFederated(true);
             }
         }
     }

@@ -51,8 +51,8 @@ import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.plan.PlannerInitializer;
-import org.apache.shardingsphere.infra.optimize.schema.LogicSchemaMetadatas;
+import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
+import org.apache.shardingsphere.infra.optimize.core.schema.LogicSchemaMetadatas;
 
 import java.util.Collections;
 import java.util.Map;
