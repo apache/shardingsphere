@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.event.invocation;
+package org.apache.shardingsphere.governance.core.registry.process.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

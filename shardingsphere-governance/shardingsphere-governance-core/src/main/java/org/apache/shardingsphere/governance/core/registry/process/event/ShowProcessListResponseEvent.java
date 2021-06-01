@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.event.invocation;
+package org.apache.shardingsphere.governance.core.registry.process.event;
 
+import java.util.Collection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Execute process report event.
+ * Show process list response event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteProcessReportEvent {
+public final class ShowProcessListResponseEvent {
     
-    private final String executionID;
+    private final Collection<String> processListData;
 }
