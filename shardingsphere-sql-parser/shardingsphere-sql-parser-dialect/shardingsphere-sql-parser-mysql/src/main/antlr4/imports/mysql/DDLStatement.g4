@@ -99,7 +99,7 @@ alterListItem
     | ALTER COLUMN? columnInternalRef=identifier (SET DEFAULT (LP_ expr RP_| signedLiteral)| DROP DEFAULT) # alterColumn
     | ALTER INDEX indexName visibility  # alterIndex
     | ALTER CHECK identifier constraintEnforcement  # alterCheck
-    | ALTER CONSTRAINT identifier constraintEnforcement # alterConstraint
+    | ALTER CONSTRAINT constraintName constraintEnforcement # alterConstraint
     | RENAME COLUMN columnInternalRef=identifier TO identifier  # renameColumn
     | RENAME (TO | AS)? tableName # alterRenameTable
     | RENAME keyOrIndex indexName TO indexName  # renameIndex

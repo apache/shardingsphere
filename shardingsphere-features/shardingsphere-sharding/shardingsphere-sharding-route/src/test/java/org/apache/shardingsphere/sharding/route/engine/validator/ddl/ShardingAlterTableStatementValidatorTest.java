@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.Shardi
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -62,7 +63,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         ConstraintDefinitionSegment definitionSegment = new ConstraintDefinitionSegment(0, 0);
         definitionSegment.setReferencedTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_item")));
-        sqlStatement.getAddConstraintDefinitions().add(definitionSegment);
+        sqlStatement.getAddConstraintDefinitions().add(new AddConstraintDefinitionSegment(0, 0, definitionSegment));
         SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
         when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_item"))).thenReturn(false);
         when(shardingRule.isSingleTablesInSameDataSource(Arrays.asList("t_order", "t_order_item"))).thenReturn(true);
@@ -75,7 +76,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         ConstraintDefinitionSegment definitionSegment = new ConstraintDefinitionSegment(0, 0);
         definitionSegment.setReferencedTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_item")));
-        sqlStatement.getAddConstraintDefinitions().add(definitionSegment);
+        sqlStatement.getAddConstraintDefinitions().add(new AddConstraintDefinitionSegment(0, 0, definitionSegment));
         SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
         when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_item"))).thenReturn(false);
         when(shardingRule.isSingleTablesInSameDataSource(Arrays.asList("t_order", "t_order_item"))).thenReturn(false);

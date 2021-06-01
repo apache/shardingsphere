@@ -526,7 +526,7 @@
     
     <alter-table sql-case-id="alter_table_add_primary_key">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint start-index="24" stop-index="66">
+        <add-constraint constraint-name="pk_user_id" start-index="24" stop-index="66">
             <primary-key-column name="user_id" start-index="59" stop-index="65" />
         </add-constraint>
     </alter-table>
@@ -538,7 +538,7 @@
                 <column name="status" />
             </column-definition>
         </add-column>
-        <add-constraint start-index="39" stop-index="115">
+        <add-constraint constraint-name="pk_order_id_user_id_status" start-index="39" stop-index="115">
             <primary-key-column name="order_id" start-index="90" stop-index="97" />
             <primary-key-column name="user_id" start-index="100" stop-index="106" />
             <primary-key-column name="status" start-index="109" stop-index="114" />
@@ -554,7 +554,7 @@
     
     <alter-table sql-case-id="alter_table_add_foreign_key">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <add-constraint start-index="29" stop-index="121">
+        <add-constraint constraint-name="fk_order_id" start-index="29" stop-index="121">
             <referenced-table name="t_order" stop-index="92" start-index="86"/>
         </add-constraint>
     </alter-table>
@@ -842,7 +842,7 @@
     
     <alter-table sql-case-id="alter_table_add_foreign_key_with_cascade">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <add-constraint start-index="29" stop-index="139">
+        <add-constraint constraint-name="fk_order_id" start-index="29" stop-index="139">
             <referenced-table name="t_order" start-index="86" stop-index="92" />
         </add-constraint>
     </alter-table>
