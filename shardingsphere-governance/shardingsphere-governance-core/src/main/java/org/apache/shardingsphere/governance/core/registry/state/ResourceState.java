@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.governance.core.registry.state;
 
 /**
  * Resource state.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.state.watcher;
 
-import org.apache.shardingsphere.governance.core.registry.ResourceState;
+import org.apache.shardingsphere.governance.core.registry.state.ResourceState;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;

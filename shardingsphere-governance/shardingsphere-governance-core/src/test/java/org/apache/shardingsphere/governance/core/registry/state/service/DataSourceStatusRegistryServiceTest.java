@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.state.service;
 
-import org.apache.shardingsphere.governance.core.registry.ResourceState;
+import org.apache.shardingsphere.governance.core.registry.state.ResourceState;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
