@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.service.schema;
+package org.apache.shardingsphere.governance.core.registry.metadata.service;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.MetaDataCreatedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.MetaDataDroppedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataCreatedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.service.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.lock.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 
 /**
  * Lock released event.

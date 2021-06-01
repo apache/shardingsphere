@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.lock.watcher;
 
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Test;

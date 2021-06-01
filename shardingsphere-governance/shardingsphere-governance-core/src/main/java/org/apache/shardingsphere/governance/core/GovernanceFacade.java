@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core;
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
-import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcherFactory;
+import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;

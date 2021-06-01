@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher;
+package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.event.metadata;
+package org.apache.shardingsphere.governance.core.registry.metadata.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 
 /**
  * Schema deleted event.

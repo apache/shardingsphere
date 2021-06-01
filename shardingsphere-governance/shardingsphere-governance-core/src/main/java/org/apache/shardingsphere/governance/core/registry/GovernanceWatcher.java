@@ -15,24 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.impl;
+package org.apache.shardingsphere.governance.core.registry;
 
-import org.apache.shardingsphere.governance.core.registry.config.watcher.MetaDataChangedWatcher;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-
-public final class MetaDataChangedWatcherTest {
+/**
+ * Governance watcher.
+ * 
+ * @param <T> type of event
+ */
+public interface GovernanceWatcher<T> {
     
-    @Test
-    public void assertCreateEventWithInvalidPath() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata_invalid/sharding_db", "encrypt_db", Type.UPDATED);
-        Optional<GovernanceEvent> actual = new MetaDataChangedWatcher().createGovernanceEvent(dataChangedEvent);
-        assertFalse(actual.isPresent());
-    }
+    /**
+     * Get watching keys.
+     * 
+     * @param schemaNames schema names
+     * @return watching keys
+     */
+    Collection<String> getWatchingKeys(Collection<String> schemaNames);
+    
+    /**
+     * Get watching types.
+     *
+     * @return watching types
+     */
+    Collection<Type> getWatchingTypes();
+    
+    /**
+     * Create governance event.
+     * 
+     * @param event registry center data changed event
+     * @return governance event
+     */
+    Optional<T> createGovernanceEvent(DataChangedEvent event);
 }

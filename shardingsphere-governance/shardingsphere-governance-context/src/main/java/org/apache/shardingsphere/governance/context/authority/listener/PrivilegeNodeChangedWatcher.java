@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.context.authority.listener;
 
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.state.service.StatesNode;
-import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
+import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;

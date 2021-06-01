@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.config.event.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 
 import java.util.Properties;
 

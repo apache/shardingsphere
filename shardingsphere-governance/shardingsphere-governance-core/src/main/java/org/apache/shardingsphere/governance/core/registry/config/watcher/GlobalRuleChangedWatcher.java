@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.config.watcher;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.core.registry.config.service.node.GlobalNode;
-import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
+import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;

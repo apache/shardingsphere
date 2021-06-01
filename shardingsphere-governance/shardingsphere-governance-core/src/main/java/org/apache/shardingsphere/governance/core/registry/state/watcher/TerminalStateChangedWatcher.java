@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.state.watcher;
 
 import org.apache.shardingsphere.governance.core.registry.ResourceState;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
-import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
+import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.state.service.StatesNode;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;

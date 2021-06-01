@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.watcher;
+package org.apache.shardingsphere.governance.core.registry.metadata.watcher;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.governance.core.registry.cache.CacheNode;
 import org.apache.shardingsphere.governance.core.registry.config.service.node.SchemaMetadataNode;
-import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
+import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.schema.SchemaChangedEvent;

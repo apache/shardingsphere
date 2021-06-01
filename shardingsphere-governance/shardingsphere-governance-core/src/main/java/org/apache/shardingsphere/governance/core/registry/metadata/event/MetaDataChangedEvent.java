@@ -15,10 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.event;
+package org.apache.shardingsphere.governance.core.registry.metadata.event;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Governance event.
+ * Meta data changed event.
  */
-public interface GovernanceEvent {
+@RequiredArgsConstructor
+@Getter
+public final class MetaDataChangedEvent {
+    
+    private final Collection<String> schemaNames;
 }

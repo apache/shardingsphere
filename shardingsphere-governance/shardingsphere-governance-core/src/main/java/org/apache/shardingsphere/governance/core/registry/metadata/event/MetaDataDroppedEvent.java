@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.event.metadata;
+package org.apache.shardingsphere.governance.core.registry.metadata.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
 
 /**
- * Schema added event.
+ * Meta data dropped event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaAddedEvent implements GovernanceEvent {
+public final class MetaDataDroppedEvent {
     
     private final String schemaName;
 }

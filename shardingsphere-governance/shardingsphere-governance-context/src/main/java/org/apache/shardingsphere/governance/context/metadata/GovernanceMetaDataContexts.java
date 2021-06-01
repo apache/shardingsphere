@@ -26,9 +26,9 @@ import org.apache.shardingsphere.governance.core.lock.ShardingSphereDistributeLo
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.MetaDataChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.state.event.PrimaryStateChangedEvent;
