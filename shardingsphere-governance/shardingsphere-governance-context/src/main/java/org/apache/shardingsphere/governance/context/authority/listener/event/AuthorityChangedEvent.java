@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.context.authority.listener.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;

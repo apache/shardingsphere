@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Create sharding table rule statement.
@@ -32,5 +31,5 @@ import java.util.LinkedList;
 @Getter
 public final class CreateShardingTableRuleStatement extends CreateRDLStatement {
     
-    private final Collection<TableRuleSegment> tables = new LinkedList<>();
+    private final Collection<TableRuleSegment> tables;
 }

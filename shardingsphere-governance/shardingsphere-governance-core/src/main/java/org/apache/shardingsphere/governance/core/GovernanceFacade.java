@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core;
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
-import org.apache.shardingsphere.governance.core.registry.listener.GovernanceListenerManager;
+import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -45,7 +45,7 @@ public final class GovernanceFacade implements AutoCloseable {
     @Getter
     private RegistryCenter registryCenter;
     
-    private GovernanceListenerManager listenerManager;
+    private GovernanceWatcherFactory listenerFactory;
     
     /**
      * Initialize governance facade.
@@ -57,7 +57,7 @@ public final class GovernanceFacade implements AutoCloseable {
         isOverwrite = config.isOverwrite();
         registryCenterRepository = RegistryCenterRepositoryFactory.newInstance(config);
         registryCenter = new RegistryCenter(registryCenterRepository);
-        listenerManager = new GovernanceListenerManager(registryCenterRepository, 
+        listenerFactory = new GovernanceWatcherFactory(registryCenterRepository, 
                 Stream.of(registryCenter.getSchemaService().loadAllNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
     }
     
@@ -80,7 +80,7 @@ public final class GovernanceFacade implements AutoCloseable {
      */
     public void onlineInstance() {
         registryCenter.registerInstanceOnline();
-        listenerManager.initListeners();
+        listenerFactory.watchListeners();
     }
     
     @Override

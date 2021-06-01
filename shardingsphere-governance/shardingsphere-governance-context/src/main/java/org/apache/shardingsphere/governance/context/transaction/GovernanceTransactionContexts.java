@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.context.transaction;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangeCompletedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;

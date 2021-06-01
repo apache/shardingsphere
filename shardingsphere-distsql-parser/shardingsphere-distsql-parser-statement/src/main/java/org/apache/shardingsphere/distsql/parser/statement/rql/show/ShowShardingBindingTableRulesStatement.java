@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
  * Show sharding binding table rules statement.
  */
 public final class ShowShardingBindingTableRulesStatement extends ShowRulesStatement {
-
+    
     public ShowShardingBindingTableRulesStatement(final SchemaSegment schema) {
         super(schema);
     }

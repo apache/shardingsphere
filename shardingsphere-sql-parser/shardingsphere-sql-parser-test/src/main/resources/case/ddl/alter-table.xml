@@ -526,7 +526,7 @@
     
     <alter-table sql-case-id="alter_table_add_primary_key">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint start-index="24" stop-index="66">
+        <add-constraint constraint-name="pk_user_id" start-index="24" stop-index="66">
             <primary-key-column name="user_id" start-index="59" stop-index="65" />
         </add-constraint>
     </alter-table>
@@ -538,7 +538,7 @@
                 <column name="status" />
             </column-definition>
         </add-column>
-        <add-constraint start-index="39" stop-index="115">
+        <add-constraint constraint-name="pk_order_id_user_id_status" start-index="39" stop-index="115">
             <primary-key-column name="order_id" start-index="90" stop-index="97" />
             <primary-key-column name="user_id" start-index="100" stop-index="106" />
             <primary-key-column name="status" start-index="109" stop-index="114" />
@@ -547,14 +547,14 @@
     
     <alter-table sql-case-id="alter_table_add_unique_key">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint start-index="24" stop-index="63" >
+        <add-constraint constraint-name="uk_order_id" start-index="24" stop-index="63" >
             <index-column name="order_id" start-index="55" stop-index="62"/>
         </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_foreign_key">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <add-constraint start-index="29" stop-index="121">
+        <add-constraint constraint-name="fk_order_id" start-index="29" stop-index="121">
             <referenced-table name="t_order" stop-index="92" start-index="86"/>
         </add-constraint>
     </alter-table>
@@ -738,7 +738,7 @@
     
     <alter-table sql-case-id="alter_table_add_check">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint index-name="chk_order_id" start-index="24" stop-index="67"/>
+        <add-constraint constraint-name="chk_order_id" start-index="24" stop-index="67"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_columns_oracle">
@@ -787,14 +787,26 @@
     
     <alter-table sql-case-id="alter_table_add_primary_foreign_key">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <add-constraint>
-            <referenced-table name="t_order" start-index="125" stop-index="131"/>
+        <add-constraint start-index="29" stop-index="50">
             <primary-key-column name="order_id" start-index="42" stop-index="49"/>
         </add-constraint>
+        <add-constraint start-index="52" stop-index="68">
+            <index-column name="order_id" start-index="60" stop-index="67" />
+        </add-constraint>
+        <add-constraint start-index="70" stop-index="89"/>
+        <add-constraint start-index="91" stop-index="160">
+            <referenced-table name="t_order" start-index="125" stop-index="131"/>
+        </add-constraint>
+        <add-constraint start-index="162" stop-index="181"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_composite_primary_key_oracle">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint constraint-name="pk_order_id_user_id_status" start-index="24" stop-index="100">
+            <primary-key-column name="order_id" start-index="75" stop-index="82" />
+            <primary-key-column name="user_id" start-index="85" stop-index="91" />
+            <primary-key-column name="status" start-index="94" stop-index="99" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_unique_key">
@@ -842,7 +854,7 @@
     
     <alter-table sql-case-id="alter_table_add_foreign_key_with_cascade">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <add-constraint start-index="29" stop-index="139">
+        <add-constraint constraint-name="fk_order_id" start-index="29" stop-index="139">
             <referenced-table name="t_order" start-index="86" stop-index="92" />
         </add-constraint>
     </alter-table>
@@ -1094,4 +1106,33 @@
     <alter-table sql-case-id="alter_table_drop_partition_update_all_index_noparallel">
         <table name="t_order" start-index="12" stop-index="18"/>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_hash_partition1">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_hash_partition2">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_hash_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_list_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_range_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_move_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_coalesce_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
 </sql-parser-test-cases>

@@ -47,7 +47,7 @@ public final class RouteContext {
     private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
     
     @Setter
-    private boolean toCalcite;
+    private boolean isFederated;
     
     /**
      * Judge is route for single database and table only or not.

@@ -115,9 +115,6 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof CreateShardingTableRuleStatement) {
             return Optional.of(new CreateShardingTableRuleBackendHandler((CreateShardingTableRuleStatement) sqlStatement, backendConnection));
         }
-        if (sqlStatement instanceof CreateShardingTableRuleStatement) {
-            return Optional.of(new CreateShardingTableRuleBackendHandler((CreateShardingTableRuleStatement) sqlStatement, backendConnection));
-        }
         if (sqlStatement instanceof CreateShardingBindingTableRulesStatement) {
             return Optional.of(new CreateShardingBindingTableRulesBackendHandler((CreateShardingBindingTableRulesStatement) sqlStatement, backendConnection));
         }

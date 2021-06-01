@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.governance.context.authority.listener;
 
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.listener.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -31,7 +29,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public final class PrivilegeNodeChangedListenerTest {
     
@@ -39,9 +36,9 @@ public final class PrivilegeNodeChangedListenerTest {
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = new PrivilegeNodeChangedListener(mock(RegistryCenterRepository.class)).createEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
+        Optional<AuthorityChangedEvent> actual = new PrivilegeNodeChangedWatcher().createGovernanceEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
-        Optional<ShardingSphereUser> user = ((AuthorityChangedEvent) actual.get()).getUsers().stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
+        Optional<ShardingSphereUser> user = actual.get().getUsers().stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("root1"));
     }

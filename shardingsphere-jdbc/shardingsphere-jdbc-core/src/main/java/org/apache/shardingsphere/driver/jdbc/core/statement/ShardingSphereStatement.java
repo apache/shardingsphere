@@ -58,10 +58,10 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteExecutor;
-import org.apache.shardingsphere.infra.executor.sql.optimize.execute.CalciteJDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.optimize.schema.CalciteLogicSchema;
-import org.apache.shardingsphere.infra.executor.sql.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateJDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederateLogicSchema;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -117,7 +117,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private ResultSet currentResultSet;
     
     @Getter(AccessLevel.PROTECTED)
-    private CalciteExecutor calciteExecutor;
+    private FederateExecutor federateExecutor;
     
     public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
@@ -158,8 +158,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private List<ResultSet> getResultSetsForShardingSphereResultSet() throws SQLException {
-        if (null != calciteExecutor) {
-            return Collections.singletonList(calciteExecutor.getResultSet());
+        if (null != federateExecutor) {
+            return Collections.singletonList(federateExecutor.getResultSet());
         }
         return statements.stream().map(this::getResultSet).collect(Collectors.toList());
     }
@@ -169,8 +169,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return rawExecutor.execute(createRawExecutionContext(), executionContext.getSqlStatementContext(),
                     new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
-        if (executionContext.getRouteContext().isToCalcite()) {
-            return executeQueryByCalcite();
+        if (executionContext.getRouteContext().isFederated()) {
+            return executeFederatedQuery();
         }
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
         cacheStatements(executionGroupContext.getInputGroups());
@@ -179,23 +179,23 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return driverJDBCExecutor.executeQuery(executionGroupContext, executionContext.getSqlStatementContext(), callback);
     }
     
-    private List<QueryResult> executeQueryByCalcite() throws SQLException {
+    private List<QueryResult> executeFederatedQuery() throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return Collections.emptyList();
         }
-        calciteExecutor = createCalciteExecutor();
+        federateExecutor = createFederateExecutor();
         SQLUnit sqlUnit = executionContext.getExecutionUnits().iterator().next().getSqlUnit();
-        return calciteExecutor.executeQuery(sqlUnit.getSql(), sqlUnit.getParameters());
+        return federateExecutor.executeQuery(sqlUnit.getSql(), sqlUnit.getParameters());
     }
     
-    private CalciteExecutor createCalciteExecutor() {
+    private FederateExecutor createFederateExecutor() {
         StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 executionContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
-        CalciteRowExecutor executor = new CalciteRowExecutor(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(),
+        FederateRowExecutor executor = new FederateRowExecutor(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(),
                 metaDataContexts.getProps(), connection, driverJDBCExecutor.getJdbcExecutor(), executionContext, callback);
-        // TODO Consider CalciteRawExecutor
-        CalciteLogicSchema logicSchema = new CalciteLogicSchema(metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(DefaultSchema.LOGIC_NAME), executor);
-        return new CalciteJDBCExecutor(metaDataContexts.getOptimizeContextFactory().create(DefaultSchema.LOGIC_NAME, logicSchema));
+        // TODO Consider FederateRawExecutor
+        FederateLogicSchema logicSchema = new FederateLogicSchema(metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(DefaultSchema.LOGIC_NAME), executor);
+        return new FederateJDBCExecutor(metaDataContexts.getOptimizeContextFactory().create(DefaultSchema.LOGIC_NAME, logicSchema));
     }
     
     @Override

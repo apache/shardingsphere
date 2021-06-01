@@ -47,7 +47,7 @@ public final class ShardingFederatedRoutingEngine implements ShardingRouteEngine
                 fillRouteContext(routeContext, shardingRule, each);
             }
         }
-        routeContext.setToCalcite(true);
+        routeContext.setFederated(true);
     }
     
     private void fillRouteContext(final RouteContext routeContext, final ShardingRule shardingRule, final String logicTableName) {

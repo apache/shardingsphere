@@ -127,6 +127,10 @@ indexName
     : identifier
     ;
 
+constraintName
+    : identifier
+    ;
+
 savepointName
     : identifier
     ;

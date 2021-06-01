@@ -18,20 +18,23 @@
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AddColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CheckConstraintDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ConstraintDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CreateDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DataTypeOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DropColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DropConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
@@ -41,10 +44,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92DropTableStatement;
@@ -126,10 +133,23 @@ public final class SQL92DDLStatementSQLVisitor extends SQL92StatementSQLVisitor 
         return false;
     }
     
+    @Override
+    public ASTNode visitAddConstraintSpecification(final AddConstraintSpecificationContext ctx) {
+        return new AddConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintDefinitionSegment) visit(ctx.constraintDefinition()));
+    }
+    
+    @Override
+    public ASTNode visitDropConstraintSpecification(final DropConstraintSpecificationContext ctx) {
+        return new DropConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintDefinition().constraintName()));
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitConstraintDefinition(final ConstraintDefinitionContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.constraintName()) {
+            result.setConstraintName((ConstraintSegment) visit(ctx.constraintName()));
+        }
         if (null != ctx.primaryKeyOption()) {
             result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().columnNames())).getValue());
         }
@@ -137,6 +157,11 @@ public final class SQL92DDLStatementSQLVisitor extends SQL92StatementSQLVisitor 
             result.setReferencedTable((SimpleTableSegment) visit(ctx.foreignKeyOption().referenceDefinition().tableName()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitConstraintName(final ConstraintNameContext ctx) {
+        return new ConstraintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     @SuppressWarnings("unchecked")
@@ -152,8 +177,10 @@ public final class SQL92DDLStatementSQLVisitor extends SQL92StatementSQLVisitor 
                     result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
                 } else if (each instanceof DropColumnDefinitionSegment) {
                     result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
-                } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getAddConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                } else if (each instanceof AddConstraintDefinitionSegment) {
+                    result.getAddConstraintDefinitions().add((AddConstraintDefinitionSegment) each);
+                } else if (each instanceof DropConstraintDefinitionSegment) {
+                    result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
                 }
             }
         }

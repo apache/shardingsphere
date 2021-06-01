@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.context.transaction;
 
-import org.apache.shardingsphere.governance.core.registry.listener.event.datasource.DataSourceChangeCompletedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;

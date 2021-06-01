@@ -20,6 +20,7 @@ package org.apache.shardingsphere.distsql.parser.api;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
@@ -62,6 +63,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+// TODO use Parameterized + XML instead of static test
 public final class DistSQLStatementParserEngineTest {
     
     private static final String RDL_ADD_RESOURCE_SINGLE_WITHOUT_PASSWORD = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT);";
@@ -328,18 +330,54 @@ public final class DistSQLStatementParserEngineTest {
     public void assertParseStaticReadwriteSplittingRule() {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_STATIC_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
+        CreateReadwriteSplittingRuleStatement statement = (CreateReadwriteSplittingRuleStatement) sqlStatement;
+        assertThat(statement.getReadwriteSplittingRules().size(), is(1));
+        List<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments
+                = new ArrayList<>(((CreateReadwriteSplittingRuleStatement) sqlStatement).getReadwriteSplittingRules());
+        assertThat(readwriteSplittingRuleSegments.get(0).getName(), is("ms_group_0"));
+        assertThat(readwriteSplittingRuleSegments.get(0).getWriteDataSource(), is("primary_ds"));
+        assertThat(readwriteSplittingRuleSegments.get(0).getReadDataSources(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
+        assertThat(readwriteSplittingRuleSegments.get(0).getLoadBalancer(), is("random"));
+        assertThat(readwriteSplittingRuleSegments.get(0).getProps().size(), is(0));
     }
 
     @Test
     public void assertParseDynamicReadwriteSplittingRule() {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
+        CreateReadwriteSplittingRuleStatement statement = (CreateReadwriteSplittingRuleStatement) sqlStatement;
+        assertThat(statement.getReadwriteSplittingRules().size(), is(1));
+        List<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments
+                = new ArrayList<>(((CreateReadwriteSplittingRuleStatement) sqlStatement).getReadwriteSplittingRules());
+        assertThat(readwriteSplittingRuleSegments.get(0).getName(), is("ms_group_1"));
+        assertThat(readwriteSplittingRuleSegments.get(0).getAutoAwareResource(), is("group_0"));
+        assertNull(readwriteSplittingRuleSegments.get(0).getWriteDataSource());
+        assertNull(readwriteSplittingRuleSegments.get(0).getReadDataSources());
+        assertThat(readwriteSplittingRuleSegments.get(0).getLoadBalancer(), is("random"));
+        assertThat(readwriteSplittingRuleSegments.get(0).getProps().size(), is(1));
+        assertThat(readwriteSplittingRuleSegments.get(0).getProps().getProperty("read_weight"), is("'2:1'"));
     }
 
     @Test
     public void assertParseAlterReadwriteSplittingRule() {
         SQLStatement sqlStatement = engine.parse(RDL_ALTER_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof AlterReadwriteSplittingRuleStatement);
+        AlterReadwriteSplittingRuleStatement statement = (AlterReadwriteSplittingRuleStatement) sqlStatement;
+        assertThat(statement.getReadwriteSplittingRules().size(), is(2));
+        List<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments
+                = new ArrayList<>(((AlterReadwriteSplittingRuleStatement) sqlStatement).getReadwriteSplittingRules());
+        assertThat(readwriteSplittingRuleSegments.get(0).getName(), is("ms_group_0"));
+        assertThat(readwriteSplittingRuleSegments.get(0).getAutoAwareResource(), is("group_0"));
+        assertNull(readwriteSplittingRuleSegments.get(0).getWriteDataSource());
+        assertNull(readwriteSplittingRuleSegments.get(0).getReadDataSources());
+        assertThat(readwriteSplittingRuleSegments.get(0).getLoadBalancer(), is("random"));
+        assertThat(readwriteSplittingRuleSegments.get(0).getProps().size(), is(1));
+        assertThat(readwriteSplittingRuleSegments.get(0).getProps().getProperty("read_weight"), is("'2:1'"));
+        assertThat(readwriteSplittingRuleSegments.get(1).getName(), is("ms_group_1"));
+        assertThat(readwriteSplittingRuleSegments.get(1).getWriteDataSource(), is("primary_ds"));
+        assertThat(readwriteSplittingRuleSegments.get(1).getReadDataSources(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
+        assertThat(readwriteSplittingRuleSegments.get(1).getLoadBalancer(), is("random"));
+        assertThat(readwriteSplittingRuleSegments.get(1).getProps().size(), is(0));
     }
 
     @Test

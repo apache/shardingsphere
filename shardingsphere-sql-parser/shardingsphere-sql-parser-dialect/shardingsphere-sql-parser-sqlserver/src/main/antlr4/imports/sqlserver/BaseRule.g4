@@ -135,6 +135,10 @@ indexName
     : identifier
     ;
 
+constraintName
+    : identifier
+    ;
+
 collationName
     : STRING_ | IDENTIFIER_
     ;

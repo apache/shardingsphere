@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.cache;
 
-import org.apache.shardingsphere.governance.core.registry.service.config.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;

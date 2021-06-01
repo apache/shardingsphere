@@ -91,7 +91,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private PostgreSQLPacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
         return updateResponseHeader.getSqlStatement() instanceof EmptyStatement ? new PostgreSQLEmptyQueryResponsePacket()
-                : new PostgreSQLCommandCompletePacket(new PostgreSQLCommand(updateResponseHeader.getSqlStatement()).getSQLCommand(), updateResponseHeader.getUpdateCount());
+                : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(updateResponseHeader.getSqlStatement().getClass()).map(Enum::name).orElse(""), updateResponseHeader.getUpdateCount());
     }
     
     @Override

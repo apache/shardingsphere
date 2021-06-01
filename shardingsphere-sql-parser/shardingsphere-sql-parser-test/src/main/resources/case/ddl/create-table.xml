@@ -492,7 +492,7 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="132" stop-index="176">
+        <constraint-definition constraint-name="pk_order_id" start-index="132" stop-index="176">
             <primary-key-column name="order_id" start-index="168" stop-index="175" />
         </constraint-definition>
     </create-table>
@@ -518,7 +518,7 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="132" stop-index="193">
+        <constraint-definition constraint-name="pk_order_id" start-index="132" stop-index="193">
             <primary-key-column name="order_id" start-index="168" stop-index="175" />
             <primary-key-column name="user_id" start-index="178" stop-index="184" />
             <primary-key-column name="status" start-index="187" stop-index="192" />
@@ -545,7 +545,7 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition index-name="order_id_index" start-index="132" stop-index="190">
+        <constraint-definition constraint-name="uk_order_id" index-name="order_id_index" start-index="132" stop-index="190">
             <index-column name="order_id" start-index="182" stop-index="189"/>
         </constraint-definition>
     </create-table>
@@ -570,7 +570,7 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="132" stop-index="188">
+        <constraint-definition constraint-name="uk_order_id" start-index="132" stop-index="188">
             <index-column name="order_id" start-index="163" stop-index="170" />
             <index-column name="user_id" start-index="173" stop-index="179" />
             <index-column name="status" start-index="182" stop-index="187" />
@@ -600,7 +600,7 @@
         <column-definition type="VARCHAR" start-index="129" stop-index="147">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="150" stop-index="260">
+        <constraint-definition constraint-name="fk_order_id" start-index="150" stop-index="260">
             <referenced-table name="t_order" start-index="207" stop-index="213" />
         </constraint-definition>
     </create-table>
@@ -628,7 +628,7 @@
         <column-definition type="VARCHAR" start-index="129" stop-index="147">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="150" stop-index="294">
+        <constraint-definition constraint-name="fk_order_id" start-index="150" stop-index="294">
             <referenced-table name="t_order" start-index="224" stop-index="230" />
         </constraint-definition>
     </create-table>
@@ -1007,7 +1007,7 @@
         <column-definition type="VARCHAR2" start-index="153" stop-index="172">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="175" stop-index="267">
+        <constraint-definition constraint-name="fk_order_id" start-index="175" stop-index="267">
             <referenced-table name="t_order" start-index="232" stop-index="238" />
         </constraint-definition>
     </create-table>
@@ -1035,7 +1035,7 @@
         <column-definition type="VARCHAR2" start-index="153" stop-index="172">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="175" stop-index="301">
+        <constraint-definition constraint-name="fk_order_id" start-index="175" stop-index="301">
             <referenced-table name="t_order" start-index="249" stop-index="255" />
         </constraint-definition>
     </create-table>
@@ -1066,7 +1066,9 @@
         <constraint-definition start-index="175" stop-index="195">
             <primary-key-column name="item_id" start-index="188" stop-index="194"/>
         </constraint-definition>
-        <constraint-definition start-index="198" stop-index="213"/>
+        <constraint-definition start-index="198" stop-index="213">
+            <index-column name="item_id" start-index="206" stop-index="212" />
+        </constraint-definition>
         <constraint-definition start-index="216" stop-index="285">
             <referenced-table name="t_order" start-index="250" stop-index="256" />
         </constraint-definition>

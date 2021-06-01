@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CastFu
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
@@ -63,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Unrese
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
@@ -233,6 +235,11 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     @Override
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
         return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+    }
+    
+    @Override
+    public final ASTNode visitConstraintName(final ConstraintNameContext ctx) {
+        return new ConstraintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     @Override
