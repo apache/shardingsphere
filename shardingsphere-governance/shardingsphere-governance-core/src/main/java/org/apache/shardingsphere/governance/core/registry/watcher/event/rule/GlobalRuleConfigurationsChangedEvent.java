@@ -31,7 +31,5 @@ import java.util.Collection;
 @Getter
 public final class GlobalRuleConfigurationsChangedEvent implements GovernanceEvent {
     
-    private final String schemaName;
-    
     private final Collection<RuleConfiguration> ruleConfigurations;
 }
