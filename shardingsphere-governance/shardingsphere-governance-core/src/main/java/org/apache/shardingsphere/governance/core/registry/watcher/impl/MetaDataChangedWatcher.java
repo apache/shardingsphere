@@ -86,7 +86,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         }
         return Optional.empty();
     }
-
+    
     private Optional<GovernanceEvent> buildGovernanceEvent(final DataChangedEvent event) {
         String schemaName = SchemaMetadataNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(schemaName) || Strings.isNullOrEmpty(event.getValue())) {
@@ -110,7 +110,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     private boolean isDataSourceChangedEvent(final String schemaName, final String eventPath) {
         return SchemaMetadataNode.getMetadataDataSourcePath(schemaName).equals(eventPath);
     }
-
+    
     @SuppressWarnings("unchecked")
     private DataSourceAlteredEvent createDataSourceAlteredEvent(final String schemaName, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
@@ -119,32 +119,31 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
                     Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         return new DataSourceAlteredEvent(schemaName, dataSourceConfigs);
     }
-
+    
     private boolean isRuleChangedEvent(final String schemaName, final String eventPath) {
         return SchemaMetadataNode.getRulePath(schemaName).equals(eventPath);
     }
-
+    
     private boolean isRuleCachedEvent(final String schemaName, final String key) {
         return CacheNode.getCachePath(SchemaMetadataNode.getRulePath(schemaName)).equals(key);
     }
-
+    
     private GovernanceEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {
         return new RuleConfigurationsChangedEvent(schemaName, getRuleConfigurations(event.getValue()));
     }
-
+    
     @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> getRuleConfigurations(final String yamlContent) {
         Collection<YamlRuleConfiguration> rules = YamlEngine.unmarshal(yamlContent, Collection.class);
         Preconditions.checkState(!rules.isEmpty(), "No available rule to load for governance.");
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
     }
-
+    
     private boolean isSchemaChangedEvent(final String schemaName, final String key) {
         return SchemaMetadataNode.getMetadataSchemaPath(schemaName).equals(key);
     }
-
+    
     private GovernanceEvent createSchemaChangedEvent(final String schemaName, final DataChangedEvent event) {
-        return new SchemaChangedEvent(schemaName, new SchemaYamlSwapper()
-                .swapToObject(YamlEngine.unmarshal(event.getValue(), YamlSchema.class)));
+        return new SchemaChangedEvent(schemaName, new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlSchema.class)));
     }
 }
