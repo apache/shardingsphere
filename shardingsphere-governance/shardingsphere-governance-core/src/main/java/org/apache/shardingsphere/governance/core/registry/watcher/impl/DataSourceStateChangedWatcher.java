@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.governance.core.registry.ResourceState;
 import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.readwritesplitting.DisabledStateChangedEvent;
@@ -54,6 +54,6 @@ public final class DataSourceStateChangedWatcher implements GovernanceWatcher<Go
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {
-        return RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()) && (Type.UPDATED == event.getType() || Type.ADDED == event.getType());
+        return ResourceState.DISABLED.toString().equalsIgnoreCase(event.getValue()) && (Type.UPDATED == event.getType() || Type.ADDED == event.getType());
     }
 }

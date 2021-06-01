@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.service.state;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.governance.core.registry.ResourceState;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
@@ -48,7 +48,7 @@ public final class DataSourceStatusRegistryService {
      */
     public Collection<String> loadDisabledDataSources(final String schemaName) {
         return loadDataSources(schemaName).stream().filter(each -> !Strings.isNullOrEmpty(getDataSourceNodeData(schemaName, each))
-                && RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(getDataSourceNodeData(schemaName, each))).collect(Collectors.toList());
+                && ResourceState.DISABLED.toString().equalsIgnoreCase(getDataSourceNodeData(schemaName, each))).collect(Collectors.toList());
     }
     
     private Collection<String> loadDataSources(final String schemaName) {
@@ -66,7 +66,7 @@ public final class DataSourceStatusRegistryService {
      */
     @Subscribe
     public void update(final DataSourceDisabledEvent event) {
-        String value = event.isDisabled() ? RegistryCenterNodeStatus.DISABLED.toString() : "";
+        String value = event.isDisabled() ? ResourceState.DISABLED.toString() : "";
         repository.persist(StatesNode.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
     }
     

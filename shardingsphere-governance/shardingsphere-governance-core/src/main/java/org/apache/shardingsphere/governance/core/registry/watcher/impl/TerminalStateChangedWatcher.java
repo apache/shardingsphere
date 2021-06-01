@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.governance.core.registry.ResourceState;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
@@ -47,6 +47,6 @@ public final class TerminalStateChangedWatcher implements GovernanceWatcher<Stat
     
     @Override
     public Optional<StateEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())));
+        return Optional.of(new StateEvent(StateType.CIRCUIT_BREAK, ResourceState.DISABLED.toString().equalsIgnoreCase(event.getValue())));
     }
 }

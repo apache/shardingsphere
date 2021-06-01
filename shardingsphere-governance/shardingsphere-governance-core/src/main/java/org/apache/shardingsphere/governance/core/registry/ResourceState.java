@@ -18,17 +18,12 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 /**
- * State node status.
+ * Resource state.
  */
-public enum RegistryCenterNodeStatus {
+public enum ResourceState {
     
     /**
      * Disabled state.
      */
-    DISABLED,
-    
-    /**
-     * Locked state.
-     */
-    LOCKED
+    DISABLED
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.service.state;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.governance.core.registry.ResourceState;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
@@ -62,7 +62,7 @@ public final class DataSourceStatusRegistryServiceTest {
 
     @Test
     public void assertUpdateDataSourceDisabledState() {
-        assertUpdateDataSourceState(true, RegistryCenterNodeStatus.DISABLED.toString());
+        assertUpdateDataSourceState(true, ResourceState.DISABLED.toString());
     }
 
     @Test

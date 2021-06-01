@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.governance.core.registry.ResourceState;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.state.StateEvent;
@@ -39,7 +39,7 @@ public final class TerminalStateChangedWatcherTest {
     
     @Test
     public void assertCreateEventWhenDisabled() {
-        Optional<StateEvent> actual = new TerminalStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds", RegistryCenterNodeStatus.DISABLED.name(), Type.UPDATED));
+        Optional<StateEvent> actual = new TerminalStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/test_ds", ResourceState.DISABLED.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertTrue(actual.get().isOn());
     }
