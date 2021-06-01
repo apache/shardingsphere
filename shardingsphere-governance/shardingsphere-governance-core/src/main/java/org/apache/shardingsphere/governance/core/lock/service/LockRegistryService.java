@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.lock.impl;
+package org.apache.shardingsphere.governance.core.lock.service;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;

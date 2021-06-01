@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.impl;
+package org.apache.shardingsphere.governance.core.lock.watcher;
 
-import org.apache.shardingsphere.governance.core.lock.impl.LockNode;
+import org.apache.shardingsphere.governance.core.lock.service.LockNode;
 import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.lock.LockNotificationEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.lock.LockReleasedEvent;
+import org.apache.shardingsphere.governance.core.lock.event.LockNotificationEvent;
+import org.apache.shardingsphere.governance.core.lock.event.LockReleasedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 

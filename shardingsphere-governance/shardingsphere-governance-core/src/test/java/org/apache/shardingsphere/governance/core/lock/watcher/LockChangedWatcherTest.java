@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.lock.impl;
+package org.apache.shardingsphere.governance.core.lock.watcher;
 
+import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.Optional;
 
-public final class LockNodeTest {
+import static org.junit.Assert.assertFalse;
+
+public final class LockChangedWatcherTest {
     
     @Test
-    public void assertGetLockNodePath() {
-        assertThat(LockNode.getLockNodePath("test"), is("/lock/locks/test"));
-    }
-    
-    @Test
-    public void assertGetLockName() {
-        assertThat(LockNode.getLockName("/lock/locks/sharding_db.test/_c_c2d-lock-00000").orElse(null), is("sharding_db.test"));
-    }
-    
-    @Test
-    public void assertGetLockAckNodePath() {
-        assertThat(LockNode.getLockedAckNodePath("test"), is("/lock/ack/test"));
-    }
-    
-    @Test
-    public void assertGetLockedAckRootNodePah() {
-        assertThat(LockNode.getLockedAckRootNodePah(), is("/lock/ack"));
+    public void assertCreateEventWithInvalidPath() {
+        Optional<GovernanceEvent> actual = new LockChangedWatcher().createGovernanceEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
+        assertFalse(actual.isPresent());
     }
 }

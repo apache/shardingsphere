@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.watcher.impl;
+package org.apache.shardingsphere.governance.core.lock.event;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.junit.Test;
 
-import java.util.Optional;
-
-import static org.junit.Assert.assertFalse;
-
-public final class LockChangedWatcherTest {
+/**
+ * Lock notification event.
+ */
+@AllArgsConstructor
+@Getter
+public final class LockNotificationEvent implements GovernanceEvent {
     
-    @Test
-    public void assertCreateEventWithInvalidPath() {
-        Optional<GovernanceEvent> actual = new LockChangedWatcher().createGovernanceEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
-        assertFalse(actual.isPresent());
-    }
+    private String lockName;
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.lock.impl;
+package org.apache.shardingsphere.governance.core.lock.service;
 
 /**
  * Lock ack.
