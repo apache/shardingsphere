@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceAlteredEvent;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -46,7 +45,7 @@ import java.util.stream.Collectors;
  * Drop resource backend handler.
  */
 public final class DropResourceBackendHandler extends SchemaRequiredBackendHandler<DropResourceStatement> {
-
+    
     public DropResourceBackendHandler(final DropResourceStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
@@ -55,8 +54,8 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) {
         Collection<String> resourceNames = sqlStatement.getResourceNames();
         check(schemaName, resourceNames);
-        Map<String, DataSource> resourceMap = drop(schemaName, resourceNames);
-        post(schemaName, resourceMap);
+        Map<String, DataSource> dataSources = drop(schemaName, resourceNames);
+        post(schemaName, dataSources);
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -88,7 +87,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
             throw new ResourceInUsedException(conflictResources);
         }
     }
-
+    
     private Set<String> getResources(final DataSourceContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<String> each : rule.getDataSourceMapper().values()) {
@@ -96,7 +95,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         }
         return result;
     }
-
+    
     private Set<String> getResources(final DataNodeContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
@@ -104,7 +103,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         }
         return result;
     }
-
+    
     private Map<String, DataSource> drop(final String schemaName, final Collection<String> resourceNames) {
         Map<String, DataSource> result = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
         for (String each : resourceNames) {
@@ -113,8 +112,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         return result;
     }
     
-    private void post(final String schemaName, final Map<String, DataSource> resourceMap) {
-        Map<String, DataSourceConfiguration> datasourceMap = DataSourceConverter.getDataSourceConfigurationMap(resourceMap);
-        ShardingSphereEventBus.getInstance().post(new DataSourceAlteredEvent(schemaName, datasourceMap));
+    private void post(final String schemaName, final Map<String, DataSource> dataSources) {
+        ShardingSphereEventBus.getInstance().post(new DataSourceAlteredEvent(schemaName, DataSourceConverter.getDataSourceConfigurationMap(dataSources)));
     }
 }

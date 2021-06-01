@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.governance.context.authority.listener;
 
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.service.state.StatesNode;
+import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
@@ -33,7 +32,7 @@ import java.util.Optional;
 /**
  * Privilege changed watcher.
  */
-public final class PrivilegeNodeChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class PrivilegeNodeChangedWatcher implements GovernanceWatcher<AuthorityChangedEvent> {
     
     @Override
     public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
@@ -46,7 +45,7 @@ public final class PrivilegeNodeChangedWatcher implements GovernanceWatcher<Gove
     }
     
     @Override
-    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<AuthorityChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
         return Optional.of(new AuthorityChangedEvent(YamlUsersConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(event.getValue(), Collection.class))));
     }
 }

@@ -21,13 +21,13 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.readwritesplitting.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.props.PropertiesChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.readwritesplitting.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -105,7 +105,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewDataSource() throws SQLException {
-        metaDataContexts.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
+        metaDataContexts.renew(new DataSourceAlteredEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
         assertThat(metaDataContexts.getDefaultMetaData().getResource().getDataSources().size(), is(3));
     }
     

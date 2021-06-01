@@ -21,7 +21,8 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.metadata.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.props.PropertiesChangedEvent;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.governance.core.registry.watcher.event.readwrit
 import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.schema.SchemaChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -186,7 +186,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Test
     public void assertDataSourceChanged() throws SQLException {
-        DataSourceChangedEvent event = new DataSourceChangedEvent("schema", getChangedDataSourceConfigurations());
+        DataSourceAlteredEvent event = new DataSourceAlteredEvent("schema", getChangedDataSourceConfigurations());
         governanceMetaDataContexts.renew(event);
         assertTrue(governanceMetaDataContexts.getMetaData("schema").getResource().getDataSources().containsKey("ds_2"));
     }
