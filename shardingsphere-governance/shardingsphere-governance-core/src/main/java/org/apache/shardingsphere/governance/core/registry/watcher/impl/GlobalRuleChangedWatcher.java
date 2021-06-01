@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -36,7 +35,7 @@ import java.util.Optional;
 /**
  * Global rule changed watcher.
  */
-public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GlobalRuleConfigurationsChangedEvent> {
     
     @Override
     public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
@@ -49,7 +48,7 @@ public final class GlobalRuleChangedWatcher implements GovernanceWatcher<Governa
     }
     
     @Override
-    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<GlobalRuleConfigurationsChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
         return Optional.of(new GlobalRuleConfigurationsChangedEvent("", getGlobalRuleConfigurations(event)));
     }
     

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
@@ -39,7 +38,7 @@ public final class GlobalRuleChangedWatcherTest {
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> event = new GlobalRuleChangedWatcher().createGovernanceEvent(new DataChangedEvent("rule", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
+        Optional<GlobalRuleConfigurationsChangedEvent> event = new GlobalRuleChangedWatcher().createGovernanceEvent(new DataChangedEvent("rule", readYAML("yaml/authority-rule.yaml"), Type.UPDATED));
         assertTrue(event.isPresent());
         assertThat(event.get(), instanceOf(GlobalRuleConfigurationsChangedEvent.class));
     }

@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
-import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.service.config.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.watcher.GovernanceWatcher;
+import org.apache.shardingsphere.governance.core.registry.watcher.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -33,7 +32,7 @@ import java.util.Properties;
 /**
  * Properties changed watcher.
  */
-public final class PropertiesChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
+public final class PropertiesChangedWatcher implements GovernanceWatcher<PropertiesChangedEvent> {
     
     @Override
     public Collection<String> getWatchingKeys(final Collection<String> schemaNames) {
@@ -46,7 +45,7 @@ public final class PropertiesChangedWatcher implements GovernanceWatcher<Governa
     }
     
     @Override
-    public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
+    public Optional<PropertiesChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
         return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class)));
     }
 }

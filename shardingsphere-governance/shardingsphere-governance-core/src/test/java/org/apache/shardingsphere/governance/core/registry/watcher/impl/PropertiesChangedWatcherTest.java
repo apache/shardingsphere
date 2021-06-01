@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
-import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
@@ -36,8 +35,8 @@ public final class PropertiesChangedWatcherTest {
     
     @Test
     public void assertCreateEvent() {
-        Optional<GovernanceEvent> actual = new PropertiesChangedWatcher().createGovernanceEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
+        Optional<PropertiesChangedEvent> actual = new PropertiesChangedWatcher().createGovernanceEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
+        assertThat(actual.get().getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
     }
 }
