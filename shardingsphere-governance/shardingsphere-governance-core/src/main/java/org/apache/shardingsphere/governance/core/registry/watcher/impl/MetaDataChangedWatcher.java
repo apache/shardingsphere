@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -68,15 +69,15 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         String schemaName = SchemaMetadataNode.getSchemaNameBySchemaPath(event.getKey());
         if (!Strings.isNullOrEmpty(schemaName)) {
-            return buildSchemaEvent(schemaName, event);
+            return buildGovernanceEvent(schemaName, event);
         }
         if (event.getType() != DataChangedEvent.Type.UPDATED) {
             return Optional.empty();
         }
-        return buildSchemaConfigEvent(event);
+        return buildGovernanceEvent(event);
     }
     
-    private Optional<GovernanceEvent> buildSchemaEvent(final String schemaName, final DataChangedEvent event) {
+    private Optional<GovernanceEvent> buildGovernanceEvent(final String schemaName, final DataChangedEvent event) {
         if (event.getType() == DataChangedEvent.Type.ADDED || event.getType() == DataChangedEvent.Type.UPDATED) {
             return Optional.of(new SchemaAddedEvent(schemaName));
         }
@@ -86,18 +87,21 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         return Optional.empty();
     }
 
-    private Optional<GovernanceEvent> buildSchemaConfigEvent(final DataChangedEvent event) {
+    private Optional<GovernanceEvent> buildGovernanceEvent(final DataChangedEvent event) {
         String schemaName = SchemaMetadataNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(schemaName) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
         if (isDataSourceChangedEvent(schemaName, event.getKey())) {
-            return Optional.of(createDataSourceChangedEvent(schemaName, event));
-        } else if (isRuleChangedEvent(schemaName, event.getKey())) {
+            return Optional.of(createDataSourceAlteredEvent(schemaName, event));
+        }
+        if (isRuleChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createRuleChangedEvent(schemaName, event));
-        } else if (isRuleCachedEvent(schemaName, event.getKey())) {
+        }
+        if (isRuleCachedEvent(schemaName, event.getKey())) {
             return Optional.of(new RuleConfigurationCachedEvent(event.getValue(), schemaName));
-        } else if (isSchemaChangedEvent(schemaName, event.getKey())) {
+        }
+        if (isSchemaChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createSchemaChangedEvent(schemaName, event));
         }
         return Optional.empty();
@@ -108,12 +112,12 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
 
     @SuppressWarnings("unchecked")
-    private DataSourceAlteredEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
+    private DataSourceAlteredEvent createDataSourceAlteredEvent(final String schemaName, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
-        Map<String, DataSourceConfiguration> dataSourceConfigurations = yamlDataSources.isEmpty() ? new HashMap<>()
-                : yamlDataSources.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
-                .swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new DataSourceAlteredEvent(schemaName, dataSourceConfigurations);
+        Map<String, DataSourceConfiguration> dataSourceConfigs = yamlDataSources.isEmpty() ? new HashMap<>()
+                : yamlDataSources.entrySet().stream().collect(Collectors.toMap(
+                    Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return new DataSourceAlteredEvent(schemaName, dataSourceConfigs);
     }
 
     private boolean isRuleChangedEvent(final String schemaName, final String eventPath) {
