@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleStatementConverter;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -48,11 +48,11 @@ import java.util.stream.Collectors;
  * Create encrypt rule backend handler.
  */
 public final class CreateEncryptRuleBackendHandler extends SchemaRequiredBackendHandler<CreateEncryptRuleStatement> {
-
+    
     static {
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
     }
-
+    
     public CreateEncryptRuleBackendHandler(final CreateEncryptRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
@@ -70,7 +70,7 @@ public final class CreateEncryptRuleBackendHandler extends SchemaRequiredBackend
         checkEncryptors(sqlStatement);
         // TODO check resource
     }
-
+    
     private void checkDuplicateRuleNames(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
         Optional<EncryptRuleConfiguration> optional = getEncryptRuleConfiguration(schemaName);
         if (optional.isPresent()) {
@@ -82,18 +82,18 @@ public final class CreateEncryptRuleBackendHandler extends SchemaRequiredBackend
             }
         }
     }
-
+    
     private void checkEncryptors(final CreateEncryptRuleStatement sqlStatement) {
         Collection<String> encryptors = new LinkedHashSet<>();
-        sqlStatement.getEncryptRules().stream().forEach(each -> encryptors.addAll(each.getColumns().stream()
+        sqlStatement.getEncryptRules().forEach(each -> encryptors.addAll(each.getColumns().stream()
                 .map(column -> column.getEncryptor().getAlgorithmName()).collect(Collectors.toSet())));
-        Collection<String> invalidEncryptors = encryptors.stream().filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent())
-                .collect(Collectors.toList());
+        Collection<String> invalidEncryptors = encryptors.stream().filter(
+            each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!invalidEncryptors.isEmpty()) {
             throw new InvalidEncryptorsException(invalidEncryptors);
         }
     }
-
+    
     private void create(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
         YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration = EncryptRuleStatementConverter.convert(sqlStatement.getEncryptRules());
         EncryptRuleConfiguration createdEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
@@ -107,16 +107,16 @@ public final class CreateEncryptRuleBackendHandler extends SchemaRequiredBackend
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdEncryptRuleConfiguration);
         }
     }
-
+    
     private Optional<EncryptRuleConfiguration> getEncryptRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof EncryptRuleConfiguration).findAny().map(each -> (EncryptRuleConfiguration) each);
     }
-
+    
     private Collection<String> getRuleNames(final EncryptRuleConfiguration encryptRuleConfiguration) {
         return encryptRuleConfiguration.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
     }
-
+    
     private void post(final String schemaName) {
         ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName,
                 ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));

@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabas
 public final class DropDatabaseBackendHandler implements TextProtocolBackendHandler {
     
     private final DropDatabaseStatement sqlStatement;
-
+    
     private final BackendConnection backendConnection;
     
     @Override
@@ -54,7 +54,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
             throw new DBDropExistsException(sqlStatement.getDatabaseName());
         }
     }
-
+    
     private boolean isDropCurrentDatabase(final String databaseName) {
         return !Strings.isNullOrEmpty(backendConnection.getSchemaName())
                 && backendConnection.getSchemaName().equals(databaseName);

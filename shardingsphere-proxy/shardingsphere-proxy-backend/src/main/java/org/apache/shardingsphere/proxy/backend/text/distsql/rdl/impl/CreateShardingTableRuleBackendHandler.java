@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConvert
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,14 +57,14 @@ public final class CreateShardingTableRuleBackendHandler extends SchemaRequiredB
     
     private void check(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
         Collection<String> existLogicTables = getLogicTables(schemaName);
-        Set<String> duplicateTableNames = sqlStatement.getTables().stream().collect(Collectors.toMap(each -> each.getLogicTable(), each -> 1, (a, b) -> a + b))
-                .entrySet().stream().filter(entry -> entry.getValue() > 1).map(entry -> entry.getKey()).collect(Collectors.toSet());
-        duplicateTableNames.addAll(sqlStatement.getTables().stream().map(each -> each.getLogicTable()).filter(existLogicTables::contains).collect(Collectors.toSet()));
+        Set<String> duplicateTableNames = sqlStatement.getTables().stream().collect(Collectors.toMap(TableRuleSegment::getLogicTable, each -> 1, Integer::sum))
+                .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
+        duplicateTableNames.addAll(sqlStatement.getTables().stream().map(TableRuleSegment::getLogicTable).filter(existLogicTables::contains).collect(Collectors.toSet()));
         if (!duplicateTableNames.isEmpty()) {
             throw new DuplicateTablesException(duplicateTableNames);
         }
     }
-
+    
     private void create(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).iterator().next();

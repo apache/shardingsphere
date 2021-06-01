@@ -16,8 +16,8 @@
 #
 
 org.apache.shardingsphere.governance.core.registry.watcher.impl.DataSourceStateChangedWatcher
-org.apache.shardingsphere.governance.core.registry.watcher.impl.MetaDataChangedWatcher
-org.apache.shardingsphere.governance.core.registry.watcher.impl.GlobalRuleChangedWatcher
-org.apache.shardingsphere.governance.core.registry.watcher.impl.PropertiesChangedWatcher
+org.apache.shardingsphere.governance.core.registry.config.watcher.MetaDataChangedWatcher
+org.apache.shardingsphere.governance.core.registry.config.watcher.GlobalRuleChangedWatcher
+org.apache.shardingsphere.governance.core.registry.config.watcher.PropertiesChangedWatcher
 org.apache.shardingsphere.governance.core.registry.watcher.impl.TerminalStateChangedWatcher
 org.apache.shardingsphere.governance.core.registry.watcher.impl.LockChangedWatcher

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.common.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.governance.core.registry.watcher.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * Drop database discovery rule backend handler.
  */
 public final class DropDatabaseDiscoveryRuleBackendHandler extends SchemaRequiredBackendHandler<DropDatabaseDiscoveryRuleStatement> {
-
+    
     public DropDatabaseDiscoveryRuleBackendHandler(final DropDatabaseDiscoveryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
@@ -57,7 +57,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends SchemaRequire
                         .isEmpty() ? Collections.emptyList() : Collections.singletonList(yamlDatabaseDiscoveryRuleConfiguration)));
         return new UpdateResponseHeader(sqlStatement);
     }
-
+    
     private DatabaseDiscoveryRuleConfiguration getDatabaseDiscoveryRuleConfiguration(final String schemaName, final Collection<String> droppedRuleNames) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst();
@@ -66,7 +66,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends SchemaRequire
         }
         return ruleConfig.get();
     }
-
+    
     private YamlDatabaseDiscoveryRuleConfiguration getYamlDatabaseDiscoveryRuleConfiguration(final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration) {
         return new YamlRuleConfigurationSwapperEngine()
                 .swapToYamlRuleConfigurations(Collections.singletonList(databaseDiscoveryRuleConfiguration)).stream()
@@ -80,7 +80,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends SchemaRequire
             throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistedRuleNames);
         }
     }
-
+    
     private void drop(final YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
         for (String each : sqlStatement.getRuleNames()) {
             yamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes()

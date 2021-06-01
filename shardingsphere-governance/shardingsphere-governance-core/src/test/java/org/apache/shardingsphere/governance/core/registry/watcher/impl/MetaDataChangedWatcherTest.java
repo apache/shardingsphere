@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.watcher.impl;
 
+import org.apache.shardingsphere.governance.core.registry.config.watcher.MetaDataChangedWatcher;
 import org.apache.shardingsphere.governance.core.registry.watcher.event.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
