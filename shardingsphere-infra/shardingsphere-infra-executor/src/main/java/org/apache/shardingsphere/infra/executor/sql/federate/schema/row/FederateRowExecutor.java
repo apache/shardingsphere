@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.row;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.calcite.DataContext;
+import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -29,6 +30,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator.FederateExecutionContextGenerator;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator.FederateExecutionSQLGenerator;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
@@ -39,6 +42,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -56,18 +60,25 @@ public final class FederateRowExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
-    @Getter
-    private final ExecutionContext initialExecutionContext;
+    private final ExecutionContext routeExecutionContext;
     
     private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
     /**
      * Execute.
      *
-     * @param context context
+     * @param logicTable logic table
+     * @param root root
+     * @param filters filter
+     * @param projects projects
      * @return a query result list
      */
-    public Collection<QueryResult> execute(final ExecutionContext context) {
+    public Collection<QueryResult> execute(final String logicTable, final DataContext root, final List<RexNode> filters, final int[] projects) {
+        FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(logicTable, routeExecutionContext, new FederateExecutionSQLGenerator(root, filters, projects));
+        return execute(generator.generate());
+    }
+    
+    private Collection<QueryResult> execute(final ExecutionContext context) {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(context);
             ExecuteProcessEngine.initialize(context.getSqlStatementContext(), executionGroupContext, props);

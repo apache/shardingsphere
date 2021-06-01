@@ -30,16 +30,16 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 
 /**
- * Federate table execute context generator.
+ * Federate table execution context generator.
  */
 @RequiredArgsConstructor
-public final class FederateExecuteContextGenerator {
+public final class FederateExecutionContextGenerator {
     
     private final String table;
     
-    private final ExecutionContext initialExecutionContext;
+    private final ExecutionContext routeExecutionContext;
     
-    private final FederateExecuteSQLGenerator filter;
+    private final FederateExecutionSQLGenerator generator;
     
     /**
      * Create execution context.
@@ -47,24 +47,24 @@ public final class FederateExecuteContextGenerator {
      * @return execution context
      */
     public ExecutionContext generate() {
-        RouteContext routeContext = getRouteContext(initialExecutionContext.getRouteContext());
-        return new ExecutionContext(initialExecutionContext.getSqlStatementContext(),
-                getExecutionUnits(routeContext.getRouteUnits(), filter), routeContext);
+        RouteContext routeContext = getRouteContext(routeExecutionContext.getRouteContext());
+        return new ExecutionContext(routeExecutionContext.getSqlStatementContext(),
+                getExecutionUnits(routeContext.getRouteUnits(), generator), routeContext);
     }
     
-    private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits, final FederateExecuteSQLGenerator filter) {
+    private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits, final FederateExecutionSQLGenerator generator) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         for (RouteUnit each: routeUnits) {
-            fillExecutionUnits(result, filter, each);
+            fillExecutionUnits(result, generator, each);
         }
         return result;
     }
     
-    private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final FederateExecuteSQLGenerator filter, final RouteUnit routeUnit) {
+    private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final FederateExecutionSQLGenerator generator, final RouteUnit routeUnit) {
         for (RouteMapper mapper : routeUnit.getTableMappers()) {
             if (mapper.getLogicName().equals(table)) {
                 executionUnits.add(new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(),
-                        new SQLUnit(filter.generate(mapper.getActualName()), Collections.emptyList(), Collections.singletonList(mapper))));
+                        new SQLUnit(generator.generate(mapper.getActualName()), Collections.emptyList(), Collections.singletonList(mapper))));
             }
         }
     }
