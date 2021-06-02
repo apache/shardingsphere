@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.registry.config.service.GlobalRegistryService;
-import org.apache.shardingsphere.governance.core.registry.config.service.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
 import org.apache.shardingsphere.governance.core.registry.state.service.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;

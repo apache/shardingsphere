@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service.node;
+package org.apache.shardingsphere.governance.core.registry.config.node;
 
 import org.junit.Test;
 
