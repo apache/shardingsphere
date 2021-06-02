@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.metadata.watcher;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
-import org.apache.shardingsphere.governance.core.registry.cache.CacheNode;
+import org.apache.shardingsphere.governance.core.registry.cache.node.CacheNode;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;

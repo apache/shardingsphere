@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.cache;
+package org.apache.shardingsphere.governance.core.registry.cache.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.governance.core.registry.cache.RegistryCacheManager;
+import org.apache.shardingsphere.governance.core.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;

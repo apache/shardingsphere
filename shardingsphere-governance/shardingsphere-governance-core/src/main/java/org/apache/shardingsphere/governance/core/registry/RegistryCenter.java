@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.lock.service.LockRegistryService;
-import org.apache.shardingsphere.governance.core.registry.cache.ScalingRegistrySubscriber;
+import org.apache.shardingsphere.governance.core.registry.cache.subscriber.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRuleRegistryService;

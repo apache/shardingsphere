@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.cache;
+package org.apache.shardingsphere.governance.core.registry.cache.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
