@@ -23,18 +23,18 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.lock.ShardingSphereDistributeLock;
-import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.state.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.schema.SchemaChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.state.event.PrimaryStateChangedEvent;
+import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -273,7 +273,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final DataSourceAlteredEvent event) throws SQLException {
+    public synchronized void renew(final DataSourceChangedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
         Map<String, ShardingSphereMetaData> newMetaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         newMetaDataMap.remove(schemaName);

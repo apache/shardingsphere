@@ -61,14 +61,14 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     @Override
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
         check(schemaName, sqlStatement);
-        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = DataSourceParameterConverter.getDataSourceConfigurationMap(
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
-        Collection<String> invalidDataSourceNames = dataSourceConfigurationMap.entrySet()
+        Collection<String> invalidDataSourceNames = dataSourceConfigMap.entrySet()
                 .stream().filter(entry -> !dataSourceValidator.validate(entry.getValue())).map(Entry::getKey).collect(Collectors.toList());
         if (!invalidDataSourceNames.isEmpty()) {
             throw new InvalidResourceException(invalidDataSourceNames);
         }
-        post(schemaName, dataSourceConfigurationMap);
+        post(schemaName, dataSourceConfigMap);
         return new UpdateResponseHeader(sqlStatement);
     }
     

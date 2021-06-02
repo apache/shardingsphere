@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.cache.node.CacheNode;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.schema.SchemaChangedEvent;
@@ -93,7 +93,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
             return Optional.empty();
         }
         if (isDataSourceChangedEvent(schemaName, event.getKey())) {
-            return Optional.of(createDataSourceAlteredEvent(schemaName, event));
+            return Optional.of(createDataSourceChangedEvent(schemaName, event));
         }
         if (isRuleChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createRuleChangedEvent(schemaName, event));
@@ -112,12 +112,12 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     @SuppressWarnings("unchecked")
-    private DataSourceAlteredEvent createDataSourceAlteredEvent(final String schemaName, final DataChangedEvent event) {
+    private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
         Map<String, DataSourceConfiguration> dataSourceConfigs = yamlDataSources.isEmpty() ? new HashMap<>()
                 : yamlDataSources.entrySet().stream().collect(Collectors.toMap(
                     Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new DataSourceAlteredEvent(schemaName, dataSourceConfigs);
+        return new DataSourceChangedEvent(schemaName, dataSourceConfigs);
     }
     
     private boolean isRuleChangedEvent(final String schemaName, final String eventPath) {
