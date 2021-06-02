@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForUpd
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForUpdateClauseListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntoClauseContext;
@@ -89,6 +90,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
@@ -296,7 +298,16 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         if (null != ctx.groupByClause()) {
             result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
+        if (null != ctx.havingClause()) {
+            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+        }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitHavingClause(final HavingClauseContext ctx) {
+        ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
+        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
     }
     
     @Override

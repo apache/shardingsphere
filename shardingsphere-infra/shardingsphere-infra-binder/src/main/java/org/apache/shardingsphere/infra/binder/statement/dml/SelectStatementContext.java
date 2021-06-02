@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -112,15 +113,16 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private int generateOrderByStartIndex() {
+        SelectStatement sqlStatement = getSqlStatement();
         int stopIndex;
-        if (getSqlStatement().getWindow().isPresent()) {
-            stopIndex = getSqlStatement().getWindow().get().getStopIndex();
-        } else if (getSqlStatement().getHaving().isPresent()) {
-            stopIndex = getSqlStatement().getHaving().get().getStopIndex();
-        } else if (getSqlStatement().getGroupBy().isPresent()) {
-            stopIndex = getSqlStatement().getGroupBy().get().getStopIndex();
-        } else if (getSqlStatement().getWhere().isPresent()) {
-            stopIndex = getSqlStatement().getWhere().get().getStopIndex();
+        if (SelectStatementHandler.getWindowSegment(sqlStatement).isPresent()) {
+            stopIndex = SelectStatementHandler.getWindowSegment(sqlStatement).get().getStopIndex();
+        } else if (sqlStatement.getHaving().isPresent()) {
+            stopIndex = sqlStatement.getHaving().get().getStopIndex();
+        } else if (sqlStatement.getGroupBy().isPresent()) {
+            stopIndex = sqlStatement.getGroupBy().get().getStopIndex();
+        } else if (sqlStatement.getWhere().isPresent()) {
+            stopIndex = sqlStatement.getWhere().get().getStopIndex();
         } else {
             stopIndex = getAllSimpleTableSegments().stream().mapToInt(SimpleTableSegment::getStopIndex).max().orElse(0);
         }

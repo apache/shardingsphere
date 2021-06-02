@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -48,8 +47,6 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     private GroupBySegment groupBy;
     
     private HavingSegment having;
-    
-    private WindowSegment window;
     
     private OrderBySegment orderBy;
     
@@ -78,15 +75,6 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
      */
     public Optional<HavingSegment> getHaving() {
         return Optional.ofNullable(having);
-    }
-    
-    /**
-     * Get window segment.
-     *
-     * @return window segment
-     */
-    public Optional<WindowSegment> getWindow() {
-        return Optional.ofNullable(window);
     }
     
     /**

@@ -627,8 +627,8 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public ASTNode visitHavingClause(final HavingClauseContext ctx) {
-        ASTNode segment = visit(ctx.expr());
-        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) segment);
+        ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
+        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
     }
     
     @Override
