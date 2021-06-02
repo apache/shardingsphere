@@ -35,8 +35,8 @@ import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,43 +52,46 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     
     @Override
     public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) {
-        Collection<String> resourceNames = sqlStatement.getResourceNames();
-        check(schemaName, resourceNames);
-        Map<String, DataSource> dataSources = drop(schemaName, resourceNames);
-        post(schemaName, dataSources);
+        check(schemaName, sqlStatement.getResourceNames());
+        drop(schemaName, sqlStatement.getResourceNames());
+        post(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources());
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final String schemaName, final Collection<String> resourceNames) {
-        Map<String, DataSource> resourceMap = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
-        if (null == resourceMap || resourceMap.isEmpty()) {
-            throw new ResourceNotExistedException(schemaName, resourceNames);
-        }
-        Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resourceMap.containsKey(each)).collect(Collectors.toList());
+    private void check(final String schemaName, final Collection<String> toBeDroppedResourceNames) {
+        checkResourceNameExisted(schemaName, toBeDroppedResourceNames);
+        checkResourceNameNotInUse(schemaName, toBeDroppedResourceNames);
+    }
+    
+    private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) {
+        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
+        Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
         if (!notExistedResourceNames.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistedResourceNames);
         }
-        Collection<ShardingSphereRule> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getRules();
-        Set<String> useResources = new HashSet<>();
-        for (ShardingSphereRule each : ruleConfig) {
-            if (each instanceof DataSourceContainedRule) {
-                useResources = getResources((DataSourceContainedRule) each);
-            } else if (each instanceof DataNodeContainedRule) {
-                useResources = getResources((DataNodeContainedRule) each);
-            }
-        }
-        Collection<String> conflictResources = new LinkedList<>();
-        for (String each : resourceNames) {
-            if (useResources.contains(each)) {
-                conflictResources.add(each);
-            }
-        }
-        if (!conflictResources.isEmpty()) {
-            throw new ResourceInUsedException(conflictResources);
+    }
+    
+    private void checkResourceNameNotInUse(final String schemaName, final Collection<String> toBeDroppedResourceNames) {
+        Collection<String> inUsedResourceNames = getInUsedResourceNames(schemaName);
+        inUsedResourceNames.retainAll(toBeDroppedResourceNames);
+        if (!inUsedResourceNames.isEmpty()) {
+            throw new ResourceInUsedException(inUsedResourceNames);
         }
     }
     
-    private Set<String> getResources(final DataSourceContainedRule rule) {
+    private Collection<String> getInUsedResourceNames(final String schemaName) {
+        for (ShardingSphereRule each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getRules()) {
+            if (each instanceof DataSourceContainedRule) {
+                return getInUsedResourceNames((DataSourceContainedRule) each);
+            }
+            if (each instanceof DataNodeContainedRule) {
+                return getInUsedResourceNames((DataNodeContainedRule) each);
+            }
+        }
+        return Collections.emptyList();
+    }
+    
+    private Set<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<String> each : rule.getDataSourceMapper().values()) {
             result.addAll(each);
@@ -96,7 +99,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         return result;
     }
     
-    private Set<String> getResources(final DataNodeContainedRule rule) {
+    private Set<String> getInUsedResourceNames(final DataNodeContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
             result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toList()));
@@ -104,12 +107,10 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         return result;
     }
     
-    private Map<String, DataSource> drop(final String schemaName, final Collection<String> resourceNames) {
-        Map<String, DataSource> result = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
-        for (String each : resourceNames) {
-            result.remove(each);
+    private void drop(final String schemaName, final Collection<String> toBeDroppedResourceNames) {
+        for (String each : toBeDroppedResourceNames) {
+            ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().remove(each);
         }
-        return result;
     }
     
     private void post(final String schemaName, final Map<String, DataSource> dataSources) {
