@@ -82,7 +82,7 @@ public final class ShardingResultMergerEngineTest {
     private void assertNewInstanceWithSelectStatement(final SelectStatement selectStatement) {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SelectStatementContext sqlStatementContext = new SelectStatementContext(selectStatement,
-                new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
+                new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), null, props, sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
     }

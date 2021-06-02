@@ -68,7 +68,7 @@ public final class OrderByStreamMergedResultTest {
         OrderByContext orderByContext = new OrderByContext(Arrays.asList(
             new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
             new OrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), false);
-        selectStatementContext = new SelectStatementContext(selectStatement, new GroupByContext(Collections.emptyList(), 0), orderByContext,
+        selectStatementContext = new SelectStatementContext(selectStatement, new GroupByContext(Collections.emptyList()), orderByContext,
             new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
     }
     

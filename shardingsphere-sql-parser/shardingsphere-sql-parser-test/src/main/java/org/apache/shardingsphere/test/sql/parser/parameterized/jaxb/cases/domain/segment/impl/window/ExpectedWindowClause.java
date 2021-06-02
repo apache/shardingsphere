@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.select.groupby;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.window;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 /**
- * Group by context.
+ * Expected window clause.
  */
-@RequiredArgsConstructor
 @Getter
-public final class GroupByContext {
-    
-    private final Collection<OrderByItem> items;
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedWindowClause extends AbstractExpectedSQLSegment {
 }

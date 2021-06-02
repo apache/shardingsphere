@@ -46,7 +46,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     @Test
     public void assertNextForSkipAll() throws SQLException {
         SelectStatementContext selectStatementContext = new SelectStatementContext(new SQLServerSelectStatement(), 
-                new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
+                new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, Integer.MAX_VALUE, true), null, Collections.emptyList()));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
@@ -58,7 +58,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     public void assertNextWithoutOffsetWithRowCount() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
         SelectStatementContext selectStatementContext = new SelectStatementContext(new SQLServerSelectStatement(), 
-                new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
+                new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(null, new NumberLiteralLimitValueSegment(0, 0, 5), Collections.emptyList()));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
@@ -72,7 +72,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     public void assertNextWithOffsetWithoutRowCount() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
         SelectStatementContext selectStatementContext = new SelectStatementContext(new SQLServerSelectStatement(), 
-                new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
+                new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), 
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), null, Collections.emptyList()));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
@@ -86,7 +86,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     public void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
         SelectStatementContext selectStatementContext = new SelectStatementContext(new SQLServerSelectStatement(), 
-                new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
+                new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 2, false), new NumberLiteralLimitValueSegment(0, 0, 4), Collections.emptyList()));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);
@@ -99,7 +99,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     public void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeRegistry.getActualDatabaseType("SQLServer"));
         SelectStatementContext selectStatementContext = new SelectStatementContext(new SQLServerSelectStatement(), 
-                new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
+                new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(new NumberLiteralRowNumberValueSegment(0, 0, 2, true), new NumberLiteralLimitValueSegment(0, 0, 4), Collections.emptyList()));
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, null);

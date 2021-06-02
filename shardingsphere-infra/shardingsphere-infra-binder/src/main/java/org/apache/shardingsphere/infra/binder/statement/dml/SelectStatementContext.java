@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -74,6 +75,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private final PaginationContext paginationContext;
     
     private final boolean containsSubquery;
+    
+    private final int generateOrderByStartIndex;
 
     // TODO to be remove, for test case only
     public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
@@ -85,6 +88,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         this.projectionsContext = projectionsContext;
         this.paginationContext = paginationContext;
         containsSubquery = containsSubquery();
+        generateOrderByStartIndex = generateOrderByStartIndex();
     }
     
     public SelectStatementContext(final ShardingSphereSchema schema, final List<Object> parameters, final SelectStatement sqlStatement) {
@@ -95,6 +99,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
+        generateOrderByStartIndex = generateOrderByStartIndex();
     }
     
     private boolean containsSubquery() {
@@ -105,6 +110,23 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             }
         }
         return false;
+    }
+    
+    private int generateOrderByStartIndex() {
+        SelectStatement sqlStatement = getSqlStatement();
+        int stopIndex;
+        if (SelectStatementHandler.getWindowSegment(sqlStatement).isPresent()) {
+            stopIndex = SelectStatementHandler.getWindowSegment(sqlStatement).get().getStopIndex();
+        } else if (sqlStatement.getHaving().isPresent()) {
+            stopIndex = sqlStatement.getHaving().get().getStopIndex();
+        } else if (sqlStatement.getGroupBy().isPresent()) {
+            stopIndex = sqlStatement.getGroupBy().get().getStopIndex();
+        } else if (sqlStatement.getWhere().isPresent()) {
+            stopIndex = sqlStatement.getWhere().get().getStopIndex();
+        } else {
+            stopIndex = getAllSimpleTableSegments().stream().mapToInt(SimpleTableSegment::getStopIndex).max().orElse(0);
+        }
+        return stopIndex + 1;
     }
     
     /**

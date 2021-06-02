@@ -95,7 +95,7 @@ public final class OrderByContextEngineTest {
         OrderByItem orderByItem1 = new OrderByItem(new IndexOrderByItemSegment(0, 1, 1, OrderDirection.ASC, OrderDirection.DESC));
         OrderByItem orderByItem2 = new OrderByItem(new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, OrderDirection.DESC));
         Collection<OrderByItem> orderByItems = Arrays.asList(orderByItem1, orderByItem2);
-        GroupByContext groupByContext = new GroupByContext(orderByItems, 0);
+        GroupByContext groupByContext = new GroupByContext(orderByItems);
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(new ShardingSphereSchema(), selectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems(), is(orderByItems));
         assertTrue(actualOrderByContext.isGenerated());
@@ -132,7 +132,7 @@ public final class OrderByContextEngineTest {
         OrderByItemSegment indexOrderByItemSegment2 = new IndexOrderByItemSegment(2, 3, 3, OrderDirection.ASC, OrderDirection.DESC);
         OrderBySegment orderBySegment = new OrderBySegment(0, 1, Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
         selectStatement.setOrderBy(orderBySegment);
-        GroupByContext emptyGroupByContext = new GroupByContext(Collections.emptyList(), 0);
+        GroupByContext emptyGroupByContext = new GroupByContext(Collections.emptyList());
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(new ShardingSphereSchema(), selectStatement, emptyGroupByContext);
         OrderByItem expectedOrderByItem1 = new OrderByItem(columnOrderByItemSegment);
         OrderByItem expectedOrderByItem2 = new OrderByItem(indexOrderByItemSegment1);
@@ -176,7 +176,7 @@ public final class OrderByContextEngineTest {
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(list);
         selectStatement.setProjections(projectionsSegment);
-        GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
+        GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(new ShardingSphereSchema(), selectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems().size(), is(list.size()));
         List<OrderByItem> items = (List<OrderByItem>) actualOrderByContext.getItems();
@@ -189,7 +189,7 @@ public final class OrderByContextEngineTest {
     public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnPlainQuery() {
         SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
         when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
-        GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
+        GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(getShardingSphereSchemaForMySQLSelectWithoutOrderBy(), selectStatement, groupByContext);
         assertTrue(actualOrderByContext.isGenerated());
         assertThat(actualOrderByContext.getItems().size(), is(1));
@@ -203,7 +203,7 @@ public final class OrderByContextEngineTest {
         when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
         when(selectStatement.getOrderBy()).thenReturn(Optional.of(new OrderBySegment(0, 1, Collections.singleton(new ColumnOrderByItemSegment(
             new ColumnSegment(0, 1, new IdentifierValue("order_id")), OrderDirection.ASC)))));
-        GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
+        GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(getShardingSphereSchemaForMySQLSelectWithoutOrderBy(), selectStatement, groupByContext);
         assertFalse(actualOrderByContext.isGenerated());
         assertThat(actualOrderByContext.getItems().size(), is(1));
