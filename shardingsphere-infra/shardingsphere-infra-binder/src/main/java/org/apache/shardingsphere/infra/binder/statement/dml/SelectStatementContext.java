@@ -74,6 +74,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private final PaginationContext paginationContext;
     
     private final boolean containsSubquery;
+    
+    private final int generateOrderByStartIndex;
 
     // TODO to be remove, for test case only
     public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
@@ -85,6 +87,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         this.projectionsContext = projectionsContext;
         this.paginationContext = paginationContext;
         containsSubquery = containsSubquery();
+        generateOrderByStartIndex = generateOrderByStartIndex();
     }
     
     public SelectStatementContext(final ShardingSphereSchema schema, final List<Object> parameters, final SelectStatement sqlStatement) {
@@ -95,6 +98,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
+        generateOrderByStartIndex = generateOrderByStartIndex();
     }
     
     private boolean containsSubquery() {
@@ -105,6 +109,22 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             }
         }
         return false;
+    }
+    
+    private int generateOrderByStartIndex() {
+        int stopIndex;
+        if (getSqlStatement().getWindow().isPresent()) {
+            stopIndex = getSqlStatement().getWindow().get().getStopIndex();
+        } else if (getSqlStatement().getHaving().isPresent()) {
+            stopIndex = getSqlStatement().getHaving().get().getStopIndex();
+        } else if (getSqlStatement().getGroupBy().isPresent()) {
+            stopIndex = getSqlStatement().getGroupBy().get().getStopIndex();
+        } else if (getSqlStatement().getWhere().isPresent()) {
+            stopIndex = getSqlStatement().getWhere().get().getStopIndex();
+        } else {
+            stopIndex = getAllSimpleTableSegments().stream().mapToInt(SimpleTableSegment::getStopIndex).max().orElse(0);
+        }
+        return stopIndex + 1;
     }
     
     /**

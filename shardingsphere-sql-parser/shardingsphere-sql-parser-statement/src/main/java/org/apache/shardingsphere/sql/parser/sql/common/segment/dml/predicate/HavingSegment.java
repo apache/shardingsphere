@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.select.groupby;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-
-import java.util.Collection;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
- * Group by context.
+ * Having segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class GroupByContext {
+@Setter
+public final class HavingSegment implements SQLSegment {
     
-    private final Collection<OrderByItem> items;
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final ExpressionSegment expr;
 }

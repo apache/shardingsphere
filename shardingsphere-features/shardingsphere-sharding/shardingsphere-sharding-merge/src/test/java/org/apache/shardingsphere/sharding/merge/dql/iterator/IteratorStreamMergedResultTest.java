@@ -48,7 +48,7 @@ public final class IteratorStreamMergedResultTest {
     @Before
     public void setUp() {
         selectStatementContext = new SelectStatementContext(new MySQLSelectStatement(), 
-                new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false), 
+                new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
     }
     
