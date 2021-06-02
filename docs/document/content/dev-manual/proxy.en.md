@@ -29,3 +29,14 @@ chapter = true
 | OracleRecognizer        |  Use Oracle JDBC driver to execute SQL     |
 | SQLServerRecognizer     |  Use SQLServer JDBC driver to execute SQL  |
 | H2Recognizer            |  Use H2 JDBC driver to execute SQL         |
+
+## AuthorityProvideAlgorithm
+
+| *SPI Name*                       | *Description*                 |
+| ------------------------------- | ------------------------------ |
+| AuthorityProvideAlgorithm       | User authority loading logic   |
+
+| *Implementation Class*                             | *Description*                                                  |
+| -------------------------------------------------- | -------------------------------------------------------------- |
+| NativeAuthorityProviderAlgorithm                   | Persist user authority into the backend database               |
+| AllPrivilegesPermittedAuthorityProviderAlgorithm   | All privileges granted to user by default (No authentication)  |
