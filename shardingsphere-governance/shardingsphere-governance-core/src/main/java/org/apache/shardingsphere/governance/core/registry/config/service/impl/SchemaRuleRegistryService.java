@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.config.service.SchemaBasedRegistryService;
-import org.apache.shardingsphere.governance.core.registry.config.service.node.SchemaMetadataNode;
+import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;

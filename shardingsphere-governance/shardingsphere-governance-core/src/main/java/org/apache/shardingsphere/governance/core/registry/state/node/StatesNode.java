@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.state.service;
+package org.apache.shardingsphere.governance.core.registry.state.node;
 
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
+import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
 
 import java.util.ArrayList;
 import java.util.Collection;

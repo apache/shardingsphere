@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.cache;
+package org.apache.shardingsphere.governance.core.schema;
 
+import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+
+import java.util.List;
 
 /**
- * Start scaling event.
+ * Governance schema.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StartScalingEvent {
+public final class GovernanceSchema {
     
     private final String schemaName;
     
-    private final String sourceDataSource;
+    private final String dataSourceName;
     
-    private final String sourceRule;
-    
-    private final String targetDataSource;
-    
-    private final String targetRule;
-    
-    private final String ruleCacheId;
-    
-    public StartScalingEvent(final String schemaName, final String sourceDataSource, final String sourceRule, final String targetRule, final String ruleCacheId) {
-        this(schemaName, sourceDataSource, sourceRule, sourceDataSource, targetRule, ruleCacheId);
+    public GovernanceSchema(final String value) {
+        if (value.contains(".")) {
+            List<String> values = Splitter.on(".").splitToList(value);
+            schemaName = values.get(0);
+            dataSourceName = values.get(1);
+        } else {
+            schemaName = DefaultSchema.LOGIC_NAME;
+            dataSourceName = value;
+        }
     }
 }

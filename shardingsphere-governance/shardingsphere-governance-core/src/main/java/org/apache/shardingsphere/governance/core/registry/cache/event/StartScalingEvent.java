@@ -15,22 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service.node;
+package org.apache.shardingsphere.governance.core.registry.cache.event;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class GlobalNodeTest {
+/**
+ * Start scaling event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class StartScalingEvent {
     
-    @Test
-    public void assertGetGlobalRuleNodePath() {
-        assertThat(GlobalNode.getGlobalRuleNode(), is("/rules"));
-    }
+    private final String schemaName;
     
-    @Test
-    public void assertGetPropsPath() {
-        assertThat(GlobalNode.getPropsPath(), is("/props"));
+    private final String sourceDataSource;
+    
+    private final String sourceRule;
+    
+    private final String targetDataSource;
+    
+    private final String targetRule;
+    
+    private final String ruleCacheId;
+    
+    public StartScalingEvent(final String schemaName, final String sourceDataSource, final String sourceRule, final String targetRule, final String ruleCacheId) {
+        this(schemaName, sourceDataSource, sourceRule, sourceDataSource, targetRule, ruleCacheId);
     }
 }

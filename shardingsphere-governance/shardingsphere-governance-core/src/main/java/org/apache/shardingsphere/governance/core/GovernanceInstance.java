@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.instance;
+package org.apache.shardingsphere.governance.core;
 
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.utils.IpUtils;

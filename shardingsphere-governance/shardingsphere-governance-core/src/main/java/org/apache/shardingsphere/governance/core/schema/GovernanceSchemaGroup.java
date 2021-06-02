@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.schema;
+package org.apache.shardingsphere.governance.core.schema;
 
 import java.util.Collection;
 import java.util.Collections;

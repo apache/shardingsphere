@@ -19,8 +19,8 @@ package org.apache.shardingsphere.governance.core.lock.service;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
-import org.apache.shardingsphere.governance.core.registry.state.service.StatesNode;
+import org.apache.shardingsphere.governance.core.GovernanceInstance;
+import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.Collection;

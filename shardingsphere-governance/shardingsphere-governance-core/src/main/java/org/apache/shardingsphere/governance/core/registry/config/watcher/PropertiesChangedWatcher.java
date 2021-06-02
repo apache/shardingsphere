@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.config.watcher;
 
-import org.apache.shardingsphere.governance.core.registry.config.service.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;

@@ -15,27 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.cache;
+package org.apache.shardingsphere.governance.core.registry.process.node;
 
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Cache node.
+ * Process node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CacheNode {
+public final class ProcessNode {
     
-    private static final String CACHE_NODE = "cache";
+    private static final String EXECUTION_NODE_NAME = "executionnodes";
     
     /**
-     * Get cache path.
+     * Get execution nodes path.
      *
-     * @param path path
-     * @return cache path
+     * @return execution nodes path
      */
-    public static String getCachePath(final String path) {
-        return Joiner.on("/").join(path, CACHE_NODE);
+    public static String getExecutionNodesPath() {
+        return Joiner.on("/").join("", EXECUTION_NODE_NAME);
+    }
+    
+    /**
+     * Get execution path.
+     *
+     * @param executionId execution id
+     * @return execution path
+     */
+    public static String getExecutionPath(final String executionId) {
+        return Joiner.on("/").join("", EXECUTION_NODE_NAME, executionId);
     }
 }

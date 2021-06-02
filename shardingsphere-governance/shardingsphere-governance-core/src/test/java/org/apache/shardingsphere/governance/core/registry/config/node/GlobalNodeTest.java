@@ -15,34 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.schema;
+package org.apache.shardingsphere.governance.core.registry.config.node;
 
-import com.google.common.base.Splitter;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.junit.Test;
 
-import java.util.List;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Governance schema.
- */
-@RequiredArgsConstructor
-@Getter
-public final class GovernanceSchema {
+public final class GlobalNodeTest {
     
-    private final String schemaName;
+    @Test
+    public void assertGetGlobalRuleNodePath() {
+        assertThat(GlobalNode.getGlobalRuleNode(), is("/rules"));
+    }
     
-    private final String dataSourceName;
-    
-    public GovernanceSchema(final String value) {
-        if (value.contains(".")) {
-            List<String> values = Splitter.on(".").splitToList(value);
-            schemaName = values.get(0);
-            dataSourceName = values.get(1);
-        } else {
-            schemaName = DefaultSchema.LOGIC_NAME;
-            dataSourceName = value;
-        }
+    @Test
+    public void assertGetPropsPath() {
+        assertThat(GlobalNode.getPropsPath(), is("/props"));
     }
 }
