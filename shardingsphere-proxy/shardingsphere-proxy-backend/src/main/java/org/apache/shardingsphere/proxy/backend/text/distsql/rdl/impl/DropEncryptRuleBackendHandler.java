@@ -20,47 +20,44 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Drop encrypt rule backend handler.
  */
-public final class DropEncryptRuleBackendHandler extends SchemaRequiredBackendHandler<DropEncryptRuleStatement> {
+public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropEncryptRuleStatement> {
     
     public DropEncryptRuleBackendHandler(final DropEncryptRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findFirst();
+    protected void before(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
+        Optional<EncryptRuleConfiguration> ruleConfig = getEncryptRuleConfiguration(schemaName);
         if (!ruleConfig.isPresent()) {
             throw new EncryptRulesNotExistedException(schemaName, sqlStatement.getTables());
         }
         check(schemaName, ruleConfig.get(), sqlStatement.getTables());
-        YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
-                .swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig.get())).stream()
-                .map(each -> (YamlEncryptRuleConfiguration) each).findFirst().get();
-        drop(yamlEncryptRuleConfiguration, sqlStatement.getTables());
-        post(schemaName, new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singletonList(yamlEncryptRuleConfiguration)));
-        return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    @Override
+    protected void doExecute(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
+        EncryptRuleConfiguration encryptRuleConfiguration = getEncryptRuleConfiguration(schemaName).get();
+        sqlStatement.getTables().forEach(each -> {
+            EncryptTableRuleConfiguration encryptTableRuleConfiguration = encryptRuleConfiguration.getTables()
+                    .stream().filter(tableRule -> tableRule.getName().equals(each)).findAny().get();
+            encryptRuleConfiguration.getTables().remove(encryptTableRuleConfiguration);
+            encryptTableRuleConfiguration.getColumns().forEach(column -> encryptRuleConfiguration.getEncryptors().remove(column.getEncryptorName()));
+        });
+        if (encryptRuleConfiguration.getTables().isEmpty()) {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(encryptRuleConfiguration);
+        }
     }
     
     private void check(final String schemaName, final EncryptRuleConfiguration ruleConfig, final Collection<String> droppedTables) {
@@ -69,21 +66,5 @@ public final class DropEncryptRuleBackendHandler extends SchemaRequiredBackendHa
         if (!notExistedTables.isEmpty()) {
             throw new EncryptRulesNotExistedException(schemaName, notExistedTables);
         }
-    }
-    
-    private void drop(final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration, final Collection<String> droppedTables) {
-        for (String each : droppedTables) {
-            dropEncryptors(each, yamlEncryptRuleConfiguration);
-            yamlEncryptRuleConfiguration.getTables().remove(each);
-        }
-    }
-    
-    private void dropEncryptors(final String droppedTable, final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration) {
-        yamlEncryptRuleConfiguration.getTables().get(droppedTable).getColumns()
-                .values().forEach(value -> yamlEncryptRuleConfiguration.getEncryptors().remove(value.getEncryptorName()));
-    }
-    
-    private void post(final String schemaName, final Collection<RuleConfiguration> rules) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, rules));
     }
 }

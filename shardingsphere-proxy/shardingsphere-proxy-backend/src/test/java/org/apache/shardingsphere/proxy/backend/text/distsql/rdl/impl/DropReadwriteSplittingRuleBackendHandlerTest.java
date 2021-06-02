@@ -41,6 +41,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
@@ -91,9 +92,9 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("pr_ds"));
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>(1, 1);
         loadBalancers.put("pr_ds", shardingSphereAlgorithmConfiguration);
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections
-                .singletonList(new ReadwriteSplittingRuleConfiguration(Collections
-                        .singleton(readwriteSplittingDataSourceRuleConfiguration), loadBalancers)));
+        when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>(Collections
+                .singletonList(new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections
+                        .singleton(readwriteSplittingDataSourceRuleConfiguration)), loadBalancers))));
         when(readwriteSplittingDataSourceRuleConfiguration.getName()).thenReturn("pr_ds");
         when(readwriteSplittingDataSourceRuleConfiguration.getLoadBalancerName()).thenReturn("pr_ds");
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);

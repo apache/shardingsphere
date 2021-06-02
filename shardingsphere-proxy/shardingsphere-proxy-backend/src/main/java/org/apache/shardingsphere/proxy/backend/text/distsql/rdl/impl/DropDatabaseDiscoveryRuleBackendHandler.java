@@ -19,58 +19,45 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.common.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Drop database discovery rule backend handler.
  */
-public final class DropDatabaseDiscoveryRuleBackendHandler extends SchemaRequiredBackendHandler<DropDatabaseDiscoveryRuleStatement> {
+public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<DropDatabaseDiscoveryRuleStatement> {
     
     public DropDatabaseDiscoveryRuleBackendHandler(final DropDatabaseDiscoveryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName, sqlStatement.getRuleNames());
-        check(schemaName, databaseDiscoveryRuleConfiguration, sqlStatement);
-        YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration = getYamlDatabaseDiscoveryRuleConfiguration(databaseDiscoveryRuleConfiguration);
-        drop(yamlDatabaseDiscoveryRuleConfiguration, sqlStatement);
-        post(schemaName, new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(yamlDatabaseDiscoveryRuleConfiguration.getDataSources()
-                        .isEmpty() ? Collections.emptyList() : Collections.singletonList(yamlDatabaseDiscoveryRuleConfiguration)));
-        return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    private DatabaseDiscoveryRuleConfiguration getDatabaseDiscoveryRuleConfiguration(final String schemaName, final Collection<String> droppedRuleNames) {
-        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst();
+    protected void before(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
+        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = getDatabaseDiscoveryRuleConfiguration(schemaName);
         if (!ruleConfig.isPresent()) {
-            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, droppedRuleNames);
+            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
-        return ruleConfig.get();
+        check(schemaName, ruleConfig.get(), sqlStatement);
     }
     
-    private YamlDatabaseDiscoveryRuleConfiguration getYamlDatabaseDiscoveryRuleConfiguration(final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration) {
-        return new YamlRuleConfigurationSwapperEngine()
-                .swapToYamlRuleConfigurations(Collections.singletonList(databaseDiscoveryRuleConfiguration)).stream()
-                .map(each -> (YamlDatabaseDiscoveryRuleConfiguration) each).findFirst().get();
+    @Override
+    protected void doExecute(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
+        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName).get();
+        sqlStatement.getRuleNames().forEach(each -> {
+            DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration = databaseDiscoveryRuleConfiguration.getDataSources()
+                    .stream().filter(dataSource -> dataSource.getName().equals(each)).findAny().get();
+            databaseDiscoveryRuleConfiguration.getDataSources().remove(databaseDiscoveryDataSourceRuleConfiguration);
+            databaseDiscoveryRuleConfiguration.getDiscoveryTypes().remove(databaseDiscoveryDataSourceRuleConfiguration.getDiscoveryTypeName());
+        });
+        if (databaseDiscoveryRuleConfiguration.getDataSources().isEmpty()) {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(databaseDiscoveryRuleConfiguration);
+        }
     }
     
     private void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
@@ -79,17 +66,5 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends SchemaRequire
         if (!notExistedRuleNames.isEmpty()) {
             throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistedRuleNames);
         }
-    }
-    
-    private void drop(final YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
-        for (String each : sqlStatement.getRuleNames()) {
-            yamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes()
-                    .remove(yamlDatabaseDiscoveryRuleConfiguration.getDataSources().get(each).getDiscoveryTypeName());
-            yamlDatabaseDiscoveryRuleConfiguration.getDataSources().remove(each);
-        }
-    }
-    
-    private void post(final String schemaName, final Collection<RuleConfiguration> rules) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, rules));
     }
 }

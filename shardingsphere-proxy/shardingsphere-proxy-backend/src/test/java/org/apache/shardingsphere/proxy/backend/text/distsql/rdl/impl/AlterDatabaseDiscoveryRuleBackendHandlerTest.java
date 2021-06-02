@@ -45,6 +45,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
@@ -100,8 +101,8 @@ public final class AlterDatabaseDiscoveryRuleBackendHandlerTest {
         databaseDiscoveryRuleSegment.setDiscoveryTypeName("TEST");
         when(sqlStatement.getDatabaseDiscoveryRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections
-                .singletonList(new DatabaseDiscoveryRuleConfiguration(Collections
-                        .singleton(databaseDiscoveryDataSourceRuleConfiguration), Maps.newHashMap())));
+                .singletonList(new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections
+                        .singleton(databaseDiscoveryDataSourceRuleConfiguration)), Maps.newHashMap())));
         when(databaseDiscoveryDataSourceRuleConfiguration.getName()).thenReturn("ha_group");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
