@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.state.service;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
+import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.schema;
+package org.apache.shardingsphere.governance.core.schema;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;

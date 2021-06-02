@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.state.service;
 
-import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
+import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
 import org.junit.Test;
 
 import java.util.Arrays;
