@@ -44,6 +44,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -90,8 +91,8 @@ public final class AlterEncryptRuleBackendHandlerTest {
         EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("MD5"));
         when(sqlStatement.getEncryptRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections
-                .singletonList(new EncryptRuleConfiguration(Collections
-                        .singleton(encryptTableRuleConfiguration), Maps.newHashMap())));
+                .singletonList(new EncryptRuleConfiguration(new LinkedList<>(Collections
+                        .singleton(encryptTableRuleConfiguration)), Maps.newHashMap())));
         when(encryptTableRuleConfiguration.getName()).thenReturn("t_encrypt");
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
