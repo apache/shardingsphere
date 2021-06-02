@@ -45,11 +45,11 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     static {
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
     }
-
+    
     public AlterEncryptRuleBackendHandler(final AlterEncryptRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
-
+    
     @Override
     protected void before(final String schemaName, final AlterEncryptRuleStatement sqlStatement) {
         Optional<EncryptRuleConfiguration> ruleConfig = getEncryptRuleConfiguration(schemaName);
@@ -58,7 +58,7 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
         }
         check(schemaName, sqlStatement, ruleConfig.get());
     }
-
+    
     @Override
     protected void doExecute(final String schemaName, final AlterEncryptRuleStatement sqlStatement) {
         EncryptRuleConfiguration encryptRuleConfiguration = getEncryptRuleConfiguration(schemaName).get();
@@ -69,7 +69,7 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
         encryptRuleConfiguration.getTables().addAll(alteredEncryptRuleConfiguration.getTables());
         encryptRuleConfiguration.getEncryptors().putAll(alteredEncryptRuleConfiguration.getEncryptors());
     }
-
+    
     private void drop(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration encryptRuleConfiguration) {
         getAlteredRuleNames(sqlStatement).forEach(each -> {
             EncryptTableRuleConfiguration encryptTableRuleConfiguration = encryptRuleConfiguration.getTables()
@@ -107,7 +107,7 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
             throw new InvalidEncryptorsException(invalidEncryptors);
         }
     }
-
+    
     private Collection<String> getAlteredRuleNames(final AlterEncryptRuleStatement sqlStatement) {
         return sqlStatement.getEncryptRules()
                 .stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toList());

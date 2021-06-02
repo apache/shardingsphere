@@ -32,11 +32,11 @@ import java.util.stream.Collectors;
  * Drop database discovery rule backend handler.
  */
 public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<DropDatabaseDiscoveryRuleStatement> {
-
+    
     public DropDatabaseDiscoveryRuleBackendHandler(final DropDatabaseDiscoveryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
-
+    
     @Override
     protected void before(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = getDatabaseDiscoveryRuleConfiguration(schemaName);
@@ -45,7 +45,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
         }
         check(schemaName, ruleConfig.get(), sqlStatement);
     }
-
+    
     @Override
     protected void doExecute(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName).get();

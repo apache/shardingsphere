@@ -36,7 +36,7 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
     public DropEncryptRuleBackendHandler(final DropEncryptRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
-
+    
     @Override
     protected void before(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
         Optional<EncryptRuleConfiguration> ruleConfig = getEncryptRuleConfiguration(schemaName);
@@ -45,7 +45,7 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
         }
         check(schemaName, ruleConfig.get(), sqlStatement.getTables());
     }
-
+    
     @Override
     protected void doExecute(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
         EncryptRuleConfiguration encryptRuleConfiguration = getEncryptRuleConfiguration(schemaName).get();
@@ -59,7 +59,7 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(encryptRuleConfiguration);
         }
     }
-
+    
     private void check(final String schemaName, final EncryptRuleConfiguration ruleConfig, final Collection<String> droppedTables) {
         Collection<String> encryptTables = ruleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTables = droppedTables.stream().filter(each -> !encryptTables.contains(each)).collect(Collectors.toList());

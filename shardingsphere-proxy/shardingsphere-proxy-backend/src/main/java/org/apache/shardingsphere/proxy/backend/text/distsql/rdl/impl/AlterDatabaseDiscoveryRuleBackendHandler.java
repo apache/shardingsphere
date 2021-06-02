@@ -49,11 +49,11 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
     }
-
+    
     public AlterDatabaseDiscoveryRuleBackendHandler(final AlterDatabaseDiscoveryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
-
+    
     @Override
     protected void before(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = getDatabaseDiscoveryRuleConfiguration(schemaName);
@@ -62,7 +62,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
         }
         check(schemaName, sqlStatement, ruleConfig.get());
     }
-
+    
     @Override
     protected void doExecute(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName).get();
@@ -73,7 +73,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
         databaseDiscoveryRuleConfiguration.getDataSources().addAll(alteredDatabaseDiscoveryRuleConfiguration.getDataSources());
         databaseDiscoveryRuleConfiguration.getDiscoveryTypes().putAll(alteredDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes());
     }
-
+    
     private void drop(final AlterDatabaseDiscoveryRuleStatement sqlStatement,
                       final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration) {
         getAlteredRuleNames(sqlStatement).forEach(each -> {
@@ -83,14 +83,14 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
             databaseDiscoveryRuleConfiguration.getDiscoveryTypes().remove(databaseDiscoveryDataSourceRuleConfiguration.getDiscoveryTypeName());
         });
     }
-
+    
     private void check(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
                        final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration) {
         checkAlteredRules(schemaName, databaseDiscoveryRuleConfiguration, sqlStatement);
         checkResources(schemaName, sqlStatement);
         checkDiscoveryType(sqlStatement);
     }
-
+    
     private void checkAlteredRules(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration,
                                    final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         Set<String> existRuleNames = databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
@@ -100,7 +100,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
             throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistRuleNames);
         }
     }
-
+    
     private void checkResources(final String schemaName, final AlterDatabaseDiscoveryRuleStatement statement) {
         Collection<String> resources = new LinkedHashSet<>();
         statement.getDatabaseDiscoveryRules().forEach(each -> resources.addAll(each.getDataSources()));
@@ -109,7 +109,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
     }
-
+    
     private void checkDiscoveryType(final AlterDatabaseDiscoveryRuleStatement statement) {
         Collection<String> invalidDiscoveryTypes = statement.getDatabaseDiscoveryRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent())
@@ -118,12 +118,12 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
             throw new InvalidDatabaseDiscoveryTypesException(invalidDiscoveryTypes);
         }
     }
-
+    
     private boolean isValidResource(final String schemaName, final String resourceName) {
         return Objects.nonNull(ProxyContext.getInstance().getMetaData(schemaName).getResource())
                 && ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(resourceName);
     }
-
+    
     private Collection<String> getAlteredRuleNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         return sqlStatement.getDatabaseDiscoveryRules()
                 .stream().map(DatabaseDiscoveryRuleSegment::getName).collect(Collectors.toList());

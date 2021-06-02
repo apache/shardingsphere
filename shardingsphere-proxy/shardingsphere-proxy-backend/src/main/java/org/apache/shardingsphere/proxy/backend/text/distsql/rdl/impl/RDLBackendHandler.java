@@ -37,11 +37,11 @@ import java.util.Optional;
  * @param <T> type of SQL statement
  */
 public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
-
+    
     public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
-
+    
     @Override
     protected ResponseHeader execute(final String schemaName, final T sqlStatement) {
         before(schemaName, sqlStatement);
@@ -49,26 +49,26 @@ public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRe
         after(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
-
+    
     protected abstract void before(String schemaName, T sqlStatement);
-
+    
     protected abstract void doExecute(String schemaName, T sqlStatement);
-
+    
     private void after(final String schemaName) {
         ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName,
                 ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
     }
-
+    
     protected Optional<ReadwriteSplittingRuleConfiguration> getReadwriteSplittingRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst();
     }
-
+    
     protected Optional<EncryptRuleConfiguration> getEncryptRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findFirst();
     }
-
+    
     protected Optional<DatabaseDiscoveryRuleConfiguration> getDatabaseDiscoveryRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst();

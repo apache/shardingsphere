@@ -54,7 +54,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     public AlterReadwriteSplittingRuleBackendHandler(final AlterReadwriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
-
+    
     @Override
     protected void before(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = getReadwriteSplittingRuleConfiguration(schemaName);
@@ -63,7 +63,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
         }
         check(schemaName, sqlStatement, ruleConfig.get(), getAlteredRuleNames(sqlStatement));
     }
-
+    
     @Override
     protected void doExecute(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
         ReadwriteSplittingRuleConfiguration alterReadwriteSplittingRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
@@ -74,7 +74,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
         readwriteSplittingRuleConfiguration.getDataSources().addAll(alterReadwriteSplittingRuleConfiguration.getDataSources());
         readwriteSplittingRuleConfiguration.getLoadBalancers().putAll(alterReadwriteSplittingRuleConfiguration.getLoadBalancers());
     }
-
+    
     private void drop(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration) {
         getAlteredRuleNames(sqlStatement).forEach(each -> {
             ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration = readwriteSplittingRuleConfiguration
@@ -83,7 +83,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
             readwriteSplittingRuleConfiguration.getLoadBalancers().remove(readwriteSplittingDataSourceRuleConfiguration.getLoadBalancerName());
         });
     }
-
+    
     private void check(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement,
                        final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<String> alteredRuleNames) {
         checkAlteredRules(schemaName, ruleConfig, alteredRuleNames);
@@ -125,7 +125,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
         return Objects.nonNull(ProxyContext.getInstance().getMetaData(schemaName).getResource())
                 && ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(resourceName);
     }
-
+    
     private Collection<String> getAlteredRuleNames(final AlterReadwriteSplittingRuleStatement sqlStatement) {
         return sqlStatement.getReadwriteSplittingRules()
                 .stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toSet());

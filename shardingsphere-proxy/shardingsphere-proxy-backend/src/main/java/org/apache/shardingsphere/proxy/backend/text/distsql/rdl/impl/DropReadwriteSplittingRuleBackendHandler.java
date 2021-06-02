@@ -32,11 +32,11 @@ import java.util.stream.Collectors;
  * Drop readwrite splitting rule backend handler.
  */
 public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<DropReadwriteSplittingRuleStatement> {
-
+    
     public DropReadwriteSplittingRuleBackendHandler(final DropReadwriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
-
+    
     @Override
     protected void before(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement) {
         Optional<ReadwriteSplittingRuleConfiguration> optional = getReadwriteSplittingRuleConfiguration(schemaName);
@@ -49,7 +49,7 @@ public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHa
             throw new ReadwriteSplittingRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
     }
-
+    
     @Override
     protected void doExecute(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement) {
         ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = getReadwriteSplittingRuleConfiguration(schemaName).get();
