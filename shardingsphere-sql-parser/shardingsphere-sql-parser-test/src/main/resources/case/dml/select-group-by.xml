@@ -337,4 +337,57 @@
             <index-item index="2" start-index="81" stop-index="81" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_group_by_with_having">
+        <from>
+            <simple-table name="t_order" start-index="53" stop-index="59" />
+        </from>
+        <projections start-index="7" stop-index="46">
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <column-projection name="user_id" start-index="40" stop-index="46" />
+        </projections>
+        <group-by>
+            <column-item name="user_id" start-index="70" stop-index="76" />
+        </group-by>
+        <having start-index="78" stop-index="100">
+            <expr>
+                <binary-operation-expression start-index="85" stop-index="100">
+                    <left>
+                        <column name="orders_count" start-index="85" stop-index="96" />
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression start-index="100" stop-index="100" value="0"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+    </select>
+
+    <select sql-case-id="select_group_by_with_having_and_window">
+        <from>
+            <simple-table name="t_order" start-index="53" stop-index="59" />
+        </from>
+        <projections start-index="7" stop-index="46">
+            <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(order_id)" start-index="7" stop-index="21" />
+            <column-projection name="user_id" start-index="40" stop-index="46" />
+        </projections>
+        <group-by>
+            <column-item name="user_id" start-index="70" stop-index="76" />
+        </group-by>
+        <having start-index="78" stop-index="100">
+            <expr>
+                <binary-operation-expression start-index="85" stop-index="100">
+                    <left>
+                        <column name="orders_count" start-index="85" stop-index="96" />
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression start-index="100" stop-index="100" value="0" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+        <window start-index="102" stop-index="135" />
+    </select>
 </sql-parser-test-cases>
