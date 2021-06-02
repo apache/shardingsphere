@@ -86,7 +86,8 @@ public final class DatabaseDiscoveryRulesQueryBackendHandler extends SchemaRequi
     @Override
     public Collection<Object> getRowData() {
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = data.next();
-        Properties discoverProps = discoverTypes.get(ruleConfig.getDiscoveryTypeName()).getProps();
+        Properties discoverProps = Objects.nonNull(discoverTypes.get(ruleConfig.getDiscoveryTypeName())) 
+                ? discoverTypes.get(ruleConfig.getDiscoveryTypeName()).getProps() : null;
         return Arrays.asList(ruleConfig.getName(), Joiner.on(",").join(ruleConfig.getDataSourceNames()),
                 discoverTypes.get(ruleConfig.getDiscoveryTypeName()).getType(),
                 Objects.nonNull(discoverProps) ? Joiner.on(",").join(discoverProps.entrySet().stream()
