@@ -143,6 +143,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends SchemaRequi
     }
     
     private void post(final String schemaName) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
+        ShardingSphereEventBus.getInstance().post(
+                new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
     }
 }

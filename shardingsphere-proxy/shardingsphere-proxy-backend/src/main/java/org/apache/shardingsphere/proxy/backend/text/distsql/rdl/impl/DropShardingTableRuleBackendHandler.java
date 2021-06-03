@@ -105,7 +105,8 @@ public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBac
     
     private void post(final String schemaName) {
         // TODO should use RuleConfigurationsChangeEvent
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
+        ShardingSphereEventBus.getInstance().post(
+                new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
         // TODO Need to get the executed feedback from registry center for returning.
     }
 }
