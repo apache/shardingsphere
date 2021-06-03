@@ -773,6 +773,8 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
                 projects.setDistinctRow(true);
             }
             result.setProjections(projects);
+        } else {
+            result.setProjections(new ProjectionsSegment(-1, -1));
         }
         if (null != ctx.fromClause()) {
             TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
