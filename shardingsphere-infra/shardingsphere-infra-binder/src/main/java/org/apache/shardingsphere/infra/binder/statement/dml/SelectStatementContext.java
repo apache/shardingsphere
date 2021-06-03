@@ -160,7 +160,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private void setIndexForHaving(final Map<String, Integer> columnLabelIndexMap) {
         for (HavingColumn each : havingContext.getColumns()) {
             String columnLabel = each.getSegment().getIdentifier().getValue();
-            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s, please add alias for aggregate selections", each);
+            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s.", each);
             each.setIndex(columnLabelIndexMap.get(columnLabel));
         }
     }
