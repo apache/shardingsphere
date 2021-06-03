@@ -89,7 +89,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         this.groupByContext = groupByContext;
-        this.havingContext = null;
+        this.havingContext = new HavingContextEngine().createHavingContext(sqlStatement);
         this.orderByContext = orderByContext;
         this.projectionsContext = projectionsContext;
         this.paginationContext = paginationContext;

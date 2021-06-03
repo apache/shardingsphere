@@ -36,8 +36,8 @@ public final class MemoryQueryResultRow {
         data = load(queryResult);
     }
     
-    public MemoryQueryResultRow(final MergedResult mergedResult) throws SQLException {
-        data = load(mergedResult);
+    public MemoryQueryResultRow(final MergedResult mergedResult, final int columnCount) throws SQLException {
+        data = load(mergedResult, columnCount);
     }
     
     private Object[] load(final QueryResult queryResult) throws SQLException {
@@ -49,9 +49,9 @@ public final class MemoryQueryResultRow {
         return result;
     }
     
-    private Object[] load(final MergedResult mergedResult) throws SQLException {
-        Object[] result = new Object[2];
-        for (int i = 0; i < 2; i++) {
+    private Object[] load(final MergedResult mergedResult, final int columnCount) throws SQLException {
+        Object[] result = new Object[columnCount];
+        for (int i = 0; i < columnCount; i++) {
             result[i] = mergedResult.getValue(i + 1, Object.class);
         }
         return result;

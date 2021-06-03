@@ -21,6 +21,7 @@ import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import org.apache.shardingsphere.infra.binder.segment.select.having.HavingColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.having.HavingContext;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Decorator merged result for having.
@@ -49,13 +49,15 @@ public final class HavingDecoratorMergedResult extends MemoryMergedResult<Shardi
     @Override
     protected List<MemoryQueryResultRow> init(final ShardingRule rule, final ShardingSphereSchema schema, final SQLStatementContext sqlStatementContext, 
                                               final List<QueryResult> queryResults, final MergedResult mergedResult) throws SQLException {
-        Optional<HavingContext> havingContext = sqlStatementContext instanceof SelectStatementContext 
-                ? Optional.of(((SelectStatementContext) sqlStatementContext).getHavingContext()) : Optional.empty();
+        SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+        HavingContext havingContext = selectStatementContext.getHavingContext();
+        ProjectionsContext projectionsContext = selectStatementContext.getProjectionsContext();
         List<MemoryQueryResultRow> result = new LinkedList<>();
         while (mergedResult.next()) {
-            MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(mergedResult);
-            if (havingContext.isPresent() && havingContext.get().isHasHaving()) {
-                Object evaluate = evaluate(generateHavingExpression(havingContext.get(), memoryResultSetRow));
+            MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(mergedResult, projectionsContext.getProjections().size());
+            if (havingContext.isHasHaving()) {
+                // TODO support more expr scenario, like in, between and ... 
+                Object evaluate = evaluate(generateHavingExpression(havingContext, memoryResultSetRow));
                 if (evaluate instanceof Boolean && ((Boolean) evaluate)) {
                     result.add(memoryResultSetRow);
                 }
