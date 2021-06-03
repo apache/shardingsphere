@@ -32,6 +32,36 @@ import java.util.Properties;
 public final class TypedSPIRegistry {
     
     /**
+     * Find registered service.
+     *
+     * @param typedSPIClass typed SPI class
+     * @param type type
+     * @param props properties
+     * @param <T> type
+     * @return registered service
+     */
+    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> typedSPIClass, final String type, final Properties props) {
+        Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
+        if (serviceInstance.isPresent()) {
+            T result = serviceInstance.get();
+            convertPropertiesValueType(props, result);
+            return Optional.of(result);
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Find registered service.
+     *
+     * @param typedSPIClass typed SPI class
+     * @param <T> type
+     * @return registered service
+     */
+    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> typedSPIClass) { 
+        return ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().findFirst();
+    }
+    
+    /**
      * Get registered service.
      * 
      * @param typedSPIClass typed SPI class
@@ -41,11 +71,9 @@ public final class TypedSPIRegistry {
      * @return registered service
      */
     public static <T extends TypedSPI> T getRegisteredService(final Class<T> typedSPIClass, final String type, final Properties props) {
-        Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
-        if (serviceInstance.isPresent()) {
-            T result = serviceInstance.get();
-            result.setProps(props);
-            return result;
+        Optional<T> result = findRegisteredService(typedSPIClass, type, props);
+        if (result.isPresent()) {
+            return result.get();
         }
         throw new ServiceProviderNotFoundException(typedSPIClass, type);
     }
@@ -63,5 +91,13 @@ public final class TypedSPIRegistry {
             return serviceInstance.get();
         }
         throw new ServiceProviderNotFoundException(typedSPIClass);
+    }
+    
+    private static <T extends TypedSPI> void convertPropertiesValueType(final Properties props, final T service) {
+        if (null != props) {
+            Properties newProps = new Properties();
+            props.forEach((key, value) -> newProps.setProperty(key.toString(), null == value ? null : value.toString()));
+            service.setProps(newProps);
+        }
     }
 }

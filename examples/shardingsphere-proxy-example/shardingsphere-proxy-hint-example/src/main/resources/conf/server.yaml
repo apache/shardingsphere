@@ -33,14 +33,15 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 
-authentication:
-  users:
-    root:
-      password: root
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+    provider:
+      type: NATIVE
 
 props:
   max-connections-size-per-query: 1
-  acceptor-size: 16  # The default value is available processors count * 2.
   executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
     # LOCAL: Proxy will run with LOCAL transaction.
@@ -49,6 +50,5 @@ props:
   proxy-transaction-type: LOCAL
   proxy-opentracing-enabled: false
   proxy-hint-enabled: true
-  query-with-cipher-column: true
   sql-show: true
   check-table-metadata-enabled: false

@@ -45,6 +45,9 @@ chapter = true
 | 孟浩然 | menghaoranss|
 | 陆敬尚 | jingshanglu |
 | 端正强 | strongduanmu|
+| 郭吉伟 | Technoboy-  |
+| 吴伟杰 | TeslaCN     |
+| 邱鹿   | Lucas-307   |
 
 ## 贡献者
 

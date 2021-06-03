@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
+import Symbol, Keyword, OracleKeyword, Literals, BaseRule, Comments;
 
 insert
     : INSERT (insertSingleTable | insertMultiTable)
@@ -101,15 +101,27 @@ multipleTableNames
     ;
 
 select 
-    : unionClause
+    : selectSubquery forUpdateClause?
+    ;
+
+selectSubquery
+    : (queryBlock | selectUnionClause | parenthesisSelectSubquery) orderByClause? rowLimitingClause
+    ;
+
+selectUnionClause
+    : ((queryBlock | parenthesisSelectSubquery) orderByClause? rowLimitingClause) ((UNION ALL? | INTERSECT | MINUS) selectSubquery)+
+    ;
+
+parenthesisSelectSubquery
+    : LP_ selectSubquery RP_
     ;
 
 unionClause
-    : selectClause (UNION (ALL | DISTINCT)? selectClause)*
+    : queryBlock (UNION (ALL | DISTINCT)? queryBlock)*
     ;
 
-selectClause
-    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause? orderByClause? lockClause?
+queryBlock
+    : SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause?
     ;
 
 duplicateSpecification
@@ -174,9 +186,73 @@ havingClause
     ;
 
 subquery
-    : LP_ unionClause RP_
+    : LP_ selectSubquery RP_
     ;
-        
-lockClause
-    : FOR UPDATE 
+
+forUpdateClause
+    : FOR UPDATE (OF forUpdateClauseList)? ((NOWAIT | WAIT INTEGER_) | SKIP_SYMBOL LOCKED)?
+    ;
+
+forUpdateClauseList
+    : forUpdateClauseOption (COMMA_ forUpdateClauseOption)*
+    ;
+
+forUpdateClauseOption
+    : ((tableName | viewName) DOT_)? columnName
+    ;
+
+rowLimitingClause
+    : (OFFSET offset (ROW | ROWS))? (FETCH (FIRST | NEXT) (rowcount | percent PERCENT)? (ROW | ROWS) (ONLY | WITH TIES))?
+    ;
+
+merge
+    : MERGE hint? intoClause usingClause mergeUpdateClause? mergeInsertClause? errorLoggingClause?
+    ;
+
+hint
+    : BLOCK_COMMENT | INLINE_COMMENT
+    ;
+
+intoClause
+    : INTO (tableName | viewName) alias?
+    ;
+
+usingClause
+    : USING ((tableName | viewName) | subquery) alias? ON LP_ expr RP_
+    ;
+
+mergeUpdateClause
+    : WHEN MATCHED THEN UPDATE SET mergeSetAssignmentsClause whereClause? deleteWhereClause?
+    ;
+
+mergeSetAssignmentsClause
+    : mergeAssignment (COMMA_ mergeAssignment)*
+    ;
+
+mergeAssignment
+    : columnName EQ_ mergeAssignmentValue
+    ;
+
+mergeAssignmentValue
+    : expr | DEFAULT
+    ;
+
+deleteWhereClause
+    : DELETE whereClause
+    ;
+
+mergeInsertClause
+    : WHEN NOT MATCHED THEN INSERT mergeInsertColumn? mergeColumnValue whereClause?
+    ;
+
+mergeInsertColumn
+    : LP_ columnName (COMMA_ columnName)* RP_
+    ;
+
+mergeColumnValue
+    : VALUES LP_ (expr | DEFAULT) (COMMA_ (expr | DEFAULT))* RP_
+    ;
+
+errorLoggingClause
+    : LOG ERRORS (INTO tableName)? (LP_ simpleExpr RP_)? (REJECT LIMIT (numberLiterals | UNLIMITED))?
     ;

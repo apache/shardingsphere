@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.DescribeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ExplainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowColumnsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ShowCreateTableStatementTestCase;
@@ -51,12 +51,17 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterProcedureStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSequenceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterServerStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSessionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSynonymStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateProcedureStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSequenceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateServerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTriggerStatementTestCase;
@@ -65,13 +70,16 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropProcedureStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropSequenceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropServerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
@@ -80,6 +88,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetAutoCommitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetTransactionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.XATestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -200,7 +209,7 @@ public final class SQLParserTestCases {
     private final List<UseStatementTestCase> useTestCases = new LinkedList<>();
     
     @XmlElement(name = "describe")
-    private final List<DescribeStatementTestCase> describeTestCases = new LinkedList<>();
+    private final List<ExplainStatementTestCase> describeTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-databases")
     private final List<ShowDatabasesStatementTestCase> showDatabasesTestCases = new LinkedList<>();
@@ -241,6 +250,15 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-server")
     private final List<AlterServerStatementTestCase> alterServerTestCase = new LinkedList<>();
     
+    @XmlElement(name = "alter-session")
+    private final List<AlterSessionStatementTestCase> alterSessionTestCase = new LinkedList<>();
+
+    @XmlElement(name = "alter-synonym")
+    private final List<AlterSynonymStatementTestCase> alterSynonymTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "alter-system")
+    private final List<AlterSystemStatementTestCase> alterSystemTestCase = new LinkedList<>();
+
     @XmlElement(name = "create-database")
     private final List<CreateDatabaseStatementTestCase> createDatabaseTestCase = new LinkedList<>();
     
@@ -276,6 +294,24 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-view")
     private final List<DropViewStatementTestCase> dropViewTestCase = new LinkedList<>();
+
+    @XmlElement(name = "call")
+    private final List<CallStatementTestCase> callProcedureTestCase = new LinkedList<>();
+
+    @XmlElement(name = "xa")
+    private final List<XATestCase> xaTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "merge")
+    private final List<MergeStatementTestCase> mergeTestCase = new LinkedList<>();
+
+    @XmlElement(name = "create-sequence")
+    private final List<CreateSequenceStatementTestCase> createSequenceTestCase = new LinkedList<>();
+
+    @XmlElement(name = "alter-sequence")
+    private final List<AlterSequenceStatementTestCase> alterSequenceTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-sequence")
+    private final List<DropSequenceStatementTestCase> dropSequenceTestCase = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -330,6 +366,9 @@ public final class SQLParserTestCases {
         putAll(commonTestCases, result);
         putAll(alterFunctionTestCases, result);
         putAll(alterServerTestCase, result);
+        putAll(alterSessionTestCase, result);
+        putAll(alterSynonymTestCase, result);
+        putAll(alterSystemTestCase, result);
         putAll(alterProcedureTestCase, result);
         putAll(alterDatabaseTestCase, result);
         putAll(createViewTestCase, result);
@@ -344,6 +383,12 @@ public final class SQLParserTestCases {
         putAll(dropProcedureTestCase, result);
         putAll(dropFunctionTestCase, result);
         putAll(dropDatabaseTestCase, result);
+        putAll(callProcedureTestCase, result);
+        putAll(xaTestCase, result);
+        putAll(mergeTestCase, result);
+        putAll(createSequenceTestCase, result);
+        putAll(alterSequenceTestCase, result);
+        putAll(dropSequenceTestCase, result);
         return result;
     }
     

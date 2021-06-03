@@ -9,10 +9,11 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 
 Attributes:
 
-| *Name*         | *DataType*                                          | *Description*                             |
-| -------------- | --------------------------------------------------- | ----------------------------------------- |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\>         | Encrypt table rule configurations         |
-| encryptors (+) | Map\<String, ShardingSphereAlgorithmConfiguration\> | Encrypt algorithm name and configurations |
+| *Name*                    | *DataType*                                          | *Description*                                                                                  | *Default Value* |
+| ------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------- |
+| tables (+)                | Collection\<EncryptTableRuleConfiguration\>         | Encrypt table rule configurations                                                              |                 |
+| encryptors (+)            | Map\<String, ShardingSphereAlgorithmConfiguration\> | Encrypt algorithm name and configurations                                                      |                 |
+| queryWithCipherColumn (?) | boolean                                             | Whether query with cipher column for data encrypt. User you can use plaintext to query if have | true            |
 
 ## Encrypt Table Rule Configuration
 

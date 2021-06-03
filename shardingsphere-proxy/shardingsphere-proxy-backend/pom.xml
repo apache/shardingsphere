@@ -74,7 +74,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-replica-query-route</artifactId>
+            <artifactId>shardingsphere-readwrite-splitting-route</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-db-discovery-route</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -104,14 +109,30 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-authority-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-xa-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-scaling-mysql</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-scaling-postgresql</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test</artifactId>
+            <artifactId>shardingsphere-test-common</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         
         <dependency>

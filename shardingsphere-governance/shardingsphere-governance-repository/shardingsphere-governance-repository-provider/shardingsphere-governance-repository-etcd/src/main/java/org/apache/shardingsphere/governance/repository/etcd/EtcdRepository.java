@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.repository.etcd;
 
-import java.nio.charset.StandardCharsets;
 import com.google.common.base.Splitter;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
@@ -25,39 +24,46 @@ import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.Observers;
 import io.etcd.jetcd.Util;
 import io.etcd.jetcd.Watch;
+import io.etcd.jetcd.options.DeleteOption;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
+import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.watch.WatchEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.governance.repository.etcd.props.EtcdProperties;
+import org.apache.shardingsphere.governance.repository.etcd.props.EtcdPropertyKey;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
  * Registry repository of ETCD.
  */
-public final class EtcdRepository implements ConfigurationRepository, RegistryRepository {
+@Slf4j
+public final class EtcdRepository implements RegistryCenterRepository {
     
     private Client client;
     
     @Getter
     @Setter
     private Properties props = new Properties();
-
+    
     private EtcdProperties etcdProperties;
-
+    
     @Override
-    public void init(final String name, final GovernanceCenterConfiguration config) {
+    public void init(final String name, final RegistryCenterConfiguration config) {
         etcdProperties = new EtcdProperties(props);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).namespace(ByteSequence.from(name, StandardCharsets.UTF_8)).build();
     }
@@ -89,7 +95,7 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     public void persist(final String key, final String value) {
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8)).get();
     }
-    
+
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void persistEphemeral(final String key, final String value) {
@@ -97,42 +103,69 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> { }));
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8), PutOption.newBuilder().withLeaseId(leaseId).build()).get();
     }
-    
+
     @Override
     public void delete(final String key) {
-        client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8));
+        client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8),
+                DeleteOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build());
     }
     
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         Watch.Listener listener = Watch.listener(response -> {
             for (WatchEvent each : response.getEvents()) {
-                ChangedType changedType = getEventChangedType(each);
-                if (ChangedType.IGNORED != changedType) {
+                Type type = getEventChangedType(each);
+                if (Type.IGNORED != type) {
                     dataChangedEventListener.onChange(new DataChangedEvent(each.getKeyValue().getKey().toString(StandardCharsets.UTF_8),
-                            each.getKeyValue().getValue().toString(StandardCharsets.UTF_8), changedType));
+                            each.getKeyValue().getValue().toString(StandardCharsets.UTF_8), type));
                 }
             }
         });
-        client.getWatchClient().watch(ByteSequence.from(key, StandardCharsets.UTF_8), listener);
+        client.getWatchClient().watch(ByteSequence.from(key, StandardCharsets.UTF_8),
+                WatchOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build(), listener);
     }
     
-    private ChangedType getEventChangedType(final WatchEvent event) {
+    private Type getEventChangedType(final WatchEvent event) {
         switch (event.getEventType()) {
             case PUT:
-                return ChangedType.UPDATED;
+                return Type.UPDATED;
             case DELETE:
-                return ChangedType.DELETED;
+                return Type.DELETED;
             default:
-                return ChangedType.IGNORED;
+                return Type.IGNORED;
         }
     }
-    
+
+    @Override
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
+        try {
+            long leaseId = client.getLeaseClient().grant(etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
+            client.getLockClient().lock(ByteSequence.from(key, StandardCharsets.UTF_8), leaseId).get(time, unit);
+            return true;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("EtcdRepository tryLock error, key:{}, time:{}, unit:{}", key, time, unit, ex);
+            return false;
+        }
+    }
+
+    @Override
+    public void releaseLock(final String key) {
+        try {
+            client.getLockClient().unlock(ByteSequence.from(key, StandardCharsets.UTF_8)).get(etcdProperties.getValue(EtcdPropertyKey.CONNECTION_TIMEOUT_SECONDS), TimeUnit.SECONDS);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("EtcdRepository releaseLock error, key:{}", key, ex);
+        }
+    }
+
     @Override
     public void close() {
         client.close();
     }
-    
+
     @Override
     public String getType() {
         return "etcd";

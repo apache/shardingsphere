@@ -8,12 +8,14 @@ weight = 4
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
 ## 规则配置
+
+注：示例的数据库连接池为HikariCP，可根据业务场景更换为其他主流数据库连接池。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -27,48 +29,64 @@ weight = 4
                         ">
     <!-- 配置真实数据源 -->
     <!-- 配置第 1 个数据源 -->
-    <bean id="ds0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+    <bean id="ds0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ds0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     <!-- 配置第 2 个数据源 -->
-    <bean id="ds1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+    <bean id="ds1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ds1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     
     <!-- 配置分库策略 -->
     <sharding:sharding-algorithm id="dbShardingAlgorithm" type="INLINE">
-        <properties>
+        <props>
             <prop key="algorithm-expression">ds$->{user_id % 2}</prop>
-        </properties>
+        </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="dbStrategy" sharding-column="user_id" algorithm-ref="dbShardingAlgorithm" />
     
     <!-- 配置分表策略 -->
     <sharding:sharding-algorithm id="tableShardingAlgorithm" type="INLINE">
-        <properties>
+        <props>
             <prop key="algorithm-expression">t_order$->{order_id % 2}</prop>
-        </properties>
+        </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="tableStrategy" sharding-column="user_id" algorithm-ref="tableShardingAlgorithm" />
+
+    <!-- 配置分布式id生成策略 -->
+    <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
+           <props>
+               <prop key="worker-id">123</prop>
+           </props>
+    </sharding:key-generate-algorithm>   
+    <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+
+    <!-- 配置sharding策略 -->
+    <sharding:rule id="shardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="ds${0..1}.t_order_${0..1}" database-strategy-ref="dbStrategy" table-strategy-ref="tableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
+        </sharding:binding-table-rules>
+        <sharding:broadcast-table-rules>
+            <sharding:broadcast-table-rule table="t_address"/>
+        </sharding:broadcast-table-rules>
+    </sharding:rule>
     
     <!-- 配置ShardingSphereDataSource -->
-    <sharding:data-source id="shardingDataSource">
-        <!-- 配置分片规则 -->
-        <sharding:sharding-rule data-source-names="ds0,ds1">
-            <sharding:table-rules>
-                <!-- 配置 t_order 表规则 -->
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="dbStrategy" table-strategy-ref="tableStrategy" />
-                <!-- 省略配置 t_order_item 表规则... -->
-                <!-- ... -->
-            </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="ds0, ds1" rule-refs="shardingRule">
+        <props>
+            <prop key="sql-show">false</prop>
+        </props>
+    </shardingsphere:data-source>
+    
 </beans>
 ```
 

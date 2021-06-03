@@ -17,10 +17,12 @@
   -->
 
 <sql-parser-test-cases>
-<!--    <alter-database sql-case-id="alter_database_set_to" />-->
-<!--    <alter-database sql-case-id="alter_database_set_to_default" />-->
-<!--    <alter-database sql-case-id="alter_database_set_equal" />-->
-<!--    <alter-database sql-case-id="alter_database_reset_all" />-->
-<!--    <alter-database sql-case-id="alter_database_reset_param" />-->
-<!--    <alter-database sql-case-id="alter_database_owner" />-->
+    <alter-database sql-case-id="alter_database_mount" />
+    <alter-database sql-case-id="alter_database_open" />
+    <alter-database sql-case-id="alter_database_recovery1" />
+    <alter-database sql-case-id="alter_database_recovery2" />
+    <alter-database sql-case-id="alter_database_rename" />
+    <alter-database sql-case-id="alter_database_create1" />
+    <alter-database sql-case-id="alter_database_create2" />
+    <alter-database sql-case-id="alter_database_create3" />
 </sql-parser-test-cases>

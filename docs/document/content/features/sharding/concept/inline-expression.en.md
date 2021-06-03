@@ -141,7 +141,7 @@ db${0..1}.t_order_0${0..9}, db${0..1}.t_order_${10..20}
 Or
 
 ```
-db->${0..1}.t_order_0$->{0..9}, db$->{0..1}.t_order_$->{10..20}
+db$->{0..1}.t_order_0$->{0..9}, db$->{0..1}.t_order_$->{10..20}
 ```
 
 ## Sharding Algorithm Configuration

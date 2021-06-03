@@ -20,7 +20,9 @@ package org.apache.shardingsphere.infra.config;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -37,6 +39,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class DataSourceConfigurationTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
     
     @Test
     public void assertGetDataSourceConfiguration() throws SQLException {
@@ -71,6 +76,23 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
+    }
+    
+    @Test
+    public void assertCreateDataSourceWithIntegerPassword() {
+        Map<String, Object> props = new HashMap<>(16, 1);
+        props.put("driverClassName", "org.h2.Driver");
+        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("username", "root");
+        props.put("password", Integer.valueOf(123));
+        props.put("loginTimeout", "5000");
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        dataSourceConfig.getProps().putAll(props);
+        HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
+        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("123"));
     }
     
     @Test

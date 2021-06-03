@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.infra.context.fixture;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 
-import java.util.Collection;
+import javax.sql.DataSource;
+import java.util.Map;
 
-public final class FixtureRuleBuilder implements ShardingSphereRuleBuilder<FixtureRule, FixtureRuleConfiguration> {
+public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRule, FixtureRuleConfiguration> {
     
     @Override
-    public FixtureRule build(final FixtureRuleConfiguration ruleConfig, final Collection<String> dataSourceNames) {
+    public FixtureRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final FixtureRuleConfiguration ruleConfig) {
         return new FixtureRule();
     }
     

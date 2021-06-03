@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.governance.util.FieldValueUtil;
 import org.junit.BeforeClass;
@@ -36,7 +36,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -57,8 +56,8 @@ public final class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringCo
     
     private AlgorithmProvidedEncryptRuleConfiguration getEncryptRuleConfiguration() {
         GovernanceShardingSphereDataSource governanceDataSource = (GovernanceShardingSphereDataSource) applicationContext.getBean("encryptDataSourceGovernance");
-        SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(governanceDataSource, "schemaContexts");
-        return (AlgorithmProvidedEncryptRuleConfiguration) schemaContexts.getDefaultSchema().getConfigurations().iterator().next();
+        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(governanceDataSource, "metaDataContexts");
+        return (AlgorithmProvidedEncryptRuleConfiguration) metaDataContexts.getDefaultMetaData().getRuleMetaData().getConfigurations().iterator().next();
     }
     
     private void assertEncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {
@@ -80,14 +79,12 @@ public final class GovernanceEncryptNamespaceTest extends AbstractJUnit4SpringCo
     @Test
     public void assertProperties() {
         boolean showSQL = getProperties("encryptDataSourceGovernance").getValue(ConfigurationPropertyKey.SQL_SHOW);
-        boolean queryWithCipherColumn = getProperties("encryptDataSourceGovernance").getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN);
         assertTrue(showSQL);
-        assertFalse(queryWithCipherColumn);
     }
     
     private ConfigurationProperties getProperties(final String encryptDatasourceName) {
         GovernanceShardingSphereDataSource governanceDataSource = applicationContext.getBean(encryptDatasourceName, GovernanceShardingSphereDataSource.class);
-        SchemaContexts schemaContexts = (SchemaContexts) FieldValueUtil.getFieldValue(governanceDataSource, "schemaContexts");
-        return schemaContexts.getProps();
+        MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(governanceDataSource, "metaDataContexts");
+        return metaDataContexts.getProps();
     }
 }

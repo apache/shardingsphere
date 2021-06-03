@@ -28,13 +28,10 @@ public final class NoSuchTableException extends ShardingSphereException {
     
     private static final long serialVersionUID = 8311953084941769743L;
     
-    private final String databaseName;
-    
     private final String tableName;
     
-    public NoSuchTableException(final String databaseName, final String tableName) {
-        super(String.format("Table '%s.%s' doesn't exist", databaseName, tableName));
-        this.databaseName = databaseName;
+    public NoSuchTableException(final String tableName) {
+        super(String.format("Table '%s' doesn't exist", tableName));
         this.tableName = tableName;
     }
 }

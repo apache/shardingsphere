@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -30,11 +31,14 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.bind.PostgreSQLComBindExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.close.PostgreSQLComCloseExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe.PostgreSQLComDescribeExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.execute.PostgreSQLComExecuteExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.parse.PostgreSQLComParseExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutor;
+
+import java.sql.SQLException;
 
 /**
  * Command executor factory for PostgreSQL.
@@ -50,22 +54,26 @@ public final class PostgreSQLCommandExecutorFactory {
      * @param commandPacket command packet for PostgreSQL
      * @param backendConnection backend connection
      * @return command executor
+     * @throws SQLException SQL exception
      */
-    public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final BackendConnection backendConnection) {
+    public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, 
+                                              final PostgreSQLCommandPacket commandPacket, final BackendConnection backendConnection) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         switch (commandPacketType) {
-            case QUERY:
+            case SIMPLE_QUERY:
                 return new PostgreSQLComQueryExecutor((PostgreSQLComQueryPacket) commandPacket, backendConnection);
-            case PARSE:
+            case PARSE_COMMAND:
                 return new PostgreSQLComParseExecutor((PostgreSQLComParsePacket) commandPacket, backendConnection);
-            case BIND:
+            case BIND_COMMAND:
                 return new PostgreSQLComBindExecutor((PostgreSQLComBindPacket) commandPacket, backendConnection);
-            case DESCRIBE:
+            case DESCRIBE_COMMAND:
                 return new PostgreSQLComDescribeExecutor();
-            case EXECUTE:
+            case EXECUTE_COMMAND:
                 return new PostgreSQLComExecuteExecutor();
-            case SYNC:
-                return new PostgreSQLComSyncExecutor();
+            case SYNC_COMMAND:
+                return new PostgreSQLComSyncExecutor(backendConnection);
+            case CLOSE_COMMAND:
+                return new PostgreSQLComCloseExecutor((PostgreSQLComClosePacket) commandPacket, backendConnection);
             case TERMINATE:
                 return new PostgreSQLComTerminationExecutor();
             default:

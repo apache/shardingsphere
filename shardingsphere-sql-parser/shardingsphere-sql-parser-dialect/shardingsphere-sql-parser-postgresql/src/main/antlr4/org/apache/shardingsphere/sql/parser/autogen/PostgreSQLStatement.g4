@@ -33,9 +33,13 @@ execute
     | truncateTable
     | setTransaction
     | beginTransaction
+    | startTransaction
+    | end
     | commit
     | rollback
     | savepoint
+    | releaseSavepoint
+    | rollbackToSavepoint
     | grant
     | revoke
     | createUser
@@ -52,17 +56,30 @@ execute
     | alterDatabase
     | alterProcedure
     | alterServer
+    | alterSequence
     | createDatabase
     | createFunction
     | createProcedure
     | createServer
     | createTrigger
     | createView
+    | createSequence
     | dropDatabase
     | dropFunction
     | dropProcedure
     | dropServer
     | dropTrigger
     | dropView
+    | dropSequence
+    | vacuum
+    | prepare
+    | executeStmt
+    | deallocate
+    | explain
+    | analyzeTable
+    | load
+    | createTablespace
+    | alterTablespace
+    | dropTablespace
     ) SEMI_?
     ;

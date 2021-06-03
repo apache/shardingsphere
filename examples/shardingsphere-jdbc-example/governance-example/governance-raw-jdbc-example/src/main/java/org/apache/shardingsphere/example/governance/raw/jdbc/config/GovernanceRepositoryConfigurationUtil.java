@@ -19,7 +19,7 @@ package org.apache.shardingsphere.example.governance.raw.jdbc.config;
 
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 
 import java.util.Properties;
 
@@ -27,40 +27,17 @@ public final class GovernanceRepositoryConfigurationUtil {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
-    private static final String NACOS_CONNECTION_STRING = "localhost:8848";
-    
     public static GovernanceConfiguration getZooKeeperConfiguration(final boolean overwrite, final ShardingType shardingType) {
-        GovernanceCenterConfiguration governanceCenterConfig = new GovernanceCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, new Properties());
+        RegistryCenterConfiguration registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, new Properties());
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                return new GovernanceConfiguration("governance-sharding-data-source", governanceCenterConfig, overwrite);
-            case REPLICA_QUERY:
-                return new GovernanceConfiguration("governance-replica-query-data-source", governanceCenterConfig, overwrite);
+                return new GovernanceConfiguration("governance-sharding-data-source", registryCenterConfig, overwrite);
+            case READWRITE_SPLITTING:
+                return new GovernanceConfiguration("governance-readwrite-splitting-data-source", registryCenterConfig, overwrite);
             case ENCRYPT:
-                return new GovernanceConfiguration("governance-encrypt-data-source", governanceCenterConfig, overwrite);
+                return new GovernanceConfiguration("governance-encrypt-data-source", registryCenterConfig, overwrite);
             case SHADOW:
-                return new GovernanceConfiguration("governance-shadow-data-source", governanceCenterConfig, overwrite);
-            default:
-                throw new UnsupportedOperationException(shardingType.toString());
-        }
-    }
-    
-    public static GovernanceConfiguration getNacosConfiguration(final boolean overwrite, final ShardingType shardingType) {
-        Properties nacosProperties = new Properties();
-        nacosProperties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
-        nacosProperties.setProperty("timeout", "3000");
-        GovernanceCenterConfiguration nacosConfig = new GovernanceCenterConfiguration("Nacos", NACOS_CONNECTION_STRING, nacosProperties);
-        Properties zookeeperProperties = new Properties();
-        GovernanceCenterConfiguration zookeeperConfig = new GovernanceCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, zookeeperProperties);
-        switch (shardingType) {
-            case SHARDING_DATABASES_AND_TABLES:
-                return new GovernanceConfiguration("governance-zookeeper-sharding-data-source", zookeeperConfig, nacosConfig, overwrite);
-            case REPLICA_QUERY:
-                return new GovernanceConfiguration("governance-zookeeper-replica-query-data-source", zookeeperConfig, nacosConfig, overwrite);
-            case ENCRYPT:
-                return new GovernanceConfiguration("governance-zookeeper-encrypt-data-source", zookeeperConfig, nacosConfig, overwrite);
-            case SHADOW:
-                return new GovernanceConfiguration("governance-zookeeper-shadow-data-source", zookeeperConfig, nacosConfig, overwrite);
+                return new GovernanceConfiguration("governance-shadow-data-source", registryCenterConfig, overwrite);
             default:
                 throw new UnsupportedOperationException(shardingType.toString());
         }

@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -82,7 +82,7 @@ public final class BackendConnectionTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        setSchemaContexts();
+        setMetaDataContexts();
         setTransactionContexts();
         setBackendDataSource();
         backendConnection.setCurrentSchema(String.format(SCHEMA_PATTERN, 0));
@@ -97,18 +97,20 @@ public final class BackendConnectionTest {
         field.set(ProxyContext.getInstance(), datasource);
     }
     
-    private void setSchemaContexts() throws ReflectiveOperationException {
-        Field field = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
+    private void setMetaDataContexts() throws ReflectiveOperationException {
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), 
-                new StandardSchemaContexts(createSchemas(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        field.set(ProxyContext.getInstance(), new StandardMetaDataContexts(createMetaDataMap(), 
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties())));
     }
     
-    private Map<String, ShardingSphereSchema> createSchemas() {
-        Map<String, ShardingSphereSchema> result = new HashMap<>(10);
+    private Map<String, ShardingSphereMetaData> createMetaDataMap() {
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
-            result.put(name, mock(ShardingSphereSchema.class));
+            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+            when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            result.put(name, metaData);
         }
         return result;
     }
@@ -166,24 +168,24 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionWithMethodInvocation() throws SQLException {
+    public void assertGetConnectionWithConnectionPostProcessors() throws SQLException {
         backendConnection.getTransactionStatus().setInTransaction(true);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
-        setMethodInvocation();
+        setConnectionPostProcessors();
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
-        verify(backendConnection.getMethodInvocations().iterator().next(), times(2)).invoke(any());
+        verify(backendConnection.getConnectionPostProcessors().iterator().next(), times(2)).process(any());
         assertThat(actualConnections.size(), is(2));
         assertTrue(backendConnection.getTransactionStatus().isInTransaction());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setMethodInvocation() {
-        MethodInvocation invocation = mock(MethodInvocation.class);
-        Collection<MethodInvocation> methodInvocations = new LinkedList<>();
-        methodInvocations.add(invocation);
-        Field field = backendConnection.getClass().getDeclaredField("methodInvocations");
+    private void setConnectionPostProcessors() {
+        ConnectionPostProcessor invocation = mock(ConnectionPostProcessor.class);
+        Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
+        connectionPostProcessors.add(invocation);
+        Field field = backendConnection.getClass().getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
-        field.set(backendConnection, methodInvocations);
+        field.set(backendConnection, connectionPostProcessors);
     }
     
     @Test
@@ -263,7 +265,7 @@ public final class BackendConnectionTest {
         backendConnection.add(statement);
         Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
         field.setAccessible(true);
-        assertTrue(((Collection<Statement>) field.get(backendConnection)).contains(statement));
+        assertTrue(((Collection<?>) field.get(backendConnection)).contains(statement));
     }
     
     @Test
@@ -272,7 +274,7 @@ public final class BackendConnectionTest {
         backendConnection.add(resultSet);
         Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
         field.setAccessible(true);
-        assertTrue(((Collection<ResultSet>) field.get(backendConnection)).contains(resultSet));
+        assertTrue(((Collection<?>) field.get(backendConnection)).contains(resultSet));
     }
     
     @Test
@@ -341,7 +343,7 @@ public final class BackendConnectionTest {
         backendConnection.closeConnections(false);
         verify(connection, times(1)).close();
         assertTrue(cachedConnections.isEmpty());
-        verifyMethodInvocationsEmpty();
+        verifyConnectionPostProcessorsEmpty();
         verify(connectionStatus, times(1)).switchToReleased();
     }
     
@@ -427,10 +429,10 @@ public final class BackendConnectionTest {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private void verifyMethodInvocationsEmpty() {
-        Field field = backendConnection.getClass().getDeclaredField("methodInvocations");
+    private void verifyConnectionPostProcessorsEmpty() {
+        Field field = backendConnection.getClass().getDeclaredField("connectionPostProcessors");
         field.setAccessible(true);
-        Collection<MethodInvocation> methodInvocations = (Collection<MethodInvocation>) field.get(backendConnection);
-        assertTrue(methodInvocations.isEmpty());
+        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) field.get(backendConnection);
+        assertTrue(connectionPostProcessors.isEmpty());
     }
 }

@@ -17,21 +17,14 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
 import java.util.UUID;
 
 /**
  * UUID key generate algorithm.
  */
-@Getter
-@Setter
 public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-    
-    private Properties props = new Properties();
     
     @Override
     public void init() {

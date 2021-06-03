@@ -80,7 +80,12 @@ public final class BindingTableRule {
         throw new ShardingSphereConfigurationException("Cannot find binding actual table, data source: %s, logic table: %s, other actual table: %s", dataSource, logicTable, otherActualTable);
     }
     
-    Collection<String> getAllLogicTables() {
+    /**
+     * Get list of logical table.
+     *
+     * @return logical tables.
+     */
+    public Collection<String> getAllLogicTables() {
         return tableRules.stream().map(input -> input.getLogicTable().toLowerCase()).collect(Collectors.toList());
     }
     

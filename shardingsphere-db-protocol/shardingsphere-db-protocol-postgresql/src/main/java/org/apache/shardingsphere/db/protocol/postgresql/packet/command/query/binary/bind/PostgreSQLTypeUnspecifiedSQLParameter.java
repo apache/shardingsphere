@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
 
 /**
  * Type unspecified SQL parameter for PostgreSQL.
  */
+@RequiredArgsConstructor
 public final class PostgreSQLTypeUnspecifiedSQLParameter implements TypeUnspecifiedSQLParameter {
     
     private final String parameterValue;
-    
-    public PostgreSQLTypeUnspecifiedSQLParameter(final String parameterValue) {
-        this.parameterValue = parameterValue;
-    }
     
     @Override
     public String toString() {

@@ -1,6 +1,6 @@
 +++
 title = "ShardingSphere-UI发布指南"
-weight = 7
+weight = 8
 chapter = true
 +++
 
@@ -352,7 +352,49 @@ git push --delete origin ${RELEASE.VERSION}-release
 git branch -d ${RELEASE.VERSION}-release
 ```
 
-**3. 更新下载页面**
+**3. 发布 Docker**
+
+3.1 准备工作
+
+本地安装 Docker，并启动服务。
+
+3.2 编译 Docker 镜像
+
+```shell
+git checkout ${RELEASE.VERSION}
+cd ~/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/
+mvn clean package -Prelease,docker
+```
+
+3.3 给本地 Docker 镜像打标记
+
+通过`docker images`查看到IMAGE ID，例如为：e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/shardingsphere-ui:latest
+docker tag e9ea51023687 apache/shardingsphere-ui:${RELEASE.VERSION}
+```
+
+3.4 发布Docker镜像
+
+```shell
+docker push apache/shardingsphere-ui:latest
+docker push apache/shardingsphere-ui:${RELEASE_VERSION}
+```
+
+3.5 确认发布成功
+
+登录 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-ui/) 查看是否有发布的镜像
+
+**4. GitHub 版本发布**
+
+在 [GitHub Releases](https://github.com/apache/shardingsphere-ui/releases) 页面的 `shardingsphere-ui-${RELEASE_VERSION}` 版本上点击 `Edit`
+
+编辑版本号及版本说明，并点击 `Publish release`
+
+**5. 更新下载页面**
+
+等待并确认新的发布版本同步至 Apache 镜像后，更新如下页面：
 
 https://shardingsphere.apache.org/document/current/en/downloads/
 
@@ -362,11 +404,7 @@ GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `
 
 `最新版本`中保留一个最新的版本。Incubator阶段历史版本会自动归档到[Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
-## GitHub版本发布
-
-在[GitHub Releases](https://github.com/apache/shardingsphere-ui/releases)页面的`shardingsphere-ui-${RELEASE_VERSION}`版本上点击`Edit`
-
-编辑版本号及版本说明，并点击`Publish release`
+**6. 邮件通知版本发布完成**
 
 ## 发送邮件到`dev@shardingsphere.apache.org`和`announce@apache.org`通知完成版本发布
 
@@ -385,11 +423,11 @@ Hi all,
 
 Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere UI ${RELEASE.VERSION}.
 
-ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy. 
-They both provide functions of data sharding, distributed transaction and database governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
-Aiming at reasonably making full use of the computation and storage capacity of the database in a distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
-As the cornerstone of many enterprises, relational database still takes a huge market share. 
-Therefore, at the current stage, we prefer to focus on its increment instead of a total overturn.
+ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy.
+They both provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism and heterogeneous language.
+Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database.
+As the cornerstone of enterprises, relational database still takes a huge market share.
+Therefore, we prefer to focus on its increment instead of a total overturn.
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 

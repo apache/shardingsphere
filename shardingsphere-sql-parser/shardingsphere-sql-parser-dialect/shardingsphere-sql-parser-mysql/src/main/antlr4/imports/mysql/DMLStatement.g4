@@ -28,11 +28,23 @@ insertSpecification
     ;
 
 insertValuesClause
-    : columnNames? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
+    : (LP_ fields? RP_ )? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
+    ;
+
+fields
+    : insertIdentifier (COMMA_ insertIdentifier)*
+    ;
+
+insertIdentifier
+    : columnRef | tableWild
+    ;
+
+tableWild
+    : identifier DOT_ (identifier DOT_)? ASTERISK_
     ;
 
 insertSelectClause
-    : valueReference? columnNames? select
+    : valueReference? (LP_ fields? RP_)? select
     ;
 
 onDuplicateKeyClause
@@ -56,11 +68,11 @@ replaceSpecification
     ;
 
 replaceValuesClause
-    : columnNames? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
+    : (LP_ fields? RP_)? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference?
     ;
 
 replaceSelectClause
-    : valueReference? columnNames? select
+    : valueReference? (LP_ fields? RP_)? select
     ;
 
 update
@@ -72,7 +84,7 @@ updateSpecification_
     ;
 
 assignment
-    : columnName EQ_ assignmentValue
+    : columnRef EQ_ assignmentValue
     ;
 
 setAssignmentsClause
@@ -89,7 +101,7 @@ assignmentValue
     ;
 
 blobValue
-    : UL_BINARY STRING_
+    : UL_BINARY string_
     ;
 
 delete
@@ -106,10 +118,6 @@ singleTableClause
 
 multipleTablesClause
     : tableAliasRefList FROM tableReferences | FROM tableAliasRefList USING tableReferences
-    ;
-
-multipleTableNames
-    : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
     ;
 
 select
@@ -131,6 +139,7 @@ queryExpression
 queryExpressionBody
     : queryPrimary
     | queryExpressionParens UNION unionOption? (queryPrimary | queryExpressionParens)
+    | queryExpressionBody UNION unionOption? (queryPrimary | queryExpressionParens)
     ;
 
 queryExpressionParens
@@ -178,17 +187,21 @@ handlerCloseStatement
     ;
 
 importStatement
-    : IMPORT TABLE FROM STRING_ (COMMA_ STRING_)?
+    : IMPORT TABLE FROM string_ (COMMA_ string_)?
+    ;
+
+loadStatement
+    : loadDataStatement | loadXmlStatement
     ;
 
 loadDataStatement
     : LOAD DATA
       (LOW_PRIORITY | CONCURRENT)? LOCAL? 
-      INFILE STRING_
+      INFILE string_
       (REPLACE | IGNORE)?
       INTO TABLE tableName partitionNames?
       (CHARACTER SET identifier)?
-      ((FIELDS | COLUMNS) selectFieldsInto+ )?
+      (COLUMNS selectFieldsInto+ )?
       ( LINES selectLinesInto+ )?
       ( IGNORE numberLiterals (LINES | ROWS) )?
       fieldOrVarSpec?
@@ -198,11 +211,11 @@ loadDataStatement
 loadXmlStatement
     : LOAD XML
       (LOW_PRIORITY | CONCURRENT)? LOCAL? 
-      INFILE STRING_
+      INFILE string_
       (REPLACE | IGNORE)?
       INTO TABLE tableName
       (CHARACTER SET identifier)?
-      (ROWS IDENTIFIED BY LT_ STRING_ GT_)?
+      (ROWS IDENTIFIED BY LT_ string_ GT_)?
       ( IGNORE numberLiterals (LINES | ROWS) )?
       fieldOrVarSpec?
       (setAssignmentsClause)?
@@ -216,10 +229,6 @@ tableValueConstructor
     : VALUES rowConstructorList
     ;
 
-columnDesignator
-    : STRING_
-    ;
-
 rowConstructorList
     : ROW assignmentValues (COMMA_ ROW assignmentValues)*
     ;
@@ -229,11 +238,11 @@ withClause
     ;
 
 cteClause
-    : ignoredIdentifier columnNames? AS subquery
+    : identifier (LP_ columnNames RP_)? AS subquery
     ;
 
 selectSpecification
-    : duplicateSpecification | HIGH_PRIORITY | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | (SQL_CACHE | SQL_NO_CACHE) | SQL_CALC_FOUND_ROWS
+    : duplicateSpecification | HIGH_PRIORITY | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | SQL_NO_CACHE | SQL_CALC_FOUND_ROWS
     ;
 
 duplicateSpecification
@@ -257,23 +266,23 @@ qualifiedShorthand
     ;
 
 fromClause
-    : FROM tableReferences
+    : FROM (DUAL | tableReferences)
     ;
 
 tableReferences
-    : escapedTableReference (COMMA_ escapedTableReference)*
+    : tableReference (COMMA_ tableReference)*
     ;
 
 escapedTableReference
-    : tableReference  | LBE_ OJ tableReference RBE_
-    ;
-
-tableReference
     : tableFactor joinedTable*
     ;
 
+tableReference
+    : (tableFactor | LBE_ OJ escapedTableReference RBE_) joinedTable*
+    ;
+
 tableFactor
-    : tableName partitionNames? (AS? alias)? indexHintList? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    : tableName partitionNames? (AS? alias)? indexHintList? | subquery AS? alias (LP_ columnNames RP_)? | LP_ tableReferences RP_
     ;
 
 partitionNames
@@ -289,13 +298,27 @@ indexHint
     ;
 
 joinedTable
-    : ((INNER | CROSS)? JOIN | STRAIGHT_JOIN) tableFactor joinSpecification?
-    | (LEFT | RIGHT) OUTER? JOIN tableFactor joinSpecification
-    | NATURAL (INNER | (LEFT | RIGHT) (OUTER))? JOIN tableFactor
+    : innerJoinType tableReference joinSpecification?
+    | outerJoinType tableReference joinSpecification
+    | naturalJoinType tableFactor
+    ;
+
+innerJoinType
+    : (INNER | CROSS)? JOIN
+    | STRAIGHT_JOIN
+    ;
+
+outerJoinType
+    : (LEFT | RIGHT) OUTER? JOIN
+    ;
+
+naturalJoinType
+    : NATURAL INNER? JOIN
+    | NATURAL (LEFT | RIGHT) OUTER? JOIN
     ;
 
 joinSpecification
-    : ON expr | USING columnNames
+    : ON expr | USING LP_ columnNames RP_
     ;
 
 whereClause
@@ -327,7 +350,7 @@ windowClause
     ;
 
 windowItem
-    : ignoredIdentifier AS LP_ windowSpecification RP_
+    : identifier AS LP_ windowSpecification RP_
     ;
 
 subquery
@@ -335,21 +358,20 @@ subquery
     ;
 
 selectLinesInto
-    : STARTING BY STRING_ | TERMINATED BY STRING_
+    : STARTING BY string_ | TERMINATED BY string_
     ;
 
 selectFieldsInto
-    : TERMINATED BY STRING_ | OPTIONALLY? ENCLOSED BY STRING_ | ESCAPED BY STRING_
+    : TERMINATED BY string_ | OPTIONALLY? ENCLOSED BY string_ | ESCAPED BY string_
     ;
 
 selectIntoExpression
-    : INTO variable (COMMA_ variable )* | INTO DUMPFILE STRING_
-    | (INTO OUTFILE STRING_ (CHARACTER SET IDENTIFIER_)?((FIELDS | COLUMNS) selectFieldsInto+)? (LINES selectLinesInto+)?)
+    : INTO variable (COMMA_ variable )* | INTO DUMPFILE string_
+    | (INTO OUTFILE string_ (CHARACTER SET charsetName)?(COLUMNS selectFieldsInto+)? (LINES selectLinesInto+)?)
     ;
 
 lockClause
-    : FOR lockStrength lockedRowAction?
-    | FOR lockStrength
+    : FOR lockStrength tableLockingList? lockedRowAction?
     | LOCK IN SHARE MODE
     ;
 
@@ -374,5 +396,5 @@ tableIdentOptWild
     ;
 
 tableAliasRefList
-    : tableIdentOptWild+
+    : tableIdentOptWild (COMMA_ tableIdentOptWild)*
     ;

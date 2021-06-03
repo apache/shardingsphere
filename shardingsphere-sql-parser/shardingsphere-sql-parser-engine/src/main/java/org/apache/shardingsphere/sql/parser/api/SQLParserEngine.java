@@ -17,22 +17,28 @@
 
 package org.apache.shardingsphere.sql.parser.api;
 
-import lombok.RequiredArgsConstructor;
+import com.google.common.cache.LoadingCache;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.core.cache.ParseTreeCacheBuilder;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * SQL parser engine.
  */
-@RequiredArgsConstructor
 public final class SQLParserEngine {
     
-    private static final Map<String, SQLParserExecutor> EXECUTORS = new ConcurrentHashMap<>();
+    private final SQLParserExecutor sqlParserExecutor;
     
-    private final String databaseType;
+    private final LoadingCache<String, ParseTree> parseTreeCache;
+    
+    public SQLParserEngine(final String databaseType) {
+        this(databaseType, new CacheOption(128, 1024L, 4));
+    }
+    
+    public SQLParserEngine(final String databaseType, final CacheOption cacheOption) {
+        sqlParserExecutor = new SQLParserExecutor(databaseType);
+        parseTreeCache = ParseTreeCacheBuilder.build(cacheOption, databaseType);
+    }
     
     /**
      * Parse SQL.
@@ -42,7 +48,6 @@ public final class SQLParserEngine {
      * @return parse tree
      */
     public ParseTree parse(final String sql, final boolean useCache) {
-        SQLParserExecutor executor = EXECUTORS.containsKey(databaseType) ? EXECUTORS.get(databaseType) : EXECUTORS.computeIfAbsent(databaseType, SQLParserExecutor::new);
-        return executor.parse(sql, useCache);
+        return useCache ? parseTreeCache.getUnchecked(sql) : sqlParserExecutor.parse(sql);
     }
 }

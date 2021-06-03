@@ -113,6 +113,10 @@ name
     : identifier
     ;
 
+constraintName
+    : identifier
+    ;
+
 columnNames
     : LP_? columnName (COMMA_ columnName)* RP_?
     ;

@@ -34,6 +34,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
+import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTypeFactory;
 
 /**
  * ShardingSphere-Proxy.
@@ -62,7 +63,7 @@ public final class ShardingSphereProxy {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            BackendExecutorContext.getInstance().getExecutorKernel().close();
+            BackendExecutorContext.getInstance().getExecutorEngine().close();
         }
     }
     
@@ -80,6 +81,6 @@ public final class ShardingSphereProxy {
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new ServerHandlerInitializer());
+                .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
     }
 }

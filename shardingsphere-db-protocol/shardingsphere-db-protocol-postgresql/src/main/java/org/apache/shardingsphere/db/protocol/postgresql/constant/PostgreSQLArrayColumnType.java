@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -29,111 +30,103 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLArrayColumnType {
     
-    private static final String ORIGINAL_RECORD_LINES =
-        "_aclitem 1034\n"
-            + "_array_tc_0 16425\n"
-            + "_array_tc_1 16433\n"
-            + "_bit 1561\n"
-            + "_bool 1000\n"
-            + "_box 1020\n"
-            + "_bpchar 1014\n"
-            + "_bytea 1001\n"
-            + "_cardinal_number 13031\n"
-            + "_char 1002\n"
-            + "_character_data 13034\n"
-            + "_cid 1012\n"
-            + "_cidr 651\n"
-            + "_circle 719\n"
-            + "_cstring 1263\n"
-            + "_date 1182\n"
-            + "_daterange 3913\n"
-            + "_float4 1021\n"
-            + "_float8 1022\n"
-            + "_gtsvector 3644\n"
-            + "_inet 1041\n"
-            + "_int2 1005\n"
-            + "_int2vector 1006\n"
-            + "_int4 1007\n"
-            + "_int4range 3905\n"
-            + "_int8 1016\n"
-            + "_int8range 3927\n"
-            + "_interval 1187\n"
-            + "_json 199\n"
-            + "_jsonb 3807\n"
-            + "_jsonpath 4073\n"
-            + "_line 629\n"
-            + "_lseg 1018\n"
-            + "_macaddr 1040\n"
-            + "_macaddr8 775\n"
-            + "_money 791\n"
-            + "_name 1003\n"
-            + "_numeric 1231\n"
-            + "_numrange 3907\n"
-            + "_oid 1028\n"
-            + "_oidvector 1013\n"
-            + "_path 1019\n"
-            + "_pg_foreign_data_wrappers 13265\n"
-            + "_pg_foreign_servers 13274\n"
-            + "_pg_foreign_table_columns 13258\n"
-            + "_pg_foreign_tables 13284\n"
-            + "_pg_lsn 3221\n"
-            + "_pg_user_mappings 13294\n"
-            + "_point 1017\n"
-            + "_polygon 1027\n"
-            + "_record 2287\n"
-            + "_refcursor 2201\n"
-            + "_regclass 2210\n"
-            + "_regconfig 3735\n"
-            + "_regdictionary 3770\n"
-            + "_regnamespace 4090\n"
-            + "_regoper 2208\n"
-            + "_regoperator 2209\n"
-            + "_regproc 1008\n"
-            + "_regprocedure 2207\n"
-            + "_regrole 4097\n"
-            + "_regtype 2211\n"
-            + "_sql_identifier 13036\n"
-            + "_test_array 16395\n"
-            + "_text 1009\n"
-            + "_tid 1010\n"
-            + "_time 1183\n"
-            + "_time_stamp 13041\n"
-            + "_timestamp 1115\n"
-            + "_timestamptz 1185\n"
-            + "_timetz 1270\n"
-            + "_tsquery 3645\n"
-            + "_tsrange 3909\n"
-            + "_tstzrange 3911\n"
-            + "_tsvector 3643\n"
-            + "_txid_snapshot 2949\n"
-            + "_uuid 2951\n"
-            + "_varbit 1563\n"
-            + "_varchar 1015\n"
-            + "_xid 1011\n"
-            + "_xml 143\n"
-            + "_yes_or_no 13043";
+    private static final Map<String, Integer> COLUMN_TYPE_NAME_OID_MAP = new HashMap<>(128, 1);
     
-    private static final Map<String, Integer> COLUMN_TYPE_NAME_OID_MAP = new HashMap<>(128, 1.0F);
-    
+    // CHECKSTYLE:OFF
     static {
-        for (String line : ORIGINAL_RECORD_LINES.split("\n")) {
-            String[] values = line.split(" ");
-            COLUMN_TYPE_NAME_OID_MAP.put(values[0], Integer.parseInt(values[1]));
-        }
+        COLUMN_TYPE_NAME_OID_MAP.put("_aclitem", 1034);
+        COLUMN_TYPE_NAME_OID_MAP.put("_array_tc_0", 16425);
+        COLUMN_TYPE_NAME_OID_MAP.put("_array_tc_1", 16433);
+        COLUMN_TYPE_NAME_OID_MAP.put("_bit", 1561);
+        COLUMN_TYPE_NAME_OID_MAP.put("_bool", 1000);
+        COLUMN_TYPE_NAME_OID_MAP.put("_box", 1020);
+        COLUMN_TYPE_NAME_OID_MAP.put("_bpchar", 1014);
+        COLUMN_TYPE_NAME_OID_MAP.put("_bytea", 1001);
+        COLUMN_TYPE_NAME_OID_MAP.put("_cardinal_number", 13031);
+        COLUMN_TYPE_NAME_OID_MAP.put("_char", 1002);
+        COLUMN_TYPE_NAME_OID_MAP.put("_character_data", 13034);
+        COLUMN_TYPE_NAME_OID_MAP.put("_cid", 1012);
+        COLUMN_TYPE_NAME_OID_MAP.put("_cidr", 651);
+        COLUMN_TYPE_NAME_OID_MAP.put("_circle", 719);
+        COLUMN_TYPE_NAME_OID_MAP.put("_cstring", 1263);
+        COLUMN_TYPE_NAME_OID_MAP.put("_date", 1182);
+        COLUMN_TYPE_NAME_OID_MAP.put("_daterange", 3913);
+        COLUMN_TYPE_NAME_OID_MAP.put("_float4", 1021);
+        COLUMN_TYPE_NAME_OID_MAP.put("_float8", 1022);
+        COLUMN_TYPE_NAME_OID_MAP.put("_gtsvector", 3644);
+        COLUMN_TYPE_NAME_OID_MAP.put("_inet", 1041);
+        COLUMN_TYPE_NAME_OID_MAP.put("_int2", 1005);
+        COLUMN_TYPE_NAME_OID_MAP.put("_int2vector", 1006);
+        COLUMN_TYPE_NAME_OID_MAP.put("_int4", 1007);
+        COLUMN_TYPE_NAME_OID_MAP.put("_int4range", 3905);
+        COLUMN_TYPE_NAME_OID_MAP.put("_int8", 1016);
+        COLUMN_TYPE_NAME_OID_MAP.put("_int8range", 3927);
+        COLUMN_TYPE_NAME_OID_MAP.put("_interval", 1187);
+        COLUMN_TYPE_NAME_OID_MAP.put("_json", 199);
+        COLUMN_TYPE_NAME_OID_MAP.put("_jsonb", 3807);
+        COLUMN_TYPE_NAME_OID_MAP.put("_jsonpath", 4073);
+        COLUMN_TYPE_NAME_OID_MAP.put("_line", 629);
+        COLUMN_TYPE_NAME_OID_MAP.put("_lseg", 1018);
+        COLUMN_TYPE_NAME_OID_MAP.put("_macaddr", 1040);
+        COLUMN_TYPE_NAME_OID_MAP.put("_macaddr8", 775);
+        COLUMN_TYPE_NAME_OID_MAP.put("_money", 791);
+        COLUMN_TYPE_NAME_OID_MAP.put("_name", 1003);
+        COLUMN_TYPE_NAME_OID_MAP.put("_numeric", 1231);
+        COLUMN_TYPE_NAME_OID_MAP.put("_numrange", 3907);
+        COLUMN_TYPE_NAME_OID_MAP.put("_oid", 1028);
+        COLUMN_TYPE_NAME_OID_MAP.put("_oidvector", 1013);
+        COLUMN_TYPE_NAME_OID_MAP.put("_path", 1019);
+        COLUMN_TYPE_NAME_OID_MAP.put("_pg_foreign_data_wrappers", 13265);
+        COLUMN_TYPE_NAME_OID_MAP.put("_pg_foreign_servers", 13274);
+        COLUMN_TYPE_NAME_OID_MAP.put("_pg_foreign_table_columns", 13258);
+        COLUMN_TYPE_NAME_OID_MAP.put("_pg_foreign_tables", 13284);
+        COLUMN_TYPE_NAME_OID_MAP.put("_pg_lsn", 3221);
+        COLUMN_TYPE_NAME_OID_MAP.put("_pg_user_mappings", 13294);
+        COLUMN_TYPE_NAME_OID_MAP.put("_point", 1017);
+        COLUMN_TYPE_NAME_OID_MAP.put("_polygon", 1027);
+        COLUMN_TYPE_NAME_OID_MAP.put("_record", 2287);
+        COLUMN_TYPE_NAME_OID_MAP.put("_refcursor", 2201);
+        COLUMN_TYPE_NAME_OID_MAP.put("_regclass", 2210);
+        COLUMN_TYPE_NAME_OID_MAP.put("_regconfig", 3735);
+        COLUMN_TYPE_NAME_OID_MAP.put("_regdictionary", 3770);
+        COLUMN_TYPE_NAME_OID_MAP.put("_regnamespace", 4090);
+        COLUMN_TYPE_NAME_OID_MAP.put("_regoper", 2208);
+        COLUMN_TYPE_NAME_OID_MAP.put("_regoperator", 2209);
+        COLUMN_TYPE_NAME_OID_MAP.put("_regproc", 1008);
+        COLUMN_TYPE_NAME_OID_MAP.put("_regprocedure", 2207);
+        COLUMN_TYPE_NAME_OID_MAP.put("_regrole", 4097);
+        COLUMN_TYPE_NAME_OID_MAP.put("_regtype", 2211);
+        COLUMN_TYPE_NAME_OID_MAP.put("_sql_identifier", 13036);
+        COLUMN_TYPE_NAME_OID_MAP.put("_test_array", 16395);
+        COLUMN_TYPE_NAME_OID_MAP.put("_text", 1009);
+        COLUMN_TYPE_NAME_OID_MAP.put("_tid", 1010);
+        COLUMN_TYPE_NAME_OID_MAP.put("_time", 1183);
+        COLUMN_TYPE_NAME_OID_MAP.put("_time_stamp", 13041);
+        COLUMN_TYPE_NAME_OID_MAP.put("_timestamp", 1115);
+        COLUMN_TYPE_NAME_OID_MAP.put("_timestamptz", 1185);
+        COLUMN_TYPE_NAME_OID_MAP.put("_timetz", 1270);
+        COLUMN_TYPE_NAME_OID_MAP.put("_tsquery", 3645);
+        COLUMN_TYPE_NAME_OID_MAP.put("_tsrange", 3909);
+        COLUMN_TYPE_NAME_OID_MAP.put("_tstzrange", 3911);
+        COLUMN_TYPE_NAME_OID_MAP.put("_tsvector", 3643);
+        COLUMN_TYPE_NAME_OID_MAP.put("_txid_snapshot", 2949);
+        COLUMN_TYPE_NAME_OID_MAP.put("_uuid", 2951);
+        COLUMN_TYPE_NAME_OID_MAP.put("_varbit", 1563);
+        COLUMN_TYPE_NAME_OID_MAP.put("_varchar", 1015);
+        COLUMN_TYPE_NAME_OID_MAP.put("_xid", 1011);
+        COLUMN_TYPE_NAME_OID_MAP.put("_xml", 143);
+        COLUMN_TYPE_NAME_OID_MAP.put("_yes_or_no", 13043);
     }
+    // CHECKSTYLE:ON
     
     /**
      * Get type oid by database-specific column type name.
      *
      * @param columnTypeName PostgreSQL column type name, e.g. {@code int4}
      * @return type oid, e.g. {@code 23} for {@code int4}
-     * @throws IllegalArgumentException if no type oid could be found
      */
-    public static int getTypeOidByColumnTypeName(final String columnTypeName) throws IllegalArgumentException {
-        if (COLUMN_TYPE_NAME_OID_MAP.containsKey(columnTypeName)) {
-            return COLUMN_TYPE_NAME_OID_MAP.get(columnTypeName);
-        }
-        throw new IllegalArgumentException(String.format("Cannot find PostgreSQL type oid for columnTypeName '%s'", columnTypeName));
+    public static int getTypeOid(final String columnTypeName) {
+        Preconditions.checkArgument(COLUMN_TYPE_NAME_OID_MAP.containsKey(columnTypeName), "Cannot find PostgreSQL type oid for columnTypeName '%s'", columnTypeName);
+        return COLUMN_TYPE_NAME_OID_MAP.get(columnTypeName);
     }
-    
 }

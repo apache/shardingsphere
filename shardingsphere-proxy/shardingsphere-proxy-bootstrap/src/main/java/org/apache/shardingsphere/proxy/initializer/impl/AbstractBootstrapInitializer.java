@@ -19,23 +19,23 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
-import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
+import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -55,33 +55,33 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
+    static {
+        ShardingSphereServiceLoader.register(MetaDataAwareEventSubscriber.class);
+    }
+    
     private final ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
     
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
-        SchemaContexts schemaContexts = decorateSchemaContexts(createSchemaContexts(proxyConfig));
-        TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(schemaContexts));
-        ProxyContext.getInstance().init(schemaContexts, transactionContexts);
-        initOpenTracing();
+        MetaDataContexts metaDataContexts = decorateMetaDataContexts(createMetaDataContexts(proxyConfig));
+        for (MetaDataAwareEventSubscriber each : ShardingSphereServiceLoader.getSingletonServiceInstances(MetaDataAwareEventSubscriber.class)) {
+            each.setMetaDataContexts(metaDataContexts);
+            ShardingSphereEventBus.getInstance().register(each);
+        }
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
+        TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), xaTransactionMangerType);
+        ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         setDatabaseServerInfo();
+        initScalingWorker(yamlConfig);
         shardingSphereProxy.start(port);
     }
     
-    private SchemaContexts createSchemaContexts(final ProxyConfiguration proxyConfig) throws SQLException {
-        DatabaseType databaseType = containsDataSources(proxyConfig.getSchemaDataSources()) ? getDatabaseType(proxyConfig.getSchemaDataSources()) : new MySQLDatabaseType();
+    private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
-        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(databaseType, dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
-        return schemaContextsBuilder.build();
-    }
-    
-    private boolean containsDataSources(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        return !schemaDataSources.isEmpty() && !schemaDataSources.values().iterator().next().isEmpty();
-    }
-    
-    private static DatabaseType getDatabaseType(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        String databaseTypeName = JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType();
-        return DatabaseTypeRegistry.getActualDatabaseType(databaseTypeName);
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
+                dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps());
+        return metaDataContextsBuilder.build();
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
@@ -91,39 +91,64 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     private static Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), JDBCRawBackendDataSourceFactory.getInstance().build(entry.getKey(), entry.getValue()));
+            DataSource dataSource = JDBCRawBackendDataSourceFactory.getInstance().build(entry.getKey(), entry.getValue());
+            if (null != dataSource) {
+                result.put(entry.getKey(), dataSource);
+            }
         }
         return result;
     }
     
-    private TransactionContexts createTransactionContexts(final SchemaContexts schemaContexts) {
-        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(schemaContexts.getSchemas().size(), 1);
-        for (Entry<String, ShardingSphereSchema> entry : schemaContexts.getSchemas().entrySet()) {
+    private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
+        Map<String, ShardingTransactionManagerEngine> transactionManagerEngines = new HashMap<>(metaDataContexts.getAllSchemaNames().size(), 1);
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
+        for (String each : metaDataContexts.getAllSchemaNames()) {
             ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-            engine.init(schemaContexts.getDatabaseType(), entry.getValue().getDataSources());
-            transactionManagerEngines.put(entry.getKey(), engine);
+            ShardingSphereResource resource = metaDataContexts.getMetaData(each).getResource();
+            engine.init(resource.getDatabaseType(), resource.getDataSources(), xaTransactionMangerType);
+            transactionManagerEngines.put(each, engine);
         }
         return new StandardTransactionContexts(transactionManagerEngines);
     }
     
-    private void initOpenTracing() {
-        if (ProxyContext.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
-            OpenTracingTracer.init();
-        }
+    private void setDatabaseServerInfo() {
+        findBackendDataSource().ifPresent(dataSourceSample -> {
+            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample);
+            log.info(databaseServerInfo.toString());
+            switch (databaseServerInfo.getDatabaseName()) {
+                case "MySQL":
+                    MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
+                    break;
+                case "PostgreSQL":
+                    PostgreSQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
+                    break;
+                default:
+            }
+        });
     }
     
-    private void setDatabaseServerInfo() {
-        Optional<DataSource> dataSourceSample = ProxyContext.getInstance().getDataSourceSample();
-        if (dataSourceSample.isPresent()) {
-            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample.get());
-            log.info(databaseServerInfo.toString());
-            MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
+    private Optional<DataSource> findBackendDataSource() {
+        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
+            return ProxyContext.getInstance().getMetaData(each).getResource().getDataSources().values().stream().findFirst();
         }
+        return Optional.empty();
+    }
+    
+    protected Optional<ServerConfiguration> getScalingConfiguration(final YamlProxyConfiguration yamlConfig) {
+        if (null != yamlConfig.getServerConfiguration().getScaling()) {
+            ServerConfiguration result = new ServerConfiguration();
+            result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
+            result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());
+            return Optional.of(result);
+        }
+        return Optional.empty();
     }
     
     protected abstract ProxyConfiguration getProxyConfiguration(YamlProxyConfiguration yamlConfig);
     
-    protected abstract SchemaContexts decorateSchemaContexts(SchemaContexts schemaContexts);
+    protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     
-    protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts);
+    protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
+    
+    protected abstract void initScalingWorker(YamlProxyConfiguration yamlConfig);
 }

@@ -18,26 +18,28 @@
 package org.apache.shardingsphere.sharding.merge.dql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.segment.select.having.HavingContext;
+import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
+import org.apache.shardingsphere.sharding.merge.dql.groupby.having.HavingDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.iterator.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -53,36 +55,36 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     private final DatabaseType databaseType;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final PhysicalSchemaMetaData schemaMetaData) throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
         if (1 == queryResults.size()) {
             return new IteratorStreamMergedResult(queryResults);
         }
         Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         selectStatementContext.setIndexes(columnLabelIndexMap);
-        MergedResult mergedResult = build(queryResults, selectStatementContext, columnLabelIndexMap, schemaMetaData);
+        MergedResult mergedResult = build(queryResults, selectStatementContext, columnLabelIndexMap, schema);
         return decorate(queryResults, selectStatementContext, mergedResult);
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (int i = queryResult.getColumnCount(); i > 0; i--) {
-            result.put(SQLUtil.getExactlyValue(queryResult.getColumnLabel(i)), i);
+        for (int i = queryResult.getMetaData().getColumnCount(); i > 0; i--) {
+            result.put(SQLUtil.getExactlyValue(queryResult.getMetaData().getColumnLabel(i)), i);
         }
         return result;
     }
     
     private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
-                               final Map<String, Integer> columnLabelIndexMap, final PhysicalSchemaMetaData schemaMetaData) throws SQLException {
+                               final Map<String, Integer> columnLabelIndexMap, final ShardingSphereSchema schema) throws SQLException {
         if (isNeedProcessGroupBy(selectStatementContext)) {
-            return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap, schemaMetaData);
+            return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap, schema);
         }
         if (isNeedProcessDistinctRow(selectStatementContext)) {
             setGroupByForDistinctRow(selectStatementContext);
-            return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap, schemaMetaData);
+            return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap, schema);
         }
         if (isNeedProcessOrderBy(selectStatementContext)) {
-            return new OrderByStreamMergedResult(queryResults, selectStatementContext, schemaMetaData);
+            return new OrderByStreamMergedResult(queryResults, selectStatementContext, schema);
         }
         return new IteratorStreamMergedResult(queryResults);
     }
@@ -104,10 +106,10 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     }
     
     private MergedResult getGroupByMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
-                                                final Map<String, Integer> columnLabelIndexMap, final PhysicalSchemaMetaData schemaMetaData) throws SQLException {
+                                                final Map<String, Integer> columnLabelIndexMap, final ShardingSphereSchema schema) throws SQLException {
         return selectStatementContext.isSameGroupByAndOrderByItems()
-                ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectStatementContext, schemaMetaData)
-                : new GroupByMemoryMergedResult(queryResults, selectStatementContext, schemaMetaData);
+                ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectStatementContext, schema)
+                : new GroupByMemoryMergedResult(queryResults, selectStatementContext, schema);
     }
     
     private boolean isNeedProcessOrderBy(final SelectStatementContext selectStatementContext) {
@@ -115,6 +117,19 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     }
     
     private MergedResult decorate(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final MergedResult mergedResult) throws SQLException {
+        MergedResult decoratedMergedResult = decorateHavingContext(queryResults, selectStatementContext, mergedResult);
+        return decoratePaginationContext(queryResults, selectStatementContext, decoratedMergedResult);
+    }
+    
+    private MergedResult decorateHavingContext(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final MergedResult mergedResult) throws SQLException {
+        HavingContext havingContext = selectStatementContext.getHavingContext();
+        if (!havingContext.isHasHaving() || 1 == queryResults.size()) {
+            return mergedResult;
+        }
+        return new HavingDecoratorMergedResult(selectStatementContext, mergedResult);
+    }
+    
+    private MergedResult decoratePaginationContext(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final MergedResult mergedResult) throws SQLException {
         PaginationContext paginationContext = selectStatementContext.getPaginationContext();
         if (!paginationContext.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;

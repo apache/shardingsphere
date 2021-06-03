@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -35,13 +36,18 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateTableStatement> sqlStatementContext, 
-                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
-        if (!CreateTableStatementHandler.containsIfNotExistClause(sqlStatementContext.getSqlStatement())) {
-            validateTableNotExist(metaData, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
+                            final List<Object> parameters, final ShardingSphereSchema schema) {
+        if (!CreateTableStatementHandler.containsNotExistClause(sqlStatementContext.getSqlStatement())) {
+            validateTableNotExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         }
     }
     
     @Override
-    public void postValidate(final CreateTableStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateTableStatement> sqlStatementContext, 
+                             final RouteContext routeContext, final ShardingSphereSchema schema) {
+        String primaryTable = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
+            throw new ShardingSphereException("CREATE TABLE ... statement can not route correctly for tables %s.", sqlStatementContext.getTablesContext().getTableNames());
+        }
     }
 }

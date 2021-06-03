@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 /**
@@ -35,11 +35,11 @@ public interface ResultDecoratorEngine<T extends ShardingSphereRule> extends Res
      * Create new instance of result decorator.
      * 
      * @param databaseType database type
-     * @param schemaMetaData schema meta data
+     * @param schema ShardingSphere schema
      * @param rule rule
      * @param props ShardingSphere properties
      * @param sqlStatementContext SQL statement context
      * @return new instance of result decorator
      */
-    ResultDecorator newInstance(DatabaseType databaseType, PhysicalSchemaMetaData schemaMetaData, T rule, ConfigurationProperties props, SQLStatementContext<?> sqlStatementContext);
+    ResultDecorator newInstance(DatabaseType databaseType, ShardingSphereSchema schema, T rule, ConfigurationProperties props, SQLStatementContext<?> sqlStatementContext);
 }

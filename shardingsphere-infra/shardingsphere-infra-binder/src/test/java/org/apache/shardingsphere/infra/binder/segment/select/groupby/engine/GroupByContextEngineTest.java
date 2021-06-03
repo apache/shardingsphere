@@ -70,7 +70,6 @@ public final class GroupByContextEngineTest {
     private void assertCreateGroupByContextWithoutGroupBy(final SelectStatement selectStatement) {
         GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
         assertTrue(actualGroupByContext.getItems().isEmpty());
-        assertThat(actualGroupByContext.getLastIndex(), is(0));
     }
     
     @Test
@@ -111,6 +110,5 @@ public final class GroupByContextEngineTest {
         OrderByItem expectedOrderByItem3 = new OrderByItem(indexOrderByItemSegment2);
         expectedOrderByItem3.setIndex(3);
         assertThat(actualGroupByContext.getItems(), is(Arrays.asList(expectedOrderByItem1, expectedOrderByItem2, expectedOrderByItem3)));
-        assertThat(actualGroupByContext.getLastIndex(), is(10));
     }
 }

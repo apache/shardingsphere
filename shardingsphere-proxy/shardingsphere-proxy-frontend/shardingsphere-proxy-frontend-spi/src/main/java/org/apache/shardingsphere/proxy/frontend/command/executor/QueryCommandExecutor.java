@@ -42,10 +42,10 @@ public interface QueryCommandExecutor extends CommandExecutor {
     boolean next() throws SQLException;
     
     /**
-     * Get query data.
+     * Get query row packet.
      *
-     * @return database packet of query data
+     * @return database packet of query row
      * @throws SQLException SQL exception
      */
-    DatabasePacket<?> getQueryData() throws SQLException;
+    DatabasePacket<?> getQueryRowPacket() throws SQLException;
 }

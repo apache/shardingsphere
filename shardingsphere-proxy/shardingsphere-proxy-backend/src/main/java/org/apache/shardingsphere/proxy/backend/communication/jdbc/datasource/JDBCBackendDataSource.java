@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -59,7 +60,8 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final String schemaName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return getConnections(schemaName, dataSourceName, connectionSize, connectionMode, TransactionType.LOCAL);
+        TransactionType transactionType = TransactionType.valueOf(ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE));
+        return getConnections(schemaName, dataSourceName, connectionSize, connectionMode, transactionType);
     }
     
     /**
@@ -76,7 +78,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public List<Connection> getConnections(final String schemaName, final String dataSourceName,
                                            final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
-        DataSource dataSource = ProxyContext.getInstance().getSchemaContexts().getSchemas().get(schemaName).getDataSources().get(dataSourceName);
+        DataSource dataSource = ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources().get(dataSourceName);
         Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);
         if (1 == connectionSize) {
             return Collections.singletonList(createConnection(schemaName, dataSourceName, dataSource, transactionType));
@@ -99,7 +101,8 @@ public final class JDBCBackendDataSource implements BackendDataSource {
                 for (Connection each : result) {
                     each.close();
                 }
-                throw new SQLException(String.format("Can not get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()), ex);
+                throw new SQLException(String.format("Could not get %d connections at once. The %d obtained connections have been released. "
+                        + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in props.", connectionSize, result.size()), ex);
             }
         }
         return result;

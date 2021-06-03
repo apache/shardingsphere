@@ -19,9 +19,10 @@ package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Database type of SQLServer.
@@ -34,8 +35,13 @@ public final class SQLServerDatabaseType implements DatabaseType {
     }
     
     @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.BRACKETS;
+    }
+    
+    @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList("jdbc:microsoft:sqlserver:");
+        return Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:");
     }
     
     @Override

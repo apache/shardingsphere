@@ -178,44 +178,74 @@ public final class SafeNumberOperationUtilsTest {
     }
 
     @Test
-    public void assertSafeEqualsForInteger() {
+    public void assertSafeCollectionEqualsForInteger() {
         List<Comparable<?>> sourceCollection = Lists.newArrayList(10, 12);
         List<Comparable<?>> targetCollection = Lists.newArrayList(10, 12);
-        assertTrue(SafeNumberOperationUtils.safeEquals(sourceCollection, targetCollection));
+        assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sourceCollection, targetCollection));
     }
 
     @Test
-    public void assertSafeEqualsForLong() {
+    public void assertSafeCollectionEqualsForLong() {
         List<Comparable<?>> sourceCollection = Lists.newArrayList(10, 12);
         List<Comparable<?>> targetCollection = Lists.newArrayList(10L, 12L);
-        assertTrue(SafeNumberOperationUtils.safeEquals(sourceCollection, targetCollection));
+        assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sourceCollection, targetCollection));
     }
 
     @Test
-    public void assertSafeEqualsForBigInteger() {
+    public void assertSafeCollectionEqualsForBigInteger() {
         List<Comparable<?>> sourceCollection = Lists.newArrayList(10, 12);
         List<Comparable<?>> targetCollection = Lists.newArrayList(BigInteger.valueOf(10), BigInteger.valueOf(12L));
-        assertTrue(SafeNumberOperationUtils.safeEquals(sourceCollection, targetCollection));
+        assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sourceCollection, targetCollection));
     }
 
     @Test
-    public void assertSafeEqualsForFloat() {
+    public void assertSafeCollectionEqualsForFloat() {
         List<Comparable<?>> sourceCollection = Lists.newArrayList(10.01F, 12.01F);
         List<Comparable<?>> targetCollection = Lists.newArrayList(10.01F, 12.01F);
-        assertTrue(SafeNumberOperationUtils.safeEquals(sourceCollection, targetCollection));
+        assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sourceCollection, targetCollection));
     }
 
     @Test
-    public void assertSafeEqualsForDouble() {
+    public void assertSafeCollectionEqualsForDouble() {
         List<Comparable<?>> sourceCollection = Lists.newArrayList(10.01, 12.01);
         List<Comparable<?>> targetCollection = Lists.newArrayList(10.01F, 12.01);
-        assertTrue(SafeNumberOperationUtils.safeEquals(sourceCollection, targetCollection));
+        assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sourceCollection, targetCollection));
     }
 
     @Test
-    public void assertSafeEqualsForBigDecimal() {
+    public void assertSafeCollectionEqualsForBigDecimal() {
         List<Comparable<?>> sourceCollection = Lists.newArrayList(10.01, 12.01);
         List<Comparable<?>> targetCollection = Lists.newArrayList(BigDecimal.valueOf(10.01), BigDecimal.valueOf(12.01));
-        assertTrue(SafeNumberOperationUtils.safeEquals(sourceCollection, targetCollection));
+        assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sourceCollection, targetCollection));
+    }
+    
+    @Test
+    public void assertSafeRangeEqualsForInteger() {
+        assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(1), Range.greaterThan(1L)));
+    }
+    
+    @Test
+    public void assertSafeRangeEqualsForLong() {
+        assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(1L), Range.greaterThan(BigInteger.ONE)));
+    }
+    
+    @Test
+    public void assertSafeRangeEqualsForBigInteger() {
+        assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(BigInteger.ONE), Range.greaterThan(1)));
+    }
+    
+    @Test
+    public void assertSafeRangeEqualsForFloat() {
+        assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(1.1F), Range.greaterThan(1.1)));
+    }
+    
+    @Test
+    public void assertSafeRangeEqualsForDouble() {
+        assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(1.1), Range.greaterThan(BigDecimal.valueOf(1.1))));
+    }
+    
+    @Test
+    public void assertSafeRangeEqualsForBigDecimal() {
+        assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(BigDecimal.valueOf(1.1)), Range.greaterThan(1.1F)));
     }
 }

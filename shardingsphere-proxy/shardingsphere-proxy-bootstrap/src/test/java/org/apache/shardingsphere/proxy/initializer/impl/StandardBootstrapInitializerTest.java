@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlProxyUserConfiguration;
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -35,12 +37,14 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.proxy.fixture.FixtureYamlRuleConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -53,16 +57,16 @@ import static org.mockito.Mockito.mock;
 
 public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
-    protected YamlProxyConfiguration makeProxyConfiguration() {
-        return new YamlProxyConfiguration(createYamlProxyServerConfiguration(), createYamlProxyRuleConfigurationMap());
-    }
-    
     @Test
     public void assertGetProxyConfiguration() {
         YamlProxyConfiguration yamlConfig = makeProxyConfiguration();
         ProxyConfiguration actual = getInitializer().getProxyConfiguration(yamlConfig);
         assertNotNull(actual);
         assertProxyConfiguration(actual);
+    }
+    
+    private YamlProxyConfiguration makeProxyConfiguration() {
+        return new YamlProxyConfiguration(createYamlProxyServerConfiguration(), createYamlProxyRuleConfigurationMap());
     }
     
     private Map<String, YamlProxyRuleConfiguration> createYamlProxyRuleConfigurationMap() {
@@ -107,10 +111,20 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        assertAuthentication(actual.getAuthentication());
+        assertUsers(new ShardingSphereUsers(getUsersFromAuthorityRule(actual.getGlobalRules())));
         assertProps(actual.getProps());
     }
-    
+
+    private Collection<ShardingSphereUser> getUsersFromAuthorityRule(final Collection<RuleConfiguration> globalRuleConfigs) {
+        for (RuleConfiguration ruleConfig : globalRuleConfigs) {
+            if (ruleConfig instanceof AuthorityRuleConfiguration) {
+                AuthorityRuleConfiguration authorityRuleConfiguration = (AuthorityRuleConfiguration) ruleConfig;
+                return authorityRuleConfiguration.getUsers();
+            }
+        }
+        return Collections.emptyList();
+    }
+
     private void assertSchemaDataSources(final Map<String, Map<String, DataSourceParameter>> actual) {
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("logic-db"));
@@ -145,19 +159,20 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
     }
     
-    private void assertAuthentication(final Authentication actual) {
-        assertThat(actual.getUsers().size(), is(1));
-        assertTrue(actual.getUsers().containsKey("root"));
-        ProxyUser proxyUser = actual.getUsers().get("root");
-        assertThat(proxyUser.getPassword(), is("root"));
-        assertThat(proxyUser.getAuthorizedSchemas().size(), is(2));
-        assertTrue(proxyUser.getAuthorizedSchemas().contains("ds-1"));
-        assertTrue(proxyUser.getAuthorizedSchemas().contains("ds-2"));
+    private void assertUsers(final ShardingSphereUsers actual) {
+        Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
+        assertTrue(rootUser.isPresent());
+        assertThat(rootUser.get().getPassword(), is("root"));
     }
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
-        YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
-        result.setAuthentication(createYamlAuthenticationConfiguration());
+        final YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
+        YamlAuthorityRuleConfiguration yamlRule = new YamlAuthorityRuleConfiguration();
+        yamlRule.setUsers(Collections.singletonList("root@%:root"));
+        YamlShardingSphereAlgorithmConfiguration provider = new YamlShardingSphereAlgorithmConfiguration();
+        provider.setType("test");
+        yamlRule.setProvider(provider);
+        result.getRules().add(yamlRule);
         result.setProps(createProperties());
         return result;
     }
@@ -168,32 +183,17 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         result.setProperty("beta-2", "beta-B");
         return result;
     }
-    
-    private YamlAuthenticationConfiguration createYamlAuthenticationConfiguration() {
-        Map<String, YamlProxyUserConfiguration> users = new HashMap<>(1, 1);
-        users.put("root", createYamlProxyUserConfiguration());
-        YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
-        result.setUsers(users);
-        return result;
-    }
-    
-    private YamlProxyUserConfiguration createYamlProxyUserConfiguration() {
-        YamlProxyUserConfiguration result = new YamlProxyUserConfiguration();
-        result.setPassword("root");
-        result.setAuthorizedSchemas("ds-1,ds-2");
-        return result;
-    }
-    
+
     @Test
-    public void assertDecorateSchemaContexts() {
-        SchemaContexts schemaContexts = mock(SchemaContexts.class);
-        assertThat(getInitializer().decorateSchemaContexts(schemaContexts), is(schemaContexts));
+    public void assertDecorateMetaDataContexts() {
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        assertThat(getInitializer().decorateMetaDataContexts(metaDataContexts), is(metaDataContexts));
     }
     
     @Test
     public void assertDecorateTransactionContexts() {
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
-        assertThat(getInitializer().decorateTransactionContexts(transactionContexts), is(transactionContexts));
+        assertThat(getInitializer().decorateTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType()), is(transactionContexts));
     }
     
     protected void doEnvironmentPrepare() {

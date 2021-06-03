@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * PostgreSQL error code.
  *
  * @see <a href="https://www.postgresql.org/docs/12/errcodes-appendix.html">Appendix A. PostgreSQL Error Codes</a>
  */
+@RequiredArgsConstructor
+@Getter
 public enum PostgreSQLErrorCode {
     
     SUCCESSFUL_COMPLETION("00000", "successful_completion"),
@@ -40,35 +45,14 @@ public enum PostgreSQLErrorCode {
     SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION("08004", "sqlserver_rejected_establishment_of_sqlconnection"),
     TRANSACTION_RESOLUTION_UNKNOWN("08007", "transaction_resolution_unknown"),
     PROTOCOL_VIOLATION("08P01", "protocol_violation"),
+    FEATURE_NOT_SUPPORTED("0A000", "feature_not_supported"),
     INVALID_AUTHORIZATION_SPECIFICATION("28000", "invalid_authorization_specification"),
     INVALID_PASSWORD("28P01", "invalid_password"),
     INVALID_CATALOG_NAME("3D000", "invalid_catalog_name"),
-    INVALID_SCHEMA_NAME("3F000", "invalid_schema_name"),;
+    INVALID_SCHEMA_NAME("3F000", "invalid_schema_name"),
+    SYSTEM_ERROR("58000", "system_error");
     
     private final String errorCode;
     
     private final String conditionName;
-    
-    PostgreSQLErrorCode(final String errorCode, final String conditionName) {
-        this.errorCode = errorCode;
-        this.conditionName = conditionName;
-    }
-    
-    /**
-     * Get error code.
-     *
-     * @return error code
-     */
-    public String getErrorCode() {
-        return errorCode;
-    }
-    
-    /**
-     * Get condition name.
-     *
-     * @return condition name
-     */
-    public String getConditionName() {
-        return conditionName;
-    }
 }

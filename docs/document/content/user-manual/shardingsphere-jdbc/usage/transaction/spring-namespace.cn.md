@@ -8,7 +8,7 @@ weight = 3
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ProjectionEngine {
     
-    private final PhysicalSchemaMetaData schemaMetaData;
+    private final ShardingSphereSchema schema;
     
     private int aggregationAverageDerivedColumnCount;
     
@@ -82,8 +82,8 @@ public final class ProjectionEngine {
     
     private ShorthandProjection createProjection(final Collection<SimpleTableSegment> tableSegments, final ShorthandProjectionSegment projectionSegment) {
         String owner = projectionSegment.getOwner().map(ownerSegment -> ownerSegment.getIdentifier().getValue()).orElse(null);
-        Collection<ColumnProjection> columns = getShorthandColumns(tableSegments, owner);
-        return new ShorthandProjection(owner, columns);
+        Collection<ColumnProjection> shorthandColumns = getShorthandColumns(tableSegments, owner);
+        return new ShorthandProjection(owner, shorthandColumns);
     }
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
@@ -123,8 +123,9 @@ public final class ProjectionEngine {
     private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<SimpleTableSegment> tables) {
         Collection<ColumnProjection> result = new LinkedList<>();
         for (SimpleTableSegment each : tables) {
-            result.addAll(schemaMetaData.getAllColumnNames(
-                    each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(null, columnName, null)).collect(Collectors.toList()));
+            String owner = each.getAlias().orElse(each.getTableName().getIdentifier().getValue());
+            result.addAll(schema.getAllColumnNames(
+                    each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList()));
         }
         return result;
     }
@@ -133,10 +134,15 @@ public final class ProjectionEngine {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (owner.equalsIgnoreCase(each.getAlias().orElse(tableName))) {
-                return schemaMetaData.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList());
+                return schema.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList());
             }
         }
         return Collections.emptyList();
+    }
+    
+    private boolean isMatch(final ShorthandProjectionSegment projectionSegment, final SimpleTableSegment tableSegment) {
+        return !projectionSegment.getOwner().isPresent()
+                || tableSegment.getAlias().orElse(tableSegment.getTableName().getIdentifier().getValue()).equals(projectionSegment.getOwner().get().getIdentifier().getValue());
     }
     
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {

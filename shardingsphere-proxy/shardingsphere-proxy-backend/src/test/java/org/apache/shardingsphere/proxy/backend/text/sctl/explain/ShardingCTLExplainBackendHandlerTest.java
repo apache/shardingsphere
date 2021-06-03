@@ -1,13 +1,16 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Before;
@@ -15,7 +18,9 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -52,22 +57,26 @@ public final class ShardingCTLExplainBackendHandlerTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         handler = new ShardingCTLExplainBackendHandler("sctl:explain select 1", connection);
-        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
-        schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxyContext.getInstance(), 
-                new StandardSchemaContexts(getSchemas(), mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
+        metaDataContexts.setAccessible(true);
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(),
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties())));
     }
     
-    private Map<String, ShardingSphereSchema> getSchemas() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("schema", Collections.emptyList(),
-                Collections.singleton(mock(ShardingSphereRule.class)), Collections.singletonMap("ds0", mock(DataSource.class)), mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
-        return Collections.singletonMap("schema", schema);
+    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
+        ShardingSphereResource resource = new ShardingSphereResource(
+                Collections.singletonMap("ds0", mock(DataSource.class)), mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS), mock(CachedDatabaseMetaData.class), new MySQLDatabaseType());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("schema", 
+                resource, new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(mock(ShardingSphereRule.class))), mock(ShardingSphereSchema.class));
+        return Collections.singletonMap("schema", metaData);
     }
     
     @Test
-    public void assertQueryData() {
+    public void assertGetRowData() throws SQLException {
         handler.execute();
         assertTrue(handler.next());
-        assertThat(handler.getQueryData().getData().get(1), is("select 1"));
+        Iterator<Object> iterator = handler.getRowData().iterator();
+        assertThat(iterator.next(), is("ds0"));
+        assertThat(iterator.next(), is("select 1"));
     }
 }

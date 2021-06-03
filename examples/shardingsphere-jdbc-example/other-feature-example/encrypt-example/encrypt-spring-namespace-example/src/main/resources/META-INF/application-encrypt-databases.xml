@@ -56,11 +56,7 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <shardingsphere:data-source id="encryptDataSource" data-source-names="ds" rule-refs="encryptRule">
-        <props>
-            <prop key="query-with-cipher-column">true</prop>
-        </props>
-    </shardingsphere:data-source>
+    <shardingsphere:data-source id="encryptDataSource" data-source-names="ds" rule-refs="encryptRule" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

@@ -17,24 +17,25 @@
 
 package org.apache.shardingsphere.driver.governance.internal.datasource;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.governance.internal.circuit.datasource.CircuitBreakerDataSource;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import org.apache.shardingsphere.governance.core.config.ConfigCenter;
-import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.context.schema.GovernanceSchemaContexts;
+import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
+import org.apache.shardingsphere.governance.core.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.SchemaContextsBuilder;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -55,21 +56,31 @@ import java.util.Properties;
 @Getter
 public final class GovernanceShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    private final SchemaContexts schemaContexts;
+    static {
+        ShardingSphereServiceLoader.register(MetaDataAwareEventSubscriber.class);
+    }
+    
+    private final MetaDataContexts metaDataContexts;
     
     private final TransactionContexts transactionContexts;
     
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
-        schemaContexts = new GovernanceSchemaContexts(createSchemaContexts(governanceFacade), governanceFacade);
-        transactionContexts = createTransactionContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultSchema().getDataSources());
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(governanceFacade), governanceFacade);
+        registerMetaDataAwareEventSubscriber();
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
+        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
+                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
     }
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
-        schemaContexts = new GovernanceSchemaContexts(createSchemaContexts(dataSourceMap, ruleConfigs, props), governanceFacade);
-        transactionContexts = createTransactionContexts(schemaContexts.getDatabaseType(), schemaContexts.getDefaultSchema().getDataSources());
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(dataSourceMap, ruleConfigs, props), governanceFacade);
+        registerMetaDataAwareEventSubscriber();
+        String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
+        transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
+                metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
         uploadLocalConfiguration(governanceFacade);
     }
     
@@ -80,55 +91,45 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return result;
     }
     
-    private SchemaContexts createSchemaContexts(final GovernanceFacade governanceFacade) throws SQLException {
-        ConfigCenter configCenter = governanceFacade.getConfigCenter();
-        Map<String, DataSourceConfiguration> dataSourceConfigs = configCenter.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
-        Collection<RuleConfiguration> ruleConfigurations = configCenter.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
+    private StandardMetaDataContexts createMetaDataContexts(final GovernanceFacade governanceFacade) throws SQLException {
+        RegistryCenter registryCenter = governanceFacade.getRegistryCenter();
+        Map<String, DataSourceConfiguration> dataSourceConfigs = registryCenter.getDataSourceService().load(DefaultSchema.LOGIC_NAME);
+        Collection<RuleConfiguration> ruleConfigurations = registryCenter.getSchemaRuleService().load(DefaultSchema.LOGIC_NAME);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
-        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(createDatabaseType(dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), new Authentication(), configCenter.loadProperties());
-        return schemaContextsBuilder.build();
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), registryCenter.getGlobalRuleService().load(), registryCenter.getPropsService().load());
+        return metaDataContextsBuilder.build();
     }
     
-    private SchemaContexts createSchemaContexts(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        SchemaContextsBuilder schemaContextsBuilder = new SchemaContextsBuilder(createDatabaseType(dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap),
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), new Authentication(), props);
-        return schemaContextsBuilder.build();
+    private StandardMetaDataContexts createMetaDataContexts(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), props);
+        return metaDataContextsBuilder.build();
     }
     
-    private DatabaseType createDatabaseType(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        DatabaseType result = null;
-        for (DataSource each : dataSourceMap.values()) {
-            DatabaseType databaseType = createDatabaseType(each);
-            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
-            result = databaseType;
-        }
-        return result;
-    }
-    
-    private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
+    private void registerMetaDataAwareEventSubscriber() {
+        for (MetaDataAwareEventSubscriber each : ShardingSphereServiceLoader.getSingletonServiceInstances(MetaDataAwareEventSubscriber.class)) {
+            each.setMetaDataContexts(metaDataContexts);
+            ShardingSphereEventBus.getInstance().register(each);
         }
     }
     
-    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
         ShardingTransactionManagerEngine engine = new ShardingTransactionManagerEngine();
-        engine.init(databaseType, dataSourceMap);
+        engine.init(databaseType, dataSourceMap, xaTransactionMangerType);
         return new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
     }
     
     private void uploadLocalConfiguration(final GovernanceFacade governanceFacade) {
-        Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(schemaContexts.getDefaultSchema().getDataSources());
-        Collection<RuleConfiguration> ruleConfigurations = schemaContexts.getDefaultSchema().getConfigurations();
+        Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(metaDataContexts.getDefaultMetaData().getResource().getDataSources());
+        Collection<RuleConfiguration> ruleConfigurations = metaDataContexts.getDefaultMetaData().getRuleMetaData().getConfigurations();
         governanceFacade.onlineInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs),
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), null, schemaContexts.getProps().getProps());
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps().getProps());
     }
     
     @Override
     public Connection getConnection() {
-        return schemaContexts.isCircuitBreak() ? new CircuitBreakerDataSource().getConnection()
-                : new ShardingSphereConnection(getDataSourceMap(), schemaContexts, transactionContexts, TransactionTypeHolder.get());
+        return DriverStateContext.getConnection(getDataSourceMap(), metaDataContexts, transactionContexts, TransactionTypeHolder.get());
     }
     
     @Override
@@ -139,7 +140,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     @Override
     public void close() throws Exception {
         getDataSourceMap().forEach((key, value) -> close(value));
-        schemaContexts.close();
+        metaDataContexts.close();
     }
     
     private void close(final DataSource dataSource) {
@@ -152,6 +153,6 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     }
     
     private Map<String, DataSource> getDataSourceMap() {
-        return schemaContexts.getDefaultSchema().getDataSources();
+        return metaDataContexts.getDefaultMetaData().getResource().getDataSources();
     }
 }

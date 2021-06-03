@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexSt
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -48,11 +49,16 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext<
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
         Optional<SimpleTableSegment> simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(getSqlStatement());
-        return simpleTableSegment.isPresent() ? Collections.singletonList(simpleTableSegment.get()) : Collections.emptyList();
+        return simpleTableSegment.map(Collections::singletonList).orElse(Collections.emptyList());
     }
     
     @Override
     public Collection<IndexSegment> getIndexes() {
-        return getSqlStatement().getIndex().isPresent() ? Collections.singletonList(getSqlStatement().getIndex().get()) : Collections.emptyList();
+        Collection<IndexSegment> result = new LinkedList<>();
+        if (getSqlStatement().getIndex().isPresent()) {
+            result.add(getSqlStatement().getIndex().get());
+        }
+        AlterIndexStatementHandler.getRenameIndexSegment(getSqlStatement()).ifPresent(result::add);
+        return result;
     }
 }

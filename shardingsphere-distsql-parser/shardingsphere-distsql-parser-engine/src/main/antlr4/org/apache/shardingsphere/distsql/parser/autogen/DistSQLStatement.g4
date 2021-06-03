@@ -17,10 +17,42 @@
 
 grammar DistSQLStatement;
 
-import Symbol, RDLStatement;
+import Symbol, RDLStatement, RQLStatement, RALStatement;
 
 execute
-    : (createDataSources
-    | createShardingRule
+    : (addResource
+    | dropResource
+    | createShardingTableRule
+    | createShardingBindingTableRules
+    | createShardingBroadcastTableRules
+    | createReadwriteSplittingRule
+    | alterShardingTableRule
+    | alterShardingBindingTableRules
+    | alterShardingBroadcastTableRules
+    | dropShardingTableRule
+    | dropShardingBindingTableRules
+    | dropShardingBroadcastTableRules
+    | alterReadwriteSplittingRule
+    | dropReadwriteSplittingRule
+    | createDatabaseDiscoveryRule
+    | alterDatabaseDiscoveryRule
+    | dropDatabaseDiscoveryRule
+    | createEncryptRule
+    | alterEncryptRule
+    | dropEncryptRule
+    | showResources
+    | showShardingBindingTableRules
+    | showShardingBroadcastTableRules
+    | showReadwriteSplittingRules
+    | showDatabaseDiscoveryRules
+    | showEncryptRules
+    | showShardingTableRules
+    | showScalingJobList
+    | showScalingJobStatus
+    | startScalingJob
+    | stopScalingJob
+    | dropScalingJob
+    | resetScalingJob
+    | checkScalingJob
     ) SEMI?
     ;

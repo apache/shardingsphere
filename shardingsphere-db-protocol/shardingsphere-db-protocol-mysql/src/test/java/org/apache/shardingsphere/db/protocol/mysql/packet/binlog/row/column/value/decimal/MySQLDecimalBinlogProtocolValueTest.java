@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.decimal;
 
 import io.netty.buffer.ByteBufUtil;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Before;
@@ -42,7 +42,7 @@ public final class MySQLDecimalBinlogProtocolValueTest {
     
     @Before
     public void setUp() {
-        columnDef = new MySQLBinlogColumnDef(MySQLColumnType.MYSQL_TYPE_NEWDECIMAL);
+        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL);
         columnDef.setColumnMeta((14 << 8) + 4);
     }
     
@@ -64,7 +64,7 @@ public final class MySQLDecimalBinlogProtocolValueTest {
     
     @Test
     public void assertDecodeNegativeNewDecimalWithLargeNumber() {
-        columnDef = new MySQLBinlogColumnDef(MySQLColumnType.MYSQL_TYPE_NEWDECIMAL);
+        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL);
         columnDef.setColumnMeta(32 << 8 | 6);
         byte[] newDecimalBytes = ByteBufUtil.decodeHexDump("7DFEFDB5CC2741EFDEBE4154FD52E7");
         when(payload.readStringFixByBytes(newDecimalBytes.length)).thenReturn(newDecimalBytes);

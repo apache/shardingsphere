@@ -91,7 +91,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     private List<Set<RouteMapper>> toRoutingTableGroups(final String dataSource, final List<Set<String>> actualTableGroups) {
         List<Set<RouteMapper>> result = new ArrayList<>(actualTableGroups.size());
         for (Set<String> each : actualTableGroups) {
-            result.add(new HashSet<>(new ArrayList<>(each).stream().map(input -> findRoutingTable(dataSource, input)).collect(Collectors.toList())));
+            result.add(new LinkedHashSet<>(new ArrayList<>(each).stream().map(input -> findRoutingTable(dataSource, input)).collect(Collectors.toList())));
         }
         return result;
     }

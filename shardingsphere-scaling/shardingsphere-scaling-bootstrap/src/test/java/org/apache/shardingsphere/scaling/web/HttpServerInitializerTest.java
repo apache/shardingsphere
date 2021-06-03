@@ -20,6 +20,12 @@ package org.apache.shardingsphere.scaling.web;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,14 +47,22 @@ public final class HttpServerInitializerTest {
     private ChannelPipeline channelPipeline;
     
     @Before
+    @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        when(socketChannel.pipeline()).thenReturn(channelPipeline);
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
     }
     
     @Test
     public void assertInitChannel() {
+        when(socketChannel.pipeline()).thenReturn(channelPipeline);
         HttpServerInitializer httpServerInitializer = new HttpServerInitializer();
         httpServerInitializer.initChannel(socketChannel);
         verify(channelPipeline, times(3)).addLast(any(ChannelHandler.class));
+    }
+    
+    private ServerConfiguration mockServerConfig() {
+        ServerConfiguration result = new ServerConfiguration();
+        result.setGovernanceConfig(new GovernanceConfiguration("test", new RegistryCenterConfiguration("Zookeeper", "localhost:2181", null), false));
+        return result;
     }
 }

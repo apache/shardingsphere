@@ -17,13 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
 
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+
+import java.util.Optional;
 
 /**
  * SQLServer update statement.
  */
+@Setter
 @ToString
 public final class SQLServerUpdateStatement extends UpdateStatement implements SQLServerStatement {
+
+    private WithSegment withSegment;
+
+    /**
+     * Get with segment.
+     *
+     * @return with segment.
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
+    }
 }

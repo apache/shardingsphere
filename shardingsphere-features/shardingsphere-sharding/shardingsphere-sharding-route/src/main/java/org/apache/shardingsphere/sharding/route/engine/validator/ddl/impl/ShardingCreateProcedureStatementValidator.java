@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -39,18 +39,19 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext, 
-                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
+                            final List<Object> parameters, final ShardingSphereSchema schema) {
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
         routineBodySegment.ifPresent(routineBody -> {
             TableExtractor extractor = new TableExtractor();
-            validateTableNotExist(metaData, extractor.extractNotExistTableFromRoutineBody(routineBody));
+            validateTableNotExist(schema, extractor.extractNotExistTableFromRoutineBody(routineBody));
             Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBody);
-            validateShardingTable(metaData, existTables);
-            validateTableExist(metaData, existTables);
+            validateShardingTable(schema, existTables);
+            validateTableExist(schema, existTables);
         });
     }
     
     @Override
-    public void postValidate(final CreateProcedureStatement sqlStatement, final RouteContext routeContext) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext, 
+                             final RouteContext routeContext, final ShardingSphereSchema schema) {
     }
 }

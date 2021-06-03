@@ -20,7 +20,9 @@ package org.apache.shardingsphere.db.protocol.mysql.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.util.List;
@@ -30,29 +32,41 @@ import java.util.List;
  */
 public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<MySQLPacket> {
     
+    private static final int PAYLOAD_LENGTH = 3;
+    
+    private static final int SEQUENCE_LENGTH = 1;
+    
     @Override
     public boolean isValidHeader(final int readableBytes) {
-        return readableBytes >= MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH;
+        return readableBytes >= PAYLOAD_LENGTH + SEQUENCE_LENGTH;
     }
     
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int readableBytes) {
         int payloadLength = in.markReaderIndex().readMediumLE();
-        int realPacketLength = payloadLength + MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH;
+        int realPacketLength = payloadLength + PAYLOAD_LENGTH + SEQUENCE_LENGTH;
         if (readableBytes < realPacketLength) {
             in.resetReaderIndex();
             return;
         }
-        out.add(in.readRetainedSlice(payloadLength + MySQLPacket.SEQUENCE_LENGTH));
+        out.add(in.readRetainedSlice(payloadLength + SEQUENCE_LENGTH));
     }
     
     @Override
     public void encode(final ChannelHandlerContext context, final MySQLPacket message, final ByteBuf out) {
-        try (MySQLPacketPayload payload = new MySQLPacketPayload(context.alloc().buffer())) {
+        MySQLPacketPayload payload = new MySQLPacketPayload(context.alloc().buffer());
+        try {
             message.write(payload);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            payload.getByteBuf().resetWriterIndex();
+            new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, ex.getMessage()).write(payload);
+        } finally {
             out.writeMediumLE(payload.getByteBuf().readableBytes());
             out.writeByte(message.getSequenceId());
             out.writeBytes(payload.getByteBuf());
+            payload.close();
         }
     }
     

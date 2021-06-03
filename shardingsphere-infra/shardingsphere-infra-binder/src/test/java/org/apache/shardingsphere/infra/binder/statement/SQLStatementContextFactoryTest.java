@@ -20,18 +20,18 @@ package org.apache.shardingsphere.infra.binder.statement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92InsertStatement;
@@ -52,7 +52,7 @@ public final class SQLStatementContextFactoryTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mock(PhysicalSchemaMetaData.class), null, selectStatement);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mock(ShardingSphereSchema.class), null, selectStatement);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof SelectStatementContext);
     }
@@ -87,14 +87,14 @@ public final class SQLStatementContextFactoryTest {
     
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mock(PhysicalSchemaMetaData.class), null, insertStatement);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mock(ShardingSphereSchema.class), null, insertStatement);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof InsertStatementContext);
     }
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mock(PhysicalSchemaMetaData.class), null, mock(SQLStatement.class));
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mock(ShardingSphereSchema.class), null, mock(MySQLStatement.class));
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof CommonSQLStatementContext);
     }

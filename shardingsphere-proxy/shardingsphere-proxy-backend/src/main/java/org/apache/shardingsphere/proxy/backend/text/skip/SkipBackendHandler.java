@@ -17,28 +17,22 @@
 
 package org.apache.shardingsphere.proxy.backend.text.skip;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Skip backend handler.
  */
+@RequiredArgsConstructor
 public final class SkipBackendHandler implements TextProtocolBackendHandler {
     
-    @Override
-    public BackendResponse execute() {
-        return new UpdateResponse();
-    }
+    private final SQLStatement sqlStatement;
     
     @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public QueryData getQueryData() {
-        return null;
+    public ResponseHeader execute() {
+        return new UpdateResponseHeader(sqlStatement);
     }
 }

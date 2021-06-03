@@ -66,22 +66,13 @@
             <artifactId>shardingsphere-governance-repository-etcd</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-governance-repository-nacos</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-governance-repository-apollo</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
     
     <profiles>
         <profile>
             <id>release</id>
             <build>
+                <finalName>apache-shardingsphere-${project.version}</finalName>
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>

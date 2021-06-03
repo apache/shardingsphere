@@ -20,8 +20,6 @@ package org.apache.shardingsphere.governance.repository.api.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
-
 /**
  * Governance configuration.
  */
@@ -31,22 +29,7 @@ public final class GovernanceConfiguration {
     
     private final String name;
     
-    private final GovernanceCenterConfiguration registryCenterConfiguration;
-    
-    private final GovernanceCenterConfiguration additionalConfigCenterConfiguration;
+    private final RegistryCenterConfiguration registryCenterConfiguration;
     
     private final boolean overwrite;
-    
-    public GovernanceConfiguration(final String name, final GovernanceCenterConfiguration governanceCenterConfig, final boolean overwrite) {
-        this(name, governanceCenterConfig, null, overwrite);
-    }
-    
-    /**
-     * Get additional config center configuration.
-     * 
-     * @return additional config center configuration
-     */
-    public Optional<GovernanceCenterConfiguration> getAdditionalConfigCenterConfiguration() {
-        return Optional.ofNullable(additionalConfigCenterConfiguration);
-    }
 }

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
  * @param <Y> type of YAML rule configuration
  * @param <T> type of rule configuration
  */
-public interface YamlRuleConfigurationSwapper<Y extends YamlRuleConfiguration, T extends RuleConfiguration> extends YamlSwapper<Y, T>, OrderedSPI<T> {
+public interface YamlRuleConfigurationSwapper<Y extends YamlRuleConfiguration, T extends RuleConfiguration> extends YamlConfigurationSwapper<Y, T>, OrderedSPI<T> {
     
     /**
      * Get YAML rule tag name.

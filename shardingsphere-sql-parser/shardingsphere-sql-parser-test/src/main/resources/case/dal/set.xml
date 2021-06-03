@@ -75,4 +75,9 @@
             <variable name="extra_float_digits" />
         </variable-assign>
     </set-variable>
+    <set-variable sql-case-id="set_names" >
+        <variable-assign value="'utf8'" >
+            <variable name="charset" />
+        </variable-assign>
+    </set-variable>
 </sql-parser-test-cases>

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterIndexStatement;
 import org.junit.Test;
 
@@ -42,5 +44,20 @@ public final class AlterIndexStatementHandlerTest {
         SQLServerAlterIndexStatement alterIndexStatement = new SQLServerAlterIndexStatement();
         Optional<SimpleTableSegment> simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(alterIndexStatement);
         assertFalse(simpleTableSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetRenameIndexSegmentWithRenameIndexSegmentForPostgreSQL() {
+        PostgreSQLAlterIndexStatement alterIndexStatement = new PostgreSQLAlterIndexStatement();
+        alterIndexStatement.setRenameIndex(new IndexSegment(0, 0, new IdentifierValue("")));
+        Optional<IndexSegment> indexSegment = AlterIndexStatementHandler.getRenameIndexSegment(alterIndexStatement);
+        assertTrue(indexSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetRenameIndexSegmentWithoutRenameIndexSegmentForPostgreSQL() {
+        PostgreSQLAlterIndexStatement alterIndexStatement = new PostgreSQLAlterIndexStatement();
+        Optional<IndexSegment> indexSegment = AlterIndexStatementHandler.getRenameIndexSegment(alterIndexStatement);
+        assertFalse(indexSegment.isPresent());
     }
 }

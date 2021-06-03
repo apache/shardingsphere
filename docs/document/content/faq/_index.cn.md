@@ -12,7 +12,7 @@ chapter = true
 在ShardingSphere-Proxy以及ShardingSphere-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
 `sql.show`配置默认关闭，如果需要请通过配置开启。
 
-注意：5.x版本以后，`sql.show`参数调整为`sql-show`。
+> 注意：5.x版本以后，`sql.show`参数调整为`sql-show`。
 
 ## 2. 阅读源码时为什么会出现编译错误?
 
@@ -275,3 +275,11 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 回答:
 
 1. 需要在spring-boot的引导类中添加 `@SpringBootApplication(exclude = JtaAutoConfiguration.class)`。
+
+## 24. ANTLR 插件在 src 同级目录下生成代码，容易误提交，如何避免？
+
+回答：
+
+进入 [Settings -> Languages & Frameworks -> ANTLR v4 default project settings](jetbrains://idea/settings?name=Languages+%26+Frameworks--ANTLR+v4+default+project+settings) 配置生成代码的输出目录为 `target/gen`，如图：
+
+![Configure ANTLR plugin](https://shardingsphere.apache.org/document/current/img/faq/configure-antlr-plugin.png)

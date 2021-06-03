@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -45,7 +45,7 @@ import java.util.Optional;
 @Setter
 public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, QueryWithCipherColumnAware {
     
-    private PhysicalSchemaMetaData schemaMetaData;
+    private ShardingSphereSchema schema;
     
     private boolean queryWithCipherColumn;
     
@@ -96,6 +96,6 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     }
     
     private Optional<EncryptTable> findEncryptTable(final SQLStatementContext sqlStatementContext, final ColumnSegment column) {
-        return sqlStatementContext.getTablesContext().findTableName(column, schemaMetaData).flatMap(tableName -> getEncryptRule().findEncryptTable(tableName));
+        return sqlStatementContext.getTablesContext().findTableName(column, schema).flatMap(tableName -> getEncryptRule().findEncryptTable(tableName));
     }
 }

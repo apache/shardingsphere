@@ -22,11 +22,8 @@ import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Properties;
 
 public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<String> {
-    
-    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -43,16 +40,6 @@ public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<
             }
         }
         return result;
-    }
-    
-    @Override
-    public Properties getProps() {
-        return props;
-    }
-    
-    @Override
-    public void setProps(final Properties props) {
-        this.props = props;
     }
     
     @Override

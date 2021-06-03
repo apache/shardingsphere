@@ -17,28 +17,24 @@
 
 package org.apache.shardingsphere.infra.parser.sql;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import com.google.common.cache.LoadingCache;
+import org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheBuilder;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.Optional;
 
 /**
  * SQL statement parser engine.
  */
 public final class SQLStatementParserEngine {
     
-    private final SQLParserEngine parserEngine;
+    private final SQLStatementParserExecutor sqlStatementParserExecutor;
     
-    private final SQLVisitorEngine visitorEngine;
+    private final LoadingCache<String, SQLStatement> sqlStatementCache;
     
-    private final Cache<String, SQLStatement> cache = CacheBuilder.newBuilder().softValues().initialCapacity(2000).maximumSize(65535).build();
-    
-    public SQLStatementParserEngine(final String databaseTypeName) {
-        parserEngine = new SQLParserEngine(databaseTypeName);
-        visitorEngine = new SQLVisitorEngine(databaseTypeName, "STATEMENT");
+    public SQLStatementParserEngine(final String databaseType) {
+        sqlStatementParserExecutor = new SQLStatementParserExecutor(databaseType);
+        // TODO use props to configure cache option
+        sqlStatementCache = SQLStatementCacheBuilder.build(new CacheOption(2000, 65535L, 4), databaseType);
     }
     
     /**
@@ -49,19 +45,6 @@ public final class SQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql, final boolean useCache) {
-        if (!useCache) {
-            return parse(sql);
-        }
-        Optional<SQLStatement> statement = Optional.ofNullable(cache.getIfPresent(sql));
-        if (statement.isPresent()) {
-            return statement.get();
-        }
-        SQLStatement result = parse(sql);
-        cache.put(sql, result);
-        return result;
-    }
-    
-    private SQLStatement parse(final String sql) {
-        return visitorEngine.visit(parserEngine.parse(sql, false));
+        return useCache ? sqlStatementCache.getUnchecked(sql) : sqlStatementParserExecutor.parse(sql);
     }
 }

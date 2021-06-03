@@ -28,12 +28,14 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
 import java.util.Collection;
@@ -52,14 +54,14 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getSimpleTableSegments().isEmpty();
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getAllSimpleTableSegments().isEmpty();
     }
     
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
         // TODO process multiple tables
-        String tableName = selectStatementContext.getSimpleTableSegments().iterator().next().getTableName().getIdentifier().getValue();
+        String tableName = selectStatementContext.getAllSimpleTableSegments().iterator().next().getTableName().getIdentifier().getValue();
         return getEncryptRule().findEncryptTable(tableName).map(
             encryptTable -> generateSQLTokens(projectionsSegment, tableName, selectStatementContext, encryptTable)).orElseGet(Collections::emptyList);
     }
@@ -76,7 +78,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
                 ShorthandProjection shorthandProjection = getShorthandProjection((ShorthandProjectionSegment) each, selectStatementContext.getProjectionsContext());
                 if (!shorthandProjection.getActualColumns().isEmpty()) {
-                    result.add(generateSQLToken((ShorthandProjectionSegment) each, shorthandProjection, tableName, encryptTable));
+                    result.add(generateSQLToken((ShorthandProjectionSegment) each, shorthandProjection, tableName, encryptTable, selectStatementContext.getDatabaseType()));
                 }
             }
         }
@@ -88,7 +90,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             return false;
         }
         Optional<OwnerSegment> ownerSegment = ((ShorthandProjectionSegment) projectionSegment).getOwner();
-        return ownerSegment.map(segment -> selectStatementContext.getTablesContext().findTableNameFromSQL(segment.getIdentifier().getValue()).equalsIgnoreCase(tableName)).orElse(true);
+        return ownerSegment.map(segment -> selectStatementContext.getTablesContext().findTableNameFromSQL(segment.getIdentifier().getValue()).orElse("").equalsIgnoreCase(tableName)).orElse(true);
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName) {
@@ -100,14 +102,16 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 : new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), encryptColumnName);
     }
     
-    private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, 
-                                                          final ShorthandProjection shorthandProjection, final String tableName, final EncryptTable encryptTable) {
+    private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment,
+                                                          final ShorthandProjection shorthandProjection, final String tableName, final EncryptTable encryptTable, final DatabaseType databaseType) {
+        QuoteCharacter quoteCharacter = databaseType.getQuoteCharacter();
         List<String> shorthandExtensionProjections = new LinkedList<>();
         for (ColumnProjection each : shorthandProjection.getActualColumns()) {
             if (encryptTable.getLogicColumns().contains(each.getName())) {
-                shorthandExtensionProjections.add(new ColumnProjection(each.getOwner(), getEncryptColumnName(tableName, each.getName()), each.getName()).getExpressionWithAlias());
+                shorthandExtensionProjections.add(new ColumnProjection(null == each.getOwner() ? null : quoteCharacter.wrap(each.getOwner()),
+                        quoteCharacter.wrap(getEncryptColumnName(tableName, each.getName())), each.getName()).getExpressionWithAlias());
             } else {
-                shorthandExtensionProjections.add(each.getExpression());
+                shorthandExtensionProjections.add(null == each.getOwner() ? quoteCharacter.wrap(each.getName()) : quoteCharacter.wrap(each.getOwner()) + "." + quoteCharacter.wrap(each.getName()));
             }
         }
         return new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), Joiner.on(", ").join(shorthandExtensionProjections));

@@ -49,4 +49,9 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     @Override
     public void close() {
     }
+    
+    @Override
+    public String getType() {
+        return "fixture";
+    }
 }

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 
@@ -38,13 +39,13 @@ import java.util.Set;
 public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
     
     public LogicTablesMergedResult(final ShardingRule shardingRule,
-                                   final SQLStatementContext sqlStatementContext, final PhysicalSchemaMetaData schemaMetaData, final List<QueryResult> queryResults) throws SQLException {
-        super(shardingRule, schemaMetaData, sqlStatementContext, queryResults);
+                                   final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
+        super(shardingRule, schema, sqlStatementContext, queryResults);
     }
     
     @Override
-    protected final List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final PhysicalSchemaMetaData schemaMetaData, 
-                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    protected final List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema,
+                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults, final MergedResult mergedResult) throws SQLException {
         List<MemoryQueryResultRow> result = new LinkedList<>();
         Set<String> tableNames = new HashSet<>();
         for (QueryResult each : queryResults) {

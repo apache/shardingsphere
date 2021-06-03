@@ -96,8 +96,40 @@ Attributes:
 
 ## Complex Sharding Algorithm
 
-There is no built-in complex sharding algorithm in Apache ShardingSphere.
+### Complex Inline Sharding Algorithm
+
+Please refer to [Inline Expression](/en/features/sharding/concept/inline-expression/) for more details.
+
+Type: COMPLEX_INLINE
+
+| *Name*                                    | *DataType* | *Description*                                                                                            | *Default Value* |
+| ----------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- | --------------- |
+| sharding-columns (?)                      | String     | sharing column names                                                                                     | -               |
+| algorithm-expression                      | String     | Inline expression sharding algorithm                                                                     | -               |
+| allow-range-query-with-inline-sharding (?)| boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
 
 ## Hint Sharding Algorithm
 
-There is no built-in hint sharding algorithm in Apache ShardingSphere.
+### Hint Inline Sharding Algorithm
+
+Please refer to [Inline Expression](/en/features/sharding/concept/inline-expression/) for more details.
+
+Type: COMPLEX_INLINE
+
+| *Name*                                    | *DataType* | *Description*                                                                                            | *Default Value* |
+| ----------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- | --------------- |
+| algorithm-expression                      | String     | Inline expression sharding algorithm                                                                     | ${value}        |
+
+
+## Class Based Sharding Algorithm
+
+Realize custom extension by configuring the sharding strategy type and algorithm class name.
+
+Type：CLASS_BASED
+
+Attributes：
+
+| *Name*           | *DataType* | *Description*                                              |
+| ------------------ | --------- | -------------------------------------------------- |
+| strategy           | String    | Sharding strategy type, support STANDARD, COMPLEX or HINT (case insensitive) |
+| algorithmClassName | String    | Fully qualified name of sharding algorithm                                   |

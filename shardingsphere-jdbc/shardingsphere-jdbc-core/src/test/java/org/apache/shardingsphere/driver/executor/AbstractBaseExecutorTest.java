@@ -22,13 +22,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -52,44 +51,38 @@ import static org.mockito.Mockito.when;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractBaseExecutorTest {
     
-    private ExecutorKernel executorKernel;
+    private ExecutorEngine executorEngine;
     
     private ShardingSphereConnection connection;
     
     @Before
     public void setUp() throws SQLException {
         MockitoAnnotations.initMocks(this);
-        ExecutorExceptionHandler.setExceptionThrown(false);
-        executorKernel = new ExecutorKernel(Runtime.getRuntime().availableProcessors());
+        SQLExecutorExceptionHandler.setExceptionThrown(false);
+        executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
         setConnection();
     }
     
     private void setConnection() {
-        SchemaContexts schemaContexts = mock(StandardSchemaContexts.class, RETURNS_DEEP_STUBS);
-        when(schemaContexts.getExecutorKernel()).thenReturn(executorKernel);
-        when(schemaContexts.getProps()).thenReturn(createConfigurationProperties());
-        when(schemaContexts.getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        MetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(metaDataContexts.getExecutorEngine()).thenReturn(executorEngine);
+        when(metaDataContexts.getProps()).thenReturn(createConfigurationProperties());
+        when(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         ShardingRule shardingRule = mockShardingRule();
-        when(schemaContexts.getDefaultSchema().getRules()).thenReturn(Collections.singletonList(shardingRule));
+        when(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
-        connection = new ShardingSphereConnection(dataSourceSourceMap, schemaContexts, transactionContexts, TransactionType.LOCAL);
+        connection = new ShardingSphereConnection(dataSourceSourceMap, metaDataContexts, transactionContexts, TransactionType.LOCAL);
     }
     
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
         when(result.findTableRuleByActualTable("table_x")).thenReturn(Optional.empty());
         when(result.isNeedAccumulate(any())).thenReturn(true);
-        return result;
-    }
-    
-    protected final SQLStatementContext<?> createSQLStatementContext() {
-        SQLStatementContext<?> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getTablesContext().getTableNames()).thenReturn(Collections.singleton("table_x"));
         return result;
     }
     
@@ -101,6 +94,6 @@ public abstract class AbstractBaseExecutorTest {
     
     @After
     public void tearDown() {
-        executorKernel.close();
+        executorEngine.close();
     }
 }

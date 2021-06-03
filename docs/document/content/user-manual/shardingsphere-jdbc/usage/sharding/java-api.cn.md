@@ -18,23 +18,25 @@ weight = 1
 ShardingSphere-JDBC 的 Java API 通过数据源集合、规则集合以及属性配置组成。
 以下示例是根据 `user_id` 取模分库, 且根据 `order_id` 取模分表的 2 库 2 表的配置。
 
+注：示例的数据库连接池为HikariCP，可根据业务场景更换为其他主流数据库连接池。
+
 ```java
 
 // 配置真实数据源
 Map<String, DataSource> dataSourceMap = new HashMap<>();
 
 // 配置第 1 个数据源
-BasicDataSource dataSource1 = new BasicDataSource();
+HikariDataSource dataSource1 = new HikariDataSource();
 dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-dataSource1.setUrl("jdbc:mysql://localhost:3306/ds0");
+dataSource1.setJdbcUrl("jdbc:mysql://localhost:3306/ds0");
 dataSource1.setUsername("root");
 dataSource1.setPassword("");
 dataSourceMap.put("ds0", dataSource1);
 
 // 配置第 2 个数据源
-BasicDataSource dataSource2 = new BasicDataSource();
+HikariDataSource dataSource2 = new HikariDataSource();
 dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
-dataSource2.setUrl("jdbc:mysql://localhost:3306/ds1");
+dataSource2.setJdbcUrl("jdbc:mysql://localhost:3306/ds1");
 dataSource2.setUsername("root");
 dataSource2.setPassword("");
 dataSourceMap.put("ds1", dataSource2);
@@ -66,7 +68,7 @@ tableShardingAlgorithmrProps.setProperty("algorithm-expression", "t_order${order
 shardingRuleConfig.getShardingAlgorithms().put("tableShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE", tableShardingAlgorithmrProps));
 
 // 创建 ShardingSphereDataSource
-DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shardingRuleConfig), new Properties());
 ```
 
 ## 使用 ShardingSphereDataSource
@@ -77,14 +79,14 @@ DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSou
 以原生 JDBC 使用方式为例：
 
 ```java
-DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shardingRuleConfig), new Properties());
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
     ps.setInt(1, 10);
     ps.setInt(2, 1000);
-    try (ResultSet rs = preparedStatement.executeQuery()) {
+    try (ResultSet rs = ps.executeQuery()) {
         while(rs.next()) {
             // ...
         }

@@ -49,27 +49,39 @@
             </shorthand-projection>
         </projections>
         <where start-index="42" stop-index="92">
-            <and-predicate>
-                <predicate start-index="48" stop-index="70">
-                    <column-left-value name="order_id" start-index="48" stop-index="57">
-                        <owner name="o" start-index="48" stop-index="48" />
-                    </column-left-value>
-                    <operator type="=" />
-                    <column-right-value name="order_id" start-index="61" stop-index="70">
-                        <owner name="i" start-index="61" stop-index="61" />
-                    </column-right-value>
-                </predicate>
-                <predicate start-index="76" stop-index="92">
-                    <column-left-value name="status" start-index="76" stop-index="83">
-                        <owner name="o" start-index="76" stop-index="76" />
-                    </column-left-value>
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" />
-                        <literal-expression value="init" start-index="87" stop-index="92" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="48" stop-index="92">
+                    <left>
+                        <binary-operation-expression start-index="48" stop-index="70">
+                            <left>
+                                <column name="order_id" start-index="48" stop-index="57">
+                                    <owner name="o" start-index="48" stop-index="48" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="order_id" start-index="61" stop-index="70">
+                                    <owner name="i" start-index="61" stop-index="61" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="76" stop-index="92">
+                            <left>
+                                <column name="status" start-index="76" stop-index="83">
+                                    <owner name="o" start-index="76" stop-index="76" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="init" start-index="87" stop-index="92" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
         <order-by>
             <column-item name="order_id" order-direction="DESC" start-index="103" stop-index="112">
@@ -112,26 +124,39 @@
             </shorthand-projection>
         </projections>
         <where start-index="42" stop-index="92">
-            <and-predicate>
-                <predicate start-index="48" stop-index="70">
-                    <column-left-value name="order_id" start-index="48" stop-index="57">
-                        <owner name="o" start-index="48" stop-index="48" />
-                    </column-left-value>
-                    <operator type="=" />
-                    <column-right-value name="order_id" start-index="61" stop-index="70">
-                        <owner name="i" start-index="61" stop-index="61" />
-                    </column-right-value>
-                </predicate>
-                <predicate start-index="76" stop-index="92">
-                    <column-left-value name="status" start-index="76" stop-index="83">
-                        <owner name="o" start-index="76" stop-index="76" />
-                    </column-left-value>
-                    <operator type="=" />
-                    <compare-right-value>
-                        <literal-expression value="init" start-index="87" stop-index="92" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="48" stop-index="92">
+                    <left>
+                        <binary-operation-expression start-index="48" stop-index="70">
+                            <left>
+                                <column name="order_id" start-index="48" stop-index="57">
+                                    <owner name="o" start-index="48" stop-index="48" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="order_id" start-index="61" stop-index="70">
+                                    <owner name="i" start-index="61" stop-index="61" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="76" stop-index="92">
+                            <left>
+                                <column name="status" start-index="76" stop-index="83">
+                                    <owner name="o" start-index="76" stop-index="76" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="init" start-index="87" stop-index="92" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
         <order-by>
             <column-item name="creation_date" order-direction="DESC" start-index="103" stop-index="117">
@@ -198,6 +223,45 @@
         </order-by>
     </select>
 
+    <select sql-case-id="select_order_by_desc">
+        <from>
+            <simple-table name="employees" start-index="14" stop-index="22" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="24" stop-index="48">
+            <expr>
+                <binary-operation-expression start-index="30" stop-index="48">
+                    <left>
+                        <column name="job_id" start-index="30" stop-index="35" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="PU_CLERK" start-index="39" stop-index="48" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="salary" order-direction="DESC" start-index="59" stop-index="64" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_asc_desc">
+        <from>
+            <simple-table name="employees" start-index="30" stop-index="38" />
+        </from>
+        <projections start-index="7" stop-index="23">
+            <column-projection name="salary" start-index="7" stop-index="12" />
+            <column-projection name="last_name" start-index="15" stop-index="23" />
+        </projections>
+        <order-by>
+            <column-item name="salary" order-direction="ASC" start-index="49" stop-index="54" />
+            <column-item name="last_name" order-direction="DESC" start-index="61" stop-index="69" />
+        </order-by>
+    </select>
+    
     <select sql-case-id="select_order_by_with_alias_star_alias_name">
         <from>
             <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
@@ -263,26 +327,41 @@
                 <right>
                     <simple-table name="t_order_item" alias="i" start-index="36" stop-index="49" />
                 </right>
-                <joinSpecification>
-                    <and-predicate>
-                        <predicate start-index="54" stop-index="74">
-                            <column-left-value name="user_id" start-index="54" stop-index="62">
-                                <owner name="o" start-index="54" stop-index="54" />
-                            </column-left-value>
-                            <column-right-value name="user_id" start-index="66" stop-index="74">
-                                <owner name="i" start-index="66" stop-index="66" />
-                            </column-right-value>
-                        </predicate>
-                        <predicate start-index="80" stop-index="102">
-                            <column-left-value name="order_id" start-index="80" stop-index="89">
-                                <owner name="o" start-index="80" stop-index="80" />
-                            </column-left-value>
-                            <column-right-value name="order_id" start-index="93" stop-index="102">
-                                <owner name="i" start-index="93" stop-index="93" />
-                            </column-right-value>
-                        </predicate>
-                    </and-predicate>
-                </joinSpecification>
+                <on-condition>
+                    <binary-operation-expression start-index="54" stop-index="102">
+                        <left>
+                            <binary-operation-expression start-index="54" stop-index="74">
+                                <left>
+                                    <column name="user_id" start-index="54" stop-index="62">
+                                        <owner name="o" start-index="54" stop-index="54" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="user_id" start-index="66" stop-index="74">
+                                        <owner name="i" start-index="66" stop-index="66" />
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="80" stop-index="102">
+                                <left>
+                                    <column name="order_id" start-index="80" stop-index="89">
+                                        <owner name="o" start-index="80" stop-index="80" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="order_id" start-index="93" stop-index="102">
+                                        <owner name="i" start-index="93" stop-index="93" />
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
             </join-table>
         </from>
         <projections start-index="7" stop-index="14">

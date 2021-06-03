@@ -88,7 +88,19 @@ encryptedOptions
     ;
 
 columnConstraint
-    : (CONSTRAINT ignoredIdentifier)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT constraintName)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
+    ;
+
+computedColumnConstraint
+    : (CONSTRAINT constraintName)? (primaryKeyConstraint | computedColumnForeignKeyConstraint | checkConstraint)
+    ;
+
+computedColumnForeignKeyConstraint
+    : (FOREIGN KEY)? tableName (LP_ columnName RP_)? computedColumnForeignKeyOnAction*
+    ;
+
+computedColumnForeignKeyOnAction
+    : ON DELETE (NO ACTION | CASCADE) | ON UPDATE NO ACTION | NOT FOR REPLICATION
     ;
 
 primaryKeyConstraint
@@ -124,7 +136,8 @@ onString
     ;
 
 memoryTablePrimaryKeyConstraintOption
-    : CLUSTERED withBucket?
+    : NONCLUSTERED
+    | NONCLUSTERED HASH withBucket?
     ;
 
 withBucket
@@ -132,7 +145,7 @@ withBucket
     ;
 
 columnForeignKeyConstraint
-    : (FOREIGN KEY)? REFERENCES tableName LP_ columnName RP_ foreignKeyOnAction*
+    : (FOREIGN KEY)? REFERENCES tableName (LP_ columnName RP_)? foreignKeyOnAction*
     ;
 
 foreignKeyOnAction
@@ -172,7 +185,7 @@ columnConstraints
     ;
 
 computedColumnDefinition
-    : columnName AS expr (PERSISTED(NOT NULL)?)? columnConstraint?
+    : columnName AS expr (PERSISTED(NOT NULL)?)? computedColumnConstraint?
     ;
 
 columnSetDefinition 
@@ -180,7 +193,7 @@ columnSetDefinition
     ;
 
 tableConstraint 
-    : (CONSTRAINT ignoredIdentifier)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
+    : (CONSTRAINT constraintName)? (tablePrimaryConstraint | tableForeignKeyConstraint | checkConstraint)
     ;
 
 tablePrimaryConstraint
@@ -247,10 +260,15 @@ tableOption
     | tableOperationOption
     | distributionOption
     | dataWareHouseTableOption
+    | dataDelectionOption
+    ;
+
+dataDelectionOption
+    : DATA_DELETION = ON (LP_ FILTER_COLUMN EQ_ columnName COMMA_ RETENTION_PERIOD EQ_ historyRetentionPeriod)
     ;
 
 tableStretchOptions
-    : LP_ tableStretchOptions (COMMA_ tableStretchOptions)* RP_
+    : LP_ tableStretchOption (COMMA_ tableStretchOption)* RP_
     ;
 
 tableStretchOption
@@ -311,7 +329,7 @@ alterColumnAddOption
     ;
 
 constraintForColumn
-    : (CONSTRAINT ignoredIdentifier)? DEFAULT simpleExpr FOR columnName
+    : (CONSTRAINT constraintName)? DEFAULT simpleExpr FOR columnName
     ;
 
 generatedColumnNamesClause
@@ -335,7 +353,7 @@ alterTableDropConstraint
     ;
 
 dropConstraintName
-    : ignoredIdentifier dropConstraintWithClause?
+    : constraintName dropConstraintWithClause?
     ;
 
 dropConstraintWithClause
@@ -359,7 +377,7 @@ dropIndexSpecification
     ;
 
 alterCheckConstraint 
-    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | ignoredIdentifiers)
+    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | constraintName)
     ;
 
 alterTrigger 

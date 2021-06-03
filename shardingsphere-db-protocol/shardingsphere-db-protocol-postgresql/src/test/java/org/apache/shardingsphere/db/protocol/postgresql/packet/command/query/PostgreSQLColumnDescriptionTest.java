@@ -19,14 +19,10 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
 import org.junit.Test;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class PostgreSQLColumnDescriptionTest {
     
@@ -43,10 +39,8 @@ public final class PostgreSQLColumnDescriptionTest {
     }
     
     @Test
-    public void assertIntegerArrayTypeOid() throws SQLException {
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(resultSetMetaData.getColumnTypeName(2)).thenReturn("_int4");
-        PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("ages", 2, Types.ARRAY, 12, resultSetMetaData);
+    public void assertIntegerArrayTypeOid() {
+        PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("ages", 2, Types.ARRAY, 12, "_int4");
         assertThat(description.getTypeOID(), is(1007));
     }
 }

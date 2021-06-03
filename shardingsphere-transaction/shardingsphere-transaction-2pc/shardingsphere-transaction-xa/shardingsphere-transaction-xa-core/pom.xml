@@ -37,7 +37,6 @@
             <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>

@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.10. </b>"
+pre = "<b>5.11. </b>"
 title = "Proxy"
-weight = 10
+weight = 11
 chapter = true
 +++
 
@@ -14,7 +14,7 @@ chapter = true
 | *Implementation Class*   | *Description*                                                                   |
 | ------------------------ | ------------------------------------------------------------------------------- |
 | MySQLFrontendEngine      | Base on MySQL database protocol                                                 |
-| PostgreSQLFrontendEngine | Base on postgreSQL database protocol                                            |
+| PostgreSQLFrontendEngine | Base on PostgreSQL database protocol                                            |
 
 ## JDBCDriverURLRecognizer
 
@@ -29,3 +29,14 @@ chapter = true
 | OracleRecognizer        |  Use Oracle JDBC driver to execute SQL     |
 | SQLServerRecognizer     |  Use SQLServer JDBC driver to execute SQL  |
 | H2Recognizer            |  Use H2 JDBC driver to execute SQL         |
+
+## AuthorityProvideAlgorithm
+
+| *SPI Name*                       | *Description*                 |
+| ------------------------------- | ------------------------------ |
+| AuthorityProvideAlgorithm       | User authority loading logic   |
+
+| *Implementation Class*                             | *Description*                                                  |
+| -------------------------------------------------- | -------------------------------------------------------------- |
+| NativeAuthorityProviderAlgorithm                   | Persist user authority into the backend database               |
+| AllPrivilegesPermittedAuthorityProviderAlgorithm   | All privileges granted to user by default (No authentication)  |

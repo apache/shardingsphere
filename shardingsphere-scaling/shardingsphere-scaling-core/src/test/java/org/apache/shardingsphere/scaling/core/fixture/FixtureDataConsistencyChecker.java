@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.scaling.core.check.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyCheckResult;
-import org.apache.shardingsphere.scaling.core.check.DataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import com.google.common.collect.Maps;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.AbstractDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
 
 import java.util.Collections;
 import java.util.Map;
 
-public final class FixtureDataConsistencyChecker extends AbstractDataConsistencyChecker implements DataConsistencyChecker {
+public final class FixtureDataConsistencyChecker extends AbstractDataConsistencyChecker {
     
-    public FixtureDataConsistencyChecker(final ShardingScalingJob shardingScalingJob) {
-        super(shardingScalingJob);
+    public FixtureDataConsistencyChecker(final JobContext jobContext) {
+        super(jobContext);
     }
     
     @Override
@@ -43,17 +43,7 @@ public final class FixtureDataConsistencyChecker extends AbstractDataConsistency
     }
     
     @Override
-    protected AbstractSQLBuilder getSqlBuilder() {
-        return new AbstractSQLBuilder() {
-            @Override
-            protected String getLeftIdentifierQuoteString() {
-                return "`";
-            }
-            
-            @Override
-            protected String getRightIdentifierQuoteString() {
-                return "`";
-            }
-        };
+    protected ScalingSQLBuilder getSqlBuilder() {
+        return new FixtureSQLBuilder(Maps.newHashMap());
     }
 }

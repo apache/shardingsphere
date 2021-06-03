@@ -1,6 +1,6 @@
 +++
 title = "ShardingSphere Release Guide"
-weight = 6
+weight = 7
 chapter = true
 +++
 
@@ -473,7 +473,47 @@ Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and RE
 
 Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `SERVER_VERSION` in `MySQLServerInfo.java`
 
-**5. Update the download page**
+**5. Docker Release**
+
+5.1 Preparation
+
+Install and start docker service
+
+5.2 Compile Docker Image
+
+```shell
+git checkout ${RELEASE.VERSION}
+cd ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/
+mvn clean package -Prelease,docker
+```
+
+5.3 Tag the local Docker Image
+
+Check the image ID through `docker images`, for example: e9ea51023687
+
+```shell
+docker tag e9ea51023687 apache/sharding-proxy:latest
+docker tag e9ea51023687 apache/sharding-proxy:${RELEASE.VERSION}
+```
+
+5.4 Publish Docker Image
+
+```shell
+docker push apache/sharding-proxy:latest
+docker push apache/sharding-proxy:${RELEASE_VERSION}
+```
+
+5.5 Confirm the successful release
+
+Login [Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/) to check whether there are published images
+
+**6. Publish release in GitHub**
+
+Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere/releases)'s `${RELEASE_VERSION}` version
+
+Edit version number and release notes, click `Publish release`
+
+**7. Update the download page**
 
 https://shardingsphere.apache.org/document/current/en/downloads/
 
@@ -483,46 +523,9 @@ GPG signatures and hashes (SHA* etc) should use URL start with `https://download
 
 Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
-## Docker Release
-**1. Preparation**
+**8. Announce release completed by email**
 
-Install docker locally and start the docker service
-
-**2. Compile Docker Image**
-
-```shell
-git checkout ${RELEASE.VERSION}
-cd ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/
-mvn clean package -Prelease,docker
-```
-
-**3. Tag the local Docker Image**
-
-Check the image ID through `docker images`, for example: e9ea51023687
-
-```shell
-docker tag e9ea51023687 apache/sharding-proxy:latest
-docker tag e9ea51023687 apache/sharding-proxy:${RELEASE.VERSION}
-```
-
-**4. Publish Docker Image**
-
-```shell
-docker push apache/sharding-proxy:latest
-docker push apache/sharding-proxy:${RELEASE_VERSION}
-```
-
-**5. Confirm the successful release**
-
-Login [Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/) to check whether there are published images
-
-## Publish release in GitHub
-
-Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere/releases)'s `${RELEASE_VERSION}` version
-
-Edit version number and release notes, click `Publish release`
-
-## Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
+Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
 Announcement e-mail template:
 
@@ -539,11 +542,11 @@ Hi all,
 
 Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ${RELEASE.VERSION}.
 
-ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy. 
-They both provide functions of data sharding, distributed transaction and database governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
-Aiming at reasonably making full use of the computation and storage capacity of the database in a distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
-As the cornerstone of many enterprises, relational database still takes a huge market share. 
-Therefore, at the current stage, we prefer to focus on its increment instead of a total overturn.
+ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy.
+They both provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism and heterogeneous language.
+Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database.
+As the cornerstone of enterprises, relational database still takes a huge market share.
+Therefore, we prefer to focus on its increment instead of a total overturn.
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 

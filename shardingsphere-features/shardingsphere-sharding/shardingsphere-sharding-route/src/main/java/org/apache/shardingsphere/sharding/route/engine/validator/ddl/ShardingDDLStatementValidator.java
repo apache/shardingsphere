@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Sharding ddl statement validator.
@@ -36,13 +38,13 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     /**
      * Validate sharding table.
      *
-     * @param metaData meta data
+     * @param schema ShardingSphere schema
      * @param tables tables
      */
-    protected void validateShardingTable(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
+    protected void validateShardingTable(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getSchemaMetaData().getConfiguredSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (schema.getAllTableNames().contains(tableName)) {
                 throw new ShardingSphereException("Can not support sharding table '%s'.", tableName);
             }
         }
@@ -51,16 +53,14 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     /**
      * Validate table exist.
      *
-     * @param metaData meta data
+     * @param schema ShardingSphere schema
      * @param tables tables
      */
-    protected void validateTableExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
+    protected void validateTableExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            for (Map.Entry<String, Collection<String>> entry : metaData.getSchemaMetaData().getUnconfiguredSchemaMetaDataMap().entrySet()) {
-                if (!entry.getValue().contains(tableName)) {
-                    throw new NoSuchTableException(entry.getKey(), tableName);
-                }
+            if (!schema.containsTable(tableName)) {
+                throw new NoSuchTableException(tableName);
             }
         }
     }
@@ -68,15 +68,39 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
     /**
      * Validate table not exist.
      *
-     * @param metaData meta data
+     * @param schema ShardingSphere schema
      * @param tables tables
      */
-    protected void validateTableNotExist(final ShardingSphereMetaData metaData, final Collection<SimpleTableSegment> tables) {
+    protected void validateTableNotExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
-            if (metaData.getSchemaMetaData().getAllTableNames().contains(tableName)) {
+            if (schema.containsTable(tableName)) {
                 throw new TableExistsException(tableName);
             }
         }
+    }
+    
+    /**
+     * Judge whether route unit and data node are different size or not.
+     * 
+     * @param shardingRule sharding rule
+     * @param routeContext route context
+     * @param tableName table name
+     * @return whether route unit and data node are different size or not
+     */
+    protected boolean isRouteUnitDataNodeDifferentSize(final ShardingRule shardingRule, final RouteContext routeContext, final String tableName) {
+        int dataNodeSize = shardingRule.isShardingTable(tableName) || shardingRule.isBroadcastTable(tableName) 
+                ? shardingRule.getTableRule(tableName).getActualDataNodes().size() : 1;
+        return dataNodeSize != routeContext.getRouteUnits().size();
+    }
+    
+    /**
+     * Judge whether schema contains index or not.
+     *
+     * @param schema ShardingSphere schema
+     * @param index index
+     */
+    protected boolean isSchemaContainsIndex(final ShardingSphereSchema schema, final IndexSegment index) {
+        return schema.getAllTableNames().stream().anyMatch(each -> schema.get(each).getIndexes().containsKey(index.getIdentifier().getValue()));
     }
 }

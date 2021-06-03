@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ import lombok.Setter;
 @Getter
 public final class MySQLBinlogColumnDef {
     
-    private final MySQLColumnType columnType;
+    private final MySQLBinaryColumnType columnType;
     
     private int columnMeta;
 }

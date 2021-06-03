@@ -25,38 +25,34 @@ execute
     | update
     | delete
     | replace
+    | binlog
     | createTable
-    | alterTable
+    | alterStatement
     | repairTable
-    | renameTableSpecification
     | dropTable
     | truncateTable
     | createIndex
     | dropIndex
     | createProcedure
-    | alterProcedure
     | dropProcedure
     | createFunction
-    | alterFunction
     | dropFunction
     | createDatabase
-    | alterDatabase
     | dropDatabase
     | createEvent
-    | alterEvent
     | dropEvent
-    | alterInstance
     | createLogfileGroup
-    | alterLogfileGroup
     | dropLogfileGroup
     | createServer
-    | alterServer
     | dropServer
     | createView
-    | alterView
     | dropView
     | createTrigger
     | dropTrigger
+    | alterResourceGroup
+    | createResourceGroup
+    | dropResourceGroup
+    | preparedStatement
     | setTransaction
     | beginTransaction
     | setAutoCommit
@@ -73,22 +69,57 @@ execute
     | dropRole
     | setDefaultRole
     | setRole
+    | createTablespaceInnodb
+    | createTablespaceNdb
+    | dropTablespace
+    | createSRSStatement
+    | dropSRSStatement
+    | flush
+    | getDiagnosticsStatement
+    | groupReplication
+    | handlerStatement
+    | help
+    | importStatement
+    | install
+    | kill
+    | loadStatement
+    | lock
+    | cacheIndex
+    | loadIndexInfo
+    | optimizeTable
+    | purgeBinaryLog
+    | releaseSavepoint
+    | resetStatement
     | setPassword
+    | setTransaction
+    | setResourceGroup
+    | resignalStatement
+    | signalStatement
+    | restart
+    | shutdown
+    | begin
     | use
     | explain
-    | showDatabases
-    | showTables
-    | showTableStatus
-    | showColumns
-    | showIndex
-    | showCreateTable
-    | showOther
+    | doStatement
+    | show
     | setVariable
-    | setName
     | setCharacter
     | call
-    | changeMasterTo
+    | change
+    | checkTable
+    | checksumTable
+    | clone
     | startSlave
     | stopSlave
-    ) SEMI_?
+    | analyzeTable
+    | renameTable
+    | uninstall
+    | unlock
+    | xa
+    | createLoadableFunction
+    | createTablespace
+    | alterTablespace
+    | dropTablespace
+    ) (SEMI_ EOF? | EOF)
+    | EOF
     ;

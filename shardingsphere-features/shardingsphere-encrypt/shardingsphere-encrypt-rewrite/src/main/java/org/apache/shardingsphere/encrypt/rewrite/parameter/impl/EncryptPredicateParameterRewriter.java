@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAwar
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.infra.metadata.model.physical.model.schema.PhysicalSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -38,7 +38,7 @@ import java.util.Map.Entry;
 @Setter
 public final class EncryptPredicateParameterRewriter extends EncryptParameterRewriter<SQLStatementContext> implements SchemaMetaDataAware, QueryWithCipherColumnAware {
     
-    private PhysicalSchemaMetaData schemaMetaData;
+    private ShardingSphereSchema schema;
     
     private boolean queryWithCipherColumn;
     
@@ -49,7 +49,7 @@ public final class EncryptPredicateParameterRewriter extends EncryptParameterRew
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schemaMetaData).createEncryptConditions(sqlStatementContext);
+        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schema).createEncryptConditions(sqlStatementContext);
         if (encryptConditions.isEmpty()) {
             return;
         }

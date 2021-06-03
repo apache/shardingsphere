@@ -16,7 +16,8 @@
 #
 
 dataSources:
-  encrypt_ds: !!com.zaxxer.hikari.HikariDataSource
+  encrypt_ds:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:ds_encrypt;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
@@ -59,6 +60,3 @@ rules:
       type: NORMAL_ENCRYPT
     assisted_query:
       type: ASSISTED_QUERY_ENCRYPT
-
-props:
-  query-with-cipher-column: true

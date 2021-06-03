@@ -19,15 +19,18 @@ package org.apache.shardingsphere.infra.route.engine.impl;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -52,14 +55,18 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereSchema schema) {
+    public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
         RouteContext result = new RouteContext();
         for (Entry<ShardingSphereRule, SQLRouter> entry : routers.entrySet()) {
             if (result.getRouteUnits().isEmpty()) {
-                result = entry.getValue().createRouteContext(logicSQL, schema, entry.getKey(), props);
+                result = entry.getValue().createRouteContext(logicSQL, metaData, entry.getKey(), props);
             } else {
-                entry.getValue().decorateRouteContext(result, logicSQL, schema, entry.getKey(), props);
+                entry.getValue().decorateRouteContext(result, logicSQL, metaData, entry.getKey(), props);
             }
+        }
+        if (result.getRouteUnits().isEmpty() && 1 == metaData.getResource().getDataSources().size()) {
+            String singleDataSourceName = metaData.getResource().getDataSources().keySet().iterator().next();
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceName, singleDataSourceName), Collections.emptyList()));
         }
         return result;
     }

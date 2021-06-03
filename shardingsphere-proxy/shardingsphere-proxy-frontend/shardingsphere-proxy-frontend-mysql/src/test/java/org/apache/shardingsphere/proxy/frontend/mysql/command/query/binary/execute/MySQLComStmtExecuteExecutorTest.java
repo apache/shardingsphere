@@ -18,19 +18,20 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.execute;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
-import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.schema.impl.StandardSchemaContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
-import org.apache.shardingsphere.infra.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,11 +59,20 @@ public final class MySQLComStmtExecuteExecutorTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        Field schemaContexts = ProxyContext.getInstance().getClass().getDeclaredField("schemaContexts");
-        schemaContexts.setAccessible(true);
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("logic_db", mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS));
-        schemaContexts.set(ProxyContext.getInstance(), 
-                new StandardSchemaContexts(schemas, mock(ExecutorKernel.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+        Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
+        field.setAccessible(true);
+        ShardingSphereMetaData metaData = mockShardingSphereMetaData();
+        Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap("logic_db", metaData);
+        StandardMetaDataContexts metaDataContexts = new StandardMetaDataContexts(metaDataMap,
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()));
+        field.set(ProxyContext.getInstance(), metaDataContexts);
+    }
+    
+    private ShardingSphereMetaData mockShardingSphereMetaData() {
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        return result;
     }
     
     @Test
@@ -73,7 +83,7 @@ public final class MySQLComStmtExecuteExecutorTest {
         when(packet.getSql()).thenReturn("SELECT 1");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
-        when(databaseCommunicationEngine.execute()).thenReturn(new QueryResponse(Collections.singletonList(mock(QueryHeader.class))));
+        when(databaseCommunicationEngine.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComStmtExecuteExecutor.execute();
         assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.QUERY));
     }
@@ -86,7 +96,7 @@ public final class MySQLComStmtExecuteExecutorTest {
         when(packet.getSql()).thenReturn("SELECT 1");
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(packet, backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
-        when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponse());
+        when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
         mysqlComStmtExecuteExecutor.execute();
         assertThat(mysqlComStmtExecuteExecutor.getResponseType(), is(ResponseType.UPDATE));
     }

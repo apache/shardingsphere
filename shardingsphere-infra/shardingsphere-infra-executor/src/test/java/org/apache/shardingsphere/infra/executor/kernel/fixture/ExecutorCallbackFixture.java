@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.kernel.fixture;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorCallback;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 
 import java.util.Collection;
 import java.util.LinkedList;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.val
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.blob.MySQLBlobBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.decimal.MySQLDecimalBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.decimal.MySQLDoubleBinlogProtocolValue;
@@ -52,7 +52,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLBinlogProtocolValueFactory {
     
-    private static final Map<MySQLColumnType, MySQLBinlogProtocolValue> BINLOG_PROTOCOL_VALUES = new HashMap<>();
+    private static final Map<MySQLBinaryColumnType, MySQLBinlogProtocolValue> BINLOG_PROTOCOL_VALUES = new HashMap<>();
     
     static {
         registerIntegerTypeValue();
@@ -63,40 +63,40 @@ public final class MySQLBinlogProtocolValueFactory {
     }
     
     private static void registerIntegerTypeValue() {
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_BIT, new MySQLBitBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TINY, new MySQLTinyBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_SHORT, new MySQLShortBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_INT24, new MySQLInt24BinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_LONG, new MySQLLongBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_LONGLONG, new MySQLLongLongBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_BIT, new MySQLBitBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_TINY, new MySQLTinyBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_SHORT, new MySQLShortBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_INT24, new MySQLInt24BinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_LONG, new MySQLLongBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG, new MySQLLongLongBinlogProtocolValue());
     }
     
     private static void registerDecimalTypeValue() {
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_NEWDECIMAL, new MySQLDecimalBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_DOUBLE, new MySQLDoubleBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_FLOAT, new MySQLFloatBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL, new MySQLDecimalBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_DOUBLE, new MySQLDoubleBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_FLOAT, new MySQLFloatBinlogProtocolValue());
     }
     
     private static void registerTimeTypeValue() {
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_YEAR, new MySQLYearBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_DATE, new MySQLDateBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TIME, new MySQLTimeBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TIME2, new MySQLTime2BinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TIMESTAMP, new MySQLTimestampBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TIMESTAMP2, new MySQLTimestamp2BinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_DATETIME, new MySQLDatetimeBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_DATETIME2, new MySQLDatetime2BinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_YEAR, new MySQLYearBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_DATE, new MySQLDateBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_TIME, new MySQLTimeBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_TIME2, new MySQLTime2BinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_TIMESTAMP, new MySQLTimestampBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_TIMESTAMP2, new MySQLTimestamp2BinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_DATETIME, new MySQLDatetimeBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_DATETIME2, new MySQLDatetime2BinlogProtocolValue());
     }
     
     private static void registerStringTypeValue() {
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_STRING, new MySQLStringBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_VARCHAR, new MySQLVarcharBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_VAR_STRING, new MySQLVarcharBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MySQL_TYPE_JSON, new MySQLJsonBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_STRING, new MySQLStringBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, new MySQLVarcharBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, new MySQLVarcharBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MySQL_TYPE_JSON, new MySQLJsonBinlogProtocolValue());
     }
     
     private static void registerBlobTypeValue() {
-        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_BLOB, new MySQLBlobBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_BLOB, new MySQLBlobBinlogProtocolValue());
     }
     
     /**
@@ -105,7 +105,7 @@ public final class MySQLBinlogProtocolValueFactory {
      * @param columnType column type
      * @return binlog protocol value
      */
-    public static MySQLBinlogProtocolValue getBinlogProtocolValue(final MySQLColumnType columnType) {
+    public static MySQLBinlogProtocolValue getBinlogProtocolValue(final MySQLBinaryColumnType columnType) {
         Preconditions.checkArgument(BINLOG_PROTOCOL_VALUES.containsKey(columnType), "Cannot find MySQL type '%s' in column type when process binlog protocol value", columnType);
         return BINLOG_PROTOCOL_VALUES.get(columnType);
     }

@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.7. </b>"
+pre = "<b>5.8. </b>"
 title = "分布式事务"
-weight = 7
+weight = 8
 chapter = true
 +++
 

@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Binary protocol value for date for MySQL.
@@ -64,7 +65,7 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
-        Timestamp timestamp = (Timestamp) value;
+        Timestamp timestamp = new Timestamp(((Date) value).getTime());
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(timestamp);
         int year = calendar.get(Calendar.YEAR);

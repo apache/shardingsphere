@@ -15,3 +15,5 @@ Welcome to pick up some of video selections to watch. Moreover look forward to y
 4. [Apache ShardingSphere architecture evolution driven by open source](/en/videos/evolution/)  
 
 5. [How to build database ecosystem with newSQL in a big-data environment](/en/videos/ecosystem/)  
+
+6. [New feature of Apache ShardingSphere 5.x](/en/videos/Newfeature/)

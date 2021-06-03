@@ -22,11 +22,12 @@ governance:
     serverLists: localhost:2181
   overwrite: false
 
-authentication:
-  users:
-    root:
-      password: root
-      authorizedSchemas: sharding_db,replica_query_db
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+    provider:
+      type: NATIVE
 
 props:
   max-connections-size-per-query: 1

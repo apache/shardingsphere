@@ -45,6 +45,9 @@ chapter = true
 | Haoran Meng     | menghaoranss            |
 | Jingshang Lu    | jingshanglu             |
 | Zhengqiang Duan | strongduanmu            |
+| Jiwei Guo       | Technoboy-              |
+| Weijie Wu       | TeslaCN                 |
+| Lu Qiu          | Lucas-307               |
 
 ## Contributors
 

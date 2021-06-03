@@ -59,7 +59,7 @@ Operation Manual
 
 ### Items to be optimized
 
-When the Seata AT transaction is Revert SQL, we needs to parsed the physical SQL twice after the ShardingSphere fragmentation, so we needs to design an SPI to avoid the loss of the performance in the second SQL parsing.
+When the Seata AT transaction is Revert SQL, we need to parse the physical SQL twice after the ShardingSphere fragmentation, so we need to design an SPI to avoid the loss of the performance in the second SQL parsing.
 
 Reference paper
 

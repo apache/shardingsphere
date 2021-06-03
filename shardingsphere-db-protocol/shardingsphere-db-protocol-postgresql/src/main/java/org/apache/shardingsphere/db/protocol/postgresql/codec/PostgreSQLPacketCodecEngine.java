@@ -20,8 +20,11 @@ package org.apache.shardingsphere.db.protocol.postgresql.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.List;
@@ -31,9 +34,13 @@ import java.util.List;
  */
 public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEngine<PostgreSQLPacket> {
     
+    private static final int MESSAGE_TYPE_LENGTH = 1;
+    
+    private static final int PAYLOAD_LENGTH = 4;
+    
     @Override
     public boolean isValidHeader(final int readableBytes) {
-        return readableBytes >= PostgreSQLPacket.MESSAGE_TYPE_LENGTH + PostgreSQLPacket.PAYLOAD_LENGTH;
+        return readableBytes >= MESSAGE_TYPE_LENGTH + PAYLOAD_LENGTH;
     }
     
     @Override
@@ -42,7 +49,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
         if ('\0' == in.markReaderIndex().readByte()) {
             in.resetReaderIndex();
         } else {
-            messageTypeLength = PostgreSQLPacket.MESSAGE_TYPE_LENGTH;
+            messageTypeLength = MESSAGE_TYPE_LENGTH;
         }
         int payloadLength = in.readInt();
         int realPacketLength = payloadLength + messageTypeLength;
@@ -56,13 +63,24 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     
     @Override
     public void encode(final ChannelHandlerContext context, final PostgreSQLPacket message, final ByteBuf out) {
-        try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(context.alloc().buffer())) {
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(context.alloc().buffer());
+        try {
             message.write(payload);
-            if (!(message instanceof PostgreSQLSSLNegativePacket)) {
-                out.writeByte(message.getMessageType());
-                out.writeInt(payload.getByteBuf().readableBytes() + PostgreSQLPacket.PAYLOAD_LENGTH);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            payload.getByteBuf().resetWriterIndex();
+            // TODO consider what severity to use
+            PostgreSQLErrorResponsePacket errorResponsePacket = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.SYSTEM_ERROR, ex.getMessage())
+                    .build();
+            errorResponsePacket.write(payload);
+        } finally {
+            if (message instanceof PostgreSQLIdentifierPacket) {
+                out.writeByte(((PostgreSQLIdentifierPacket) message).getIdentifier().getValue());
+                out.writeInt(payload.getByteBuf().readableBytes() + PAYLOAD_LENGTH);
             }
             out.writeBytes(payload.getByteBuf());
+            payload.close();
         }
     }
     

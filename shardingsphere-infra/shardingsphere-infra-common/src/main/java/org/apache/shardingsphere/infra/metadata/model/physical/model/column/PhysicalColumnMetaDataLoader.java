@@ -20,8 +20,6 @@ package org.apache.shardingsphere.infra.metadata.model.physical.model.column;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.infra.metadata.model.physical.jdbc.handler.DatabaseMetaDataDialectHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.sql.Connection;
@@ -50,7 +48,7 @@ public final class PhysicalColumnMetaDataLoader {
     
     /**
      * Load column meta data list.
-     * 
+     *
      * @param connection connection
      * @param tableNamePattern table name pattern
      * @param databaseType database type

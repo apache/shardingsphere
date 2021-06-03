@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.model.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -45,7 +45,7 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext, 
-                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
+                            final List<Object> parameters, final ShardingSphereSchema schema) {
         validateShardingMultipleTable(shardingRule, sqlStatementContext);
         UpdateStatement sqlStatement = sqlStatementContext.getSqlStatement();
         String tableName = sqlStatementContext.getTablesContext().getTables().iterator().next().getTableName().getIdentifier().getValue();
@@ -151,8 +151,9 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
     }
     
     @Override
-    public void postValidate(final UpdateStatement sqlStatement, final RouteContext routeContext) {
-        if (UpdateStatementHandler.getLimitSegment(sqlStatement).isPresent() && routeContext.getRouteUnits().size() > 1) {
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext, 
+                             final RouteContext routeContext, final ShardingSphereSchema schema) {
+        if (UpdateStatementHandler.getLimitSegment(sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
         }
     }

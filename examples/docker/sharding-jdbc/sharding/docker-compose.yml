@@ -18,19 +18,19 @@
 version: '3'
 services:
   mysql:
-    ## mysql version, you could get more tags at here : https://hub.docker.com/_/mysql?tab=tags
+    ## for different MySQL version, you could get more at here : https://hub.docker.com/_/mysql?tab=tags
     image: "mysql:5.7"
-    ## default port is 3306, you could change to 33060 or any other port doesn't conflict MySQL on your OS
+    ## port binding to 3306, you could change to 13306:3306 or any other available port you want
     ports:
       - "3306:3306"
-    container_name: sharding-sphere-mysql
-    ## launch mysql without password
-    ## you could access the mysql in container by following command :
-    ## docker exec -it sharding-sphere-mysql mysql -uroot
+    container_name: shardingsphere-example-mysql
+    ## launch MySQL without password
+    ## you could access MySQL like `mysql -h127.0.0.1 -P3306 -uroot`
+    ## if you insist to access MySQL with password, remove `MYSQL_ALLOW_EMPTY_PASSWORD=yes` and then use MYSQL_ROOT_PASSWORD argument
+    #  - MYSQL_ROOT_PASSWORD=root
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-    ## if you insist to use password in mysql, remove MYSQL_ALLOW_EMPTY_PASSWORD=yes and uncomment following args
-    #  - MYSQL_ROOT_PASSWORD=root
+    ## copy the manual_schema.sql to /docker-entrypoint-initdb.d/ . this will init the sql file when the MySQL in container start up
     volumes:
       - ../../../src/resources/manual_schema.sql:/docker-entrypoint-initdb.d/manual_schema.sql
 
@@ -39,7 +39,7 @@ services:
     image: "zookeeper:3.4"
     ports: 
       - "2181:2181"
-    container_name: sharding-sphere-zookeeper
+    container_name: shardingsphere-example-zookeeper
 
   etcd:
     ## get more versions of etcd here  : https://quay.io/repository/coreos/etcd?tag=latest&tab=tags
@@ -48,7 +48,7 @@ services:
       - "2379:2379"
       - "2380:2380"
       - "4001:4001"
-    container_name: sharding-sphere-etcd
+    container_name: shardingsphere-example-etcd
     entrypoint: /usr/local/bin/etcd
     command:
       - '--advertise-client-urls=http://0.0.0.0:2379'

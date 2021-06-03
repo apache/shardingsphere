@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentContext;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.Escaped
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GroupByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.JoinSpecificationContext;
@@ -73,6 +75,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -92,11 +95,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * DML Statement SQL visitor for SQL92.
  */
+@NoArgsConstructor
 public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
+    
+    public SQL92DMLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
@@ -229,9 +238,18 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
+        if (null != ctx.havingClause()) {
+            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+        }
         return result;
     }
-
+    
+    @Override
+    public ASTNode visitHavingClause(final HavingClauseContext ctx) {
+        ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
+        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
+    }
+    
     private boolean isDistinct(final SelectSpecificationContext ctx) {
         return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
     }

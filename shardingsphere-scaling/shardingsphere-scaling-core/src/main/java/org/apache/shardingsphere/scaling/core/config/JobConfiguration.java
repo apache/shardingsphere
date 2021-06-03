@@ -18,25 +18,16 @@
 package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Job configuration.
+ * Scaling job configuration.
  */
-@NoArgsConstructor
 @Setter
 @Getter
 public final class JobConfiguration {
     
-    private int concurrency = 3;
+    private RuleConfiguration ruleConfig;
     
-    private int retryTimes = 3;
-    
-    private String jobName;
-    
-    private String[] shardingTables;
-    
-    private int shardingItem;
-    
+    private HandleConfiguration handleConfig = new HandleConfiguration();
 }

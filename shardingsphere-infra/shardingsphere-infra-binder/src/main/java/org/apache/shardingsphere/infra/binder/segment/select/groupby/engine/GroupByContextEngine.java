@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.groupby.engine;
 
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -39,7 +39,7 @@ public final class GroupByContextEngine {
      */
     public GroupByContext createGroupByContext(final SelectStatement selectStatement) {
         if (!selectStatement.getGroupBy().isPresent()) {
-            return new GroupByContext(new LinkedList<>(), 0);
+            return new GroupByContext(new LinkedList<>());
         }
         Collection<OrderByItem> groupByItems = new LinkedList<>();
         for (OrderByItemSegment each : selectStatement.getGroupBy().get().getGroupByItems()) {
@@ -49,6 +49,6 @@ public final class GroupByContextEngine {
             }
             groupByItems.add(orderByItem);
         }
-        return new GroupByContext(groupByItems, selectStatement.getGroupBy().get().getStopIndex());
+        return new GroupByContext(groupByItems);
     }
 }

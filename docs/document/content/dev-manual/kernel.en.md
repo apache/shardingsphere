@@ -21,27 +21,19 @@ chapter = true
 | SQLServerDatabaseType  | SQLServer database      |
 | H2DatabaseType         | H2 database             |
 
-## LogicMetaDataLoader
+## DialectTableMetaDataLoader
 
-| *SPI Name*             | *Description*                           |
-| ---------------------- | --------------------------------------- |
-| LogicMetaDataLoader    | Used to initialize meta data            |
+| *SPI Name*                   | *Description*                             |
+| ---------------------------- | ----------------------------------------- |
+| DialectTableMetaDataLoader   | Use SQL dialect to load meta data rapidly |
 
-| *Implementation Class* | *Description*                           |
-| ---------------------- | --------------------------------------- |
-| ShardingMetaDataLoader | Used to initialize sharding meta data   |
-| EncryptMetaDataLoader  | Used to initialize encryption meta data |
-
-## LogicMetaDataDecorator
-
-| *SPI Name*                | *Description*                        |
-| ------------------------- | ------------------------------------ |
-| LogicMetaDataDecorator    | Used to update meta data             |
-
-| *Implementation Class*    | *Description*                        |
-| ------------------------- | ------------------------------------ |
-| ShardingMetaDataDecorator | Used to update sharding meta data    |
-| EncryptMetaDataDecorator  | Used to update encryption meta data  |
+| *Implementation Class*       | *Description*                             |
+| ---------------------------- | ----------------------------------------- |
+| MySQLTableMetaDataLoader     | Use MySQL dialect to load meta data       |
+| OracleTableMetaDataLoader    | Use Oracle dialect to load meta data      |
+| PostgreSQLTableMetaDataLoader| Use PostgreSQL dialect to load meta data  |
+| SQLServerTableMetaDataLoader | Use SQLServer dialect to load meta data   |
+| H2TableMetaDataLoader        | Use H2 dialect to load meta data          |
 
 ## SQLRouter
 
@@ -88,3 +80,15 @@ chapter = true
 | ---------------------------- | ----------------------------------------------------- |
 | ShardingResultMergerEngine   | Used by merge engine to process sharding result set   |
 | EncryptResultDecoratorEngine | Used by merge engine to process encryption result set |
+
+## StoragePrivilegeLoader
+
+| *SPI Name*                | *Description*                                       |
+| ------------------------- | ---------------------------------------------------- |
+| StoragePrivilegeLoader    | Use SQL dialect to load privilege metadata           |
+
+| *Implementation Class*    | *Description*                                        |
+| ------------------------- | ---------------------------------------------------- |
+| MySQLPrivilegeLoader      | Use MySQL dialect to load privilege metadata         |
+| OraclePrivilegeLoader     | Use Oracle dialect to load privilege metadata        |
+| PostgreSQLPrivilegeLoader | Use PostgreSQL dialect to load privilege metadata    |

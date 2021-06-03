@@ -17,38 +17,43 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import lombok.AllArgsConstructor;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Use primary key as position.
  */
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class PrimaryKeyPosition implements InventoryPosition {
+public final class PrimaryKeyPosition implements ScalingPosition<PrimaryKeyPosition> {
     
-    private static final Gson GSON = new Gson();
+    private final long beginValue;
     
-    private long beginValue;
+    private final long endValue;
     
-    private long endValue;
-    
-    @Override
-    public int compareTo(final Position position) {
-        if (null == position) {
-            return 1;
-        }
-        return Long.compare(beginValue, ((PrimaryKeyPosition) position).beginValue);
+    /**
+     * Init by string data.
+     *
+     * @param data string data
+     * @return primary key position
+     */
+    public static PrimaryKeyPosition init(final String data) {
+        String[] array = data.split(",");
+        Preconditions.checkArgument(array.length == 2, "Unknown primary key position: " + data);
+        return new PrimaryKeyPosition(Long.parseLong(array[0]), Long.parseLong(array[1]));
     }
     
     @Override
-    public JsonElement toJson() {
-        return GSON.toJsonTree(new long[]{beginValue, endValue});
+    public int compareTo(final PrimaryKeyPosition position) {
+        if (null == position) {
+            return 1;
+        }
+        return Long.compare(beginValue, position.beginValue);
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%d,%d", beginValue, endValue);
     }
 }

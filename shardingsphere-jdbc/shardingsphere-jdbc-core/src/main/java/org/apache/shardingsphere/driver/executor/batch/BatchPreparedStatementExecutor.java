@@ -19,18 +19,19 @@ package org.apache.shardingsphere.driver.executor.batch;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.context.schema.SchemaContexts;
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl.DefaultSQLExecutorCallback;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -48,31 +49,31 @@ import java.util.stream.Collectors;
  */
 public final class BatchPreparedStatementExecutor {
     
-    private final SchemaContexts schemaContexts;
+    private final MetaDataContexts metaDataContexts;
     
-    private final SQLExecutor sqlExecutor;
+    private final JDBCExecutor jdbcExecutor;
     
-    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
+    private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
     @Getter
     private final Collection<BatchExecutionUnit> batchExecutionUnits;
     
     private int batchCount;
     
-    public BatchPreparedStatementExecutor(final SchemaContexts schemaContexts, final SQLExecutor sqlExecutor) {
-        this.schemaContexts = schemaContexts;
-        this.sqlExecutor = sqlExecutor;
-        inputGroups = new LinkedList<>();
+    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
+        this.metaDataContexts = metaDataContexts;
+        this.jdbcExecutor = jdbcExecutor;
+        executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>());
         batchExecutionUnits = new LinkedList<>();
     }
     
     /**
      * Initialize executor.
      *
-     * @param inputGroups input groups
+     * @param executionGroupContext execution group context
      */
-    public void init(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
-        this.inputGroups.addAll(inputGroups);
+    public void init(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext) {
+        this.executionGroupContext = executionGroupContext;
     }
     
     /**
@@ -118,29 +119,39 @@ public final class BatchPreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
-        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<int[]> callback = new DefaultSQLExecutorCallback<int[]>(schemaContexts.getDatabaseType(), isExceptionThrown) {
+        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
+        JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(
+                metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return statement.executeBatch();
             }
+            
+            @SuppressWarnings("OptionalContainsCollection")
+            @Override
+            protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.of(new int[batchCount]);
+            }
         };
-        List<int[]> results = sqlExecutor.execute(inputGroups, callback);
+        List<int[]> results = jdbcExecutor.execute(executionGroupContext, callback);
+        if (results.isEmpty()) {
+            return new int[0];
+        }
         return isNeedAccumulate(
-                schemaContexts.getDefaultSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
+                metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().filter(rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
-        return rules.stream().anyMatch(each -> ((DataNodeRoutedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
+        return rules.stream().anyMatch(each -> ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            for (StatementExecuteUnit eachUnit : each.getInputs()) {
+        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
+            for (JDBCExecutionUnit eachUnit : each.getInputs()) {
                 Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
                 for (BatchExecutionUnit eachExecutionUnit : batchExecutionUnits) {
                     if (isSameDataSourceAndSQL(eachExecutionUnit, eachUnit)) {
@@ -158,9 +169,9 @@ public final class BatchPreparedStatementExecutor {
         return result;
     }
     
-    private boolean isSameDataSourceAndSQL(final BatchExecutionUnit batchExecutionUnit, final StatementExecuteUnit statementExecuteUnit) {
-        return batchExecutionUnit.getExecutionUnit().getDataSourceName().equals(statementExecuteUnit.getExecutionUnit().getDataSourceName())
-                && batchExecutionUnit.getExecutionUnit().getSqlUnit().getSql().equals(statementExecuteUnit.getExecutionUnit().getSqlUnit().getSql());
+    private boolean isSameDataSourceAndSQL(final BatchExecutionUnit batchExecutionUnit, final JDBCExecutionUnit jdbcExecutionUnit) {
+        return batchExecutionUnit.getExecutionUnit().getDataSourceName().equals(jdbcExecutionUnit.getExecutionUnit().getDataSourceName())
+                && batchExecutionUnit.getExecutionUnit().getSqlUnit().getSql().equals(jdbcExecutionUnit.getExecutionUnit().getSqlUnit().getSql());
     }
     
     /**
@@ -170,8 +181,8 @@ public final class BatchPreparedStatementExecutor {
      */
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
-        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            result.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStorageResource).collect(Collectors.toList()));
+        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
+            result.addAll(each.getInputs().stream().map(JDBCExecutionUnit::getStorageResource).collect(Collectors.toList()));
         }
         return result;
     }
@@ -183,16 +194,16 @@ public final class BatchPreparedStatementExecutor {
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        return inputGroups.stream().map(each -> findStatementExecuteUnit(statement, each)).filter(Optional::isPresent).findFirst().map(Optional::get)
+        return executionGroupContext.getInputGroups().stream().map(each -> findJDBCExecutionUnit(statement, each)).filter(Optional::isPresent).findFirst().map(Optional::get)
                 .map(this::getParameterSets).orElse(Collections.emptyList());
     }
     
-    private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
-        return executeGroup.getInputs().stream().filter(each -> each.getStorageResource().equals(statement)).findFirst();
+    private Optional<JDBCExecutionUnit> findJDBCExecutionUnit(final Statement statement, final ExecutionGroup<JDBCExecutionUnit> executionGroup) {
+        return executionGroup.getInputs().stream().filter(each -> each.getStorageResource().equals(statement)).findFirst();
     }
     
-    private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {
-        Optional<BatchExecutionUnit> batchExecutionUnit = batchExecutionUnits.stream().filter(each -> isSameDataSourceAndSQL(each, executeUnit)).findFirst();
+    private List<List<Object>> getParameterSets(final JDBCExecutionUnit executionUnit) {
+        Optional<BatchExecutionUnit> batchExecutionUnit = batchExecutionUnits.stream().filter(each -> isSameDataSourceAndSQL(each, executionUnit)).findFirst();
         Preconditions.checkState(batchExecutionUnit.isPresent());
         return batchExecutionUnit.get().getParameterSets();
     }
@@ -205,7 +216,7 @@ public final class BatchPreparedStatementExecutor {
     public void clear() throws SQLException {
         closeStatements();
         getStatements().clear();
-        inputGroups.clear();
+        executionGroupContext.getInputGroups().clear();
         batchCount = 0;
         batchExecutionUnits.clear();
     }
@@ -216,5 +227,3 @@ public final class BatchPreparedStatementExecutor {
         }
     }
 }
-
-
