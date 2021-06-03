@@ -82,7 +82,7 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     }
     
     private ResultSet execute(final String sql, final List<Object> parameters) throws SQLException {
-        PreparedStatement statement = getConnection().prepareStatement(sql);
+        PreparedStatement statement = getConnection().prepareStatement(sql.replace(";", ""));
         setParameters(statement, parameters);
         this.statement = statement;
         return statement.executeQuery();
