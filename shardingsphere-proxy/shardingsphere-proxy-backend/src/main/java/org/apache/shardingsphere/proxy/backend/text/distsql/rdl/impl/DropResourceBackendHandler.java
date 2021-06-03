@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -114,6 +114,6 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     }
     
     private void post(final String schemaName, final Map<String, DataSource> dataSources) {
-        ShardingSphereEventBus.getInstance().post(new DataSourceAlteredEvent(schemaName, DataSourceConverter.getDataSourceConfigurationMap(dataSources)));
+        ShardingSphereEventBus.getInstance().post(new DataSourceAlteredSQLNotificationEvent(schemaName, DataSourceConverter.getDataSourceConfigurationMap(dataSources)));
     }
 }

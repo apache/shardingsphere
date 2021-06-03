@@ -19,8 +19,8 @@ package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.MockDataSource;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.junit.Before;
@@ -95,14 +95,14 @@ public final class DataSourceRegistryServiceTest {
     
     @Test
     public void assertUpdateWithDataSourceAddedEvent() {
-        DataSourceAddedEvent event = new DataSourceAddedEvent("foo_db", createDataSourceConfigurations());
+        DataSourceAddedSQLNotificationEvent event = new DataSourceAddedSQLNotificationEvent("foo_db", createDataSourceConfigurations());
         dataSourceRegistryService.update(event);
         verify(registryCenterRepository).persist(startsWith("/metadata/foo_db/dataSources"), anyString());
     }
     
     @Test
     public void assertUpdateWithDataSourceAlteredEvent() {
-        DataSourceAlteredEvent event = new DataSourceAlteredEvent("foo_db", createDataSourceConfigurations());
+        DataSourceAlteredSQLNotificationEvent event = new DataSourceAlteredSQLNotificationEvent("foo_db", createDataSourceConfigurations());
         dataSourceRegistryService.update(event);
         verify(registryCenterRepository).persist(startsWith("/metadata/foo_db/dataSources"), anyString());
     }
