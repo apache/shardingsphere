@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -87,7 +87,7 @@ public final class CreateShardingTableRuleBackendHandler extends SchemaRequiredB
     }
     
     private void post(final String schemaName) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName,
+        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredSQLNotificationEvent(schemaName,
                 ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
         // TODO Need to get the executed feedback from registry center for returning.
     }

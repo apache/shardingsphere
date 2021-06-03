@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByCont
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -102,7 +102,7 @@ public final class SelectStatementContextTest {
     
     public void assertSetIndexForItemsByIndexOrderBy(final SelectStatement selectStatement) {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                selectStatement, new GroupByContext(Collections.emptyList(), 0), createOrderBy(INDEX_ORDER_BY), createProjectionsContext(), null);
+                selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(INDEX_ORDER_BY), createProjectionsContext(), null);
         selectStatementContext.setIndexes(Collections.emptyMap());
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(4));
     }
@@ -134,7 +134,7 @@ public final class SelectStatementContextTest {
     
     private void assertSetIndexForItemsByColumnOrderByWithOwner(final SelectStatement selectStatement) {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                selectStatement, new GroupByContext(Collections.emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createProjectionsContext(), null);
+                selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createProjectionsContext(), null);
         selectStatementContext.setIndexes(Collections.emptyMap());
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(1));
     }
@@ -166,7 +166,7 @@ public final class SelectStatementContextTest {
     
     private void assertSetIndexForItemsByColumnOrderByWithAlias(final SelectStatement selectStatement) {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                selectStatement, new GroupByContext(Collections.emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createProjectionsContext(), null);
+                selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createProjectionsContext(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("n", 2);
         selectStatementContext.setIndexes(columnLabelIndexMap);
@@ -200,7 +200,7 @@ public final class SelectStatementContextTest {
     
     private void assertSetIndexForItemsByColumnOrderByWithoutAlias(final SelectStatement selectStatement) {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                selectStatement, new GroupByContext(Collections.emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createProjectionsContext(), null);
+                selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createProjectionsContext(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
         selectStatementContext.setIndexes(columnLabelIndexMap);
@@ -334,7 +334,7 @@ public final class SelectStatementContextTest {
         aggregationProjection.getDerivedAggregationProjections().addAll(Collections.singletonList(aggregationProjection));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singletonList(aggregationProjection));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                selectStatement, new GroupByContext(Collections.emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), projectionsContext, null);
+                selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), projectionsContext, null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
         selectStatementContext.setIndexes(columnLabelIndexMap);

@@ -173,7 +173,7 @@ public final class GroupByStreamMergedResultTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         return new SelectStatementContext(selectStatement,
-                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
+                new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC)))),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false),
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
     }

@@ -31,6 +31,4 @@ import java.util.Collection;
 public final class GroupByContext {
     
     private final Collection<OrderByItem> items;
-    
-    private final int lastIndex;
 }

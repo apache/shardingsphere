@@ -58,7 +58,7 @@ public final class ShardingSphereResource {
      * @throws SQLException exception
      */
     public void close(final Collection<String> dataSources) throws SQLException {
-        for (String each :dataSources) {
+        for (String each : dataSources) {
             close(this.dataSources.get(each));
         }
     }

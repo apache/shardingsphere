@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.cache;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.registry.cache.node.CacheNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
 import java.util.UUID;

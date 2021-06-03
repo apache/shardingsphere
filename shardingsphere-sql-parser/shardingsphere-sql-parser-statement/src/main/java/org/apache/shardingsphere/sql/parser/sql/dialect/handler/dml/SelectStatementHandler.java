@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
@@ -80,6 +81,22 @@ public final class SelectStatementHandler implements SQLStatementHandler {
         }
         if (selectStatement instanceof PostgreSQLStatement) {
             return ((PostgreSQLSelectStatement) selectStatement).getLock();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get window segment.
+     *
+     * @param selectStatement select statement
+     * @return window segment
+     */
+    public static Optional<WindowSegment> getWindowSegment(final SelectStatement selectStatement) {
+        if (selectStatement instanceof MySQLStatement) {
+            return ((MySQLSelectStatement) selectStatement).getWindow();
+        }
+        if (selectStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLSelectStatement) selectStatement).getWindow();
         }
         return Optional.empty();
     }

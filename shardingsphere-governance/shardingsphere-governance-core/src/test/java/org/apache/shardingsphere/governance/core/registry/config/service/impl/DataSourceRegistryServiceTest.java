@@ -19,8 +19,8 @@ package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.MockDataSource;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.junit.Before;
@@ -36,6 +36,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -95,14 +96,14 @@ public final class DataSourceRegistryServiceTest {
     
     @Test
     public void assertUpdateWithDataSourceAddedEvent() {
-        DataSourceAddedEvent event = new DataSourceAddedEvent("foo_db", createDataSourceConfigurations());
+        DataSourceAddedSQLNotificationEvent event = new DataSourceAddedSQLNotificationEvent("foo_db", createDataSourceConfigurations());
         dataSourceRegistryService.update(event);
         verify(registryCenterRepository).persist(startsWith("/metadata/foo_db/dataSources"), anyString());
     }
     
     @Test
     public void assertUpdateWithDataSourceAlteredEvent() {
-        DataSourceAlteredEvent event = new DataSourceAlteredEvent("foo_db", createDataSourceConfigurations());
+        DataSourceDroppedSQLNotificationEvent event = new DataSourceDroppedSQLNotificationEvent("foo_db", Collections.singletonList("ds_0"));
         dataSourceRegistryService.update(event);
         verify(registryCenterRepository).persist(startsWith("/metadata/foo_db/dataSources"), anyString());
     }

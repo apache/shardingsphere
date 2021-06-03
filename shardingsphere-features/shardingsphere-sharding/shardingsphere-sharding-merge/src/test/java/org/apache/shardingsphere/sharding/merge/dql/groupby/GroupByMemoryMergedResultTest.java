@@ -112,7 +112,7 @@ public final class GroupByMemoryMergedResultTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         return new SelectStatementContext(selectStatement,
-                new GroupByContext(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
+                new GroupByContext(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC)))),
                 new OrderByContext(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))), false),
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
     }

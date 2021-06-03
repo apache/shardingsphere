@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
@@ -88,9 +89,9 @@ public final class DropDatabaseDiscoveryRuleBackendHandlerTest {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("ha_group"));
         Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(1, 1);
         discoveryTypes.put("pr_ds_MGR", shardingSphereAlgorithmConfiguration);
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections
-                .singletonList(new DatabaseDiscoveryRuleConfiguration(Collections
-                        .singleton(databaseDiscoveryDataSourceRuleConfiguration), discoveryTypes)));
+        when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>(Collections
+                .singletonList(new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections
+                        .singleton(databaseDiscoveryDataSourceRuleConfiguration)), discoveryTypes))));
         when(databaseDiscoveryDataSourceRuleConfiguration.getName()).thenReturn("ha_group");
         when(databaseDiscoveryDataSourceRuleConfiguration.getDiscoveryTypeName()).thenReturn("pr_ds_MGR");
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);

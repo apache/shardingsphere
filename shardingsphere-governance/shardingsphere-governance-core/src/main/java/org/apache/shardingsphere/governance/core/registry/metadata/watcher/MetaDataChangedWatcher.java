@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.governance.core.registry.metadata.watcher;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.governance.core.registry.cache.CacheNode;
-import org.apache.shardingsphere.governance.core.registry.config.service.node.SchemaMetadataNode;
-import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
 import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaAddedEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
+import org.apache.shardingsphere.governance.core.registry.GovernanceWatcher;
+import org.apache.shardingsphere.governance.core.registry.cache.node.CacheNode;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.schema.SchemaChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -45,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -93,7 +93,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
             return Optional.empty();
         }
         if (isDataSourceChangedEvent(schemaName, event.getKey())) {
-            return Optional.of(createDataSourceAlteredEvent(schemaName, event));
+            return Optional.of(createDataSourceChangedEvent(schemaName, event));
         }
         if (isRuleChangedEvent(schemaName, event.getKey())) {
             return Optional.of(createRuleChangedEvent(schemaName, event));
@@ -112,12 +112,12 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     }
     
     @SuppressWarnings("unchecked")
-    private DataSourceAlteredEvent createDataSourceAlteredEvent(final String schemaName, final DataChangedEvent event) {
+    private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
         Map<String, DataSourceConfiguration> dataSourceConfigs = yamlDataSources.isEmpty() ? new HashMap<>()
                 : yamlDataSources.entrySet().stream().collect(Collectors.toMap(
                     Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new DataSourceAlteredEvent(schemaName, dataSourceConfigs);
+        return new DataSourceChangedEvent(schemaName, dataSourceConfigs);
     }
     
     private boolean isRuleChangedEvent(final String schemaName, final String eventPath) {
@@ -131,11 +131,11 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     private GovernanceEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {
         return new RuleConfigurationsChangedEvent(schemaName, getRuleConfigurations(event.getValue()));
     }
-    
+
     @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> getRuleConfigurations(final String yamlContent) {
-        Collection<YamlRuleConfiguration> rules = YamlEngine.unmarshal(yamlContent, Collection.class);
-        Preconditions.checkState(!rules.isEmpty(), "No available rule to load for governance.");
+        Collection<YamlRuleConfiguration> rules = Strings.isNullOrEmpty(yamlContent)
+                ? new LinkedList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
     }
     

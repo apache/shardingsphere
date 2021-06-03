@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
  * Order by token generator.
@@ -40,7 +38,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Se
     
     @Override
     public OrderByToken generateSQLToken(final SelectStatementContext selectStatementContext) {
-        OrderByToken result = new OrderByToken(generateOrderByIndex(selectStatementContext));
+        OrderByToken result = new OrderByToken(selectStatementContext.getGenerateOrderByStartIndex());
         String columnLabel;
         for (OrderByItem each : selectStatementContext.getOrderByContext().getItems()) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
@@ -55,17 +53,5 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Se
             result.getOrderDirections().add(each.getSegment().getOrderDirection());
         }
         return result;
-    }
-    
-    private int generateOrderByIndex(final SelectStatementContext selectStatementContext) {
-        if (selectStatementContext.getGroupByContext().getLastIndex() > 0) {
-            return selectStatementContext.getGroupByContext().getLastIndex() + 1;
-        }
-        SelectStatement selectStatement = selectStatementContext.getSqlStatement();
-        if (selectStatement.getWhere().isPresent()) {
-            return selectStatement.getWhere().get().getStopIndex() + 1;
-        } else {
-            return selectStatementContext.getAllSimpleTableSegments().stream().mapToInt(SimpleTableSegment::getStopIndex).max().getAsInt() + 1;
-        }
     }
 }

@@ -21,11 +21,11 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
-import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -49,6 +49,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -65,7 +66,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     }
     
     private static GovernanceShardingSphereDataSource getGovernanceShardingSphereDataSource() throws IOException, SQLException, URISyntaxException {
-        File yamlFile = new File(GovernanceShardingSphereDataSourceTest.class.getResource("/yaml/unit/sharding.yaml").toURI());
+        File yamlFile = new File(Objects.requireNonNull(GovernanceShardingSphereDataSourceTest.class.getResource("/yaml/unit/sharding.yaml")).toURI());
         return (GovernanceShardingSphereDataSource) YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
     }
     
@@ -105,7 +106,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewDataSource() throws SQLException {
-        metaDataContexts.renew(new DataSourceAlteredEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
+        metaDataContexts.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
         assertThat(metaDataContexts.getDefaultMetaData().getResource().getDataSources().size(), is(3));
     }
     

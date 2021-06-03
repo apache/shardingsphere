@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -61,14 +61,14 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     @Override
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
         check(schemaName, sqlStatement);
-        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = DataSourceParameterConverter.getDataSourceConfigurationMap(
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
-        Collection<String> invalidDataSourceNames = dataSourceConfigurationMap.entrySet()
+        Collection<String> invalidDataSourceNames = dataSourceConfigMap.entrySet()
                 .stream().filter(entry -> !dataSourceValidator.validate(entry.getValue())).map(Entry::getKey).collect(Collectors.toList());
         if (!invalidDataSourceNames.isEmpty()) {
             throw new InvalidResourceException(invalidDataSourceNames);
         }
-        post(schemaName, dataSourceConfigurationMap);
+        post(schemaName, dataSourceConfigMap);
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -88,6 +88,6 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     private void post(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DataSourceAddedEvent(schemaName, dataSources));
+        ShardingSphereEventBus.getInstance().post(new DataSourceAddedSQLNotificationEvent(schemaName, dataSources));
     }
 }

@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataDroppedEvent;
-import org.apache.shardingsphere.governance.core.registry.config.service.node.SchemaMetadataNode;
+import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;

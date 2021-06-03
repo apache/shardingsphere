@@ -46,7 +46,6 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -85,8 +84,9 @@ public final class PostgreSQLComQueryExecutorTest {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(textProtocolBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection<DatabasePacket<?>> actual = queryExecutor.execute();
-        assertTrue(actual.isEmpty());
-        assertNull(queryExecutor.getResponseType());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
+        assertThat(queryExecutor.getResponseType(), is(ResponseType.QUERY));
         verify(queryResponseHeader).getQueryHeaders();
     }
     
