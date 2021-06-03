@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardin
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,15 +42,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -71,6 +77,9 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
+
+    @Mock
+    private ShardingSphereResource shardingSphereResource;
     
     private AlterShardingTableRuleBackendHandler handler = new AlterShardingTableRuleBackendHandler(sqlStatement, backendConnection);
     
@@ -99,6 +108,10 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         tableRuleSegment.setTableStrategyColumn("order_id");
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
+        Map<String, DataSource> dataSourceMap = mock(Map.class);
+        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
+        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
         handler.execute("test", sqlStatement);
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
@@ -109,6 +122,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     public void assertExecuteWithDuplicateTablesInRDL() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
+        tableRuleSegment.setDataSources(Collections.emptyList());
         when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
@@ -117,6 +131,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     public void assertExecuteWithoutExistTable() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order_1");
+        tableRuleSegment.setDataSources(Collections.emptyList());
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
         handler.execute("test", sqlStatement);
@@ -125,7 +140,9 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     private Collection<RuleConfiguration> buildShardingConfigurations() {
         ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
         configuration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        configuration.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
+        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("t_order");
+        shardingAutoTableRuleConfiguration.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "test"));
+        configuration.getAutoTables().add(shardingAutoTableRuleConfiguration);
         return new ArrayList<>(Collections.singletonList(configuration));
     }
 }
