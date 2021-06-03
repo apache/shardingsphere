@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -55,7 +55,7 @@ public final class AlterShardingBroadcastTableRulesBackendHandler extends Schema
     }
     
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, rules));
+        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, rules));
         // TODO Need to get the executed feedback from registry center for returning.
     }
 }

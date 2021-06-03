@@ -19,16 +19,17 @@ package org.apache.shardingsphere.governance.core.registry.config.event.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import java.util.Collection;
 
 /**
- * Rule configurations altered event.
+ * Rule configurations altered SQL notification event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RuleConfigurationsAlteredEvent {
+public final class RuleConfigurationsAlteredSQLNotificationEvent implements SQLNotificationEvent {
     
     private final String schemaName;
     

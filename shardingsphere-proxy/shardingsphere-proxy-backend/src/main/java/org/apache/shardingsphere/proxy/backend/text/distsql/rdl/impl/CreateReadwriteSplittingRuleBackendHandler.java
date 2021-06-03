@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -140,7 +140,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends SchemaRequ
     }
     
     private void post(final String schemaName) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName,
+        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredSQLNotificationEvent(schemaName,
                 ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
     }
 }
