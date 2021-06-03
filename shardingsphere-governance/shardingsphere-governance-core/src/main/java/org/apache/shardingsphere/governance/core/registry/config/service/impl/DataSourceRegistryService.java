@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.config.service.SchemaBasedRegistryService;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredSQLNotificationEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -97,12 +97,16 @@ public final class DataSourceRegistryService implements SchemaBasedRegistryServi
     }
     
     /**
-     * Update data source configurations for alter.
+     * Update data source configurations for drop.
      *
-     * @param event data source altered event
+     * @param event data source dropped event
      */
     @Subscribe
-    public void update(final DataSourceAlteredSQLNotificationEvent event) {
-        persist(event.getSchemaName(), event.getDataSourceConfigurations());
+    public void update(final DataSourceDroppedSQLNotificationEvent event) {
+        Map<String, DataSourceConfiguration> dataSourceConfigs = load(event.getSchemaName());
+        for (String each : event.getDataSourceNames()) {
+            dataSourceConfigs.remove(each);
+        }
+        persist(event.getSchemaName(), dataSourceConfigs);
     }
 }

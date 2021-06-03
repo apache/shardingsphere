@@ -20,18 +20,17 @@ package org.apache.shardingsphere.governance.core.registry.config.event.datasour
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Data source altered SQL notification event.
+ * Data source dropped SQL notification event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceAlteredSQLNotificationEvent implements SQLNotificationEvent {
+public final class DataSourceDroppedSQLNotificationEvent implements SQLNotificationEvent {
     
     private final String schemaName;
     
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+    private final Collection<String> dataSourceNames;
 }
