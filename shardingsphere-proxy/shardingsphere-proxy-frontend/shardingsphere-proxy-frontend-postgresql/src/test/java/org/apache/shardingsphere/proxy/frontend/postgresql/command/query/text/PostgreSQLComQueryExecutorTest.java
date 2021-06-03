@@ -85,8 +85,9 @@ public final class PostgreSQLComQueryExecutorTest {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(textProtocolBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection<DatabasePacket<?>> actual = queryExecutor.execute();
-        assertTrue(actual.isEmpty());
-        assertNull(queryExecutor.getResponseType());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
+        assertThat(queryExecutor.getResponseType(), is(ResponseType.QUERY));
         verify(queryResponseHeader).getQueryHeaders();
     }
     
