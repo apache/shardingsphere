@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate;
+package org.apache.shardingsphere.infra.binder.segment.select.having;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 /**
- * Having segment.
+ * Having column.
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class HavingSegment implements RemoveAvailable {
+public final class HavingColumn {
     
-    private final int startIndex;
+    private final ColumnSegment segment;
     
-    private final int stopIndex;
-    
-    private final ExpressionSegment expr;
+    private int index;
 }
