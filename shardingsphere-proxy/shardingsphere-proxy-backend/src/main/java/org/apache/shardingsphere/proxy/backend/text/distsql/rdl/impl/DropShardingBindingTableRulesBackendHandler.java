@@ -18,14 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 import java.util.Optional;
@@ -33,35 +27,22 @@ import java.util.Optional;
 /**
  * Drop sharding binding table rules backend handler.
  */
-public final class DropShardingBindingTableRulesBackendHandler extends SchemaRequiredBackendHandler<DropShardingBindingTableRulesStatement> {
+public final class DropShardingBindingTableRulesBackendHandler extends RDLBackendHandler<DropShardingBindingTableRulesStatement> {
     
     public DropShardingBindingTableRulesBackendHandler(final DropShardingBindingTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement) {
+    protected void before(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
-        if (!shardingRuleConfiguration.isPresent()) {
+        if (!shardingRuleConfiguration.isPresent() || shardingRuleConfiguration.get().getBindingTableGroups().isEmpty()) {
             throw new ShardingBindingTableRulesNotExistsException(schemaName);
         }
-        if (shardingRuleConfiguration.get().getBindingTableGroups().isEmpty()) {
-            throw new ShardingBindingTableRulesNotExistsException(schemaName);
-        }
-        shardingRuleConfiguration.get().getBindingTableGroups().clear();
-        post(schemaName);
-        return new UpdateResponseHeader(sqlStatement);
     }
     
-    private Optional<ShardingRuleConfiguration> getShardingRuleConfiguration(final String schemaName) {
-        return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-    }
-    
-    private void post(final String schemaName) {
-        // TODO should use RuleConfigurationsChangeEvent
-        ShardingSphereEventBus.getInstance().post(
-                new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
-        // TODO Need to get the executed feedback from registry center for returning.
+    @Override
+    protected void doExecute(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement) {
+        getShardingRuleConfiguration(schemaName).get().getBindingTableGroups().clear();
     }
 }

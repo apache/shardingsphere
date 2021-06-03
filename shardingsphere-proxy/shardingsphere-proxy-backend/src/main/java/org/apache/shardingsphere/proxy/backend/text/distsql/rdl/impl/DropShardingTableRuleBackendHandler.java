@@ -19,15 +19,9 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -41,36 +35,41 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding table rule backend handler.
  */
-public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBackendHandler<DropShardingTableRuleStatement> {
+public final class DropShardingTableRuleBackendHandler extends RDLBackendHandler<DropShardingTableRuleStatement> {
     
     public DropShardingTableRuleBackendHandler(final DropShardingTableRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
+    protected void before(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
         Optional<ShardingRuleConfiguration> shardingRuleConfig = getShardingRuleConfiguration(schemaName);
         if (!shardingRuleConfig.isPresent()) {
             throw new ShardingTableRuleNotExistedException(schemaName, tableNames);
         }
-        check(schemaName, shardingRuleConfig.get(), tableNames);
-        drop(shardingRuleConfig.get(), tableNames);
-        post(schemaName);
-        return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    private void check(final String schemaName, final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> tableNames) {
-        Collection<String> shardingTableNames = getShardingTables(shardingRuleConfig);
+        Collection<String> shardingTableNames = getShardingTables(shardingRuleConfig.get());
         Collection<String> notExistedTableNames = tableNames.stream().filter(each -> !shardingTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistedTableNames.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(schemaName, notExistedTableNames);
         }
-        Collection<String> bindingTables = getBindingTables(shardingRuleConfig);
+        Collection<String> bindingTables = getBindingTables(shardingRuleConfig.get());
         Collection<String> usedTableNames = tableNames.stream().filter(bindingTables::contains).collect(Collectors.toList());
         if (!usedTableNames.isEmpty()) {
             throw new ShardingTableRulesInUsedException(usedTableNames);
         }
+    }
+    
+    @Override
+    protected void doExecute(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
+        ShardingRuleConfiguration shardingRuleConfiguration = getShardingRuleConfiguration(schemaName).get();
+        for (String each : getDroppedTables(sqlStatement)) {
+            dropShardingTable(shardingRuleConfiguration, each);
+        }
+    }
+    
+    private Collection<String> getDroppedTables(final DropShardingTableRuleStatement sqlStatement) {
+        return sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
     
     private Collection<String> getShardingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
@@ -80,33 +79,16 @@ public final class DropShardingTableRuleBackendHandler extends SchemaRequiredBac
         return result;
     }
     
-    private void drop(final ShardingRuleConfiguration shardingRuleConfiguration, final Collection<String> tableNames) {
-        // TODO add global lock
-        for (String each : tableNames) {
-            dropShardingTable(each, shardingRuleConfiguration);
-        }
-    }
-    
-    private void dropShardingTable(final String tableName, final ShardingRuleConfiguration shardingRuleConfig) {
-        shardingRuleConfig.getTables().removeAll(shardingRuleConfig.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
-        shardingRuleConfig.getAutoTables().removeAll(shardingRuleConfig.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
-    }
-    
-    private Optional<ShardingRuleConfiguration> getShardingRuleConfiguration(final String schemaName) {
-        return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
+    private void dropShardingTable(final ShardingRuleConfiguration shardingRuleConfiguration, final String tableName) {
+        shardingRuleConfiguration.getTables().removeAll(shardingRuleConfiguration.getTables()
+                .stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
+        shardingRuleConfiguration.getAutoTables().removeAll(shardingRuleConfiguration.getAutoTables()
+                .stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
     }
     
     private Collection<String> getBindingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
         Collection<String> bindTables = new LinkedHashSet<>();
         shardingRuleConfiguration.getBindingTableGroups().forEach(each -> bindTables.addAll(Splitter.on(",").splitToList(each)));
         return bindTables;
-    }
-    
-    private void post(final String schemaName) {
-        // TODO should use RuleConfigurationsChangeEvent
-        ShardingSphereEventBus.getInstance().post(
-                new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
-        // TODO Need to get the executed feedback from registry center for returning.
     }
 }
