@@ -56,7 +56,7 @@ public final class HavingContextEngine {
         return new HavingContext(havingExpression, !columns.isEmpty(), columns);
     }
     
-    public void extractHavingColumn(final ExpressionSegment expression, final Collection<HavingColumn> columns) {
+    private void extractHavingColumn(final ExpressionSegment expression, final Collection<HavingColumn> columns) {
         if (expression instanceof BinaryOperationExpression) {
             extractHavingColumnFromBinaryOperationExpression(((BinaryOperationExpression) expression).getLeft(), columns);
             extractHavingColumnFromBinaryOperationExpression(((BinaryOperationExpression) expression).getRight(), columns);
