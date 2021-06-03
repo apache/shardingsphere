@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -88,6 +88,6 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     private void post(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DataSourceAddedEvent(schemaName, dataSources));
+        ShardingSphereEventBus.getInstance().post(new DataSourceAddedSQLNotificationEvent(schemaName, dataSources));
     }
 }

@@ -15,23 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.event.datasource;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-
-import java.util.Map;
+package org.apache.shardingsphere.governance.core.registry;
 
 /**
- * Data source altered event.
+ * SQL notification event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DataSourceAlteredEvent implements GovernanceEvent {
-    
-    private final String schemaName;
-    
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+public interface SQLNotificationEvent {
 }

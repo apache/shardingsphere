@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAlteredEvent;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -52,9 +51,10 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     
     @Override
     public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) {
-        check(schemaName, sqlStatement.getResourceNames());
-        drop(schemaName, sqlStatement.getResourceNames());
-        post(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources());
+        Collection<String> toBeDroppedResourceNames = sqlStatement.getResourceNames();
+        check(schemaName, toBeDroppedResourceNames);
+        drop(schemaName, toBeDroppedResourceNames);
+        post(schemaName, toBeDroppedResourceNames);
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -113,7 +113,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         }
     }
     
-    private void post(final String schemaName, final Map<String, DataSource> dataSources) {
-        ShardingSphereEventBus.getInstance().post(new DataSourceAlteredEvent(schemaName, DataSourceConverter.getDataSourceConfigurationMap(dataSources)));
+    private void post(final String schemaName, final Collection<String> toBeDroppedResourceNames) {
+        ShardingSphereEventBus.getInstance().post(new DataSourceDroppedSQLNotificationEvent(schemaName, toBeDroppedResourceNames));
     }
 }

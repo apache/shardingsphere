@@ -194,8 +194,8 @@ public final class RDLBackendHandlerFactoryTest {
         ResponseHeader response = rdlBackendHandler.get().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
-
-    @Test(expected = ClassCastException.class)
+    
+    @Test
     public void assertExecuteDropResourceContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
@@ -210,7 +210,7 @@ public final class RDLBackendHandlerFactoryTest {
         ResponseHeader response = rdlBackendHandler.get().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
-
+    
     @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
     public void assertExecuteDropReadwriteSplittingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
@@ -242,7 +242,7 @@ public final class RDLBackendHandlerFactoryTest {
         ResponseHeader response = rdlBackendHandler.get().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
-
+    
     @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
     public void assertExecuteAlterReadwriteSplittingRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
