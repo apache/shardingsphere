@@ -19,13 +19,14 @@ package org.apache.shardingsphere.governance.core.registry.metadata.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
 
 /**
- * Meta data created event.
+ * Database created SQL notification event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataCreatedEvent {
+public final class DatabaseCreatedSQLNotificationEvent implements SQLNotificationEvent {
     
-    private final String schemaName;
+    private final String databaseName;
 }

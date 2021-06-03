@@ -19,13 +19,14 @@ package org.apache.shardingsphere.governance.core.registry.metadata.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
 
 /**
- * Meta data dropped event.
+ * Database dropped SQL notificationEvent event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataDroppedEvent {
+public final class DatabaseDroppedSQLNotificationEvent implements SQLNotificationEvent {
     
-    private final String schemaName;
+    private final String databaseName;
 }
