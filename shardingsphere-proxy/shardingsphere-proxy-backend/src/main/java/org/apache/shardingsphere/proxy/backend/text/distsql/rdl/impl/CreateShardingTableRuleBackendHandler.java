@@ -45,7 +45,7 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     }
     
     @Override
-    protected void before(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
+    public void before(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
         Collection<String> notExistResources = getInvalidResources(schemaName, getResources(sqlStatement));
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
@@ -60,7 +60,7 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     }
 
     @Override
-    protected void doExecute(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).iterator().next();
         Optional<ShardingRuleConfiguration> existShardingRuleConfiguration = getShardingRuleConfiguration(schemaName);

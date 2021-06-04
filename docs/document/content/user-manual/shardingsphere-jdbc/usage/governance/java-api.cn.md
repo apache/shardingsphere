@@ -35,17 +35,14 @@ weight = 1
 // 省略配置数据源以及规则
 // ...
 
-// 配置配置/注册中心
-RegistryCenterConfiguration configuration = new RegistryCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
+// 配置注册中心
+RegistryCenterConfiguration registryCenterConfig = new RegistryCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
 
 // 配置治理
-Map<String, CenterConfiguration> configurationMap = new HashMap<String, CenterConfiguration>();
-configurationMap.put("governance-shardingsphere-data-source", configuration);
+GovernanceConfiguration governanceConfiguration = new GovernanceConfiguration("governance-sharding-data-source", registryCenterConfig, true);
 
 // 创建 GovernanceShardingSphereDataSource
-DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
-        createDataSourceMap(), createShardingRuleConfig(), new Properties(),
-        new GovernanceConfiguration("shardingsphere-governance", configurationMap, true));
+DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfiguration);
 ```
 
 ## 使用 GovernanceShardingSphereDataSource
@@ -56,9 +53,7 @@ DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSour
 以原生 JDBC 使用方式为例：
 
 ```java
-DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
-        createDataSourceMap(), createShardingRuleConfig(), new Properties(), 
-        new GovernanceConfiguration("shardingsphere-governance", configurationMap, true));
+DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfiguration);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();

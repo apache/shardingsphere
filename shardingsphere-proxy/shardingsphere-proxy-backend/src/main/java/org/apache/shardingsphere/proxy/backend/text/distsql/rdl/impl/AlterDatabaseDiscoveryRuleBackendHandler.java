@@ -53,7 +53,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     }
     
     @Override
-    protected void before(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+    public void before(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = getDatabaseDiscoveryRuleConfiguration(schemaName);
         if (!ruleConfig.isPresent()) {
             throw new DatabaseDiscoveryRulesNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
@@ -62,7 +62,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     }
     
     @Override
-    protected void doExecute(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName).get();
         DatabaseDiscoveryRuleConfiguration alteredDatabaseDiscoveryRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getDatabaseDiscoveryRules()))).stream()

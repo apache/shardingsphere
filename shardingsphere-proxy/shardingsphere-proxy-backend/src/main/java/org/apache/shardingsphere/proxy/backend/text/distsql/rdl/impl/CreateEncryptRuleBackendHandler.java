@@ -53,14 +53,14 @@ public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<Cre
     }
     
     @Override
-    protected void before(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
+    public void before(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
         checkDuplicateRuleNames(schemaName, sqlStatement);
         checkEncryptors(sqlStatement);
         // TODO check resource
     }
     
     @Override
-    protected void doExecute(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
         YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration = EncryptRuleStatementConverter.convert(sqlStatement.getEncryptRules());
         EncryptRuleConfiguration createdEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlEncryptRuleConfiguration))

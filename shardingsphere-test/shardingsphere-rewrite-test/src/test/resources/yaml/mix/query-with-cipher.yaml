@@ -93,6 +93,17 @@ rules:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
           encryptorName: normal
+    t_account_detail:
+      columns:
+        password:
+          cipherColumn: cipher_password
+          assistedQueryColumn: assisted_query_password
+          plainColumn: plain_password
+          encryptorName: assisted_query
+        amount:
+          cipherColumn: cipher_amount
+          plainColumn: plain_amount
+          encryptorName: normal
   encryptors:
     normal:
       type: NORMAL_ENCRYPT

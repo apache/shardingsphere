@@ -54,7 +54,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     }
     
     @Override
-    protected void before(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
+    public void before(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = getReadwriteSplittingRuleConfiguration(schemaName);
         if (!ruleConfig.isPresent()) {
             throw new ReadwriteSplittingRulesNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
@@ -63,7 +63,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     }
     
     @Override
-    protected void doExecute(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
         ReadwriteSplittingRuleConfiguration alterReadwriteSplittingRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(ReadwriteSplittingRuleStatementConverter.convert(sqlStatement))).stream()
                 .map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst().get();
