@@ -85,9 +85,11 @@ public final class PostgreSQLComBindExecutorTest {
         PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(bindPacket, backendConnection);
         setMockFieldIntoExecutor(executor);
         Collection<DatabasePacket<?>> actual = executor.execute();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
-        assertNull(executor.getResponseType());
+        assertThat(actual.size(), is(2));
+        Iterator<DatabasePacket<?>> actualPackets = actual.iterator();
+        assertThat(actualPackets.next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
+        assertThat(actualPackets.next(), is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
+        assertThat(executor.getResponseType(), is(ResponseType.QUERY));
         verify(queryResponseHeader).getQueryHeaders();
     }
     

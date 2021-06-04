@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.metadata.event;
+package org.apache.shardingsphere.infra.binder.segment.select.having;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 /**
- * Meta data created event.
+ * Having column.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataCreatedEvent {
+@Setter
+public final class HavingColumn {
     
-    private final String schemaName;
+    private final ColumnSegment segment;
+    
+    private int index;
 }

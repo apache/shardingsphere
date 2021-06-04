@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate;
+package org.apache.shardingsphere.governance.core.registry.metadata.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
 
 /**
- * Having segment.
+ * Database created SQL notification event.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class HavingSegment implements RemoveAvailable {
+public final class DatabaseCreatedSQLNotificationEvent implements SQLNotificationEvent {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final ExpressionSegment expr;
+    private final String databaseName;
 }

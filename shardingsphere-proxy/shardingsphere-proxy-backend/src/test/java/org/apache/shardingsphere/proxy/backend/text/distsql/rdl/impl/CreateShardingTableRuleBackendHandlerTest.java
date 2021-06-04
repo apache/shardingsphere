@@ -90,6 +90,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     public void assertExecuteWithDuplicateTablesInRDL() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
+        tableRuleSegment.setDataSources(Collections.emptyList());
         when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
@@ -98,6 +99,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     public void assertExecuteWithDuplicateTables() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
+        tableRuleSegment.setDataSources(Collections.emptyList());
         when(sqlStatement.getTables()).thenReturn(Collections.singletonList(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }

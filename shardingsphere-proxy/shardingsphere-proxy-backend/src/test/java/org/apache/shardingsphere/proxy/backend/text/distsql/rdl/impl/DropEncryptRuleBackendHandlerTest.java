@@ -41,6 +41,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
@@ -90,9 +91,9 @@ public final class DropEncryptRuleBackendHandlerTest {
         when(sqlStatement.getTables()).thenReturn(Collections.singletonList("t_encrypt"));
         Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>(1, 1);
         encryptors.put("t_encrypt_user_id_MD5", shardingSphereAlgorithmConfiguration);
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections
-                .singletonList(new EncryptRuleConfiguration(Collections
-                        .singleton(encryptTableRuleConfiguration), encryptors)));
+        when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>(Collections
+                .singletonList(new EncryptRuleConfiguration(new LinkedList<>(Collections
+                        .singleton(encryptTableRuleConfiguration)), encryptors))));
         when(encryptTableRuleConfiguration.getName()).thenReturn("t_encrypt");
         when(encryptTableRuleConfiguration.getColumns()).thenReturn(buildColumnRuleConfigurations());
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);

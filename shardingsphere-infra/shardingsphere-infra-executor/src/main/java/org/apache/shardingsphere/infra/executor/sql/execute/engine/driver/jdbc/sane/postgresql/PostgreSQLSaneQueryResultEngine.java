@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.postgresql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.SaneQueryResultEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.util.Optional;
 
 /**
- * Having segment.
+ * Sane query result engine for PostgreSQL.
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class HavingSegment implements RemoveAvailable {
+public final class PostgreSQLSaneQueryResultEngine implements SaneQueryResultEngine {
     
-    private final int startIndex;
+    @Override
+    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement) {
+        return Optional.empty();
+    }
     
-    private final int stopIndex;
-    
-    private final ExpressionSegment expr;
+    @Override
+    public String getType() {
+        return "PostgreSQL";
+    }
 }

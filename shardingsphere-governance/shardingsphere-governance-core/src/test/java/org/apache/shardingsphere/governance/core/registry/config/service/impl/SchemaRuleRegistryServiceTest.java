@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.junit.Before;
@@ -79,7 +80,7 @@ public final class SchemaRuleRegistryServiceTest {
     
     @Test
     public void assertUpdate() {
-        RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent("foo_db", Collections.emptyList());
+        RuleConfigurationsAlteredSQLNotificationEvent event = new RuleConfigurationsAlteredSQLNotificationEvent("foo_db", Collections.emptyList());
         schemaRuleRegistryService.update(event);
         verify(registryCenterRepository).persist("/metadata/foo_db/rules", "!!map []\n");
     }

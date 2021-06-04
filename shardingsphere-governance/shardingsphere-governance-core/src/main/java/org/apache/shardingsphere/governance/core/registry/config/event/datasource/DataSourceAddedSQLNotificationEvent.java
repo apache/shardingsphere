@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.event.rule;
+package org.apache.shardingsphere.governance.core.registry.config.event.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
- * Rule configurations altered event.
+ * Data source added SQL notification event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RuleConfigurationsAlteredEvent {
+public final class DataSourceAddedSQLNotificationEvent implements SQLNotificationEvent {
     
     private final String schemaName;
     
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
 }

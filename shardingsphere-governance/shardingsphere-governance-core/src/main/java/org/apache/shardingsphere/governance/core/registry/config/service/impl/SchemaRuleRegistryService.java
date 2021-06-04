@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.config.service.SchemaBasedRegistryService;
 import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationCheckerFactory;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -86,7 +86,7 @@ public final class SchemaRuleRegistryService implements SchemaBasedRegistryServi
      * @param event rule configurations altered event
      */
     @Subscribe
-    public void update(final RuleConfigurationsAlteredEvent event) {
+    public void update(final RuleConfigurationsAlteredSQLNotificationEvent event) {
         persist(event.getSchemaName(), event.getRuleConfigurations());
     }
 }

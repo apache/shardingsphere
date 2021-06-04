@@ -43,8 +43,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Command query executor for PostgreSQL.
@@ -64,20 +62,16 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         ResponseHeader responseHeader = textProtocolBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
-            Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponseHeader) responseHeader);
-            return result.<List<DatabasePacket<?>>>map(Collections::singletonList).orElseGet(Collections::emptyList);
+            return Collections.singletonList(createQueryPacket((QueryResponseHeader) responseHeader));
         }
         responseType = ResponseType.UPDATE;
         return Collections.singletonList(createUpdatePacket((UpdateResponseHeader) responseHeader));
     }
     
-    private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponseHeader queryResponseHeader) {
+    private PostgreSQLRowDescriptionPacket createQueryPacket(final QueryResponseHeader queryResponseHeader) {
         Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponseHeader);
-        if (columnDescriptions.isEmpty()) {
-            return Optional.empty();
-        }
         responseType = ResponseType.QUERY;
-        return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
+        return new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions);
     }
     
     private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {

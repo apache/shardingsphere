@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.metadata.event;
+package org.apache.shardingsphere.governance.core.registry.config.event.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+
+import java.util.Collection;
 
 /**
- * Meta data dropped event.
+ * Rule configurations altered SQL notification event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataDroppedEvent {
+public final class RuleConfigurationsAlteredSQLNotificationEvent implements SQLNotificationEvent {
     
     private final String schemaName;
+    
+    private final Collection<RuleConfiguration> ruleConfigurations;
 }
