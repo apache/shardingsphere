@@ -87,8 +87,6 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
         try (PreparedStatement statement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
             statement.execute();
             ResultSet resultSet = statement.getGeneratedKeys();
-            assertTrue(resultSet.next());
-            assertThat(resultSet.getInt(1), is(6));
             assertFalse(resultSet.next());
         }
         assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
@@ -219,7 +217,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
             assertThat(metaData.getColumnCount(), is(3));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("plain_pwd")); 
+                assertThat(metaData.getColumnLabel(2), is("plain_pwd"));
                 assertThat(metaData.getColumnLabel(3), is("plain_pwd2"));
             }
         }
