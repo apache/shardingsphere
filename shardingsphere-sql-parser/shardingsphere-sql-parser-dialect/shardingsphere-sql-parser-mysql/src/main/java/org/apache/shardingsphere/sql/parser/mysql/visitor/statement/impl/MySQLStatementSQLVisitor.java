@@ -1253,7 +1253,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (projection instanceof SubqueryExpressionSegment) {
             SubqueryExpressionSegment subqueryExpressionSegment = (SubqueryExpressionSegment) projection;
             String text = ctx.start.getInputStream().getText(new Interval(subqueryExpressionSegment.getStartIndex(), subqueryExpressionSegment.getStopIndex()));
-            SubqueryProjectionSegment result = new SubqueryProjectionSegment((subqueryExpressionSegment).getSubquery(), text);
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment(subqueryExpressionSegment.getSubquery(), text);
             result.setAlias(alias);
             return result;
         }
