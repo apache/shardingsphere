@@ -45,7 +45,7 @@ public final class LocalTransactionManagerTest {
     private TransactionStatus transactionStatus;
     
     @Before
-    public void setUp(){
+    public void setUp() {
         when(backendConnection.getTransactionStatus()).thenReturn(transactionStatus);
     }
     
@@ -64,12 +64,12 @@ public final class LocalTransactionManagerTest {
     
     @Test
     @SneakyThrows(SQLException.class)
-    public void assertCommit(){
+    public void assertCommit() {
         if (backendConnection.getTransactionStatus().isInTransaction()) {
             try {
                 localTransactionManager.commit();
                 verify(localTransactionManager).commit();
-            }finally {
+            } finally {
                 backendConnection.getTransactionStatus().setInTransaction(false);
                 TransactionHolder.clear();
             }
@@ -78,12 +78,12 @@ public final class LocalTransactionManagerTest {
     
     @Test
     @SneakyThrows(SQLException.class)
-    public void assertRollback(){
+    public void assertRollback() {
         if (backendConnection.getTransactionStatus().isInTransaction()) {
             try {
                 localTransactionManager.rollback();
                 verify(localTransactionManager).rollback();
-            }finally {
+            } finally {
                 backendConnection.getTransactionStatus().setInTransaction(false);
                 TransactionHolder.clear();
             }
