@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -66,7 +65,6 @@ public final class SchemaRuleRegistryServiceTest {
     
     @Test
     public void assertLoadWithExistedNode() {
-        String test = readYAML();
         when(registryCenterRepository.get("/metadata/foo_db/rules")).thenReturn(readYAML());
         Collection<RuleConfiguration> actual = schemaRuleRegistryService.load("foo_db");
         assertThat(actual.size(), is(1));
