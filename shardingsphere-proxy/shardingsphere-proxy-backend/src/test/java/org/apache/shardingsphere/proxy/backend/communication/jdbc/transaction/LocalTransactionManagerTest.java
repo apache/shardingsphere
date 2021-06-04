@@ -18,16 +18,22 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.transaction.TransactionHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,54 +45,49 @@ public final class LocalTransactionManagerTest {
     private BackendConnection backendConnection;
     
     @Mock
-    private LocalTransactionManager localTransactionManager;
-    
-    @Mock
     private TransactionStatus transactionStatus;
     
+    @Mock
+    private Connection connection;
+    
+    private LocalTransactionManager localTransactionManager;
+    
     @Before
-    public void setUp() {
+    public void setUp() throws ReflectiveOperationException, SQLException {
         when(backendConnection.getTransactionStatus()).thenReturn(transactionStatus);
+        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(backendConnection.getCachedConnections()).thenReturn(setCachedConnections());
+        when(transactionStatus.isInTransaction()).thenReturn(true);
+        localTransactionManager = new LocalTransactionManager(backendConnection);
+    }
+    
+    private Multimap<String, Connection> setCachedConnections() {
+        Multimap<String, Connection> result = HashMultimap.create();
+        List<Connection> connections = new ArrayList<>(1);
+        connections.add(connection);
+        result.putAll("ds1", connections);
+        return result;
     }
     
     @Test
     public void assertBegin() {
-        if (!backendConnection.getTransactionStatus().isInTransaction()) {
-            backendConnection.getTransactionStatus().setInTransaction(true);
-            TransactionHolder.setInTransaction();
-            backendConnection.closeConnections(false);
-        }
         localTransactionManager.begin();
-        verify(localTransactionManager).begin();
-        verify(transactionStatus).setInTransaction(true);
-        verify(backendConnection).closeConnections(false);
+        verify(backendConnection).getMethodInvocations();
     }
     
     @Test
     @SneakyThrows(SQLException.class)
     public void assertCommit() {
-        if (backendConnection.getTransactionStatus().isInTransaction()) {
-            try {
-                localTransactionManager.commit();
-                verify(localTransactionManager).commit();
-            } finally {
-                backendConnection.getTransactionStatus().setInTransaction(false);
-                TransactionHolder.clear();
-            }
-        }
+        localTransactionManager.commit();
+        verify(transactionStatus).isInTransaction();
+        verify(connection).commit();
     }
     
     @Test
     @SneakyThrows(SQLException.class)
     public void assertRollback() {
-        if (backendConnection.getTransactionStatus().isInTransaction()) {
-            try {
-                localTransactionManager.rollback();
-                verify(localTransactionManager).rollback();
-            } finally {
-                backendConnection.getTransactionStatus().setInTransaction(false);
-                TransactionHolder.clear();
-            }
-        }
+        localTransactionManager.rollback();
+        verify(transactionStatus).isInTransaction();
+        verify(connection).rollback();
     }
 }
