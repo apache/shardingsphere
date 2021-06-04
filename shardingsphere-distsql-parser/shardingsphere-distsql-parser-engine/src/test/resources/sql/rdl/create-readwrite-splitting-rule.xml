@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create-static-readwrite-splitting-rule" value="CREATE READWRITE_SPLITTING RULE ms_group_0
+    (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME=random))" />
+    <sql-case id="create-dynamic-readwrite-splitting-rule" value="CREATE READWRITE_SPLITTING RULE ms_group_1
+    (AUTO_AWARE_RESOURCE=group_0, TYPE(NAME=random,PROPERTIES(read_weight='2:1'))" />
+
+    private static final String RDL_ALTER_READWRITE_SPLITTING_RULE = "ALTER READWRITE_SPLITTING RULE ms_group_0 ("
+    + "AUTO_AWARE_RESOURCE=group_0,"
+    + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))),"
+    + "ms_group_1 ("
+    + "WRITE_RESOURCE=primary_ds,"
+    + "READ_RESOURCES(replica_ds_0,replica_ds_1),"
+    + "TYPE(NAME=random)"
+    + ")";
+
+    private static final String RDL_DROP_READWRITE_SPLITTING_RULE = "DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1";
+
+    private static final String RDL_CREATE_DATABASE_DISCOVERY_RULE = "CREATE DB_DISCOVERY RULE ha_group_0 ("
+    + "RESOURCES(resource0,resource1),"
+    + "TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))),"
+    + "ha_group_1 ("
+    + "RESOURCES(resource2,resource3),"
+    + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
+    + ")";
+
+    private static final String RDL_ALTER_DATABASE_DISCOVERY_RULE = "ALTER DB_DISCOVERY RULE ha_group_0 ("
+    + "RESOURCES(resource0,resource1),"
+    + "TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))),"
+    + "ha_group_1 ("
+    + "RESOURCES(resource2,resource3),"
+    + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
+    + ")";
+
+    private static final String RDL_DROP_DATABASE_DISCOVERY_RULE = "DROP DB_DISCOVERY RULE ha_group_0,ha_group_1";
+
+    private static final String RDL_CREATE_ENCRYPT_RULE = "CREATE ENCRYPT RULE t_encrypt ("
+    + "RESOURCE=ds_1,"
+    + "COLUMNS("
+    + "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),"
+    + "(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))"
+    + "))";
+
+    private static final String RDL_ALTER_ENCRYPT_RULE = "ALTER ENCRYPT RULE t_encrypt ("
+    + "RESOURCE=ds_1,"
+    + "COLUMNS("
+    + "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),"
+    + "(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))"
+    + "))";
+
+    private static final String RDL_DROP_ENCRYPT_RULE = "DROP ENCRYPT RULE t_encrypt,t_encrypt_order";
+
+    private static final String RQL_SHOW_SHARDING_BINDING_TABLE_RULES = "SHOW SHARDING BINDING TABLE RULES FROM sharding_db";
+
+    private static final String RQL_SHOW_SHARDING_BROADCAST_TABLE_RULES = "SHOW SHARDING BROADCAST TABLE RULES FROM sharding_db";
+
+    private static final String RQL_SHOW_SHARDING_TABLE_RULES = "SHOW SHARDING TABLE RULES FROM schemaName";
+
+    private static final String RQL_SHOW_SHARDING_TABLE_RULE = "SHOW SHARDING TABLE RULE t_order";
+
+    private static final String RQL_SHOW_SHARDING_TABLE_RULE_FROM = "SHOW SHARDING TABLE RULE t_order FROM schemaName";
+
+    private static final String RQL_SHOW_READWRITE_SPLITTING_RULES = "SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db";
+
+    private static final String RQL_SHOW_DB_DISCOVERY_RULES = "SHOW DB_DISCOVERY RULES FROM db_discovery_db";
+
+    private static final String RQL_SHOW_ENCRYPT_RULES = "SHOW ENCRYPT RULES FROM encrypt_db";
+
+    private static final String RQL_SHOW_ENCRYPT_TABLE_RULE = "SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db";
+</sql-cases>
