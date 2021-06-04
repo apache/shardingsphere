@@ -33,14 +33,24 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     
     private final String columnName;
     
+    private final boolean lastColumn;
+    
     public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final String columnName) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.columnName = columnName;
+        this.lastColumn = false;
+    }
+    
+    public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final String columnName, final boolean lastColumn) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+        this.columnName = columnName;
+        this.lastColumn = lastColumn;
     }
     
     @Override
     public String toString() {
-        return columnName;
+        return lastColumn ? ", " + columnName : columnName;
     }
 }
