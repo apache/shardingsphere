@@ -19,7 +19,9 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.transaction.TransactionHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,38 +30,63 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-/**
- * @Author hdx
- * @Date 2021-06-03
- * @Version 1.0
- */
 @RunWith(MockitoJUnitRunner.class)
-public class LocalTransactionManagerTest {
+public final class LocalTransactionManagerTest {
+    
     @Mock
     private BackendConnection backendConnection;
     
-    @Mock()
+    @Mock
     private LocalTransactionManager localTransactionManager;
+    
+    @Mock
+    private TransactionStatus transactionStatus;
+    
+    @Before
+    public void setUp(){
+        when(backendConnection.getTransactionStatus()).thenReturn(transactionStatus);
+    }
     
     @Test
     public void assertBegin() {
+        if (!backendConnection.getTransactionStatus().isInTransaction()) {
+            backendConnection.getTransactionStatus().setInTransaction(true);
+            TransactionHolder.setInTransaction();
+            backendConnection.closeConnections(false);
+        }
         localTransactionManager.begin();
         verify(localTransactionManager).begin();
+        verify(transactionStatus).setInTransaction(true);
+        verify(backendConnection).closeConnections(false);
     }
     
     @Test
     @SneakyThrows(SQLException.class)
     public void assertCommit(){
-        localTransactionManager.commit();
-        verify(localTransactionManager).commit();
+        if (backendConnection.getTransactionStatus().isInTransaction()) {
+            try {
+                localTransactionManager.commit();
+                verify(localTransactionManager).commit();
+            }finally {
+                backendConnection.getTransactionStatus().setInTransaction(false);
+                TransactionHolder.clear();
+            }
+        }
     }
     
     @Test
     @SneakyThrows(SQLException.class)
     public void assertRollback(){
-        localTransactionManager.rollback();
-        verify(localTransactionManager).rollback();
+        if (backendConnection.getTransactionStatus().isInTransaction()) {
+            try {
+                localTransactionManager.rollback();
+                verify(localTransactionManager).rollback();
+            }finally {
+                backendConnection.getTransactionStatus().setInTransaction(false);
+                TransactionHolder.clear();
+            }
+        }
     }
-    
 }
