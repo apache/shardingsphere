@@ -23,42 +23,33 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
-import java.util.Arrays;
-
 /**
  * MySQL authentication switch request packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::AuthSwitchRequest">AuthSwitchRequest</a>
+ * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::AuthMoreData">AuthMoreData</a>
  */
 @RequiredArgsConstructor
-public final class MySQLAuthSwitchRequestPacket implements MySQLPacket {
+@Getter
+public final class MySQLAuthMoreDataPacket implements MySQLPacket {
     
     /**
-     * Header of MySQL auth switch request packet.
+     * Header of MySQL auth more data packet.
      */
-    public static final int HEADER = 0xfe;
+    public static final int HEADER = 0x01;
     
     @Getter
     private final int sequenceId;
     
-    private final String authPluginName;
+    private final byte[] pluginData;
     
-    @Getter
-    private final MySQLAuthPluginData authPluginData;
-    
-    public MySQLAuthSwitchRequestPacket(final MySQLPacketPayload payload) {
+    public MySQLAuthMoreDataPacket(final MySQLPacketPayload payload) {
         sequenceId = payload.readInt1();
-        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL auth switch request packet must be `0xfe`.");
-        authPluginName = payload.readStringNul();
-        String strAuthPluginData = payload.readStringNul();
-        authPluginData = new MySQLAuthPluginData(Arrays.copyOfRange(strAuthPluginData.getBytes(), 0, 8),
-                Arrays.copyOfRange(strAuthPluginData.getBytes(), 8, 20));
+        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL auth more data packet must be `0x01`.");
+        pluginData = payload.readStringEOFByBytes();
     }
     
     @Override
     public void write(final MySQLPacketPayload payload) {
-        payload.writeInt1(0xfe);
-        payload.writeStringNul(authPluginName);
-        payload.writeStringNul(new String(authPluginData.getAuthenticationPluginData()));
+        throw new UnsupportedOperationException();
     }
 }
