@@ -69,7 +69,7 @@ public final class SchemaRuleRegistryServiceTest {
         Collection<RuleConfiguration> actual = schemaRuleRegistryService.load("foo_db");
         assertThat(actual.size(), is(1));
     }
-
+    
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML() {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/regcenter/data-schema-rule.yaml").toURI()))
