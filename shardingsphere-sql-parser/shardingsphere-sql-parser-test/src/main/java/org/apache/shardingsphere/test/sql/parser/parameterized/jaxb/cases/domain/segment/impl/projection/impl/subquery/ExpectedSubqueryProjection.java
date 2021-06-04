@@ -38,4 +38,10 @@ public final class ExpectedSubqueryProjection extends AbstractExpectedDelimiterS
     
     @XmlElement
     private ExpectedSubquery subquery;
+    
+    @XmlAttribute
+    private String text;
+    
+    @XmlAttribute(name = "literal-text")
+    private String literalText;
 }

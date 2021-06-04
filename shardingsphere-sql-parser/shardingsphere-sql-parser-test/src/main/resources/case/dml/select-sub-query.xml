@@ -23,11 +23,11 @@
         </from>
         <projections start-index="7" stop-index="33">
             <column-projection name="order_id" start-index="7" stop-index="14" />
-            <subquery-projection start-index="17" stop-index="26" alias="num">
+            <subquery-projection start-index="17" stop-index="26" alias="num" text="(SELECT 1)" literal-text="(SELECT 1)">
                 <subquery>
                     <select>
                         <projections start-index="25" stop-index="25">
-                            <expression-projection start-index="25" stop-index="25" />
+                            <expression-projection start-index="25" stop-index="25" text="1" />
                         </projections>
                     </select>
                 </subquery>
@@ -222,16 +222,33 @@
         </where>
     </select>
     
-    <select sql-case-id="select_with_exists_sub_query_with_project">
+    <select sql-case-id="select_with_exists_sub_query_with_project_for_mysql">
         <projections start-index="7" stop-index="36">
-            <subquery-projection start-index="14" stop-index="36">
+            <subquery-projection start-index="14" stop-index="36" text="EXISTS (SELECT 1 FROM t_order)" literal-text="EXISTS (SELECT 1 FROM t_order)">
                 <subquery start-index="15" stop-index="35">
                     <select>
                         <from>
                             <simple-table name="t_order" start-index="29" stop-index="35" />
                         </from>
-                        <projections start-index="43" stop-index="43">
-                            <expression-projection start-index="43" stop-index="43" text="1"/>
+                        <projections start-index="22" stop-index="22">
+                            <expression-projection start-index="22" stop-index="22" text="1"/>
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_with_exists_sub_query_with_project_for_postgresql">
+        <projections start-index="7" stop-index="36">
+            <subquery-projection start-index="14" stop-index="36" text="(SELECT 1 FROM t_order)" literal-text="(SELECT 1 FROM t_order)">
+                <subquery start-index="15" stop-index="35">
+                    <select>
+                        <from>
+                            <simple-table name="t_order" start-index="29" stop-index="35" />
+                        </from>
+                        <projections start-index="22" stop-index="22">
+                            <expression-projection start-index="22" stop-index="22" text="1"/>
                         </projections>
                     </select>
                 </subquery>
