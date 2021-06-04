@@ -352,10 +352,6 @@ projection
     : (columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
-alias
-    : identifier | STRING_
-    ;
-
 unqualifiedShorthand
     : ASTERISK_
     ;
