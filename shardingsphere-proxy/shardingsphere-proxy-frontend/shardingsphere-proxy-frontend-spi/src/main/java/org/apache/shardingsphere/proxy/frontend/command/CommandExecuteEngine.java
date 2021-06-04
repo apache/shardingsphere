@@ -87,7 +87,8 @@ public interface CommandExecuteEngine {
      * @param backendConnection backend connection
      * @param queryCommandExecutor query command executor
      * @param headerPackagesCount count of header packages
+     * @return is need flush
      * @throws SQLException SQL exception
      */
-    void writeQueryData(ChannelHandlerContext context, BackendConnection backendConnection, QueryCommandExecutor queryCommandExecutor, int headerPackagesCount) throws SQLException;
+    boolean writeQueryData(ChannelHandlerContext context, BackendConnection backendConnection, QueryCommandExecutor queryCommandExecutor, int headerPackagesCount) throws SQLException;
 }
