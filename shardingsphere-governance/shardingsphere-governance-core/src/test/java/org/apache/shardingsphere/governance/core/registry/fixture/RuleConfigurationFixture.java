@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 @Getter
 @Setter
-public class RuleConfigurationFixture implements RuleConfiguration {
-
+public final class RuleConfigurationFixture implements RuleConfiguration {
+    
     private String name;
-
 }
