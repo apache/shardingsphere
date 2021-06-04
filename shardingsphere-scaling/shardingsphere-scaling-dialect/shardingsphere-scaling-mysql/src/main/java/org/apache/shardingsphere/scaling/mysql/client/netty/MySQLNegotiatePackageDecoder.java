@@ -20,10 +20,11 @@ package org.apache.shardingsphere.scaling.mysql.client.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthMoreDataPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchRequestPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
@@ -53,9 +54,6 @@ public final class MySQLNegotiatePackageDecoder extends ByteToMessageDecoder {
     
     private MySQLHandshakePacket decodeHandshakePacket(final MySQLPacketPayload payload) {
         MySQLHandshakePacket result = new MySQLHandshakePacket(payload);
-        if (!MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName().equals(result.getAuthPluginName())) {
-            throw new UnsupportedOperationException("Only supported SECURE_PASSWORD_AUTHENTICATION server");
-        }
         return result;
     }
     
@@ -66,6 +64,10 @@ public final class MySQLNegotiatePackageDecoder extends ByteToMessageDecoder {
                 return new MySQLErrPacket(payload);
             case MySQLOKPacket.HEADER:
                 return new MySQLOKPacket(payload);
+            case MySQLAuthSwitchRequestPacket.HEADER:
+                return new MySQLAuthSwitchRequestPacket(payload);
+            case MySQLAuthMoreDataPacket.HEADER:
+                return new MySQLAuthMoreDataPacket(payload);
             default:
                 throw new UnsupportedOperationException(String.format("Unsupported negotiate response header: %X", header));
         }

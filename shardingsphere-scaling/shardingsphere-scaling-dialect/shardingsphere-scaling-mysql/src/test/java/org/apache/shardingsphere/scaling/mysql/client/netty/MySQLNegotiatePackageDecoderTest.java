@@ -20,9 +20,10 @@ package org.apache.shardingsphere.scaling.mysql.client.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthMoreDataPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchRequestPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -44,14 +45,6 @@ public final class MySQLNegotiatePackageDecoderTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertDecodeUnsupportedProtocolVersion() {
-        MySQLNegotiatePackageDecoder commandPacketDecoder = new MySQLNegotiatePackageDecoder();
-        commandPacketDecoder.decode(null, byteBuf, null);
-    }
-    
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertDecodeUnsupportedAuthenticationMethod() {
-        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLServerInfo.PROTOCOL_VERSION);
-        when(byteBuf.readUnsignedShortLE()).thenReturn(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         MySQLNegotiatePackageDecoder commandPacketDecoder = new MySQLNegotiatePackageDecoder();
         commandPacketDecoder.decode(null, byteBuf, null);
     }
@@ -85,5 +78,41 @@ public final class MySQLNegotiatePackageDecoderTest {
         assertThat(actualPacket.getCapabilityFlagsLower(), is(63487));
         assertThat(actualPacket.getCapabilityFlagsUpper(), is(33279));
         assertThat(actualPacket.getAuthPluginName(), is("mysql_native_password"));
+    }
+    
+    @Test
+    public void assertDecodeAuthSwitchRequestPacket() throws NoSuchFieldException, IllegalAccessException {
+        MySQLNegotiatePackageDecoder negotiatePackageDecoder = new MySQLNegotiatePackageDecoder();
+        ReflectionUtil.setFieldValue(negotiatePackageDecoder, "handshakeReceived", true);
+        List<Object> actual = new LinkedList<>();
+        negotiatePackageDecoder.decode(null, authSwitchRequestPacket(), actual);
+        assertPacketByType(actual, MySQLAuthSwitchRequestPacket.class);
+    }
+    
+    private ByteBuf authSwitchRequestPacket() {
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLAuthSwitchRequestPacket.HEADER);
+        when(byteBuf.getByte(1)).thenReturn((byte) MySQLAuthSwitchRequestPacket.HEADER);
+        when(byteBuf.bytesBefore((byte) 0)).thenReturn(20);
+        return byteBuf;
+    }
+    
+    @Test
+    public void assertDecodeAuthMoreDataPacket() throws NoSuchFieldException, IllegalAccessException {
+        MySQLNegotiatePackageDecoder negotiatePackageDecoder = new MySQLNegotiatePackageDecoder();
+        ReflectionUtil.setFieldValue(negotiatePackageDecoder, "handshakeReceived", true);
+        List<Object> actual = new LinkedList<>();
+        negotiatePackageDecoder.decode(null, authMoreDataPacket(), actual);
+        assertPacketByType(actual, MySQLAuthMoreDataPacket.class);
+    }
+    
+    private ByteBuf authMoreDataPacket() {
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0, (short) MySQLAuthMoreDataPacket.HEADER);
+        when(byteBuf.getByte(1)).thenReturn((byte) MySQLAuthMoreDataPacket.HEADER);
+        return byteBuf;
+    }
+    
+    private void assertPacketByType(final List<Object> actual, final Class<?> clazz) {
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), instanceOf(clazz));
     }
 }
