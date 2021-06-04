@@ -42,7 +42,7 @@ public final class DropShardingTableRuleBackendHandler extends RDLBackendHandler
     }
     
     @Override
-    protected void before(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
+    public void before(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
         Optional<ShardingRuleConfiguration> shardingRuleConfig = getShardingRuleConfiguration(schemaName);
         if (!shardingRuleConfig.isPresent()) {
@@ -61,7 +61,7 @@ public final class DropShardingTableRuleBackendHandler extends RDLBackendHandler
     }
     
     @Override
-    protected void doExecute(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration shardingRuleConfiguration = getShardingRuleConfiguration(schemaName).get();
         for (String each : getDroppedTables(sqlStatement)) {
             dropShardingTable(shardingRuleConfiguration, each);

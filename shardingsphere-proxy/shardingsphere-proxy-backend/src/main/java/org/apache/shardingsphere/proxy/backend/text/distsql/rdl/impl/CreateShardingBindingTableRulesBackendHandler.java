@@ -43,7 +43,7 @@ public final class CreateShardingBindingTableRulesBackendHandler extends RDLBack
     }
     
     @Override
-    protected void before(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
+    public void before(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = getShardingRuleConfiguration(schemaName);
         if (!shardingRuleConfig.isPresent()) {
             throw new ShardingBindingTableRulesNotExistsException(schemaName);
@@ -63,7 +63,7 @@ public final class CreateShardingBindingTableRulesBackendHandler extends RDLBack
     }
     
     @Override
-    protected void doExecute(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
+    public void doExecute(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
         YamlShardingRuleConfiguration yamlShardingRuleConfiguration = ShardingRuleStatementConverter.convert(sqlStatement);
         getShardingRuleConfiguration(schemaName).get().getBindingTableGroups().addAll(yamlShardingRuleConfiguration.getBindingTables());
     }
