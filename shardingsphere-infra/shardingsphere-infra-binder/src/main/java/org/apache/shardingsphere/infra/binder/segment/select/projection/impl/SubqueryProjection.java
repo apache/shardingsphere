@@ -15,47 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
+package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 
 import java.util.Optional;
 
 /**
- * Subquery projection segment.
+ * Subquery projection.
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 @ToString
-public final class SubqueryProjectionSegment implements ProjectionSegment, AliasAvailable {
+public final class SubqueryProjection implements Projection {
     
-    private final SubquerySegment subquery;
+    private final String expression;
     
-    private final String text;
-    
-    @Setter
-    private AliasSegment alias;
+    private final String alias;
     
     @Override
     public Optional<String> getAlias() {
-        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+        return Optional.ofNullable(alias);
     }
     
     @Override
-    public int getStartIndex() {
-        return subquery.getStartIndex();
-    }
-    
-    @Override
-    public int getStopIndex() {
-        return subquery.getStopIndex();
-        // TODO
-        // return null == alias ? alias.getStopIndex() : column.getStopIndex();
+    public String getColumnLabel() {
+        return getAlias().orElse(expression);
     }
 }
