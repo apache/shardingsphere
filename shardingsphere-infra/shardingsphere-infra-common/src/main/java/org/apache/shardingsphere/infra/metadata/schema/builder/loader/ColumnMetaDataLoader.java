@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -49,7 +48,7 @@ public final class ColumnMetaDataLoader {
     
     /**
      * Load column meta data list.
-     * 
+     *
      * @param connection connection
      * @param tableNamePattern table name pattern
      * @param databaseType database type
