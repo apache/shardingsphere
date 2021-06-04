@@ -17,19 +17,30 @@
 
 package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaRuleRegistryServiceTest {
@@ -54,20 +65,16 @@ public final class SchemaRuleRegistryServiceTest {
     
     @Test
     public void assertLoadWithExistedNode() {
-        // TODO use RuleConfigurationFixture instead of ShardingRuleConfiguration for test case
-//        when(registryCenterRepository.get("/metadata/foo_db/rules")).thenReturn(readYAML());
-//        Collection<RuleConfiguration> actual = schemaRuleRegistryService.load("foo_db");
-//        assertThat(actual.size(), is(1));
-//        ShardingRuleConfiguration actualShardingRuleConfig = (ShardingRuleConfiguration) actual.iterator().next();
-//        assertThat(actualShardingRuleConfig.getTables().size(), is(1));
-//        assertThat(actualShardingRuleConfig.getTables().iterator().next().getLogicTable(), is("t_order"));
+        when(registryCenterRepository.get("/metadata/foo_db/rules")).thenReturn(readYAML());
+        Collection<RuleConfiguration> actual = schemaRuleRegistryService.load("foo_db");
+        assertThat(actual.size(), is(1));
     }
-    
-//    @SneakyThrows({IOException.class, URISyntaxException.class})
-//    private String readYAML() {
-//        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/regcenter/data-schema-rule.yaml").toURI()))
-//                .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-//    }
+
+    @SneakyThrows({IOException.class, URISyntaxException.class})
+    private String readYAML() {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/regcenter/data-schema-rule.yaml").toURI()))
+                .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+    }
     
     @Test
     public void assertUpdate() {

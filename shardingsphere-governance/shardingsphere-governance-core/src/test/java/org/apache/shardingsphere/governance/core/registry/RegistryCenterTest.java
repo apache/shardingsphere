@@ -124,11 +124,10 @@ public final class RegistryCenterTest {
         result.setPassword("root");
         return result;
     }
-    
+
+    @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> createRuleConfigurations() {
-        // TODO use RuleConfigurationFixture instead of ShardingRuleConfiguration for test case
-        return Collections.emptyList();
-//        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SCHEMA_RULE_YAML), Collection.class));
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SCHEMA_RULE_YAML), Collection.class));
     }
     
     @SuppressWarnings("unchecked")
