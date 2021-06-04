@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedExcep
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -104,7 +102,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     private void checkResources(final String schemaName, final AlterDatabaseDiscoveryRuleStatement statement) {
         Collection<String> resources = new LinkedHashSet<>();
         statement.getDatabaseDiscoveryRules().forEach(each -> resources.addAll(each.getDataSources()));
-        Collection<String> notExistResources = resources.stream().filter(each -> !this.isValidResource(schemaName, each)).collect(Collectors.toList());
+        Collection<String> notExistResources = getInvalidResources(schemaName, resources);
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
@@ -117,11 +115,6 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
         if (!invalidDiscoveryTypes.isEmpty()) {
             throw new InvalidDatabaseDiscoveryTypesException(invalidDiscoveryTypes);
         }
-    }
-    
-    private boolean isValidResource(final String schemaName, final String resourceName) {
-        return Objects.nonNull(ProxyContext.getInstance().getMetaData(schemaName).getResource())
-                && ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(resourceName);
     }
     
     private Collection<String> getAlteredRuleNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {

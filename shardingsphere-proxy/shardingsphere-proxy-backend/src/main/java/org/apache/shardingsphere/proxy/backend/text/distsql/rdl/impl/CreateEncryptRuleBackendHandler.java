@@ -24,8 +24,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleStatementConverter;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -33,9 +31,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateRuleNamesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Create encrypt rule backend handler.
  */
-public final class CreateEncryptRuleBackendHandler extends SchemaRequiredBackendHandler<CreateEncryptRuleStatement> {
+public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<CreateEncryptRuleStatement> {
     
     static {
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
@@ -58,17 +53,25 @@ public final class CreateEncryptRuleBackendHandler extends SchemaRequiredBackend
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
-        check(schemaName, sqlStatement);
-        create(schemaName, sqlStatement);
-        post(schemaName);
-        return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    private void check(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
+    protected void before(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
         checkDuplicateRuleNames(schemaName, sqlStatement);
         checkEncryptors(sqlStatement);
         // TODO check resource
+    }
+    
+    @Override
+    protected void doExecute(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
+        YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration = EncryptRuleStatementConverter.convert(sqlStatement.getEncryptRules());
+        EncryptRuleConfiguration createdEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(Collections.singleton(yamlEncryptRuleConfiguration))
+                .stream().filter(each -> each instanceof EncryptRuleConfiguration).findAny().map(each -> (EncryptRuleConfiguration) each).get();
+        if (getEncryptRuleConfiguration(schemaName).isPresent()) {
+            EncryptRuleConfiguration existEncryptRuleConfiguration = getEncryptRuleConfiguration(schemaName).get();
+            existEncryptRuleConfiguration.getTables().addAll(createdEncryptRuleConfiguration.getTables());
+            existEncryptRuleConfiguration.getEncryptors().putAll(createdEncryptRuleConfiguration.getEncryptors());
+        } else {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdEncryptRuleConfiguration);
+        }
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
@@ -94,31 +97,7 @@ public final class CreateEncryptRuleBackendHandler extends SchemaRequiredBackend
         }
     }
     
-    private void create(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
-        YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration = EncryptRuleStatementConverter.convert(sqlStatement.getEncryptRules());
-        EncryptRuleConfiguration createdEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singleton(yamlEncryptRuleConfiguration))
-                .stream().filter(each -> each instanceof EncryptRuleConfiguration).findAny().map(each -> (EncryptRuleConfiguration) each).get();
-        if (getEncryptRuleConfiguration(schemaName).isPresent()) {
-            EncryptRuleConfiguration existEncryptRuleConfiguration = getEncryptRuleConfiguration(schemaName).get();
-            existEncryptRuleConfiguration.getTables().addAll(createdEncryptRuleConfiguration.getTables());
-            existEncryptRuleConfiguration.getEncryptors().putAll(createdEncryptRuleConfiguration.getEncryptors());
-        } else {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdEncryptRuleConfiguration);
-        }
-    }
-    
-    private Optional<EncryptRuleConfiguration> getEncryptRuleConfiguration(final String schemaName) {
-        return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof EncryptRuleConfiguration).findAny().map(each -> (EncryptRuleConfiguration) each);
-    }
-    
     private Collection<String> getRuleNames(final EncryptRuleConfiguration encryptRuleConfiguration) {
         return encryptRuleConfiguration.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
-    }
-    
-    private void post(final String schemaName) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredSQLNotificationEvent(schemaName,
-                ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
     }
 }

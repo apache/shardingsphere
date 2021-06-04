@@ -19,20 +19,17 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConverter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
@@ -41,21 +38,18 @@ import java.util.stream.Collectors;
 /**
  * Create sharding table rule backend handler.
  */
-public final class CreateShardingTableRuleBackendHandler extends SchemaRequiredBackendHandler<CreateShardingTableRuleStatement> {
+public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandler<CreateShardingTableRuleStatement> {
     
     public CreateShardingTableRuleBackendHandler(final CreateShardingTableRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
-        check(schemaName, sqlStatement);
-        create(schemaName, sqlStatement);
-        post(schemaName);
-        return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    private void check(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
+    protected void before(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
+        Collection<String> notExistResources = getInvalidResources(schemaName, getResources(sqlStatement));
+        if (!notExistResources.isEmpty()) {
+            throw new ResourceNotExistedException(schemaName, notExistResources);
+        }
         Collection<String> existLogicTables = getLogicTables(schemaName);
         Set<String> duplicateTableNames = sqlStatement.getTables().stream().collect(Collectors.toMap(TableRuleSegment::getLogicTable, each -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
@@ -64,8 +58,9 @@ public final class CreateShardingTableRuleBackendHandler extends SchemaRequiredB
             throw new DuplicateTablesException(duplicateTableNames);
         }
     }
-    
-    private void create(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
+
+    @Override
+    protected void doExecute(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).iterator().next();
         Optional<ShardingRuleConfiguration> existShardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
@@ -81,14 +76,9 @@ public final class CreateShardingTableRuleBackendHandler extends SchemaRequiredB
         return ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames();
     }
     
-    private Optional<ShardingRuleConfiguration> getShardingRuleConfiguration(final String schemaName) {
-        return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-    }
-    
-    private void post(final String schemaName) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredSQLNotificationEvent(schemaName,
-                ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
-        // TODO Need to get the executed feedback from registry center for returning.
+    private Collection<String> getResources(final CreateShardingTableRuleStatement sqlStatement) {
+        Collection<String> result = new LinkedHashSet<>();
+        sqlStatement.getTables().forEach(each -> result.addAll(each.getDataSources()));
+        return result;
     }
 }
