@@ -55,14 +55,14 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     }
     
     @Override
-    protected void before(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+    public void before(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         checkDuplicateRuleNames(schemaName, sqlStatement);
         checkResources(schemaName, sqlStatement);
         checkDiscoverTypes(sqlStatement);
     }
     
     @Override
-    protected void doExecute(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration = DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getDatabaseDiscoveryRules());
         DatabaseDiscoveryRuleConfiguration createdDatabaseDiscoveryRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlDatabaseDiscoveryRuleConfiguration))

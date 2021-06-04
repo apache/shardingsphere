@@ -46,7 +46,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     }
     
     @Override
-    protected void before(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
+    public void before(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
         Collection<String> notExistResources = getInvalidResources(schemaName, getResources(sqlStatement));
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
@@ -67,7 +67,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     }
     
     @Override
-    protected void doExecute(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration alteredShardingRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(ShardingRuleStatementConverter.convert(sqlStatement))).stream()
                 .map(each -> (ShardingRuleConfiguration) each).findFirst().get();

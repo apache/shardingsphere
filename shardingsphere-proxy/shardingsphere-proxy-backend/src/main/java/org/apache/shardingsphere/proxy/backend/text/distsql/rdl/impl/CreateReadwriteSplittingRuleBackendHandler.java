@@ -55,14 +55,14 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
     }
     
     @Override
-    protected void before(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
+    public void before(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
         checkDuplicateRuleNames(schemaName, sqlStatement);
         checkResources(schemaName, sqlStatement);
         checkLoadBalancers(sqlStatement);
     }
     
     @Override
-    protected void doExecute(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
         YamlReadwriteSplittingRuleConfiguration yamlReadwriteSplittingRuleConfiguration = ReadwriteSplittingRuleStatementConverter.convert(sqlStatement);
         ReadwriteSplittingRuleConfiguration createdReadwriteSplittingRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlReadwriteSplittingRuleConfiguration))
