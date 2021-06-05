@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.route;
 
-import org.apache.shardingsphere.dbdiscovery.common.rule.DatabaseDiscoveryRule;
+import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.dbdiscovery.route.impl.DatabaseDiscoveryDataSourceRouter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.dbdiscovery.common.constant.DatabaseDiscoveryOrder;
-import org.apache.shardingsphere.dbdiscovery.common.rule.DatabaseDiscoveryDataSourceRule;
+import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
+import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryDataSourceRule;
 
 import java.util.Collection;
 import java.util.Collections;

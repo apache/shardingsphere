@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.spring.boot.rule;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.dbdiscovery.common.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.route.impl;
+package org.apache.shardingsphere.dbdiscovery.yaml.config.rule;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryDataSourceRule;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
- * Data source router for database discovery.
+ * Database discovery data source rule configuration for YAML.
  */
-@RequiredArgsConstructor
-public final class DatabaseDiscoveryDataSourceRouter {
+@Getter
+@Setter
+public final class YamlDatabaseDiscoveryDataSourceRuleConfiguration implements YamlConfiguration {
+
+    private List<String> dataSourceNames = new ArrayList<>();
     
-    private final DatabaseDiscoveryDataSourceRule rule;
+    private String discoveryTypeName;
     
-    /**
-     * Route.
-     * 
-     * @return data source name
-     */
-    public String route() {
-        return rule.getPrimaryDataSourceName();
-    }
+    private Properties props = new Properties();
 }

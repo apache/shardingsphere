@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.route.impl;
+package org.apache.shardingsphere.dbdiscovery.constant;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryDataSourceRule;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Data source router for database discovery.
+ * Database discovery order.
  */
-@RequiredArgsConstructor
-public final class DatabaseDiscoveryDataSourceRouter {
-    
-    private final DatabaseDiscoveryDataSourceRule rule;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseDiscoveryOrder {
     
     /**
-     * Route.
-     * 
-     * @return data source name
+     * Database discovery order.
      */
-    public String route() {
-        return rule.getPrimaryDataSourceName();
-    }
+    public static final int ORDER = 20;
+    
+    /**
+     * Algorithm provider database discovery order.
+     */
+    public static final int ALGORITHM_PROVIDER_DB_DISCOVERY_ORDER = 21;
 }
