@@ -30,6 +30,7 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>shardingsphere-readwrite-splitting-api</module>
         <module>shardingsphere-readwrite-splitting-core</module>
         <module>shardingsphere-readwrite-splitting-spring</module>
     </modules>

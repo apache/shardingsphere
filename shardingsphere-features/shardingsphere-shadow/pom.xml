@@ -30,6 +30,7 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>shardingsphere-shadow-api</module>
         <module>shardingsphere-shadow-core</module>
         <module>shardingsphere-shadow-spring</module>
     </modules>

@@ -28,6 +28,7 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>shardingsphere-sharding-api</module>
         <module>shardingsphere-sharding-core</module>
         <module>shardingsphere-sharding-spring</module>
     </modules>
