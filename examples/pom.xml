@@ -85,12 +85,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-encrypt-common</artifactId>
-                <version>${shardingsphere.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-encrypt-api</artifactId>
+                <artifactId>shardingsphere-encrypt-core</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
