@@ -17,19 +17,45 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe;
 
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
+import java.util.Collection;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLComDescribeExecutorTest {
     
+    @Mock
+    private PostgreSQLConnectionContext connectionContext;
+    
     @Test
-    public void assertNewInstance() {
-        PostgreSQLComDescribeExecutor actual = new PostgreSQLComDescribeExecutor(new PostgreSQLConnectionContext());
-        assertThat(actual.execute(), is(Collections.emptyList()));
+    public void assertDescribeEmptyStatement() {
+        when(connectionContext.getSqlStatement()).thenReturn(new EmptyStatement());
+        Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext).execute();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLNoDataPacket.class)));
+    }
+    
+    @Test
+    public void assertDescribeRows() {
+        PostgreSQLComDescribeExecutor describeExecutor = new PostgreSQLComDescribeExecutor(connectionContext);
+        PostgreSQLRowDescriptionPacket expected = mock(PostgreSQLRowDescriptionPacket.class);
+        describeExecutor.setRowDescriptionPacket(expected);
+        Collection<DatabasePacket<?>> actual = describeExecutor.execute();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(expected));
     }
 }
