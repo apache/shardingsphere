@@ -22,6 +22,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,26 +41,29 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLComSyncExecutorTest {
     
     @Mock
+    private PostgreSQLConnectionContext connectionContext;
+    
+    @Mock
     private BackendConnection backendConnection;
     
     @Test
     public void assertNewInstance() {
         when(backendConnection.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
-        PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(backendConnection);
+        PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(connectionContext, backendConnection);
         assertThat(actual.execute().iterator().next(), is(instanceOf(PostgreSQLReadyForQueryPacket.class)));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     @SneakyThrows(SQLException.class)
     public void assertNextFalse() {
-        PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(backendConnection);
+        PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(connectionContext, backendConnection);
         assertFalse(actual.next());
         actual.getQueryRowPacket();
     }
     
     @Test
     public void assertResponseType() {
-        ResponseType actual = new PostgreSQLComSyncExecutor(backendConnection).getResponseType();
+        ResponseType actual = new PostgreSQLComSyncExecutor(connectionContext, backendConnection).getResponseType();
         assertThat(actual, is(ResponseType.UPDATE));
     }
 }
