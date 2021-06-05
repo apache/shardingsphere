@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.spring.boot.rule;
+package org.apache.shardingsphere.dbdiscovery.yaml.config.rule;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
- * YAML data base discovery rule spring boot configuration.
+ * Database discovery data source rule configuration for YAML.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
-public final class YamlDatabaseDiscoveryRuleSpringBootConfiguration {
+public final class YamlDatabaseDiscoveryDataSourceRuleConfiguration implements YamlConfiguration {
+
+    private List<String> dataSourceNames = new ArrayList<>();
     
-    private YamlDatabaseDiscoveryRuleConfiguration databaseDiscovery;
+    private String discoveryTypeName;
+    
+    private Properties props = new Properties();
 }

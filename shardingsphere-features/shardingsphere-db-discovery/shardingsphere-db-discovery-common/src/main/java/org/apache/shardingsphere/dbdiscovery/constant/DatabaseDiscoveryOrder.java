@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.spring.boot.rule;
+package org.apache.shardingsphere.dbdiscovery.constant;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * YAML data base discovery rule spring boot configuration.
+ * Database discovery order.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere.rules")
-@Getter
-@Setter
-public final class YamlDatabaseDiscoveryRuleSpringBootConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseDiscoveryOrder {
     
-    private YamlDatabaseDiscoveryRuleConfiguration databaseDiscovery;
+    /**
+     * Database discovery order.
+     */
+    public static final int ORDER = 20;
+    
+    /**
+     * Algorithm provider database discovery order.
+     */
+    public static final int ALGORITHM_PROVIDER_DB_DISCOVERY_ORDER = 21;
 }

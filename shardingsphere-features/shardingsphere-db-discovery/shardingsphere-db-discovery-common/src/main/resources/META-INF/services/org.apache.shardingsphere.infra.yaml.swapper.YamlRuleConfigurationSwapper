@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbdiscovery.common.yaml.swapper.DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwapper
-org.apache.shardingsphere.dbdiscovery.common.yaml.swapper.DatabaseDiscoveryRuleConfigurationYamlSwapper
+org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwapper
+org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleConfigurationYamlSwapper
