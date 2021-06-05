@@ -18,4 +18,3 @@
 org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm
 org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm
 org.apache.shardingsphere.sharding.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm
-org.apache.shardingsphere.sharding.rewrite.fixture.KeyGenerateAlgorithmFixture
