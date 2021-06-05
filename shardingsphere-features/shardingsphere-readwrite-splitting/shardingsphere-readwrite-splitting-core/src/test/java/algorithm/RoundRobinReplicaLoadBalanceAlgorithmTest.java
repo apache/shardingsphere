@@ -18,10 +18,14 @@
 package algorithm;
 
 import org.apache.shardingsphere.readwritesplitting.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -29,6 +33,14 @@ import static org.junit.Assert.assertThat;
 public final class RoundRobinReplicaLoadBalanceAlgorithmTest {
     
     private final RoundRobinReplicaLoadBalanceAlgorithm roundRobinReplicaLoadBalanceAlgorithm = new RoundRobinReplicaLoadBalanceAlgorithm();
+    
+    @Before
+    @After
+    public void reset() throws NoSuchFieldException, IllegalAccessException {
+        Field field = RoundRobinReplicaLoadBalanceAlgorithm.class.getDeclaredField("COUNTS");
+        field.setAccessible(true);
+        ((ConcurrentHashMap<?, ?>) field.get(RoundRobinReplicaLoadBalanceAlgorithm.class)).clear();
+    }
     
     @Test
     public void assertGetDataSource() {
