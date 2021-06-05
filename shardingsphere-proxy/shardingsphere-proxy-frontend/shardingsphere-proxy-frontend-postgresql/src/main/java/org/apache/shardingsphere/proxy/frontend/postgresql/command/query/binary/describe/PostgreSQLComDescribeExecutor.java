@@ -24,7 +24,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,9 +41,6 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        if (connectionContext.getSqlStatement().map(EmptyStatement.class::isInstance).orElse(false)) {
-            return Collections.singletonList(new PostgreSQLNoDataPacket());
-        }
-        return null == rowDescriptionPacket ? Collections.emptyList() : Collections.singletonList(rowDescriptionPacket);
+        return null == rowDescriptionPacket ? Collections.singletonList(new PostgreSQLNoDataPacket()) : Collections.singletonList(rowDescriptionPacket);
     }
 }
