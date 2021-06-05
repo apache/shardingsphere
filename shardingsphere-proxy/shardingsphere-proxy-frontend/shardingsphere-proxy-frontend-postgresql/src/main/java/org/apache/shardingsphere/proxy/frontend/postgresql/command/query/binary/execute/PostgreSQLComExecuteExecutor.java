@@ -43,7 +43,7 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
     
     private final PostgreSQLConnectionContext connectionContext;
     
-    private boolean commandComplete = false;
+    private boolean commandComplete;
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
