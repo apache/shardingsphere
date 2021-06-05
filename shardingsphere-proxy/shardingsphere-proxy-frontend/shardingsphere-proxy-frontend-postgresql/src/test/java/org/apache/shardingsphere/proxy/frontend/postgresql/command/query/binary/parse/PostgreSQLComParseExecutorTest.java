@@ -80,8 +80,10 @@ public final class PostgreSQLComParseExecutorTest {
     
     @Test
     public void assertGetSqlWithNull() {
+        when(parsePacket.getStatementId()).thenReturn("");
         when(parsePacket.getSql()).thenReturn("");
         when(backendConnection.getConnectionId()).thenReturn(1);
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
         PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(connectionContext, parsePacket, backendConnection);
         assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));
     }
