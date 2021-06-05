@@ -26,6 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketFactory;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketTypeLoader;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -36,7 +37,7 @@ import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.bind.PostgreSQLComBindExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.err.PostgreSQLErrPacketFactory;
@@ -48,6 +49,8 @@ import java.util.Optional;
  * Command execute engine for PostgreSQL.
  */
 public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngine {
+    
+    private static final ThreadLocal<PostgreSQLConnectionContext> CONNECTION_CONTEXT = ThreadLocal.withInitial(PostgreSQLConnectionContext::new);
     
     @Override
     public PostgreSQLCommandPacketType getCommandPacketType(final PacketPayload payload) {
@@ -61,11 +64,12 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) throws SQLException {
-        return PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLCommandPacket) packet, backendConnection);
+        return PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLCommandPacket) packet, backendConnection, CONNECTION_CONTEXT.get());
     }
     
     @Override
     public DatabasePacket<?> getErrorPacket(final Exception cause) {
+        CONNECTION_CONTEXT.get().getPendingExecutors().clear();
         return PostgreSQLErrPacketFactory.newInstance(cause);
     }
     
@@ -81,35 +85,49 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             return true;
         }
         if (ResponseType.QUERY == queryCommandExecutor.getResponseType() && !context.channel().isActive()) {
-            context.write(new PostgreSQLCommandCompletePacket());
+            context.write(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.SELECT.name(), 0));
             return true;
         }
-        if (ResponseType.UPDATE == queryCommandExecutor.getResponseType() && !(queryCommandExecutor instanceof PostgreSQLComBindExecutor)) {
+        if (queryCommandExecutor instanceof PostgreSQLComQueryExecutor) {
+            return processSimpleQuery(context, backendConnection, (PostgreSQLComQueryExecutor) queryCommandExecutor);
+        }
+        writeQueryData(context, backendConnection, queryCommandExecutor);
+        return false;
+    }
+    
+    private boolean processSimpleQuery(final ChannelHandlerContext context, final BackendConnection backendConnection, final PostgreSQLComQueryExecutor queryExecutor) throws SQLException {
+        if (ResponseType.UPDATE == queryExecutor.getResponseType()) {
             context.write(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
             return true;
         }
-        int count = 0;
+        long dataRows = writeQueryData(context, backendConnection, queryExecutor);
+        if (ResponseType.QUERY == queryExecutor.getResponseType()) {
+            context.write(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.SELECT.name(), dataRows));
+        }
+        context.write(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
+        return true;
+    }
+    
+    private long writeQueryData(final ChannelHandlerContext context, final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor) throws SQLException {
+        long dataRows = 0;
+        int flushCount = 0;
         int proxyFrontendFlushThreshold = ProxyContext.getInstance().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandExecutor.next()) {
-            count++;
+            flushCount++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
                 backendConnection.getResourceLock().doAwait();
             }
             DatabasePacket<?> resultValue = queryCommandExecutor.getQueryRowPacket();
             context.write(resultValue);
-            if (proxyFrontendFlushThreshold == count) {
+            if (proxyFrontendFlushThreshold == flushCount) {
                 context.flush();
-                count = 0;
+                flushCount = 0;
+            }
+            if (resultValue instanceof PostgreSQLDataRowPacket) {
+                dataRows++;
             }
         }
-        if (ResponseType.QUERY == queryCommandExecutor.getResponseType()) {
-            context.write(new PostgreSQLCommandCompletePacket());
-        }
-        if (queryCommandExecutor instanceof PostgreSQLComQueryExecutor) {
-            context.write(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
-            return true;
-        }
-        return false;
+        return dataRows;
     }
 }

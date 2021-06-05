@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe;
 
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -28,7 +29,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     @Test
     public void assertNewInstance() {
-        PostgreSQLComDescribeExecutor actual = new PostgreSQLComDescribeExecutor();
+        PostgreSQLComDescribeExecutor actual = new PostgreSQLComDescribeExecutor(new PostgreSQLConnectionContext());
         assertThat(actual.execute(), is(Collections.emptyList()));
     }
 }

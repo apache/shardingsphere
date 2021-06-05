@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.execute;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
-import org.junit.Test;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.sql.SQLException;
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-
-public final class PostgreSQLComExecuteExecutorTest {
+/**
+ * No data packet for PostgreSQL.
+ */
+public final class PostgreSQLNoDataPacket implements PostgreSQLIdentifierPacket {
     
-    @Test
-    public void assertNewInstance() throws SQLException {
-        PostgreSQLComExecuteExecutor actual = new PostgreSQLComExecuteExecutor(mock(PostgreSQLConnectionContext.class));
-        assertThat(actual.execute(), is(Collections.emptyList()));
+    @Override
+    public void write(final PostgreSQLPacketPayload payload) {
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.NO_DATA;
     }
 }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -37,26 +38,20 @@ import java.util.Collections;
  */
 public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
-    private final PostgreSQLComParsePacket packet;
-
-    private final String schemaName;
-    
-    private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
-    
-    public PostgreSQLComParseExecutor(final PostgreSQLComParsePacket packet, final BackendConnection backendConnection) {
-        this.packet = packet;
-        schemaName = backendConnection.getSchemaName();
-        binaryStatementRegistry = PostgreSQLBinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
-    }
-    
-    @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public PostgreSQLComParseExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComParsePacket packet, final BackendConnection backendConnection) {
+        String schemaName = backendConnection.getSchemaName();
+        ConnectionScopeBinaryStatementRegistry binaryStatementRegistry = PostgreSQLBinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
         if (!packet.getSql().isEmpty()) {
             ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
                     DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()));
             SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
+            connectionContext.setSqlStatement(sqlStatement);
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), sqlStatement.getParameterCount(), packet.getBinaryStatementColumnTypes());
         }
+    }
+    
+    @Override
+    public Collection<DatabasePacket<?>> execute() {
         return Collections.singletonList(new PostgreSQLParseCompletePacket());
     }
 }
