@@ -27,6 +27,9 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
 
+/**
+ * PostgreSQL connection context.
+ */
 @Getter
 @Setter
 public final class PostgreSQLConnectionContext {
@@ -37,10 +40,18 @@ public final class PostgreSQLConnectionContext {
     
     private long updateCount;
     
+    /**
+     * Get describe command executor.
+     *
+     * @return describe command executor
+     */
     public Optional<PostgreSQLComDescribeExecutor> getDescribeExecutor() {
         return pendingExecutors.stream().filter(PostgreSQLComDescribeExecutor.class::isInstance).map(PostgreSQLComDescribeExecutor.class::cast).findFirst();
     }
     
+    /**
+     * Clear context.
+     */
     public void clearContext() {
         pendingExecutors.clear();
         sqlStatement = null;
