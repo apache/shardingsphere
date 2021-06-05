@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +48,9 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     }
     
     private SQLStatement parseSQL(final PostgreSQLComParsePacket packet, final String schemaName) {
+        if (packet.getSql().isEmpty()) {
+            return new EmptyStatement();
+        }
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()));
         return sqlStatementParserEngine.parse(packet.getSql(), true);

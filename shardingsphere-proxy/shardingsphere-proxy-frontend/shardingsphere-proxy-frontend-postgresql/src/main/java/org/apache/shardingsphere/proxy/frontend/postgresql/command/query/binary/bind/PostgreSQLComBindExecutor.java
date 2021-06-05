@@ -46,6 +46,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExe
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 import java.sql.SQLException;
@@ -96,7 +97,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private void init() throws SQLException {
         SQLStatement sqlStatement = connectionContext.getSqlStatement();
-        if (sqlStatement instanceof TCLStatement) {
+        if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement) {
             textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), packet.getSql(), backendConnection);
             return;
         }
