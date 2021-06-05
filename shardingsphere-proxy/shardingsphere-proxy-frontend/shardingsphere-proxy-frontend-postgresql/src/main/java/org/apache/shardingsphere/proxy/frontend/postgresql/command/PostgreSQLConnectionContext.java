@@ -23,9 +23,9 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe.PostgreSQLComDescribeExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Queue;
 
 /**
  * PostgreSQL connection context.
@@ -34,7 +34,7 @@ import java.util.Queue;
 @Setter
 public final class PostgreSQLConnectionContext {
     
-    private final Queue<CommandExecutor> pendingExecutors = new LinkedList<>();
+    private final Collection<CommandExecutor> pendingExecutors = new LinkedList<>();
     
     private SQLStatement sqlStatement;
     
@@ -47,6 +47,15 @@ public final class PostgreSQLConnectionContext {
      */
     public Optional<PostgreSQLComDescribeExecutor> getDescribeExecutor() {
         return pendingExecutors.stream().filter(PostgreSQLComDescribeExecutor.class::isInstance).map(PostgreSQLComDescribeExecutor.class::cast).findFirst();
+    }
+    
+    /**
+     * Get SQL statement.
+     *
+     * @return SQL statement
+     */
+    public Optional<SQLStatement> getSqlStatement() {
+        return Optional.ofNullable(sqlStatement);
     }
     
     /**

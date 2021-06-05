@@ -53,6 +53,9 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLCommandExecuteEngineTest {
     
     @Mock
+    private PostgreSQLConnectionContext connectionContext;
+    
+    @Mock
     private ChannelHandlerContext channelHandlerContext;
     
     @Mock
@@ -82,7 +85,7 @@ public final class PostgreSQLCommandExecuteEngineTest {
     @Test
     public void assertWriteQueryDataWithComSync() throws SQLException {
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
-        boolean actual = commandExecuteEngine.writeQueryData(channelHandlerContext, backendConnection, new PostgreSQLComSyncExecutor(backendConnection), 0);
+        boolean actual = commandExecuteEngine.writeQueryData(channelHandlerContext, backendConnection, new PostgreSQLComSyncExecutor(connectionContext, backendConnection), 0);
         assertTrue(actual);
         verify(channelHandlerContext, never()).write(any(Object.class));
     }

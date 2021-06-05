@@ -43,20 +43,20 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
     
     private final PostgreSQLConnectionContext connectionContext;
     
+    private final Collection<QueryCommandExecutor> queryCommandExecutors = new LinkedList<>();
+    
     private boolean commandComplete;
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
-        Iterator<CommandExecutor> commandExecutorListIterator = connectionContext.getPendingExecutors().iterator();
-        while (commandExecutorListIterator.hasNext()) {
-            CommandExecutor nextCommandExecutor = commandExecutorListIterator.next();
-            result.addAll(nextCommandExecutor.execute());
-            if (nextCommandExecutor instanceof QueryCommandExecutor) {
-                break;
+        for (CommandExecutor each : connectionContext.getPendingExecutors()) {
+            if (each instanceof QueryCommandExecutor) {
+                queryCommandExecutors.add((QueryCommandExecutor) each);
             }
-            commandExecutorListIterator.remove();
+            result.addAll(each.execute());
         }
+        connectionContext.getPendingExecutors().clear();
         return result;
     }
     
@@ -67,61 +67,38 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
     
     @Override
     public boolean next() throws SQLException {
-        return !commandComplete || anyPendingExecutorsHaveNext();
-    }
-    
-    private boolean anyPendingExecutorsHaveNext() throws SQLException {
-        for (CommandExecutor each : connectionContext.getPendingExecutors()) {
-            if (!(each instanceof QueryCommandExecutor) || ((QueryCommandExecutor) each).next()) {
-                return true;
-            }
-        }
-        return false;
+        return !commandComplete;
     }
     
     @Override
     public DatabasePacket<?> getQueryRowPacket() throws SQLException {
-        Optional<DatabasePacket<?>> result = getPacketFromPendingExecutors();
+        Optional<DatabasePacket<?>> result = getPacketFromQueryCommandExecutors();
         if (result.isPresent()) {
             return result.get();
         }
-        if (!commandComplete) {
-            return createCommandCompletePacket();
-        }
-        throw new UnsupportedOperationException();
+        return createCommandCompletePacket();
     }
     
     private PostgreSQLIdentifierPacket createCommandCompletePacket() {
         commandComplete = true;
-        if (connectionContext.getSqlStatement() instanceof EmptyStatement) {
+        if (connectionContext.getSqlStatement().map(EmptyStatement.class::isInstance).orElse(false)) {
             return new PostgreSQLEmptyQueryResponsePacket();
         }
-        PostgreSQLCommand command = PostgreSQLCommand.valueOf(connectionContext.getSqlStatement().getClass())
+        PostgreSQLCommand command = PostgreSQLCommand.valueOf(connectionContext.getSqlStatement().get().getClass())
                 .orElseThrow(() -> new UnsupportedOperationException(connectionContext.getSqlStatement().getClass().getName()));
         PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(command.name(), connectionContext.getUpdateCount());
         connectionContext.clearContext();
         return result;
     }
     
-    private Optional<DatabasePacket<?>> getPacketFromPendingExecutors() throws SQLException {
-        if (connectionContext.getPendingExecutors().isEmpty()) {
-            return Optional.empty();
-        }
-        Iterator<CommandExecutor> iterator = connectionContext.getPendingExecutors().iterator();
+    private Optional<DatabasePacket<?>> getPacketFromQueryCommandExecutors() throws SQLException {
+        Iterator<QueryCommandExecutor> iterator = queryCommandExecutors.iterator();
         while (iterator.hasNext()) {
-            CommandExecutor nextCommandExecutor = iterator.next();
-            if (nextCommandExecutor instanceof QueryCommandExecutor) {
-                if (((QueryCommandExecutor) nextCommandExecutor).next()) {
-                    return Optional.of(((QueryCommandExecutor) nextCommandExecutor).getQueryRowPacket());
-                } else {
-                    iterator.remove();
-                }
+            QueryCommandExecutor next = iterator.next();
+            if (next.next()) {
+                return Optional.of(next.getQueryRowPacket());
             } else {
-                Optional<DatabasePacket<?>> result = nextCommandExecutor.execute().stream().findAny();
                 iterator.remove();
-                if (result.isPresent()) {
-                    return result;
-                }
             }
         }
         return Optional.empty();

@@ -42,7 +42,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        if (connectionContext.getSqlStatement() instanceof EmptyStatement) {
+        if (connectionContext.getSqlStatement().map(EmptyStatement.class::isInstance).orElse(false)) {
             return Collections.singletonList(new PostgreSQLNoDataPacket());
         }
         return null == rowDescriptionPacket ? Collections.emptyList() : Collections.singletonList(rowDescriptionPacket);

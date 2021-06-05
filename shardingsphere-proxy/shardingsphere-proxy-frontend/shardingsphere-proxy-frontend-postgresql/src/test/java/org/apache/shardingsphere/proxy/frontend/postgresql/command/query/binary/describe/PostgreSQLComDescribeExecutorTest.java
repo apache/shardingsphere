@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -43,7 +44,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     @Test
     public void assertDescribeEmptyStatement() {
-        when(connectionContext.getSqlStatement()).thenReturn(new EmptyStatement());
+        when(connectionContext.getSqlStatement()).thenReturn(Optional.of(new EmptyStatement()));
         Collection<DatabasePacket<?>> actual = new PostgreSQLComDescribeExecutor(connectionContext).execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLNoDataPacket.class)));

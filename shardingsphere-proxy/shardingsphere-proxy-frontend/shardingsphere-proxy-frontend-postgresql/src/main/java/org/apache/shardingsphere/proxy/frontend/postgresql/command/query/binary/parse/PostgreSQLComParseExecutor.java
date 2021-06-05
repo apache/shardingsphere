@@ -42,18 +42,18 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     public PostgreSQLComParseExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComParsePacket packet, final BackendConnection backendConnection) {
         String schemaName = backendConnection.getSchemaName();
         ConnectionScopeBinaryStatementRegistry binaryStatementRegistry = PostgreSQLBinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
-        SQLStatement sqlStatement = parseSQL(packet, schemaName);
+        SQLStatement sqlStatement = parseSql(packet.getSql(), schemaName);
         connectionContext.setSqlStatement(sqlStatement);
         binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), sqlStatement.getParameterCount(), packet.getBinaryStatementColumnTypes());
     }
     
-    private SQLStatement parseSQL(final PostgreSQLComParsePacket packet, final String schemaName) {
-        if (packet.getSql().isEmpty()) {
+    private SQLStatement parseSql(final String sql, final String schemaName) {
+        if (sql.isEmpty()) {
             return new EmptyStatement();
         }
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()));
-        return sqlStatementParserEngine.parse(packet.getSql(), true);
+        return sqlStatementParserEngine.parse(sql, true);
     }
     
     @Override
