@@ -20,10 +20,12 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
@@ -38,6 +40,7 @@ import java.util.Optional;
  */
 public enum PostgreSQLCommand {
     
+    SELECT(SelectStatement.class),
     INSERT(InsertStatement.class),
     UPDATE(UpdateStatement.class),
     DELETE(DeleteStatement.class),
@@ -45,7 +48,8 @@ public enum PostgreSQLCommand {
     DROP(DropDatabaseStatement.class),
     BEGIN(BeginTransactionStatement.class),
     COMMIT(CommitStatement.class),
-    ROLLBACK(RollbackStatement.class);
+    ROLLBACK(RollbackStatement.class),
+    SET(SetStatement.class);
     
     private final Collection<Class<? extends SQLStatement>> sqlStatementClasses;
     

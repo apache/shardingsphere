@@ -33,10 +33,6 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifi
     
     private final long rowCount;
     
-    public PostgreSQLCommandCompletePacket() {
-        this("", 0);
-    }
-    
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
         switch (sqlCommand) {

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,6 +61,9 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLComBindExecutorTest {
     
     @Mock
+    private PostgreSQLConnectionContext connectionContext;
+    
+    @Mock
     private PostgreSQLComBindPacket bindPacket;
     
     @Mock
@@ -70,7 +74,7 @@ public final class PostgreSQLComBindExecutorTest {
     
     @Test
     public void assertExecuteEmptyBindPacket() throws SQLException {
-        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(bindPacket, backendConnection);
+        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, backendConnection);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLBindCompletePacket.class)));
@@ -82,7 +86,7 @@ public final class PostgreSQLComBindExecutorTest {
     public void assertExecuteBindPacketWithQuerySQLAndReturnEmptyResult() throws SQLException {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(databaseCommunicationEngine.execute()).thenReturn(queryResponseHeader);
-        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(bindPacket, backendConnection);
+        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, backendConnection);
         setMockFieldIntoExecutor(executor);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(2));
@@ -98,7 +102,7 @@ public final class PostgreSQLComBindExecutorTest {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(queryResponseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(new QueryHeader("schema", "table", "label", "column", 1, "type", 2, 3, true, true, true, true)));
         when(databaseCommunicationEngine.execute()).thenReturn(queryResponseHeader);
-        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(bindPacket, backendConnection);
+        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, backendConnection);
         setMockFieldIntoExecutor(executor);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(2));
@@ -111,7 +115,7 @@ public final class PostgreSQLComBindExecutorTest {
     @Test
     public void assertNext() throws SQLException {
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
-        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(bindPacket, backendConnection);
+        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, backendConnection);
         setMockFieldIntoExecutor(executor);
         assertTrue(executor.next());
         assertFalse(executor.next());
@@ -121,7 +125,7 @@ public final class PostgreSQLComBindExecutorTest {
     public void assertDataRowNotBinary() throws SQLException {
         QueryResponseRow queryResponseRow = mock(QueryResponseRow.class);
         when(databaseCommunicationEngine.getQueryResponseRow()).thenReturn(queryResponseRow);
-        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(bindPacket, backendConnection);
+        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, backendConnection);
         setMockFieldIntoExecutor(executor);
         PostgreSQLPacket actualQueryRowPacket = executor.getQueryRowPacket();
         verify(queryResponseRow).getData();
@@ -133,7 +137,7 @@ public final class PostgreSQLComBindExecutorTest {
         when(bindPacket.isBinaryRowData()).thenReturn(true);
         QueryResponseRow queryResponseRow = mock(QueryResponseRow.class);
         when(databaseCommunicationEngine.getQueryResponseRow()).thenReturn(queryResponseRow);
-        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(bindPacket, backendConnection);
+        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, backendConnection);
         setMockFieldIntoExecutor(executor);
         PostgreSQLPacket actualQueryRowPacket = executor.getQueryRowPacket();
         verify(queryResponseRow).getCells();
@@ -143,7 +147,7 @@ public final class PostgreSQLComBindExecutorTest {
     @Test
     public void assertExecuteBindPacketWithUpdateSQL() throws SQLException {
         when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponseHeader(mock(InsertStatement.class)));
-        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(bindPacket, backendConnection);
+        PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, backendConnection);
         setMockFieldIntoExecutor(executor);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(2));
