@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.condition.impl;
+package org.apache.shardingsphere.encrypt.rewrite.impl;
 
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class EncryptInConditionTest {
+public final class EncryptEqualConditionTest {
     
     @Test
     public void assertGetConditionValues() {
-        List<Object> actual = new EncryptInCondition(
-                "col", null, 0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2))).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(2));
+        List<Object> actual = new EncryptEqualCondition("col", null, 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
+        assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(1));
-        assertThat(actual.get(1), is(2));
     }
 }
