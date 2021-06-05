@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExe
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.sql.SQLException;
@@ -84,9 +85,8 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
         if (connectionContext.getSqlStatement().map(EmptyStatement.class::isInstance).orElse(false)) {
             return new PostgreSQLEmptyQueryResponsePacket();
         }
-        PostgreSQLCommand command = PostgreSQLCommand.valueOf(connectionContext.getSqlStatement().get().getClass())
-                .orElseThrow(() -> new UnsupportedOperationException(connectionContext.getSqlStatement().get().getClass().getName()));
-        PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(command.name(), connectionContext.getUpdateCount());
+        String sqlCommand = connectionContext.getSqlStatement().map(SQLStatement::getClass).map(PostgreSQLCommand::valueOf).map(command -> command.map(Enum::name).orElse("")).orElse("");
+        PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(sqlCommand, connectionContext.getUpdateCount());
         connectionContext.clearContext();
         return result;
     }
