@@ -349,8 +349,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
                 CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
                 if (null != each.searchClause()) {
                     ColumnNameContext columnName = each.searchClause().orderingColumn().columnName();
-                    CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(columnName);
-                    commonTableExpression.getColumns().addAll(columns.getValue());
+                    commonTableExpression.getColumns().add((ColumnSegment) visit(columnName));
                 }
                 commonTableExpressions.add(commonTableExpression);
             }
