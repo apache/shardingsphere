@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.readwritesplitting.route.engine.impl.PrimaryVisitedManager;
+import org.apache.shardingsphere.readwritesplitting.route.impl.PrimaryVisitedManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
