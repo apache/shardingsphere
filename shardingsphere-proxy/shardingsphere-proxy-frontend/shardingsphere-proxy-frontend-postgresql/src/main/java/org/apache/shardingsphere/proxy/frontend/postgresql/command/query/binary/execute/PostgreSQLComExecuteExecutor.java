@@ -85,7 +85,7 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
             return new PostgreSQLEmptyQueryResponsePacket();
         }
         PostgreSQLCommand command = PostgreSQLCommand.valueOf(connectionContext.getSqlStatement().get().getClass())
-                .orElseThrow(() -> new UnsupportedOperationException(connectionContext.getSqlStatement().getClass().getName()));
+                .orElseThrow(() -> new UnsupportedOperationException(connectionContext.getSqlStatement().get().getClass().getName()));
         PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(command.name(), connectionContext.getUpdateCount());
         connectionContext.clearContext();
         return result;
