@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.core.schema;
+package org.apache.shardingsphere.infra.optimize.core.metadata;
 
 import lombok.Getter;
-import org.apache.commons.collections4.map.LinkedMap;
+import lombok.Synchronized;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
@@ -42,11 +43,23 @@ public final class FederateSchemaMetadata {
     
     private final String name;
     
-    private final Map<String, FederateTableMetadata> tables = new LinkedMap<>();
+    private final Map<String, FederateTableMetadata> tables = new LinkedHashMap<>();
     
+    /**
+     * Please fix me.
+     * @deprecated Remove this constructor.
+     */
+    @Deprecated
     public FederateSchemaMetadata(final String name, final ShardingSphereMetaData metaData) throws SQLException {
         this.name = name;
         initTables(metaData);
+    }
+    
+    public FederateSchemaMetadata(final String name, final Map<String, TableMetaData> metaData) {
+        this.name = name;
+        for (Entry<String, TableMetaData> entry : metaData.entrySet()) {
+            tables.put(entry.getKey(), new FederateTableMetadata(entry.getKey(), entry.getValue()));
+        }
     }
     
     private void initTables(final ShardingSphereMetaData metaData) throws SQLException {
@@ -85,5 +98,15 @@ public final class FederateSchemaMetadata {
             result.putAll(each.getAllDataNodes());
         }
         return result;
+    }
+    
+    /**
+     * Renew.
+     * @param tableName table name
+     * @param metaData meta data
+     */
+    @Synchronized
+    public void renew(final String tableName, final TableMetaData metaData) {
+        tables.put(tableName, new FederateTableMetadata(tableName, metaData));
     }
 }

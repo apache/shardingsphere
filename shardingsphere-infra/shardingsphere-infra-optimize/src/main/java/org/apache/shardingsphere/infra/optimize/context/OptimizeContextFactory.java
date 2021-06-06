@@ -52,7 +52,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseTy
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
-import org.apache.shardingsphere.infra.optimize.core.schema.FederateSchemaMetadatas;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadatas;
 
 import java.util.Collections;
 import java.util.Map;

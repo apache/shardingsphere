@@ -24,7 +24,7 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
-import org.apache.shardingsphere.infra.optimize.core.schema.FederateTableMetadata;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetadata;
 
 /**
  * Abstract Federate table.

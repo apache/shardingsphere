@@ -55,8 +55,16 @@ public final class TableMetaDataBuilder {
         return tableMetaData.map(optional -> decorate(tableName, optional, materials.getRules()));
     }
     
+    /**
+     * Load physical table metadata.
+     * 
+     * @param tableName table name
+     * @param materials schema builder materials
+     * @return table meta data
+     * @throws SQLException SQL exception
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Optional<TableMetaData> load(final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
+    public static Optional<TableMetaData> load(final String tableName, final SchemaBuilderMaterials materials) throws SQLException {
         DataNodes dataNodes = new DataNodes(materials.getRules());
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(materials.getRules(), RuleBasedTableMetaDataBuilder.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {

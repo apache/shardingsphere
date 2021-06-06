@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.core.schema;
+package org.apache.shardingsphere.infra.optimize.core.metadata;
 
 import lombok.Getter;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -46,6 +46,16 @@ public final class FederateTableMetadata {
     
     private final RelProtoDataType relProtoDataType;
     
+    public FederateTableMetadata(final String name, final TableMetaData tableMetaData) {
+        this.name = name;
+        relProtoDataType = createRelDataType(tableMetaData);
+    }
+    
+    /**
+     * Please fix me.
+     * @deprecated Remove this constructor.
+     */
+    @Deprecated
     public FederateTableMetadata(final String name, final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
                                  final Collection<DataNode> tableDataNodes, final DatabaseType databaseType) throws SQLException {
         this.name = name;
