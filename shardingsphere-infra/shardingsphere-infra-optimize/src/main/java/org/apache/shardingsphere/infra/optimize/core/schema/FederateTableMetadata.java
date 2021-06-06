@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Optimized table metadata.
+ * Federate table metadata.
  */
 @Getter
 public final class FederateTableMetadata {
