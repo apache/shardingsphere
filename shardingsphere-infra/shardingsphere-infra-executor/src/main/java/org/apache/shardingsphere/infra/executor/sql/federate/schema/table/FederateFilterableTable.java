@@ -25,7 +25,7 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowEnumerator;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
-import org.apache.shardingsphere.infra.optimize.core.schema.FederateTableMetadata;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetadata;
 
 import java.util.List;
 
