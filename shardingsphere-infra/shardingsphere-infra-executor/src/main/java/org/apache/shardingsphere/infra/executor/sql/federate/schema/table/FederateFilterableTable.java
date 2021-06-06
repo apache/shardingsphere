@@ -25,7 +25,7 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowEnumerator;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
-import org.apache.shardingsphere.infra.optimize.core.schema.LogicTableMetadata;
+import org.apache.shardingsphere.infra.optimize.core.schema.FederateTableMetadata;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ import java.util.List;
  */
 public final class FederateFilterableTable extends AbstractFederateTable implements ProjectableFilterableTable {
     
-    public FederateFilterableTable(final LogicTableMetadata metadata, final FederateRowExecutor executor) {
+    public FederateFilterableTable(final FederateTableMetadata metadata, final FederateRowExecutor executor) {
         super(metadata, executor);
     }
     

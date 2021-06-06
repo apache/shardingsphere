@@ -446,6 +446,4 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     private Collection<ShardingSphereUser> getModifiedUsers(final ShardingSphereUsers oldUsers, final Collection<ShardingSphereUser> users) {
         return users.stream().filter(each -> oldUsers.findUser(each.getGrantee()).isPresent()).collect(Collectors.toSet());
     }
-    
-    // TODO subscribe for global rules changed
 }

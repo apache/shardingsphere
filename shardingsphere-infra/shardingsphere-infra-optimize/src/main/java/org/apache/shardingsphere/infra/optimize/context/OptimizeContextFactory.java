@@ -52,7 +52,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseTy
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
-import org.apache.shardingsphere.infra.optimize.core.schema.LogicSchemaMetadatas;
+import org.apache.shardingsphere.infra.optimize.core.schema.FederateSchemaMetadatas;
 
 import java.util.Collections;
 import java.util.Map;
@@ -76,7 +76,7 @@ public final class OptimizeContextFactory {
     private final RelDataTypeFactory typeFactory;
     
     @Getter
-    private final LogicSchemaMetadatas schemaMetadatas;
+    private final FederateSchemaMetadatas schemaMetadatas;
     
     private final RelOptCluster cluster;
     
@@ -85,7 +85,7 @@ public final class OptimizeContextFactory {
         initProperties(databaseType);
         typeFactory = new JavaTypeFactoryImpl();
         cluster = newCluster();
-        schemaMetadatas = new LogicSchemaMetadatas(metaDataMap);
+        schemaMetadatas = new FederateSchemaMetadatas(metaDataMap);
         connectionConfig = new CalciteConnectionConfigImpl(properties);
         parserConfig = SqlParser.config()
                 .withLex(connectionConfig.lex())
