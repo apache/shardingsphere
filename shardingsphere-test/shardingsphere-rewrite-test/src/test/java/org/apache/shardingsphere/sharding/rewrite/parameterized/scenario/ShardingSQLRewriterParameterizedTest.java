@@ -67,7 +67,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewriterParameterizedTest {
     
-    private static final String PATH = "scenario/case/sharding";
+    private static final String CASE_PATH = "scenario/sharding/case";
     
     public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
@@ -75,7 +75,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     @Parameters(name = "{0}: {1} -> {2}")
     public static Collection<Object[]> loadTestParameters() {
-        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, ShardingSQLRewriterParameterizedTest.class);
+        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, ShardingSQLRewriterParameterizedTest.class);
     }
     
     @Override

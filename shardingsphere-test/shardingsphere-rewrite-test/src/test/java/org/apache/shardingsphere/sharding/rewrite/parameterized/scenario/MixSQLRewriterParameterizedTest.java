@@ -63,7 +63,7 @@ import java.util.Map;
 
 public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterParameterizedTest {
     
-    private static final String PATH = "scenario/case/mix";
+    private static final String CASE_PATH = "scenario/mix/case";
     
     public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
@@ -71,7 +71,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     @Parameters(name = "{0}: {1} -> {2}")
     public static Collection<Object[]> loadTestParameters() {
-        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, MixSQLRewriterParameterizedTest.class);
+        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, MixSQLRewriterParameterizedTest.class);
     }
     
     @Override

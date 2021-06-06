@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewriterParameterizedTest {
     
-    private static final String PATH = "scenario/case/encrypt";
+    private static final String CASE_PATH = "scenario/encrypt/case";
     
     public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final SQLRewriteEngineTestParameters testParameters) {
         super(testParameters);
@@ -66,7 +66,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     
     @Parameters(name = "{0}: {1} -> {2}")
     public static Collection<Object[]> loadTestParameters() {
-        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(PATH.toUpperCase(), PATH, EncryptSQLRewriterParameterizedTest.class);
+        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, EncryptSQLRewriterParameterizedTest.class);
     }
     
     @Override
