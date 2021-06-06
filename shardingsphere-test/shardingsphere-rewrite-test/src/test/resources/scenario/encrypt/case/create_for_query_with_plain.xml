@@ -16,20 +16,9 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
-    </parent>
-    <artifactId>shardingsphere-infra-rewrite</artifactId>
-    <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
-    
-    <modules>
-        <module>shardingsphere-infra-rewrite-engine</module>
-    </modules>
-</project>
+<rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-plain.yaml">
+    <rewrite-assertion id="create_table_for_plain">
+        <input sql="CREATE TABLE t_account_bak (id int not null, name varchar(100) not null default '', password varchar(255) not null default '', primary key (`id`))" />
+        <output sql="CREATE TABLE t_account_bak (id int not null, name varchar(100) not null default '', cipher_password varchar(255) not null default '', assisted_query_password varchar(255) not null default '', plain_password varchar(255) not null default '', primary key (`id`))" />
+    </rewrite-assertion>
+</rewrite-assertions>

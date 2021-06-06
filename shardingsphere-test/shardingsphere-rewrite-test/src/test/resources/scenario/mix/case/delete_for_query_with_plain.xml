@@ -16,20 +16,14 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
-    </parent>
-    <artifactId>shardingsphere-infra-rewrite</artifactId>
-    <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
+<rewrite-assertions yaml-rule="scenario/mix/config/query-with-plain.yaml">
+    <rewrite-assertion id="delete_plain_for_parameters">
+        <input sql="DELETE FROM t_account_bak WHERE account_id = ? AND password = ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
+        <output sql="DELETE FROM t_account_bak_1 WHERE account_id = ? AND plain_password = ? AND plain_amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
+    </rewrite-assertion>
     
-    <modules>
-        <module>shardingsphere-infra-rewrite-engine</module>
-    </modules>
-</project>
+    <rewrite-assertion id="delete_for_literals">
+        <input sql="DELETE FROM t_account_bak WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="DELETE FROM t_account_bak_1 WHERE account_id = 1 AND plain_password = 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
+    </rewrite-assertion>
+</rewrite-assertions>
