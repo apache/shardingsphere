@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.core.metadata;
 
 import lombok.Getter;
 import org.apache.commons.collections4.map.LinkedMap;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
@@ -42,5 +43,14 @@ public final class FederateSchemaMetadatas {
                 throw new ShardingSphereException(ex);
             }
         }
+    }
+    
+    /**
+     * Get default schema metadata.
+     * 
+     * @return default schema metadata
+     */
+    public FederateSchemaMetadata getDefaultSchemaMetadata() {
+        return schemas.get(DefaultSchema.LOGIC_NAME);
     }
 }
