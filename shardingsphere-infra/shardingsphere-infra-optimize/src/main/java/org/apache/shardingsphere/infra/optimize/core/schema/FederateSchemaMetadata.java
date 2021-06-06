@@ -34,17 +34,17 @@ import java.util.Map.Entry;
 
 
 /**
- * Logic schema metadata.
+ * Federate schema metadata.
  *
  */
 @Getter
-public final class LogicSchemaMetadata {
+public final class FederateSchemaMetadata {
     
     private final String name;
     
-    private final Map<String, LogicTableMetadata> tables = new LinkedMap<>();
+    private final Map<String, FederateTableMetadata> tables = new LinkedMap<>();
     
-    public LogicSchemaMetadata(final String name, final ShardingSphereMetaData metaData) throws SQLException {
+    public FederateSchemaMetadata(final String name, final ShardingSphereMetaData metaData) throws SQLException {
         this.name = name;
         initTables(metaData);
     }
@@ -55,7 +55,7 @@ public final class LogicSchemaMetadata {
         Map<String, Collection<String>> dataSourceRules = getDataSourceRules(metaData);
         for (Entry<String, Collection<DataNode>> entry : tableDataNodes.entrySet()) {
             tables.put(entry.getKey(),
-                    new LogicTableMetadata(entry.getKey(), metaData.getResource().getDataSources(), dataSourceRules, entry.getValue(), metaData.getResource().getDatabaseType()));
+                    new FederateTableMetadata(entry.getKey(), metaData.getResource().getDataSources(), dataSourceRules, entry.getValue(), metaData.getResource().getDatabaseType()));
         }
     }
     

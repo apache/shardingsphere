@@ -27,17 +27,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Logic schema metadatas.
+ * Federate schema metadatas.
  */
 @Getter
-public final class LogicSchemaMetadatas {
+public final class FederateSchemaMetadatas {
     
-    private final Map<String, LogicSchemaMetadata> schemas = new LinkedMap<>();
+    private final Map<String, FederateSchemaMetadata> schemas = new LinkedMap<>();
     
-    public LogicSchemaMetadatas(final Map<String, ShardingSphereMetaData> metaDataMap) {
+    public FederateSchemaMetadatas(final Map<String, ShardingSphereMetaData> metaDataMap) {
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
             try {
-                schemas.put(each.getKey(), new LogicSchemaMetadata(each.getKey(), each.getValue()));
+                schemas.put(each.getKey(), new FederateSchemaMetadata(each.getKey(), each.getValue()));
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }

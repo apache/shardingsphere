@@ -37,22 +37,19 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Logic table metadata.
+ * Federate table metadata.
  */
 @Getter
-public final class LogicTableMetadata {
+public final class FederateTableMetadata {
     
     private final String name;
     
-    private final TableMetaData tableMetaData;
-    
     private final RelProtoDataType relProtoDataType;
     
-    public LogicTableMetadata(final String name, final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
-                              final Collection<DataNode> tableDataNodes, final DatabaseType databaseType) throws SQLException {
+    public FederateTableMetadata(final String name, final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
+                                 final Collection<DataNode> tableDataNodes, final DatabaseType databaseType) throws SQLException {
         this.name = name;
-        tableMetaData = createTableMetaData(dataSources, dataSourceRules, tableDataNodes, databaseType);
-        relProtoDataType = createRelDataType();
+        relProtoDataType = createRelDataType(createTableMetaData(dataSources, dataSourceRules, tableDataNodes, databaseType));
     }
     
     private TableMetaData createTableMetaData(final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
@@ -63,7 +60,7 @@ public final class LogicTableMetadata {
         return tableMetaData.orElseGet(TableMetaData::new);
     }
     
-    private RelProtoDataType createRelDataType() {
+    private RelProtoDataType createRelDataType(final TableMetaData tableMetaData) {
         RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
         RelDataTypeFactory.Builder fieldInfo = typeFactory.builder();
         for (Map.Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
