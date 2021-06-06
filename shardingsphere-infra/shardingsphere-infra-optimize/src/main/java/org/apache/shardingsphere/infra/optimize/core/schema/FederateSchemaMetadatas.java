@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Optimized schema metadatas.
+ * Federate schema metadatas.
  */
 @Getter
 public final class FederateSchemaMetadatas {
