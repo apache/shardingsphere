@@ -51,7 +51,7 @@ public final class ShadowUserEntity extends ShadowUser {
     
     @Column(name = "shadow")
     @Override
-    public boolean isShadow() {
+    public Boolean isShadow() {
         return super.isShadow();
     }
 }
