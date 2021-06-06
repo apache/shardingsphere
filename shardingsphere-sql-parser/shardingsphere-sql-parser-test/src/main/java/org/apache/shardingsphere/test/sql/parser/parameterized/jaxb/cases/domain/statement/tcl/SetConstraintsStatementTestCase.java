@@ -15,41 +15,12 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | setRole
-    | call
-    | merge
-    | alterSynonym
-    | alterSession
-    | alterDatabase
-    | alterSystem
-    | setConstraints
-    ) SEMI_?
-    ;
+/**
+ * Set constraints statement test case.
+ */
+public final class SetConstraintsStatementTestCase extends SQLParserTestCase {
+}

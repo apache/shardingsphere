@@ -15,41 +15,15 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | setRole
-    | call
-    | merge
-    | alterSynonym
-    | alterSession
-    | alterDatabase
-    | alterSystem
-    | setConstraints
-    ) SEMI_?
-    ;
+/**
+ * Oracle set constraints statement.
+ */
+@ToString
+public final class OracleSetConstraintsStatement extends SetConstraintsStatement implements OracleStatement {
+}

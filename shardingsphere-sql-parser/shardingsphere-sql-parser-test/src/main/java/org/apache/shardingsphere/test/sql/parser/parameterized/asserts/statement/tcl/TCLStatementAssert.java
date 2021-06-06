@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.RollbackStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.SavepointStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.SetAutoCommitStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.SetConstraintsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.SetTransactionStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
@@ -39,6 +41,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.RollbackStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetAutoCommitStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetConstraintsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetTransactionStatementTestCase;
 
 /**
@@ -67,6 +70,8 @@ public final class TCLStatementAssert {
             RollbackStatementAssert.assertIs(assertContext, (RollbackStatement) actual, (RollbackStatementTestCase) expected);
         } else if (actual instanceof SavepointStatement) {
             SavepointStatementAssert.assertIs(assertContext, (SavepointStatement) actual, (SavepointStatementTestCase) expected);
+        } else if (actual instanceof SetConstraintsStatement) {
+            SetConstraintsStatementAssert.assertIs(assertContext, (SetConstraintsStatement) actual, (SetConstraintsStatementTestCase) expected);
         }
     }
 }

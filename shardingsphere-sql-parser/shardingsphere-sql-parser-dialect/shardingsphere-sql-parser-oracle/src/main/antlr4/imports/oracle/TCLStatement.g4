@@ -53,3 +53,7 @@ savepointClause
 savepoint
     : SAVEPOINT savepointName
     ;
+
+setConstraints
+    : SET (CONSTRAINT | CONSTRAINTS) (constraintName (COMMA_ constraintName)* | ALL) (IMMEDIATE | DEFERRED)
+    ;
