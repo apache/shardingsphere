@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.engine;
+package org.apache.shardingsphere.infra.context.metadata.refresher;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.MetadataRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterIndexStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateIndexStatementSchemaRefresher;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateView
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropIndexStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropViewStatementSchemaRefresher;
+import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.CreateTableStatementFederateRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -37,10 +39,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexSt
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * ShardingSphere schema refresher factory.
@@ -48,17 +52,26 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetadataRefresherFactory {
     
-    private static final Map<Class<?>, MetadataRefresher> REGISTRY = new HashMap<>();
+    private static final Map<Class<?>, Collection<MetadataRefresher>> REGISTRY = new HashMap<>();
     
     static {
-        REGISTRY.put(CreateTableStatement.class, new CreateTableStatementSchemaRefresher());
-        REGISTRY.put(AlterTableStatement.class, new AlterTableStatementSchemaRefresher());
-        REGISTRY.put(DropTableStatement.class, new DropTableStatementSchemaRefresher());
-        REGISTRY.put(CreateIndexStatement.class, new CreateIndexStatementSchemaRefresher());
-        REGISTRY.put(AlterIndexStatement.class, new AlterIndexStatementSchemaRefresher());
-        REGISTRY.put(DropIndexStatement.class, new DropIndexStatementSchemaRefresher());
-        REGISTRY.put(CreateViewStatement.class, new CreateViewStatementSchemaRefresher());
-        REGISTRY.put(DropViewStatement.class, new DropViewStatementSchemaRefresher());
+        REGISTRY.put(CreateTableStatement.class, new LinkedHashSet<>());
+        REGISTRY.put(AlterTableStatement.class, new LinkedHashSet<>());
+        REGISTRY.put(DropTableStatement.class, new LinkedHashSet<>());
+        REGISTRY.put(CreateIndexStatement.class, new LinkedHashSet<>());
+        REGISTRY.put(AlterIndexStatement.class, new LinkedHashSet<>());
+        REGISTRY.put(DropIndexStatement.class, new LinkedHashSet<>());
+        REGISTRY.put(CreateViewStatement.class, new LinkedHashSet<>());
+        REGISTRY.put(DropViewStatement.class, new LinkedHashSet<>());
+        REGISTRY.get(CreateTableStatement.class).add(new CreateTableStatementSchemaRefresher());
+        REGISTRY.get(CreateTableStatement.class).add(new CreateTableStatementFederateRefresher());
+        REGISTRY.get(AlterTableStatement.class).add(new AlterTableStatementSchemaRefresher());
+        REGISTRY.get(DropTableStatement.class).add(new DropTableStatementSchemaRefresher());
+        REGISTRY.get(CreateIndexStatement.class).add(new CreateIndexStatementSchemaRefresher());
+        REGISTRY.get(AlterIndexStatement.class).add(new AlterIndexStatementSchemaRefresher());
+        REGISTRY.get(DropIndexStatement.class).add(new DropIndexStatementSchemaRefresher());
+        REGISTRY.get(CreateViewStatement.class).add(new CreateViewStatementSchemaRefresher());
+        REGISTRY.get(DropViewStatement.class).add(new DropViewStatementSchemaRefresher());
     }
     
     /**
@@ -67,7 +80,12 @@ public final class MetadataRefresherFactory {
      * @param sqlStatement SQL statement
      * @return instance of schema refresher
      */
-    public static Optional<MetadataRefresher> newInstance(final SQLStatement sqlStatement) {
-        return REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(sqlStatement.getClass())).findFirst().map(Entry::getValue);
+    public static Collection<MetadataRefresher> newInstance(final SQLStatement sqlStatement) {
+        for (Entry<Class<?>, Collection<MetadataRefresher>> entry : REGISTRY.entrySet()) {
+            if (entry.getKey().isAssignableFrom(sqlStatement.getClass())) {
+                return entry.getValue();
+            }
+        }
+        return Collections.emptyList();
     }
 }

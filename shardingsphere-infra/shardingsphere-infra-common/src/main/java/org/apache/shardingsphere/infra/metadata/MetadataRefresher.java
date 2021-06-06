@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.engine;
+package org.apache.shardingsphere.infra.metadata;
 
 /**
  * Metadata refresher.

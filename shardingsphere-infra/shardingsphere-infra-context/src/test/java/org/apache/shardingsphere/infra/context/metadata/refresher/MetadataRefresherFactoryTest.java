@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher;
+package org.apache.shardingsphere.infra.context.metadata.refresher;
 
-import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresherFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
@@ -28,7 +27,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,31 +36,31 @@ public final class MetadataRefresherFactoryTest {
     
     @Test
     public void assertNewInstanceWithCreateTableStatement() {
-        assertTrue(MetadataRefresherFactory.newInstance(mock(CreateTableStatement.class)).isPresent());
+        assertThat(MetadataRefresherFactory.newInstance(mock(CreateTableStatement.class)).size(), is(2));
     }
     
     @Test
     public void assertNewInstanceWithAlterTableStatement() {
-        assertTrue(MetadataRefresherFactory.newInstance(mock(AlterTableStatement.class)).isPresent());
+        assertThat(MetadataRefresherFactory.newInstance(mock(AlterTableStatement.class)).size(), is(1));
     }
     
     @Test
     public void assertNewInstanceWithDropTableStatement() {
-        assertTrue(MetadataRefresherFactory.newInstance(mock(DropTableStatement.class)).isPresent());
+        assertThat(MetadataRefresherFactory.newInstance(mock(DropTableStatement.class)).size(), is(1));
     }
     
     @Test
     public void assertNewInstanceWithCreateIndexStatement() {
-        assertTrue(MetadataRefresherFactory.newInstance(mock(CreateIndexStatement.class)).isPresent());
+        assertThat(MetadataRefresherFactory.newInstance(mock(CreateIndexStatement.class)).size(), is(1));
     }
     
     @Test
     public void assertNewInstanceWithDropIndexStatement() {
-        assertTrue(MetadataRefresherFactory.newInstance(mock(DropIndexStatement.class)).isPresent());
+        assertThat(MetadataRefresherFactory.newInstance(mock(DropIndexStatement.class)).size(), is(1));
     }
     
     @Test
     public void assertNewInstanceWithAlterIndexStatement() {
-        assertTrue(MetadataRefresherFactory.newInstance(mock(AlterIndexStatement.class)).isPresent());
+        assertThat(MetadataRefresherFactory.newInstance(mock(AlterIndexStatement.class)).size(), is(1));
     }
 }
