@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <drop-resource sql-case-id = "drop-resource">
+        <dataSource name = "ds_0" start-index="1" stop-index="" />
+        <dataSource name = "ds_1" start-index="" stop-index="" />
+    </drop-resource>
+
+    <drop-sharding-table-rule sql-case-id = "drop-sharding-table-rule">
+        <tabel name="t_order" start-index="" stop-index="" />
+        <tabel name="t_order_item" start-index="" stop-index="" />
+    </drop-sharding-table-rule>
+
+    <drop-sharding-binding-table-rules sql-case-id = "drop-sharding-binding-table-rules" />
+
+    <drop-sharding-broadcast-table-rules sql-case-id = "drop-sharding-broadcast-table-rules" />
+
+    <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule">
+        <readwrite-splitting-rule name = "ms_group_0" start-index="" stop-index="" />
+        <readwrite-splitting-rule name = "ms_group_1" start-index="" stop-index="" />
+    </drop-readwrite-splitting-rule>
+
+    <drop-database-discovery-rule sql-case-id="drop-database-discovery-rule">
+        <database-discover name = "ha_group_0" start-index="" stop-index="" />
+        <database-discover name = "ha_group_1" start-index="" stop-index="" />
+    </drop-database-discovery-rule>
+
+    <drop-encrypt-rule sql-case-id="drop-encrypt-rule">
+        <encrypt-rule name = "t_encrypt" start-index="" stop-index="" />
+        <encrypt-rule name = "t_encrypt_order" start-index="" stop-index="" />
+    </drop-encrypt-rule>
+
+</sql-parser-test-cases>

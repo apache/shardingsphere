@@ -15,37 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl;
+package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.resource.*;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.ExpectedSimpleDataSource;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Expected lock clause.
+ * Add resource statement test case.
  */
 @Getter
 @Setter
-public final class ExpectedSimpleDataSource extends SQLParserTestCase {
+public final class ShowShardingTableRulesStatementTestCase extends SQLParserTestCase {
 
-    @XmlElement
-    private ExpectedDataSourceName resource;
-
-    @XmlElement
-    private ExpectedHostName hostName;
-
-    @XmlElement
-    private ExpectedPort port;
-
-    @XmlElement
-    private ExpectedDataBase db;
-
-    @XmlElement
-    private ExpectedUser user;
-
-    @XmlElement
-    private ExpectedPassword password;
+    @XmlElement(name = "dataSource")
+    private final List<ExpectedSimpleDataSource> dataSources = new LinkedList<>();
 }

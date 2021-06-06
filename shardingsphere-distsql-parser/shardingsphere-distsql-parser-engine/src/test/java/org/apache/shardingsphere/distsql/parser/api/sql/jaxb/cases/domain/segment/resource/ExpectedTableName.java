@@ -15,37 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl;
+package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.resource;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.resource.*;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
-import javax.xml.bind.annotation.XmlElement;
-
-/**
- * Expected lock clause.
- */
 @Getter
 @Setter
-public final class ExpectedSimpleDataSource extends SQLParserTestCase {
-
-    @XmlElement
-    private ExpectedDataSourceName resource;
-
-    @XmlElement
-    private ExpectedHostName hostName;
-
-    @XmlElement
-    private ExpectedPort port;
-
-    @XmlElement
-    private ExpectedDataBase db;
-
-    @XmlElement
-    private ExpectedUser user;
-
-    @XmlElement
-    private ExpectedPassword password;
+public final class ExpectedTableName extends AbstractExpectedIdentifierSQLSegment {
 }

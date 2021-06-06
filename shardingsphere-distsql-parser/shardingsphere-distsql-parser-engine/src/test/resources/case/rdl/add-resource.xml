@@ -19,7 +19,7 @@
 <sql-parser-test-cases>
     <add-resource sql-case-id="add-resource-single-without-password">
         <dataSource>
-            <name name="ds_0" start-index="1" stop-index="2"/>
+            <resource name="ds_0" start-index="1" stop-index="2"/>
             <hostName name="127.0.0.1" start-index="3" stop-index="4" />
             <port name="3306" start-index="5" stop-index="6" />
             <db name="test0" start-index="7" stop-index="8" />
@@ -28,6 +28,32 @@
     </add-resource>
 
     <add-resource sql-case-id="add-resource-single-with-password">
+        <dataSource>
+            <resource name="ds_0" start-index="1" stop-index="2"/>
+            <hostName name="127.0.0.1" start-index="3" stop-index="4" />
+            <port name="3306" start-index="5" stop-index="6" />
+            <db name="test0" start-index="7" stop-index="8" />
+            <user name="ROOT" start-index="9" stop-index="10" />
+            <password name="123456" start-index="" stop-index="11" />
+        </dataSource>
+    </add-resource>
 
+    <add-resource sql-case-id="add-resource-multiple">
+        <dataSource>
+            <resource name="ds_0" start-index="1" stop-index="2"/>
+            <hostName name="127.0.0.1" start-index="3" stop-index="4" />
+            <port name="3306" start-index="5" stop-index="6" />
+            <db name="test0" start-index="7" stop-index="8" />
+            <user name="ROOT" start-index="9" stop-index="10" />
+            <password name="123456" start-index="" stop-index="11" />
+        </dataSource>
+        <dataSource>
+            <resource name="ds_1" start-index="1" stop-index="2"/>
+            <hostName name="127.0.0.1" start-index="3" stop-index="4" />
+            <port name="3306" start-index="5" stop-index="6" />
+            <db name="test1" start-index="7" stop-index="8" />
+            <user name="ROOT" start-index="9" stop-index="10" />
+            <password name="123456" start-index="" stop-index="11" />
+        </dataSource>
     </add-resource>
 </sql-parser-test-cases>
