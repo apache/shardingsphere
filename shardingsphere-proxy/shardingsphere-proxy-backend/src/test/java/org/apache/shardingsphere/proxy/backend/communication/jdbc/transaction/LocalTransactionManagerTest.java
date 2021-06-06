@@ -21,7 +21,6 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.transaction.TransactionHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
@@ -53,7 +52,7 @@ public final class LocalTransactionManagerTest {
     private LocalTransactionManager localTransactionManager;
     
     @Before
-    public void setUp() throws ReflectiveOperationException, SQLException {
+    public void setUp() throws SQLException {
         when(backendConnection.getTransactionStatus()).thenReturn(transactionStatus);
         when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         when(backendConnection.getCachedConnections()).thenReturn(setCachedConnections());
