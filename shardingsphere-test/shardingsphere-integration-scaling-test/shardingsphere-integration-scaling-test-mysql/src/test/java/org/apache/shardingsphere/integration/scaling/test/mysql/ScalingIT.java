@@ -41,13 +41,12 @@ public final class ScalingIT {
     
     private static final long WAIT_MS_BEFORE_CHECK_JOB = 15 * 1000;
     
-    private final DataImporter dataImporter = new DataImporter();
-    
     @SneakyThrows(InterruptedException.class)
     @Test
     public void assertScaling() {
         if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
             IntegrationTestEnvironment.getInstance().waitForEnvironmentReady();
+            DataImporter dataImporter = new DataImporter();
             dataImporter.createTables();
             dataImporter.importData();
             String jobId = assertStartJob();
