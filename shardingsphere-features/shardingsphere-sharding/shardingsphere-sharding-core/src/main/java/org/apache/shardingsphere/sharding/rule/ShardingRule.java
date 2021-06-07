@@ -98,7 +98,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     public ShardingRule(final ShardingRuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(null != config, "Sharding rule configuration cannot be null.");
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
-        dataSourceNames = getDataSourceNames(config.getTables(), dataSourceMap.keySet());
+        dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceMap.keySet());
         config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
         config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
         tableRules = new LinkedList<>(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
@@ -116,7 +116,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Preconditions.checkArgument(null != config, "Sharding rule configuration cannot be null.");
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
-        dataSourceNames = getDataSourceNames(config.getTables(), dataSourceMap.keySet());
+        dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceMap.keySet());
         shardingAlgorithms.putAll(config.getShardingAlgorithms());
         keyGenerators.putAll(config.getKeyGenerators());
         tableRules = new LinkedList<>(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
@@ -130,7 +130,8 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
     }
     
-    private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, final Collection<String> dataSourceNames) {
+    private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, 
+                                                  final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs, final Collection<String> dataSourceNames) {
         if (tableRuleConfigs.isEmpty()) {
             return dataSourceNames;
         }
@@ -139,7 +140,12 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         }
         Collection<String> result = new LinkedHashSet<>();
         tableRuleConfigs.forEach(each -> result.addAll(getDataSourceNames(each)));
+        autoTableRuleConfigs.forEach(each -> result.addAll(getDataSourceNames(each)));
         return result;
+    }
+    
+    private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
+        return Splitter.on(",").trimResults().splitToList(shardingAutoTableRuleConfig.getActualDataSources());
     }
     
     private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
