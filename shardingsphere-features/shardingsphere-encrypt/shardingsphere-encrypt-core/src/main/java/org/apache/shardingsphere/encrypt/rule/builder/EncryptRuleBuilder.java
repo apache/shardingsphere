@@ -30,11 +30,11 @@ import java.util.Map;
 /**
  * Encrypt rule builder.
  */
-public final class EncryptRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<EncryptRule, EncryptRuleConfiguration> {
+public final class EncryptRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<EncryptRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final EncryptRuleConfiguration ruleConfig) {
-        return new EncryptRule(ruleConfig);
+    public EncryptRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final EncryptRuleConfiguration config) {
+        return new EncryptRule(config);
     }
     
     @Override

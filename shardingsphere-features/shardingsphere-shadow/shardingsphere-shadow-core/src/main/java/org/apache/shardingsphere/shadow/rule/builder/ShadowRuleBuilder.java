@@ -30,11 +30,11 @@ import java.util.Map;
 /**
  * Shadow rule builder.
  */
-public final class ShadowRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ShadowRule, ShadowRuleConfiguration> {
+public final class ShadowRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ShadowRuleConfiguration> {
     
     @Override
-    public ShadowRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ShadowRuleConfiguration ruleConfig) {
-        return new ShadowRule(ruleConfig);
+    public ShadowRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ShadowRuleConfiguration config) {
+        return new ShadowRule(config);
     }
     
     @Override

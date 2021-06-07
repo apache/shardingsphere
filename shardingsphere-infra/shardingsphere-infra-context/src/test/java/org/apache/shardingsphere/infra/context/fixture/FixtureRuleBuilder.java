@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import javax.sql.DataSource;
 import java.util.Map;
 
-public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRule, FixtureRuleConfiguration> {
+public final class FixtureRuleBuilder implements SchemaRuleBuilder<FixtureRuleConfiguration> {
     
     @Override
-    public FixtureRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final FixtureRuleConfiguration ruleConfig) {
+    public FixtureRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final FixtureRuleConfiguration config) {
         return new FixtureRule();
     }
     
