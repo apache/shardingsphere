@@ -15,46 +15,56 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.util;
+package org.apache.shardingsphere.integration.scaling.test.mysql.env.config;
 
-import com.google.gson.Gson;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 
+import javax.sql.DataSource;
 import java.util.Properties;
 
 /**
- * Target data source util.
+ * Target standard jdbc configuration.
  */
-public final class TargetDataSourceUtil {
+public final class TargetConfiguration {
     
     private static final String TARGET_JDBC_URL = "jdbc:mysql://%s/ds_dst?useSSL=false";
     
     private static final Properties ENGINE_ENV_PROPS = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
     
     /**
-     * Create docker scaling job configurations.
+     * Get docker standard jdbc configuration.
      *
-     * @return scaling job configurations
+     * @return standard jdbc configuration
      */
-    public static String createDockerConfigurations() {
-        JobConfiguration jobConfiguration = new JobConfiguration();
-        RuleConfiguration ruleConfiguration = new RuleConfiguration();
-        ruleConfiguration.setSource(new ShardingSphereJDBCDataSourceConfiguration(YamlEngine.marshal(SourceShardingSphereUtil.createDockerConfigurations())).wrap());
-        ruleConfiguration.setTarget(createDockerTarget());
-        jobConfiguration.setRuleConfig(ruleConfiguration);
-        return new Gson().toJson(jobConfiguration);
+    public static StandardJDBCDataSourceConfiguration getDockerConfiguration() {
+        return getConfiguration(ENGINE_ENV_PROPS.getProperty("db.host.docker"));
     }
     
-    private static ScalingDataSourceConfigurationWrap createDockerTarget() {
+    /**
+     * Get host standard jdbc configuration.
+     *
+     * @return standard jdbc configuration
+     */
+    public static StandardJDBCDataSourceConfiguration getHostConfiguration() {
+        return getConfiguration(ENGINE_ENV_PROPS.getProperty("db.host.host"));
+    }
+    
+    private static StandardJDBCDataSourceConfiguration getConfiguration(final String host) {
         StandardJDBCDataSourceConfiguration configuration = new StandardJDBCDataSourceConfiguration(
-                String.format(TARGET_JDBC_URL, ENGINE_ENV_PROPS.getProperty("db.host.docker")),
+                String.format(TARGET_JDBC_URL, host),
                 ENGINE_ENV_PROPS.getProperty("db.username"), ENGINE_ENV_PROPS.getProperty("db.password"));
-        return configuration.wrap();
+        return configuration;
+    }
+    
+    /**
+     * Create host standard jdbc data source.
+     *
+     * @return data source
+     */
+    public static DataSource createHostDataSource() {
+        StandardJDBCDataSourceConfiguration configuration = TargetConfiguration.getHostConfiguration();
+        return new HikariDataSource(configuration.getHikariConfig());
     }
 }

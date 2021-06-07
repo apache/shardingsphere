@@ -29,7 +29,9 @@ import okhttp3.Response;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -117,10 +119,15 @@ public final class ScalingUtil {
      * @return check result
      * @throws IOException io exception
      */
-    public Tuple2<Boolean, Boolean> getJobCheckResult(final String jobId) throws IOException {
+    public Map<String, Tuple2<Boolean, Boolean>> getJobCheckResult(final String jobId) throws IOException {
         JsonElement response = getInstance().get(scalingUrl + "/scaling/job/check/" + jobId);
-        JsonObject result = response.getAsJsonObject().getAsJsonObject("model").getAsJsonObject("t1");
-        return new Tuple2<>(result.get("countValid").getAsBoolean(), result.get("dataValid").getAsBoolean());
+        return response.getAsJsonObject().getAsJsonObject("model").getAsJsonObject().entrySet().stream().collect(
+                Collectors.toMap(entry -> entry.getKey(), entry -> createTaskResult(entry)));
+    }
+    
+    private Tuple2<Boolean, Boolean> createTaskResult(final Map.Entry<String, JsonElement> entry) {
+        return new Tuple2<>(entry.getValue().getAsJsonObject().get("countValid").getAsBoolean(),
+                entry.getValue().getAsJsonObject().get("dataValid").getAsBoolean());
     }
     
     /**
