@@ -71,7 +71,7 @@ public final class LocalTransactionManagerTest {
     @Test
     public void assertBegin() {
         localTransactionManager.begin();
-        verify(backendConnection).getMethodInvocations();
+        verify(backendConnection).getConnectionPostProcessors();
     }
     
     @Test
