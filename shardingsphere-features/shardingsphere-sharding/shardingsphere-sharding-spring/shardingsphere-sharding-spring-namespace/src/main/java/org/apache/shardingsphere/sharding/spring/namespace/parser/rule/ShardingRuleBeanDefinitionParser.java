@@ -51,9 +51,9 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         factory.addPropertyValue("autoTables", parseAutoTableRulesConfiguration(element));
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(element));
         factory.addPropertyValue("broadcastTables", parseBroadcastTables(element));
-        addDefaultDatabaseShardingStrategyRef(element, factory);
-        addDefaultTableShardingStrategyRef(element, factory);
-        addDefaultKeyGenerateStrategyRef(element, factory);
+        setDefaultDatabaseShardingStrategyRef(element, factory);
+        setDefaultTableShardingStrategyRef(element, factory);
+        setDefaultKeyGenerateStrategyRef(element, factory);
         factory.addPropertyValue("shardingAlgorithms", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ShardingAlgorithmFactoryBean.class));
         factory.addPropertyValue("keyGenerators", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, KeyGenerateAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
@@ -172,31 +172,19 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         return result;
     }
     
-    private void addDefaultDatabaseShardingStrategyRef(final Element element, final BeanDefinitionBuilder factory) {
+    private void setDefaultDatabaseShardingStrategyRef(final Element element, final BeanDefinitionBuilder factory) {
         Optional<String> strategyRef = parseStrategyRef(element, ShardingRuleBeanDefinitionTag.DEFAULT_DATABASE_STRATEGY_REF_ATTRIBUTE);
-        if (strategyRef.isPresent()) {
-            factory.addPropertyReference("defaultDatabaseShardingStrategy", strategyRef.get());
-        } else {
-            factory.addPropertyValue("defaultDatabaseShardingStrategy", null);
-        }
+        strategyRef.ifPresent(optional -> factory.addPropertyReference("defaultDatabaseShardingStrategy", optional));
     }
     
-    private void addDefaultTableShardingStrategyRef(final Element element, final BeanDefinitionBuilder factory) {
+    private void setDefaultTableShardingStrategyRef(final Element element, final BeanDefinitionBuilder factory) {
         Optional<String> strategyRef = parseStrategyRef(element, ShardingRuleBeanDefinitionTag.DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE);
-        if (strategyRef.isPresent()) {
-            factory.addPropertyReference("defaultTableShardingStrategy", strategyRef.get());
-        } else {
-            factory.addPropertyValue("defaultTableShardingStrategy", null);
-        }
+        strategyRef.ifPresent(optional -> factory.addPropertyReference("defaultTableShardingStrategy", optional));
     }
     
-    private void addDefaultKeyGenerateStrategyRef(final Element element, final BeanDefinitionBuilder factory) {
+    private void setDefaultKeyGenerateStrategyRef(final Element element, final BeanDefinitionBuilder factory) {
         Optional<String> strategyRef = parseStrategyRef(element, ShardingRuleBeanDefinitionTag.DEFAULT_KEY_GENERATE_STRATEGY_REF_ATTRIBUTE);
-        if (strategyRef.isPresent()) {
-            factory.addPropertyReference("defaultKeyGenerateStrategy", strategyRef.get());
-        } else {
-            factory.addPropertyValue("defaultKeyGenerateStrategy", null);
-        }
+        strategyRef.ifPresent(optional -> factory.addPropertyReference("defaultKeyGenerateStrategy", optional));
     }
     
     private Optional<String> parseStrategyRef(final Element element, final String tagName) {
