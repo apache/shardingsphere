@@ -15,52 +15,61 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.scaling.test.mysql.util;
+package org.apache.shardingsphere.integration.scaling.test.mysql.env.config;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Source sharding sphere util.
+ * Source sharding jdbc configuration.
  */
-public final class SourceShardingSphereUtil {
+public final class SourceConfiguration {
     
     private static final String SOURCE_JDBC_URL = "jdbc:mysql://%s/ds_src?useSSL=false";
     
     private static final Properties ENGINE_ENV_PROPS = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
     
     /**
-     * Create docker sharding jdbc configurations.
+     * Get docker sharding jdbc configuration.
      *
-     * @return yaml root rule configurations
+     * @param tableRules table rules
+     * @return sharding jdbc configuration
      */
-    public static YamlRootRuleConfigurations createDockerConfigurations() {
-        return createConfigurations(String.format(SOURCE_JDBC_URL, ENGINE_ENV_PROPS.getProperty("db.host.docker")));
+    public static ShardingSphereJDBCDataSourceConfiguration getDockerConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
+        return getConfiguration(String.format(SOURCE_JDBC_URL, ENGINE_ENV_PROPS.getProperty("db.host.docker")), tableRules);
     }
     
     /**
-     * Create host sharding jdbc configurations.
+     * Get host sharding jdbc configuration.
      *
-     * @return yaml root rule configurations
+     * @param tableRules table rules
+     * @return sharding jdbc configuration
      */
-    public static YamlRootRuleConfigurations createHostConfigurations() {
-        return createConfigurations(String.format(SOURCE_JDBC_URL, ENGINE_ENV_PROPS.getProperty("db.host.host")));
+    public static ShardingSphereJDBCDataSourceConfiguration getHostConfiguration(final Map<String, YamlTableRuleConfiguration> tableRules) {
+        return getConfiguration(String.format(SOURCE_JDBC_URL, ENGINE_ENV_PROPS.getProperty("db.host.host")), tableRules);
     }
     
-    private static YamlRootRuleConfigurations createConfigurations(final String jdbcUrl) {
+    private static ShardingSphereJDBCDataSourceConfiguration getConfiguration(final String jdbcUrl, final Map<String, YamlTableRuleConfiguration> tableRules) {
+        YamlRootRuleConfigurations shardingSphereConfigurations = getShardingJdbcConfiguration(jdbcUrl, tableRules);
+        return new ShardingSphereJDBCDataSourceConfiguration(YamlEngine.marshal(shardingSphereConfigurations));
+    }
+    
+    private static YamlRootRuleConfigurations getShardingJdbcConfiguration(final String jdbcUrl, final Map<String, YamlTableRuleConfiguration> tableRules) {
         YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
         Map dataSources = ImmutableMap.builder().put("ds_src", ImmutableMap.builder()
                 .put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource")
@@ -70,29 +79,21 @@ public final class SourceShardingSphereUtil {
                 .build()).build();
         result.setDataSources(dataSources);
         YamlShardingRuleConfiguration shardingRuleConfiguration = new YamlShardingRuleConfiguration();
-        shardingRuleConfiguration.setTables(createTableRules());
+        shardingRuleConfiguration.setTables(tableRules);
         result.setRules(Collections.singleton(shardingRuleConfiguration));
-        return result;
-    }
-    
-    private static Map<String, YamlTableRuleConfiguration> createTableRules() {
-        Map<String, YamlTableRuleConfiguration> result = new HashMap<>();
-        YamlTableRuleConfiguration t1TableRule = new YamlTableRuleConfiguration();
-        t1TableRule.setLogicTable("t1");
-        t1TableRule.setActualDataNodes("ds_src.t1");
-        result.put("t1", t1TableRule);
         return result;
     }
     
     /**
      * Create host sharding jdbc data source.
      *
+     * @param tableRules table rules
      * @return data source
      */
-    @SneakyThrows
-    public static DataSource createHostDataSource() {
-        YamlRootRuleConfigurations configurations = createHostConfigurations();
-        return new ShardingSphereDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(configurations.getDataSources()),
-                new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()), null);
+    @SneakyThrows(SQLException.class)
+    public static DataSource createHostDataSource(final Map<String, YamlTableRuleConfiguration> tableRules) {
+        ShardingSphereJDBCDataSourceConfiguration configuration = getHostConfiguration(tableRules);
+        return new ShardingSphereDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(configuration.getRootRuleConfigs().getDataSources()),
+                new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configuration.getRootRuleConfigs().getRules()), null);
     }
 }

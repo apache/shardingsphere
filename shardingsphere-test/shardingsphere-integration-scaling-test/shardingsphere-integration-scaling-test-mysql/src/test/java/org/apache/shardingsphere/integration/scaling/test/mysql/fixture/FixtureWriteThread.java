@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.scaling.test.mysql.fixture;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.integration.scaling.test.mysql.util.SourceShardingSphereUtil;
+import org.apache.shardingsphere.integration.scaling.test.mysql.env.ITEnvironmentContext;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -68,7 +68,7 @@ public final class FixtureWriteThread implements Runnable {
     public void run() {
         long startTime = System.currentTimeMillis();
         int idGenerator = 0;
-        DataSource dataSource = SourceShardingSphereUtil.createHostDataSource();
+        DataSource dataSource = ITEnvironmentContext.INSTANCE.getSourceDataSource();
         while (running && !checkTimeout(startTime, writeThreadTimeout)) {
             try (Connection connection = dataSource.getConnection()) {
                 insert(connection, ++idGenerator);

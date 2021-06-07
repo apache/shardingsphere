@@ -20,11 +20,11 @@ package org.apache.shardingsphere.integration.scaling.test.mysql;
 import groovy.lang.Tuple2;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.integration.scaling.test.mysql.env.ITEnvironmentContext;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.scaling.test.mysql.fixture.FixtureWriteThread;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
-import org.apache.shardingsphere.integration.scaling.test.mysql.util.TargetDataSourceUtil;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -59,8 +59,8 @@ public final class ScalingIT {
     
     @SneakyThrows(IOException.class)
     private String assertStartJob() {
-        String configurations = TargetDataSourceUtil.createDockerConfigurations();
-        Tuple2<Boolean, String> response = ScalingUtil.getInstance().startJob(configurations);
+        String configuration = ITEnvironmentContext.INSTANCE.getScalingConfiguration();
+        Tuple2<Boolean, String> response = ScalingUtil.getInstance().startJob(configuration);
         assertTrue(response.getFirst());
         return response.getSecond();
     }
