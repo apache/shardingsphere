@@ -33,7 +33,7 @@ import java.util.Map;
 public interface SchemaRuleBuilder<R extends SchemaRule, T extends RuleConfiguration> extends RuleBuilder<T> {
     
     /**
-     * Build Schema rule.
+     * Build schema rule.
      *
      * @param schemaName schema name
      * @param dataSourceMap dataSource map
