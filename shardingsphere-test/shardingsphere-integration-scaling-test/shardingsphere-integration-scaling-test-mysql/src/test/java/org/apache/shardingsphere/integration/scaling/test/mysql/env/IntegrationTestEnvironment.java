@@ -20,8 +20,8 @@ package org.apache.shardingsphere.integration.scaling.test.mysql.env;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
+import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,8 +71,6 @@ public final class IntegrationTestEnvironment {
         log.info("it scaling environment success");
         return true;
     }
-    
-    
     
     /**
      * Get instance.
