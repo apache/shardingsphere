@@ -104,7 +104,7 @@ public final class OptimizeContextFactory {
         if (databaseType instanceof H2DatabaseType) {
             // TODO No suitable type of Lex
             properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.DEFAULT.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
             return;
         }
         if (databaseType instanceof MariaDBDatabaseType) {
@@ -119,8 +119,9 @@ public final class OptimizeContextFactory {
         }
         if (databaseType instanceof PostgreSQLDatabaseType) {
             // TODO No suitable type of Lex and conformance
-            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.DEFAULT.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.ORACLE.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.BABEL.name());
+//            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
             return;
         }
         if (databaseType instanceof SQL92DatabaseType) {
