@@ -103,6 +103,8 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
 
     private Object getTextParameters(final String textValue, final PostgreSQLBinaryColumnType columnType) {
         switch (columnType) {
+            case POSTGRESQL_TYPE_UNSPECIFIED:
+                return new PostgreSQLTypeUnspecifiedSQLParameter(textValue);
             case POSTGRESQL_TYPE_BOOL:
                 return Boolean.valueOf(textValue);
             case POSTGRESQL_TYPE_INT2:
