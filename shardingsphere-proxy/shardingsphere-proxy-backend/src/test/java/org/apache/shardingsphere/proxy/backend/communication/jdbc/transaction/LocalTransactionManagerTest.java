@@ -54,7 +54,6 @@ public final class LocalTransactionManagerTest {
     @Before
     public void setUp() throws SQLException {
         when(backendConnection.getTransactionStatus()).thenReturn(transactionStatus);
-        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         when(backendConnection.getCachedConnections()).thenReturn(setCachedConnections());
         when(transactionStatus.isInTransaction()).thenReturn(true);
         localTransactionManager = new LocalTransactionManager(backendConnection);
