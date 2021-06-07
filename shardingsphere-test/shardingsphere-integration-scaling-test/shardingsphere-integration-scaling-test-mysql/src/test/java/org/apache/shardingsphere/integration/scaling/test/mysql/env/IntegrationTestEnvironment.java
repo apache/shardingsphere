@@ -20,13 +20,11 @@ package org.apache.shardingsphere.integration.scaling.test.mysql.env;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
+import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.Properties;
 
 @Getter
@@ -62,7 +60,6 @@ public final class IntegrationTestEnvironment {
         log.info("wait begin scaling environment");
         new ExecuteUtil(() -> isScalingReady(engineEnvProps), Integer.parseInt(engineEnvProps.getProperty("scaling.retry", "30")),
                 Long.parseLong(engineEnvProps.getProperty("scaling.waitMs", "1000"))).execute();
-        initDatabase();
     }
     
     private boolean isScalingReady(final Properties engineEnvProps) {
@@ -75,17 +72,7 @@ public final class IntegrationTestEnvironment {
         return true;
     }
     
-    @SneakyThrows
-    private void initDatabase() {
-        try (Connection connection = ITEnvironmentContext.INSTANCE.getSourceDataSource().getConnection()) {
-            PreparedStatement ps = connection.prepareStatement("CREATE TABLE t1(id INT PRIMARY KEY AUTO_INCREMENT, C1 INT NOT NULL, C2 VARCHAR(255) NOT NULL)");
-            ps.execute();
-        }
-        try (Connection connection = ITEnvironmentContext.INSTANCE.getTargetDataSource().getConnection()) {
-            PreparedStatement ps = connection.prepareStatement("CREATE TABLE t1(id INT PRIMARY KEY AUTO_INCREMENT, C1 INT NOT NULL, C2 VARCHAR(255) NOT NULL)");
-            ps.execute();
-        }
-    }
+    
     
     /**
      * Get instance.
