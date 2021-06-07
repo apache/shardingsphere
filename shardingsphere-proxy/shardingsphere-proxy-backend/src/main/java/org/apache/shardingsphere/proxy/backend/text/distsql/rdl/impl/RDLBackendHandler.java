@@ -27,9 +27,13 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * RDL backend handler.
@@ -72,5 +76,19 @@ public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRe
     protected Optional<DatabaseDiscoveryRuleConfiguration> getDatabaseDiscoveryRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst();
+    }
+    
+    protected Optional<ShardingRuleConfiguration> getShardingRuleConfiguration(final String schemaName) {
+        return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
+                .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
+    }
+    
+    protected Collection<String> getInvalidResources(final String schemaName, final Collection<String> resources) {
+        return resources.stream().filter(each -> !isValidResource(schemaName, each)).collect(Collectors.toSet());
+    }
+    
+    private boolean isValidResource(final String schemaName, final String resourceName) {
+        return Objects.nonNull(ProxyContext.getInstance().getMetaData(schemaName).getResource())
+                && ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(resourceName);
     }
 }

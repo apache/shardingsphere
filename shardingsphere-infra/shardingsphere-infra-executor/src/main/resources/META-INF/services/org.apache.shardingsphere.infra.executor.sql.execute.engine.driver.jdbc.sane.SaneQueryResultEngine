@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.mysql.MySQLSaneQueryResultEngine
+org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.postgresql.PostgreSQLSaneQueryResultEngine

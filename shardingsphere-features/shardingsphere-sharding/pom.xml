@@ -29,10 +29,7 @@
     
     <modules>
         <module>shardingsphere-sharding-api</module>
-        <module>shardingsphere-sharding-common</module>
-        <module>shardingsphere-sharding-route</module>
-        <module>shardingsphere-sharding-rewrite</module>
-        <module>shardingsphere-sharding-merge</module>
+        <module>shardingsphere-sharding-core</module>
         <module>shardingsphere-sharding-spring</module>
     </modules>
 </project>

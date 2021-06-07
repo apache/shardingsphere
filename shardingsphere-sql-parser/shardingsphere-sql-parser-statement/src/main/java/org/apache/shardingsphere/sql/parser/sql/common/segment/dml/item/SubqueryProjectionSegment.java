@@ -37,6 +37,8 @@ public final class SubqueryProjectionSegment implements ProjectionSegment, Alias
     
     private final SubquerySegment subquery;
     
+    private final String text;
+    
     @Setter
     private AliasSegment alias;
     

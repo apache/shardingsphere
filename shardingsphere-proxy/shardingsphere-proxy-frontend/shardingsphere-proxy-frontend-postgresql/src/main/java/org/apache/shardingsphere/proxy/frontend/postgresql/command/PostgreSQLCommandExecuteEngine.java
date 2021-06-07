@@ -75,18 +75,18 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
-    public void writeQueryData(final ChannelHandlerContext context,
-                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+    public boolean writeQueryData(final ChannelHandlerContext context,
+                                  final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (queryCommandExecutor instanceof PostgreSQLComSyncExecutor) {
-            return;
+            return true;
         }
         if (ResponseType.QUERY == queryCommandExecutor.getResponseType() && !context.channel().isActive()) {
             context.write(new PostgreSQLCommandCompletePacket());
-            return;
+            return true;
         }
         if (ResponseType.UPDATE == queryCommandExecutor.getResponseType() && !(queryCommandExecutor instanceof PostgreSQLComBindExecutor)) {
             context.write(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
-            return;
+            return true;
         }
         int count = 0;
         int proxyFrontendFlushThreshold = ProxyContext.getInstance().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
@@ -108,6 +108,8 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
         }
         if (queryCommandExecutor instanceof PostgreSQLComQueryExecutor) {
             context.write(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
+            return true;
         }
+        return false;
     }
 }

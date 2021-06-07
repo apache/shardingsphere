@@ -42,6 +42,7 @@ import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLCommandPacketDecoder;
 import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLNegotiateHandler;
+import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLNegotiatePackageDecoder;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
@@ -82,6 +83,7 @@ public final class MySQLClient {
                     @Override
                     protected void initChannel(final SocketChannel socketChannel) {
                         socketChannel.pipeline().addLast(new PacketCodec(new MySQLPacketCodecEngine()));
+                        socketChannel.pipeline().addLast(new MySQLNegotiatePackageDecoder());
                         socketChannel.pipeline().addLast(new MySQLCommandPacketDecoder());
                         socketChannel.pipeline().addLast(new MySQLNegotiateHandler(connectInfo.getUsername(), connectInfo.getPassword(), responseCallback));
                         socketChannel.pipeline().addLast(new MySQLCommandResponseHandler());

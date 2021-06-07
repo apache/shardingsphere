@@ -15,17 +15,5 @@
 # limitations under the License.
 #
 
-- !SHARDING
-  tables:
-    t_order:
-      logicTable: t_order
-      actualDataNodes: ds_${0..1}.t_order_${0..1}
-      tableStrategy:
-        standard:
-          shardingColumn: order_id
-          shardingAlgorithmName: table_inline
-  shardingAlgorithms:
-    table_inline:
-      type: INLINE
-      props:
-        algorithm-expression: t_order_${order_id % 2}
+- !FIXTURE
+  name: test

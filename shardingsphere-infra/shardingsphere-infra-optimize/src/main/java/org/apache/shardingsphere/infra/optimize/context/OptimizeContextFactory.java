@@ -52,7 +52,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseTy
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
-import org.apache.shardingsphere.infra.optimize.core.schema.LogicSchemaMetadatas;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadatas;
 
 import java.util.Collections;
 import java.util.Map;
@@ -76,7 +76,7 @@ public final class OptimizeContextFactory {
     private final RelDataTypeFactory typeFactory;
     
     @Getter
-    private final LogicSchemaMetadatas schemaMetadatas;
+    private final FederateSchemaMetadatas schemaMetadatas;
     
     private final RelOptCluster cluster;
     
@@ -85,7 +85,7 @@ public final class OptimizeContextFactory {
         initProperties(databaseType);
         typeFactory = new JavaTypeFactoryImpl();
         cluster = newCluster();
-        schemaMetadatas = new LogicSchemaMetadatas(metaDataMap);
+        schemaMetadatas = new FederateSchemaMetadatas(metaDataMap);
         connectionConfig = new CalciteConnectionConfigImpl(properties);
         parserConfig = SqlParser.config()
                 .withLex(connectionConfig.lex())
@@ -104,7 +104,7 @@ public final class OptimizeContextFactory {
         if (databaseType instanceof H2DatabaseType) {
             // TODO No suitable type of Lex
             properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.DEFAULT.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
             return;
         }
         if (databaseType instanceof MariaDBDatabaseType) {
@@ -119,8 +119,9 @@ public final class OptimizeContextFactory {
         }
         if (databaseType instanceof PostgreSQLDatabaseType) {
             // TODO No suitable type of Lex and conformance
-            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.DEFAULT.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.ORACLE.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.BABEL.name());
+//            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
             return;
         }
         if (databaseType instanceof SQL92DatabaseType) {

@@ -31,9 +31,8 @@
     
     <modules>
         <module>shardingsphere-db-discovery-api</module>
-        <module>shardingsphere-db-discovery-common</module>
-        <module>shardingsphere-db-discovery-provider</module>
-        <module>shardingsphere-db-discovery-route</module>
+        <module>shardingsphere-db-discovery-core</module>
         <module>shardingsphere-db-discovery-spring</module>
+        <module>shardingsphere-db-discovery-provider</module>
     </modules>
 </project>

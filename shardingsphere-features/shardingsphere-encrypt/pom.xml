@@ -31,9 +31,7 @@
     
     <modules>
         <module>shardingsphere-encrypt-api</module>
-        <module>shardingsphere-encrypt-common</module>
-        <module>shardingsphere-encrypt-rewrite</module>
-        <module>shardingsphere-encrypt-merge</module>
+        <module>shardingsphere-encrypt-core</module>
         <module>shardingsphere-encrypt-spring</module>
     </modules>
 </project>
