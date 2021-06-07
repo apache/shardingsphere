@@ -120,8 +120,8 @@ public final class OptimizeContextFactory {
         if (databaseType instanceof PostgreSQLDatabaseType) {
             // TODO No suitable type of Lex and conformance
             properties.setProperty(LEX_CAMEL_NAME, Lex.ORACLE.name());
-//            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.BABEL.name());
-            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.BABEL.name());
+//            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
             return;
         }
         if (databaseType instanceof SQL92DatabaseType) {
