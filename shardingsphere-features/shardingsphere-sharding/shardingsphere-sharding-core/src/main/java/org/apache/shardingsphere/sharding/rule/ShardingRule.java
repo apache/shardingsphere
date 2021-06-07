@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -145,7 +146,8 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        return Splitter.on(",").trimResults().splitToList(shardingAutoTableRuleConfig.getActualDataSources());
+        return Strings.isNullOrEmpty(shardingAutoTableRuleConfig.getActualDataSources()) 
+                ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(shardingAutoTableRuleConfig.getActualDataSources());
     }
     
     private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
