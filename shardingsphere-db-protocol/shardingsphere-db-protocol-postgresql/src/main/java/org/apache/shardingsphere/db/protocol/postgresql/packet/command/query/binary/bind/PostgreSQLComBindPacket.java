@@ -62,11 +62,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
         sql = null == binaryStatement ? null : binaryStatement.getSql();
         parameters = null == sql ? Collections.emptyList() : getParameters(payload, parameterFormats, binaryStatement.getColumnTypes());
-        int resultFormatsLength = payload.readInt2();
-        binaryRowData = parameterFormats.contains(1);
-        for (int i = 0; i < resultFormatsLength; i++) {
-            payload.readInt2();
-        }
+        binaryRowData = isBinaryRowData(payload);
     }
     
     private List<Object> getParameters(final PostgreSQLPacketPayload payload, final List<Integer> parameterFormats, final List<PostgreSQLBinaryColumnType> columnTypes) {
@@ -141,6 +137,18 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     private Object getBinaryParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLBinaryColumnType columnType) {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
         return binaryProtocolValue.read(payload, parameterValueLength);
+    }
+    
+    private boolean isBinaryRowData(final PostgreSQLPacketPayload payload) {
+        int resultFormatsLength = payload.readInt2();
+        if (0 == resultFormatsLength) {
+            return false;
+        }
+        List<Integer> resultFormats = new ArrayList<>(resultFormatsLength);
+        for (int i = 0; i < resultFormatsLength; i++) {
+            resultFormats.add(payload.readInt2());
+        }
+        return resultFormats.stream().allMatch(each -> 1 == each);
     }
     
     @Override
