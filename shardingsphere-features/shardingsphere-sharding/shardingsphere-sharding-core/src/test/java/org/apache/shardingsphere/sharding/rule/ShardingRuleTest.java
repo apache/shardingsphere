@@ -286,11 +286,6 @@ public final class ShardingRuleTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertConstructShardingRuleWithNullShardingRuleConfiguration() {
-        new ShardingRule((ShardingRuleConfiguration) null, mock(DatabaseType.class), createDataSourceMap());
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
     public void assertConstructShardingRuleWithNullDataSourceNames() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "pr_ds_${0..1}.table_${0..2}");
