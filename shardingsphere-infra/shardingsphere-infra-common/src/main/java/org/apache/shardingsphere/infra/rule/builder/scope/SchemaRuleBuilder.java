@@ -39,7 +39,7 @@ public interface SchemaRuleBuilder<R extends SchemaRule, T extends RuleConfigura
      * @param dataSourceMap dataSource map
      * @param databaseType database type
      * @param ruleConfig rule configuration
-     * @return schema rule
+     * @return built schema rule
      */
     R build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T ruleConfig);
 }
