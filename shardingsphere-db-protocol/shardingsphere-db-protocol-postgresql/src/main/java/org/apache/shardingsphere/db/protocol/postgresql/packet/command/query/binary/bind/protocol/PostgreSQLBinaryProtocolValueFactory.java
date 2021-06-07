@@ -62,6 +62,7 @@ public final class PostgreSQLBinaryProtocolValueFactory {
     private static void setStringLenencBinaryProtocolValue() {
         PostgreSQLStringBinaryProtocolValue binaryProtocolValue = new PostgreSQLStringBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_VARCHAR, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_CHAR, binaryProtocolValue);
     }
     
     private static void setInt8BinaryProtocolValue() {
