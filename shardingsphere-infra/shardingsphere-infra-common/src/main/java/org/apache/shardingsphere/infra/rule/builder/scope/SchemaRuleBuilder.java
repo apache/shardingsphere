@@ -27,10 +27,9 @@ import java.util.Map;
 /**
  * Schema rule builder.
  * 
- * @param <R> type of schema rule
  * @param <T> type of rule configuration
  */
-public interface SchemaRuleBuilder<R extends SchemaRule, T extends RuleConfiguration> extends RuleBuilder<T> {
+public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
     
     /**
      * Build schema rule.
@@ -38,8 +37,8 @@ public interface SchemaRuleBuilder<R extends SchemaRule, T extends RuleConfigura
      * @param schemaName schema name
      * @param dataSourceMap dataSource map
      * @param databaseType database type
-     * @param ruleConfig rule configuration
+     * @param config rule configuration
      * @return built schema rule
      */
-    R build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T ruleConfig);
+    SchemaRule build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T config);
 }

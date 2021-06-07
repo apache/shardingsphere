@@ -30,11 +30,11 @@ import java.util.Map;
 /**
  * Sharding rule builder.
  */
-public final class ShardingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ShardingRule, ShardingRuleConfiguration> {
+public final class ShardingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ShardingRuleConfiguration> {
     
     @Override
-    public ShardingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ShardingRuleConfiguration ruleConfig) {
-        return new ShardingRule(ruleConfig, databaseType, dataSourceMap);
+    public ShardingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ShardingRuleConfiguration config) {
+        return new ShardingRule(config, databaseType, dataSourceMap);
     }
     
     @Override
