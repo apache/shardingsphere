@@ -82,7 +82,7 @@ public class AlterTableStatementFederateRefresherTest {
         refreshTableWithRule(new SQL92AlterTableStatement());
     }
     
-    private void refreshTableWithRule(AlterTableStatement alterTableStatement) throws SQLException {
+    private void refreshTableWithRule(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         TableContainedRule rule = mock(TableContainedRule.class);
@@ -123,7 +123,7 @@ public class AlterTableStatementFederateRefresherTest {
         refreshTableWithoutRule(new SQL92AlterTableStatement());
     }
     
-    private void refreshTableWithoutRule(AlterTableStatement alterTableStatement) throws SQLException {
+    private void refreshTableWithoutRule(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(
                 new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
@@ -161,7 +161,7 @@ public class AlterTableStatementFederateRefresherTest {
         renameTableWithRule(new SQL92AlterTableStatement());
     }
     
-    private void renameTableWithRule(AlterTableStatement alterTableStatement) throws SQLException {
+    private void renameTableWithRule(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         alterTableStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
@@ -204,7 +204,7 @@ public class AlterTableStatementFederateRefresherTest {
         renameTableWithoutRule(new SQL92AlterTableStatement());
     }
     
-    private void renameTableWithoutRule(AlterTableStatement alterTableStatement) throws SQLException {
+    private void renameTableWithoutRule(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         alterTableStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
