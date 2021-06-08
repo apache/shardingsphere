@@ -28,7 +28,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Getter
 public final class InvalidShardingAlgorithmsException extends BackendException {
-
+    
     private static final long serialVersionUID = 4257890788163115250L;
     
     private final Collection<String> algorithms;
