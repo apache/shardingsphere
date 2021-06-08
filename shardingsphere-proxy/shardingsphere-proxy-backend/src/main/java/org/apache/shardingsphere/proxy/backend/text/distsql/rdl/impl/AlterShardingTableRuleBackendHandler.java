@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidKeyGeneratorsException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConverter;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
@@ -38,6 +40,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -49,6 +52,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     static {
         // TODO consider about register once only
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
+        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
     }
     
     public AlterShardingTableRuleBackendHandler(final AlterShardingTableRuleStatement sqlStatement, final BackendConnection backendConnection) {
@@ -80,6 +84,12 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
         if (!invalidTableAlgorithms.isEmpty()) {
             throw new InvalidShardingAlgorithmsException(invalidTableAlgorithms);
         }
+        Collection<String> invalidKeyGenerators = getKeyGenerators(sqlStatement).stream()
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent())
+                .collect(Collectors.toList());
+        if (!invalidKeyGenerators.isEmpty()) {
+            throw new InvalidKeyGeneratorsException(invalidKeyGenerators);
+        }
     }
     
     @Override
@@ -91,6 +101,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
         drop(shardingRuleConfiguration, sqlStatement);
         shardingRuleConfiguration.getAutoTables().addAll(alteredShardingRuleConfiguration.getAutoTables());
         shardingRuleConfiguration.getShardingAlgorithms().putAll(alteredShardingRuleConfiguration.getShardingAlgorithms());
+        shardingRuleConfiguration.getKeyGenerators().putAll(alteredShardingRuleConfiguration.getKeyGenerators());
     }
     
     private void drop(final ShardingRuleConfiguration shardingRuleConfiguration, final AlterShardingTableRuleStatement sqlStatement) {
@@ -99,6 +110,9 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
                     .stream().filter(tableRule -> each.equals(tableRule.getLogicTable())).findAny().get();
             shardingRuleConfiguration.getAutoTables().remove(shardingAutoTableRuleConfiguration);
             shardingRuleConfiguration.getShardingAlgorithms().remove(shardingAutoTableRuleConfiguration.getShardingStrategy().getShardingAlgorithmName());
+            if (Objects.nonNull(shardingAutoTableRuleConfiguration.getKeyGenerateStrategy())) {
+                shardingRuleConfiguration.getKeyGenerators().remove(shardingAutoTableRuleConfiguration.getKeyGenerateStrategy().getKeyGeneratorName());
+            }
         });
     }
     
@@ -126,5 +140,10 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
         Collection<String> result = new LinkedHashSet<>();
         sqlStatement.getTables().forEach(each -> result.addAll(each.getDataSources()));
         return result;
+    }
+    
+    private Collection<String> getKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) {
+        return sqlStatement.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
+                .map(each -> each.getKeyGenerateStrategy().getAlgorithmName()).collect(Collectors.toSet());
     }
 }
