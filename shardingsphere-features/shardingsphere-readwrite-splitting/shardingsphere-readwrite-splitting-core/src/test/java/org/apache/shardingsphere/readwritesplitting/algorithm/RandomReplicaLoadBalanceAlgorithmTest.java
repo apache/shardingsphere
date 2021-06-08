@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package algorithm;
+package org.apache.shardingsphere.readwritesplitting.algorithm;
 
-import org.apache.shardingsphere.readwritesplitting.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;

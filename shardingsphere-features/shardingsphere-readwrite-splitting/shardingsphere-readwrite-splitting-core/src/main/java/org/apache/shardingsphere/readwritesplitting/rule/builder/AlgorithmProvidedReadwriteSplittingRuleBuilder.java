@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.rule.biulder;
+package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
@@ -28,22 +28,23 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Readwrite-splitting rule builder.
+ * Algorithm provided readwrite-splitting rule builder.
  */
-public final class ReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadwriteSplittingRuleConfiguration> {
+public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<AlgorithmProvidedReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public ReadwriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ReadwriteSplittingRuleConfiguration config) {
+    public ReadwriteSplittingRule build(final String schemaName, 
+                                        final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final AlgorithmProvidedReadwriteSplittingRuleConfiguration config) {
         return new ReadwriteSplittingRule(config);
     }
     
     @Override
     public int getOrder() {
-        return ReadwriteSplittingOrder.ORDER;
+        return ReadwriteSplittingOrder.ORDER + 1;
     }
     
     @Override
-    public Class<ReadwriteSplittingRuleConfiguration> getTypeClass() {
-        return ReadwriteSplittingRuleConfiguration.class;
+    public Class<AlgorithmProvidedReadwriteSplittingRuleConfiguration> getTypeClass() {
+        return AlgorithmProvidedReadwriteSplittingRuleConfiguration.class;
     }
 }
