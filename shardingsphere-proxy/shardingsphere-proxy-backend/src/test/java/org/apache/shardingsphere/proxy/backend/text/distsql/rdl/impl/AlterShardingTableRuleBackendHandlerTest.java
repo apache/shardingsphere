@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -77,7 +78,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     @Mock
     private ShardingSphereResource shardingSphereResource;
     
@@ -95,7 +96,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     public void assertExecuteWithoutShardingRule() {
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test
     public void assertExecute() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
@@ -134,6 +135,19 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         tableRuleSegment.setDataSources(Collections.emptyList());
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
+        handler.execute("test", sqlStatement);
+    }
+    
+    @Test(expected = InvalidShardingAlgorithmsException.class)
+    public void assertExecuteWithInvalidAlgorithms() {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment();
+        tableRuleSegment.setLogicTable("t_order_item");
+        tableRuleSegment.setDataSources(Collections.emptyList());
+        FunctionSegment shardingAlgorithm = new FunctionSegment();
+        shardingAlgorithm.setAlgorithmName("algorithm-not-exist");
+        tableRuleSegment.setTableStrategy(shardingAlgorithm);
+        when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         handler.execute("test", sqlStatement);
     }
     

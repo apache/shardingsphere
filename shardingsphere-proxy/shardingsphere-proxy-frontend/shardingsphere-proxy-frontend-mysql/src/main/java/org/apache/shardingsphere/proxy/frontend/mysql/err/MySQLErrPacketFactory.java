@@ -35,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscover
 import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
@@ -187,6 +188,9 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof DuplicateRuleNamesException) {
             return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_RULE_NAMES, ((DuplicateRuleNamesException) cause).getRuleNames(),
                     ((DuplicateRuleNamesException) cause).getSchemaName());
+        }
+        if (cause instanceof InvalidShardingAlgorithmsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.INVALID_SHARDING_ALGORITHMS, ((InvalidShardingAlgorithmsException) cause).getAlgorithms());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }

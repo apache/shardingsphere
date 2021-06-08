@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<CreateEncryptRuleStatement> {
     
     static {
+        // TODO consider about register once only
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
     }
     

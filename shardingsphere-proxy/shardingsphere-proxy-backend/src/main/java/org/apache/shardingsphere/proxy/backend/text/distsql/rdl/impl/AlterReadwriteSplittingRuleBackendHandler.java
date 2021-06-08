@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<AlterReadwriteSplittingRuleStatement> {
     
     static {
+        // TODO consider about register once only
         ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
     }
     
