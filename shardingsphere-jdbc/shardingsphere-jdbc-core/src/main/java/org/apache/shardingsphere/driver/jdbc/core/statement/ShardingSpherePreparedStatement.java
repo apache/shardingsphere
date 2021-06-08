@@ -24,6 +24,7 @@ import org.apache.shardingsphere.driver.executor.DriverJDBCExecutor;
 import org.apache.shardingsphere.driver.executor.batch.BatchExecutionUnit;
 import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.impl.PreparedStatementExecuteQueryCallback;
+import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQueryCallback;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractPreparedStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.constant.SQLExceptionConstant;
@@ -188,7 +189,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private List<ResultSet> getResultSetsForShardingSphereResultSet() throws SQLException {
-        if (null != federateExecutor) {
+        if (executionContext.getRouteContext().isFederated()) {
             return Collections.singletonList(federateExecutor.getResultSet());
         }
         return statements.stream().map(this::getResultSet).collect(Collectors.toList());
@@ -212,8 +213,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (executionContext.getExecutionUnits().isEmpty()) {
             return Collections.emptyList();
         }
-        PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), 
-                sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
+        // TODO : Please fix me here.
+        // PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), 
+        //         sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
+        StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
+                executionContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
         return federateExecutor.executeQuery(executionContext, callback);
     }
     

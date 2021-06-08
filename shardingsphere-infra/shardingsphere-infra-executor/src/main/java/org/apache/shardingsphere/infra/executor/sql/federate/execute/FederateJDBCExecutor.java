@@ -53,8 +53,6 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     
     public static final String DRIVER_NAME = "org.apache.calcite.jdbc.Driver";
     
-    public static final Properties PROPERTIES = new Properties();
-    
     private final String schema;
     
     private final OptimizeContextFactory factory;
@@ -85,8 +83,6 @@ public final class FederateJDBCExecutor implements FederateExecutor {
         this.props = props;
         this.jdbcManager = jdbcManager;
         this.jdbcExecutor = jdbcExecutor;
-        PROPERTIES.setProperty(CalciteConnectionProperty.LEX.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.LEX.camelName()));
-        PROPERTIES.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.CONFORMANCE.camelName()));
     }
     
     @Override
@@ -118,9 +114,16 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     }
     
     private Connection getConnection(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback) throws SQLException {
-        Connection result = DriverManager.getConnection(CONNECTION_URL, PROPERTIES);
+        Connection result = DriverManager.getConnection(CONNECTION_URL, getProperties());
         CalciteConnection calciteConnection = result.unwrap(CalciteConnection.class);
         addSchema(calciteConnection, executionContext, callback);
+        return result;
+    }
+    
+    private Properties getProperties() {
+        Properties result = new Properties();
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.LEX.camelName()));
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.CONFORMANCE.camelName()));
         return result;
     }
     

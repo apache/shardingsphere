@@ -158,7 +158,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private List<ResultSet> getResultSetsForShardingSphereResultSet() throws SQLException {
-        if (null != federateExecutor) {
+        if (executionContext.getRouteContext().isFederated()) {
             return Collections.singletonList(federateExecutor.getResultSet());
         }
         return statements.stream().map(this::getResultSet).collect(Collectors.toList());
