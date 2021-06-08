@@ -51,16 +51,9 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         closed = true;
         try {
             forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
-            closeFederateExecutor();
+            getFederateExecutor().close();
         } finally {
             getRoutedStatements().clear();
-        }
-    }
-    
-    private void closeFederateExecutor() throws SQLException {
-        FederateExecutor executor = getFederateExecutor();
-        if (null != executor) {
-            executor.close();
         }
     }
     

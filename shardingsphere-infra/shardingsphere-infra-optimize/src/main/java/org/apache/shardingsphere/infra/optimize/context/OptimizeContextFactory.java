@@ -67,6 +67,7 @@ public final class OptimizeContextFactory {
     
     private static final String CONFORMANCE_CAMEL_NAME = CalciteConnectionProperty.CONFORMANCE.camelName();
     
+    @Getter
     private final Properties properties = new Properties();
     
     private final CalciteConnectionConfig connectionConfig;

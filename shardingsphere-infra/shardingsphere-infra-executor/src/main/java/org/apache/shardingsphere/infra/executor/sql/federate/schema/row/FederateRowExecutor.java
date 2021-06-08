@@ -65,8 +65,6 @@ public final class FederateRowExecutor {
     
     private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
-    private final StatementOption statementOption;
-    
     /**
      * Execute.
      *
@@ -96,11 +94,12 @@ public final class FederateRowExecutor {
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext(final ExecutionContext executionContext) throws SQLException {
+        // TODO Set parameters for StatementOption
         int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         Collection<ExecutionUnit> executionUnits = executionContext.getExecutionUnits();
         String type = executionUnits.stream().anyMatch(each -> !each.getSqlUnit().getParameters().isEmpty()) ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                type, maxConnectionsSizePerQuery, jdbcManager, statementOption, rules);
+                type, maxConnectionsSizePerQuery, jdbcManager, new StatementOption(true), rules);
         return prepareEngine.prepare(executionContext.getRouteContext(), executionUnits);
     }
 }

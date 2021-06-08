@@ -33,6 +33,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesExceptio
 import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidKeyGeneratorsException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
@@ -191,6 +192,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof InvalidShardingAlgorithmsException) {
             return new MySQLErrPacket(1, CommonErrorCode.INVALID_SHARDING_ALGORITHMS, ((InvalidShardingAlgorithmsException) cause).getAlgorithms());
+        }
+        if (cause instanceof InvalidKeyGeneratorsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.INVALID_KEY_GENERATORS, ((InvalidKeyGeneratorsException) cause).getKeyGenerators());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
