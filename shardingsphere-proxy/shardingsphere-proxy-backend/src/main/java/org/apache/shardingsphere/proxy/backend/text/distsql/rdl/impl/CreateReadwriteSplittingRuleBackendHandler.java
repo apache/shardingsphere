@@ -47,6 +47,7 @@ import java.util.stream.Collectors;
 public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<CreateReadwriteSplittingRuleStatement> {
     
     static {
+        // TODO consider about register once only
         ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
     }
     
