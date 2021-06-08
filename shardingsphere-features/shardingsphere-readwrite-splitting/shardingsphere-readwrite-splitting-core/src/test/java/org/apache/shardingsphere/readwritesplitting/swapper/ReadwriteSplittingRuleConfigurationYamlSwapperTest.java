@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package swapper;
+package org.apache.shardingsphere.readwritesplitting.swapper;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;

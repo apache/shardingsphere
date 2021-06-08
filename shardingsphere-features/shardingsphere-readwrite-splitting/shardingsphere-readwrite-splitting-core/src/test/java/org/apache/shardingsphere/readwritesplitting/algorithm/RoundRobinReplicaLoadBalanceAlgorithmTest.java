@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package algorithm;
+package org.apache.shardingsphere.readwritesplitting.algorithm;
 
-import org.apache.shardingsphere.readwritesplitting.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

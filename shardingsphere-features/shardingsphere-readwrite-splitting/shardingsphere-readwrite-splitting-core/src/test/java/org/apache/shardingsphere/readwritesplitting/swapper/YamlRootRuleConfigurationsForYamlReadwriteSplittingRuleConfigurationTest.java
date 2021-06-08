@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package swapper;
+package org.apache.shardingsphere.readwritesplitting.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
