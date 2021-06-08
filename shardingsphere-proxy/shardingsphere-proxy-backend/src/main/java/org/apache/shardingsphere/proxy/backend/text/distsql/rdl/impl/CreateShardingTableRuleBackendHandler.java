@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * Create sharding table rule backend handler.
  */
 public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandler<CreateShardingTableRuleStatement> {
-
+    
     static {
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
     }
@@ -73,7 +73,7 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
             throw new InvalidShardingAlgorithmsException(invalidTableAlgorithms);
         }
     }
-
+    
     @Override
     public void doExecute(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()

@@ -111,7 +111,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         when(sqlStatement.getTables()).thenReturn(Collections.singletonList(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = InvalidShardingAlgorithmsException.class)
     public void assertExecuteWithInvalidAlgorithms() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();

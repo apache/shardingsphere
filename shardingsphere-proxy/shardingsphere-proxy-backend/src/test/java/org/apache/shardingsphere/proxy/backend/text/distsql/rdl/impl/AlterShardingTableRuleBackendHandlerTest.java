@@ -96,7 +96,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     public void assertExecuteWithoutShardingRule() {
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test
     public void assertExecute() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
@@ -137,7 +137,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = InvalidShardingAlgorithmsException.class)
     public void assertExecuteWithInvalidAlgorithms() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
