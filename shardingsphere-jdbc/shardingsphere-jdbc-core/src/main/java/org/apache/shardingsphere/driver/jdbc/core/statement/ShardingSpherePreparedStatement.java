@@ -222,7 +222,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 executionContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
         FederateRowExecutor executor = new FederateRowExecutor(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(),
-                metaDataContexts.getProps(), connection, driverJDBCExecutor.getJdbcExecutor(), executionContext, callback);
+                metaDataContexts.getProps(), connection, driverJDBCExecutor.getJdbcExecutor(), executionContext, callback, JDBCDriverType.PREPARED_STATEMENT, statementOption);
         // TODO Consider FederateRawExecutor
         FederateLogicSchema logicSchema = new FederateLogicSchema(metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(DefaultSchema.LOGIC_NAME), executor);
         return new FederateJDBCExecutor(metaDataContexts.getOptimizeContextFactory().create(DefaultSchema.LOGIC_NAME, logicSchema));

@@ -145,7 +145,8 @@ public final class ProxySQLExecutor {
         MetaDataContexts metaData = ProxyContext.getInstance().getMetaDataContexts();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(type, metaData.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType(), 
                 executionContext.getSqlStatementContext().getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true);
-        FederateRowExecutor executor = new FederateRowExecutor(rules, metaData.getProps(), backendConnection, jdbcExecutor.getJdbcExecutor(), executionContext, callback);
+        FederateRowExecutor executor = new FederateRowExecutor(rules, metaData.getProps(), backendConnection, jdbcExecutor.getJdbcExecutor(), 
+                executionContext, callback, type, new StatementOption(isReturnGeneratedKeys));
         FederateLogicSchema logicSchema = new FederateLogicSchema(metaData.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(backendConnection.getSchemaName()), executor);
         FederateExecutor federateExecutor = new FederateJDBCExecutor(metaData.getOptimizeContextFactory().create(backendConnection.getSchemaName(), logicSchema));
         backendConnection.setFederateExecutor(federateExecutor);
