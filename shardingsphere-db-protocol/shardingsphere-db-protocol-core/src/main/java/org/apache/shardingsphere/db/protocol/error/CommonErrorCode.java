@@ -65,6 +65,8 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     INVALID_SHARDING_ALGORITHMS(1119, "C1119", "Invalid sharding algorithms %s"),
     
+    INVALID_KEY_GENERATORS(1120, "C1120", "Invalid key generators %s."),
+    
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     
     SCALING_OPERATE_FAILED(1209, "C1209", "Scaling Operate Failed: [%s]"),
