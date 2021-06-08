@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -34,8 +33,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateJDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederateLogicSchema;
-import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
@@ -74,6 +71,8 @@ public final class ProxySQLExecutor {
     
     private final RawExecutor rawExecutor;
     
+    private final FederateExecutor federateExecutor;
+    
     public ProxySQLExecutor(final String type, final BackendConnection backendConnection) {
         this.type = type;
         this.backendConnection = backendConnection;
@@ -82,6 +81,10 @@ public final class ProxySQLExecutor {
         jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection, new JDBCExecutor(executorEngine, isSerialExecute));
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
         rawExecutor = new RawExecutor(executorEngine, isSerialExecute, metaDataContexts.getProps());
+        // TODO Consider FederateRawExecutor
+        federateExecutor = new FederateJDBCExecutor(backendConnection.getSchemaName(), metaDataContexts.getOptimizeContextFactory(), 
+                metaDataContexts.getMetaData(backendConnection.getSchemaName()).getRuleMetaData().getRules(), 
+                metaDataContexts.getProps(), backendConnection, new JDBCExecutor(executorEngine, isSerialExecute));
     }
     
     /**
@@ -145,12 +148,8 @@ public final class ProxySQLExecutor {
         MetaDataContexts metaData = ProxyContext.getInstance().getMetaDataContexts();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(type, metaData.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType(), 
                 executionContext.getSqlStatementContext().getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true);
-        FederateRowExecutor executor = new FederateRowExecutor(rules, metaData.getProps(), backendConnection, jdbcExecutor.getJdbcExecutor(), executionContext, callback);
-        FederateLogicSchema logicSchema = new FederateLogicSchema(metaData.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(backendConnection.getSchemaName()), executor);
-        FederateExecutor federateExecutor = new FederateJDBCExecutor(metaData.getOptimizeContextFactory().create(backendConnection.getSchemaName(), logicSchema));
         backendConnection.setFederateExecutor(federateExecutor);
-        SQLUnit sqlUnit = executionContext.getExecutionUnits().iterator().next().getSqlUnit();
-        return federateExecutor.executeQuery(sqlUnit.getSql(), sqlUnit.getParameters()).stream().map(each -> (ExecuteResult) each).collect(Collectors.toList());
+        return federateExecutor.executeQuery(executionContext, callback).stream().map(each -> (ExecuteResult) each).collect(Collectors.toList());
     }
     
     private Collection<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules, 
