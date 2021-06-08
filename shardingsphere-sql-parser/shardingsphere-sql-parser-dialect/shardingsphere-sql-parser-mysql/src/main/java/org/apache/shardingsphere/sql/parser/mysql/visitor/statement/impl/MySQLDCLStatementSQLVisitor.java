@@ -94,6 +94,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLeve
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.PrivilegeTypeEnum;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLAlterUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLCreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLCreateUserStatement;
@@ -556,7 +557,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         if (null != ctx.string_()) {
-            result.setAuth(extractStringContent(ctx.string_()));
+            result.setAuth(((StringLiteralValue) visit(ctx.string_())).getValue());
             result.setHasPasswordGenerator(false);
             result.setUsesIdentifiedByClause(true);
             result.setDiscardOldPassword(false);
@@ -570,8 +571,9 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return result;
     }
     
-    private String extractStringContent(final String_Context ctx) {
-        return ctx.getText().length() > 2 ? ctx.getText().substring(1, ctx.getText().length() - 1) : "";
+    @Override
+    public ASTNode visitString_(final String_Context ctx) {
+        return new StringLiteralValue(ctx.getText());
     }
     
     @Override
@@ -587,14 +589,14 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setRetainCurrentPassword(false);
         } else if (null != ctx.AS()) {
             result.setPlugin(ctx.textOrIdentifier().getText());
-            result.setAuth(extractStringContent(ctx.string_()));
+            result.setAuth(((StringLiteralValue) visit(ctx.string_())).getValue());
             result.setHasPasswordGenerator(false);
             result.setUsesIdentifiedByClause(true);
             result.setDiscardOldPassword(false);
             result.setRetainCurrentPassword(false);
         } else if (null != ctx.BY() && null != ctx.string_()) {
             result.setPlugin(ctx.textOrIdentifier().getText());
-            result.setAuth(extractStringContent(ctx.string_()));
+            result.setAuth(((StringLiteralValue) visit(ctx.string_())).getValue());
             result.setHasPasswordGenerator(false);
             result.setUsesIdentifiedByClause(true);
             result.setUsesIdentifiedWithClause(true);
@@ -602,7 +604,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setRetainCurrentPassword(false);
         } else {
             result.setPlugin(ctx.textOrIdentifier().getText());
-            result.setAuth(extractStringContent(ctx.string_()));
+            result.setAuth(((StringLiteralValue) visit(ctx.string_())).getValue());
             result.setHasPasswordGenerator(true);
             result.setUsesIdentifiedByClause(true);
             result.setUsesIdentifiedWithClause(true);
