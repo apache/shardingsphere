@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandler<CreateShardingTableRuleStatement> {
     
     static {
+        // TODO consider about register once only
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
     }
     

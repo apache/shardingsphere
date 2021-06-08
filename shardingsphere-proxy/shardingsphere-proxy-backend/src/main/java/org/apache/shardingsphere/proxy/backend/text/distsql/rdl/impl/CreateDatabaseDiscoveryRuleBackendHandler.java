@@ -47,6 +47,7 @@ import java.util.stream.Collectors;
 public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<CreateDatabaseDiscoveryRuleStatement> {
     
     static {
+        // TODO consider about register once only
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
     }
     
