@@ -15,36 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.rule.biulder;
+package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
-import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
-import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Algorithm provided data base discovery rule builder.
+ * Readwrite-splitting rule builder.
  */
-public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<DatabaseDiscoveryRule, AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
+public final class ReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public DatabaseDiscoveryRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
-                                       final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration ruleConfig) {
-        return new DatabaseDiscoveryRule(ruleConfig, databaseType, dataSourceMap, schemaName);
+    public ReadwriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ReadwriteSplittingRuleConfiguration config) {
+        return new ReadwriteSplittingRule(config);
     }
     
     @Override
     public int getOrder() {
-        return DatabaseDiscoveryOrder.ORDER + 1;
+        return ReadwriteSplittingOrder.ORDER;
     }
     
     @Override
-    public Class<AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedDatabaseDiscoveryRuleConfiguration.class;
+    public Class<ReadwriteSplittingRuleConfiguration> getTypeClass() {
+        return ReadwriteSplittingRuleConfiguration.class;
     }
 }
