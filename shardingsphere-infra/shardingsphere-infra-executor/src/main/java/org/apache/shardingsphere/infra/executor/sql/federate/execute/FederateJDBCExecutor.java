@@ -97,9 +97,11 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     
     @Override
     public void close() throws SQLException {
-        Connection connection = statement.getConnection();
-        connection.close();
-        statement.close();
+        if (null != statement) {
+            Connection connection = statement.getConnection();
+            connection.close();
+            statement.close();
+        }
     }
     
     @Override
