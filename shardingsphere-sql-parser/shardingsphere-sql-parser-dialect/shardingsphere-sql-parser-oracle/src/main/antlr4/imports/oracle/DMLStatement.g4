@@ -209,7 +209,7 @@ filterClauses
     ;
 
 filterClause
-    : (MEASURES | (alias DOT_)? alias) TO expr
+    : (MEASURES | (alias DOT_)? alias) TO predicate
     ;
 
 addCalcsClause
