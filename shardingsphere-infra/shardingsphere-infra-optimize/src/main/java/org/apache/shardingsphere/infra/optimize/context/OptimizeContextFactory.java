@@ -67,6 +67,7 @@ public final class OptimizeContextFactory {
     
     private static final String CONFORMANCE_CAMEL_NAME = CalciteConnectionProperty.CONFORMANCE.camelName();
     
+    @Getter
     private final Properties properties = new Properties();
     
     private final CalciteConnectionConfig connectionConfig;
@@ -119,7 +120,7 @@ public final class OptimizeContextFactory {
         }
         if (databaseType instanceof PostgreSQLDatabaseType) {
             // TODO No suitable type of Lex and conformance
-            properties.setProperty(LEX_CAMEL_NAME, Lex.ORACLE.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.BABEL.name());
 //            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
             return;
