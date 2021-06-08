@@ -108,13 +108,7 @@ public final class ShardingRuleStatementConverter {
         return result;
     }
     
-    /**
-     * Convert function segment to YAML algorithm configuration.
-     *
-     * @param segment function segment
-     * @return YAML algorithm configuration
-     */
-    public static YamlShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final FunctionSegment segment) {
+    private static YamlShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final FunctionSegment segment) {
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(segment.getAlgorithmName());
         result.setProps(segment.getAlgorithmProps());
@@ -132,13 +126,7 @@ public final class ShardingRuleStatementConverter {
         return result;
     }
     
-    /**
-     * Convert table rule segment to YAML sharding strategy configuration.
-     *
-     * @param segment table rule segment
-     * @return YAML sharding strategy configuration
-     */
-    public static YamlShardingStrategyConfiguration createTableStrategyConfiguration(final TableRuleSegment segment) {
+    private static YamlShardingStrategyConfiguration createTableStrategyConfiguration(final TableRuleSegment segment) {
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
         standard.setShardingColumn(segment.getTableStrategyColumn());
@@ -147,13 +135,7 @@ public final class ShardingRuleStatementConverter {
         return result;
     }
     
-    /**
-     * Convert table rule segment to YAML key generate strategy configuration.
-     *
-     * @param segment table rule segment
-     * @return YAML key generate strategy configuration
-     */
-    public static YamlKeyGenerateStrategyConfiguration createKeyGenerateStrategyConfiguration(final TableRuleSegment segment) {
+    private static YamlKeyGenerateStrategyConfiguration createKeyGenerateStrategyConfiguration(final TableRuleSegment segment) {
         YamlKeyGenerateStrategyConfiguration result = new YamlKeyGenerateStrategyConfiguration();
         result.setColumn(segment.getKeyGenerateStrategyColumn());
         result.setKeyGeneratorName(getKeyGeneratorName(segment.getLogicTable(), segment.getKeyGenerateStrategy().getAlgorithmName()));
