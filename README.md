@@ -48,7 +48,7 @@ You are welcome to communicate with the community via the [mailing list](mailto:
 
 ### ShardingSphere-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/sharding-jdbc)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/shardingsphere-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
 ShardingSphere-JDBC defines itself as a lightweight Java framework that provides extra services at Java JDBC layer. 
 With the client end connecting directly to the database, it provides services in the form of jar and requires no extra deployment and dependence. 
