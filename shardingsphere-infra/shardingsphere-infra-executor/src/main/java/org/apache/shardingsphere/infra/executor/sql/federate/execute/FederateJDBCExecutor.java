@@ -130,7 +130,7 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     
     private void addSchema(final CalciteConnection calciteConnection, final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback) throws SQLException {
         FederateRowExecutor executor = new FederateRowExecutor(rules, props, jdbcManager, jdbcExecutor, executionContext, callback);
-        FederateLogicSchema logicSchema = new FederateLogicSchema(factory.getSchemaMetadatas().getDefaultSchemaMetadata(), executor);
+        FederateLogicSchema logicSchema = new FederateLogicSchema(factory.getSchemaMetadatas().getSchemaMetadataBySchemaName(schema), executor);
         calciteConnection.getRootSchema().add(schema, logicSchema);
         calciteConnection.setSchema(schema);
     }
