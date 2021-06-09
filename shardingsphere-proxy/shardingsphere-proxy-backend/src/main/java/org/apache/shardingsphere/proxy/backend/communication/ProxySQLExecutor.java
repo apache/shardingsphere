@@ -123,7 +123,7 @@ public final class ProxySQLExecutor {
             return rawExecute(executionContext, rules, maxConnectionsSizePerQuery);
         }
         if (executionContext.getRouteContext().isFederated()) {
-            return federateExecute(executionContext, rules, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
+            return federateExecute(executionContext, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
         }
         return useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
     }
@@ -140,8 +140,7 @@ public final class ProxySQLExecutor {
         return rawExecutor.execute(executionGroupContext, executionContext.getSqlStatementContext(), new RawSQLExecutorCallback());
     }
     
-    private Collection<ExecuteResult> federateExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,
-                                                      final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+    private Collection<ExecuteResult> federateExecute(final ExecutionContext executionContext, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return Collections.emptyList();
         }
@@ -149,7 +148,7 @@ public final class ProxySQLExecutor {
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(type, metaData.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType(), 
                 executionContext.getSqlStatementContext().getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true);
         backendConnection.setFederateExecutor(federateExecutor);
-        return federateExecutor.executeQuery(executionContext, callback).stream().map(each -> (ExecuteResult) each).collect(Collectors.toList());
+        return federateExecutor.executeQuery(executionContext, callback, type, new StatementOption(isReturnGeneratedKeys)).stream().map(each -> (ExecuteResult) each).collect(Collectors.toList());
     }
     
     private Collection<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules, 

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.driver.executor.DriverJDBCExecutor;
 import org.apache.shardingsphere.driver.executor.batch.BatchExecutionUnit;
 import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.impl.PreparedStatementExecuteQueryCallback;
-import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQueryCallback;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractPreparedStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.constant.SQLExceptionConstant;
@@ -213,12 +212,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (executionContext.getExecutionUnits().isEmpty()) {
             return Collections.emptyList();
         }
-        // TODO : Please fix me here.
-        // PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), 
-        //         sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
-        StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
-                executionContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
-        return federateExecutor.executeQuery(executionContext, callback);
+        PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), 
+                 sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown());
+        return federateExecutor.executeQuery(executionContext, callback, JDBCDriverType.PREPARED_STATEMENT, statementOption);
     }
     
     @Override
