@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
@@ -95,8 +96,10 @@ public final class FederateRowExecutor {
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext(final ExecutionContext executionContext) throws SQLException {
         // TODO Set parameters for StatementOption
         int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        Collection<ExecutionUnit> executionUnits = executionContext.getExecutionUnits();
+        String type = executionUnits.stream().anyMatch(each -> !each.getSqlUnit().getParameters().isEmpty()) ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, jdbcManager, new StatementOption(true), rules);
-        return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+                type, maxConnectionsSizePerQuery, jdbcManager, new StatementOption(true), rules);
+        return prepareEngine.prepare(executionContext.getRouteContext(), executionUnits);
     }
 }

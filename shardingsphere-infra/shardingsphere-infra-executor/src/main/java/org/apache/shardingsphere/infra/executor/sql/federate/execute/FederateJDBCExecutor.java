@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.Federate
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -107,7 +108,7 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     
     private ResultSet execute(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback) throws SQLException {
         SQLUnit sqlUnit = executionContext.getExecutionUnits().iterator().next().getSqlUnit();
-        PreparedStatement statement = getConnection(executionContext, callback).prepareStatement(sqlUnit.getSql());
+        PreparedStatement statement = getConnection(executionContext, callback).prepareStatement(SQLUtil.trimSemicolon(sqlUnit.getSql()));
         setParameters(statement, sqlUnit.getParameters());
         this.statement = statement;
         return statement.executeQuery();
@@ -129,7 +130,7 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     
     private void addSchema(final CalciteConnection calciteConnection, final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback) throws SQLException {
         FederateRowExecutor executor = new FederateRowExecutor(rules, props, jdbcManager, jdbcExecutor, executionContext, callback);
-        FederateLogicSchema logicSchema = new FederateLogicSchema(factory.getSchemaMetadatas().getDefaultSchemaMetadata(), executor);
+        FederateLogicSchema logicSchema = new FederateLogicSchema(factory.getSchemaMetadatas().getSchemaMetadataBySchemaName(schema), executor);
         calciteConnection.getRootSchema().add(schema, logicSchema);
         calciteConnection.setSchema(schema);
     }
