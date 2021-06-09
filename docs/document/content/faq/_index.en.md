@@ -13,7 +13,7 @@ Answer:
 
 A Tip: Property `sql.show` has changed to `sql-show` in version 5.x.
 
-## 2. Why do some compiling errors appear? Why the IDEA did not index the generated codes?
+## 2. Why do some compiling errors appear? Why did not the IDEA index the generated codes?
 
 Answer:
 
