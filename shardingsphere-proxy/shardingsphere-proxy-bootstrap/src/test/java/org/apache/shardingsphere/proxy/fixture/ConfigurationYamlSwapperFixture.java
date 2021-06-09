@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.fixture;
 
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 
-public final class FixtureConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<FixtureYamlRuleConfiguration, FixtureRuleConfiguration> {
+public final class ConfigurationYamlSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, RuleConfigurationFixture> {
     
     @Override
     public String getRuleTagName() {
@@ -32,19 +32,19 @@ public final class FixtureConfigurationYamlSwapper implements YamlRuleConfigurat
     }
     
     @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
+    public Class<RuleConfigurationFixture> getTypeClass() {
+        return RuleConfigurationFixture.class;
     }
     
     @Override
-    public FixtureYamlRuleConfiguration swapToYamlConfiguration(final FixtureRuleConfiguration data) {
-        FixtureYamlRuleConfiguration result = new FixtureYamlRuleConfiguration();
+    public YamlRuleConfigurationFixture swapToYamlConfiguration(final RuleConfigurationFixture data) {
+        YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
         result.setName(data.getName());
         return result;
     }
     
     @Override
-    public FixtureRuleConfiguration swapToObject(final FixtureYamlRuleConfiguration yamlConfig) {
-        return new FixtureRuleConfiguration(yamlConfig.getName());
+    public RuleConfigurationFixture swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
+        return new RuleConfigurationFixture(yamlConfig.getName());
     }
 }
