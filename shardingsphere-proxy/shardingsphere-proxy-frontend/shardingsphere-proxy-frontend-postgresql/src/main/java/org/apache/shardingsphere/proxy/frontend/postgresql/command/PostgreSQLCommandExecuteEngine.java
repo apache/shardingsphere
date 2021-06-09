@@ -50,8 +50,6 @@ import java.util.Optional;
  */
 public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngine {
     
-    private static final ThreadLocal<PostgreSQLConnectionContext> CONNECTION_CONTEXT = ThreadLocal.withInitial(PostgreSQLConnectionContext::new);
-    
     @Override
     public PostgreSQLCommandPacketType getCommandPacketType(final PacketPayload payload) {
         return PostgreSQLCommandPacketTypeLoader.getCommandPacketType((PostgreSQLPacketPayload) payload);
@@ -64,12 +62,13 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) throws SQLException {
-        return PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLCommandPacket) packet, backendConnection, CONNECTION_CONTEXT.get());
+        PostgreSQLConnectionContext connectionContext = PostgreSQLConnectionContextRegistry.getInstance().get(backendConnection.getConnectionId());
+        return PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLCommandPacket) packet, backendConnection, connectionContext);
     }
     
     @Override
-    public DatabasePacket<?> getErrorPacket(final Exception cause) {
-        CONNECTION_CONTEXT.get().getPendingExecutors().clear();
+    public DatabasePacket<?> getErrorPacket(final Exception cause, final BackendConnection backendConnection) {
+        PostgreSQLConnectionContextRegistry.getInstance().get(backendConnection.getConnectionId()).getPendingExecutors().clear();
         return PostgreSQLErrPacketFactory.newInstance(cause);
     }
     
