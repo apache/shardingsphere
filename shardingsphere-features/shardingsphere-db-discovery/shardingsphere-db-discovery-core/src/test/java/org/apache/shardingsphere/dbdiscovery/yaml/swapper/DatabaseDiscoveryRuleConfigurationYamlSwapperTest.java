@@ -20,13 +20,11 @@ package org.apache.shardingsphere.dbdiscovery.yaml.swapper;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -98,13 +96,6 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapperTest {
         DatabaseDiscoveryRuleConfigurationYamlSwapper swapper = getHARuleConfigurationYamlSwapper();
         Class<DatabaseDiscoveryRuleConfiguration> actual = swapper.getTypeClass();
         assertTrue(actual.isAssignableFrom(DatabaseDiscoveryRuleConfiguration.class));
-    }
-    
-    @Test
-    public void assertGetOrder() {
-        DatabaseDiscoveryRuleConfigurationYamlSwapper swapper = getHARuleConfigurationYamlSwapper();
-        int actual = swapper.getOrder();
-        assertThat(actual, CoreMatchers.is(DatabaseDiscoveryOrder.ORDER));
     }
     
     private DatabaseDiscoveryRuleConfigurationYamlSwapper getHARuleConfigurationYamlSwapper() {
