@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.bind;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
@@ -46,8 +46,9 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 import java.sql.SQLException;
@@ -60,60 +61,74 @@ import java.util.stream.Collectors;
 /**
  * Command bind executor for PostgreSQL.
  */
+@RequiredArgsConstructor
 public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
+    
+    private final PostgreSQLConnectionContext connectionContext;
     
     private final PostgreSQLComBindPacket packet;
     
-    private final DatabaseCommunicationEngine databaseCommunicationEngine;
+    private final BackendConnection backendConnection;
     
-    private final TextProtocolBackendHandler textProtocolBackendHandler;
+    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    
+    private TextProtocolBackendHandler textProtocolBackendHandler;
     
     @Getter
     private volatile ResponseType responseType;
     
-    public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) throws SQLException {
-        this.packet = packet;
-        if (null == packet.getSql()) {
-            databaseCommunicationEngine = null;
-            textProtocolBackendHandler = null;
-            return;
-        }
-        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
-                ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType()));
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
-        if (sqlStatement instanceof TCLStatement) {
-            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), packet.getSql(), backendConnection);
-            databaseCommunicationEngine = null;
-            return;
-        }
-        textProtocolBackendHandler = null;
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement, packet.getSql(), packet.getParameters(), backendConnection);
-    }
-    
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
+        init();
         List<DatabasePacket<?>> result = new LinkedList<>();
         result.add(new PostgreSQLBindCompletePacket());
         if (null == databaseCommunicationEngine && null == textProtocolBackendHandler) {
             return result;
         }
         ResponseHeader responseHeader = null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.execute();
-        if (responseHeader instanceof QueryResponseHeader) {
-            createQueryPacket((QueryResponseHeader) responseHeader).ifPresent(result::add);
+        if (responseHeader instanceof QueryResponseHeader && connectionContext.getDescribeExecutor().isPresent()) {
+            getRowDescriptionPacket((QueryResponseHeader) responseHeader)
+                    .ifPresent(rowDescriptionPacket -> connectionContext.getDescribeExecutor().get().setRowDescriptionPacket(rowDescriptionPacket));
         }
         if (responseHeader instanceof UpdateResponseHeader) {
             responseType = ResponseType.UPDATE;
-            result.add(createUpdatePacket((UpdateResponseHeader) responseHeader));
+            connectionContext.setUpdateCount(((UpdateResponseHeader) responseHeader).getUpdateCount());
         }
         return result;
     }
     
-    private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponseHeader queryResponseHeader) {
-        Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponseHeader);
+    private void init() throws SQLException {
+        SQLStatement sqlStatement = getSqlStatement();
+        if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement) {
+            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), packet.getSql(), backendConnection);
+            return;
+        }
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement, packet.getSql(), packet.getParameters(), backendConnection);
+    }
+    
+    private SQLStatement getSqlStatement() {
+        return connectionContext.getSqlStatement().orElseGet(() -> {
+            SQLStatement result = parseSql(packet.getSql(), backendConnection.getSchemaName());
+            connectionContext.setSqlStatement(result);
+            return result;
+        });
+    }
+    
+    private SQLStatement parseSql(final String sql, final String schemaName) {
+        if (sql.isEmpty()) {
+            return new EmptyStatement();
+        }
+        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
+                DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()));
+        return sqlStatementParserEngine.parse(sql, true);
+    }
+    
+    private Optional<PostgreSQLRowDescriptionPacket> getRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {
         if (packet.isBinaryRowData()) {
             return Optional.empty();
         }
         responseType = ResponseType.QUERY;
+        Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponseHeader);
         return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
     }
     
@@ -124,10 +139,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
             result.add(new PostgreSQLColumnDescription(each.getColumnName(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
         }
         return result;
-    }
-    
-    private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
-        return new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(updateResponseHeader.getSqlStatement().getClass()).map(Enum::name).orElse(""), updateResponseHeader.getUpdateCount());
     }
     
     @Override

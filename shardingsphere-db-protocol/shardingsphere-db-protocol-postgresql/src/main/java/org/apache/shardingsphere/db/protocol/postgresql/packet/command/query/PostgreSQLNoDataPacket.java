@@ -15,40 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * Command complete packet for PostgreSQL.
+ * No data packet for PostgreSQL.
  */
-@RequiredArgsConstructor
-public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifierPacket {
-    
-    private final String sqlCommand;
-    
-    private final long rowCount;
+public final class PostgreSQLNoDataPacket implements PostgreSQLIdentifierPacket {
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        switch (sqlCommand) {
-            case "BEGIN":
-            case "COMMIT":
-            case "ROLLBACK":
-                payload.writeStringNul(sqlCommand);
-                return;
-            default:
-        }
-        String delimiter = "INSERT".equals(sqlCommand) ? " 0 " : " ";
-        payload.writeStringNul(String.join(delimiter, sqlCommand, Long.toString(rowCount)));
     }
     
     @Override
     public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLMessagePacketType.COMMAND_COMPLETE;
+        return PostgreSQLMessagePacketType.NO_DATA;
     }
 }
