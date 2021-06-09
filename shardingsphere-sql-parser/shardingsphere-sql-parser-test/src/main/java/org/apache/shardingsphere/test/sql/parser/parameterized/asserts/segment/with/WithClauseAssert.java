@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegme
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.with.ExpectedCommonTableExpressionClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.with.ExpectedWithClause;
 
@@ -66,6 +67,9 @@ public final class WithClauseAssert {
         for (ColumnSegment each : actual.getColumns()) {
             ColumnAssert.assertIs(assertContext, each, expected.getCommonTableExpressColumns().getColumns().get(count));
             count++;
+        }
+        if (null != expected.getSubquery()) {
+            ExpressionAssert.assertSubquery(assertContext, actual.getSubquery(), expected.getSubquery());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }

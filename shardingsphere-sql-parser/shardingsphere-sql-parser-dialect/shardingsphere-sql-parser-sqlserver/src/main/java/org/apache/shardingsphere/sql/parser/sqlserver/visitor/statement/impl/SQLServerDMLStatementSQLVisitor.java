@@ -244,7 +244,7 @@ public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQL
         List<CteClauseContext> cteClauses = ctx.cteClause();
         Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
         for (CteClauseContext cte : cteClauses) {
-            SubquerySegment subquery = new SubquerySegment(cte.start.getStartIndex(), cte.stop.getStopIndex(), (SQLServerSelectStatement) visit(cte.subquery()));
+            SubquerySegment subquery = new SubquerySegment(cte.subquery().start.getStartIndex(), cte.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(cte.subquery()));
             IdentifierValue identifier = (IdentifierValue) visit(cte.identifier());
             CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(cte.start.getStartIndex(), cte.stop.getStopIndex(), identifier, subquery);
             if (null != cte.columnNames()) {
