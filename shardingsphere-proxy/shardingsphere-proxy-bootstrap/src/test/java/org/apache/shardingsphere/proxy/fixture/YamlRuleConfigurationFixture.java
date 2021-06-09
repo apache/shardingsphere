@@ -18,12 +18,18 @@
 package org.apache.shardingsphere.proxy.fixture;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
-@RequiredArgsConstructor
 @Getter
-public final class FixtureRuleConfiguration implements RuleConfiguration {
+@Setter
+public final class YamlRuleConfigurationFixture implements YamlRuleConfiguration {
     
-    private final String name;
+    private String name;
+    
+    @Override
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return RuleConfigurationFixture.class;
+    }
 }
