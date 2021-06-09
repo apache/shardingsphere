@@ -56,10 +56,11 @@ public final class FederateSchemaMetadatas {
     
     /**
      * Get schema metadata by schema name.
-     *
+     * 
+     * @param schemaName schema name
      * @return schema metadata
      */
-    public FederateSchemaMetadata getSchemaMetadataBySchemaName(String schemaName) {
+    public FederateSchemaMetadata getSchemaMetadataBySchemaName(final String schemaName) {
         return schemas.get(schemaName);
     }
 }
