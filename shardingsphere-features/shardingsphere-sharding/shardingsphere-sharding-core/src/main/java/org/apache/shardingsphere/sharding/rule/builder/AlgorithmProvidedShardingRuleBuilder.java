@@ -39,7 +39,7 @@ public final class AlgorithmProvidedShardingRuleBuilder implements FeatureRuleBu
     
     @Override
     public int getOrder() {
-        return ShardingOrder.ORDER + 1;
+        return ShardingOrder.ALGORITHM_PROVIDER_ORDER;
     }
     
     @Override
