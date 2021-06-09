@@ -69,7 +69,7 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
     
     @Test
     public void assertGetOrder() {
-        assertThat(swapper.getOrder(), CoreMatchers.is(DatabaseDiscoveryOrder.ALGORITHM_PROVIDER_DB_DISCOVERY_ORDER));
+        assertThat(swapper.getOrder(), CoreMatchers.is(DatabaseDiscoveryOrder.ALGORITHM_PROVIDER_ORDER));
     }
     
     private YamlDatabaseDiscoveryRuleConfiguration createYamlHARuleConfiguration() {

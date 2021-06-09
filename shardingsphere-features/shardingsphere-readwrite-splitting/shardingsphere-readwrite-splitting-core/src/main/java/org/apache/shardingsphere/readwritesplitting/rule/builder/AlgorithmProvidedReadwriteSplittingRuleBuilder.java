@@ -40,7 +40,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements Fea
     
     @Override
     public int getOrder() {
-        return ReadwriteSplittingOrder.ORDER + 1;
+        return ReadwriteSplittingOrder.ALGORITHM_PROVIDER_ORDER;
     }
     
     @Override
