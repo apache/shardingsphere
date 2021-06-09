@@ -76,6 +76,6 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapper implemen
     
     @Override
     public int getOrder() {
-        return EncryptOrder.ORDER + 1;
+        return EncryptOrder.ALGORITHM_PROVIDER_ORDER;
     }
 }

@@ -51,8 +51,8 @@ import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadatas;
+import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
 
 import java.util.Collections;
 import java.util.Map;
@@ -67,6 +67,7 @@ public final class OptimizeContextFactory {
     
     private static final String CONFORMANCE_CAMEL_NAME = CalciteConnectionProperty.CONFORMANCE.camelName();
     
+    @Getter
     private final Properties properties = new Properties();
     
     private final CalciteConnectionConfig connectionConfig;
@@ -119,7 +120,7 @@ public final class OptimizeContextFactory {
         }
         if (databaseType instanceof PostgreSQLDatabaseType) {
             // TODO No suitable type of Lex and conformance
-            properties.setProperty(LEX_CAMEL_NAME, Lex.ORACLE.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.JAVA.name());
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.BABEL.name());
 //            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.LENIENT.name());
             return;

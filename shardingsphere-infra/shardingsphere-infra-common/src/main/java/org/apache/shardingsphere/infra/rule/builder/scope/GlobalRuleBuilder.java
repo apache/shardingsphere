@@ -26,10 +26,9 @@ import java.util.Map;
 /**
  * Global rule builder.
  * 
- * @param <R> type of global rule
  * @param <T> type of rule configuration
  */
-public interface GlobalRuleBuilder<R extends GlobalRule, T extends RuleConfiguration> extends RuleBuilder<T> {
+public interface GlobalRuleBuilder<T extends RuleConfiguration> extends RuleBuilder<T> {
     
     /**
      * Build global rule.
@@ -38,5 +37,5 @@ public interface GlobalRuleBuilder<R extends GlobalRule, T extends RuleConfigura
      * @param mataDataMap mata data map
      * @return global rule
      */
-    R build(T ruleConfig, Map<String, ShardingSphereMetaData> mataDataMap);
+    GlobalRule build(T ruleConfig, Map<String, ShardingSphereMetaData> mataDataMap);
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.spi.ordered;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -86,6 +87,7 @@ public final class OrderedSPIRegistry {
     public static <T extends OrderedSPI<?>> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass) {
         Map<Integer, T> result = new TreeMap<>();
         for (T each : ShardingSphereServiceLoader.getSingletonServiceInstances(orderedSPIClass)) {
+            Preconditions.checkArgument(!result.containsKey(each.getOrder()), "Found same order `%s` with `%s` and `%s`", each.getOrder(), result.get(each.getOrder()), each);
             result.put(each.getOrder(), each);
         }
         return result.values();

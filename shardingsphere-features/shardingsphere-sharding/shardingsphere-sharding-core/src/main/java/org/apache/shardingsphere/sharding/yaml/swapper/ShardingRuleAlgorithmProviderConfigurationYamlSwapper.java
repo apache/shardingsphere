@@ -99,7 +99,7 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
     
     @Override
     public int getOrder() {
-        return ShardingOrder.ALGORITHM_PROVIDER_SHARDING_ORDER;
+        return ShardingOrder.ALGORITHM_PROVIDER_ORDER;
     }
     
     private void setYamlDefaultStrategies(final AlgorithmProvidedShardingRuleConfiguration data, final YamlShardingRuleConfiguration yamlConfig) {

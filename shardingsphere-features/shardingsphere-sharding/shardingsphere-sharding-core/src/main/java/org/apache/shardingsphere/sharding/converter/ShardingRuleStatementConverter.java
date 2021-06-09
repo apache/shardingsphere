@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.converter;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
@@ -31,11 +32,11 @@ import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereA
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Sharding rule statement converter.
@@ -95,20 +96,19 @@ public final class ShardingRuleStatementConverter {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         for (TableRuleSegment each : tableRuleSegments) {
             if (null != each.getTableStrategy()) {
-                result.getShardingAlgorithms().put(getAlgorithmName(each.getLogicTable(), each.getTableStrategy().getAlgorithmName()), createAlgorithmConfiguration(each.getTableStrategy()));
+                result.getShardingAlgorithms().put(getAlgorithmName(each.getLogicTable(), 
+                        each.getTableStrategy().getAlgorithmName()), createAlgorithmConfiguration(each.getTableStrategy()));
                 result.getAutoTables().put(each.getLogicTable(), createAutoTableRuleConfiguration(each));
+            }
+            if (null != each.getKeyGenerateStrategy()) {
+                result.getKeyGenerators().put(getKeyGeneratorName(each.getLogicTable(), 
+                        each.getKeyGenerateStrategy().getAlgorithmName()), createAlgorithmConfiguration(each.getKeyGenerateStrategy()));
             }
         }
         return result;
     }
     
-    /**
-     * Convert function segment to YAML algorithm configuration.
-     *
-     * @param segment function segment
-     * @return YAML algorithm configuration
-     */
-    public static YamlShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final FunctionSegment segment) {
+    private static YamlShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final FunctionSegment segment) {
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(segment.getAlgorithmName());
         result.setProps(segment.getAlgorithmProps());
@@ -120,16 +120,13 @@ public final class ShardingRuleStatementConverter {
         result.setLogicTable(segment.getLogicTable());
         result.setActualDataSources(Joiner.on(",").join(segment.getDataSources()));
         result.setShardingStrategy(createTableStrategyConfiguration(segment));
+        if (!Strings.isNullOrEmpty(segment.getTableStrategyColumn()) && Objects.nonNull(segment.getKeyGenerateStrategy())) {
+            result.setKeyGenerateStrategy(createKeyGenerateStrategyConfiguration(segment));
+        }
         return result;
     }
     
-    /**
-     * Convert table rule segment to YAML sharding strategy configuration.
-     *
-     * @param segment table rule segment
-     * @return YAML sharding strategy configuration
-     */
-    public static YamlShardingStrategyConfiguration createTableStrategyConfiguration(final TableRuleSegment segment) {
+    private static YamlShardingStrategyConfiguration createTableStrategyConfiguration(final TableRuleSegment segment) {
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
         standard.setShardingColumn(segment.getTableStrategyColumn());
@@ -138,49 +135,18 @@ public final class ShardingRuleStatementConverter {
         return result;
     }
     
-    /**
-     * Create YAML sharding strategy configuration.
-     *
-     * @param shardingColumn sharding column
-     * @param segment function segment
-     * @return YAML sharding strategy configuration
-     */
-    public static YamlShardingStrategyConfiguration createDefaultTableStrategyConfiguration(final String shardingColumn, final FunctionSegment segment) {
-        YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        if (null != shardingColumn) {
-            YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
-            standard.setShardingColumn(shardingColumn);
-            standard.setShardingAlgorithmName(segment.getAlgorithmName());
-            result.setStandard(standard);
-        } else {
-            YamlHintShardingStrategyConfiguration hint = new YamlHintShardingStrategyConfiguration();
-            hint.setShardingAlgorithmName(segment.getAlgorithmName());
-            result.setHint(hint);
-        }
-        return result;
-    }
-    
-    /**
-     * Convert table rule segment to YAML key generate strategy configuration.
-     *
-     * @param segment table rule segment
-     * @return YAML key generate strategy configuration
-     */
-    public static YamlKeyGenerateStrategyConfiguration createKeyGenerateStrategyConfiguration(final TableRuleSegment segment) {
+    private static YamlKeyGenerateStrategyConfiguration createKeyGenerateStrategyConfiguration(final TableRuleSegment segment) {
         YamlKeyGenerateStrategyConfiguration result = new YamlKeyGenerateStrategyConfiguration();
         result.setColumn(segment.getKeyGenerateStrategyColumn());
-        result.setKeyGeneratorName(getAlgorithmName(segment.getLogicTable(), segment.getKeyGenerateStrategy().getAlgorithmName()));
+        result.setKeyGeneratorName(getKeyGeneratorName(segment.getLogicTable(), segment.getKeyGenerateStrategy().getAlgorithmName()));
         return result;
     }
     
-    /**
-     * Generate real algorithm name.
-     *
-     * @param tableName table name
-     * @param algorithmType algorithm name
-     * @return real algorithm name
-     */
-    public static String getAlgorithmName(final String tableName, final String algorithmType) {
+    private static String getAlgorithmName(final String tableName, final String algorithmType) {
         return String.format("%s_%s", tableName, algorithmType);
+    }
+    
+    private static String getKeyGeneratorName(final String tableName, final String columnName) {
+        return String.format("%s_%s", tableName, columnName);
     }
 }

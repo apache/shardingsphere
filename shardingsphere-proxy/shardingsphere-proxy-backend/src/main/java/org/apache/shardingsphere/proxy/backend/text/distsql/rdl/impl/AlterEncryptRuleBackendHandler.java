@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<AlterEncryptRuleStatement> {
     
     static {
+        // TODO consider about register once only
         ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
     }
     
