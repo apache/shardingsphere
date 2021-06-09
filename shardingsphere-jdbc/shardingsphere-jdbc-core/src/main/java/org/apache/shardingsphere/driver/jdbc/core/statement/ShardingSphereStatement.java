@@ -185,7 +185,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 executionContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
-        return federateExecutor.executeQuery(executionContext, callback);
+        return federateExecutor.executeQuery(executionContext, callback, JDBCDriverType.STATEMENT, statementOption);
     }
     
     @Override

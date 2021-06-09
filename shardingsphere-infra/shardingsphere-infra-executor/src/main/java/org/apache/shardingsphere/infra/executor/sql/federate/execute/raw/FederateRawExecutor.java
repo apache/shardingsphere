@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 
@@ -50,7 +51,8 @@ public final class FederateRawExecutor implements FederateExecutor {
     }
     
     @Override
-    public List<QueryResult> executeQuery(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback) throws SQLException {
+    public List<QueryResult> executeQuery(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+                                          final String type, final StatementOption statementOption) throws SQLException {
         // TODO
         return Collections.emptyList();
     }
