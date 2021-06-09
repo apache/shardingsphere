@@ -14,3 +14,7 @@ rules:
     provider:
       type: NATIVE
 ```
+
+If the hostname is `%` or empty, it means no restrict to the user's host.
+
+The type of the provider must be explicitly specified. Refer to [5.11 Proxy](/document/current/en/dev-manual/proxy) for more implementations.
