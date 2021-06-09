@@ -55,7 +55,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -87,8 +86,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         }
         ResponseHeader responseHeader = null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader && connectionContext.getDescribeExecutor().isPresent()) {
-            getRowDescriptionPacket((QueryResponseHeader) responseHeader)
-                    .ifPresent(rowDescriptionPacket -> connectionContext.getDescribeExecutor().get().setRowDescriptionPacket(rowDescriptionPacket));
+            connectionContext.getDescribeExecutor().get().setRowDescriptionPacket(getRowDescriptionPacket((QueryResponseHeader) responseHeader));
         }
         if (responseHeader instanceof UpdateResponseHeader) {
             responseType = ResponseType.UPDATE;
@@ -123,13 +121,10 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         return sqlStatementParserEngine.parse(sql, true);
     }
     
-    private Optional<PostgreSQLRowDescriptionPacket> getRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {
-        if (packet.isBinaryRowData()) {
-            return Optional.empty();
-        }
+    private PostgreSQLRowDescriptionPacket getRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
         Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponseHeader);
-        return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
+        return new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions);
     }
     
     private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {
