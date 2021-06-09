@@ -23,6 +23,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -34,10 +35,13 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class PostgreSQLComSyncExecutor implements QueryCommandExecutor {
     
+    private final PostgreSQLConnectionContext connectionContext;
+    
     private final BackendConnection backendConnection;
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
+        connectionContext.clearContext();
         return Collections.singletonList(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
     }
     
