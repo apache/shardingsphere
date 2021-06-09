@@ -35,7 +35,6 @@ import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.genera
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator.FederateExecutionSQLGenerator;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -64,6 +63,10 @@ public final class FederateRowExecutor {
     private final ExecutionContext routeExecutionContext;
     
     private final JDBCExecutorCallback<? extends ExecuteResult> callback;
+    
+    private final String type;
+    
+    private final StatementOption statementOption;
     
     /**
      * Execute.
@@ -94,12 +97,9 @@ public final class FederateRowExecutor {
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext(final ExecutionContext executionContext) throws SQLException {
-        // TODO Set parameters for StatementOption
         int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         Collection<ExecutionUnit> executionUnits = executionContext.getExecutionUnits();
-        String type = executionUnits.stream().anyMatch(each -> !each.getSqlUnit().getParameters().isEmpty()) ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                type, maxConnectionsSizePerQuery, jdbcManager, new StatementOption(true), rules);
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(type, maxConnectionsSizePerQuery, jdbcManager, statementOption, rules);
         return prepareEngine.prepare(executionContext.getRouteContext(), executionUnits);
     }
 }
