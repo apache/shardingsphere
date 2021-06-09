@@ -71,7 +71,7 @@ public interface CommandExecuteEngine {
      * @param backendConnection backend connection
      * @return error packet
      */
-    DatabasePacket<?> getErrorPacket(Exception cause, final BackendConnection backendConnection);
+    DatabasePacket<?> getErrorPacket(Exception cause, BackendConnection backendConnection);
     
     /**
      * Get other packet.
