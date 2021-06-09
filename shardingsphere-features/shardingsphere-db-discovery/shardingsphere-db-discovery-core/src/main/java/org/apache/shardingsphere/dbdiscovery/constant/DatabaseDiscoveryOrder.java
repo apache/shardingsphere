@@ -34,5 +34,5 @@ public final class DatabaseDiscoveryOrder {
     /**
      * Algorithm provider database discovery order.
      */
-    public static final int ALGORITHM_PROVIDER_DB_DISCOVERY_ORDER = 21;
+    public static final int ALGORITHM_PROVIDER_ORDER = ORDER + 1;
 }

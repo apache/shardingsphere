@@ -40,7 +40,7 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements Feat
     
     @Override
     public int getOrder() {
-        return DatabaseDiscoveryOrder.ORDER + 1;
+        return DatabaseDiscoveryOrder.ALGORITHM_PROVIDER_ORDER;
     }
     
     @Override
