@@ -15,3 +15,7 @@ rules:
     provider:
       type: NATIVE
 ```
+
+hostname 为 `%` 或空字符串，则代表不限制 host。
+
+provider 的 type 必须显式指定，具体实现可以参考 [5.11 Proxy](/document/current/cn/dev-manual/proxy)
