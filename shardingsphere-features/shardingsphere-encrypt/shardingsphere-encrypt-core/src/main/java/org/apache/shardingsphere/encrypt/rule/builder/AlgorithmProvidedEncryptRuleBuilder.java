@@ -39,7 +39,7 @@ public final class AlgorithmProvidedEncryptRuleBuilder implements FeatureRuleBui
     
     @Override
     public int getOrder() {
-        return EncryptOrder.ORDER + 1;
+        return EncryptOrder.ALGORITHM_PROVIDER_ORDER;
     }
     
     @Override

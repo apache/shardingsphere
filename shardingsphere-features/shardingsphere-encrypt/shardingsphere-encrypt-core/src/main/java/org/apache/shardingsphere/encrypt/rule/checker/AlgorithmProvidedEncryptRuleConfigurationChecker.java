@@ -33,7 +33,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationChecker extends Abst
     
     @Override
     public int getOrder() {
-        return EncryptOrder.ALGORITHM_PROVIDER_ENCRYPT_ORDER;
+        return EncryptOrder.ALGORITHM_PROVIDER_ORDER;
     }
     
     @Override

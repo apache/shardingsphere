@@ -34,5 +34,5 @@ public final class EncryptOrder {
     /**
      * Algorithm provider encrypt order.
      */
-    public static final int ALGORITHM_PROVIDER_ENCRYPT_ORDER = 51;
+    public static final int ALGORITHM_PROVIDER_ORDER = ORDER + 1;
 }
