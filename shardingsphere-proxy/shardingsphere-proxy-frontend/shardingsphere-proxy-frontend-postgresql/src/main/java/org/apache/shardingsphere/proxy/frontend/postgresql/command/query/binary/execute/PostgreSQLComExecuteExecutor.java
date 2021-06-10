@@ -46,6 +46,8 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
     
     private final Collection<QueryCommandExecutor> queryCommandExecutors = new LinkedList<>();
     
+    private long dataRows;
+    
     private boolean commandComplete;
     
     @Override
@@ -75,6 +77,7 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
     public DatabasePacket<?> getQueryRowPacket() throws SQLException {
         Optional<DatabasePacket<?>> result = getPacketFromQueryCommandExecutors();
         if (result.isPresent()) {
+            dataRows++;
             return result.get();
         }
         return createCommandCompletePacket();
@@ -86,7 +89,7 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
             return new PostgreSQLEmptyQueryResponsePacket();
         }
         String sqlCommand = connectionContext.getSqlStatement().map(SQLStatement::getClass).map(PostgreSQLCommand::valueOf).map(command -> command.map(Enum::name).orElse("")).orElse("");
-        PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(sqlCommand, connectionContext.getUpdateCount());
+        PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(sqlCommand, Math.max(dataRows, connectionContext.getUpdateCount()));
         connectionContext.clearContext();
         return result;
     }
