@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.fixture;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
+import org.junit.Test;
 
-@Getter
-@Setter
-public final class FixtureYamlRuleConfiguration implements YamlRuleConfiguration {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class PostgreSQLNoDataPacketTest {
     
-    private String name;
-    
-    @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return FixtureRuleConfiguration.class;
+    @Test
+    public void assertIdentifier() {
+        PostgreSQLIdentifierTag actual = new PostgreSQLNoDataPacket().getIdentifier();
+        assertThat(actual, is(PostgreSQLMessagePacketType.NO_DATA));
     }
 }

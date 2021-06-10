@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.constant;
+package org.apache.shardingsphere.authority.rule.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Authority order.
+ * Default user.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AuthorityOrder {
+public final class DefaultUser {
     
-    /**
-     * Authority order.
-     */
-    public static final int ORDER = 500;
+    public static final String USER_NAME = "root";
+    
+    public static final String USER_HOSTNAME = "%";
+    
+    public static final String USER_PASSWORD = "root";
 }

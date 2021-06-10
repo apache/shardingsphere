@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.constant;
+package org.apache.shardingsphere.infra.rule.fixture.checker;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
 
-/**
- * Authority order.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AuthorityOrder {
-    
-    /**
-     * Authority order.
-     */
-    public static final int ORDER = 500;
+public final class RuleConfigurationCheckerFixture implements RuleConfigurationChecker<TestRuleConfiguration> {
+
+    @Override
+    public void check(final String schemaName, final TestRuleConfiguration config) {
+
+    }
+
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+
+    @Override
+    public Class<TestRuleConfiguration> getTypeClass() {
+        return TestRuleConfiguration.class;
+    }
 }

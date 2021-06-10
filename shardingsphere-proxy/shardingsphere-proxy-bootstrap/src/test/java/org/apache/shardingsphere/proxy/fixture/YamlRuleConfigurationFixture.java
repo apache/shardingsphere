@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.constant;
+package org.apache.shardingsphere.proxy.fixture;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
-/**
- * Authority order.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AuthorityOrder {
+@Getter
+@Setter
+public final class YamlRuleConfigurationFixture implements YamlRuleConfiguration {
     
-    /**
-     * Authority order.
-     */
-    public static final int ORDER = 500;
+    private String name;
+    
+    @Override
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return RuleConfigurationFixture.class;
+    }
 }

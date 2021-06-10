@@ -21,11 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
@@ -34,10 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator.FederateExecutionContextGenerator;
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator.FederateExecutionSQLGenerator;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,12 +46,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class FederateRowExecutor {
     
-    // TODO Consider use emptyList
-    private final Collection<ShardingSphereRule> rules;
-    
     private final ConfigurationProperties props;
-    
-    private final ExecutorJDBCManager jdbcManager;
     
     private final JDBCExecutor jdbcExecutor;
     
@@ -64,9 +54,7 @@ public final class FederateRowExecutor {
     
     private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
-    private final String type;
-    
-    private final StatementOption statementOption;
+    private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
     /**
      * Execute.
@@ -84,7 +72,7 @@ public final class FederateRowExecutor {
     
     private Collection<QueryResult> execute(final ExecutionContext context) {
         try {
-            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(context);
+            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             ExecuteProcessEngine.initialize(context.getSqlStatementContext(), executionGroupContext, props);
             Collection<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
@@ -94,12 +82,5 @@ public final class FederateRowExecutor {
         } finally {
             ExecuteProcessEngine.clean();
         }
-    }
-    
-    private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext(final ExecutionContext executionContext) throws SQLException {
-        int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        Collection<ExecutionUnit> executionUnits = executionContext.getExecutionUnits();
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(type, maxConnectionsSizePerQuery, jdbcManager, statementOption, rules);
-        return prepareEngine.prepare(executionContext.getRouteContext(), executionUnits);
     }
 }

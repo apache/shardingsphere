@@ -15,15 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.fixture;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-@RequiredArgsConstructor
-@Getter
-public final class FixtureRuleConfiguration implements RuleConfiguration {
+/**
+ * No data packet for PostgreSQL.
+ */
+public final class PostgreSQLNoDataPacket implements PostgreSQLIdentifierPacket {
     
-    private final String name;
+    @Override
+    public void write(final PostgreSQLPacketPayload payload) {
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.NO_DATA;
+    }
 }

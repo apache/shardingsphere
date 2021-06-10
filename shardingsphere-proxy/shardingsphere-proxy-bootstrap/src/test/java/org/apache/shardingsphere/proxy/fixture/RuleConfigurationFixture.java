@@ -15,19 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.constant;
+package org.apache.shardingsphere.proxy.fixture;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-/**
- * Authority order.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AuthorityOrder {
+@RequiredArgsConstructor
+@Getter
+public final class RuleConfigurationFixture implements RuleConfiguration {
     
-    /**
-     * Authority order.
-     */
-    public static final int ORDER = 500;
+    private final String name;
 }
