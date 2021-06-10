@@ -15,22 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.loader.util;
+package org.apache.shardingsphere.infra.metadata.schema.builder.util;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TableMetaDataLoaderUtilTest {
+public class IndexMetaDataUtilTest {
     
     @Test
     public void assertGetLogicIndexNameWithIndexNameSuffix() {
-        String logicIndexName = TableMetaDataLoaderUtil.getLogicIndexName("order_index_t_order", "t_order");
+        String logicIndexName = IndexMetaDataUtil.getLogicIndexName("order_index_t_order", "t_order");
         Assert.assertEquals(logicIndexName, "order_index");
     }
     
     @Test
+    public void assertGetLogicIndexNameWithMultiIndexNameSuffix() {
+        String logicIndexName = IndexMetaDataUtil.getLogicIndexName("order_t_order_index_t_order", "t_order");
+        Assert.assertEquals(logicIndexName, "order_t_order_index");
+    }
+    
+    @Test
     public void assertGetLogicIndexNameWithoutIndexNameSuffix() {
-        String logicIndexName = TableMetaDataLoaderUtil.getLogicIndexName("order_index", "t_order");
+        String logicIndexName = IndexMetaDataUtil.getLogicIndexName("order_index", "t_order");
         Assert.assertEquals(logicIndexName, "order_index");
+    }
+    
+    @Test
+    public void assertGetActualIndexNameWithActualTableName() {
+        String actualIndexName = IndexMetaDataUtil.getActualIndexName("order_index", "t_order");
+        Assert.assertEquals(actualIndexName, "order_index_t_order");
+    }
+    
+    @Test
+    public void assertGetActualIndexNameWithoutActualTableName() {
+        String actualIndexName = IndexMetaDataUtil.getActualIndexName("order_index", null);
+        Assert.assertEquals(actualIndexName, "order_index");
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
@@ -65,12 +66,10 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     }
     
     private String getIndexValue(final RouteUnit routeUnit) {
-        StringBuilder result = new StringBuilder(identifier.getValue());
         Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
-        Optional<String> actualTableName = findLogicTableNameFromMetaData(identifier.getValue()).map(tableName 
-            -> Optional.of(logicAndActualTables.get(tableName))).orElseGet(() -> logicAndActualTables.values().stream().findFirst());
-        actualTableName.ifPresent(tableName -> result.append("_").append(tableName));
-        return result.toString();
+        String actualTableName = findLogicTableNameFromMetaData(identifier.getValue()).map(logicAndActualTables::get)
+                .orElse(logicAndActualTables.values().stream().findFirst().orElse(null));
+        return IndexMetaDataUtil.getActualIndexName(identifier.getValue(), actualTableName);
     }
     
     private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
