@@ -15,26 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.loader.util;
+package org.apache.shardingsphere.infra.metadata.schema.builder.util;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Table meta data loader utility class.
+ * Index meta data utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TableMetaDataLoaderUtil {
+public class IndexMetaDataUtil {
     
     /**
      * Get logic index name.
      * 
      * @param actualIndexName actual index name
      * @param actualTableName actual table name
-     * @return logic index
+     * @return logic index name
      */
     public static String getLogicIndexName(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
-        return actualIndexName.endsWith(indexNameSuffix) ? actualIndexName.replace(indexNameSuffix, "") : actualIndexName;
+        return actualIndexName.endsWith(indexNameSuffix) ? actualIndexName.substring(0, actualIndexName.lastIndexOf(indexNameSuffix)) : actualIndexName;
+    }
+    
+    /**
+     * Get actual index name.
+     *
+     * @param logicIndexName logic index name
+     * @param actualTableName actual table name
+     * @return actual index name
+     */
+    public static String getActualIndexName(final String logicIndexName, final String actualTableName) {
+        return Strings.isNullOrEmpty(actualTableName) ? logicIndexName : logicIndexName + "_" + actualTableName;
     }
 }

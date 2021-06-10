@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.util.TableMetaDataLoaderUtil;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -118,7 +118,7 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
-                    result.get(tableName).add(new IndexMetaData(TableMetaDataLoaderUtil.getLogicIndexName(indexName, tableName)));
+                    result.get(tableName).add(new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(indexName, tableName)));
                 }
             }
         }
