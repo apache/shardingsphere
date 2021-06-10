@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -55,11 +56,13 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
                 Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
                 if (!tableRule.isPresent()) {
                     if (shardingRule.getTableRules().isEmpty() || tableNames.add(actualTableName)) {
+                        setCellValue(memoryResultSetRow, actualTableName, actualTableName, schema.get(actualTableName));
                         result.add(memoryResultSetRow);
                     }
                 } else if (tableNames.add(tableRule.get().getLogicTable())) {
-                    memoryResultSetRow.setCell(1, tableRule.get().getLogicTable());
-                    setCellValue(memoryResultSetRow, tableRule.get().getLogicTable(), actualTableName);
+                    String logicTableName = tableRule.get().getLogicTable();
+                    memoryResultSetRow.setCell(1, logicTableName);
+                    setCellValue(memoryResultSetRow, logicTableName, actualTableName, schema.get(logicTableName));
                     result.add(memoryResultSetRow);
                 }
             }
@@ -67,6 +70,6 @@ public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
         return result;
     }
     
-    protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName) {
+    protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName, final TableMetaData tableMetaData) {
     }
 }

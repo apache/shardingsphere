@@ -54,11 +54,20 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, 
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
         Collection<String> indexNames = sqlStatementContext.getSqlStatement().getIndexes().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
-        for (String each : indexNames) {
-            Optional<String> logicTableName = schema.getAllTableNames().stream().filter(tableName -> schema.get(tableName).getIndexes().containsKey(each)).findFirst();
-            if (logicTableName.isPresent() && isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, logicTableName.get())) {
-                throw new ShardingSphereException("DROP INDEX ... statement can not route correctly for indexes %s.", indexNames);
+        Optional<String> logicTableName = DropIndexStatementHandler.getSimpleTableSegment(sqlStatementContext.getSqlStatement()).map(table -> table.getTableName().getIdentifier().getValue());
+        if (logicTableName.isPresent()) {
+            validateDropIndexRouteUnit(shardingRule, routeContext, indexNames, logicTableName.get());
+        } else {
+            for (String each : indexNames) {
+                logicTableName = schema.getAllTableNames().stream().filter(tableName -> schema.get(tableName).getIndexes().containsKey(each)).findFirst();
+                logicTableName.ifPresent(tableName -> validateDropIndexRouteUnit(shardingRule, routeContext, indexNames, tableName));
             }
+        }
+    }
+    
+    private void validateDropIndexRouteUnit(final ShardingRule shardingRule, final RouteContext routeContext, final Collection<String> indexNames, final String logicTableName) {
+        if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, logicTableName)) {
+            throw new ShardingSphereException("DROP INDEX ... statement can not route correctly for indexes %s.", indexNames);
         }
     }
 }
