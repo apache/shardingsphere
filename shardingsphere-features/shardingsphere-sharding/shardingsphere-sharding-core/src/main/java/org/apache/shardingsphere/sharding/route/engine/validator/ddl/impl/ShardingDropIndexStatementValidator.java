@@ -38,7 +38,8 @@ import java.util.stream.Collectors;
 public final class ShardingDropIndexStatementValidator extends ShardingDDLStatementValidator<DropIndexStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereSchema schema) {
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, 
+                            final List<Object> parameters, final ShardingSphereSchema schema) {
         if (DropIndexStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
             return;
         }
