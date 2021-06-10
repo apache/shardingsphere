@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateRuleNamesException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
@@ -195,6 +196,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof InvalidKeyGeneratorsException) {
             return new MySQLErrPacket(1, CommonErrorCode.INVALID_KEY_GENERATORS, ((InvalidKeyGeneratorsException) cause).getKeyGenerators());
+        }
+        if (cause instanceof DuplicateBindingTablesException) {
+            return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_BINDING_TABLES, ((DuplicateBindingTablesException) cause).getTableNames());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }

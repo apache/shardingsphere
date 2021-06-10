@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -89,6 +90,14 @@ public final class AlterShardingBindingTableRulesBackendHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
+    @Test(expected = DuplicateBindingTablesException.class)
+    public void assertExecuteWithDuplicateTables() {
+        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Arrays.asList(buildShardingRuleConfiguration()));
+        AlterShardingBindingTableRulesStatement statement = buildDuplicateShardingTableRuleStatement();
+        AlterShardingBindingTableRulesBackendHandler handler = new AlterShardingBindingTableRulesBackendHandler(statement, backendConnection);
+        handler.execute("test", statement);
+    }
+    
     private ShardingRuleConfiguration buildShardingRuleConfiguration() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order"));
@@ -106,6 +115,17 @@ public final class AlterShardingBindingTableRulesBackendHandlerTest {
         result.getRules().add(segment);
         ShardingBindingTableRuleSegment segmentAnother = new ShardingBindingTableRuleSegment();
         segmentAnother.setTables("t_1,t_2");
+        result.getRules().add(segmentAnother);
+        return result;
+    }
+    
+    private AlterShardingBindingTableRulesStatement buildDuplicateShardingTableRuleStatement() {
+        AlterShardingBindingTableRulesStatement result = new AlterShardingBindingTableRulesStatement();
+        ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
+        segment.setTables("t_order,t_order_item");
+        result.getRules().add(segment);
+        ShardingBindingTableRuleSegment segmentAnother = new ShardingBindingTableRuleSegment();
+        segmentAnother.setTables("t_order,t_order_item");
         result.getRules().add(segmentAnother);
         return result;
     }
