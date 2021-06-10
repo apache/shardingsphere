@@ -35,12 +35,14 @@ import javax.transaction.TransactionManager;
  */
 public final class AtomikosTransactionManager implements XATransactionManager {
     
-    private final UserTransactionManager transactionManager = new UserTransactionManager();
+    private UserTransactionManager transactionManager;
     
-    private final UserTransactionService userTransactionService = new UserTransactionServiceImp();
+    private UserTransactionService userTransactionService;
     
     @Override
     public void init() {
+        transactionManager = new UserTransactionManager();
+        userTransactionService = new UserTransactionServiceImp();
         userTransactionService.init();
     }
     

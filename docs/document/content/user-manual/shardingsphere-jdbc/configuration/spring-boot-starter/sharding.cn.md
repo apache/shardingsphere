@@ -6,7 +6,7 @@ weight = 1
 ## 配置项说明
 
 ```properties
-spring.shardingsphere.datasource.names= # 省略数据源配置
+spring.shardingsphere.datasource.names= # 省略数据源配置，请参考使用手册
 
 # 标准分片表配置
 spring.shardingsphere.rules.sharding.tables.<table-name>.actual-data-nodes= # 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况

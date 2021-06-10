@@ -23,4 +23,5 @@
     <rollback sql-case-id="rollbackForce" />
     <rollback sql-case-id="rollbackPrepare" />
     <rollback sql-case-id="rollback_in_pg" />
+    <rollback sql-case-id="rollbackWorkForce" />
 </sql-parser-test-cases>

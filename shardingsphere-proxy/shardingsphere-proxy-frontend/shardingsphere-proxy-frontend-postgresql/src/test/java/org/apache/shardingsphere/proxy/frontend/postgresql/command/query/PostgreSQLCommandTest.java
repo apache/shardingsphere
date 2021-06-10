@@ -17,59 +17,69 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDataSourcesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLUpdateStatement;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class PostgreSQLCommandTest {
     
     @Test
-    public void assertPostgreSQLCommandWhenSQLStatementInstanceOfUnEnumeration() {
-        assertThat(new PostgreSQLCommand(mock(SQLStatement.class)).getSQLCommand(), is(""));
+    public void assertValueOfUnConfiguredSQLStatement() {
+        assertFalse(PostgreSQLCommand.valueOf(SQLStatement.class).isPresent());
     }
     
     @Test
-    public void assertPostgreSQLCommandWhenSQLStatementInstanceOfInsertStatement() {
-        assertThat(new PostgreSQLCommand(mock(InsertStatement.class)).getSQLCommand(), is("INSERT"));
+    public void assertValueOfInsertStatement() {
+        assertThat(PostgreSQLCommand.valueOf(InsertStatement.class).orElse(null), is(PostgreSQLCommand.INSERT));
+        assertThat(PostgreSQLCommand.valueOf(PostgreSQLInsertStatement.class).orElse(null), is(PostgreSQLCommand.INSERT));
     }
     
     @Test
-    public void assertPostgreSQLCommandWhenSQLStatementInstanceOfDeleteStatement() {
-        assertThat(new PostgreSQLCommand(mock(DeleteStatement.class)).getSQLCommand(), is("DELETE"));
+    public void assertValueOfUpdateStatement() {
+        assertThat(PostgreSQLCommand.valueOf(UpdateStatement.class).orElse(null), is(PostgreSQLCommand.UPDATE));
+        assertThat(PostgreSQLCommand.valueOf(PostgreSQLUpdateStatement.class).orElse(null), is(PostgreSQLCommand.UPDATE));
     }
     
     @Test
-    public void assertPostgreSQLCommandWhenSQLStatementInstanceOfUpdateStatement() {
-        assertThat(new PostgreSQLCommand(mock(UpdateStatement.class)).getSQLCommand(), is("UPDATE"));
+    public void assertValueOfDeleteStatement() {
+        assertThat(PostgreSQLCommand.valueOf(DeleteStatement.class).orElse(null), is(PostgreSQLCommand.DELETE));
+        assertThat(PostgreSQLCommand.valueOf(PostgreSQLDeleteStatement.class).orElse(null), is(PostgreSQLCommand.DELETE));
     }
     
     @Test
-    public void assertPostgreSQLCommandWhenSQLStatementInstanceOfDropDatabaseStatement() {
-        assertThat(new PostgreSQLCommand(mock(DropDatabaseStatement.class)).getSQLCommand(), is("DROP"));
+    public void assertValueOfDropDatabaseStatement() {
+        assertThat(PostgreSQLCommand.valueOf(DropDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.DROP));
+        assertThat(PostgreSQLCommand.valueOf(PostgreSQLDropDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.DROP));
     }
     
     @Test
-    public void assertPostgreSQLCommandWhenSQLStatementInstanceOfCreateDatabaseStatement() {
-        assertThat(new PostgreSQLCommand(mock(CreateDatabaseStatement.class)).getSQLCommand(), is("CREATE"));
+    public void assertValueOfCreateDatabaseStatement() {
+        assertThat(PostgreSQLCommand.valueOf(CreateDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.CREATE));
+        assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.CREATE));
     }
     
     @Test
-    public void assertPostgreSQLCommandWhenSQLStatementInstanceOfCreateDataSourcesStatement() {
-        assertThat(new PostgreSQLCommand(mock(CreateDataSourcesStatement.class)).getSQLCommand(), is("CREATE"));
+    public void assertValueOfCreateDataSourcesStatement() {
+        assertThat(PostgreSQLCommand.valueOf(AddResourceStatement.class).orElse(null), is(PostgreSQLCommand.CREATE));
     }
     
     @Test
-    public void assertPostgreSQLCommandWhenSQLStatementInstanceOfCreateShardingRuleStatement() {
-        assertThat(new PostgreSQLCommand(mock(CreateShardingRuleStatement.class)).getSQLCommand(), is("CREATE"));
+    public void assertValueOfCreateShardingTableRuleStatement() {
+        assertThat(PostgreSQLCommand.valueOf(CreateShardingTableRuleStatement.class).orElse(null), is(PostgreSQLCommand.CREATE));
     }
 }

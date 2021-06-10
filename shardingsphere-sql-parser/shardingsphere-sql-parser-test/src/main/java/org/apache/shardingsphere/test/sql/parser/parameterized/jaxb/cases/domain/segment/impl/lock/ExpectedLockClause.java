@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -35,4 +36,7 @@ public final class ExpectedLockClause extends AbstractExpectedSQLSegment {
 
     @XmlElement(name = "table")
     private final List<ExpectedSimpleTable> tables = new LinkedList<>();
+    
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> columns = new LinkedList<>();
 }

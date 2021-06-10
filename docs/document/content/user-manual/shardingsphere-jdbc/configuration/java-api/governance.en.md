@@ -13,27 +13,25 @@ Class name: org.apache.shardingsphere.governance.repository.api.config.Governanc
 
 Attributes:
 
-| *Name*                              | *Data Type*                         | *Description*                                                                                                       |
-| ----------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| name         | String  | Governance instance name |
-| registryCenterConfiguration         | GovernanceCenterConfiguration  | Config of registry-center |
-| additionalConfigCenterConfiguration | GovernanceCenterConfiguration  | Config additional of config-center |
+| *Name*                      | *Data Type*                  | *Description*             |
+| --------------------------- | ---------------------------- | ------------------------- |
+| name                        | String                       | Governance instance name  |
+| registryCenterConfiguration | RegistryCenterConfiguration  | Config of registry-center |
 
-The type of registryCenter could be Zookeeper or etcd.
-The type of additional ConfigCenter could be Zookeeper or etcd, Apollo, Nacos.
+The type of registryCenter could be Zookeeper or Etcd.
 
 *Governance Instance Configuration*
 
-Class name: org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration
+Class name: org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration
 
 Attributes:
 
-| *Name*        | *Data Type* | *Description*                                                                                                                                    |
-| ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| type          | String      | Governance instance type, such as: Zookeeper, etcd, Apollo, Nacos                                                                             |
-| serverLists   | String      | The list of servers that connect to governance instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |                                                                                                                    |
-| props         | Properties  | Properties for center instance config, such as options of zookeeper                                                                              |
-| overwrite       | boolean     | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations | 
+| *Name*      | *Data Type* | *Description*                                                                                                                                 |
+| ----------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| type        | String      | Governance instance type, such as: Zookeeper, etcd                                                                                            |
+| serverLists | String      | The list of servers that connect to governance instance, including IP and port number, use commas to separate, such as: host1:2181,host2:2181 |
+| props       | Properties  | Properties for center instance config, such as options of zookeeper                                                                           |
+| overwrite   | boolean     | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations     | 
 
 ZooKeeper Properties Configuration
 
@@ -51,23 +49,3 @@ Etcd Properties Configuration
 | *Name*                | *Data Type* | *Description*                         | *Default Value* |
 | --------------------- | ----------- | ------------------------------------- | --------------- |
 | timeToLiveSeconds (?) | long        | Time to live seconds for data persist | 30 seconds      |
-
-Apollo Properties Configuration
-
-| *Name*             | *Data Type* | *Description*                | *Default Value*       |
-| ------------------ | ----------- | ---------------------------- | --------------------- |
-| appId (?)          | String      | Apollo appId                 | APOLLO_SHARDINGSPHERE |
-| env (?)            | String      | Apollo env                   | DEV                   |
-| clusterName (?)    | String      | Apollo clusterName           | default               |
-| administrator (?)  | String      | Apollo administrator         | Empty                 |
-| token (?)          | String      | Apollo token                 | Empty                 |
-| portalUrl (?)      | String      | Apollo portalUrl             | Empty                 |
-| connectTimeout (?) | int         | Connect timeout milliseconds | 1000 milliseconds     |
-| readTimeout (?)    | int         | Read timeout milliseconds    | 5000 milliseconds     |
-
-Nacos Properties Configuration
-
-| *Name*      | *Data Type* | *Description* | *Default Value*               |
-| ----------- | ----------- | ------------- | ----------------------------- |
-| group (?)   | String      | group         | SHARDING_SPHERE_DEFAULT_GROUP |
-| timeout (?) | long        | timeout       | 3000 milliseconds             |

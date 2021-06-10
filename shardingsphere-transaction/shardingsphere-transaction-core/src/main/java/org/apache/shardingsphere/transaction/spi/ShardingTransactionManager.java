@@ -35,8 +35,9 @@ public interface ShardingTransactionManager extends AutoCloseable {
      *
      * @param databaseType database type
      * @param resourceDataSources resource data sources
+     * @param transactionMangerType transaction manger type
      */
-    void init(DatabaseType databaseType, Collection<ResourceDataSource> resourceDataSources);
+    void init(DatabaseType databaseType, Collection<ResourceDataSource> resourceDataSources, String transactionMangerType);
     
     /**
      * Get transaction type.

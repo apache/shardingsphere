@@ -21,10 +21,11 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.execute.engine.TaskExecuteEngine;
-import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +33,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,15 +49,20 @@ public final class HttpServerInitializerTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "inventoryDumperExecuteEngine", mock(TaskExecuteEngine.class));
-        when(socketChannel.pipeline()).thenReturn(channelPipeline);
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
     }
     
     @Test
     public void assertInitChannel() {
+        when(socketChannel.pipeline()).thenReturn(channelPipeline);
         HttpServerInitializer httpServerInitializer = new HttpServerInitializer();
         httpServerInitializer.initChannel(socketChannel);
         verify(channelPipeline, times(3)).addLast(any(ChannelHandler.class));
+    }
+    
+    private ServerConfiguration mockServerConfig() {
+        ServerConfiguration result = new ServerConfiguration();
+        result.setGovernanceConfig(new GovernanceConfiguration("test", new RegistryCenterConfiguration("Zookeeper", "localhost:2181", null), false));
+        return result;
     }
 }

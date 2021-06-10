@@ -77,7 +77,7 @@ public final class DatabaseMetaDataResultSetTest {
     
     private static final BigDecimal BIGDECIMAL = BigDecimal.valueOf(12.22);
     
-    private static final BigDecimal BIGDECIMAL_SCALA_ONE = BigDecimal.valueOf(12.2);
+    private static final BigDecimal BIG_DECIMAL_SCALA_ONE = BigDecimal.valueOf(12.2);
     
     private static final String INDEX_NAME_COLUMN_LABEL = "INDEX_NAME";
     
@@ -347,13 +347,13 @@ public final class DatabaseMetaDataResultSetTest {
     @Test
     public void assertGetBigDecimalWithIndexAndScale() throws SQLException {
         databaseMetaDataResultSet.next();
-        assertThat(databaseMetaDataResultSet.getBigDecimal(8, 1), is(BIGDECIMAL_SCALA_ONE));
+        assertThat(databaseMetaDataResultSet.getBigDecimal(8, 1), is(BIG_DECIMAL_SCALA_ONE));
     }
     
     @Test
     public void assertGetBigDecimalWithLabelAndScale() throws SQLException {
         databaseMetaDataResultSet.next();
-        assertThat(databaseMetaDataResultSet.getBigDecimal(BIG_DECIMAL_COLUMN_LABEL, 1), is(BIGDECIMAL_SCALA_ONE));
+        assertThat(databaseMetaDataResultSet.getBigDecimal(BIG_DECIMAL_COLUMN_LABEL, 1), is(BIG_DECIMAL_SCALA_ONE));
     }
     
     @Test

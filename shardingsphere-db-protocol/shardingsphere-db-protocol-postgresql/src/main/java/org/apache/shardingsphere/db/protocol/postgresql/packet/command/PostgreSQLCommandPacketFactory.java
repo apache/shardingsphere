@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
@@ -28,8 +29,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLComTerminationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-
-import java.sql.SQLException;
 
 /**
  * Command packet factory for PostgreSQL.
@@ -44,27 +43,27 @@ public final class PostgreSQLCommandPacketFactory {
      * @param payload packet payload for PostgreSQL
      * @param connectionId connection id
      * @return command packet for PostgreSQL
-     * @throws SQLException SQL exception
      */
-    public static PostgreSQLCommandPacket newInstance(
-            final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) throws SQLException {
+    public static PostgreSQLCommandPacket newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) {
         switch (commandPacketType) {
-            case QUERY:
+            case SIMPLE_QUERY:
                 return new PostgreSQLComQueryPacket(payload);
-            case PARSE:
+            case PARSE_COMMAND:
                 return new PostgreSQLComParsePacket(payload);
-            case BIND:
+            case BIND_COMMAND:
                 return new PostgreSQLComBindPacket(payload, connectionId);
-            case DESCRIBE:
+            case DESCRIBE_COMMAND:
                 return new PostgreSQLComDescribePacket(payload);
-            case EXECUTE:
+            case EXECUTE_COMMAND:
                 return new PostgreSQLComExecutePacket(payload);
-            case SYNC:
+            case SYNC_COMMAND:
                 return new PostgreSQLComSyncPacket(payload);
+            case CLOSE_COMMAND:
+                return new PostgreSQLComClosePacket(payload);
             case TERMINATE:
                 return new PostgreSQLComTerminationPacket(payload);
             default:
-                return new PostgreSQLUnsupportedCommandPacket(commandPacketType.getValue());
+                return new PostgreSQLUnsupportedCommandPacket(commandPacketType);
         }
     }
 }

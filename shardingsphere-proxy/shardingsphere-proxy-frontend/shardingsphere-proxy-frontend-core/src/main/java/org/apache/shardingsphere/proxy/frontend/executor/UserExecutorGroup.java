@@ -19,29 +19,22 @@ package org.apache.shardingsphere.proxy.frontend.executor;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
  * User executor group.
  */
 public final class UserExecutorGroup {
     
-    private static final ProxyContext PROXY_SCHEMA_CONTEXTS = ProxyContext.getInstance();
-    
     private static final String NAME_FORMAT = "Command-%d";
     
     private static final UserExecutorGroup INSTANCE = new UserExecutorGroup();
-    
-    private final ExecutorServiceManager executorServiceManager;
     
     @Getter
     private final ListeningExecutorService executorService;
     
     private UserExecutorGroup() {
-        executorServiceManager = new ExecutorServiceManager(
-                PROXY_SCHEMA_CONTEXTS.getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.ACCEPTOR_SIZE), NAME_FORMAT);
+        ExecutorServiceManager executorServiceManager = new ExecutorServiceManager(0, NAME_FORMAT);
         executorService = executorServiceManager.getExecutorService();
     }
     

@@ -35,6 +35,7 @@ import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +48,7 @@ public final class ResponsePacketBuilderTest {
         List<QueryHeader> queryHeaders = Arrays.asList(queryHeader1, queryHeader2);
         QueryResponseHeader queryResponseHeader = new QueryResponseHeader(queryHeaders);
         Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader);
+        assertTrue(actual.stream().findAny().isPresent());
         assertThat(actual.stream().findAny().get(), anyOf(instanceOf(MySQLFieldCountPacket.class), instanceOf(MySQLColumnDefinition41Packet.class), instanceOf(MySQLEofPacket.class)));
     }
     
@@ -56,6 +58,7 @@ public final class ResponsePacketBuilderTest {
         when(updateResponseHeader.getUpdateCount()).thenReturn(10L);
         when(updateResponseHeader.getLastInsertId()).thenReturn(100L);
         Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader);
+        assertTrue(actual.stream().findAny().isPresent());
         MySQLOKPacket actualItem = (MySQLOKPacket) actual.stream().findAny().get();
         assertThat(actualItem, instanceOf(MySQLOKPacket.class));
         assertThat(actualItem.getAffectedRows(), is(10L));

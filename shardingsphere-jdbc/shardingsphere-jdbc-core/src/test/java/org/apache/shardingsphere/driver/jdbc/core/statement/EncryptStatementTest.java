@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForEncryptTest;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForEncryptTest;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -54,7 +53,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     private static final String SELECT_SQL_WITH_CIPHER = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'plainValue'";
     
     private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
-
+    
     private static final String SHOW_COLUMNS_SQL = "SHOW columns FROM t_encrypt";
     
     @Test
@@ -168,7 +167,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object plain) throws SQLException {
-        try (Connection conn = getDatabaseTypeMap().get(DatabaseTypeRegistry.getActualDatabaseType("H2")).get("encrypt").getConnection();
+        try (Connection conn = getActualDataSources().get("encrypt").getConnection();
              Statement stmt = conn.createStatement()) {
             ResultSet resultSet = stmt.executeQuery(SELECT_SQL_TO_ASSERT);
             int count = 1;

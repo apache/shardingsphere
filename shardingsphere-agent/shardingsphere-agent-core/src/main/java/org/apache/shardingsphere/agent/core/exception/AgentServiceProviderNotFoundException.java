@@ -24,10 +24,6 @@ public final class AgentServiceProviderNotFoundException extends RuntimeExceptio
     
     private static final long serialVersionUID = -3730257541332863235L;
     
-    public AgentServiceProviderNotFoundException(final Class<?> clazz) {
-        super(String.format("No implementation class load from SPI `%s`.", clazz.getName()));
-    }
-    
     public AgentServiceProviderNotFoundException(final Class<?> clazz, final String type) {
         super(String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type));
     }

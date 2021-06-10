@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.state;
 
-import org.junit.After;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,26 +24,27 @@ import static org.junit.Assert.assertThat;
 
 public final class StateContextTest {
     
+    private final StateContext stateContext = new StateContext();
+    
     @Test
     public void assertSwitchStateWithCircuitBreakOn() {
-        StateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
-        assertThat(StateContext.getCurrentState(), is(StateType.CIRCUIT_BREAK));
+        stateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
+        assertThat(stateContext.getCurrentState(), is(StateType.CIRCUIT_BREAK));
+        stateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, false));
     }
     
     @Test
     public void assertSwitchStateWithCircuitBreakOff() {
-        StateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, false));
-        assertThat(StateContext.getCurrentState(), is(StateType.OK));
+        stateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, false));
+        assertThat(stateContext.getCurrentState(), is(StateType.OK));
     }
     
     @Test
-    public void assertSwitchStateWithLocked() {
-        StateContext.switchState(new StateEvent(StateType.LOCK, false));
-        assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
-    }
-    
-    @After
-    public void reset() {
-        StateContext.switchState(new StateEvent(StateType.OK, true));
+    public void assertSwitchStateWithMultiState() {
+        stateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
+        stateContext.switchState(new StateEvent(StateType.LOCK, true));
+        assertThat(stateContext.getCurrentState(), is(StateType.LOCK));
+        stateContext.switchState(new StateEvent(StateType.LOCK, false));
+        assertThat(stateContext.getCurrentState(), is(StateType.CIRCUIT_BREAK));
     }
 }

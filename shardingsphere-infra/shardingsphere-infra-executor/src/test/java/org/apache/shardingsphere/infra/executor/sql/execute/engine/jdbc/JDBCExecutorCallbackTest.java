@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,9 +41,11 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,20 +74,25 @@ public final class JDBCExecutorCallbackTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), true) {
+        JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), mock(SelectStatement.class), true) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return ((PreparedStatement) statement).executeUpdate();
+            }
+            
+            @Override
+            protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.of(0);
             }
         };
         Field field = JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
         field.setAccessible(true);
         Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(jdbcExecutorCallback);
         assertThat(cachedDataSourceMetaData.size(), is(0));
-        jdbcExecutorCallback.execute(units, true, null);
+        jdbcExecutorCallback.execute(units, true, Collections.emptyMap());
         assertThat(cachedDataSourceMetaData.size(), is(1));
-        jdbcExecutorCallback.execute(units, true, null);
+        jdbcExecutorCallback.execute(units, true, Collections.emptyMap());
         assertThat(cachedDataSourceMetaData.size(), is(1));
     }
 }

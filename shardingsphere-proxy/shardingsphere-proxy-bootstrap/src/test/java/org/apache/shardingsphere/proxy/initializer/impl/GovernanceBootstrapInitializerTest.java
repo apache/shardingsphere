@@ -20,23 +20,24 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.fixture.FixtureConfigurationRepository;
+import org.apache.shardingsphere.proxy.fixture.FixtureRegistryCenterRepository;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -45,7 +46,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -56,18 +56,17 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
-    private static final String DATA_SOURCE_YAML = "conf/reg_center/config_center/data-sources.yaml";
+    private static final String DATA_SOURCE_YAML = "conf/reg_center/data-sources.yaml";
     
-    private static final String SHARDING_RULE_YAML = "conf/reg_center/config_center/sharding-rule.yaml";
+    private static final String SHARDING_RULE_YAML = "conf/reg_center/sharding-rule.yaml";
     
-    private static final String AUTHENTICATION_YAML = "conf/reg_center/config_center/authentication.yaml";
+    private static final String PROPS_YAML = "conf/reg_center/props.yaml";
     
-    private static final String PROPS_YAML = "conf/reg_center/config_center/props.yaml";
-    
-    private FixtureConfigurationRepository configurationRepository = new FixtureConfigurationRepository();
+    private final FixtureRegistryCenterRepository registryCenterRepository = new FixtureRegistryCenterRepository();
     
     @Test
     public void assertGetProxyConfiguration() throws IOException {
@@ -77,28 +76,20 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         closeConfigCenter();
     }
     
-    @SneakyThrows(IOException.class)
-    protected YamlProxyConfiguration makeProxyConfiguration() {
-        return ProxyConfigurationLoader.load("/conf/reg_center/");
-    }
-    
     private void initConfigCenter() {
-        ConfigCenterNode node = new ConfigCenterNode();
-        configurationRepository.persist(node.getAuthenticationPath(), readYAML(AUTHENTICATION_YAML));
-        configurationRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
-        configurationRepository.persist(node.getMetadataNodePath(), "db");
-        configurationRepository.persist(node.getDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
-        configurationRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
+        registryCenterRepository.persist(GlobalNode.getPropsPath(), readYAML(PROPS_YAML));
+        registryCenterRepository.persist(SchemaMetadataNode.getMetadataNodePath(), "db");
+        registryCenterRepository.persist(SchemaMetadataNode.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
+        registryCenterRepository.persist(SchemaMetadataNode.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})
     private String readYAML(final String yamlFile) {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
-                .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
     private void closeConfigCenter() {
-        configurationRepository.close();
+        registryCenterRepository.close();
     }
     
     @Test
@@ -114,7 +105,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertNotNull(actual);
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        assertAuthentication(actual.getAuthentication());
         assertProps(actual.getProps());
     }
     
@@ -194,33 +184,21 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
     }
     
-    private void assertAuthentication(final DefaultAuthentication actual) {
-        Optional<ShardingSphereUser> rootUser = actual.findUser("root");
-        assertTrue(rootUser.isPresent());
-        assertThat(rootUser.get().getPassword(), is("root"));
-        assertThat(rootUser.get().getAuthorizedSchemas().size(), is(0));
-        Optional<ShardingSphereUser> shardingUser = actual.findUser("sharding");
-        assertTrue(shardingUser.isPresent());
-        assertThat(shardingUser.get().getPassword(), is("sharding"));
-        assertThat(shardingUser.get().getAuthorizedSchemas().size(), is(1));
-        assertTrue(shardingUser.get().getAuthorizedSchemas().contains("sharding_db"));
-    }
-    
     @Test
     public void assertDecorateMetaDataContexts() {
         StandardMetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class);
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         MetaDataContexts actualMetaDataContexts = getInitializer().decorateMetaDataContexts(metaDataContexts);
         assertNotNull(actualMetaDataContexts);
         assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
         assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
-        assertThat(actualMetaDataContexts.getAuthentication(), is(metaDataContexts.getAuthentication()));
         assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));
     }
     
     @Test
     public void assertDecorateTransactionContexts() {
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
-        TransactionContexts actualTransactionContexts = getInitializer().decorateTransactionContexts(transactionContexts);
+        TransactionContexts actualTransactionContexts = getInitializer().decorateTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
         assertNotNull(actualTransactionContexts);
         assertThat(actualTransactionContexts, instanceOf(GovernanceTransactionContexts.class));
         assertThat(actualTransactionContexts.getEngines(), is(transactionContexts.getEngines()));

@@ -32,7 +32,7 @@ public final class ShardingTransactionManagerFixture implements ShardingTransact
     private Runnable caller;
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String transactionMangerType) {
         caller.run();
     }
     

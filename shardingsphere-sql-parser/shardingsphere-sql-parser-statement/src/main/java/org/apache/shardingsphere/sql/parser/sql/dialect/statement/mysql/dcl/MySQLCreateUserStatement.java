@@ -17,13 +17,31 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PasswordOrLockOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.TLSOptionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserResourceSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * MySQL create user statement.
  */
 @ToString
+@Getter
+@Setter
 public final class MySQLCreateUserStatement extends CreateUserStatement implements MySQLStatement {
+    
+    private Collection<String> defaultRoles = new LinkedList<>();
+    
+    private TLSOptionSegment tlsOptionSegment;
+    
+    private UserResourceSegment userResource;
+    
+    private PasswordOrLockOptionSegment passwordOrLockOption;
 }

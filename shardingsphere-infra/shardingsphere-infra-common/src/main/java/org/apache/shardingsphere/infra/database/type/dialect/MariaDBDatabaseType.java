@@ -21,18 +21,24 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.MariaDBDataSour
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Database type of Mariadb.
+ * Database type of MariaDB.
  */
 public final class MariaDBDatabaseType implements BranchDatabaseType {
     
     @Override
     public String getName() {
         return "MariaDB";
+    }
+    
+    @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.BACK_QUOTE;
     }
     
     @Override

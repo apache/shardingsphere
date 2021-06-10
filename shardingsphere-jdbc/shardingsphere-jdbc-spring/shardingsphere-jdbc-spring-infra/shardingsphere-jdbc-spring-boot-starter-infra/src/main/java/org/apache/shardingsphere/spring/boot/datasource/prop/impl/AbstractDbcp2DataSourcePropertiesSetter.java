@@ -46,7 +46,7 @@ public abstract class AbstractDbcp2DataSourcePropertiesSetter implements DataSou
         if (PropertyUtil.containPropertyPrefix(environment, datasourcePropPrefix)) {
             Map<?, ?> datasourceProperties = PropertyUtil.handle(environment, datasourcePropPrefix, Map.class);
             Method method = dataSource.getClass().getMethod("addConnectionProperty", String.class, String.class);
-            for (final Entry<?, ?> entry : datasourceProperties.entrySet()) {
+            for (Entry<?, ?> entry : datasourceProperties.entrySet()) {
                 method.invoke(dataSource, entry.getKey(), entry.getValue());
             }
         }

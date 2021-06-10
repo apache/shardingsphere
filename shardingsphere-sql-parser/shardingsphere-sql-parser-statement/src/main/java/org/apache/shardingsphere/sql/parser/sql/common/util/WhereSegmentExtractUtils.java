@@ -41,7 +41,27 @@ import java.util.LinkedList;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WhereSegmentExtractUtils {
-    
+
+    /**
+     * Get join where segment from SelectStatement.
+     *
+     * @param selectStatement SelectStatement
+     * @return join where segment collection.
+     */
+    public static Collection<WhereSegment> getJoinWhereSegments(final SelectStatement selectStatement) {
+        if (null == selectStatement.getFrom()) {
+            return Collections.emptyList();
+        }
+        TableSegment tableSegment = selectStatement.getFrom();
+        Collection<WhereSegment> result = new LinkedList<>();
+        if (tableSegment instanceof JoinTableSegment && null != ((JoinTableSegment) tableSegment).getCondition()) {
+            ExpressionSegment expressionSegment = ((JoinTableSegment) tableSegment).getCondition();
+            WhereSegment whereSegment = new WhereSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), expressionSegment);
+            result.add(whereSegment);
+        }
+        return result;
+    }
+
     /**
      * Get subquery where segment from SelectStatement.
      *

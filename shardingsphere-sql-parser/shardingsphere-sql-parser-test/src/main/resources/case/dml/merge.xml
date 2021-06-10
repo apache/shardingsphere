@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+
+<sql-parser-test-cases>
+    <merge sql-case-id="merge_into_table_using_table" >
+        <target>
+            <simple-table name="people_target" start-index="11" stop-index="23" />
+        </target>
+        <source>
+            <simple-table name="people_source" start-index="31" stop-index="43" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="49" stop-index="97">
+                <left>
+                    <column name="person_id" start-index="49" stop-index="71">
+                        <owner name="people_target" start-index="49" stop-index="61" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="person_id" start-index="75" stop-index="97">
+                        <owner name="people_source" start-index="75" stop-index="87" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+    </merge>
+    <merge sql-case-id="merge_into_table_using_subquery_alias" >
+        <target>
+            <simple-table name="bonuses" alias="D" start-index="11" stop-index="19" />
+        </target>
+        <source>
+            <subquery-table alias="S">
+                <subquery>
+                    <select>
+                        <from>
+                            <simple-table name="employees" start-index="75" stop-index="83" />
+                        </from>
+                        <projections start-index="35" stop-index="68">
+                            <column-projection name="employee_id" start-index="35" stop-index="45" />
+                            <column-projection name="salary" start-index="48" stop-index="53" />
+                            <column-projection name="department_id" start-index="56" stop-index="68" />
+                        </projections>
+                        <where start-index="85" stop-index="108">
+                            <expr>
+                                <binary-operation-expression start-index="91" stop-index="108">
+                                    <left>
+                                        <column name="department_id" start-index="91" stop-index="103"/>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="80" start-index="107" stop-index="108" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="117" stop-index="145">
+                <left>
+                    <column name="employee_id" start-index="117" stop-index="129">
+                        <owner name="D" start-index="117" stop-index="117" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="employee_id" start-index="133" stop-index="145">
+                        <owner name="S" start-index="133" stop-index="133" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+    </merge>
+    <merge sql-case-id="merge_update_table">
+        <target>
+            <simple-table name="people_target" alias="pt" start-index="11" stop-index="26" />
+        </target>
+        <source>
+            <simple-table name="people_source" alias="ps" start-index="34" stop-index="49" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="55" stop-index="81">
+                <left>
+                    <column name="person_id" start-index="55" stop-index="66">
+                        <owner name="pt" start-index="55" stop-index="56" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="person_id" start-index="70" stop-index="81">
+                        <owner name="ps" start-index="70" stop-index="71" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <update>
+            <set start-index="113" stop-index="191">
+                <assignment start-index="113" stop-index="141">
+                    <column name="first_name" start-index="113" stop-index="125">
+                        <owner name="pt" start-index="113" stop-index="114" />
+                    </column>
+                    <assignment-value>
+                        <column name="first_name" start-index="129" stop-index="141">
+                            <owner name="ps" start-index="129" stop-index="130" />
+                        </column>
+                    </assignment-value>
+                </assignment>
+                <assignment start-index="144" stop-index="170">
+                    <column name="last_name" start-index="144" stop-index="155">
+                        <owner name="pt" start-index="144" stop-index="145" />
+                    </column>
+                    <assignment-value>
+                        <column name="last_name" start-index="159" stop-index="170">
+                            <owner name="ps" start-index="159" stop-index="160" />
+                        </column>
+                    </assignment-value>
+                </assignment>
+                <assignment start-index="173" stop-index="191">
+                    <column name="title" start-index="173" stop-index="180">
+                        <owner name="pt" start-index="173" stop-index="174" />
+                    </column>
+                    <assignment-value>
+                        <column name="title" start-index="184" stop-index="191">
+                            <owner name="ps" start-index="184" stop-index="185" />
+                        </column>
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </merge>
+    <merge sql-case-id="merge_update_table_with_delete">
+        <target>
+            <simple-table name="bonuses" alias="D" start-index="11" stop-index="19" />
+        </target>
+        <source>
+            <subquery-table alias="S">
+                <subquery>
+                    <select>
+                        <from>
+                            <simple-table name="employees" start-index="75" stop-index="83" />
+                        </from>
+                        <projections start-index="35" stop-index="68">
+                            <column-projection name="employee_id" start-index="35" stop-index="45" />
+                            <column-projection name="salary" start-index="48" stop-index="53" />
+                            <column-projection name="department_id" start-index="56" stop-index="68" />
+                        </projections>
+                        <where start-index="85" stop-index="108">
+                            <expr>
+                                <binary-operation-expression start-index="91" stop-index="108">
+                                    <left>
+                                        <column name="department_id" start-index="91" stop-index="103"/>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="80" start-index="107" stop-index="108" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="117" stop-index="145">
+                <left>
+                    <column name="employee_id" start-index="117" stop-index="129">
+                        <owner name="D" start-index="117" stop-index="117" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="employee_id" start-index="133" stop-index="145">
+                        <owner name="S" start-index="133" stop-index="133" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <update>
+            <set start-index="177" stop-index="208">
+                <assignment start-index="177" stop-index="208">
+                    <column name="bonus" start-index="177" stop-index="183">
+                        <owner name="D" start-index="177" stop-index="177" />
+                    </column>
+                    <assignment-value>
+                        <literal-expression value="D.bonus + S.salary*.01" start-index="187" stop-index="208" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+        <delete>
+            <where start-index="210" stop-index="239">
+                <expr>
+                    <binary-operation-expression start-index="224" stop-index="238">
+                        <left>
+                            <column name="salary" start-index="224" stop-index="231">
+                                <owner name="S" start-index="224" stop-index="224" />
+                            </column>
+                        </left>
+                        <operator>&gt;</operator>
+                        <right>
+                            <literal-expression value="8000" start-index="235" stop-index="238" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </merge>
+</sql-parser-test-cases>

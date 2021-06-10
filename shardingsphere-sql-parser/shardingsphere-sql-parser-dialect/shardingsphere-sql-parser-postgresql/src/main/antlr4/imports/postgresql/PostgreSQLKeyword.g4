@@ -648,36 +648,36 @@ OVERLAY
     ;
 
 XMLCONCAT
-	: X M L C O N C A T
-	;
+    : X M L C O N C A T
+    ;
 
 XMLELEMENT
-	: X M L E L E M E N T
-	;
+    : X M L E L E M E N T
+    ;
 
 XMLEXISTS
-	: X M L E X I S T S
-	;
+    : X M L E X I S T S
+    ;
 
 XMLFOREST
-	: X M L F O R E S T
-	;
+    : X M L F O R E S T
+    ;
 
 XMLPARSE
-	: X M L P A R S E
-	;
+    : X M L P A R S E
+    ;
 
 XMLPI
-	: X M L P I
-	;
+    : X M L P I
+    ;
 
 XMLROOT
-	: X M L R O O T
-	;
+    : X M L R O O T
+    ;
 
 XMLSERIALIZE
-	: X M L S E R I A L I Z E
-	;
+    : X M L S E R I A L I Z E
+    ;
 
 TREAT
     : T R E A T

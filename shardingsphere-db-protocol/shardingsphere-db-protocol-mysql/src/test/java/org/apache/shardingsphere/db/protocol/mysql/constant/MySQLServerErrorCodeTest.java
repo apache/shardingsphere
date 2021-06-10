@@ -44,6 +44,6 @@ public final class MySQLServerErrorCodeTest {
         assertThat(MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getSqlState(), is("HY000"));
         assertThat(MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getErrorMessage(), is("Please do not modify the %s table with an XA transaction. "
                 + "This is an internal system table used to store GTIDs for committed transactions. "
-                + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction."));
+                + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction."));
     }
 }

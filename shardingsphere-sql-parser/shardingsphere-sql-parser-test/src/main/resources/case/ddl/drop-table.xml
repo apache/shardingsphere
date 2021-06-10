@@ -40,6 +40,12 @@
     <drop-table sql-case-id="drop_table_cascade_constraints_and_purge">
         <table name="t_log" start-index="11" stop-index="15" />
     </drop-table>
+
+    <drop-table sql-case-id="drop_table_purge_with_schema">
+        <table name="t_log" start-index="11" stop-index="27">
+            <owner name="sharding_db" start-index="11" stop-index="21" />
+        </table>
+    </drop-table>
     
     <drop-table sql-case-id="drop_table_with_space">
         <table name="t_order" start-index="23" stop-index="29" />

@@ -17,67 +17,35 @@
 
 package org.apache.shardingsphere.scaling.core.job;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
-import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
-import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.elasticjob.api.ShardingContext;
+import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.scaling.core.api.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
+import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
 
 /**
  * Scaling job.
  */
-@Getter
-@Setter
-public final class ScalingJob {
+@Slf4j
+public final class ScalingJob implements SimpleJob {
     
-    private static final SnowflakeKeyGenerateAlgorithm ID_AUTO_INCREASE_GENERATOR = initIdAutoIncreaseGenerator();
+    private final GovernanceRepositoryAPI governanceRepositoryAPI = ScalingAPIFactory.getGovernanceRepositoryAPI();
     
-    private long jobId;
+    private final ScalingJobPreparer jobPreparer = new ScalingJobPreparer();
     
-    private int shardingItem;
-    
-    private String databaseType;
-    
-    private final transient List<TaskConfiguration> taskConfigs = new LinkedList<>();
-    
-    private final transient List<ScalingTask> inventoryTasks = new LinkedList<>();
-    
-    private final transient List<ScalingTask> incrementalTasks = new LinkedList<>();
-    
-    private transient ScalingConfiguration scalingConfig;
-    
-    private String status = JobStatus.RUNNING.name();
-    
-    public ScalingJob() {
-        this(generateKey());
-    }
-    
-    public ScalingJob(final long jobId) {
-        this.jobId = jobId;
-    }
-    
-    public ScalingJob(final ScalingConfiguration scalingConfig) {
-        this(Optional.ofNullable(scalingConfig.getJobConfiguration().getJobId()).orElse(generateKey()));
-        this.scalingConfig = scalingConfig;
-        shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
-        taskConfigs.addAll(TaskConfigurationUtil.toTaskConfigs(scalingConfig));
-        databaseType = taskConfigs.get(0).getDumperConfig().getDataSourceConfig().getDatabaseType().getName();
-    }
-    
-    private static SnowflakeKeyGenerateAlgorithm initIdAutoIncreaseGenerator() {
-        SnowflakeKeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
-        result.init();
-        return result;
-    }
-    
-    private static Long generateKey() {
-        return (Long) ID_AUTO_INCREASE_GENERATOR.generateKey();
+    @Override
+    public void execute(final ShardingContext shardingContext) {
+        log.info("Execute scaling job {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
+        JobConfiguration jobConfig = YamlEngine.unmarshal(shardingContext.getJobParameter(), JobConfiguration.class);
+        jobConfig.getHandleConfig().setShardingItem(shardingContext.getShardingItem());
+        JobContext jobContext = new JobContext(jobConfig);
+        jobContext.setInitProgress(governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem()));
+        jobPreparer.prepare(jobContext);
+        governanceRepositoryAPI.persistJobProgress(jobContext);
+        JobSchedulerCenter.start(jobContext);
     }
 }

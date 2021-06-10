@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,6 +32,11 @@ public final class MySQLDatabaseType implements DatabaseType {
     @Override
     public String getName() {
         return "MySQL";
+    }
+    
+    @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.BACK_QUOTE;
     }
     
     @Override

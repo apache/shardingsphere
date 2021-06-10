@@ -17,13 +17,34 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ACLTypeEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLevelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.MySQLRoleOrPrivilegeSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * MySQL grant statement.
  */
 @ToString
+@Getter
+@Setter
 public final class MySQLGrantStatement extends GrantStatement implements MySQLStatement {
+    
+    private final Collection<MySQLRoleOrPrivilegeSegment> roleOrPrivileges = new LinkedList<>();
+    
+    private boolean allPrivileges;
+    
+    private final Collection<UserSegment> users = new LinkedList<>();
+    
+    private ACLTypeEnum aclType;
+    
+    private GrantLevelSegment level;
 }

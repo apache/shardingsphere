@@ -44,12 +44,7 @@
             <artifactId>shardingsphere-scaling-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-scaling-elasticjob</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    
+        
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
@@ -67,6 +62,7 @@
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
         </dependency>
+        
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -77,6 +73,7 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+        
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

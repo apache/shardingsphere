@@ -20,14 +20,21 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.complex.ExpectedComplexExpressionSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjection;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
 @Getter
 @Setter
-public final class ExpectedExpressionProjection extends AbstractExpectedSQLSegment implements ExpectedProjection {
-    
-    @XmlAttribute
+public final class ExpectedExpressionProjection extends AbstractExpectedSQLSegment implements ExpectedProjection, ExpectedComplexExpressionSegment {
+
+    @XmlAttribute(name = "text")
+    private String text;
+
+    @XmlAttribute(name = "literal-text")
+    private String literalText;
+
+    @XmlAttribute(name = "alias")
     private String alias;
 }

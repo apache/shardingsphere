@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
@@ -136,5 +137,35 @@ public final class SelectStatementHandlerTest {
         PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
         assertFalse(lockSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetWindowSegmentWithWindowSegmentForMySQL() {
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.setWindow(new WindowSegment(0, 0));
+        Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
+        assertTrue(windowSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetWindowSegmentWithoutWindowSegmentForMySQL() {
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
+        assertFalse(windowSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetWindowSegmentWithWindowSegmentForPostgreSQL() {
+        PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
+        selectStatement.setWindow(new WindowSegment(0, 0));
+        Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
+        assertTrue(windowSegment.isPresent());
+    }
+    
+    @Test
+    public void assertGetWindowSegmentWithoutWindowSegmentForPostgreSQL() {
+        PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
+        Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
+        assertFalse(windowSegment.isPresent());
     }
 }

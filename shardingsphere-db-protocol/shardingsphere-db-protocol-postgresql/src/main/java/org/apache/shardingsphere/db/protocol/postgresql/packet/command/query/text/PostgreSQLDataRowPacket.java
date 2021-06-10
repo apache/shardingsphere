@@ -19,9 +19,9 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.te
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.sql.SQLException;
@@ -33,10 +33,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-@Slf4j
-public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
-    
-    private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
+public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket {
     
     private final Collection<Object> data;
     
@@ -66,7 +63,12 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
             payload.writeInt4(((SQLXML) data).getString().getBytes().length);
             payload.writeStringEOF(((SQLXML) data).getString());
         } catch (final SQLException ex) {
-            log.error("PostgreSQL DataRowPacket write SQLXML type exception", ex);
+            throw new RuntimeException(ex.getMessage());
         }
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.DATA_ROW;
     }
 }

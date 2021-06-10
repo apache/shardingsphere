@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.GrantStatementTestCase;
 
 /**
@@ -38,10 +37,6 @@ public final class GrantStatementAssert {
      * @param expected expected grant statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final GrantStatement actual, final GrantStatementTestCase expected) {
-        assertTable(assertContext, actual, expected);
-    }
-    
-    private static void assertTable(final SQLCaseAssertContext assertContext, final GrantStatement actual, final GrantStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+//        TODO add assert for grant.
     }
 }

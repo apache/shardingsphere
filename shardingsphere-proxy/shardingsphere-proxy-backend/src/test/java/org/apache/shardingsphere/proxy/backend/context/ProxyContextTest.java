@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.context;
 
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.jdbc.test.MockedDataSource;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
@@ -31,11 +33,9 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -53,19 +53,6 @@ public final class ProxyContextTest {
     private static final String SCHEMA_PATTERN = "schema_%s";
     
     @Test
-    public void assertGetDataSourceSample() throws NoSuchFieldException, IllegalAccessException {
-        Map<String, DataSource> mockDataSourceMap = new HashMap<>(2, 1);
-        mockDataSourceMap.put("ds_1", new MockedDataSource());
-        mockDataSourceMap.put("ds_2", new MockedDataSource());
-        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(mockMetaDataMap(mockDataSourceMap), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
-        Optional<DataSource> actual = ProxyContext.getInstance().getDataSourceSample();
-        assertThat(actual, is(Optional.of(mockDataSourceMap.get("ds_1"))));
-    }
-    
-    @Test
     public void assertInit() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
@@ -80,8 +67,8 @@ public final class ProxyContextTest {
         Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap(Collections.emptyMap());
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), 
+                new ConfigurationProperties(new Properties())));
         assertTrue(ProxyContext.getInstance().schemaExists("schema"));
         assertFalse(ProxyContext.getInstance().schemaExists("schema_2"));
     }
@@ -101,8 +88,8 @@ public final class ProxyContextTest {
         Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap(Collections.emptyMap());
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), 
+                new ConfigurationProperties(new Properties())));
         ProxyContext.getInstance().getMetaData("schema1");
     }
     
@@ -111,8 +98,8 @@ public final class ProxyContextTest {
         Map<String, ShardingSphereMetaData> metaDataMap = mockMetaDataMap(Collections.emptyMap());
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), 
+                new ConfigurationProperties(new Properties())));
         assertThat(metaDataMap.get("schema"), is(ProxyContext.getInstance().getMetaData("schema")));
     }
     
@@ -121,15 +108,18 @@ public final class ProxyContextTest {
         Map<String, ShardingSphereMetaData> metaDataMap = createMetaDataMap();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), 
+                new ConfigurationProperties(new Properties())));
         assertThat(new LinkedHashSet<>(ProxyContext.getInstance().getAllSchemaNames()), is(metaDataMap.keySet()));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         Map<String, ShardingSphereMetaData> result = new LinkedHashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            result.put(String.format(SCHEMA_PATTERN, i), mock(ShardingSphereMetaData.class));
+            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+            when(metaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
+            when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
+            result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
         return result;
     }
@@ -137,6 +127,7 @@ public final class ProxyContextTest {
     private Map<String, ShardingSphereMetaData> mockMetaDataMap(final Map<String, DataSource> mockDataSourceMap) {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getName()).thenReturn("schema");
+        when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(metaData.getResource().getDataSources()).thenReturn(mockDataSourceMap);
         return Collections.singletonMap("schema", metaData);
     }

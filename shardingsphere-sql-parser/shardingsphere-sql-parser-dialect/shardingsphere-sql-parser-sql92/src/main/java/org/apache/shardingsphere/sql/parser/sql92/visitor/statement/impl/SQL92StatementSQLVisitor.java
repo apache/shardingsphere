@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -98,14 +99,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * SQL92 Statement SQL visitor.
  */
+@NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
+    
+    public SQL92StatementSQLVisitor(final Properties props) {
+    }
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
@@ -354,14 +360,16 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     
     @Override
     public final ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
+        int startIndex = ctx.getStart().getStartIndex();
+        int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.subquery()) {
-            return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SQL92SelectStatement) visit(ctx.subquery()));
+            return new SubquerySegment(startIndex, stopIndex, (SQL92SelectStatement) visit(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
-            return visit(ctx.parameterMarker());
+            return new ParameterMarkerExpressionSegment(startIndex, stopIndex, ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         }
         if (null != ctx.literals()) {
-            return visit(ctx.literals());
+            return SQLUtil.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
         }
         if (null != ctx.functionCall()) {
             return visit(ctx.functionCall());
@@ -369,9 +377,9 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));

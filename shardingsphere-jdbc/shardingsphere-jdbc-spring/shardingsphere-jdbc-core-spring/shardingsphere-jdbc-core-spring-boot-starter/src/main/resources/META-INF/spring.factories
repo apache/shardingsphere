@@ -16,4 +16,4 @@
 #
 
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.apache.shardingsphere.spring.boot.SpringBootConfiguration
+org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration

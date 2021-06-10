@@ -47,6 +47,7 @@ chapter = true
 | 端正强 | strongduanmu|
 | 郭吉伟 | Technoboy-  |
 | 吴伟杰 | TeslaCN     |
+| 邱鹿   | Lucas-307   |
 
 ## 贡献者
 

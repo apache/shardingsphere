@@ -39,11 +39,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     SQL_SIMPLE("sql-simple", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
-     * The max thread size of accepter group to accept TCP connections.
-     */
-    ACCEPTOR_SIZE("acceptor-size", String.valueOf(Runtime.getRuntime().availableProcessors() * 2), int.class),
-    
-    /**
      * The max thread size of worker group to execute SQL.
      */
     EXECUTOR_SIZE("executor-size", String.valueOf(0), int.class),
@@ -57,11 +52,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Whether validate table meta data consistency when application startup or updated.
      */
     CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class),
-    
-    /**
-     * Whether query with cipher column for data encrypt.
-     */
-    QUERY_WITH_CIPHER_COLUMN("query-with-cipher-column", String.valueOf(Boolean.TRUE), boolean.class),
     
     /**
      * Frontend database protocol type for ShardingSphere-Proxy.
@@ -97,21 +87,21 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * XA transaction manager type of proxy.
      *
      * <p>
-     * atomikos:
-     * ShardingSphere-Proxy will run with XA transaction with atomikos.
+     * Atomikos:
+     * ShardingSphere-Proxy will run with XA transaction with Atomikos.
      * </p>
      *
      * <p>
-     * narayana:
-     * ShardingSphere-Proxy will run with XA transaction with narayana.
+     * Narayana:
+     * ShardingSphere-Proxy will run with XA transaction with Narayana.
      * </p>
      *
      * <p>
-     * bitronix:
-     * ShardingSphere-Proxy will run with XA transaction with bitronix.
+     * Bitronix:
+     * ShardingSphere-Proxy will run with XA transaction with Bitronix.
      * </p>
      */
-    PROXY_XA_TRANSACTION_MANAGER_TYPE("proxy-xa-transaction-manager-type", "atomikos", String.class),
+    XA_TRANSACTION_MANAGER_TYPE("xa-transaction-manager-type", "Atomikos", String.class),
     
     /**
      * Whether enable opentracing for ShardingSphere-Proxy.
@@ -124,9 +114,19 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
+     * Whether enable show process list.
+     */
+    SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(false), boolean.class),
+    
+    /**
      * The length of time in milliseconds an SQL waits for a global lock before giving up.
      */
-    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(5000L), long.class);
+    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class),
+    
+    /**
+     * Whether enable lock.
+     */
+    LOCK_ENABLED("lock-enabled", String.valueOf(false), boolean.class);
     
     private final String key;
     

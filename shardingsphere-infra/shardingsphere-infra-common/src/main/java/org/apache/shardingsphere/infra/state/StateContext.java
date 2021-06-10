@@ -17,41 +17,43 @@
 
 package org.apache.shardingsphere.infra.state;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * State context.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StateContext {
     
-    private static final AtomicReference<StateType> CURRENT_STATE = new AtomicReference<>(StateType.OK);
+    private final Deque<StateType> currentState = new ConcurrentLinkedDeque<>(Collections.singleton(StateType.OK));
+    
+    public StateContext() {
+        ShardingSphereEventBus.getInstance().register(this);
+    }
     
     /**
      * Switch state.
      *
      * @param event state event
      */
-    public static void switchState(final StateEvent event) {
-        if (StateType.CIRCUIT_BREAK == event.getType() && event.isOn()) {
-            CURRENT_STATE.set(StateType.CIRCUIT_BREAK);
-        } else if (StateType.LOCK == event.getType()) {
-            CURRENT_STATE.set(StateType.LOCK);
+    @Subscribe
+    public void switchState(final StateEvent event) {
+        if (event.isOn()) {
+            currentState.push(event.getType());
         } else {
-            CURRENT_STATE.set(StateType.OK);    
+            if (getCurrentState() == event.getType()) {
+                recoverState();
+            }
         }
-        signalAll();
     }
     
-    private static void signalAll() {
-        if (getCurrentState() == StateType.LOCK) {
-            return;
-        }
-        LockContext.signalAll();
+    private void recoverState() {
+        currentState.pop();
     }
     
     /**
@@ -59,7 +61,7 @@ public final class StateContext {
      * 
      * @return current state
      */
-    public static StateType getCurrentState() {
-        return CURRENT_STATE.get();
+    public StateType getCurrentState() {
+        return Optional.ofNullable(currentState.peek()).orElse(StateType.OK);
     }
 }

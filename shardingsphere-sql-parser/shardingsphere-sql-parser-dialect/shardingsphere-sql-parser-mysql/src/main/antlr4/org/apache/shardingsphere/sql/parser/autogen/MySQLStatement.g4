@@ -103,7 +103,6 @@ execute
     | doStatement
     | show
     | setVariable
-    | setName
     | setCharacter
     | call
     | change
@@ -117,5 +116,10 @@ execute
     | uninstall
     | unlock
     | xa
+    | createLoadableFunction
+    | createTablespace
+    | alterTablespace
+    | dropTablespace
     ) (SEMI_ EOF? | EOF)
+    | EOF
     ;

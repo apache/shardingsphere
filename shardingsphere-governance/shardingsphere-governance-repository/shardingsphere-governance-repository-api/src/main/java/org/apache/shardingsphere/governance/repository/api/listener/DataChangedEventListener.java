@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.repository.api.listener;
 
 /**
- * Listener for data changed.
+ * Data changed listener.
  */
 public interface DataChangedEventListener {
     

@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.yaml.swapper.algorithm;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 
 /**
  * ShardingSphere algorithm configuration YAML swapper.
  */
-public final class ShardingSphereAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlShardingSphereAlgorithmConfiguration, ShardingSphereAlgorithmConfiguration> {
+public final class ShardingSphereAlgorithmConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlShardingSphereAlgorithmConfiguration, ShardingSphereAlgorithmConfiguration> {
     
     @Override
     public YamlShardingSphereAlgorithmConfiguration swapToYamlConfiguration(final ShardingSphereAlgorithmConfiguration data) {

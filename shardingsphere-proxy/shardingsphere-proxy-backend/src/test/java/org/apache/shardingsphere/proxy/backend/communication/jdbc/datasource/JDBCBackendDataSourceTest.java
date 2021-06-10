@@ -19,12 +19,13 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -72,13 +73,14 @@ public final class JDBCBackendDataSourceTest {
     private void setMetaDataContexts() {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(createMetaDataMap(), mock(ShardingSphereRuleMetaData.class), 
+                mock(ExecutorEngine.class), new ConfigurationProperties(new Properties())));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getName()).thenReturn("schema");
+        when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(metaData.getResource().getDataSources()).thenReturn(mockDataSources(2));
         return Collections.singletonMap("schema", metaData);
     }
@@ -133,7 +135,8 @@ public final class JDBCBackendDataSourceTest {
             try {
                 actual.addAll(each.get());
             } catch (final InterruptedException | ExecutionException ex) {
-                assertThat(ex.getMessage(), containsString("Can not get 6 connections one time, partition succeed connection(5) have released!"));
+                assertThat(ex.getMessage(), containsString("Could not get 6 connections at once. The 5 obtained connections have been released. "
+                        + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in props."));
             }
         }
         assertTrue(actual.isEmpty());

@@ -35,8 +35,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public final class MySQLCallStatement extends CallStatement implements MySQLStatement {
-
+    
     private String procedureName;
-
+    
     private List<ExpressionSegment> parameters;
 }

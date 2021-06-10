@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.position;
 /**
  * Finished inventory position.
  */
-public final class FinishedPosition implements Position<FinishedPosition> {
+public final class FinishedPosition implements ScalingPosition<FinishedPosition> {
     
     @Override
     public int compareTo(final FinishedPosition position) {

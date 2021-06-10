@@ -9,10 +9,11 @@ weight = 3
 
 可配置属性：
 
-| *名称*          | *数据类型*                                           | *说明*             |
-| -------------- | --------------------------------------------------- | ------------------ |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\>         | 加密表规则配置       |
-| encryptors (+) | Map\<String, ShardingSphereAlgorithmConfiguration\> | 加解密算法名称和配置 |
+| *名称*                     | *数据类型*                                           | *说明*                                                 | *默认值* |
+| ------------------------- | --------------------------------------------------- | ----------------------------------------------------- | ------- |
+| tables (+)                | Collection\<EncryptTableRuleConfiguration\>         | 加密表规则配置                                           |        |
+| encryptors (+)            | Map\<String, ShardingSphereAlgorithmConfiguration\> | 加解密算法名称和配置                                      |        |
+| queryWithCipherColumn (?) | boolean                                             | 是否使用加密列进行查询。在有原文列的情况下，可以使用原文列进行查询 | true   |
 
 ## 加密表规则配置
 

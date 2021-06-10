@@ -34,6 +34,7 @@ public final class LockDriverState implements DriverState {
     @Override
     public Connection getConnection(final Map<String, DataSource> dataSourceMap, 
                                     final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
-        throw new UnsupportedOperationException("LockProxyState");
+        // TODO
+        throw new UnsupportedOperationException("LockDriverState");
     }
 }

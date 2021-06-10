@@ -65,6 +65,6 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     @Override
     @SuppressWarnings("unchecked")
     public List<OrderItem> selectAll() {
-        return (List<OrderItem>) entityManager.createQuery("SELECT i FROM OrderEntity o, OrderItemEntity i WHERE o.orderId = i.orderId").getResultList();
+        return (List<OrderItem>) entityManager.createQuery("SELECT o from  OrderItemEntity o").getResultList();
     }
 }

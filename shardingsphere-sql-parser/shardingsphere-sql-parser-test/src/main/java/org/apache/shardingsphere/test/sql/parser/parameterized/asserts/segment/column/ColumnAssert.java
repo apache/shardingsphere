@@ -20,16 +20,13 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner.OwnerAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -46,17 +43,13 @@ public final class ColumnAssert {
      * @param expected expected column
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnSegment actual, final ExpectedColumn expected) {
-        assertThat(assertContext.getText("Column name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
+        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Column");
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
-            // TODO OwnerAssert is needed.
-            OwnerSegment owner = actual.getOwner().get();
-            TableAssert.assertOwner(assertContext, new SimpleTableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
+            OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
-        assertThat(assertContext.getText("Column start delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertContext.getText("Column end delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

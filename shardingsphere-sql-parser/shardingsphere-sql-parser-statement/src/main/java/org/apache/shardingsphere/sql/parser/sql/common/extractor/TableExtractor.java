@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -54,18 +55,17 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 
+@Getter
 public final class TableExtractor {
     
-    @Getter
     private Collection<SimpleTableSegment> rewriteTables = new LinkedList<>();
     
-    @Getter
     private Collection<TableSegment> tableContext = new LinkedList<>();
     
     /**
-     * Extract table that should be rewrited from SelectStatement.
+     * Extract table that should be rewrite from select statement.
      *
-     * @param selectStatement SelectStatement.
+     * @param selectStatement select statement
      */
     public void extractTablesFromSelect(final SelectStatement selectStatement) {
         if (null != selectStatement.getFrom()) {
@@ -88,6 +88,19 @@ public final class TableExtractor {
         }
     }
     
+    /**
+     * Extract tables with from clause.
+     *
+     * @param selectStatement select statement
+     * @return tables with from clause
+     */
+    public Collection<SimpleTableSegment> extractTablesWithFromClause(final SelectStatement selectStatement) {
+        if (null != selectStatement.getFrom()) {
+            extractTablesFromTableSegment(selectStatement.getFrom());
+        }
+        return rewriteTables;
+    }
+    
     private void extractTablesFromTableSegment(final TableSegment tableSegment) {
         if (tableSegment instanceof SimpleTableSegment) {
             tableContext.add(tableSegment);
@@ -97,7 +110,7 @@ public final class TableExtractor {
             tableContext.add(tableSegment);
             TableExtractor tableExtractor = new TableExtractor();
             tableExtractor.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
-            rewriteTables.addAll(tableExtractor.getRewriteTables());
+            rewriteTables.addAll(tableExtractor.rewriteTables);
         }
         if (tableSegment instanceof JoinTableSegment) {
             extractTablesFromJoinTableSegment((JoinTableSegment) tableSegment);
@@ -173,21 +186,20 @@ public final class TableExtractor {
             if (each instanceof ColumnOrderByItemSegment) {
                 Optional<OwnerSegment> owner = ((ColumnOrderByItemSegment) each).getColumn().getOwner();
                 if (owner.isPresent() && needRewrite(owner.get())) {
-                    OwnerSegment segment = ((ColumnOrderByItemSegment) each).getColumn().getOwner().get();
-                    rewriteTables.add(new SimpleTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+                    rewriteTables.add(new SimpleTableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
                 }
             }
         }
     }
-
+    
     private void extractTablesFromLock(final LockSegment lockSegment) {
         rewriteTables.addAll(lockSegment.getTables());
     }
     
     /**
-     * Extract table that should be rewrited from DeleteStatement.
+     * Extract table that should be rewrite from delete statement.
      *
-     * @param deleteStatement DeleteStatement.
+     * @param deleteStatement delete statement
      */
     public void extractTablesFromDelete(final DeleteStatement deleteStatement) {
         extractTablesFromTableSegment(deleteStatement.getTableSegment());
@@ -197,9 +209,9 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract table that should be rewrited from InsertStatement.
+     * Extract table that should be rewrite from insert statement.
      *
-     * @param insertStatement SelectStatement.
+     * @param insertStatement insert statement
      */
     public void extractTablesFromInsert(final InsertStatement insertStatement) {
         if (null != insertStatement.getTable()) {
@@ -216,12 +228,13 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract table that should be rewrited from UpdateStatement.
+     * Extract table that should be rewrite from update statement.
      *
-     * @param updateStatement UpdateStatement.
+     * @param updateStatement update statement.
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
         extractTablesFromTableSegment(updateStatement.getTableSegment());
+        updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumn()));
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
         }
@@ -230,8 +243,8 @@ public final class TableExtractor {
     /**
      * Check if the table needs to be overwritten.
      *
-     * @param owner OwnerSegment.
-     * @return boolean.
+     * @param owner owner
+     * @return boolean
      */
     public boolean needRewrite(final OwnerSegment owner) {
         for (TableSegment each : tableContext) {
@@ -243,9 +256,9 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract the tables that should exist from RoutineBodySegment.
+     * Extract the tables that should exist from routine body segment.
      *
-     * @param routineBody RoutineBodySegment
+     * @param routineBody routine body segment
      * @return the tables that should exist
      */
     public Collection<SimpleTableSegment> extractExistTableFromRoutineBody(final RoutineBodySegment routineBody) {
@@ -281,19 +294,36 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract the tables that should not exist from RoutineBodySegment.
+     * Extract the tables that should not exist from routine body segment.
      *
-     * @param routineBody RoutineBodySegment
+     * @param routineBody routine body segment
      * @return the tables that should not exist
      */
     public Collection<SimpleTableSegment> extractNotExistTableFromRoutineBody(final RoutineBodySegment routineBody) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (ValidStatementSegment each : routineBody.getValidStatements()) {
             Optional<CreateTableStatement> createTable = each.getCreateTable();
-            if (createTable.isPresent() && !CreateTableStatementHandler.containsIfNotExistClause(createTable.get())) {
+            if (createTable.isPresent() && !CreateTableStatementHandler.containsNotExistClause(createTable.get())) {
                 result.add(createTable.get().getTable());
             }
         }
         return result;
+    }
+    
+    /**
+     * Extract table that should be rewrite from sql statement.
+     *
+     * @param sqlStatement sql statement
+     */
+    public void extractTablesFromSQLStatement(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            extractTablesFromSelect((SelectStatement) sqlStatement);
+        } else if (sqlStatement instanceof InsertStatement) {
+            extractTablesFromInsert((InsertStatement) sqlStatement);
+        } else if (sqlStatement instanceof UpdateStatement) {
+            extractTablesFromUpdate((UpdateStatement) sqlStatement);
+        } else if (sqlStatement instanceof DeleteStatement) {
+            extractTablesFromDelete((DeleteStatement) sqlStatement);
+        }
     }
 }

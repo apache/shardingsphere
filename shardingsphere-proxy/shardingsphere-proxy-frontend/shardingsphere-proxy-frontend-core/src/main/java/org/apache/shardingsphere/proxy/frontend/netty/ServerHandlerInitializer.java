@@ -27,7 +27,7 @@ import org.apache.shardingsphere.proxy.frontend.protocol.DatabaseProtocolFronten
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
- * Channel initializer.
+ * Server handler initializer.
  */
 @RequiredArgsConstructor
 public final class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> {

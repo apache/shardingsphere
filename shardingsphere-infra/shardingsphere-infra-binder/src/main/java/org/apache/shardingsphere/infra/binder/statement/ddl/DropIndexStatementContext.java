@@ -48,7 +48,7 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext<D
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(getSqlStatement());
-        return simpleTableSegment.isPresent() ? Collections.singletonList(simpleTableSegment.get()) : Collections.emptyList();
+        return simpleTableSegment.map(Collections::singletonList).orElse(Collections.emptyList());
     }
     
     @Override

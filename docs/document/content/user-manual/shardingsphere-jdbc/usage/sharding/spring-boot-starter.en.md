@@ -15,21 +15,23 @@ weight = 3
 
 ## Configure Rule
 
+Note: The example database connection pool is HikariCP, which can be replaced with other mainstream database connection pools according to business scenarios.
+
 ```properties
 # Configure actual data sources
 spring.shardingsphere.datasource.names=ds0,ds1
 
 # Configure the first data source
-spring.shardingsphere.datasource.ds0.type=org.apache.commons.dbcp2.BasicDataSource
+spring.shardingsphere.datasource.ds0.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
+spring.shardingsphere.datasource.ds0.jdbc-url=jdbc:mysql://localhost:3306/ds0
 spring.shardingsphere.datasource.ds0.username=root
 spring.shardingsphere.datasource.ds0.password=
 
 # Configure the second data source
-spring.shardingsphere.datasource.ds1.type=org.apache.commons.dbcp2.BasicDataSource
+spring.shardingsphere.datasource.ds1.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
+spring.shardingsphere.datasource.ds1.jdbc-url=jdbc:mysql://localhost:3306/ds1
 spring.shardingsphere.datasource.ds1.username=root
 spring.shardingsphere.datasource.ds1.password=
 

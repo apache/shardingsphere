@@ -44,4 +44,28 @@ public interface TransactionManager {
      * @throws SQLException SQL Exception
      */
     void rollback() throws SQLException;
+    
+    /**
+     * Set savepoint.
+     *
+     * @param savepointName savepoint name
+     * @throws SQLException SQL Exception
+     */
+    void setSavepoint(String savepointName) throws SQLException;
+    
+    /**
+     * Rollback to savepoint.
+     *
+     * @param savepointName savepoint name
+     * @throws SQLException SQL Exception
+     */
+    void rollbackTo(String savepointName) throws SQLException;
+    
+    /**
+     * Release savepoint.
+     *
+     * @param savepointName savepoint name
+     * @throws SQLException SQL Exception
+     */
+    void releaseSavepoint(String savepointName) throws SQLException;
 }

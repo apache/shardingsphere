@@ -17,39 +17,38 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
-import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Command complete packet for PostgreSQL.
  */
-public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
-    
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue();
+@RequiredArgsConstructor
+public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifierPacket {
     
     private final String sqlCommand;
     
     private final long rowCount;
     
-    public PostgreSQLCommandCompletePacket() {
-        sqlCommand = "";
-        rowCount = 0;
-    }
-    
-    public PostgreSQLCommandCompletePacket(final String sqlCommand, final long rowCount) {
-        this.sqlCommand = sqlCommand;
-        this.rowCount = rowCount;
+    @Override
+    public void write(final PostgreSQLPacketPayload payload) {
+        switch (sqlCommand) {
+            case "BEGIN":
+            case "COMMIT":
+            case "ROLLBACK":
+                payload.writeStringNul(sqlCommand);
+                return;
+            default:
+        }
+        String delimiter = "INSERT".equals(sqlCommand) ? " 0 " : " ";
+        payload.writeStringNul(String.join(delimiter, sqlCommand, Long.toString(rowCount)));
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
-        if ("INSERT".equals(sqlCommand)) {
-            payload.writeStringNul(sqlCommand + " 0 " + rowCount);
-        } else {
-            payload.writeStringNul(sqlCommand + " " + rowCount);
-        }
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.COMMAND_COMPLETE;
     }
 }

@@ -55,28 +55,28 @@ public enum MySQLCommandPacketType implements CommandPacketType {
     /**
      * COM_QUERY.
      * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/com-sleep.html#packet-COM_QUERY">COM_QUERY</a>
+     * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
      */
     COM_QUERY(0x03),
     
     /**
      * COM_FIELD_LIST.
      * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/com-sleep.html#packet-COM_FIELD_LIST">COM_FIELD_LIST</a>
+     * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
      */
     COM_FIELD_LIST(0x04),
     
     /**
      * COM_CREATE_DB.
      * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/com-sleep.html#packet-COM_CREATE_DB">COM_CREATE_DB</a>
+     * @see <a href="https://dev.mysql.com/doc/internals/en/com-create-db.html">COM_CREATE_DB</a>
      */
     COM_CREATE_DB(0x05),
     
     /**
      * COM_DROP_DB.
      * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/com-create-db.html">COM_DROP_DB</a>
+     * @see <a href="https://dev.mysql.com/doc/internals/en/com-drop-db.html">COM_DROP_DB</a>
      */
     COM_DROP_DB(0x06),
     
@@ -97,7 +97,7 @@ public enum MySQLCommandPacketType implements CommandPacketType {
     /**
      * COM_STATISTICS.
      * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/com-statistics.html#packet-COM_STATISTICS">COM_STATISTICS</a>
+     * @see <a href="https://dev.mysql.com/doc/internals/en/com-statistics.html">COM_STATISTICS</a>
      */
     COM_STATISTICS(0x09),
     
@@ -146,21 +146,21 @@ public enum MySQLCommandPacketType implements CommandPacketType {
     /**
      * COM_DELAYED_INSERT.
      * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/com-time.html">COM_DELAYED_INSERT</a>
+     * @see <a href="https://dev.mysql.com/doc/internals/en/com-delayed-insert.html">COM_DELAYED_INSERT</a>
      */
     COM_DELAYED_INSERT(0x10),
     
     /**
      * COM_CHANGE_USER.
      * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/com-sleep.html#packet-COM_CHANGE_USER">COM_CHANGE_USER</a>
+     * @see <a href="https://dev.mysql.com/doc/internals/en/com-change-user.html">COM_CHANGE_USER</a>
      */
     COM_CHANGE_USER(0x11),
     
     /**
      * COM_BINLOG_DUMP.
      * 
-     * @see <a href="https://dev.mysql.com/doc/internals/en/com-change-user.html">COM_BINLOG_DUMP</a>
+     * @see <a href="https://dev.mysql.com/doc/internals/en/com-binlog-dump.html">COM_BINLOG_DUMP</a>
      */
     COM_BINLOG_DUMP(0x12),
     

@@ -42,6 +42,8 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.reset
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.fieldlist.MySQLComFieldListPacketExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor;
 
+import java.sql.SQLException;
+
 /**
  * Command executor factory for MySQL.
  */
@@ -56,8 +58,9 @@ public final class MySQLCommandExecutorFactory {
      * @param commandPacket command packet for MySQL
      * @param backendConnection backend connection
      * @return command executor
+     * @throws SQLException SQL exception
      */
-    public static CommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final BackendConnection backendConnection) {
+    public static CommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final BackendConnection backendConnection) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         switch (commandPacketType) {
             case COM_QUIT:

@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class TaskConfiguration {
     
-    private final JobConfiguration jobConfig;
+    private final HandleConfiguration handleConfig;
     
     private final DumperConfiguration dumperConfig;
     

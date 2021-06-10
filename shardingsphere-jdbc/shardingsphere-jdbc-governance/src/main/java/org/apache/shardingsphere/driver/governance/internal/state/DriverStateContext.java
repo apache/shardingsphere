@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.governance.internal.state.impl.CircuitBr
 import org.apache.shardingsphere.driver.governance.internal.state.impl.LockDriverState;
 import org.apache.shardingsphere.driver.governance.internal.state.impl.OKDriverState;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -58,6 +57,6 @@ public final class DriverStateContext {
      */
     public static Connection getConnection(final Map<String, DataSource> dataSourceMap, 
                                            final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
-        return STATES.get(StateContext.getCurrentState()).getConnection(dataSourceMap, metaDataContexts, transactionContexts, transactionType);
+        return STATES.get(metaDataContexts.getStateContext().getCurrentState()).getConnection(dataSourceMap, metaDataContexts, transactionContexts, transactionType);
     }
 }

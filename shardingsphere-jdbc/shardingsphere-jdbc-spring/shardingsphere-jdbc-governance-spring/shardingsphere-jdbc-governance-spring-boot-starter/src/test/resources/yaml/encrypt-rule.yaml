@@ -15,16 +15,15 @@
 # limitations under the License.
 #
 
-rules:
-  - !ENCRYPT
-    encryptors:
-      order_encrypt:
-        props:
-          aes-key-value: '123456'
-        type: AES
-    tables:
-      t_order:
-        columns:
-          user_id:
-            cipherColumn: user_id
-            encryptorName: order_encrypt
+- !ENCRYPT
+  encryptors:
+    order_encrypt:
+      props:
+        aes-key-value: '123456'
+      type: AES
+  tables:
+    t_order:
+      columns:
+        user_id:
+          cipherColumn: user_id
+          encryptorName: order_encrypt

@@ -5,37 +5,28 @@ weight = 9
 chapter = true
 +++
 
-## ConfigurationRepository
+## RegistryCenterRepository
 
-| *SPI Name*                       | *Description*           |
-| -------------------------------- | ----------------------- |
-| ConfigurationRepository          | Config repository           |
+| *SPI Name*                       | *Description*                        |
+| -------------------------------- | ------------------------------------ |
+| RegistryCenterRepository         | Registry center repository           |
 
-| *Implementation Class*           | *Description*           |
-| -------------------------------- | ----------------------- |
-| CuratorZookeeperRepository       | ZooKeeper config repository |
-| EtcdRepository                   | etcd config repository      |
-| NacosRepository                  | Nacos config repository     |
-| ApolloRepository                 | Apollo config repository    |
+| *Implementation Class*           | *Description*                        |
+| -------------------------------- | ------------------------------------ |
+| CuratorZookeeperRepository       | ZooKeeper registry center repository |
+| EtcdRepository                   | Etcd registry center repository      |
 
-## RegistryRepository
+## GovernanceWatcher
 
-| *SPI Name*                       | *Description*             |
-| -------------------------------- | ------------------------- |
-| RegistryRepository               | Registry repository           |
+| *SPI Name*                       | *Description*                 |
+| -------------------------------- | ----------------------------- |
+| GovernanceWatcher                | Governance watcher            |
 
-| *Implementation Class*           | *Description*             |
-| -------------------------------- | ------------------------- |
-| CuratorZookeeperRepository | ZooKeeper registry repository |
-| EtcdRepository             | etcd registry repository      |
-
-## RootInvokeHook
-
-| *SPI Name*                | *Description*                                  |
-| ------------------------- | ---------------------------------------------- |
-| RootInvokeHook            | Used to trace request root                     |
-
-| *Implementation Class*    | *Description*                                  |
-| ------------------------- | ---------------------------------------------- |
-| OpenTracingRootInvokeHook | Use OpenTracing protocol to trace request root |
-
+| *Implementation Class*           | *Description*                     |
+| -------------------------------- | --------------------------------- |
+| TerminalStateChangedWatcher      | Terminal state changed watcher    |
+| DataSourceStateChangedWatcher    | Data source state changed watcher |
+| LockChangedWatcher               | Lock changed watcher              |
+| PropertiesChangedWatcher         | Properties changed watcher        |
+| PrivilegeNodeChangedWatcher      | Privilege changed watcher         |
+| GlobalRuleChangedWatcher         | Global rule changed watcher       |

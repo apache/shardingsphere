@@ -9,10 +9,11 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encry
 
 \<encrypt:rule />
 
-| *Name*    | *Type*    | *Description*               |
-| --------- | --------- | --------------------------- |
-| id        | Attribute | Spring Bean Id              |
-| table (+) | Tag       | Encrypt table configuration |
+| *Name*                    | *Type*    | *Description*                                                                                  | *Default Value* |
+| ------------------------- | --------- | ---------------------------------------------------------------------------------------------- | --------------- |
+| id                        | Attribute | Spring Bean Id                                                                                 |                 |
+| queryWithCipherColumn (?) | Attribute | Whether query with cipher column for data encrypt. User you can use plaintext to query if have | true            |
+| table (+)                 | Tag       | Encrypt table configuration                                                                    |                 |
 
 \<encrypt:table />
 

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.integer;
 
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
@@ -35,12 +36,16 @@ public final class MySQLTinyBinlogProtocolValueTest {
     private MySQLPacketPayload payload;
     
     @Mock
+    private ByteBuf byteBuf;
+    
+    @Mock
     private MySQLBinlogColumnDef columnDef;
     
     @Test
     public void assertRead() {
-        when(payload.readInt1()).thenReturn(1);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readByte()).thenReturn((byte) 1);
         MySQLTinyBinlogProtocolValue actual = new MySQLTinyBinlogProtocolValue();
-        assertThat(actual.read(columnDef, payload), is(1));
+        assertThat(actual.read(columnDef, payload), is((byte) 1));
     }
 }

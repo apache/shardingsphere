@@ -28,10 +28,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleSta
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetPasswordStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
@@ -111,8 +111,8 @@ public final class DCLStatementAssert {
             AlterRoleStatementAssert.assertIs(assertContext, (AlterRoleStatement) actual, (AlterRoleStatementTestCase) expected);
         } else if (actual instanceof DropRoleStatement) {
             DropRoleStatementAssert.assertIs(assertContext, (DropRoleStatement) actual, (DropRoleStatementTestCase) expected);
-        } else if (actual instanceof MySQLSetRoleStatement) {
-            SetRoleStatementAssert.assertIs(assertContext, (MySQLSetRoleStatement) actual, (SetRoleStatementTestCase) expected);
+        } else if (actual instanceof SetRoleStatement) {
+            SetRoleStatementAssert.assertIs(assertContext, (SetRoleStatement) actual, (SetRoleStatementTestCase) expected);
         } else if (actual instanceof MySQLSetDefaultRoleStatement) {
             SetDefaultRoleStatementAssert.assertIs(assertContext, (MySQLSetDefaultRoleStatement) actual, (SetDefaultRoleStatementTestCase) expected);
         } else if (actual instanceof MySQLSetPasswordStatement) {

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.AbstractMemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ import java.util.List;
  */
 public final class RawMemoryQueryResult extends AbstractMemoryQueryResult {
     
-    public RawMemoryQueryResult(final RawQueryResultMetaData metaData, final List<MemoryQueryResultDataRow> rows) {
+    public RawMemoryQueryResult(final QueryResultMetaData metaData, final List<MemoryQueryResultDataRow> rows) {
         super(metaData, rows.iterator());
     }
 }

@@ -19,10 +19,14 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
 
@@ -61,11 +65,12 @@ public final class DropIndexStatementAssert {
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
         // TODO should assert index for all databases(mysql and sqlserver do not parse index right now)
-//        assertThat(assertContext.getText("Index size assertion error: "), actual.getIndexes().size(), is(expected.getIndexes().size()));
-//        int count = 0;
-//        for (IndexSegment each : actual.getIndexes()) {
-//            IndexAssert.assertIs(assertContext, each, expected.getIndexes().get(count));
-//            count++;
-//        }
+        if (actual instanceof OracleDropIndexStatement) {
+            int count = 0;
+            for (IndexSegment each : actual.getIndexes()) {
+                IndexAssert.assertIs(assertContext, each, expected.getIndexes().get(count));
+                count++;
+            }
+        }
     }
 }

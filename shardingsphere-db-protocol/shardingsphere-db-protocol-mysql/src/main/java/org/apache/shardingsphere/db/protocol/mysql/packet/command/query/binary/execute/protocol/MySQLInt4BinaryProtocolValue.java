@@ -19,6 +19,8 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.
 
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
+import java.math.BigDecimal;
+
 /**
  * Binary protocol value for int4 for MySQL.
  */
@@ -31,6 +33,6 @@ public final class MySQLInt4BinaryProtocolValue implements MySQLBinaryProtocolVa
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
-        payload.writeInt4((Integer) value);
+        payload.writeInt4(value instanceof BigDecimal ? ((BigDecimal) value).intValue() : (Integer) value);
     }
 }

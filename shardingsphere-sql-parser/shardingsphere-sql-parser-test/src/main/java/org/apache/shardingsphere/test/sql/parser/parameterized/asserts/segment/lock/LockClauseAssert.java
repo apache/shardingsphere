@@ -19,11 +19,14 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.lock.ExpectedLockClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 
@@ -46,11 +49,21 @@ public final class LockClauseAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final LockSegment actual, final ExpectedLockClause expected) {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         List<SimpleTableSegment> actualTables = actual.getTables();
+        List<ColumnSegment> actualColumns = actual.getColumns();
         List<ExpectedSimpleTable> expectedTables = expected.getTables();
+        List<ExpectedColumn> expectedColumns = expected.getColumns();
         if (actualTables.isEmpty()) {
             assertTrue(assertContext.getText("lock tables should not exist."), expectedTables.isEmpty());
-            return;
         }
         TableAssert.assertIs(assertContext, actualTables, expectedTables);
+        if (actualColumns.isEmpty()) {
+            assertTrue(assertContext.getText("lock columns should not exist."), expectedColumns.isEmpty());
+            return;
+        }
+        int count = 0;
+        for (ColumnSegment each : actual.getColumns()) {
+            ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));
+            count++;
+        }
     }
 }

@@ -109,7 +109,7 @@ In order to avoid deadlock, ShardingSphere synchronizes the database connection.
 
 In view of this problem, we also carried out the following two aspects of Optimization:          
 
-1\.    Avoid locking and only need to obtain one database connection at a time. Because only one connection needs to be obtained at a time, there is no need to lock two requests waiting for each other. For most OLTP operations, the fragmentation key is used to route to the only data node. At this time, there is no need to worry about cross deadlock and lock addition, so as to reduce the impact on concurrent efficiency. In addition to routing to a single fragment, read-write separation also belongs to this category.  
+1\.    Avoid locking and only need to obtain one database connection at a time. Because only one connection needs to be obtained at a time, there is no need to lock two requests waiting for each other. For most OLTP operations, the fragmentation key is used to route to the only data node. At this time, there is no need to worry about cross deadlock and lock addition, so as to reduce the impact on concurrent efficiency. In addition to routing to a single fragment, readwrite-splitting also belongs to this category.
 
 2\.    Lock linked resources only for memory limited mode. When using the connection restriction mode, the database connection resources are released after all query result sets are loaded into memory, so it is not necessary to consider deadlock waiting and locking processing. 
            

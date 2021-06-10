@@ -18,14 +18,16 @@
 package org.apache.shardingsphere.driver.governance.internal.circuit.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.governance.internal.circuit.resultset.CircuitBreakerResultSet;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -212,6 +214,10 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     }
     
     @Override
+    public void setArray(final int parameterIndex, final Array x) {
+    }
+    
+    @Override
     public void setURL(final int parameterIndex, final URL x) {
     }
     
@@ -267,6 +273,11 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     @Override
     protected Collection<? extends Statement> getRoutedStatements() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    protected FederateExecutor getFederateExecutor() {
+        return null;
     }
     
     @Override

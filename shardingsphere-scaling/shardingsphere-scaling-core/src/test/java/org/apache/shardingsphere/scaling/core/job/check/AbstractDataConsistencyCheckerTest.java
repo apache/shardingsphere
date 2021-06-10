@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.scaling.core.job.check;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -39,28 +40,23 @@ public final class AbstractDataConsistencyCheckerTest {
     
     @Test
     public void assertCountCheck() {
-        ScalingJob scalingJob = mockScalingJob();
-        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(scalingJob);
-        initTableData(scalingJob.getTaskConfigs().get(0).getDumperConfig().getDataSourceConfig());
-        initTableData(scalingJob.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig());
+        JobContext jobContext = new JobContext(ResourceUtil.mockJobConfig());
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
+        initTableData(jobContext.getTaskConfigs().get(0).getDumperConfig().getDataSourceConfig());
+        initTableData(jobContext.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.countCheck();
-        assertTrue(resultMap.get("t1").isCountValid());
-        assertThat(resultMap.get("t1").getSourceCount(), is(resultMap.get("t1").getTargetCount()));
+        assertTrue(resultMap.get("t_order").isCountValid());
+        assertThat(resultMap.get("t_order").getSourceCount(), is(resultMap.get("t_order").getTargetCount()));
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final DataSourceConfiguration dataSourceConfig) {
+    private void initTableData(final ScalingDataSourceConfiguration dataSourceConfig) {
         DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE IF EXISTS t1");
-            statement.execute("CREATE TABLE t1 (id INT PRIMARY KEY, user_id VARCHAR(12))");
-            statement.execute("INSERT INTO t1 (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
-    }
-    
-    @SneakyThrows(IOException.class)
-    private ScalingJob mockScalingJob() {
-        return ScalingConfigurationUtil.initJob("/config.json");
     }
 }

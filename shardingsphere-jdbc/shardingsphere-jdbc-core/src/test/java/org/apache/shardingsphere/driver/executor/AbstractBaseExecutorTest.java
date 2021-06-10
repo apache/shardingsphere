@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -84,12 +83,6 @@ public abstract class AbstractBaseExecutorTest {
         ShardingRule result = mock(ShardingRule.class);
         when(result.findTableRuleByActualTable("table_x")).thenReturn(Optional.empty());
         when(result.isNeedAccumulate(any())).thenReturn(true);
-        return result;
-    }
-    
-    protected final SQLStatementContext<?> createSQLStatementContext() {
-        SQLStatementContext<?> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getTablesContext().getTableNames()).thenReturn(Collections.singleton("table_x"));
         return result;
     }
     

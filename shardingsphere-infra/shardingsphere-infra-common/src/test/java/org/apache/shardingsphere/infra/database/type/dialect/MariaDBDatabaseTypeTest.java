@@ -18,13 +18,18 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.MariaDBDataSourceMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class MariaDBDatabaseTypeTest {
     
@@ -47,5 +52,24 @@ public final class MariaDBDatabaseTypeTest {
     @Test
     public void assertGetTrunkDatabaseType() {
         assertThat(new MariaDBDatabaseType().getTrunkDatabaseType().getName(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetSchema() throws SQLException {
+        Connection connection = mock(Connection.class);
+        when(connection.getSchema()).thenReturn("ds");
+        assertThat(new MariaDBDatabaseType().getSchema(connection), is("ds"));
+    }
+    
+    @Test
+    public void assertFormatTableNamePattern() {
+        assertThat(new MariaDBDatabaseType().formatTableNamePattern("tbl"), is("tbl"));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacter() {
+        QuoteCharacter actual = new MariaDBDatabaseType().getQuoteCharacter();
+        assertThat(actual.getStartDelimiter(), is("`"));
+        assertThat(actual.getEndDelimiter(), is("`"));
     }
 }

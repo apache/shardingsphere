@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
@@ -26,6 +25,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.SubqueryProjection;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnPr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
@@ -76,14 +78,21 @@ public final class ProjectionEngine {
         if (projectionSegment instanceof AggregationProjectionSegment) {
             return Optional.of(createProjection((AggregationProjectionSegment) projectionSegment));
         }
+        if (projectionSegment instanceof SubqueryProjectionSegment) {
+            return Optional.of(createProjection((SubqueryProjectionSegment) projectionSegment));
+        }
         // TODO subquery
         return Optional.empty();
     }
     
+    private SubqueryProjection createProjection(final SubqueryProjectionSegment projectionSegment) {
+        return new SubqueryProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
+    }
+    
     private ShorthandProjection createProjection(final Collection<SimpleTableSegment> tableSegments, final ShorthandProjectionSegment projectionSegment) {
         String owner = projectionSegment.getOwner().map(ownerSegment -> ownerSegment.getIdentifier().getValue()).orElse(null);
-        Collection<ColumnProjection> columns = getShorthandColumns(tableSegments, owner);
-        return new ShorthandProjection(owner, columns);
+        Collection<ColumnProjection> shorthandColumns = getShorthandColumns(tableSegments, owner);
+        return new ShorthandProjection(owner, shorthandColumns);
     }
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
@@ -123,8 +132,9 @@ public final class ProjectionEngine {
     private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<SimpleTableSegment> tables) {
         Collection<ColumnProjection> result = new LinkedList<>();
         for (SimpleTableSegment each : tables) {
+            String owner = each.getAlias().orElse(each.getTableName().getIdentifier().getValue());
             result.addAll(schema.getAllColumnNames(
-                    each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(null, columnName, null)).collect(Collectors.toList()));
+                    each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList()));
         }
         return result;
     }
@@ -137,6 +147,11 @@ public final class ProjectionEngine {
             }
         }
         return Collections.emptyList();
+    }
+    
+    private boolean isMatch(final ShorthandProjectionSegment projectionSegment, final SimpleTableSegment tableSegment) {
+        return !projectionSegment.getOwner().isPresent()
+                || tableSegment.getAlias().orElse(tableSegment.getTableName().getIdentifier().getValue()).equals(projectionSegment.getOwner().get().getIdentifier().getValue());
     }
     
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {

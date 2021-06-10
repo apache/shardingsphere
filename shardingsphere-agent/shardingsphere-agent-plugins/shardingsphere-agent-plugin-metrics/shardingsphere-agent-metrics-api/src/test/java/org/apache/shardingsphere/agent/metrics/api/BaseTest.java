@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.agent.metrics.api;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
+import org.apache.shardingsphere.agent.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
+import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
+import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.metrics.api.util.ReflectiveUtil;
 import org.junit.Before;
 
 public class BaseTest {
@@ -30,13 +33,13 @@ public class BaseTest {
     
     @Before
     public void assertLoad() throws IOException {
-        System.setProperty("agent-path", getResourceUrl());
+        ReflectiveUtil.setStaticField(AgentPathBuilder.class, "agentPath", new File(getResourceUrl()));
         AgentConfiguration configuration = AgentConfigurationLoader.load();
-        SingletonHolder.INSTANCE.put(configuration);
+        AgentConfigurationRegistry.INSTANCE.put(configuration);
     }
     
     private static String getResourceUrl() {
-        URL url = AgentConfigurationLoader.class.getResource(DEFAULT_CONFIG_PATH);
+        URL url = AgentConfigurationLoader.class.getClassLoader().getResource("");
         if (null != url) {
             return url.getFile();
         }

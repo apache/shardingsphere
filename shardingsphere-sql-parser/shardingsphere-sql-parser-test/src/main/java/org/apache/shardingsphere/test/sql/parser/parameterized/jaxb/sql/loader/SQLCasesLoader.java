@@ -39,6 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * SQL test cases loader.
@@ -110,14 +112,14 @@ public final class SQLCasesLoader {
     }
     
     private String getPlaceholderSQL(final String sql) {
-        return sql.replace("%%", "%").replace("'%'", "'%%'");
+        return sql;
     }
     
     private String getLiteralSQL(final String sql, final List<?> parameters) {
         if (null == parameters || parameters.isEmpty()) {
             return sql;
         }
-        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
+        return replace(sql, "?", parameters.toArray());
     }
     
     /**
@@ -162,6 +164,35 @@ public final class SQLCasesLoader {
     
     private static Collection<String> getAllDatabaseTypes() {
         return Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92");
+    }
+
+    /**
+     * Replaces each substring of this string that matches the literal target sequence with
+     * literal replacements one by one.
+     *
+     * @param source The source string need to be replaced
+     * @param target The sequence of char values to be replaced
+     * @param replacements Array of replacement
+     * @return  The resulting string
+     * @throws IllegalArgumentException When replacements is not enough to replace found target.
+     */
+    private static String replace(final String source, final CharSequence target, final Object... replacements) {
+        if (null == source || null == replacements) {
+            return source;
+        }
+        Matcher matcher = Pattern.compile(target.toString(), Pattern.LITERAL).matcher(source);
+        int found = 0;
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            found++;
+            if (found > replacements.length) {
+                throw new IllegalArgumentException(
+                        String.format("Missing replacement for '%s' at [%s].", target, found));
+            }
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(replacements[found - 1].toString()));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
     
     /**

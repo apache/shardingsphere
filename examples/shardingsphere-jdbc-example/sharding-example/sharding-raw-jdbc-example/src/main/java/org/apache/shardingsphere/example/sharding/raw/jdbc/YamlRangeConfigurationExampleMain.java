@@ -35,8 +35,8 @@ public final class YamlRangeConfigurationExampleMain {
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.REPLICA_QUERY;
-//    private static ShardingType shardingType = ShardingType.SHARDING_REPLICA_QUERY;
+//    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING;
+//    private static ShardingType shardingType = ShardingType.SHARDING_READWRITE_SPLITTING;
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlRangeDataSourceFactory.newInstance(shardingType);

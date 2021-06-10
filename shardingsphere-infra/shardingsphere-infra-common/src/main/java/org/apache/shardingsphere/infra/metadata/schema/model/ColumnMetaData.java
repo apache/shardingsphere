@@ -35,8 +35,6 @@ public final class ColumnMetaData {
     
     private final int dataType;
     
-    private final String dataTypeName;
-    
     private final boolean primaryKey;
     
     private final boolean generated;

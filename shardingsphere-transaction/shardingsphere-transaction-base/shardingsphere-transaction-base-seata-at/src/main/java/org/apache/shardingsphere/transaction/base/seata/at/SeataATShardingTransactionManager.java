@@ -62,12 +62,10 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     }
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String transactionMangerType) {
         if (enableSeataAT) {
             initSeataRPCClient();
-            for (ResourceDataSource each : resourceDataSources) {
-                dataSourceMap.put(each.getOriginalName(), new DataSourceProxy(each.getDataSource()));
-            }
+            resourceDataSources.forEach(each -> dataSourceMap.put(each.getOriginalName(), new DataSourceProxy(each.getDataSource())));
         }
     }
     

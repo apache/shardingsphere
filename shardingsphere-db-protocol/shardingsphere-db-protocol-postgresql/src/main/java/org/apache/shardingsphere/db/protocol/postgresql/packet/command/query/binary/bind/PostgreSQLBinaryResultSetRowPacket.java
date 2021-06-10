@@ -17,25 +17,22 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Binary result set row packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacket {
+public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLIdentifierPacket {
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
-
     private final BinaryRow row;
     
     @Override
@@ -51,5 +48,10 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
             payload.writeInt4(binaryProtocolValue.getColumnLength(value));
             binaryProtocolValue.write(payload, value);
         }
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.DATA_ROW;
     }
 }

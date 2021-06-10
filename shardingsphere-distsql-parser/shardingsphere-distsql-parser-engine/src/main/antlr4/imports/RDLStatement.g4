@@ -19,20 +19,20 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol;
 
-createDataSources
-    : CREATE DATASOURCES LP dataSource (COMMA dataSource)* RP
+addResource
+    : ADD RESOURCE dataSource (COMMA dataSource)*
+    ;
+
+dropResource
+    : DROP RESOURCE IDENTIFIER (COMMA IDENTIFIER)*
     ;
 
 dataSource
-    : dataSourceName EQ dataSourceDefinition
+    : dataSourceName LP HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName COMMA USER EQ user (COMMA PASSWORD EQ password)? RP
     ;
 
 dataSourceName
     : IDENTIFIER
-    ;
-
-dataSourceDefinition
-    : hostName COLON port COLON dbName (COLON user (COLON password)?)?
     ;
 
 hostName
@@ -56,61 +56,177 @@ user
     ;
 
 password
-    : IDENTIFIER | NUMBER | STRING
+    : IDENTIFIER | INT | STRING
     ;
 
-createShardingRule
-    : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* RP
+createShardingTableRule
+    : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
+    ;
+
+createShardingBindingTableRules
+    : CREATE SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    ;
+
+bindTableRulesDefinition
+    : LP tableName (COMMA tableName)* RP
+    ;
+
+createShardingBroadcastTableRules
+    : CREATE SHARDING BROADCAST TABLE RULES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
+alterShardingTableRule
+    : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
+    ;
+
+alterShardingBindingTableRules
+    : ALTER SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
+    ;
+
+alterShardingBroadcastTableRules
+    : ALTER SHARDING BROADCAST TABLE RULES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
+createReadwriteSplittingRule
+    : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
+    ;
+
+readwriteSplittingRuleDefinition
+    : ruleName LP (staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition) (COMMA functionDefinition)? RP
+    ;
+
+staticReadwriteSplittingRuleDefinition
+    : WRITE_RESOURCE EQ writeResourceName COMMA READ_RESOURCES LP resourceName (COMMA resourceName)* RP
+    ;
+
+dynamicReadwriteSplittingRuleDefinition
+    : AUTO_AWARE_RESOURCE EQ IDENTIFIER
+    ;
+
+alterReadwriteSplittingRule
+    : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
 
 shardingTableRuleDefinition
-    : tableName columName shardingAlgorithmDefinition
+    : tableName LP resources (COMMA shardingColumn)? (COMMA functionDefinition)? (COMMA keyGenerateStrategy)? RP
     ;
 
-shardingAlgorithmDefinition
-    : shardingAlgorithmType LP shardingAlgorithmProperties RP
+resources
+    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
-shardingAlgorithmType
+writeResourceName
+    : resourceName
+    ;
+
+resourceName
     : IDENTIFIER
     ;
 
-shardingAlgorithmProperties
-    : shardingAlgorithmProperty (COMMA shardingAlgorithmProperty)*
+shardingColumn
+    : SHARDING_COLUMN EQ columnName
     ;
 
-shardingAlgorithmProperty
-    : shardingAlgorithmPropertyKey EQ shardingAlgorithmPropertyValue
+keyGenerateStrategy
+    : GENERATED_KEY LP COLUMN EQ columnName COMMA functionDefinition RP
     ;
 
-shardingAlgorithmPropertyKey
+ruleName
     : IDENTIFIER
-    ;
-
-shardingAlgorithmPropertyValue
-    : NUMBER | INT | STRING
     ;
 
 tableName
     : IDENTIFIER
     ;
 
-columName
+columnName
     : IDENTIFIER
     ;
 
-showDataSources
-    : SHOW DATASOURCES (FROM schemaName)?
+dropReadwriteSplittingRule
+    : DROP READWRITE_SPLITTING RULE IDENTIFIER (COMMA IDENTIFIER)*
     ;
 
-showRule
-    : SHOW ruleType RULE (FROM schemaName)?
+dropShardingTableRule
+    : DROP SHARDING TABLE RULE tableName (COMMA tableName)*
     ;
 
-ruleType
-    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
+dropShardingBindingTableRules
+    : DROP SHARDING BINDING TABLE RULES
+    ;
+
+dropShardingBroadcastTableRules
+    : DROP SHARDING BROADCAST TABLE RULES
+    ;
+
+showShardingRule
+    : SHOW SHARDING RULE (FROM schemaName)?
+    ;
+
+schemaNames
+    : schemaName (COMMA schemaName)*
     ;
 
 schemaName
+    : IDENTIFIER
+    ;
+
+functionDefinition
+    : TYPE LP NAME EQ functionName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    ;
+
+functionName
+    : IDENTIFIER
+    ;
+
+algorithmProperties
+    : algorithmProperty (COMMA algorithmProperty)*
+    ;
+
+algorithmProperty
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+    ;
+
+createDatabaseDiscoveryRule
+    : CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    ;
+
+databaseDiscoveryRuleDefinition
+    : ruleName LP resources COMMA functionDefinition RP
+    ;
+
+alterDatabaseDiscoveryRule
+    : ALTER DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    ;
+
+dropDatabaseDiscoveryRule
+    : DROP DB_DISCOVERY RULE IDENTIFIER (COMMA IDENTIFIER)*
+    ;
+
+createEncryptRule
+    : CREATE ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
+    ;
+
+encryptRuleDefinition
+    : tableName LP RESOURCE EQ resourceName COMMA COLUMNS LP columnDefinition (COMMA columnDefinition)*  RP RP
+    ;
+
+columnDefinition
+    : LP NAME EQ columnName (COMMA PLAIN EQ plainColumnName)? COMMA CIPHER EQ cipherColumnName COMMA functionDefinition RP
+    ;
+
+alterEncryptRule
+    : ALTER ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
+    ;
+
+dropEncryptRule
+    : DROP ENCRYPT RULE IDENTIFIER (COMMA IDENTIFIER)*
+    ;
+
+plainColumnName
+    : IDENTIFIER
+    ;
+
+cipherColumnName
     : IDENTIFIER
     ;

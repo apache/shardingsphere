@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
@@ -36,13 +37,12 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFa
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Command query executor for PostgreSQL.
@@ -54,7 +54,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     @Getter
     private volatile ResponseType responseType;
     
-    public PostgreSQLComQueryExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
+    public PostgreSQLComQueryExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) throws SQLException {
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), comQueryPacket.getSql(), backendConnection);
     }
     
@@ -62,22 +62,16 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         ResponseHeader responseHeader = textProtocolBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
-            Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponseHeader) responseHeader);
-            return result.<List<DatabasePacket<?>>>map(Collections::singletonList).orElseGet(Collections::emptyList);
+            return Collections.singletonList(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
         }
         responseType = ResponseType.UPDATE;
         return Collections.singletonList(createUpdatePacket((UpdateResponseHeader) responseHeader));
     }
     
-    private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponseHeader queryResponseHeader) {
+    private PostgreSQLRowDescriptionPacket createRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {
         Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponseHeader);
-        if (columnDescriptions.isEmpty()) {
-            responseType = ResponseType.QUERY;
-        }
-        if (columnDescriptions.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
+        responseType = ResponseType.QUERY;
+        return new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions);
     }
     
     private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {
@@ -89,8 +83,9 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
-        return new PostgreSQLCommandCompletePacket(new PostgreSQLCommand(updateResponseHeader.getSqlStatement()).getSQLCommand(), updateResponseHeader.getUpdateCount());
+    private PostgreSQLPacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
+        return updateResponseHeader.getSqlStatement() instanceof EmptyStatement ? new PostgreSQLEmptyQueryResponsePacket()
+                : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(updateResponseHeader.getSqlStatement().getClass()).map(Enum::name).orElse(""), updateResponseHeader.getUpdateCount());
     }
     
     @Override

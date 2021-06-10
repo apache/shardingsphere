@@ -32,7 +32,7 @@ public final class PostgreSQLInt8BinaryProtocolValue implements PostgreSQLBinary
     }
     
     @Override
-    public Object read(final PostgreSQLPacketPayload payload) {
+    public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
         return payload.readInt8();
     }
     

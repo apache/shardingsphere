@@ -6,11 +6,15 @@ weight = 2
 It is used to verify the authentication to log in ShardingSphere-Proxy, which must use correct user name and password after the configuration of them.
 
 ```yaml
-authentication:
-  users:
-    root: # Self-defined username
-      password: root # Self-defined password
-    sharding: # Self-defined username
-      password: sharding # Self-defined password
-      authorizedSchemas: sharding_db, replica_query_db # Schemas authorized to this user, please use commas to connect multiple schemas. Default authorized schemas is all of the schemas.
+rules:
+  - !AUTHORITY
+    users:
+      - root@localhost:root # <username>@<hostname>:<password>
+      - sharding@:sharding
+    provider:
+      type: NATIVE
 ```
+
+If the hostname is `%` or empty, it means no restrict to the user's host.
+
+The type of the provider must be explicitly specified. Refer to [5.11 Proxy](/en/dev-manual/proxy) for more implementations.

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.context.transaction;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
+import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -32,8 +32,11 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
     
     private final TransactionContexts contexts;
     
-    public GovernanceTransactionContexts(final TransactionContexts contexts) {
+    private final String xaTransactionMangerType;
+    
+    public GovernanceTransactionContexts(final TransactionContexts contexts, final String xaTransactionMangerType) {
         this.contexts = contexts;
+        this.xaTransactionMangerType = xaTransactionMangerType;
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -65,7 +68,7 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
             oldEngine.close();
         }
         ShardingTransactionManagerEngine newEngine = new ShardingTransactionManagerEngine();
-        newEngine.init(event.getDatabaseType(), event.getDataSources());
+        newEngine.init(event.getDatabaseType(), event.getDataSources(), xaTransactionMangerType);
         contexts.getEngines().put(event.getSchemaName(), newEngine);
     }
 }

@@ -68,7 +68,7 @@ db0.t_order0, db0.t_order1, db1.t_order2, db1.t_order3, db1.t_order4
 
 - 表分片策略
 
-对应于 TableShardingStrategy。用于配置数据被分配的目标表，该目标表存在与该数据的目标数据源内。故表分片策略是依赖与数据源分片策略的结果的。
+对应于 TableShardingStrategy。用于配置数据被分配的目标表，该目标表存在于该数据的目标数据源内。故表分片策略是依赖于数据源分片策略的结果的。
 
 两种策略的 API 完全相同。
 

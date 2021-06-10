@@ -90,7 +90,7 @@ public final class SeataATShardingTransactionManagerTest {
     
     @Before
     public void setUp() {
-        seataATShardingTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), getResourceDataSources());
+        seataATShardingTransactionManager.init(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), getResourceDataSources(), "seata");
     }
     
     @After

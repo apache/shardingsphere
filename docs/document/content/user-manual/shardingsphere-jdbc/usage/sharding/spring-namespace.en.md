@@ -15,6 +15,8 @@ weight = 4
 
 ## Configure Rule
 
+Note: The example database connection pool is HikariCP, which can be replaced with other mainstream database connection pools according to business scenarios.
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -27,16 +29,16 @@ weight = 4
                         ">
     <!-- Configure actual data sources -->
     <!-- Configure the first data source -->
-    <bean id="ds0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+    <bean id="ds0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ds0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     <!-- Configure the second data source -->
-    <bean id="ds1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+    <bean id="ds1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ds1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>

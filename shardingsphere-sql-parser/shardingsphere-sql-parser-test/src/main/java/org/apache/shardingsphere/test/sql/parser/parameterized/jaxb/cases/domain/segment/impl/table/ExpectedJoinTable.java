@@ -20,9 +20,12 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedDelimiterSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.ExpectedJoinSpecification;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpression;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Expected JoinTable.
@@ -30,13 +33,16 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExpectedJoinTable extends AbstractExpectedDelimiterSQLSegment {
-    
+
     @XmlElement(name = "left")
     private ExpectedTable left;
 
     @XmlElement(name = "right")
     private ExpectedTable right;
-    
-    @XmlElement
-    private ExpectedJoinSpecification joinSpecification;
+
+    @XmlElement(name = "on-condition")
+    private ExpectedExpression onCondition;
+
+    @XmlElement(name = "using-columns")
+    private final List<ExpectedColumn> usingColumns = new LinkedList<>();
 }

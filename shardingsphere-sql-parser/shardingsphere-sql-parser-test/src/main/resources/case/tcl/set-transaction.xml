@@ -21,6 +21,10 @@
     <set-transaction sql-case-id="setGlobalTransaction" />
     <set-transaction sql-case-id="setSessionTransaction" />
     <set-transaction sql-case-id="setTransactionReadOnly" />
+    <set-transaction sql-case-id="setTransactionReadWriteWithName" />
+    <set-transaction sql-case-id="setTransactionIsolationLevelSerializable" />
+    <set-transaction sql-case-id="setTransactionIsolationLevelReadCommitted" />
+    <set-transaction sql-case-id="setTransactionUseRollbackSegment" />
     <set-transaction sql-case-id="setTransactionWithName" />
     <set-transaction sql-case-id="setTransactionSnapshot" />
     <xa sql-case-id="xa-recover" />

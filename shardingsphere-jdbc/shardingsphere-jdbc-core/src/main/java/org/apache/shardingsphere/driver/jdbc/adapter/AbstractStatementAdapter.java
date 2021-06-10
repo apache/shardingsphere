@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import org.apache.shardingsphere.infra.executor.sql.federate.execute.FederateExecutor;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -50,6 +51,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         closed = true;
         try {
             forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
+            getFederateExecutor().close();
         } finally {
             getRoutedStatements().clear();
         }
@@ -115,13 +117,12 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final int getUpdateCount() throws SQLException {
         if (isAccumulate()) {
             return accumulate();
-        } else {
-            Collection<? extends Statement> statements = getRoutedStatements();
-            if (statements.isEmpty()) {
-                return -1;
-            }
-            return getRoutedStatements().iterator().next().getUpdateCount();
         }
+        Collection<? extends Statement> statements = getRoutedStatements();
+        if (statements.isEmpty()) {
+            return -1;
+        }
+        return getRoutedStatements().iterator().next().getUpdateCount();
     }
     
     private int accumulate() throws SQLException {
@@ -203,4 +204,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     protected abstract boolean isAccumulate();
     
     protected abstract Collection<? extends Statement> getRoutedStatements();
+    
+    protected abstract FederateExecutor getFederateExecutor();
 }

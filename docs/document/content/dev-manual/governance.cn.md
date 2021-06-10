@@ -5,36 +5,28 @@ weight = 9
 chapter = true
 +++
 
-## ConfigurationRepository
+## RegistryCenterRepository
 
-| *SPI 名称*                       | *详细说明*               |
-| -------------------------------- | ----------------------- |
-| ConfigurationRepository          | 配置中心                 |
+| *SPI 名称*                     | *详细说明*               |
+| ----------------------------- | ----------------------- |
+| RegistryCenterRepository      | 注册中心                 |
 
-| *已知实现类*                      | *详细说明*               |
-| -------------------------------- | ----------------------- |
-| CuratorZookeeperRepository | 基于 ZooKeeper 的配置中心 |
-| EtcdRepository             | 基于 etcd 的配置中心      |
-| NacosRepository            | 基于 Nacos 的配置中心     |
-| ApolloRepository           | 基于 Apollo 的配置中心    |
+| *已知实现类*                    | *详细说明*               |
+| ----------------------------- | ----------------------- |
+| CuratorZookeeperRepository    | 基于 ZooKeeper 的注册中心 |
+| EtcdRepository                | 基于 etcd 的注册中心      |
 
-## RegistryRepository
+## GovernanceWatcher
 
-| *SPI 名称*                       | *详细说明*               |
-| -------------------------------- | ----------------------- |
-| RegistryRepository               | 注册中心                 |
+| *SPI 名称*                     | *详细说明*          |
+| ----------------------------- | ------------------ |
+| GovernanceWatcher             | 治理监听器           |
 
-| *已知实现类*                      | *详细说明*               |
-| -------------------------------- | ----------------------- |
-| CuratorZookeeperRepository | 基于 ZooKeeper 的注册中心 |
-| EtcdRepository             | 基于 etcd 的注册中心      |
-
-## RootInvokeHook
-
-| *SPI 名称*                 | *详细说明*                           |
-| ------------------------- | ------------------------------------ |
-| RootInvokeHook            | 请求调用入口追踪                       |
-
-| *已知实现类*               | *详细说明*                            |
-| ------------------------- | ------------------------------------ |
-| OpenTracingRootInvokeHook | 基于 OpenTracing 协议的请求调用入口追踪 |
+| *已知实现类*                    | *详细说明*          |
+| ----------------------------- | ------------------ |
+| TerminalStateChangedWatcher   | 终端节点状态变化监听器 |
+| DataSourceStateChangedWatcher | 数据源状态变化监听器   |
+| LockChangedWatcher            | 锁状态变化监听器      |
+| PropertiesChangedWatcher      | 属性变化监听器        |
+| PrivilegeNodeChangedWatcher   | 权限变化监听器        |
+| GlobalRuleChangedWatcher      | 全局规则配置变化监听器 |

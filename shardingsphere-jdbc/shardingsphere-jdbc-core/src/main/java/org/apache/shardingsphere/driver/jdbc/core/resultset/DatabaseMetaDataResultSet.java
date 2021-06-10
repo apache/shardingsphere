@@ -111,7 +111,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);
                 String indexName = resultSet.getString(i);
-                result.addObject(null != indexName && indexName.endsWith(tableName) ? indexName.substring(0, indexName.indexOf(tableName) - 1) : indexName);
+                result.addObject(null != indexName && indexName.endsWith(tableName) ? indexName.substring(0, indexName.length() - tableName.length() - 1) : indexName);
             } else {
                 result.addObject(resultSet.getObject(i));
             }

@@ -24,6 +24,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexSt
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
 
@@ -49,5 +51,21 @@ public final class DropIndexStatementHandler implements SQLStatementHandler {
             return ((SQLServerDropIndexStatement) dropIndexStatement).getTable();
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Judge whether contains exist clause or not.
+     *
+     * @param dropIndexStatement drop index statement
+     * @return whether contains exist clause or not
+     */
+    public static boolean containsExistClause(final DropIndexStatement dropIndexStatement) {
+        if (dropIndexStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLDropIndexStatement) dropIndexStatement).isContainsExistClause();
+        }
+        if (dropIndexStatement instanceof SQLServerStatement) {
+            return ((SQLServerDropIndexStatement) dropIndexStatement).isContainsExistClause();
+        }
+        return false;
     }
 }

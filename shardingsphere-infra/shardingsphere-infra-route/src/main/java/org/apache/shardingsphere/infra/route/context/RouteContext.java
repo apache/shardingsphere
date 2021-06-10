@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.route.context;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -44,6 +45,9 @@ public final class RouteContext {
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
     private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
+    
+    @Setter
+    private boolean isFederated;
     
     /**
      * Judge is route for single database and table only or not.
@@ -79,7 +83,7 @@ public final class RouteContext {
     }
     
     private Set<String> getActualTableNames(final String actualDataSourceName, final String logicTableName) {
-        Set<String> result = new HashSet<>();
+        Set<String> result = new LinkedHashSet<>();
         for (RouteUnit each : routeUnits) {
             if (actualDataSourceName.equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 result.addAll(each.getActualTableNames(logicTableName));
@@ -130,5 +134,22 @@ public final class RouteContext {
             }
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Put route unit.
+     *
+     * @param dataSourceMapper database mapper
+     * @param tableMapper table mapper
+     */
+    public void putRouteUnit(final RouteMapper dataSourceMapper, final RouteMapper tableMapper) {
+        Optional<RouteUnit> target = routeUnits.stream().filter(unit -> unit.getDataSourceMapper().equals(dataSourceMapper)).findFirst();
+        RouteUnit unit = new RouteUnit(dataSourceMapper, new LinkedHashSet<>());
+        if (target.isPresent()) {
+            unit.getTableMappers().addAll(target.get().getTableMappers());
+            routeUnits.remove(target.get());
+        }
+        unit.getTableMappers().add(tableMapper);
+        routeUnits.add(unit);
     }
 }

@@ -36,4 +36,10 @@ public final class EncryptRuleConfiguration implements RuleConfiguration {
     private final Collection<EncryptTableRuleConfiguration> tables;
     
     private final Map<String, ShardingSphereAlgorithmConfiguration> encryptors;
+    
+    private final boolean queryWithCipherColumn;
+    
+    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, ShardingSphereAlgorithmConfiguration> encryptors) {
+        this(tables, encryptors, true);
+    }
 }

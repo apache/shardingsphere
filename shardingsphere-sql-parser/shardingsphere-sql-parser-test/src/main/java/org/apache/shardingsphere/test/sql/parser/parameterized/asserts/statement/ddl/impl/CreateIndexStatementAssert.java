@@ -20,7 +20,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
 
@@ -56,6 +58,8 @@ public final class CreateIndexStatementAssert {
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
         // TODO should assert index for all databases(mysql and sqlserver do not parse index right now)
-//        IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
+        if (actual instanceof OracleCreateIndexStatement) {
+            IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
+        }
     }
 }

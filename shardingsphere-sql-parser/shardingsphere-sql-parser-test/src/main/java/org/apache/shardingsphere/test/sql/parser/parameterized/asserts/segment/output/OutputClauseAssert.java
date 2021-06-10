@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnPr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.output.ExpectedOutputClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.impl.column.ExpectedColumnProjection;
 
@@ -69,8 +70,7 @@ public final class OutputClauseAssert {
     }
     
     private static void assertOutputColumnSegment(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) { 
-        assertThat(assertContext.getText("Output column name assertion error: "), 
-                actual.getColumn().getIdentifier().getValue(), is(expected.getName()));
+        IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Output column");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     

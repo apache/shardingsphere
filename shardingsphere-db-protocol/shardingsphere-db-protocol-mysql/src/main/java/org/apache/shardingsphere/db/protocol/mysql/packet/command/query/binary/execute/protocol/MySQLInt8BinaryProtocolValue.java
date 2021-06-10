@@ -33,6 +33,12 @@ public final class MySQLInt8BinaryProtocolValue implements MySQLBinaryProtocolVa
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
-        payload.writeInt8(value instanceof BigDecimal ? ((BigDecimal) value).longValue() : (Long) value);
+        if (value instanceof BigDecimal) {
+            payload.writeInt8(((BigDecimal) value).longValue());
+        } else if (value instanceof Integer) {
+            payload.writeInt8(((Integer) value).longValue());
+        } else {
+            payload.writeInt8((Long) value);
+        }
     }
 }

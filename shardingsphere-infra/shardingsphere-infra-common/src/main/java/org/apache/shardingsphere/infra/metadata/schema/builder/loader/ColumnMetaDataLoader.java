@@ -20,14 +20,12 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -78,21 +76,20 @@ public final class ColumnMetaDataLoader {
                 }
             }
         }
-        try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(tableNamePattern, databaseType))) {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(generateEmptyResultSQL(tableNamePattern, databaseType))) {
             for (String each : columnNames) {
                 isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each)));
             }
         }
         for (int i = 0; i < columnNames.size(); i++) {
             // TODO load auto generated from database meta data
-            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), columnTypeNames.get(i), isPrimaryKeys.get(i), false, isCaseSensitives.get(i)));
+            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), false, isCaseSensitives.get(i)));
         }
         return result;
     }
     
     private static String generateEmptyResultSQL(final String table, final DatabaseType databaseType) {
-        QuoteCharacter quoteCharacter = DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getQuoteCharacter).orElse(QuoteCharacter.NONE);
-        return String.format("SELECT * FROM %s WHERE 1 != 1", quoteCharacter.wrap(table));
+        return String.format("SELECT * FROM %s WHERE 1 != 1", databaseType.getQuoteCharacter().wrap(table));
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {

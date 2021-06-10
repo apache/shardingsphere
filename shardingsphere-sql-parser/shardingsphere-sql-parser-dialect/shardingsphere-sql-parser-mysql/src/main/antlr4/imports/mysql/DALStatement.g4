@@ -47,7 +47,7 @@ showTableStatus
     ;
 
 showColumns
-    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema? (showColumnLike | showWhereClause)?
+    : SHOW EXTENDED? FULL? COLUMNS fromTable fromSchema? (showColumnLike | showWhereClause)?
     ;
 
 showIndex
@@ -87,11 +87,23 @@ showProfileType
     ;
 
 setVariable
-    : SET variableAssign (COMMA_ variableAssign)*
+    : SET optionValueList
     ;
 
-variableAssign
-    : variable EQ_ setExprOrDefault
+optionValueList
+    : optionValueNoOptionType (COMMA_ optionValue)*
+    | optionType (internalVariableName EQ_ setExprOrDefault) (COMMA_ optionValue)*
+    ;
+
+optionValueNoOptionType
+    : internalVariableName EQ_ setExprOrDefault
+    | userVariable EQ_ expr
+    | setSystemVariable EQ_ setExprOrDefault
+    | NAMES (EQ_ expr | charsetName collateClause? | DEFAULT)
+    ;
+
+optionValue
+    : optionType internalVariableName EQ_ setExprOrDefault | optionValueNoOptionType
     ;
 
 showBinaryLogs
@@ -146,6 +158,10 @@ showEngines
     : SHOW STORAGE? ENGINES
     ;
 
+showCharset
+    : SHOW CHARSET
+    ;
+    
 showErrors
     : SHOW (COUNT LP_ ASTERISK_ RP_)? ERRORS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
     ;
@@ -163,7 +179,7 @@ showFunctionStatus
     ;
 
 showGrant
-    : SHOW GRANTS (FOR userOrRole (USING userName (COMMA_ userName)+)?)?
+    : SHOW GRANTS (FOR userName (USING userName (COMMA_ userName)+)?)?
     ;
 
 showMasterStatus
@@ -234,10 +250,6 @@ setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
     ;
 
-setName
-    : SET NAMES (EQ_ expr | charsetName collateClause? | DEFAULT)
-    ;
-
 clone
     : CLONE cloneAction
     ;
@@ -247,7 +259,7 @@ cloneAction
     | INSTANCE FROM cloneInstance IDENTIFIED BY string_ (DATA DIRECTORY EQ_? cloneDir)? (REQUIRE NO? SSL)?
     ;
 
-createUdf
+createLoadableFunction
     : CREATE AGGREGATE? FUNCTION functionName RETURNS (STRING | INTEGER | REAL | DECIMAL) SONAME shardLibraryName
     ;
 
@@ -417,6 +429,7 @@ show
     | showCreateView
     | showEngine
     | showEngines
+    | showCharset
     | showErrors
     | showEvents
     | showFunctionCode

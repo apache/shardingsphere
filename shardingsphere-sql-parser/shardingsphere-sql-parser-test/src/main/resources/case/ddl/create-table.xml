@@ -76,7 +76,111 @@
             <column name="status" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_private_temporary_table">
+        <table name="t_temp_log" start-index="31" stop-index="40" />
+        <column-definition type="int" start-index="42" stop-index="47">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="50" stop-index="67">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_shared_table">
+        <table name="t_temp_log" start-index="21" stop-index="30" />
+        <column-definition type="int" start-index="32" stop-index="37">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="40" stop-index="57">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_duplicated_table">
+        <table name="t_temp_log" start-index="24" stop-index="33" />
+        <column-definition type="int" start-index="35" stop-index="40">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="43" stop-index="60">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_sharing_metadata">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="39" stop-index="56">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="59" stop-index="76">
+            <column name="status" />
+        </column-definition>
+    </create-table>
     
+    <create-table sql-case-id="create_table_with_sharing_data">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="35" stop-index="52">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="55" stop-index="72">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_sharing_extended_data">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="44" stop-index="61">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="64" stop-index="81">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_sharing_none">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="35" stop-index="52">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="55" stop-index="72">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_optimize_read">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="19" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="39" stop-index="56">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_optimize_write">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="19" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="39" stop-index="56">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_parent">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="19" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="39" stop-index="56">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_object_table">
+        <table name="t_log" start-index="13" stop-index="17" />
+    </create-table>
+  
     <create-table sql-case-id="create_local_temp_table">
         <table name="t_temp_log" start-index="24" stop-index="33" />
         <column-definition type="int" start-index="35" stop-index="40">
@@ -388,7 +492,7 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="132" stop-index="176">
+        <constraint-definition constraint-name="pk_order_id" start-index="132" stop-index="176">
             <primary-key-column name="order_id" start-index="168" stop-index="175" />
         </constraint-definition>
     </create-table>
@@ -414,7 +518,7 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="132" stop-index="193">
+        <constraint-definition constraint-name="pk_order_id" start-index="132" stop-index="193">
             <primary-key-column name="order_id" start-index="168" stop-index="175" />
             <primary-key-column name="user_id" start-index="178" stop-index="184" />
             <primary-key-column name="status" start-index="187" stop-index="192" />
@@ -441,7 +545,7 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition index-name="order_id_index" start-index="132" stop-index="190">
+        <constraint-definition constraint-name="uk_order_id" index-name="order_id_index" start-index="132" stop-index="190">
             <index-column name="order_id" start-index="182" stop-index="189"/>
         </constraint-definition>
     </create-table>
@@ -466,7 +570,7 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="132" stop-index="188">
+        <constraint-definition constraint-name="uk_order_id" start-index="132" stop-index="188">
             <index-column name="order_id" start-index="163" stop-index="170" />
             <index-column name="user_id" start-index="173" stop-index="179" />
             <index-column name="status" start-index="182" stop-index="187" />
@@ -496,7 +600,7 @@
         <column-definition type="VARCHAR" start-index="129" stop-index="147">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="150" stop-index="260">
+        <constraint-definition constraint-name="fk_order_id" start-index="150" stop-index="260">
             <referenced-table name="t_order" start-index="207" stop-index="213" />
         </constraint-definition>
     </create-table>
@@ -524,7 +628,7 @@
         <column-definition type="VARCHAR" start-index="129" stop-index="147">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="150" stop-index="294">
+        <constraint-definition constraint-name="fk_order_id" start-index="150" stop-index="294">
             <referenced-table name="t_order" start-index="224" stop-index="230" />
         </constraint-definition>
     </create-table>
@@ -903,7 +1007,7 @@
         <column-definition type="VARCHAR2" start-index="153" stop-index="172">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="175" stop-index="267">
+        <constraint-definition constraint-name="fk_order_id" start-index="175" stop-index="267">
             <referenced-table name="t_order" start-index="232" stop-index="238" />
         </constraint-definition>
     </create-table>
@@ -931,7 +1035,7 @@
         <column-definition type="VARCHAR2" start-index="153" stop-index="172">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="175" stop-index="301">
+        <constraint-definition constraint-name="fk_order_id" start-index="175" stop-index="301">
             <referenced-table name="t_order" start-index="249" stop-index="255" />
         </constraint-definition>
     </create-table>
@@ -962,7 +1066,9 @@
         <constraint-definition start-index="175" stop-index="195">
             <primary-key-column name="item_id" start-index="188" stop-index="194"/>
         </constraint-definition>
-        <constraint-definition start-index="198" stop-index="213"/>
+        <constraint-definition start-index="198" stop-index="213">
+            <index-column name="item_id" start-index="206" stop-index="212" />
+        </constraint-definition>
         <constraint-definition start-index="216" stop-index="285">
             <referenced-table name="t_order" start-index="250" stop-index="256" />
         </constraint-definition>
@@ -1031,6 +1137,30 @@
         </column-definition>
         <column-definition type="VARCHAR2" start-index="128" stop-index="147">
             <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_xmltype_table_oracle">
+        <table name="xwarehouses" start-index="13" stop-index="23" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_xmltype_column_oracle">
+        <table name="xwarehouses" start-index="13" stop-index="23" />
+        <column-definition type="NUMBER" start-index="26" stop-index="44">
+            <column name="warehouse_id" />
+        </column-definition>
+        <column-definition type="XMLTYPE" start-index="47" stop-index="68">
+            <column name="warehouse_spec" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_xmltype_column_clob_oracle">
+        <table name="xwarehouses" start-index="13" stop-index="23" />
+        <column-definition type="NUMBER" start-index="26" stop-index="44">
+            <column name="warehouse_id" />
+        </column-definition>
+        <column-definition type="XMLTYPE" start-index="47" stop-index="68">
+            <column name="warehouse_spec" />
         </column-definition>
     </create-table>
     

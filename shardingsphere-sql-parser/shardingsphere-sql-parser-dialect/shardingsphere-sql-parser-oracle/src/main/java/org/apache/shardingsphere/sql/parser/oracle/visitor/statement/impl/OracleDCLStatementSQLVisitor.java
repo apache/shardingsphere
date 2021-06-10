@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropUs
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectPrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RevokeContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetRoleContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleAlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleAlterUserStatement;
@@ -38,14 +40,21 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleDropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleRevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleSetRoleStatement;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * DCL Statement SQL visitor for Oracle.
  */
+@NoArgsConstructor
 public final class OracleDCLStatementSQLVisitor extends OracleStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
+    
+    public OracleDCLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
@@ -101,5 +110,10 @@ public final class OracleDCLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
         return new OracleDropRoleStatement();
+    }
+
+    @Override
+    public ASTNode visitSetRole(final SetRoleContext ctx) {
+        return new OracleSetRoleStatement();
     }
 }

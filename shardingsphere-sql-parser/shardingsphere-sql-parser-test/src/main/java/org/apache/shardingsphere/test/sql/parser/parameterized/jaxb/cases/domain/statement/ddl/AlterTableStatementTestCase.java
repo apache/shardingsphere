@@ -40,6 +40,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "table")
     private ExpectedSimpleTable table;
     
+    @XmlElement(name = "rename-table")
+    private ExpectedSimpleTable renameTable;
+    
     @XmlElement(name = "add-column")
     private final List<ExpectedAddColumnDefinition> addColumns = new LinkedList<>();
     

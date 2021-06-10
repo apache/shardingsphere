@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
@@ -78,12 +79,13 @@ public abstract class AbstractBootstrapInitializerTest {
         doReturn(mock(ProxyConfiguration.class)).when(abstractBootstrapInitializer).getProxyConfiguration(any());
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
-        when(props.getValue(ConfigurationPropertyKey.PROXY_XA_TRANSACTION_MANAGER_TYPE)).thenReturn("atomikos");
+        when(props.getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE)).thenReturn("Atomikos");
         when(props.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)).thenReturn(Boolean.FALSE);
         when(metaDataContexts.getProps()).thenReturn(props);
         doReturn(metaDataContexts).when(abstractBootstrapInitializer).decorateMetaDataContexts(any());
-        doReturn(mock(TransactionContexts.class)).when(abstractBootstrapInitializer).decorateTransactionContexts(any());
+        doReturn(mock(TransactionContexts.class)).when(abstractBootstrapInitializer).decorateTransactionContexts(any(), any());
         YamlProxyConfiguration yamlConfig = mock(YamlProxyConfiguration.class);
+        when(yamlConfig.getServerConfiguration()).thenReturn(mock(YamlProxyServerConfiguration.class));
         abstractBootstrapInitializer.init(yamlConfig, eq(anyInt()));
         verify(shardingSphereProxy).start(anyInt());
     }

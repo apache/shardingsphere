@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.yaml.engine;
 
-import org.apache.shardingsphere.infra.yaml.swapper.fixture.FixtureYamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.swapper.fixture.YamlRuleConfigurationFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
 
@@ -26,11 +27,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,7 +39,7 @@ public final class YamlEngineTest {
     public void assertUnmarshalWithFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/fixture-rule.yaml");
         assertNotNull(url);
-        FixtureYamlRuleConfiguration actual = YamlEngine.unmarshal(new File(url.getFile()), FixtureYamlRuleConfiguration.class);
+        YamlRuleConfigurationFixture actual = YamlEngine.unmarshal(new File(url.getFile()), YamlRuleConfigurationFixture.class);
         assertThat(actual.getName(), is("test"));
     }
     
@@ -60,48 +56,42 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        FixtureYamlRuleConfiguration actual = YamlEngine.unmarshal(yamlContent.toString().getBytes(), FixtureYamlRuleConfiguration.class);
+        YamlRuleConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRuleConfigurationFixture.class);
         assertThat(actual.getName(), is("test"));
     }
     
     @Test
     public void assertUnmarshalWithYamlContentClassType() {
-        FixtureYamlRuleConfiguration actual = YamlEngine.unmarshal("name: test", FixtureYamlRuleConfiguration.class);
+        YamlRuleConfigurationFixture actual = YamlEngine.unmarshal("name: test", YamlRuleConfigurationFixture.class);
         assertThat(actual.getName(), is("test"));
     }
     
     @Test
-    @SuppressWarnings("unchecked")
-    public void assertUnmarshalWithYamlContent() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("name: test", Collections.emptyList());
-        assertThat(actual.get("name").toString(), is("test"));
-    }
-    
-    @Test
     public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalProperties("password: pwd\nauthorizedSchemas: db1", Collections.singletonList(Properties.class));
-        assertThat(actual.getProperty("authorizedSchemas"), is("db1"));
+        Properties actual = YamlEngine.unmarshal("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));
     }
     
     @Test
     public void assertMarshal() {
-        FixtureYamlRuleConfiguration actual = new FixtureYamlRuleConfiguration();
+        YamlRuleConfigurationFixture actual = new YamlRuleConfigurationFixture();
         actual.setName("test");
         assertThat(YamlEngine.marshal(actual), is("name: test\n"));
     }
     
     @Test(expected = ConstructorException.class)
-    public void assertUnmarshalMapWithIllegalClasses() {
-        YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.<Class<?>>emptyList());
-    }
-    
-    @Test
-    public void assertUnmarshalMapWithAcceptClasses() {
-        Collection<Class<?>> acceptClasses = new LinkedList<>();
-        acceptClasses.add(URLClassLoader.class);
-        acceptClasses.add(URL.class);
-        Map<String, URLClassLoader> actual = (Map) YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptClasses);
-        assertThat(actual.get("url").getClass().getName(), is(URLClassLoader.class.getName()));
+    public void assertUnmarshalInvalidYaml() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
+        assertNotNull(url);
+        StringBuilder yamlContent = new StringBuilder();
+        try (
+                FileReader fileReader = new FileReader(url.getFile());
+                BufferedReader reader = new BufferedReader(fileReader)) {
+            String line;
+            while (null != (line = reader.readLine())) {
+                yamlContent.append(line).append("\n");
+            }
+        }
+        YamlEngine.unmarshal(yamlContent.toString(), YamlRootRuleConfigurations.class);
     }
 }

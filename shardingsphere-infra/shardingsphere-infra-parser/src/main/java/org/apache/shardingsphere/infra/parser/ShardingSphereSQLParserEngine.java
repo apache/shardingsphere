@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.parser;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.infra.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -34,12 +33,9 @@ public final class ShardingSphereSQLParserEngine {
     
     private final DistSQLStatementParserEngine distSQLStatementParserEngine;
     
-    private final ParsingHookRegistry parsingHookRegistry;
-    
     public ShardingSphereSQLParserEngine(final String databaseTypeName) {
         sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseTypeName);
         distSQLStatementParserEngine = new DistSQLStatementParserEngine();
-        parsingHookRegistry = ParsingHookRegistry.getInstance();
     }
     
     /*
@@ -56,16 +52,12 @@ public final class ShardingSphereSQLParserEngine {
      */
     @SuppressWarnings("OverlyBroadCatchBlock")
     public SQLStatement parse(final String sql, final boolean useCache) {
-        parsingHookRegistry.start(sql);
         try {
-            SQLStatement result = parse0(sql, useCache);
-            parsingHookRegistry.finishSuccess(result);
-            return result;
+            return parse0(sql, useCache);
             // CHECKSTYLE:OFF
             // TODO check whether throw SQLParsingException only
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            parsingHookRegistry.finishFailure(ex);
             throw ex;
         }
     }

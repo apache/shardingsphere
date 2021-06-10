@@ -24,7 +24,7 @@ before_script:
   - mysql --version
 
 script:
-  - travis_wait 120 ./mvnw --batch-mode --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true -Pit-jdbc-ci
+  - travis_wait 120 ./mvnw -B --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true -Ddatabases=MySQL,PostgreSQL
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

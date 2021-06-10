@@ -71,7 +71,7 @@ unreservedWord
     | ARRAY | LOCALTIME | LOCALTIMESTAMP | QUARTER | WEEK | MICROSECOND | ENABLE
     | DISABLE | BINARY | HIDDEN_ | MOD | PARTITION | TOP | ROW
     | XOR | ALWAYS | ROLE | START | ALGORITHM | AUTO | BLOCKERS
-    | CLUSTERED | COLUMNSTORE | CONTENT | DATABASE | DAYS | DENY | DETERMINISTIC
+    | CLUSTERED | COLUMNSTORE | CONTENT | CONCAT | DATABASE | DAYS | DENY | DETERMINISTIC
     | DISTRIBUTION | DOCUMENT | DURABILITY | ENCRYPTED | FILESTREAM | FILETABLE | FOLLOWING
     | HASH | HEAP | INBOUND | INFINITE | LOGIN | MASKED | MAXDOP 
     | MINUTES | MONTHS | MOVE | NOCHECK | NONCLUSTERED | OBJECT | OFF
@@ -132,6 +132,10 @@ tableNames
     ;
 
 indexName
+    : identifier
+    ;
+
+constraintName
     : identifier
     ;
 
@@ -277,11 +281,11 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | numberLiterals | expr) (ASC | DESC)?
+    : (columnName | numberLiterals | expr) (COLLATE identifier)? (ASC | DESC)?
     ;
 
 dataType
-    : dataTypeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier RP_)?
+    : (ignoredIdentifier DOT_)? dataTypeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier RP_)?
     ;
 
 dataTypeName
@@ -376,6 +380,7 @@ eqKey
     | ALLOW_PAGE_LOCKS
     | COMPRESSION_DELAY
     | SORT_IN_TEMPDB
+    | OPTIMIZE_FOR_SEQUENTIAL_KEY
     ;
 
 eqOnOff

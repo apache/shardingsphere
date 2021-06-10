@@ -32,7 +32,7 @@ public final class MySQLAuthPluginDataTest {
         MySQLAuthPluginData actual = new MySQLAuthPluginData(actualPart1, actualPart2);
         assertThat(actual.getAuthPluginDataPart1(), is(actualPart1));
         assertThat(actual.getAuthPluginDataPart2(), is(actualPart2));
-        assertThat(actual.getAuthPluginData(), is(Bytes.concat(actualPart1, actualPart2)));
+        assertThat(actual.getAuthenticationPluginData(), is(Bytes.concat(actualPart1, actualPart2)));
     }
     
     @Test
@@ -40,6 +40,6 @@ public final class MySQLAuthPluginDataTest {
         MySQLAuthPluginData actual = new MySQLAuthPluginData();
         assertThat(actual.getAuthPluginDataPart1().length, is(8));
         assertThat(actual.getAuthPluginDataPart2().length, is(12));
-        assertThat(actual.getAuthPluginData().length, is(20));
+        assertThat(actual.getAuthenticationPluginData().length, is(20));
     }
 }

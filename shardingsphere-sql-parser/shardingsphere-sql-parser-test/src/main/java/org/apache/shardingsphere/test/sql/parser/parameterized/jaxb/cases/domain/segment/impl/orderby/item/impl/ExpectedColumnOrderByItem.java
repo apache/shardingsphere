@@ -19,8 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.ExpectedIdentifierSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.orderby.item.ExpectedOrderByItem;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTableOwner;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedOwner;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -30,11 +31,11 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Getter
 @Setter
-public final class ExpectedColumnOrderByItem extends ExpectedOrderByItem {
+public final class ExpectedColumnOrderByItem extends ExpectedOrderByItem implements ExpectedIdentifierSQLSegment {
     
     @XmlAttribute
     private String name;
     
     @XmlElement
-    private ExpectedSimpleTableOwner owner;
+    private ExpectedOwner owner;
 }

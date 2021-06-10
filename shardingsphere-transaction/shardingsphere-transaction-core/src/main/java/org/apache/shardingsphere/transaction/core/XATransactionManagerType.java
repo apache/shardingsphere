@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.transaction.core;
 
-import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 
 /**
  * XA transaction manager type.
@@ -28,21 +29,23 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum XATransactionManagerType {
     
-    ATOMIKOS("atomikos"),
+    ATOMIKOS("Atomikos"),
     
-    NARAYANA("narayana"),
+    NARAYANA("Narayana"),
     
-    BITRONIX("bitronix");
-
+    BITRONIX("Bitronix"),
+    
+    SEATA("Seata");
+    
     private final String type;
     
     /**
-     * Value from xa transaction manager type.
+     * Value from transaction manager type.
      *
-     * @param type value to be xa transaction manager type
-     * @return value from xa transaction manager type
+     * @param type value to be transaction manager type
+     * @return value from transaction manager type
      */
     public static XATransactionManagerType valueFrom(final String type) {
-        return Arrays.stream(values()).filter(each -> each.type.equalsIgnoreCase(type)).findFirst().orElse(XATransactionManagerType.ATOMIKOS);
+        return Arrays.stream(values()).filter(each -> each.type.equalsIgnoreCase(type)).findFirst().orElse(ATOMIKOS);
     }
 }

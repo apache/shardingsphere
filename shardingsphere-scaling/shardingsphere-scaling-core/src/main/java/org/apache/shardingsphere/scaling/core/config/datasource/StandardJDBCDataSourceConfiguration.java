@@ -17,62 +17,75 @@
 
 package org.apache.shardingsphere.scaling.core.config.datasource;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Standard JDBC data source configuration.
  */
 @Getter
-@Setter
-@EqualsAndHashCode(exclude = "databaseType")
-public final class StandardJDBCDataSourceConfiguration implements DataSourceConfiguration {
+@EqualsAndHashCode(of = "parameter")
+public final class StandardJDBCDataSourceConfiguration implements ScalingDataSourceConfiguration {
     
     /**
-     * Config type.
+     * Type.
      */
-    public static final String CONFIG_TYPE = "JDBC";
+    public static final String TYPE = "JDBC";
     
-    private String jdbcUrl;
+    private final String parameter;
     
-    private String username;
+    private final HikariConfig hikariConfig;
     
-    private String password;
+    private final DatabaseType databaseType;
     
-    private transient DatabaseType databaseType;
+    public StandardJDBCDataSourceConfiguration(final String parameter) {
+        this.parameter = parameter;
+        hikariConfig = YamlEngine.unmarshal(parameter, HikariConfig.class);
+        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(hikariConfig.getJdbcUrl());
+    }
     
     public StandardJDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
-        this.jdbcUrl = jdbcUrl;
-        this.username = username;
-        this.password = password;
-        databaseType = getDatabaseType();
+        HikariConfig hikariConfig = getHikariConfig(jdbcUrl, username, password);
+        this.hikariConfig = hikariConfig;
+        this.parameter = wrapParameter(jdbcUrl, username, password);
+        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
     }
     
-    @Override
-    public String getConfigType() {
-        return CONFIG_TYPE;
+    private String wrapParameter(final String jdbcUrl, final String username, final String password) {
+        Map<String, String> parameter = new HashMap<>(3);
+        parameter.put("jdbcUrl", jdbcUrl);
+        parameter.put("username", username);
+        parameter.put("password", password);
+        return YamlEngine.marshal(parameter);
     }
     
-    @Override
-    public DatabaseType getDatabaseType() {
-        if (null == databaseType) {
-            databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(jdbcUrl);
-        }
-        return databaseType;
-    }
-    
-    @Override
-    public DataSource toDataSource() {
-        HikariDataSource result = new HikariDataSource();
+    private HikariConfig getHikariConfig(final String jdbcUrl, final String username, final String password) {
+        HikariConfig result = new HikariConfig();
         result.setJdbcUrl(jdbcUrl);
         result.setUsername(username);
         result.setPassword(password);
         return result;
+    }
+    
+    @Override
+    public ScalingDataSourceConfigurationWrap wrap() {
+        ScalingDataSourceConfigurationWrap result = new ScalingDataSourceConfigurationWrap();
+        result.setType(TYPE);
+        result.setParameter(parameter);
+        return result;
+    }
+    
+    @Override
+    public DataSource toDataSource() {
+        return new HikariDataSource(hikariConfig);
     }
 }

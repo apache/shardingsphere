@@ -34,6 +34,8 @@ public final class DatabaseTypeRegistry {
     
     private static final Map<String, DatabaseType> DATABASE_TYPES = new HashMap<>();
     
+    private static final String DEFAULT_DATABASE_TYPE = "MySQL";
+    
     static {
         for (DatabaseType each : ServiceLoader.load(DatabaseType.class)) {
             DATABASE_TYPES.put(each.getName(), each);
@@ -82,5 +84,14 @@ public final class DatabaseTypeRegistry {
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
         return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
+    }
+    
+    /**
+     * Get default database type.
+     * 
+     * @return default database type
+     */
+    public static DatabaseType getDefaultDatabaseType() {
+        return DATABASE_TYPES.get(DEFAULT_DATABASE_TYPE);
     }
 }

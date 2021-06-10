@@ -31,8 +31,7 @@ import java.util.Collection;
 public final class CreateIndexStatementSchemaRefresher implements SchemaRefresher<CreateIndexStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, 
-                        final Collection<String> routeDataSourceNames, final CreateIndexStatement sqlStatement, final SchemaBuilderMaterials materials) {
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, final CreateIndexStatement sqlStatement, final SchemaBuilderMaterials materials) {
         if (null == sqlStatement.getIndex()) {
             return;
         }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
@@ -27,11 +28,18 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl.SQL92RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.tcl.SQL92SetTransactionStatement;
 
+import java.util.Properties;
+
 /**
  * TCL Statement SQL visitor for SQL92.
  */
+@NoArgsConstructor
 public final class SQL92TCLStatementSQLVisitor extends SQL92StatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQL92TCLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
+
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         return new SQL92SetTransactionStatement();

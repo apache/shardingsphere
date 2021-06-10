@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import com.google.common.io.CharStreams;
+import java.sql.Array;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.SetParameterMethodInvocation;
@@ -168,6 +169,11 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     
     @Override
     public final void setClob(final int parameterIndex, final Reader x, final long length) {
+        setParameter(parameterIndex, x);
+    }
+    
+    @Override
+    public void setArray(final int parameterIndex, final Array x) {
         setParameter(parameterIndex, x);
     }
     

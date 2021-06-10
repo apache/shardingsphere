@@ -26,8 +26,14 @@ import static org.junit.Assert.assertThat;
 public final class PostgreSQLBinaryProtocolValueFactoryTest {
     
     @Test
-    public void assertGetStringBinaryProtocolValue() {
+    public void assertGetStringBinaryProtocolValueByVarchar() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_VARCHAR);
+        assertThat(binaryProtocolValue, instanceOf(PostgreSQLStringBinaryProtocolValue.class));
+    }
+    
+    @Test
+    public void assertGetStringBinaryProtocolValueByChar() {
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_CHAR);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLStringBinaryProtocolValue.class));
     }
     
@@ -59,6 +65,12 @@ public final class PostgreSQLBinaryProtocolValueFactoryTest {
     public void assertGetFloatBinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_FLOAT4);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLFloatBinaryProtocolValue.class));
+    }
+    
+    @Test
+    public void assertGetNumericBinaryProtocolValue() {
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_NUMERIC);
+        assertThat(binaryProtocolValue, instanceOf(PostgreSQLNumericBinaryProtocolValue.class));
     }
     
     @Test

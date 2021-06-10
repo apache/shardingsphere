@@ -17,99 +17,99 @@
 
 package org.apache.shardingsphere.governance.core.registry;
 
-import com.google.common.base.Strings;
+import lombok.Getter;
+import org.apache.shardingsphere.governance.core.lock.service.LockRegistryService;
+import org.apache.shardingsphere.governance.core.registry.cache.subscriber.ScalingRegistrySubscriber;
+import org.apache.shardingsphere.governance.core.GovernanceInstance;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourceRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
+import org.apache.shardingsphere.governance.core.registry.metadata.service.SchemaRegistryService;
+import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
+import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Registry center.
  */
 public final class RegistryCenter {
     
-    private final RegistryCenterNode node;
+    private final String instanceId;
     
-    private final RegistryRepository repository;
+    private final RegistryCenterRepository repository;
     
-    private final GovernanceInstance instance;
-
-    public RegistryCenter(final RegistryRepository registryRepository) {
-        node = new RegistryCenterNode();
-        repository = registryRepository;
-        instance = GovernanceInstance.getInstance();
+    @Getter
+    private final DataSourceRegistryService dataSourceService;
+    
+    @Getter
+    private final SchemaRuleRegistryService schemaRuleService;
+    
+    @Getter
+    private final GlobalRuleRegistryService globalRuleService;
+    
+    @Getter
+    private final PropertiesRegistryService propsService;
+    
+    @Getter
+    private final SchemaRegistryService schemaService;
+    
+    @Getter
+    private final DataSourceStatusRegistryService dataSourceStatusService;
+    
+    @Getter
+    private final LockRegistryService lockService;
+    
+    public RegistryCenter(final RegistryCenterRepository repository) {
+        instanceId = GovernanceInstance.getInstance().getId();
+        this.repository = repository;
+        dataSourceService = new DataSourceRegistryService(repository);
+        schemaRuleService = new SchemaRuleRegistryService(repository);
+        globalRuleService = new GlobalRuleRegistryService(repository);
+        propsService = new PropertiesRegistryService(repository);
+        schemaService = new SchemaRegistryService(repository);
+        dataSourceStatusService = new DataSourceStatusRegistryService(repository);
+        lockService = new LockRegistryService(repository);
+        new ScalingRegistrySubscriber(repository, schemaRuleService);
+        new ProcessRegistrySubscriber(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**
-     * Persist instance online.
+     * Persist configurations.
+     *
+     * @param dataSourceConfigs schema and data source configuration map
+     * @param schemaRuleConfigs schema and rule configuration map
+     * @param globalRuleConfigs global rule configurations
+     * @param props properties
+     * @param isOverwrite whether overwrite registry center's configuration if existed
      */
-    public void persistInstanceOnline() {
-        repository.persistEphemeral(node.getProxyNodePath(instance.getInstanceId()), "");
+    public void persistConfigurations(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
+                                      final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
+        globalRuleService.persist(globalRuleConfigs, isOverwrite);
+        propsService.persist(props, isOverwrite);
+        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigs.entrySet()) {
+            String schemaName = entry.getKey();
+            dataSourceService.persist(schemaName, dataSourceConfigs.get(schemaName), isOverwrite);
+            schemaRuleService.persist(schemaName, schemaRuleConfigs.get(schemaName), isOverwrite);
+        }
     }
     
     /**
-     * Initialize data nodes.
+     * Register instance online.
      */
-    public void persistDataNodes() {
-        repository.persist(node.getDataNodesPath(), "");
-    }
-    
-    /**
-     * Persist instance data.
-     * 
-     * @param instanceData instance data
-     */
-    public void persistInstanceData(final String instanceData) {
-        repository.persist(node.getProxyNodePath(instance.getInstanceId()), instanceData);
-    }
-    
-    /**
-     * Load instance data.
-     * 
-     * @return instance data
-     */
-    public String loadInstanceData() {
-        return repository.get(node.getProxyNodePath(instance.getInstanceId()));
-    }
-    
-    /**
-     * Load instance data.
-     * 
-     * @param instanceId instance id
-     * @return instance data
-     */
-    public String loadInstanceData(final String instanceId) {
-        return repository.get(node.getProxyNodePath(instanceId));
-    }
-    
-    /**
-     * Load all instances.
-     * 
-     * @return collection of all instances
-     */
-    public Collection<String> loadAllInstances() {
-        return repository.getChildrenKeys(node.getProxyNodesPath());
-    }
-    
-    /**
-     * Load disabled data sources.
-     * 
-     * @param schemaName schema name
-     * @return Collection of disabled data sources
-     */
-    public Collection<String> loadDisabledDataSources(final String schemaName) {
-        return loadDataSourcesBySchemaName(schemaName).stream().filter(each -> !Strings.isNullOrEmpty(getDataSourceNodeData(schemaName, each))
-                && RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(getDataSourceNodeData(schemaName, each))).collect(Collectors.toList());
-    }
-    
-    private Collection<String> loadDataSourcesBySchemaName(final String schemaName) {
-        return repository.getChildrenKeys(node.getSchemaPath(schemaName));
-    }
-    
-    private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
-        return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
+    public void registerInstanceOnline() {
+        repository.persist(StatesNode.getDataNodesPath(), "");
+        repository.persist(StatesNode.getPrimaryNodesPath(), "");
+        repository.persistEphemeral(StatesNode.getProxyNodePath(instanceId), "");
     }
 }

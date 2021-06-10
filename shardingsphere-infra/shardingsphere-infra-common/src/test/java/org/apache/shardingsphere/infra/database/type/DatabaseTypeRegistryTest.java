@@ -71,4 +71,9 @@ public final class DatabaseTypeRegistryTest {
     public void assertGetDatabaseTypeSQL92() {
         assertThat(DatabaseTypeRegistry.getDatabaseTypeByURL("jdbc:sqlite:test").getName(), is("SQL92"));
     }
+    
+    @Test
+    public void assertGetDefaultDatabaseType() {
+        assertThat(DatabaseTypeRegistry.getDefaultDatabaseType().getName(), is("MySQL"));
+    }
 }

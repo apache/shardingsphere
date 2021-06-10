@@ -81,4 +81,11 @@ public interface QueryResult extends ExecuteResult {
      * @return query result meta data
      */
     QueryResultMetaData getMetaData();
+    
+    /**
+     * Close.
+     *
+     * @throws SQLException sql exception
+     */
+    void close() throws SQLException;
 }

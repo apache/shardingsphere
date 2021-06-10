@@ -36,6 +36,8 @@ public enum SQLVisitorRule {
     
     DELETE("Delete", SQLStatementType.DML),
     
+    MERGE("Merge", SQLStatementType.DML),
+    
     REPLACE("Replace", SQLStatementType.DML),
     
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
@@ -90,6 +92,10 @@ public enum SQLVisitorRule {
     
     ALTER_SERVER("AlterServer", SQLStatementType.DDL),
     
+    ALTER_SESSION("AlterSession", SQLStatementType.DDL),
+    
+    ALTER_SYSTEM("AlterSystem", SQLStatementType.DDL),
+    
     DROP_SERVER("DropServer", SQLStatementType.DDL),
     
     CREATE_TRIGGER("CreateTrigger", SQLStatementType.DDL),
@@ -101,6 +107,28 @@ public enum SQLVisitorRule {
     ALTER_VIEW("AlterView", SQLStatementType.DDL),
     
     DROP_VIEW("DropView", SQLStatementType.DDL),
+
+    CREATE_SEQUENCE("CreateSequence", SQLStatementType.DDL),
+
+    ALTER_SEQUENCE("AlterSequence", SQLStatementType.DDL),
+
+    DROP_SEQUENCE("DropSequence", SQLStatementType.DDL),
+    
+    ALTER_SYNONYM("AlterSynonym", SQLStatementType.DDL),
+    
+    PREPARE("Prepare", SQLStatementType.DDL),
+    
+    EXECUTE_STMT("ExecuteStmt", SQLStatementType.DDL),
+    
+    DEALLOCATE("Deallocate", SQLStatementType.DDL),
+    
+    CREATE_TABLESPACE("CreateTablespace", SQLStatementType.DDL),
+    
+    ALTER_TABLESPACE("AlterTablespace", SQLStatementType.DDL),
+    
+    DROP_TABLESPACE("DropTablespace", SQLStatementType.DDL),
+
+    SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     
@@ -108,17 +136,35 @@ public enum SQLVisitorRule {
     
     BEGIN_TRANSACTION("BeginTransaction", SQLStatementType.TCL),
     
+    START_TRANSACTION("StartTransaction", SQLStatementType.TCL),
+    
+    END("End", SQLStatementType.TCL),
+    
     SET_AUTOCOMMIT("SetAutoCommit", SQLStatementType.TCL),
     
     COMMIT("Commit", SQLStatementType.TCL),
     
     ROLLBACK("Rollback", SQLStatementType.TCL),
     
-    SAVE_POINT("Savepoint", SQLStatementType.TCL),
+    SAVEPOINT("Savepoint", SQLStatementType.TCL),
+    
+    RELEASE_SAVEPOINT("ReleaseSavepoint", SQLStatementType.TCL),
+    
+    ROLLBACK_TO_SAVEPOINT("RollbackToSavepoint", SQLStatementType.TCL),
     
     GRANT("Grant", SQLStatementType.DCL),
     
+    GRANT_ROLE_OR_PRIVILEGE_TO("GrantRoleOrPrivilegeTo", SQLStatementType.DCL),
+    
+    GRANT_ROLE_OR_PRIVILEGE_ON_TO("GrantRoleOrPrivilegeOnTo", SQLStatementType.DCL),
+    
+    GRANT_PROXY("GrantPROXY", SQLStatementType.DCL),
+    
     REVOKE("Revoke", SQLStatementType.DCL),
+    
+    REVOKE_FROM("RevokeFrom", SQLStatementType.DCL),
+    
+    REVOKE_ON_FROM("RevokeOnFrom", SQLStatementType.DCL),
     
     CREATE_USER("CreateUser", SQLStatementType.DCL),
     
@@ -179,6 +225,14 @@ public enum SQLVisitorRule {
     SET_CHARACTER("SetCharacter", SQLStatementType.DAL),
     
     RESET_PARAMETER("ResetParameter", SQLStatementType.DAL),
+    
+    VACUUM("Vacuum", SQLStatementType.DAL),
+    
+    CREATE_LOADABLE_FUNCTION("CreateLoadableFunction", SQLStatementType.DAL),
+    
+    ANALYZE("AnalyzeTable", SQLStatementType.DAL),
+    
+    LOAD("Load", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),
     

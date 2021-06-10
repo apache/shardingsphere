@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
+import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.fixture.ResetIncrementKeyGenerateAlgorithm;
 import org.junit.Test;
 
@@ -36,9 +36,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingSpherePreparedStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
-
+    
     private static final String INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "INSERT INTO t_user (name) VALUES (?),(?),(?),(?)";
-
+    
     private static final String SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "SELECT name FROM t_user WHERE id=%dL";
     
     private static final String INSERT_WITH_GENERATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";

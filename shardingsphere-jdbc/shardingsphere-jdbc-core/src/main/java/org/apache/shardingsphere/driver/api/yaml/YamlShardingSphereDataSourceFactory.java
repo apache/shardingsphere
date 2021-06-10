@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import javax.sql.DataSource;
@@ -40,6 +41,8 @@ public final class YamlShardingSphereDataSourceFactory {
     
     private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
+    private static final YamlDataSourceConfigurationSwapper DATASOURCE_SWAPPER = new YamlDataSourceConfigurationSwapper();
+    
     /**
      * Create ShardingSphere data source.
      *
@@ -50,7 +53,8 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
-        return ShardingSphereDataSourceFactory.createDataSource(configurations.getDataSources(), SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
+        return ShardingSphereDataSourceFactory.createDataSource(DATASOURCE_SWAPPER.swapToDataSources(configurations.getDataSources()),
+                SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
     }
     
     /**
@@ -63,7 +67,8 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlBytes, YamlRootRuleConfigurations.class);
-        return ShardingSphereDataSourceFactory.createDataSource(configurations.getDataSources(), SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
+        return ShardingSphereDataSourceFactory.createDataSource(DATASOURCE_SWAPPER.swapToDataSources(configurations.getDataSources()),
+                SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), configurations.getProps());
     }
     
     /**

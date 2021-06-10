@@ -57,4 +57,24 @@
     <truncate sql-case-id="truncate_table_with_bracket">
         <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="15" stop-index="23" />
     </truncate>
+
+    <truncate sql-case-id="truncate_table_with_preserve_view_log">
+        <table name="t_log" start-index="15" stop-index="19" />
+    </truncate>
+
+    <truncate sql-case-id="truncate_table_with_purge_view_log">
+        <table name="t_log" start-index="15" stop-index="19" />
+    </truncate>
+
+    <truncate sql-case-id="truncate_table_with_drop_all_storage">
+        <table name="t_log" start-index="15" stop-index="19" />
+    </truncate>
+
+    <truncate sql-case-id="truncate_table_with_reuse_all_storage">
+        <table name="t_log" start-index="15" stop-index="19" />
+    </truncate>
+
+    <truncate sql-case-id="truncate_table_with_cascade">
+        <table name="t_log" start-index="15" stop-index="19" />
+    </truncate>
 </sql-parser-test-cases>

@@ -28,4 +28,9 @@
     <sql-case id="truncate_tables" value="TRUNCATE TABLE t_order_item, t_order" db-types="PostgreSQL" />
     <sql-case id="truncate_table_with_asterisk" value="TRUNCATE TABLE t_order *" db-types="PostgreSQL" />
     <sql-case id="truncate_table_with_bracket" value="TRUNCATE TABLE [t_order]" db-types="SQLServer" />
+    <sql-case id="truncate_table_with_preserve_view_log" value="TRUNCATE TABLE t_log PRESERVE MATERIALIZED VIEW LOG" db-types="Oracle" />
+    <sql-case id="truncate_table_with_purge_view_log" value="TRUNCATE TABLE t_log PURGE MATERIALIZED VIEW LOG" db-types="Oracle" />
+    <sql-case id="truncate_table_with_drop_all_storage" value="TRUNCATE TABLE t_log DROP STORAGE" db-types="Oracle" />
+    <sql-case id="truncate_table_with_reuse_all_storage" value="TRUNCATE TABLE t_log REUSE STORAGE" db-types="Oracle" />
+    <sql-case id="truncate_table_with_cascade" value="TRUNCATE TABLE t_log CASCADE" db-types="Oracle" />
 </sql-cases>

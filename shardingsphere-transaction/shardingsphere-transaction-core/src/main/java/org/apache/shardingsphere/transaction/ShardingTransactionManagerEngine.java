@@ -61,11 +61,10 @@ public final class ShardingTransactionManagerEngine {
      *
      * @param databaseType database type
      * @param dataSourceMap data source map
+     * @param xaTransactionMangerType XA transaction manger type
      */
-    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        for (Entry<TransactionType, ShardingTransactionManager> entry : transactionManagerMap.entrySet()) {
-            entry.getValue().init(databaseType, getResourceDataSources(dataSourceMap));
-        }
+    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
+        transactionManagerMap.forEach((key, value) -> value.init(databaseType, getResourceDataSources(dataSourceMap), xaTransactionMangerType));
     }
     
     private Collection<ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap) {

@@ -22,9 +22,7 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.infra.hook.RootInvokeHook;
-import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
-import org.apache.shardingsphere.replicaquery.route.engine.impl.PrimaryVisitedManager;
+import org.apache.shardingsphere.readwritesplitting.route.impl.PrimaryVisitedManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -46,28 +44,20 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     @Getter
     private final ForceExecuteTemplate<Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
     
-    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
-    
     private boolean readOnly;
     
     private volatile boolean closed;
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    protected AbstractConnectionAdapter() {
-        rootInvokeHook.start();
-    }
-    
     @Override
     public final void close() throws SQLException {
         closed = true;
         PrimaryVisitedManager.clear();
-        int connectionSize = cachedConnections.size();
         try {
             forceExecuteTemplateForClose.execute(cachedConnections.entries(), cachedConnections -> cachedConnections.getValue().close());
         } finally {
             cachedConnections.clear();
-            rootInvokeHook.finish(connectionSize);
         }
     }
     
@@ -131,5 +121,23 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void setHoldability(final int holdability) {
+    }
+    
+    @Override
+    public final String getCatalog() {
+        return null;
+    }
+    
+    @Override
+    public final void setCatalog(final String catalog) {
+    }
+    
+    @Override
+    public final String getSchema() {
+        return null;
+    }
+    
+    @Override
+    public final void setSchema(final String schema) {
     }
 }

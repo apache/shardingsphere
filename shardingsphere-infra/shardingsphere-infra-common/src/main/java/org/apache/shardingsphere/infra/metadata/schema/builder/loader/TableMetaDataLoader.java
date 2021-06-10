@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.adapter.MetaDataLoaderConnectionAdapter;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
@@ -47,16 +46,12 @@ public final class TableMetaDataLoader {
      */
     public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
-            String formattedTableNamePattern = formatTableNamePattern(tableNamePattern, databaseType);
+            String formattedTableNamePattern = databaseType.formatTableNamePattern(tableNamePattern);
             return isTableExist(connectionAdapter, formattedTableNamePattern)
                     ? Optional.of(new TableMetaData(ColumnMetaDataLoader.load(
                             connectionAdapter, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern)))
                     : Optional.empty();
         }
-    }
-    
-    private static String formatTableNamePattern(final String tableNamePattern, final DatabaseType databaseType) {
-        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.formatTableNamePattern(tableNamePattern)).orElse(tableNamePattern);
     }
     
     private static boolean isTableExist(final Connection connection, final String tableNamePattern) throws SQLException {

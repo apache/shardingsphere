@@ -22,8 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
-import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
@@ -31,13 +31,14 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.governance.repository.zookeeper.handler.CuratorZookeeperExceptionHandler;
+import org.apache.shardingsphere.governance.repository.zookeeper.props.ZookeeperProperties;
+import org.apache.shardingsphere.governance.repository.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
@@ -50,40 +51,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Governance repository of ZooKeeper.
+ * Registry repository of ZooKeeper.
  */
-public final class CuratorZookeeperRepository implements ConfigurationRepository, RegistryRepository {
+public final class CuratorZookeeperRepository implements RegistryCenterRepository {
     
     private final Map<String, CuratorCache> caches = new HashMap<>();
     
     private CuratorFramework client;
     
-    private InterProcessLock interProcessLock;
+    private final Builder builder = CuratorFrameworkFactory.builder();
+    
+    private final Map<String, InterProcessLock> locks = new ConcurrentHashMap<>();
     
     @Getter
     @Setter
     private Properties props = new Properties();
     
     @Override
-    public void init(final String name, final GovernanceCenterConfiguration config) {
-        ZookeeperProperties zookeeperProperties = new ZookeeperProperties(props);
-        client = buildCuratorClient(name, config, zookeeperProperties);
-        initCuratorClient(zookeeperProperties);
+    public void init(final String name, final RegistryCenterConfiguration config) {
+        ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
+        client = buildCuratorClient(name, config, zookeeperProps);
+        initCuratorClient(zookeeperProps);
     }
     
-    private CuratorFramework buildCuratorClient(final String namespace, final GovernanceCenterConfiguration config, final ZookeeperProperties zookeeperProperties) {
-        int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
-        int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
-        int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
-        int operationTimeoutMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
-        String digest = zookeeperProperties.getValue(ZookeeperPropertyKey.DIGEST);
-        CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
-            .connectString(config.getServerLists())
+    private CuratorFramework buildCuratorClient(final String namespace, final RegistryCenterConfiguration config, final ZookeeperProperties zookeeperProps) {
+        int retryIntervalMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
+        int maxRetries = zookeeperProps.getValue(ZookeeperPropertyKey.MAX_RETRIES);
+        int timeToLiveSeconds = zookeeperProps.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
+        int operationTimeoutMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
+        builder.connectString(config.getServerLists())
             .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
             .namespace(namespace);
         if (0 != timeToLiveSeconds) {
@@ -92,6 +95,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         if (0 != operationTimeoutMilliseconds) {
             builder.connectionTimeoutMs(operationTimeoutMilliseconds);
         }
+        String digest = zookeeperProps.getValue(ZookeeperPropertyKey.DIGEST);
         if (!Strings.isNullOrEmpty(digest)) {
             builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(StandardCharsets.UTF_8))
                 .aclProvider(new ACLProvider() {
@@ -110,11 +114,11 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         return builder.build();
     }
     
-    private void initCuratorClient(final ZookeeperProperties zookeeperProperties) {
+    private void initCuratorClient(final ZookeeperProperties zookeeperProps) {
         client.start();
         try {
-            int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
-            int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
+            int retryIntervalMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
+            int maxRetries = zookeeperProps.getValue(ZookeeperPropertyKey.MAX_RETRIES);
             if (!client.blockUntilConnected(retryIntervalMilliseconds * maxRetries, TimeUnit.MILLISECONDS)) {
                 client.close();
                 throw new OperationTimeoutException();
@@ -172,8 +176,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     private void update(final String key, final String value) {
         try {
-            TransactionOp transactionOp = client.transactionOp();
-            client.transaction().forOperations(transactionOp.check().forPath(key), transactionOp.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8)));
+            client.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -218,34 +221,6 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     @Override
-    public void initLock(final String key) {
-        interProcessLock = new InterProcessMutex(client, key);
-    }
-    
-    @Override
-    public boolean tryLock(final long time, final TimeUnit unit) {
-        try {
-            return interProcessLock.acquire(time, unit);
-            // CHECKSTYLE:OFF
-        } catch (final Exception e) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(e);
-            return false;
-        }
-    }
-    
-    @Override
-    public void releaseLock() {
-        try {
-            interProcessLock.release();
-            // CHECKSTYLE:OFF
-        } catch (final Exception e) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(e);
-        }
-    }
-    
-    @Override
     public void delete(final String key) {
         try {
             if (isExisted(key)) {
@@ -263,16 +238,16 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         String path = key + PATH_SEPARATOR;
         if (!caches.containsKey(path)) {
             addCacheData(key);
+            CuratorCache cache = caches.get(path);
+            cache.listenable().addListener((type, oldData, data) -> {
+                String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
+                byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
+                Type changedType = getChangedType(type);
+                if (Type.IGNORED != changedType) {
+                    listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
+                }
+            });
         }
-        CuratorCache cache = caches.get(path);
-        cache.listenable().addListener((type, oldData, data) -> {
-            String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
-            byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
-            Type changedType = getChangedType(type);
-            if (Type.IGNORED != changedType) {
-                listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
-            }
-        });
     }
     
     private void addCacheData(final String cachePath) {
@@ -298,6 +273,44 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
             default:
                 return Type.IGNORED;
         }
+    }
+    
+    @Override
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
+        try {
+            return getLock(key).acquire(time, unit);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+            return false;
+        }
+    }
+    
+    @Override
+    public void releaseLock(final String key) {
+        try {
+            if (availableLock(key)) {
+                locks.get(key).release();
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+    }
+    
+    private InterProcessLock getLock(final String key) {
+        if (availableLock(key)) {
+            return locks.get(key);
+        }
+        InterProcessLock lock = new InterProcessMutex(client, key);
+        locks.put(key, lock);
+        return lock;
+    }
+    
+    private boolean availableLock(final String key) {
+        return Objects.nonNull(locks.get(key));
     }
     
     @Override

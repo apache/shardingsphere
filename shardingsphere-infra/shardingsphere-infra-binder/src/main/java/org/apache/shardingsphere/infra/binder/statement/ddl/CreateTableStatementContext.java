@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -62,11 +62,8 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     @Override
     public Collection<IndexSegment> getIndexes() {
         Collection<IndexSegment> result = new LinkedList<>();
-        Collection<ConstraintDefinitionSegment> constraintDefinitions = getSqlStatement().getConstraintDefinitions();
-        for (ConstraintDefinitionSegment each : constraintDefinitions) {
-            if (null != each.getIndexName()) {
-                result.add(each.getIndexName());
-            }
+        for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
+            each.getIndexName().ifPresent(result::add);
         }
         return result;
     }

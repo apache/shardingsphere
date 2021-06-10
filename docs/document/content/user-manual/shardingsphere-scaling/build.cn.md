@@ -22,7 +22,6 @@ mvn clean install -Prelease;
 ```
 port: 8888
 blockQueueSize: 10000
-pushTimeout: 1000
 workerThread: 30
 
 resumeBreakPoint:
@@ -68,7 +67,6 @@ curl -X GET http://localhost:8888/scaling/job/list
 | -------------- | -------------------------------------- | ------ |
 | port           | HTTP服务监听端口                         | 8888   |
 | blockQueueSize | 数据传输通道队列大小                      | 10000  |
-| pushTimeout    | 数据推送超时时间，单位：毫秒               | 1000   |
 | workerThread   | 工作线程池大小，允许同时运行的迁移任务线程数 | 30     |
 | resumeBreakPoint   | 断点续传服务                         |        |
  

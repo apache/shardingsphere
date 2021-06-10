@@ -93,7 +93,7 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     }
     
     /**
-     * Set auth plugin name.
+     * Set authentication plugin name.
      *
      * @param mysqlAuthenticationMethod MySQL authentication method
      */

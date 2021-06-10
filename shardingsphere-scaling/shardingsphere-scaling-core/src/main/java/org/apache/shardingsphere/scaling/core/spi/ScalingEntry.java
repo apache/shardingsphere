@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.scaling.core.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
-import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
-import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
+import org.apache.shardingsphere.scaling.core.executor.dumper.InventoryDumper;
+import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 
 /**
  * Scaling entry.
@@ -32,25 +31,25 @@ import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChe
 public interface ScalingEntry extends DatabaseTypeAwareSPI {
     
     /**
-     * Get JDBC dumper type.
+     * Get inventory dumper type.
      *
-     * @return JDBC dumper type
+     * @return inventory dumper type
      */
-    Class<? extends JDBCDumper> getJdbcDumperClass();
+    Class<? extends InventoryDumper> getInventoryDumperClass();
     
     /**
-     * Get log dumper type.
+     * Get incremental dumper type.
      *
-     * @return log dumper type
+     * @return incremental dumper type
      */
-    Class<? extends LogDumper> getLogDumperClass();
-
+    Class<? extends IncrementalDumper> getIncrementalDumperClass();
+    
     /**
-     * Get position manager type.
+     * Get position initializer type.
      *
-     * @return position manager type
+     * @return position initializer type
      */
-    Class<? extends PositionManager> getPositionManager();
+    Class<? extends PositionInitializer> getPositionInitializerClass();
     
     /**
      * Get importer type.
@@ -58,20 +57,13 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      * @return importer type
      */
     Class<? extends Importer> getImporterClass();
-
-    /**
-     * Get data source checker.
-     *
-     * @return data source checker type
-     */
-    Class<? extends DataSourceChecker> getDataSourceCheckerClass();
     
     /**
-     * Get data consistency checker.
+     * Get environment checker type.
      *
-     * @return data consistency checker type
+     * @return environment checker type
      */
-    Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass();
+    Class<? extends EnvironmentChecker> getEnvironmentCheckerClass();
     
     /**
      * Get SQL builder class.

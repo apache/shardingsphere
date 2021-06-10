@@ -17,13 +17,18 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.io.Closeable;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Meta data contexts.
@@ -36,6 +41,13 @@ public interface MetaDataContexts extends Closeable {
      * @return all schema names
      */
     Collection<String> getAllSchemaNames();
+    
+    /**
+     * Get mata data map.
+     *
+     * @return mata data map
+     */
+    Map<String, ShardingSphereMetaData> getMetaDataMap();
     
     /**
      * Get mata data.
@@ -53,6 +65,13 @@ public interface MetaDataContexts extends Closeable {
     ShardingSphereMetaData getDefaultMetaData();
     
     /**
+     * Get global rule meta data.
+     * 
+     * @return global rule meta data
+     */
+    ShardingSphereRuleMetaData getGlobalRuleMetaData();
+    
+    /**
      * Get executor engine.
      * 
      * @return executor engine
@@ -60,11 +79,11 @@ public interface MetaDataContexts extends Closeable {
     ExecutorEngine getExecutorEngine();
     
     /**
-     * Get authentication.
-     * 
-     * @return authentication
+     * Get optimize context factory.
+     *
+     * @return optimize context factory
      */
-    Authentication getAuthentication();
+    OptimizeContextFactory getOptimizeContextFactory();
     
     /**
      * Get configuration properties.
@@ -72,4 +91,18 @@ public interface MetaDataContexts extends Closeable {
      * @return configuration properties
      */
     ConfigurationProperties getProps();
+    
+    /**
+     * Get lock.
+     * 
+     * @return lock
+     */
+    Optional<ShardingSphereLock> getLock();
+    
+    /**
+     * Get state context.
+     * 
+     * @return state context
+     */
+    StateContext getStateContext();
 }

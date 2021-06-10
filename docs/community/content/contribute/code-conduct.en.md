@@ -40,7 +40,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Order of members definition and parameters should be consistent during classes and methods.
  - Use guard clauses in priority.
  - Minimize the access permission for classes and methods.
- - Private method should be just next to the method in which it is used; writing private methods should be in the same as the appearance order of private methods.
+ - Private method should be just next to the method in which it is used; Multiple private methods should be in the same as the appearance order of original methods.
  - No `null` parameters or return values.
  - Replace if else return and assign statement with ternary operator in priority.
  - Replace constructors, getters, setter methods and log variable with lombok in priority.

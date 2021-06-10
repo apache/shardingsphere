@@ -26,6 +26,7 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionData
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
+import javax.sql.DataSource;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -45,14 +46,19 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     
     private final Map<String, XATransactionDataSource> cachedDataSources = new HashMap<>();
     
-    private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
-    
+    private XATransactionManager xaTransactionManager;
+
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
-        for (ResourceDataSource each : resourceDataSources) {
-            cachedDataSources.put(each.getOriginalName(), new XATransactionDataSource(databaseType, each.getUniqueResourceName(), each.getDataSource(), xaTransactionManager));
-        }
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String transactionMangerType) {
+        xaTransactionManager = XATransactionManagerLoader.getInstance().getXATransactionManager(transactionMangerType);
         xaTransactionManager.init();
+        resourceDataSources.forEach(each -> cachedDataSources.put(each.getOriginalName(), newXATransactionDataSource(databaseType, each)));
+    }
+
+    private XATransactionDataSource newXATransactionDataSource(final DatabaseType databaseType, final ResourceDataSource resourceDataSource) {
+        String resourceName = resourceDataSource.getUniqueResourceName();
+        DataSource dataSource = resourceDataSource.getDataSource();
+        return new XATransactionDataSource(databaseType, resourceName, dataSource, xaTransactionManager);
     }
     
     @Override

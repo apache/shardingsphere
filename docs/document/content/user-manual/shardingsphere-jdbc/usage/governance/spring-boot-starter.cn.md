@@ -33,8 +33,6 @@ weight = 3
 spring.shardingsphere.governance.name=governance-spring-boot-shardingsphere-test
 spring.shardingsphere.governance.registry-center.type=Zookeeper
 spring.shardingsphere.governance.registry-center.server-lists=localhost:2181
-spring.shardingsphere.governance.additional-config-center.type=Zookeeper
-spring.shardingsphere.governance.additional-config-center.server-lists=localhost:2182
 spring.shardingsphere.governance.overwrite=true
 ```
 

@@ -33,7 +33,7 @@ public final class SPIDataBaseSQLEntry implements DatabaseSQLEntry {
         ShardingSphereServiceLoader.register(DatabaseSQLEntry.class);
     }
     
-    private final Collection<DatabaseSQLEntry> sqlEntries = ShardingSphereServiceLoader.newServiceInstances(DatabaseSQLEntry.class);
+    private final Collection<DatabaseSQLEntry> sqlEntries = ShardingSphereServiceLoader.getSingletonServiceInstances(DatabaseSQLEntry.class);
     
     private final String driverClassName;
     

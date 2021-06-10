@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -38,9 +37,9 @@ public final class PostgreSQLInt8BinaryProtocolValueTest {
     @Test
     public void assertNewInstance() {
         PostgreSQLInt8BinaryProtocolValue actual = new PostgreSQLInt8BinaryProtocolValue();
-        assertThat(actual.getColumnLength(null), equalTo(8));
+        assertThat(actual.getColumnLength(null), is(8));
         when(payload.readInt8()).thenReturn(1L);
-        assertThat(actual.read(payload), is(1L));
+        assertThat(actual.read(payload, 8), is(1L));
         actual.write(payload, 1L);
         verify(payload).writeInt8(1L);
     }
