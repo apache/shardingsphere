@@ -103,8 +103,10 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     }
     
     private Collection<String> getAllTables(final String schemaName) {
-        Collection<String> result = getShardingTables(getShardingRuleConfiguration(schemaName).get());
-        result.addAll(ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames());
+        Collection<String> result = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames();
+        if (getShardingRuleConfiguration(schemaName).isPresent()) {
+            result.addAll(getShardingTables(getShardingRuleConfiguration(schemaName).get()));
+        }
         return result;
     }
     
