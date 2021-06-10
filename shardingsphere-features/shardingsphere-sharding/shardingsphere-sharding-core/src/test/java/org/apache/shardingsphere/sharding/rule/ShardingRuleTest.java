@@ -270,16 +270,6 @@ public final class ShardingRuleTest {
     }
     
     @Test
-    public void assertGetDataNodeByDataSourceAndLogicTable() {
-        assertThat(createMaximumShardingRule().getDataNode("ds_1", "logic_table"), is(new DataNode("ds_1.table_0")));
-    }
-    
-    @Test(expected = ShardingSphereConfigurationException.class)
-    public void assertGetDataNodeByLogicTableFailureWithDataSourceName() {
-        createMaximumShardingRule().getDataNode("ds_3", "logic_table");
-    }
-    
-    @Test
     public void assertGetShardingLogicTableNames() {
         ShardingRule actual = createMaximumShardingRule();
         assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), is(Collections.singletonList("LOGIC_TABLE")));

@@ -430,20 +430,6 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
-     * Find data node by data source and logic table.
-     *
-     * @param dataSourceName data source name
-     * @param logicTableName logic table name
-     * @return data node
-     */
-    public DataNode getDataNode(final String dataSourceName, final String logicTableName) {
-        TableRule tableRule = getTableRule(logicTableName);
-        return tableRule.getActualDataNodes().stream().filter(each -> dataSourceNames.contains(each.getDataSourceName())
-                && each.getDataSourceName().equals(dataSourceName)).findFirst()
-                .orElseThrow(() -> new ShardingSphereConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName));
-    }
-    
-    /**
      * Get sharding logic table names.
      *
      * @param logicTableNames logic table names
