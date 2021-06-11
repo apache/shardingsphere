@@ -21,6 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -339,13 +340,12 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * @return whether all tables are in same data source or not
      */
     public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames) {
-        Set<String> dataSourceNames = new HashSet<>();
-        if (!broadcastTables.isEmpty()) {
-            dataSourceNames.addAll(getDataSourceNames());
-        }
-        dataSourceNames.addAll(tableRules.stream().filter(each -> logicTableNames.contains(each.getLogicTable()))
-                .flatMap(each -> each.getActualDataNodes().stream()).map(DataNode::getDataSourceName).collect(Collectors.toSet()));
-        dataSourceNames.addAll(singleTableRules.values().stream().filter(each -> logicTableNames.contains(each.getTableName())).map(SingleTableRule::getDataSourceName).collect(Collectors.toSet()));
+        Set<String> tableNames = Sets.newHashSet(logicTableNames);
+        Set<String> dataSourceNames = Sets.newHashSet();
+        dataSourceNames.addAll(tableRules.stream().filter(each -> tableNames.contains(each.getLogicTable())).flatMap(each 
+            -> each.getActualDataNodes().stream()).map(DataNode::getDataSourceName).collect(Collectors.toSet()));
+        dataSourceNames.addAll(broadcastTables.stream().filter(tableNames::contains).flatMap(each -> getDataSourceNames().stream()).collect(Collectors.toSet()));
+        dataSourceNames.addAll(singleTableRules.values().stream().filter(each -> tableNames.contains(each.getTableName())).map(SingleTableRule::getDataSourceName).collect(Collectors.toSet()));
         return 1 == dataSourceNames.size();
     }
     
