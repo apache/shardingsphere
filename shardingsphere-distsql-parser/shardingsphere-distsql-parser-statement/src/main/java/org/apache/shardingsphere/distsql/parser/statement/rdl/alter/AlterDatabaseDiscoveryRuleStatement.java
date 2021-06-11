@@ -31,5 +31,5 @@ import java.util.Collection;
 @Getter
 public final class AlterDatabaseDiscoveryRuleStatement extends RDLStatement {
     
-    private final Collection<DatabaseDiscoveryRuleSegment> databaseDiscoveryRules;
+    private final Collection<DatabaseDiscoveryRuleSegment> rules;
 }

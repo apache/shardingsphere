@@ -331,9 +331,9 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_STATIC_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
         CreateReadwriteSplittingRuleStatement statement = (CreateReadwriteSplittingRuleStatement) sqlStatement;
-        assertThat(statement.getReadwriteSplittingRules().size(), is(1));
+        assertThat(statement.getRules().size(), is(1));
         List<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments
-                = new ArrayList<>(((CreateReadwriteSplittingRuleStatement) sqlStatement).getReadwriteSplittingRules());
+                = new ArrayList<>(((CreateReadwriteSplittingRuleStatement) sqlStatement).getRules());
         assertThat(readwriteSplittingRuleSegments.get(0).getName(), is("ms_group_0"));
         assertThat(readwriteSplittingRuleSegments.get(0).getWriteDataSource(), is("primary_ds"));
         assertThat(readwriteSplittingRuleSegments.get(0).getReadDataSources(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
@@ -346,9 +346,9 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
         CreateReadwriteSplittingRuleStatement statement = (CreateReadwriteSplittingRuleStatement) sqlStatement;
-        assertThat(statement.getReadwriteSplittingRules().size(), is(1));
+        assertThat(statement.getRules().size(), is(1));
         List<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments
-                = new ArrayList<>(((CreateReadwriteSplittingRuleStatement) sqlStatement).getReadwriteSplittingRules());
+                = new ArrayList<>(((CreateReadwriteSplittingRuleStatement) sqlStatement).getRules());
         assertThat(readwriteSplittingRuleSegments.get(0).getName(), is("ms_group_1"));
         assertThat(readwriteSplittingRuleSegments.get(0).getAutoAwareResource(), is("group_0"));
         assertNull(readwriteSplittingRuleSegments.get(0).getWriteDataSource());
@@ -363,9 +363,9 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_ALTER_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof AlterReadwriteSplittingRuleStatement);
         AlterReadwriteSplittingRuleStatement statement = (AlterReadwriteSplittingRuleStatement) sqlStatement;
-        assertThat(statement.getReadwriteSplittingRules().size(), is(2));
+        assertThat(statement.getRules().size(), is(2));
         List<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments
-                = new ArrayList<>(((AlterReadwriteSplittingRuleStatement) sqlStatement).getReadwriteSplittingRules());
+                = new ArrayList<>(((AlterReadwriteSplittingRuleStatement) sqlStatement).getRules());
         assertThat(readwriteSplittingRuleSegments.get(0).getName(), is("ms_group_0"));
         assertThat(readwriteSplittingRuleSegments.get(0).getAutoAwareResource(), is("group_0"));
         assertNull(readwriteSplittingRuleSegments.get(0).getWriteDataSource());
@@ -392,9 +392,9 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_DATABASE_DISCOVERY_RULE);
         assertTrue(sqlStatement instanceof CreateDatabaseDiscoveryRuleStatement);
         CreateDatabaseDiscoveryRuleStatement statement = (CreateDatabaseDiscoveryRuleStatement) sqlStatement;
-        assertThat(statement.getDatabaseDiscoveryRules().size(), is(2));
+        assertThat(statement.getRules().size(), is(2));
         List<DatabaseDiscoveryRuleSegment> databaseDiscoveryRuleSegments
-                = new ArrayList<>(((CreateDatabaseDiscoveryRuleStatement) sqlStatement).getDatabaseDiscoveryRules());
+                = new ArrayList<>(((CreateDatabaseDiscoveryRuleStatement) sqlStatement).getRules());
         assertThat(databaseDiscoveryRuleSegments.get(0).getName(), is("ha_group_0"));
         assertThat(databaseDiscoveryRuleSegments.get(0).getDiscoveryTypeName(), is("mgr"));
         assertThat(databaseDiscoveryRuleSegments.get(0).getDataSources(), is(Arrays.asList("resource0", "resource1")));
@@ -410,9 +410,9 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_ALTER_DATABASE_DISCOVERY_RULE);
         assertTrue(sqlStatement instanceof AlterDatabaseDiscoveryRuleStatement);
         AlterDatabaseDiscoveryRuleStatement statement = (AlterDatabaseDiscoveryRuleStatement) sqlStatement;
-        assertThat(statement.getDatabaseDiscoveryRules().size(), is(2));
+        assertThat(statement.getRules().size(), is(2));
         List<DatabaseDiscoveryRuleSegment> databaseDiscoveryRuleSegments
-                = new ArrayList<>(((AlterDatabaseDiscoveryRuleStatement) sqlStatement).getDatabaseDiscoveryRules());
+                = new ArrayList<>(((AlterDatabaseDiscoveryRuleStatement) sqlStatement).getRules());
         assertThat(databaseDiscoveryRuleSegments.get(0).getName(), is("ha_group_0"));
         assertThat(databaseDiscoveryRuleSegments.get(0).getDiscoveryTypeName(), is("mgr"));
         assertThat(databaseDiscoveryRuleSegments.get(0).getDataSources(), is(Arrays.asList("resource0", "resource1")));
@@ -435,8 +435,8 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_ENCRYPT_RULE);
         assertTrue(sqlStatement instanceof CreateEncryptRuleStatement);
         CreateEncryptRuleStatement createEncryptRuleStatement = (CreateEncryptRuleStatement) sqlStatement;
-        assertThat(createEncryptRuleStatement.getEncryptRules().size(), is(1));
-        EncryptRuleSegment encryptRuleSegment = createEncryptRuleStatement.getEncryptRules().iterator().next();
+        assertThat(createEncryptRuleStatement.getRules().size(), is(1));
+        EncryptRuleSegment encryptRuleSegment = createEncryptRuleStatement.getRules().iterator().next();
         assertThat(encryptRuleSegment.getTableName(), is("t_encrypt"));
         assertThat(encryptRuleSegment.getColumns().size(), is(2));
         List<EncryptColumnSegment> encryptColumnSegments = new ArrayList<>(encryptRuleSegment.getColumns());
@@ -455,8 +455,8 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(RDL_ALTER_ENCRYPT_RULE);
         assertTrue(sqlStatement instanceof AlterEncryptRuleStatement);
         AlterEncryptRuleStatement alterEncryptRuleStatement = (AlterEncryptRuleStatement) sqlStatement;
-        assertThat(alterEncryptRuleStatement.getEncryptRules().size(), is(1));
-        EncryptRuleSegment encryptRuleSegment = alterEncryptRuleStatement.getEncryptRules().iterator().next();
+        assertThat(alterEncryptRuleStatement.getRules().size(), is(1));
+        EncryptRuleSegment encryptRuleSegment = alterEncryptRuleStatement.getRules().iterator().next();
         assertThat(encryptRuleSegment.getTableName(), is("t_encrypt"));
         assertThat(encryptRuleSegment.getColumns().size(), is(2));
         List<EncryptColumnSegment> encryptColumnSegments = new ArrayList<>(encryptRuleSegment.getColumns());

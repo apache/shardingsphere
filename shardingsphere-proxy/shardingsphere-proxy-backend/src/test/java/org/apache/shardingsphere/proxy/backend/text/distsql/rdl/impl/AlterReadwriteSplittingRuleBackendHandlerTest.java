@@ -100,7 +100,7 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("TEST");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections
                 .singletonList(new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections
                         .singleton(readwriteSplittingDataSourceRuleConfiguration)), Maps.newHashMap())));
@@ -127,7 +127,7 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("TEST");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
         handler.execute("test", sqlStatement);
     }
@@ -138,7 +138,7 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setName("pr_ds");
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections
                 .singletonList(new ReadwriteSplittingRuleConfiguration(Collections
                         .singleton(readwriteSplittingDataSourceRuleConfiguration), Maps.newHashMap())));
@@ -153,7 +153,7 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("notExistLoadBalancer");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections
                 .singletonList(new ReadwriteSplittingRuleConfiguration(Collections
                         .singleton(readwriteSplittingDataSourceRuleConfiguration), Maps.newHashMap())));

@@ -31,5 +31,5 @@ import java.util.Collection;
 @Getter
 public final class CreateEncryptRuleStatement extends CreateRDLStatement {
     
-    private final Collection<EncryptRuleSegment> encryptRules;
+    private final Collection<EncryptRuleSegment> rules;
 }
