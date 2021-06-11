@@ -175,9 +175,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateShardingBroadcastTableRules(final CreateShardingBroadcastTableRulesContext ctx) {
-        CreateShardingBroadcastTableRulesStatement result = new CreateShardingBroadcastTableRulesStatement();
-        result.getTables().addAll(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
-        return result;
+        return new CreateShardingBroadcastTableRulesStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
     }
     
     @Override
