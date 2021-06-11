@@ -1,6 +1,6 @@
 +++
 title = "SCTL"
-weight = 3
+weight = 1
 +++
 
 ## Definition
