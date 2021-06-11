@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
@@ -37,7 +37,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class AlgorithmProvidedReadwriteSplittingRuleConfiguration implements RuleConfiguration {
+public final class AlgorithmProvidedReadwriteSplittingRuleConfiguration implements SchemaRuleConfiguration {
     
     private Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
     
