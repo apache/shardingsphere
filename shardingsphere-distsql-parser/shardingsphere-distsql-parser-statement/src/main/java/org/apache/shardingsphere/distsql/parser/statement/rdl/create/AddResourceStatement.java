@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+
+import java.util.Collection;
 
 /**
- * Show readwrite splitting rules statement.
+ * Add resource statement.
  */
-public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement {
+@RequiredArgsConstructor
+@Getter
+public final class AddResourceStatement extends RDLStatement {
     
-    public ShowReadwriteSplittingRulesStatement(final SchemaSegment schema) {
-        super(schema);
-    }
+    private final Collection<DataSourceSegment> dataSources;
 }

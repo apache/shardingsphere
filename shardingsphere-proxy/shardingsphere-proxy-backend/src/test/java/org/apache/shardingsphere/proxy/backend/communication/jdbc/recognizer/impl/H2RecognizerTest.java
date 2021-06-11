@@ -31,7 +31,7 @@ public final class H2RecognizerTest {
     
     @Test
     public void assertGetURLPrefixes() {
-        assertThat(recognizer.getURLPrefixes(), is(Collections.singletonList("jdbc:h2:")));
+        assertThat(recognizer.getURLPrefixes(), is(Collections.singleton("jdbc:h2:")));
     }
     
     @Test

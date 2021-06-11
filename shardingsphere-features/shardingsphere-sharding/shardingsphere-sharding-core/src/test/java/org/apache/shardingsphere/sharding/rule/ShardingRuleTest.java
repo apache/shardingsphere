@@ -62,7 +62,7 @@ public final class ShardingRuleTest {
         assertThat(actual.getTableRules().size(), is(2));
         assertThat(actual.getBindingTableRules().size(), is(1));
         assertThat(actual.getBindingTableRules().iterator().next().getTableRules().size(), is(2));
-        assertThat(actual.getBroadcastTables(), is(Collections.singleton("BROADCAST_TABLE")));
+        assertThat(actual.getBroadcastTables(), is(Collections.singletonList("BROADCAST_TABLE")));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
     }
     
@@ -272,7 +272,7 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetShardingLogicTableNames() {
         ShardingRule actual = createMaximumShardingRule();
-        assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), is(Collections.singleton("LOGIC_TABLE")));
+        assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), is(Collections.singletonList("LOGIC_TABLE")));
     }
     
     @Test(expected = IllegalArgumentException.class)

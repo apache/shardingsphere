@@ -17,10 +17,18 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
+import java.util.Collection;
+
 /**
- * Drop RDL statement.
+ * Drop resource statement.
  */
-public abstract class DropRDLStatement extends RDLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class DropResourceStatement extends RDLStatement {
+    
+    private final Collection<String> names;
 }

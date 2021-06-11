@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show.impl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Alter RDL statement.
+ * Show database discovery rules statement.
  */
-public abstract class AlterRDLStatement extends RDLStatement {
+public final class ShowDatabaseDiscoveryRulesStatement extends ShowRulesStatement {
+    
+    public ShowDatabaseDiscoveryRulesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
 import java.util.Collection;
 
@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterEncryptRuleStatement extends AlterRDLStatement {
+public final class AlterEncryptRuleStatement extends AlterRuleStatement {
     
     private final Collection<EncryptRuleSegment> rules;
 }

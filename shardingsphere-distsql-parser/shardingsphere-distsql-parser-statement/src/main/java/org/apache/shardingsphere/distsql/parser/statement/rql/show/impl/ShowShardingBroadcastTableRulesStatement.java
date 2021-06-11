@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show.impl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Create RDL statement.
+ * Show sharding broadcast table rules statement.
  */
-public abstract class CreateRDLStatement extends RDLStatement {
+public final class ShowShardingBroadcastTableRulesStatement extends ShowRulesStatement {
+    
+    public ShowShardingBroadcastTableRulesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
 }
