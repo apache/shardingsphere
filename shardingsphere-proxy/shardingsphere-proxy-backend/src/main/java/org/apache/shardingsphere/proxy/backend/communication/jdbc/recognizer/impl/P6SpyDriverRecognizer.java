@@ -72,7 +72,7 @@ public final class P6SpyDriverRecognizer implements JDBCDriverComposeURLRecogniz
     
     @Override
     public Collection<String> getURLPrefixes() {
-        return Collections.singletonList("jdbc:p6spy:");
+        return Collections.singleton("jdbc:p6spy:");
     }
     
     @Override
