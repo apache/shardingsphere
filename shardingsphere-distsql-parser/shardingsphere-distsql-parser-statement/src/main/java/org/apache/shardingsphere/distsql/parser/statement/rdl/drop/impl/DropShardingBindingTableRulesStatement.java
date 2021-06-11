@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 /**
  * Drop sharding binding table rules statement.
  */
-public final class DropShardingBindingTableRulesStatement extends DropRDLStatement {
+public final class DropShardingBindingTableRulesStatement extends DropRuleStatement {
 }
