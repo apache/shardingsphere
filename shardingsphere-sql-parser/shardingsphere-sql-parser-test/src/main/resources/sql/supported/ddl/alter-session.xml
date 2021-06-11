@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_session_enable_parallel_dml" value="ALTER SESSION ENABLE PARALLEL DML" db-types="Oracle" />
+    <sql-case id="alter_session_advise_commit" value="ALTER SESSION ADVISE COMMIT" db-types="Oracle" />
+    <sql-case id="alter_session_advise_rollback" value="ALTER SESSION ADVISE ROLLBACK" db-types="Oracle" />
+    <sql-case id="alter_session_close_database_link" value="ALTER SESSION CLOSE DATABASE LINK private_link" db-types="Oracle" />
+    <sql-case id="alter_session_change_parameter" value="ALTER SESSION SET NLS_DATE_LANGUAGE = French" db-types="Oracle" />
+    <sql-case id="alter_session_set_container" value="ALTER SESSION SET CONTAINER = cdb$root" db-types="Oracle" />
+    <sql-case id="alter_session_set_container_service" value="ALTER SESSION SET CONTAINER = pdb1 SERVICE = my_new_service" db-types="Oracle" />
+</sql-cases>
