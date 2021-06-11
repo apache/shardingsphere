@@ -99,7 +99,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
@@ -108,7 +108,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        when(sqlStatement.getTables()).thenReturn(Collections.singletonList(tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
@@ -120,7 +120,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         FunctionSegment shardingAlgorithm = new FunctionSegment();
         shardingAlgorithm.setAlgorithmName("algorithm-not-exist");
         tableRuleSegment.setTableStrategy(shardingAlgorithm);
-        when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
 }

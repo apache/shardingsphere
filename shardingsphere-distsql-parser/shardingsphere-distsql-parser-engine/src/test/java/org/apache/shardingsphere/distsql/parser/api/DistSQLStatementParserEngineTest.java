@@ -240,8 +240,8 @@ public final class DistSQLStatementParserEngineTest {
     public void assertParseCreateShardingTableRule() {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_SHARDING_TABLE_RULE);
         assertTrue(sqlStatement instanceof CreateShardingTableRuleStatement);
-        assertThat(((CreateShardingTableRuleStatement) sqlStatement).getTables().size(), is(1));
-        TableRuleSegment tableRuleSegment = ((CreateShardingTableRuleStatement) sqlStatement).getTables().iterator().next();
+        assertThat(((CreateShardingTableRuleStatement) sqlStatement).getRules().size(), is(1));
+        TableRuleSegment tableRuleSegment = ((CreateShardingTableRuleStatement) sqlStatement).getRules().iterator().next();
         assertThat(tableRuleSegment.getLogicTable(), is("t_order"));
         assertTrue(tableRuleSegment.getDataSources().containsAll(Arrays.asList("ms_group_0", "ms_group_1")));
         assertThat(tableRuleSegment.getTableStrategyColumn(), is("order_id"));
