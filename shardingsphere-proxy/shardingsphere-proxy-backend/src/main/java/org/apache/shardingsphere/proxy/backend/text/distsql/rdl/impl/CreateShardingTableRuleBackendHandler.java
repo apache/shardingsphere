@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -103,7 +104,7 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     }
     
     private Collection<String> getAllTables(final String schemaName) {
-        Collection<String> result = ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames();
+        Collection<String> result = Sets.newHashSet(ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames());
         if (getShardingRuleConfiguration(schemaName).isPresent()) {
             result.addAll(getShardingTables(getShardingRuleConfiguration(schemaName).get()));
         }
