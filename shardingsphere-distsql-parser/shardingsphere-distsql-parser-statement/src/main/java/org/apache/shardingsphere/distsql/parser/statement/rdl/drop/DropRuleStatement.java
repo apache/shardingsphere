@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
 /**
- * Show readwrite splitting rules statement.
+ * Drop rule statement.
  */
-public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement {
-    
-    public ShowReadwriteSplittingRulesStatement(final SchemaSegment schema) {
-        super(schema);
-    }
+public abstract class DropRuleStatement extends RDLStatement {
 }

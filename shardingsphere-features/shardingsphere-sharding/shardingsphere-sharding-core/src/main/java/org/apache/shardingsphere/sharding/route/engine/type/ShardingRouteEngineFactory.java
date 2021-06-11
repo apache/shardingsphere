@@ -187,6 +187,9 @@ public final class ShardingRouteEngineFactory {
         if (!select.isContainsJoinQuery() && !select.isContainsSubquery()) {
             return false;
         }
+        if (shardingRule.isAllTablesInSameDataSource(tableNames)) {
+            return false;
+        }
         return shardingRule.isAllShardingTables(tableNames) || (shardingRule.tableRuleExists(tableNames) && shardingRule.singleTableRuleExists(tableNames));
     }
 }

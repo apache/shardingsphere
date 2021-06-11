@@ -38,7 +38,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -68,7 +67,7 @@ public final class DropShardingBroadcastTableRulesBackendHandlerTest {
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
     
-    private DropShardingBroadcastTableRulesBackendHandler handler = new DropShardingBroadcastTableRulesBackendHandler(sqlStatement, backendConnection);
+    private final DropShardingBroadcastTableRulesBackendHandler handler = new DropShardingBroadcastTableRulesBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -85,7 +84,7 @@ public final class DropShardingBroadcastTableRulesBackendHandlerTest {
 
     @Test(expected = ShardingBroadcastTableRulesNotExistsException.class)
     public void assertExecuteWithNotExistBroadcastTableRule() {
-        when(ruleMetaData.getConfigurations()).thenReturn(Arrays.asList(new ShardingRuleConfiguration()));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ShardingRuleConfiguration()));
         handler.execute("test", sqlStatement);
     }
 
@@ -95,16 +94,15 @@ public final class DropShardingBroadcastTableRulesBackendHandlerTest {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
-        ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) ProxyContext.getInstance()
-                .getMetaData("test").getRuleMetaData().getConfigurations().iterator().next();
-        assertTrue(shardingRuleConfiguration.getBroadcastTables().isEmpty());
+        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) ProxyContext.getInstance().getMetaData("test").getRuleMetaData().getConfigurations().iterator().next();
+        assertTrue(shardingRuleConfig.getBroadcastTables().isEmpty());
     }
     
     private Collection<RuleConfiguration> buildShardingConfigurations() {
-        ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
-        configuration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        configuration.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
-        configuration.getBroadcastTables().add("t_order");
-        return new ArrayList<>(Collections.singletonList(configuration));
+        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
+        config.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
+        config.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
+        config.getBroadcastTables().add("t_order");
+        return new ArrayList<>(Collections.singleton(config));
     }
 }

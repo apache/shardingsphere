@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show.impl;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Drop resource statement.
+ * Show readwrite splitting rules statement.
  */
-@Getter
-public final class DropResourceStatement extends DropRDLStatement {
+public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement {
     
-    private final Collection<String> resourceNames = new LinkedList<>();
+    public ShowReadwriteSplittingRulesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
 }

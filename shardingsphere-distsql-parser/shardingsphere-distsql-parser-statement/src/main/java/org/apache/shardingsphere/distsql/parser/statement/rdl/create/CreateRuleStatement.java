@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
 /**
- * Drop RDL statement.
+ * Create rule statement.
  */
-public abstract class DropRDLStatement extends RDLStatement {
+public abstract class CreateRuleStatement extends RDLStatement {
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rule;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.fixture.TestRuleConfiguration;
@@ -35,9 +34,8 @@ public final class ShardingSphereRulesBuilderTest {
     
     @Test
     public void assertBuild() {
-        RuleConfiguration ruleConfig = new TestRuleConfiguration();
         Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.buildSchemaRules(
-                "schema_name", Collections.singletonList(ruleConfig), mock(DatabaseType.class), Collections.emptyMap());
+                "schema_name", Collections.singleton(new TestRuleConfiguration()), mock(DatabaseType.class), Collections.emptyMap());
         assertThat(shardingSphereRules, is(Collections.singletonList(TestShardingSphereRuleBuilder.getRULE())));
     }
 }

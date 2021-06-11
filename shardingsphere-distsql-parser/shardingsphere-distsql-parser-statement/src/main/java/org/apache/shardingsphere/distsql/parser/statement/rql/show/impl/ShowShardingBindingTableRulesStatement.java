@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Alter encrypt rule statement.
+ * Show sharding binding table rules statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterEncryptRuleStatement extends RDLStatement {
+public final class ShowShardingBindingTableRulesStatement extends ShowRulesStatement {
     
-    private final Collection<EncryptRuleSegment> encryptRules;
+    public ShowShardingBindingTableRulesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
 }
