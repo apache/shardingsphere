@@ -144,6 +144,12 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         return binaryProtocolValue.read(payload, parameterValueLength);
     }
     
+    /**
+     * Get result format by column index.
+     *
+     * @param columnIndex column index
+     * @return result format
+     */
     public PostgreSQLColumnFormat getResultFormatByColumnIndex(final int columnIndex) {
         if (resultFormatCodes.isEmpty()) {
             return PostgreSQLColumnFormat.TEXT;
