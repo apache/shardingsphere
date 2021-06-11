@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRDLStatement;
 
 import java.util.Collection;
 
 /**
- * Alter sharding binding table rules statement.
+ * Alter database discovery rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShardingBindingTableRulesStatement extends RDLStatement {
+public final class AlterDatabaseDiscoveryRuleStatement extends AlterRDLStatement {
     
-    private final Collection<ShardingBindingTableRuleSegment> rules;
+    private final Collection<DatabaseDiscoveryRuleSegment> rules;
 }
