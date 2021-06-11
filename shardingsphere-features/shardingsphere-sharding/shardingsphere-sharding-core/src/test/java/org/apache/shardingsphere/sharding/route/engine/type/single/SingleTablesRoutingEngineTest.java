@@ -57,11 +57,11 @@ public final class SingleTablesRoutingEngineTest {
         assertThat(routeUnits.get(0).getTableMappers().size(), is(2));
         Iterator<RouteMapper> tableMappers = routeUnits.get(0).getTableMappers().iterator();
         RouteMapper tableMapper0 = tableMappers.next();
-        assertThat(tableMapper0.getActualName(), is("t_order"));
-        assertThat(tableMapper0.getLogicName(), is("t_order"));
+        assertThat(tableMapper0.getActualName(), is("t_order_item"));
+        assertThat(tableMapper0.getLogicName(), is("t_order_item"));
         RouteMapper tableMapper1 = tableMappers.next();
-        assertThat(tableMapper1.getActualName(), is("t_order_item"));
-        assertThat(tableMapper1.getLogicName(), is("t_order_item"));
+        assertThat(tableMapper1.getActualName(), is("t_order"));
+        assertThat(tableMapper1.getLogicName(), is("t_order"));
         assertThat(routeContext.isFederated(), is(false));
     }
     
