@@ -19,8 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.api;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReadwriteSplittingRuleConfiguration implements RuleConfiguration {
+public final class ReadwriteSplittingRuleConfiguration implements SchemaRuleConfiguration {
     
     private final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources;
     
