@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.loader.util;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Table meta data loader utility class.
+ * Duplicate binding tables exception.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TableMetaDataLoaderUtil {
+@RequiredArgsConstructor
+@Getter
+public final class DuplicateBindingTablesException extends BackendException {
     
-    /**
-     * Get logic index name.
-     * 
-     * @param actualIndexName actual index name
-     * @param actualTableName actual table name
-     * @return logic index
-     */
-    public static String getLogicIndexName(final String actualIndexName, final String actualTableName) {
-        String indexNameSuffix = "_" + actualTableName;
-        return actualIndexName.endsWith(indexNameSuffix) ? actualIndexName.replace(indexNameSuffix, "") : actualIndexName;
-    }
+    private static final long serialVersionUID = -8295737924657889408L;
+    
+    private final Collection<String> tableNames;
 }
