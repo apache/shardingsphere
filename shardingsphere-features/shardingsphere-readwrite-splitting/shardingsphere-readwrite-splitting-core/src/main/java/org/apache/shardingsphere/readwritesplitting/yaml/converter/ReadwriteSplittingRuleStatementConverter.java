@@ -42,7 +42,7 @@ public final class ReadwriteSplittingRuleStatementConverter {
      * @return YAML readwrite splitting rule configuration
      */
     public static YamlReadwriteSplittingRuleConfiguration convert(final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        return convert(sqlStatement.getReadwriteSplittingRules());
+        return convert(sqlStatement.getRules());
     }
 
     /**
@@ -52,7 +52,7 @@ public final class ReadwriteSplittingRuleStatementConverter {
      * @return YAML readwrite splitting rule configuration
      */
     public static YamlReadwriteSplittingRuleConfiguration convert(final AlterReadwriteSplittingRuleStatement sqlStatement) {
-        return convert(sqlStatement.getReadwriteSplittingRules());
+        return convert(sqlStatement.getRules());
     }
 
     private static YamlReadwriteSplittingRuleConfiguration convert(final Collection<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments) {

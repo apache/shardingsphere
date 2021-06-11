@@ -101,7 +101,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     
     private void checkResources(final AlterReadwriteSplittingRuleStatement sqlStatement, final String schemaName) {
         Collection<String> resources = new LinkedHashSet<>();
-        sqlStatement.getReadwriteSplittingRules().stream().filter(each -> Strings.isNullOrEmpty(each.getAutoAwareResource())).forEach(each -> {
+        sqlStatement.getRules().stream().filter(each -> Strings.isNullOrEmpty(each.getAutoAwareResource())).forEach(each -> {
             resources.add(each.getWriteDataSource());
             resources.addAll(each.getReadDataSources());
         });
@@ -112,7 +112,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     }
     
     private void checkLoadBalancer(final AlterReadwriteSplittingRuleStatement sqlStatement) {
-        Collection<String> invalidLoadBalances = sqlStatement.getReadwriteSplittingRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
+        Collection<String> invalidLoadBalances = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidLoadBalances.isEmpty()) {
@@ -121,7 +121,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     }
     
     private Collection<String> getAlteredRuleNames(final AlterReadwriteSplittingRuleStatement sqlStatement) {
-        return sqlStatement.getReadwriteSplittingRules()
+        return sqlStatement.getRules()
                 .stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toSet());
     }
 }
