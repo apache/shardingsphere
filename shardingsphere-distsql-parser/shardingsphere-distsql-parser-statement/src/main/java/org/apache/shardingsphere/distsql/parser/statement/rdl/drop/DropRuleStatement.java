@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
 /**
- * Drop RDL statement.
+ * Drop rule statement.
  */
 public abstract class DropRuleStatement extends RDLStatement {
 }

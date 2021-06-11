@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
 /**
- * Create RDL statement.
+ * Create rule statement.
  */
-public abstract class CreateRDLStatement extends RDLStatement {
+public abstract class CreateRuleStatement extends RDLStatement {
 }
