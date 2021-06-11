@@ -81,7 +81,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
-        uploadLocalConfiguration(governanceFacade);
+        uploadLocalConfiguration(governanceFacade, ruleConfigs);
     }
     
     private GovernanceFacade createGovernanceFacade(final GovernanceConfiguration config) {
@@ -120,11 +120,10 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
     }
     
-    private void uploadLocalConfiguration(final GovernanceFacade governanceFacade) {
+    private void uploadLocalConfiguration(final GovernanceFacade governanceFacade, final Collection<RuleConfiguration> ruleConfigs) {
         Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(metaDataContexts.getDefaultMetaData().getResource().getDataSources());
-        Collection<RuleConfiguration> ruleConfigurations = metaDataContexts.getDefaultMetaData().getRuleMetaData().getConfigurations();
         governanceFacade.onlineInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs),
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps().getProps());
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps().getProps());
     }
     
     @Override
