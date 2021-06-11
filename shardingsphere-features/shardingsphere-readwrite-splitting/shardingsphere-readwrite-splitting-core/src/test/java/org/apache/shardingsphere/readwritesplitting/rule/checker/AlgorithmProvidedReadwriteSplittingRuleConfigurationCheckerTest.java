@@ -32,34 +32,32 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Algorithm provided readwrite-splitting ruleConfiguration checker testcase.
- */
 public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationCheckerTest {
+    
     static {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
-
+    
     @Test
     public void assertCheckPass() {
         AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration ds0 = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
         when(ds0.getAutoAwareDataSourceName()).thenReturn("ds0");
-        when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        when(ruleConfig.getDataSources()).thenReturn(Collections.singleton(ds0));
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
     }
-
+    
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
         AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration ds0 = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
         when(ds0.getAutoAwareDataSourceName()).thenReturn("");
         when(ds0.getWriteDataSourceName()).thenReturn("");
-        when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(ds0));
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
+        when(ruleConfig.getDataSources()).thenReturn(Collections.singleton(ds0));
+        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
