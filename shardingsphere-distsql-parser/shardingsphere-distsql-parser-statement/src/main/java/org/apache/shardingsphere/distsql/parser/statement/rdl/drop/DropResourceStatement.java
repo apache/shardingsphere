@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
 import java.util.Collection;
 
@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropResourceStatement extends DropRDLStatement {
+public final class DropResourceStatement extends RDLStatement {
     
     private final Collection<String> names;
 }
