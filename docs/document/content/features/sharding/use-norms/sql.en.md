@@ -56,7 +56,7 @@ Partially support CASE WHEN
 Do not support HAVING and UNION (ALL) 
 
 Partly available sub-query
-* When subquery and outer query specify sharding key at the same time, the value of sharding key must be consistent.
+* If subquery and outer query specify sharding key at the same time, the value of sharding key must be consistent.
 
 Support not only pagination sub-query (see [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for more details), but also sub-query with the same mode. No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
 
