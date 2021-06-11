@@ -166,11 +166,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitDropResource(final DropResourceContext ctx) {
-        DropResourceStatement result = new DropResourceStatement();
-        for (TerminalNode each : ctx.IDENTIFIER()) {
-            result.getResourceNames().add(each.getText());
-        }
-        return result;
+        return new DropResourceStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
     }
     
     @Override

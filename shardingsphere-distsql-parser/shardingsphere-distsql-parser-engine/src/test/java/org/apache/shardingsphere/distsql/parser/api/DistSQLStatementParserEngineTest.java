@@ -232,8 +232,8 @@ public final class DistSQLStatementParserEngineTest {
     public void assertParseDropResource() {
         SQLStatement sqlStatement = engine.parse(RDL_DROP_RESOURCE);
         assertTrue(sqlStatement instanceof DropResourceStatement);
-        assertThat(((DropResourceStatement) sqlStatement).getResourceNames().size(), is(2));
-        assertTrue(((DropResourceStatement) sqlStatement).getResourceNames().containsAll(Arrays.asList("ds_0", "ds_1")));
+        assertThat(((DropResourceStatement) sqlStatement).getNames().size(), is(2));
+        assertTrue(((DropResourceStatement) sqlStatement).getNames().containsAll(Arrays.asList("ds_0", "ds_1")));
     }
     
     @Test
