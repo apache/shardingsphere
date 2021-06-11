@@ -17,7 +17,7 @@ weight = 1
 
 ### 路由至多数据节点
 
-全面支持DML、DDL、DCL、TCL和部分DAL。支持分页、去重、排序、分组、聚合、关联查询（不支持跨库关联）。以下用最为复杂的DML举例：
+全面支持DML、DDL、DCL、TCL和部分DAL。支持分页、去重、排序、分组、聚合、关联查询。以下用最为复杂的DML举例：
 
 - SELECT主语句
 
@@ -52,10 +52,11 @@ tbl_name [AS] alias] [index_hint_list]
 部分支持CASE WHEN
 * `CASE WHEN` 中包含子查询不支持
 * `CASE WHEN` 中使用逻辑表名不支持（请使用表别名）
+
 不支持 HAVING、UNION (ALL)
 
 部分支持子查询
-* 子查询中使用WHERE条件时，必须包含分片键，当外层查询中也包含分片键时，子查询和外层查询中的分片键必须保持一致
+* 子查询和外层查询同时指定分片键时，分片键的值必须保持一致
 
 除了分页子查询的支持之外(详情请参考[分页](/cn/features/sharding/use-norms/pagination))，也支持同等模式的子查询。无论嵌套多少层，ShardingSphere都可以解析至第一个包含数据表的子查询，一旦在下层嵌套中再次找到包含数据表的子查询将直接抛出解析异常。
 
@@ -63,14 +64,15 @@ tbl_name [AS] alias] [index_hint_list]
 
 ```sql
 SELECT COUNT(*) FROM (SELECT * FROM t_order) o;
+SELECT COUNT(*) FROM (SELECT * FROM t_order) o WHERE o.order_id = 1;
 SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o;
 SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
+SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE product_id = 1) o;
 ```
 
 以下子查询不支持：
 
 ```sql
-SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE product_id = 1) o;
 SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 2;
 ```
 
@@ -105,8 +107,13 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                          |
 | SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    |                          |
 | SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                          |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                          |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                          |
+| SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
+| (SELECT * FROM tbl_name)                                                                    |                          |
 | INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                          |
 | INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                          |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES(1 + 2, ?, ...)                                |                          |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?, ....), (?, ?, ....)                    |                          |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT表和SELECT表必须为相同表或绑定表 |
 | REPLACE INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ? | REPLACE表和SELECT表必须为相同表或绑定表 |
@@ -119,22 +126,17 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | CREATE INDEX idx_name ON tbl_name                                                           |                          |
 | DROP INDEX idx_name ON tbl_name                                                             |                          |
 | DROP INDEX idx_name                                                                         |                          |
-| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                          |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                          |
-| SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
 
 ### 不支持的SQL
 
 | SQL                                                                                        | 不支持原因                  |
 | ------------------------------------------------------------------------------------------ | -------------------------- |
-| INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                 | VALUES语句不支持运算表达式   |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?               | SELECT子句暂不支持使用*号简写及内置的分布式主键生成器 |
 | REPLACE INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?              | SELECT子句暂不支持使用*号简写及内置的分布式主键生成器 |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                      |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                  |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | 详见DISTINCT支持情况详细说明 |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | 会导致全路由                |
-| (SELECT * FROM tbl_name)                                                                   | 暂不支持加括号的查询                              |
 | SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | 查询列是函数表达式时,查询列前不能使用表名;若查询表存在别名,则可使用表的别名|
 
 ## DISTINCT支持情况详细说明
