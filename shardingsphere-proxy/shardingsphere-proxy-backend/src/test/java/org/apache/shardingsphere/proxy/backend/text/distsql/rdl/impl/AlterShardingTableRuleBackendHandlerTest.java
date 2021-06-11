@@ -82,7 +82,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     @Mock
     private ShardingSphereResource shardingSphereResource;
     
-    private AlterShardingTableRuleBackendHandler handler = new AlterShardingTableRuleBackendHandler(sqlStatement, backendConnection);
+    private final AlterShardingTableRuleBackendHandler handler = new AlterShardingTableRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -105,10 +105,10 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         functionSegment.setAlgorithmName("hash_mod");
         functionSegment.setAlgorithmProps(new Properties());
         tableRuleSegment.setTableStrategy(functionSegment);
-        tableRuleSegment.setDataSources(Arrays.asList("ds_0"));
+        tableRuleSegment.setDataSources(Collections.singleton("ds_0"));
         tableRuleSegment.setTableStrategyColumn("order_id");
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
@@ -134,7 +134,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         tableRuleSegment.setLogicTable("t_order_1");
         tableRuleSegment.setDataSources(Collections.emptyList());
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
@@ -146,17 +146,17 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         FunctionSegment shardingAlgorithm = new FunctionSegment();
         shardingAlgorithm.setAlgorithmName("algorithm-not-exist");
         tableRuleSegment.setTableStrategy(shardingAlgorithm);
-        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         handler.execute("test", sqlStatement);
     }
     
     private Collection<RuleConfiguration> buildShardingConfigurations() {
-        ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
-        configuration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
+        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
+        config.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
         ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("t_order");
         shardingAutoTableRuleConfiguration.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "test"));
-        configuration.getAutoTables().add(shardingAutoTableRuleConfiguration);
-        return new ArrayList<>(Collections.singletonList(configuration));
+        config.getAutoTables().add(shardingAutoTableRuleConfiguration);
+        return new ArrayList<>(Collections.singleton(config));
     }
 }

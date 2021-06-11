@@ -78,11 +78,11 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
 
     @Mock
     private ShardingSphereResource shardingSphereResource;
-
+    
     @Mock
     private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration;
     
-    private AlterReadwriteSplittingRuleBackendHandler handler = new AlterReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
+    private final AlterReadwriteSplittingRuleBackendHandler handler = new AlterReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -145,7 +145,7 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
         when(readwriteSplittingDataSourceRuleConfiguration.getName()).thenReturn("pr_ds");
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = InvalidLoadBalancersException.class)
     public void assertExecuteWithInvalidLoadBalancer() {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment();

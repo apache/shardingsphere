@@ -78,7 +78,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
     @Mock
     private ShardingSphereResource shardingSphereResource;
     
-    private CreateDatabaseDiscoveryRuleBackendHandler handler = new CreateDatabaseDiscoveryRuleBackendHandler(sqlStatement, backendConnection);
+    private final CreateDatabaseDiscoveryRuleBackendHandler handler = new CreateDatabaseDiscoveryRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {

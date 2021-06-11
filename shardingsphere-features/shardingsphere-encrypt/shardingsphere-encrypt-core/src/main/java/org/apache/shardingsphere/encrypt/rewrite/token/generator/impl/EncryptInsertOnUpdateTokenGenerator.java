@@ -97,7 +97,7 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
     private void addCipherColumn(final String tableName, final String columnName, final EncryptParameterAssignmentToken token) {
         token.addColumnName(getEncryptRule().getCipherColumn(tableName, columnName));
     }
-
+    
     private void addAssistedQueryColumn(final String tableName, final String columnName, final EncryptParameterAssignmentToken token) {
         getEncryptRule().findAssistedQueryColumn(tableName, columnName).ifPresent(token::addColumnName);
     }

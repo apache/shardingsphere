@@ -71,7 +71,7 @@ public final class CreateEncryptRuleBackendHandlerTest {
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
     
-    private CreateEncryptRuleBackendHandler handler = new CreateEncryptRuleBackendHandler(sqlStatement, backendConnection);
+    private final CreateEncryptRuleBackendHandler handler = new CreateEncryptRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {

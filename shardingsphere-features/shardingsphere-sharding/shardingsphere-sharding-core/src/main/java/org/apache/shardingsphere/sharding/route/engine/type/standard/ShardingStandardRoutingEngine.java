@@ -70,7 +70,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         routeContext.getOriginalDataNodes().addAll(originalDataNodes);
         for (DataNode each : dataNodes) {
             routeContext.getRouteUnits().add(
-                    new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName()))));
+                    new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singleton(new RouteMapper(logicTableName, each.getTableName()))));
         }
     }
     

@@ -100,13 +100,13 @@ public final class AlterShardingBindingTableRulesBackendHandlerTest {
     }
     
     private ShardingRuleConfiguration buildShardingRuleConfiguration() {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_1"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_2"));
-        shardingRuleConfiguration.getBindingTableGroups().addAll(Collections.singletonList("t_order,t_order_item"));
-        return shardingRuleConfiguration;
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_1"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_2"));
+        result.getBindingTableGroups().addAll(Collections.singletonList("t_order,t_order_item"));
+        return result;
     }
     
     private AlterShardingBindingTableRulesStatement buildShardingTableRuleStatement() {
