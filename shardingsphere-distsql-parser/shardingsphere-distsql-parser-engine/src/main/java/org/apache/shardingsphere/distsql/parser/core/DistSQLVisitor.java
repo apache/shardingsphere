@@ -196,14 +196,13 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitAlterShardingBindingTableRules(final AlterShardingBindingTableRulesContext ctx) {
-        AlterShardingBindingTableRulesStatement result = new AlterShardingBindingTableRulesStatement();
+        Collection<ShardingBindingTableRuleSegment> rules = new LinkedList<>();
         for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
             ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
-            segment.setTables(Joiner.on(",")
-                    .join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
-            result.getRules().add(segment);
+            segment.setTables(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
+            rules.add(segment);
         }
-        return result;
+        return new AlterShardingBindingTableRulesStatement(rules);
     }
     
     @Override
@@ -215,15 +214,13 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateReadwriteSplittingRule(final CreateReadwriteSplittingRuleContext ctx) {
-        return new CreateReadwriteSplittingRuleStatement(ctx.readwriteSplittingRuleDefinition()
-                .stream().map(each -> (ReadwriteSplittingRuleSegment) visit(each)).collect(Collectors.toList()));
+        return new CreateReadwriteSplittingRuleStatement(ctx.readwriteSplittingRuleDefinition().stream().map(each -> (ReadwriteSplittingRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitReadwriteSplittingRuleDefinition(final ReadwriteSplittingRuleDefinitionContext ctx) {
         ReadwriteSplittingRuleSegment result = (ReadwriteSplittingRuleSegment) (null != ctx.dynamicReadwriteSplittingRuleDefinition()
-                        ? visit(ctx.dynamicReadwriteSplittingRuleDefinition())
-                        : visit(ctx.staticReadwriteSplittingRuleDefinition()));
+                        ? visit(ctx.dynamicReadwriteSplittingRuleDefinition()) : visit(ctx.staticReadwriteSplittingRuleDefinition()));
         Properties props = new Properties();
         if (null != ctx.functionDefinition().algorithmProperties()) {
             ctx.functionDefinition().algorithmProperties().algorithmProperty()
@@ -340,14 +337,12 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateEncryptRule(final CreateEncryptRuleContext ctx) {
-        return new CreateEncryptRuleStatement(ctx.encryptRuleDefinition()
-                .stream().map(each -> (EncryptRuleSegment) visit(each)).collect(Collectors.toList()));
+        return new CreateEncryptRuleStatement(ctx.encryptRuleDefinition().stream().map(each -> (EncryptRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitEncryptRuleDefinition(final EncryptRuleDefinitionContext ctx) {
-        return new EncryptRuleSegment(ctx.tableName().getText(), ctx.columnDefinition()
-                .stream().map(each -> (EncryptColumnSegment) visit(each)).collect(Collectors.toList()));
+        return new EncryptRuleSegment(ctx.tableName().getText(), ctx.columnDefinition().stream().map(each -> (EncryptColumnSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -364,8 +359,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitAlterEncryptRule(final AlterEncryptRuleContext ctx) {
-        return new AlterEncryptRuleStatement(ctx.encryptRuleDefinition()
-                .stream().map(each -> (EncryptRuleSegment) visit(each)).collect(Collectors.toList()));
+        return new AlterEncryptRuleStatement(ctx.encryptRuleDefinition().stream().map(each -> (EncryptRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override

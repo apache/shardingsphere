@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Alter sharding binding table rules statement.
@@ -31,5 +31,5 @@ import java.util.LinkedList;
 @Getter
 public final class AlterShardingBindingTableRulesStatement extends RDLStatement {
     
-    private final Collection<ShardingBindingTableRuleSegment> rules = new LinkedList<>();
+    private final Collection<ShardingBindingTableRuleSegment> rules;
 }
