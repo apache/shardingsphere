@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -130,7 +130,7 @@ public final class ProjectionEngine {
     }
     
     private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<SimpleTableSegment> tables) {
-        Collection<ColumnProjection> result = new LinkedList<>();
+        Collection<ColumnProjection> result = new HashSet<>();
         for (SimpleTableSegment each : tables) {
             String owner = each.getAlias().orElse(each.getTableName().getIdentifier().getValue());
             result.addAll(schema.getAllColumnNames(
