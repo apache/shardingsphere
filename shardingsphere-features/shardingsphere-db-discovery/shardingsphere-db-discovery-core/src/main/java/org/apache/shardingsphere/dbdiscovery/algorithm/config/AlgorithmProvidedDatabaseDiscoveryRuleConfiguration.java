@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -37,7 +37,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Getter
 @Setter
-public final class AlgorithmProvidedDatabaseDiscoveryRuleConfiguration implements RuleConfiguration {
+public final class AlgorithmProvidedDatabaseDiscoveryRuleConfiguration implements SchemaRuleConfiguration {
     
     private Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources = new LinkedList<>();
     

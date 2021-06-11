@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -37,7 +37,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class AlgorithmProvidedEncryptRuleConfiguration implements RuleConfiguration {
+public final class AlgorithmProvidedEncryptRuleConfiguration implements SchemaRuleConfiguration {
     
     private Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
     
