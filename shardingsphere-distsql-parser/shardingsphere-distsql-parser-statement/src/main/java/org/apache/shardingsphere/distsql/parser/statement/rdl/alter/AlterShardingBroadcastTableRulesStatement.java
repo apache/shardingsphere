@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Alter sharding broadcast table rules statement.
@@ -31,5 +30,5 @@ import java.util.LinkedList;
 @Getter
 public final class AlterShardingBroadcastTableRulesStatement extends RDLStatement {
     
-    private final Collection<String> tables = new LinkedList<>();
+    private final Collection<String> tables;
 }
