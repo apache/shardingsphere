@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show.impl;
 
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Show sharding binding table rules statement.
+ * Show database discovery rules statement.
  */
-public final class ShowShardingBindingTableRulesStatement extends ShowRulesStatement {
+public final class ShowDatabaseDiscoveryRulesStatement extends ShowRulesStatement {
     
-    public ShowShardingBindingTableRulesStatement(final SchemaSegment schema) {
+    public ShowDatabaseDiscoveryRulesStatement(final SchemaSegment schema) {
         super(schema);
     }
 }
