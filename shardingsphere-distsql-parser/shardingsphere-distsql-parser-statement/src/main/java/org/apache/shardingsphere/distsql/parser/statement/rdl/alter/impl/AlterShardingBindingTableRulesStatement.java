@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl;
 
-import org.junit.Test;
-import org.mariadb.jdbc.MariaDbDataSource;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRDLStatement;
 
-import java.util.Collections;
+import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MariaDBXADataSourceDefinitionTest {
+/**
+ * Alter sharding binding table rules statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AlterShardingBindingTableRulesStatement extends AlterRDLStatement {
     
-    @Test
-    public void assertGetXADriverClassName() {
-        assertThat(new MariaDBXADataSourceDefinition().getXADriverClassName(), is(Collections.singleton(MariaDbDataSource.class.getName())));
-    }
+    private final Collection<ShardingBindingTableRuleSegment> rules;
 }

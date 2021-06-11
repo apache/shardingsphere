@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -78,7 +78,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
         if (!notExistTables.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(schemaName, notExistTables);
         }
-        Collection<String> invalidTableAlgorithms = sqlStatement.getTables().stream().map(each -> each.getTableStrategy().getAlgorithmName()).distinct()
+        Collection<String> invalidTableAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getAlgorithmName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidTableAlgorithms.isEmpty()) {
@@ -117,7 +117,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     }
     
     private Collection<String> getDuplicateTables(final AlterShardingTableRuleStatement sqlStatement) {
-        return sqlStatement.getTables().stream()
+        return sqlStatement.getRules().stream()
                 .collect(Collectors.toMap(TableRuleSegment::getLogicTable, e -> 1, Integer::sum))
                 .entrySet().stream()
                 .filter(entry -> entry.getValue() > 1)
@@ -126,7 +126,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     }
     
     private Collection<String> getAlteredTables(final AlterShardingTableRuleStatement sqlStatement) {
-        return sqlStatement.getTables().stream().map(TableRuleSegment::getLogicTable).collect(Collectors.toList());
+        return sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).collect(Collectors.toList());
     }
     
     private Collection<String> getShardingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
@@ -138,12 +138,12 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     
     private Collection<String> getResources(final AlterShardingTableRuleStatement sqlStatement) {
         Collection<String> result = new LinkedHashSet<>();
-        sqlStatement.getTables().forEach(each -> result.addAll(each.getDataSources()));
+        sqlStatement.getRules().forEach(each -> result.addAll(each.getDataSources()));
         return result;
     }
     
     private Collection<String> getKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) {
-        return sqlStatement.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
+        return sqlStatement.getRules().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
                 .map(each -> each.getKeyGenerateStrategy().getAlgorithmName()).collect(Collectors.toSet());
     }
 }

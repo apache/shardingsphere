@@ -67,14 +67,14 @@ public final class DropDatabaseDiscoveryRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     @Mock
     private DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration;
-
+    
     @Mock
     private ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration;
     
-    private DropDatabaseDiscoveryRuleBackendHandler handler = new DropDatabaseDiscoveryRuleBackendHandler(sqlStatement, backendConnection);
+    private final DropDatabaseDiscoveryRuleBackendHandler handler = new DropDatabaseDiscoveryRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -89,9 +89,8 @@ public final class DropDatabaseDiscoveryRuleBackendHandlerTest {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("ha_group"));
         Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(1, 1);
         discoveryTypes.put("pr_ds_MGR", shardingSphereAlgorithmConfiguration);
-        when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>(Collections
-                .singletonList(new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections
-                        .singleton(databaseDiscoveryDataSourceRuleConfiguration)), discoveryTypes))));
+        when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>(
+                Collections.singleton(new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(databaseDiscoveryDataSourceRuleConfiguration)), discoveryTypes))));
         when(databaseDiscoveryDataSourceRuleConfiguration.getName()).thenReturn("ha_group");
         when(databaseDiscoveryDataSourceRuleConfiguration.getDiscoveryTypeName()).thenReturn("pr_ds_MGR");
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
@@ -104,7 +103,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandlerTest {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = DatabaseDiscoveryRulesNotExistedException.class)
     public void assertExecuteWithNoDroppedDatabaseDiscoveryRules() {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("ha_group"));

@@ -17,19 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
-import java.util.Collection;
-
 /**
- * Alter database discovery rule statement.
+ * Alter RDL statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterDatabaseDiscoveryRuleStatement extends RDLStatement {
-    
-    private final Collection<DatabaseDiscoveryRuleSegment> rules;
+public abstract class AlterRDLStatement extends RDLStatement {
 }
