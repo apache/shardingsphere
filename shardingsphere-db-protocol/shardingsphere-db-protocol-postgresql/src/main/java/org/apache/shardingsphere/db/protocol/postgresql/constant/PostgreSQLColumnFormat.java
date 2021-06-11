@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public enum PostgreSQLColumnFormat {
     
     TEXT(0),
+    
     BINARY(1);
     
     private final int code;
