@@ -89,7 +89,7 @@ public final class AlterEncryptRuleBackendHandlerTest {
     @Test
     public void assertExecute() {
         EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("MD5"));
-        when(sqlStatement.getEncryptRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections
                 .singletonList(new EncryptRuleConfiguration(new LinkedList<>(Collections
                         .singleton(encryptTableRuleConfiguration)), Maps.newHashMap())));
@@ -108,7 +108,7 @@ public final class AlterEncryptRuleBackendHandlerTest {
     @Test(expected = EncryptRulesNotExistedException.class)
     public void assertExecuteWithNoAlteredEncryptRules() {
         EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("MD5"));
-        when(sqlStatement.getEncryptRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
         handler.execute("test", sqlStatement);
     }
@@ -116,7 +116,7 @@ public final class AlterEncryptRuleBackendHandlerTest {
     @Test(expected = InvalidEncryptorsException.class)
     public void assertExecuteWithInvalidEncryptors() {
         EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("notExistEncryptor"));
-        when(sqlStatement.getEncryptRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections
                 .singletonList(new EncryptRuleConfiguration(Collections
                         .singleton(encryptTableRuleConfiguration), Maps.newHashMap())));

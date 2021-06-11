@@ -99,7 +99,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandlerTest {
         databaseDiscoveryRuleSegment.setName("ha_group");
         databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_0", "ds_1"));
         databaseDiscoveryRuleSegment.setDiscoveryTypeName("TEST");
-        when(sqlStatement.getDatabaseDiscoveryRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections
                 .singletonList(new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections
                         .singleton(databaseDiscoveryDataSourceRuleConfiguration)), Maps.newHashMap())));
@@ -125,7 +125,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandlerTest {
         databaseDiscoveryRuleSegment.setName("ha_group");
         databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_0", "ds_1"));
         databaseDiscoveryRuleSegment.setDiscoveryTypeName("TEST");
-        when(sqlStatement.getDatabaseDiscoveryRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
         handler.execute("test", sqlStatement);
     }
@@ -136,7 +136,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandlerTest {
         databaseDiscoveryRuleSegment.setName("ha_group");
         databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_0", "ds_1"));
         databaseDiscoveryRuleSegment.setDiscoveryTypeName("TEST");
-        when(sqlStatement.getDatabaseDiscoveryRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections
                 .singletonList(new DatabaseDiscoveryRuleConfiguration(Collections
                         .singleton(databaseDiscoveryDataSourceRuleConfiguration), Maps.newHashMap())));
@@ -150,7 +150,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandlerTest {
         databaseDiscoveryRuleSegment.setName("ha_group");
         databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_0", "ds_1"));
         databaseDiscoveryRuleSegment.setDiscoveryTypeName("notExistType");
-        when(sqlStatement.getDatabaseDiscoveryRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections
                 .singletonList(new DatabaseDiscoveryRuleConfiguration(Collections
                         .singleton(databaseDiscoveryDataSourceRuleConfiguration), Maps.newHashMap())));

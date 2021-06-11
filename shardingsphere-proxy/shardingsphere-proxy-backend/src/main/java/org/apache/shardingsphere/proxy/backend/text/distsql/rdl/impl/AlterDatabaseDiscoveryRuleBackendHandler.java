@@ -66,7 +66,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     public void doExecute(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName).get();
         DatabaseDiscoveryRuleConfiguration alteredDatabaseDiscoveryRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singletonList(DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getDatabaseDiscoveryRules()))).stream()
+                .swapToRuleConfigurations(Collections.singletonList(DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules()))).stream()
                 .map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst().get();
         drop(sqlStatement, databaseDiscoveryRuleConfiguration);
         databaseDiscoveryRuleConfiguration.getDataSources().addAll(alteredDatabaseDiscoveryRuleConfiguration.getDataSources());
@@ -102,7 +102,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     
     private void checkResources(final String schemaName, final AlterDatabaseDiscoveryRuleStatement statement) {
         Collection<String> resources = new LinkedHashSet<>();
-        statement.getDatabaseDiscoveryRules().forEach(each -> resources.addAll(each.getDataSources()));
+        statement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
         Collection<String> notExistResources = getInvalidResources(schemaName, resources);
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
@@ -110,7 +110,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     }
     
     private void checkDiscoveryType(final AlterDatabaseDiscoveryRuleStatement statement) {
-        Collection<String> invalidDiscoveryTypes = statement.getDatabaseDiscoveryRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
+        Collection<String> invalidDiscoveryTypes = statement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidDiscoveryTypes.isEmpty()) {
@@ -119,7 +119,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     }
     
     private Collection<String> getAlteredRuleNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        return sqlStatement.getDatabaseDiscoveryRules()
+        return sqlStatement.getRules()
                 .stream().map(DatabaseDiscoveryRuleSegment::getName).collect(Collectors.toList());
     }
 }

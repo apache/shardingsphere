@@ -99,7 +99,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("TEST");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
@@ -121,7 +121,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("TEST");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         handler.execute("test", sqlStatement);
     }
 
@@ -138,7 +138,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("TEST");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
@@ -154,7 +154,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setName("pr_ds");
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         handler.execute("test", sqlStatement);
     }
 
@@ -165,7 +165,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("notExistLoadBalancer");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);

@@ -81,7 +81,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
         Optional<ReadwriteSplittingRuleConfiguration> optional = getReadwriteSplittingRuleConfiguration(schemaName);
         if (optional.isPresent()) {
             Collection<String> existRuleNames = getRuleNames(optional.get());
-            Collection<String> duplicateRuleNames = sqlStatement.getReadwriteSplittingRules()
+            Collection<String> duplicateRuleNames = sqlStatement.getRules()
                     .stream().map(ReadwriteSplittingRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toList());
             if (!duplicateRuleNames.isEmpty()) {
                 throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
@@ -97,7 +97,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
     }
     
     private void checkLoadBalancers(final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        Collection<String> invalidLoadBalances = sqlStatement.getReadwriteSplittingRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
+        Collection<String> invalidLoadBalances = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidLoadBalances.isEmpty()) {
@@ -107,7 +107,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
     
     private Collection<String> getResources(final CreateReadwriteSplittingRuleStatement sqlStatement) {
         Collection<String> result = new LinkedHashSet<>();
-        sqlStatement.getReadwriteSplittingRules().stream().filter(each -> Strings.isNullOrEmpty(each.getAutoAwareResource())).forEach(each -> {
+        sqlStatement.getRules().stream().filter(each -> Strings.isNullOrEmpty(each.getAutoAwareResource())).forEach(each -> {
             result.add(each.getWriteDataSource());
             result.addAll(each.getReadDataSources());
         });
