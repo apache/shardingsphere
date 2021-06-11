@@ -21,6 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -62,6 +63,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -329,6 +331,22 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
             return false;
         }
         return 1 == singleTableRules.values().stream().filter(each -> logicTableNames.contains(each.getTableName())).map(SingleTableRule::getDataSourceName).collect(Collectors.toSet()).size();
+    }
+    
+    /**
+     * Judge whether all tables are in same data source or not.
+     * 
+     * @param logicTableNames logic table names
+     * @return whether all tables are in same data source or not
+     */
+    public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames) {
+        Set<String> tableNames = Sets.newHashSet(logicTableNames);
+        Set<String> dataSourceNames = Sets.newHashSet();
+        dataSourceNames.addAll(tableRules.stream().filter(each -> tableNames.contains(each.getLogicTable())).flatMap(each 
+            -> each.getActualDataNodes().stream()).map(DataNode::getDataSourceName).collect(Collectors.toSet()));
+        dataSourceNames.addAll(broadcastTables.stream().filter(tableNames::contains).flatMap(each -> getDataSourceNames().stream()).collect(Collectors.toSet()));
+        dataSourceNames.addAll(singleTableRules.values().stream().filter(each -> tableNames.contains(each.getTableName())).map(SingleTableRule::getDataSourceName).collect(Collectors.toSet()));
+        return 1 == dataSourceNames.size();
     }
     
     /**

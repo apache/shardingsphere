@@ -48,7 +48,7 @@ public final class SingleTablesRoutingEngine implements ShardingRouteEngine {
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        if (sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement) {
+        if (isDDLTableStatement() || shardingRule.isAllTablesInSameDataSource(logicTables)) {
             Set<String> existSingleTables = Sets.intersection(shardingRule.getSingleTableRules().keySet(), Sets.newHashSet(logicTables));
             if (!existSingleTables.isEmpty()) {
                 fillRouteContext(shardingRule, routeContext, existSingleTables);
@@ -61,6 +61,10 @@ public final class SingleTablesRoutingEngine implements ShardingRouteEngine {
                 routeContext.setFederated(true);
             }
         }
+    }
+    
+    private boolean isDDLTableStatement() {
+        return sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement;
     }
     
     private RouteUnit getRandomRouteUnit(final ShardingRule shardingRule) {
