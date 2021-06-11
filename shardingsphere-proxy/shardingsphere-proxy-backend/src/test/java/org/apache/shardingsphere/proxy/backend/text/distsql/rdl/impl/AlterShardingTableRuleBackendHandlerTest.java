@@ -108,7 +108,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         tableRuleSegment.setDataSources(Arrays.asList("ds_0"));
         tableRuleSegment.setTableStrategyColumn("order_id");
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
@@ -124,7 +124,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
@@ -134,7 +134,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         tableRuleSegment.setLogicTable("t_order_1");
         tableRuleSegment.setDataSources(Collections.emptyList());
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
@@ -146,7 +146,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         FunctionSegment shardingAlgorithm = new FunctionSegment();
         shardingAlgorithm.setAlgorithmName("algorithm-not-exist");
         tableRuleSegment.setTableStrategy(shardingAlgorithm);
-        when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         handler.execute("test", sqlStatement);
     }

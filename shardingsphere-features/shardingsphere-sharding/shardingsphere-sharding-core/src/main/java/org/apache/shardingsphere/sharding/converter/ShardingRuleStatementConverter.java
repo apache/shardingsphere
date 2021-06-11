@@ -61,7 +61,7 @@ public final class ShardingRuleStatementConverter {
      * @return YAML sharding rule configuration
      */
     public static YamlShardingRuleConfiguration convert(final AlterShardingTableRuleStatement sqlStatement) {
-        return convertTableRuleSegments(sqlStatement.getTables());
+        return convertTableRuleSegments(sqlStatement.getRules());
     }
     
     /**

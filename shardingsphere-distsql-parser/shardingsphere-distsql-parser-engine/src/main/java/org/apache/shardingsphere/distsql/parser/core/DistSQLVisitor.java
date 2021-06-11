@@ -182,11 +182,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitAlterShardingTableRule(final AlterShardingTableRuleContext ctx) {
-        AlterShardingTableRuleStatement result = new AlterShardingTableRuleStatement();
-        for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
-            result.getTables().add((TableRuleSegment) visit(each));
-        }
-        return result;
+        return new AlterShardingTableRuleStatement(ctx.shardingTableRuleDefinition().stream().map(each -> (TableRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
