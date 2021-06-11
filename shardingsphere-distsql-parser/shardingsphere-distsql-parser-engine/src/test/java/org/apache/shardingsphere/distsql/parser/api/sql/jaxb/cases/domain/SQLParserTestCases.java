@@ -19,8 +19,11 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.*;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.alter.*;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.create.*;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.drop.*;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.*;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,24 +35,87 @@ import java.util.*;
 @XmlRootElement(name = "sql-parser-test-cases")
 @Getter
 public final class SQLParserTestCases {
-    
+
     @XmlElement(name = "add-resource")
     private final List<AddResourceStatementTestCase> addResourceTestCase = new LinkedList<>();
+
+    @XmlElement(name = "alter-database-discovery-rule")
+    private final List<AlterDataBaseDiscoveryRuleStatementTestCase> alterDataBaseDiscoveryRuleTestCase = new LinkedList<>();
+
+    @XmlElement(name = "alter-encrypt-rule")
+    private final List<AlterEncryptRuleStatementTestCase> alterEncryptRuleTestCase = new LinkedList<>();
+
+    @XmlElement(name = "alter-readwrite-splitting-rule")
+    private final List<AlterReadWriteSplittingRuleStatementTestCase> alterReadWriteSplittingRuleTestCase = new LinkedList<>();
+
+    @XmlElement(name = "alter-sharding-binding-table-rules")
+    private final List<AlterShardingBindingTableRulesStatementTestCase> alterShardingBindingTableRulesTestCase = new LinkedList<>();
+
+    @XmlElement(name = "alter-sharding-broadcast-table-rules")
+    private final List<AlterShardingBroadcastTableRulesStatementTestCase> alterShardingBroadcastTableRulesTestCase = new LinkedList<>();
+
+    @XmlElement(name = "alter-sharding-table-rule")
+    private final List<AlterShardingTableRuleStatementTestCase> alterShardingTableRuleTestCase = new LinkedList<>();
+
+    @XmlElement(name = "create-database-discovery-rule")
+    private final List<CreateDataBaseDiscoveryRuleStatementTestCase> createDataBaseDiscoveryRuleTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "create-encrypt-rule")
+    private final List<CreateEncryptRuleStatementTestCase> createEncryptRuleTestCase = new LinkedList<>();
+
+    @XmlElement(name = "create-readwrite-splitting-rule")
+    private final List<CreateReadWriteSplittingRuleStatementTestCase> createReadWriteSplittingRuleTestCase = new LinkedList<>();
+
+    @XmlElement(name = "create-sharding-binding-table-rule")
+    private final List<CreateShardingBindingTableRulesStatementTestCase> createShardingBindingTableRulesTestCase = new LinkedList<>();
+
+    @XmlElement(name = "create-sharding-broadcast-table-rule")
+    private final List<CreateShardingBroadcastTableRulesStatementTestCase> createShardingBroadcastTableRulesTestCase = new LinkedList<>();
+
+    @XmlElement(name = "create-sharding-table-rule")
+    private final List<CreateShardingTableRuleStatementTestCase> createShardingTableRuleTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "drop-database-discovery-rule")
+    private final List<DropDataBaseDiscoveryRuleStatementTestCase> dropDataBaseDiscoveryRuleTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-encrypt-rule")
+    private final List<DropEncryptRuleStatementTestCase> dropEncryptRuleTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-readwrite-splitting-rule")
+    private final List<DropReadWriteSplittingRuleStatementTestCase> dropReadWriteSplittingRuleTestCase = new LinkedList<>();
 
     @XmlElement(name = "drop-resource")
     private final List<DropResourceStatementTestCase> dropResourceTestCase = new LinkedList<>();
 
+    @XmlElement(name = "drop-sharding-binding-table-rules")
+    private final List<DropShardingBindingTableRulesStatementTestCase> dropShardingBindingTableRulesTestCase = new LinkedList<>();
+
+    @XmlElement(name = "drop-sharding-broadcast-table-rules")
+    private final List<DropShardingBroadcastTableRulesStatementTestCase> dropShardingBroadcastTableRulesTestCase = new LinkedList<>();
+
     @XmlElement(name = "drop-sharding-table-rule")
-    private final List<DropShardingTableRuleStatementTestCase> dropShardingTableRuleTestCases = new LinkedList<>();
+    private final List<DropShardingTableRuleStatementTestCase> dropShardingTableRuleTestCase = new LinkedList<>();
 
-    @XmlElement(name = "drop-readwrite-splitting-rule")
-    private final List<DropReadWriteSplittingRuleStatementTestCase> dropReadWriteSplittingRuleTestCases = new LinkedList<>();
+    @XmlElement(name = "show-db-discovery-rules")
+    private final List<ShowDataBaseDiscoveryRulesStatementTestCase> showDataBaseDiscoveryRulesTestCase = new LinkedList<>();
 
-    @XmlElement(name = "drop-database-discovery-rule")
-    private final List<DropDataBaseDiscoveryRuleStatementTestCase> dropDataBaseDiscoveryRuleTestCases = new LinkedList<>();
+    @XmlElement(name = "show-encrypt-rules")
+    private final List<ShowEncryptRulesStatementTestCase> showEncryptRulesTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "show-readwrite-splitting-rules")
+    private final List<ShowReadWriteSplittingRulesStatementTestCase> showReadWriteSplittingRulesTestCase = new LinkedList<>();
 
-    @XmlElement(name = "drop-encrypt-rule")
-    private final List<DropEncryptRuleStatementTestCase> dropEncryptRuleTestCases = new LinkedList<>();
+    @XmlElement(name = "show-sharding-binding-table-rules")
+    private final List<ShowShardingBindingTableRulesStatementTestCase> showShardingBindingTableRulesTestCase = new LinkedList<>();
+
+    @XmlElement(name = "show-sharding-broadcast-table-rules")
+    private final List<ShowShardingBroadcastTableRulesStatementTestCase> showShardingBroadcastTableRulesTestCase = new LinkedList<>();
+
+    @XmlElement(name = "show-sharding-table-rules")
+    private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRulesTestCase = new LinkedList<>();
+
+    @XmlElement(name = "show-sharding-table-rule")
+    private final List<ShowShardingTableRuleStatementTestCase> showShardingTableRuleTestCase = new LinkedList<>();
 
     /**
      * Get all SQL parser test cases.
@@ -59,11 +125,32 @@ public final class SQLParserTestCases {
     public Map<String, SQLParserTestCase> getAllSQLParserTestCases() {
         Map<String, SQLParserTestCase> result = new HashMap<>();
         putAll(addResourceTestCase, result);
+        putAll(alterDataBaseDiscoveryRuleTestCase, result);
+        putAll(alterEncryptRuleTestCase, result);
+        putAll(alterReadWriteSplittingRuleTestCase, result);
+        putAll(alterShardingBindingTableRulesTestCase, result);
+        putAll(alterShardingBroadcastTableRulesTestCase, result);
+        putAll(alterShardingTableRuleTestCase, result);
+        putAll(createDataBaseDiscoveryRuleTestCase, result);
+        putAll(createEncryptRuleTestCase, result);
+        putAll(createReadWriteSplittingRuleTestCase, result);
+        putAll(createShardingBindingTableRulesTestCase, result);
+        putAll(createShardingBroadcastTableRulesTestCase, result);
+        putAll(createShardingTableRuleTestCase, result);
+        putAll(dropDataBaseDiscoveryRuleTestCase, result);
         putAll(dropResourceTestCase, result);
-        putAll(dropShardingTableRuleTestCases, result);
-        putAll(dropReadWriteSplittingRuleTestCases, result);
-        putAll(dropDataBaseDiscoveryRuleTestCases, result);
-        putAll(dropEncryptRuleTestCases, result);
+        putAll(dropEncryptRuleTestCase, result);
+        putAll(dropReadWriteSplittingRuleTestCase, result);
+        putAll(dropShardingBindingTableRulesTestCase, result);
+        putAll(dropShardingBroadcastTableRulesTestCase, result);
+        putAll(dropShardingTableRuleTestCase, result);
+        putAll(showDataBaseDiscoveryRulesTestCase, result);
+        putAll(showEncryptRulesTestCase, result);
+        putAll(showReadWriteSplittingRulesTestCase, result);
+        putAll(showShardingBindingTableRulesTestCase, result);
+        putAll(showShardingBroadcastTableRulesTestCase, result);
+        putAll(showShardingTableRulesTestCase, result);
+        putAll(showShardingTableRuleTestCase, result);
         return result;
     }
     

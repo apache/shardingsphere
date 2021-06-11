@@ -18,11 +18,8 @@
 package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.sql.loader;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.sql.SQLCase;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.sql.SQLCaseType;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.sql.SQLCases;
 import org.apache.shardingsphere.distsql.parser.api.sql.loader.TestCaseFileLoader;
 
@@ -79,7 +76,7 @@ public final class SQLCasesLoader {
      *
      * @param sqlCaseId SQL case ID
      * @param sqlCaseType SQL case type
-     * @param parameters SQL parameters
+     * @param parameters  SQL parameters
      * @return SQL
      */
     public String getSQL(final String sqlCaseId) {
@@ -95,7 +92,6 @@ public final class SQLCasesLoader {
     /**
      * Get test parameters for junit parameterized test cases.
      *
-     * @param databaseTypes database types
      * @return test parameters for junit parameterized test cases
      */
     public Collection<Object[]> getSQLTestParameters() {
@@ -112,10 +108,10 @@ public final class SQLCasesLoader {
      * Replaces each substring of this string that matches the literal target sequence with
      * literal replacements one by one.
      *
-     * @param source The source string need to be replaced
-     * @param target The sequence of char values to be replaced
+     * @param source       The source string need to be replaced
+     * @param target       The sequence of char values to be replaced
      * @param replacements Array of replacement
-     * @return  The resulting string
+     * @return The resulting string
      * @throws IllegalArgumentException When replacements is not enough to replace found target.
      */
     private static String replace(final String source, final CharSequence target, final Object... replacements) {

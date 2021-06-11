@@ -17,33 +17,39 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-resource sql-case-id = "drop-resource">
-        <dataSource name = "ds_0" start-index="1" stop-index="" />
-        <dataSource name = "ds_1" start-index="" stop-index="" />
+    <drop-resource sql-case-id="drop-resource">
+        <dataSource name="ds_0"/>
+        <dataSource name="ds_1"/>
     </drop-resource>
 
-    <drop-sharding-table-rule sql-case-id = "drop-sharding-table-rule">
-        <tabel name="t_order" start-index="" stop-index="" />
-        <tabel name="t_order_item" start-index="" stop-index="" />
+    <drop-sharding-table-rule sql-case-id="drop-sharding-table-rule">
+        <table name="t_order" start-index="" stop-index=""/>
+        <table name="t_order_item" start-index="" stop-index=""/>
     </drop-sharding-table-rule>
 
-    <drop-sharding-binding-table-rules sql-case-id = "drop-sharding-binding-table-rules" />
+    <drop-sharding-binding-table-rules sql-case-id="drop-sharding-binding-table-rules"/>
 
-    <drop-sharding-broadcast-table-rules sql-case-id = "drop-sharding-broadcast-table-rules" />
+    <drop-sharding-broadcast-table-rules sql-case-id="drop-sharding-broadcast-table-rules"/>
 
     <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule">
-        <readwrite-splitting-rule name = "ms_group_0" start-index="" stop-index="" />
-        <readwrite-splitting-rule name = "ms_group_1" start-index="" stop-index="" />
+        <read-write-splitting>
+            <name name="ms_group_0"/>
+            <name name="ms_group_0"/>
+        </read-write-splitting>
     </drop-readwrite-splitting-rule>
 
     <drop-database-discovery-rule sql-case-id="drop-database-discovery-rule">
-        <database-discover name = "ha_group_0" start-index="" stop-index="" />
-        <database-discover name = "ha_group_1" start-index="" stop-index="" />
+        <database-discovery>
+            <name>ha_group_0</name>
+        </database-discovery>
+        <database-discovery>
+            <name>ha_group_1</name>
+        </database-discovery>
     </drop-database-discovery-rule>
 
     <drop-encrypt-rule sql-case-id="drop-encrypt-rule">
-        <encrypt-rule name = "t_encrypt" start-index="" stop-index="" />
-        <encrypt-rule name = "t_encrypt_order" start-index="" stop-index="" />
+        <table name="t_encrypt"/>
+        <table name="t_encrypt_order"/>
     </drop-encrypt-rule>
 
 </sql-parser-test-cases>

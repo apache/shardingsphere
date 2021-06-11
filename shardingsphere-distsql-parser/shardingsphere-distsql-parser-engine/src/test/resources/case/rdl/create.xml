@@ -17,132 +17,158 @@
   -->
 
 <sql-parser-test-cases>
-    <create-sharding-table-rule sql-case-id = "create-sharding-table-rule">
-        <table name = "t_order">
-            <resource name = "ms_group_0" />
-            <resource name = "ms_group_1" />
-        </table>
-        <sharding-colum name="order_id" />
-        <type name = "hash_mod" start-index="" stop-index="">
-            <propert name ="sharding-count" />
-            <generated-key>
-                <colum name = "anther_id" />
-                <type name = "snowflake">
-                    <propert>
-                        <name>worker-id</name>
-                        <vale>123</vale>
-                    </propert>
-                </type>
-            </generated-key>
-        </type>
+    <add-resource sql-case-id="add-resource-single-without-password">
+        <dataSource>
+            <name name="ds_0"/>
+            <hostName name="127.0.0.1"/>
+            <port name="3306"/>
+            <db name="test0"/>
+            <user name="ROOT"/>
+        </dataSource>
+    </add-resource>
+
+    <add-resource sql-case-id="add-resource-single-with-password">
+        <dataSource>
+            <name name="ds_0"/>
+            <hostName name="127.0.0.1"/>
+            <port name="3306"/>
+            <db name="test0"/>
+            <user name="ROOT"/>
+            <password name="123456"/>
+        </dataSource>
+    </add-resource>
+
+    <add-resource sql-case-id="add-resource-multiple">
+        <dataSource>
+            <name name="ds_0"/>
+            <hostName name="127.0.0.1"/>
+            <port name="3306"/>
+            <db name="test0"/>
+            <user name="ROOT"/>
+            <password name="123456"/>
+        </dataSource>
+        <dataSource>
+            <name name="ds_1"/>
+            <hostName name="127.0.0.1"/>
+            <port name="3306"/>
+            <db name="test1"/>
+            <user name="ROOT"/>
+            <password name="123456"/>
+        </dataSource>
+    </add-resource>
+    
+    <create-sharding-table-rule sql-case-id="create-sharding-table-rule">
+        <tables>
+            <logicTable name="t_order" />
+            <dataSource name="ms_group_0" />
+            <dataSource name="ms_group_1" />
+            <tableStrategyColumn name="order_id" />
+            <keyGenerateStrategyColumn name="another_id" />
+            <tableStrategy>
+                <algorithmName name="hash_mod"/>
+                <algorithmProps>
+                    <key>sharding-count</key>
+                    <value>4</value>
+                </algorithmProps>
+            </tableStrategy>
+            <keyGenerateStrategy>
+                <algorithmName name="snowflake"/>
+                <algorithmProps>
+                    <key>worker-id</key>
+                    <value>123</value>
+                </algorithmProps>
+            </keyGenerateStrategy>
+        </tables>
     </create-sharding-table-rule>
 
-    <create-sharding-binding-table-rule sql-case-id = "create-sharding-binding-table-rule">
-        <rules>
-            <rule>
-                <table name="t_order" />
-                <table name="t_order_item" />
-            </rule>
-            <rule>
-                <table name="t_1" />
-                <table name="t_2" />
-            </rule>
-        </rules>
+    <create-sharding-binding-table-rule sql-case-id="create-sharding-binding-table-rule">
+        <table name="t_order, t_order_item"/>
+        <table name="t_1, t_2" />
     </create-sharding-binding-table-rule>
 
-    <create-sharding-broadcast-table-rule sql-case-id = "create-sharding-broadcast-table-rule">
-        <rules>
-            <rule>
-                <table name="t_1" />
-                <table name="t_2" />
-            </rule>
-        </rules>
+    <create-sharding-broadcast-table-rule sql-case-id="create-sharding-broadcast-table-rule">
+        <table name="t_1" />
+        <table name="t_2" />
     </create-sharding-broadcast-table-rule>
 
-    <create-static-readwrite-splitting-rule sql-case-id = "create-static-readwrite-splitting-rule">
-        <rules>
-            <rule>
-                <name name="ms_group_0"/>
-                <write-resource name ="primary_ds"/>
-                <read-resources>
-                    <resource name="replica_ds_0" />
-                    <resource name="replica_ds_1" />
-                </read-resources>
-                <type>
-                    <name name="random" />
-                </type>
-            </rule>
-        </rules>
-    </create-static-readwrite-splitting-rule>
+    <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule">
+        <read-write-splitting>
+            <name name="ms_group_1" />
+            <write-data-resource name="primary_ds" />
+            <read-data-resource>
+                <name name="replica_ds_0" />
+                <name name="replica_ds_1" />
+            </read-data-resource>
+            <load-balancer name="random" />
+            <props>
+                <key>read_weight</key>
+                <value>2:1</value>
+            </props>
+        </read-write-splitting>
+    </create-readwrite-splitting-rule>
 
-    <create-dynamic-readwrite-splitting-rule sql-case-id = "create-dynamic-readwrite-splitting-rule">
-        <rules>
-            <rule>
-                <name name="ms_group_1"/>
-                <auto-aware-resource name="group_0"/>
-                <type>
-                    <name name="random" />
-                    <propert>
-                        <name>read_weight</name>
-                        <vale>2:1</vale>
-                    </propert>
-                </type>
-            </rule>
-        </rules>
-    </create-dynamic-readwrite-splitting-rule>
+    <create-readwrite-splitting-rule sql-case-id="create-dynamic-readwrite-splitting-rule">
+        <read-write-splitting>
+            <name name="ms_group_1" />
+            <auto-aware-resource name="group_0" />
+            <load-balancer name="random" />
+            <props>
+                <key>read_weight</key>
+                <value>2:1</value>
+            </props>
+        </read-write-splitting>
+    </create-readwrite-splitting-rule>
 
-    <create-database-discovery-rule sql-case-id = "create-database-discovery-rule">
-        <rule name = "ha_group_0" >
-            <resource name = "resource0" />
-            <resource name = "resource1" />
-            <type name = "mgr">
-                <propert>
-                    <name name="groupName"/>
-                    <vale name = "92504d5b-6dec"/>
-                </propert>
-                <propert>
-                    <name name="keepAliveCron"/>
-                    <vale name = ""/>
-                </propert>
-            </type>
-        </rule>
-
-        <rule name = "ha_group_1" >
-            <resource name = "resource2" />
-            <resource name = "resource3" />
-            <type name = "mgr2">
-                <propert>
-                    <name name="groupName"/>
-                    <vale name = "92504d5b-6dec=2"/>
-                </propert>
-                <propert>
-                    <name name="keepAliveCron"/>
-                    <vale name = ""/>
-                </propert>
-            </type>
-        </rule>
+    <create-database-discovery-rule sql-case-id="create-database-discovery-rule">
+        <database-discovery>
+            <name>ha_group_0</name>
+            <dataSources>
+                <name>resource0</name>
+                <name>resource1</name>
+            </dataSources>
+            <discoveryTypeName>mgr</discoveryTypeName>
+            <props>
+                <key>keepAliveCron</key>
+                <value>""</value>
+            </props>
+            <props>
+                <key>groupName</key>
+                <value>92504d5b-6dec</value>
+            </props>
+        </database-discovery>
+        <database-discovery>
+            <name>ha_group_1</name>
+            <dataSources>
+                <name>resource2</name>
+                <name>resource3</name>
+            </dataSources>
+            <discoveryTypeName>mgr2</discoveryTypeName>
+            <props>
+                <key>keepAliveCron</key>
+                <value>""</value>
+            </props>
+            <props>
+                <key>groupName</key>
+                <value>92504d5b-6dec</value>
+            </props>
+        </database-discovery>
     </create-database-discovery-rule>
 
-    <create-encrypt-rule sql-case-id = "create-encrypt-rule">
-        <rule name = "t_encrypt">
-            <colums>
-                <colum>
-                    <name name="user_id"/>
-                    <plan name="user_plain"/>
-                    <cipher name="user_cipher"/>
-                    <type name = "AES">
-                        <propert>
-                            <name name="aes-key-value"/>
-                            <vale name = "123456abc"/>
-                        </propert>
-                    </type>
-                </colum>
-                <colum>
-                    <name name="order_id" />
-                    <cipher name="order_cipher"/>
-                    <type name = "MD5"/>
-                </colum>
-            </colums>
-        </rule>
+    <create-encrypt-rule sql-case-id="create-encrypt-rule">
+        <encrypt-column>
+            <table>t_encrypt</table>
+            <columns>
+                <name>user_id</name>
+                <plain-column>user_plain</plain-column>
+                <cipher-column>user_plain</cipher-column>
+                <encryptor>
+                    <algorithmName>AES</algorithmName>
+                    <algorithmProps>
+                        <key>aes-key-value</key>
+                        <value>123456abc</value>
+                    </algorithmProps>
+                </encryptor>
+            </columns>
+        </encrypt-column>
     </create-encrypt-rule>
 </sql-parser-test-cases>

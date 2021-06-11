@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.state
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.ExpectedSimpleDataSource;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.ExpectedDataSource;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -34,5 +34,5 @@ import java.util.List;
 public final class ShowShardingTableRulesStatementTestCase extends SQLParserTestCase {
 
     @XmlElement(name = "dataSource")
-    private final List<ExpectedSimpleDataSource> dataSources = new LinkedList<>();
+    private final List<ExpectedDataSource> dataSources = new LinkedList<>();
 }

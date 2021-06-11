@@ -18,27 +18,32 @@
 
 <sql-parser-test-cases>
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
-        <table name="t_order" start-index="" stop-index="" />
-        <resource name="ms_group_0" start-index="" stop-index="" />
-        <resource name="ms_group_1" start-index="" stop-index="" />
-        <sharding-column name="order_id" start-index="" stop-index="" />
-        <type name = "hash_mod" start-index="" stop-index="">
-            <propert name ="sharding-count" />
-            <generated-key>
-                <colum name = "anther_id" />
-                <type name = "snowflake">
-                    <propert name ="" />
-                </type>
-            </generated-key>
-        </type>
+        <tables>
+            <logicTable name="t_order" />
+            <dataSource name="ms_group_0" />
+            <dataSource name="ms_group_1" />
+            <tableStrategyColumn name="order_id" />
+            <keyGenerateStrategyColumn name="another_id" />
+            <tableStrategy>
+                <algorithmName name="hash_mod"/>
+                <algorithmProps>
+                    <key>sharding-count</key>
+                    <value>4</value>
+                </algorithmProps>
+            </tableStrategy>
+            <keyGenerateStrategy>
+                <algorithmName name="snowflake"/>
+                <algorithmProps>
+                    <key>worker-id</key>
+                    <value>123</value>
+                </algorithmProps>
+            </keyGenerateStrategy>
+        </tables>
     </alter-sharding-table-rule>
 
     <alter-sharding-binding-table-rules sql-case-id = "alter-sharding-binding-table-rules">
-        <table name="t_order" />
-        <table name="t_order_item" />
-        <table name="t_order" />
-        <table name="t_1" />
-        <table name="t_1" />
+        <table name="t_order, t_order_item"/>
+        <table name="t_1, t_2" />
     </alter-sharding-binding-table-rules>
 
     <alter-sharding-broadcast-table-rules sql-case-id = "alter-sharding-broadcast-table-rules">
@@ -47,72 +52,80 @@
     </alter-sharding-broadcast-table-rules>
 
     <alter-readwrite-splitting-rule sql-case-id = "alter-readwrite-splitting-rule">
-        <resource name="ms_group_0"/>
-        <auto-aware-resource name="group_0" />
-        <type name = "random">
-            <propert name ="read_weight" value = "2:1" />
-        </type>
-        <resource name="ms_group_1"/>
-        <write-resource name="primary_ds" />
-        <read-resource>
-            <resource name = "replica_ds_0" />
-            <resource name = "replica_ds_1" />
-        </read-resource>
-        <type name = "random" />
+        <read-write-splitting>
+            <name name="ms_group_1" />
+            <auto-aware-resource name="group_0" />
+            <load-balancer name="random" />
+            <props>
+                <key>read_weight</key>
+                <value>2:1</value>
+            </props>
+        </read-write-splitting>
+        <read-write-splitting>
+            <name name="ms_group_1" />
+            <write-data-resource name="primary_ds" />
+            <read-data-resource>
+                <name name="replica_ds_0" />
+                <name name="replica_ds_1" />
+            </read-data-resource>
+            <load-balancer name="random" />
+            <props>
+                <key>read_weight</key>
+                <value>2:1</value>
+            </props>
+        </read-write-splitting>
     </alter-readwrite-splitting-rule>
 
     <alter-database-discovery-rule sql-case-id = "alter-database-discovery-rule">
-        <rule name = "ha_group_0" >
-            <resource name = "resource0" />
-            <resource name = "resource1" />
-            <type name = "mgr">
-                <propert>
-                    <name name="groupName"/>
-                    <vale name = "92504d5b-6dec"/>
-                </propert>
-                <propert>
-                    <name name="keepAliveCron"/>
-                    <vale name = ""/>
-                </propert>
-            </type>
-        </rule>
-
-        <rule name = "ha_group_1" >
-            <resource name = "resource2" />
-            <resource name = "resource3" />
-            <type name = "mgr2">
-                <propert>
-                    <name name="groupName"/>
-                    <vale name = "92504d5b-6dec=2"/>
-                </propert>
-                <propert>
-                    <name name="keepAliveCron"/>
-                    <vale name = ""/>
-                </propert>
-            </type>
-        </rule>
+        <database-discovery>
+            <name>ha_group_0</name>
+            <dataSources>
+                <name>resource0</name>
+                <name>resource1</name>
+            </dataSources>
+            <discoveryTypeName>mgr</discoveryTypeName>
+            <props>
+                <key>keepAliveCron</key>
+                <value>""</value>
+            </props>
+            <props>
+                <key>groupName</key>
+                <value>92504d5b-6dec</value>
+            </props>
+        </database-discovery>
+        <database-discovery>
+            <name>ha_group_1</name>
+            <dataSources>
+                <name>resource2</name>
+                <name>resource3</name>
+            </dataSources>
+            <discoveryTypeName>mgr2</discoveryTypeName>
+            <props>
+                <key>keepAliveCron</key>
+                <value>""</value>
+            </props>
+            <props>
+                <key>groupName</key>
+                <value>92504d5b-6dec</value>
+            </props>
+        </database-discovery>
     </alter-database-discovery-rule>
 
     <alter-encrypt-rule sql-case-id = "alter-encrypt-rule">
-        <rule name = "t_encrypt">
-            <colums>
-                <colum>
-                    <name name="user_id"/>
-                    <plan name="user_plain"/>
-                    <cipher name="user_cipher"/>
-                    <type name = "AES">
-                        <propert>
-                            <name name="aes-key-value"/>
-                            <vale name = "123456abc"/>
-                        </propert>
-                    </type>
-                </colum>
-                <colum>
-                    <name name="order_id" />
-                    <cipher name="order_cipher"/>
-                    <type name = "MD5"/>
-                </colum>
-            </colums>
-        </rule>
+        <encrypt-column>
+            <table>t_encrypt</table>
+            <columns>
+                <name>user_id</name>
+                <plain-column>user_plain</plain-column>
+                <cipher-column>user_plain</cipher-column>
+                <encryptor>
+                    <algorithmName>AES</algorithmName>
+                    <algorithmProps>
+                        <key>aes-key-value</key>
+                        <value>123456abc</value>
+                    </algorithmProps>
+                </encryptor>
+            </columns>
+        </encrypt-column>
     </alter-encrypt-rule>
 </sql-parser-test-cases>

@@ -17,4 +17,43 @@
   -->
 
 <sql-parser-test-cases>
+    <show-sharding-binding-table-rules sql-case-id = "show-sharding-binding-table-rules">
+        <table name = "sharding_db" />
+    </show-sharding-binding-table-rules>
+
+    <show-sharding-broadcast-table-rules sql-case-id = "show-sharding-broadcast-table-rules">
+        <table name = "sharding_db" />
+    </show-sharding-broadcast-table-rules>
+
+    <show-sharding-table-rules sql-case-id = "show-sharding-table-rules">
+        <schema name = "schemaName" />
+    </show-sharding-table-rules>
+
+    <show-sharding-table-rules sql-case-id = "show-sharding-table-rule">
+        <table name = "t_order" />
+    </show-sharding-table-rules>
+
+    <show-sharding-table-rules sql-case-id = "show-sharding-table-rule-from">
+        <schema name = "schemaName" />
+        <table name = "t_order" />
+    </show-sharding-table-rules>
+
+    <show-readwrite-splitting-rules sql-case-id = "show-readwrite-splitting-rules">
+        <database name = "readwrite_splitting_db" />
+    </show-readwrite-splitting-rules>
+
+    <show-db-discovery-rules sql-case-id = "show-db-discovery-rules">
+        <database name = "db_discovery_db" />
+    </show-db-discovery-rules>
+
+    <show-encrypt-rules sql-case-id = "show-encrypt-rules">
+        <database name = "encrypt_db" />
+    </show-encrypt-rules>
+
+    <show-encrypt-rules sql-case-id = "show-encrypt-table-rules">
+        <database name = "encrypt_db">
+            <table name= "t_encrypt" />
+        </database>
+    </show-encrypt-rules>
+
 </sql-parser-test-cases>

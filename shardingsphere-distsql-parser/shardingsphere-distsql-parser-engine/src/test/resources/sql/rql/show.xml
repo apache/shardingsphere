@@ -25,5 +25,5 @@
     <sql-case id="show-readwrite-splitting-rules" value="SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db" />
     <sql-case id="show-db-discovery-rules" value="SHOW DB_DISCOVERY RULES FROM db_discovery_db" />
     <sql-case id="show-encrypt-rules" value="SHOW ENCRYPT RULES FROM encrypt_db" />
-    <sql-case id="show-encrypt-table" value="SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db" />
+    <sql-case id="show-encrypt-table-rules" value="SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db" />
 </sql-cases>
