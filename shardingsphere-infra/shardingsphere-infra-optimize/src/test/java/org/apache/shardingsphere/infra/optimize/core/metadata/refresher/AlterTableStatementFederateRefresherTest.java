@@ -60,7 +60,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AlterTableStatementFederateRefresherTest {
+public final class AlterTableStatementFederateRefresherTest {
 
     private final SchemaBuilderMaterials materials = mock(SchemaBuilderMaterials.class);
 

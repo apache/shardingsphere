@@ -36,7 +36,7 @@ import javax.sql.DataSource;
 /**
  * ShardingSphere federate refresher for alter table statement.
  */
-public class AlterTableStatementFederateRefresher implements FederateRefresher<AlterTableStatement> {
+public final class AlterTableStatementFederateRefresher implements FederateRefresher<AlterTableStatement> {
 
     @Override
     public void refresh(final FederateSchemaMetadata schema, final Collection<String> routeDataSourceNames,
