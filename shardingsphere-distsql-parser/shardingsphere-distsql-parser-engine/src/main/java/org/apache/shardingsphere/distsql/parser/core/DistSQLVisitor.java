@@ -243,11 +243,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitDropShardingTableRule(final DropShardingTableRuleContext ctx) {
-        DropShardingTableRuleStatement result = new DropShardingTableRuleStatement();
-        for (TableNameContext each : ctx.tableName()) {
-            result.getTableNames().add((TableNameSegment) visit(each));
-        }
-        return result;
+        return new DropShardingTableRuleStatement(ctx.tableName().stream().map(each -> (TableNameSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
