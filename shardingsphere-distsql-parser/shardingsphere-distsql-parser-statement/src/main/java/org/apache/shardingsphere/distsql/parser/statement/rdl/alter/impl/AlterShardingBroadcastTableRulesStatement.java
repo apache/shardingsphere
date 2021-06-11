@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
 import java.util.Collection;
 
@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShardingBroadcastTableRulesStatement extends AlterRDLStatement {
+public final class AlterShardingBroadcastTableRulesStatement extends AlterRuleStatement {
     
     private final Collection<String> tables;
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 
 /**
- * Alter RDL statement.
+ * Alter rule statement.
  */
-public abstract class AlterRDLStatement extends RDLStatement {
+public abstract class AlterRuleStatement extends RDLStatement {
 }

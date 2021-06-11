@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
 import java.util.Collection;
 
@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterDatabaseDiscoveryRuleStatement extends AlterRDLStatement {
+public final class AlterDatabaseDiscoveryRuleStatement extends AlterRuleStatement {
     
     private final Collection<DatabaseDiscoveryRuleSegment> rules;
 }
