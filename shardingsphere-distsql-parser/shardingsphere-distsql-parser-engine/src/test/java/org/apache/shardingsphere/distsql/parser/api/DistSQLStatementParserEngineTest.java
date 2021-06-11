@@ -144,14 +144,12 @@ public final class DistSQLStatementParserEngineTest {
     private static final String RDL_DROP_DATABASE_DISCOVERY_RULE = "DROP DB_DISCOVERY RULE ha_group_0,ha_group_1";
 
     private static final String RDL_CREATE_ENCRYPT_RULE = "CREATE ENCRYPT RULE t_encrypt ("
-            + "RESOURCE=ds_1,"
             + "COLUMNS("
             + "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),"
             + "(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))"
             + "))";
 
     private static final String RDL_ALTER_ENCRYPT_RULE = "ALTER ENCRYPT RULE t_encrypt ("
-            + "RESOURCE=ds_1,"
             + "COLUMNS("
             + "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),"
             + "(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))"
