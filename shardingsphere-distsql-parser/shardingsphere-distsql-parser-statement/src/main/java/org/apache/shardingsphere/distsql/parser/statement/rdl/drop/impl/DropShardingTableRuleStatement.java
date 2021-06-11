@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Drop sharding table rule statement.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DropShardingTableRuleStatement extends DropRDLStatement {
     
-    private final Collection<TableNameSegment> tableNames = new LinkedList<>();
+    private final Collection<TableNameSegment> tableNames;
 }

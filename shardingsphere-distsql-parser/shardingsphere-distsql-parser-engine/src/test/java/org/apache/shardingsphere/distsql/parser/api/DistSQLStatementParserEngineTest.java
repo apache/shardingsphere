@@ -24,12 +24,12 @@ import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRu
 import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterEncryptRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterEncryptRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateEncryptRuleStatement;
@@ -232,16 +232,16 @@ public final class DistSQLStatementParserEngineTest {
     public void assertParseDropResource() {
         SQLStatement sqlStatement = engine.parse(RDL_DROP_RESOURCE);
         assertTrue(sqlStatement instanceof DropResourceStatement);
-        assertThat(((DropResourceStatement) sqlStatement).getResourceNames().size(), is(2));
-        assertTrue(((DropResourceStatement) sqlStatement).getResourceNames().containsAll(Arrays.asList("ds_0", "ds_1")));
+        assertThat(((DropResourceStatement) sqlStatement).getNames().size(), is(2));
+        assertTrue(((DropResourceStatement) sqlStatement).getNames().containsAll(Arrays.asList("ds_0", "ds_1")));
     }
     
     @Test
     public void assertParseCreateShardingTableRule() {
         SQLStatement sqlStatement = engine.parse(RDL_CREATE_SHARDING_TABLE_RULE);
         assertTrue(sqlStatement instanceof CreateShardingTableRuleStatement);
-        assertThat(((CreateShardingTableRuleStatement) sqlStatement).getTables().size(), is(1));
-        TableRuleSegment tableRuleSegment = ((CreateShardingTableRuleStatement) sqlStatement).getTables().iterator().next();
+        assertThat(((CreateShardingTableRuleStatement) sqlStatement).getRules().size(), is(1));
+        TableRuleSegment tableRuleSegment = ((CreateShardingTableRuleStatement) sqlStatement).getRules().iterator().next();
         assertThat(tableRuleSegment.getLogicTable(), is("t_order"));
         assertTrue(tableRuleSegment.getDataSources().containsAll(Arrays.asList("ms_group_0", "ms_group_1")));
         assertThat(tableRuleSegment.getTableStrategyColumn(), is("order_id"));
@@ -275,8 +275,8 @@ public final class DistSQLStatementParserEngineTest {
     public void assertParseAlterShardingTableRule() {
         SQLStatement sqlStatement = engine.parse(RDL_ALTER_SHARDING_TABLE_RULE);
         assertTrue(sqlStatement instanceof AlterShardingTableRuleStatement);
-        assertThat(((AlterShardingTableRuleStatement) sqlStatement).getTables().size(), is(1));
-        TableRuleSegment tableRuleSegment = ((AlterShardingTableRuleStatement) sqlStatement).getTables().iterator().next();
+        assertThat(((AlterShardingTableRuleStatement) sqlStatement).getRules().size(), is(1));
+        TableRuleSegment tableRuleSegment = ((AlterShardingTableRuleStatement) sqlStatement).getRules().iterator().next();
         assertThat(tableRuleSegment.getLogicTable(), is("t_order"));
         assertTrue(tableRuleSegment.getDataSources().containsAll(Arrays.asList("ms_group_0", "ms_group_1")));
         assertThat(tableRuleSegment.getTableStrategyColumn(), is("order_id"));

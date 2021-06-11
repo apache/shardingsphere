@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -46,7 +45,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,20 +67,20 @@ public final class DropEncryptRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     @Mock
     private EncryptTableRuleConfiguration encryptTableRuleConfiguration;
-
+    
     @Mock
     private ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration;
     
-    private DropEncryptRuleBackendHandler handler = new DropEncryptRuleBackendHandler(sqlStatement, backendConnection);
+    private final DropEncryptRuleBackendHandler handler = new DropEncryptRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
-        when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
+        when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
@@ -91,9 +89,8 @@ public final class DropEncryptRuleBackendHandlerTest {
         when(sqlStatement.getTables()).thenReturn(Collections.singletonList("t_encrypt"));
         Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>(1, 1);
         encryptors.put("t_encrypt_user_id_MD5", shardingSphereAlgorithmConfiguration);
-        when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>(Collections
-                .singletonList(new EncryptRuleConfiguration(new LinkedList<>(Collections
-                        .singleton(encryptTableRuleConfiguration)), encryptors))));
+        when(ruleMetaData.getConfigurations()).thenReturn(
+                new LinkedList<>(Collections.singleton(new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(encryptTableRuleConfiguration)), encryptors))));
         when(encryptTableRuleConfiguration.getName()).thenReturn("t_encrypt");
         when(encryptTableRuleConfiguration.getColumns()).thenReturn(buildColumnRuleConfigurations());
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
@@ -106,16 +103,15 @@ public final class DropEncryptRuleBackendHandlerTest {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = EncryptRulesNotExistedException.class)
     public void assertExecuteWithNoDroppedEncryptRule() {
         when(sqlStatement.getTables()).thenReturn(Collections.singletonList("t_encrypt"));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
         handler.execute("test", sqlStatement);
     }
-
+    
     private Collection<EncryptColumnRuleConfiguration> buildColumnRuleConfigurations() {
-        return Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_cipher",
-                "", "user_plain", "t_encrypt_user_id_MD5"));
+        return Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "user_plain", "t_encrypt_user_id_MD5"));
     }
 }

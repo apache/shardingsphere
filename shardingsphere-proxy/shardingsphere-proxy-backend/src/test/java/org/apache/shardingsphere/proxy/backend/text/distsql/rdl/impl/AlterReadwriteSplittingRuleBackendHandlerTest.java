@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -78,11 +78,11 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
 
     @Mock
     private ShardingSphereResource shardingSphereResource;
-
+    
     @Mock
     private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration;
     
-    private AlterReadwriteSplittingRuleBackendHandler handler = new AlterReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
+    private final AlterReadwriteSplittingRuleBackendHandler handler = new AlterReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -145,7 +145,7 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
         when(readwriteSplittingDataSourceRuleConfiguration.getName()).thenReturn("pr_ds");
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = InvalidLoadBalancersException.class)
     public void assertExecuteWithInvalidLoadBalancer() {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment();

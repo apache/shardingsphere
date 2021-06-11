@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRDLStatement;
 
 import java.util.Collection;
 
 /**
- * Alter encrypt rule statement.
+ * Alter database discovery rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterEncryptRuleStatement extends RDLStatement {
+public final class AlterDatabaseDiscoveryRuleStatement extends AlterRDLStatement {
     
-    private final Collection<EncryptRuleSegment> rules;
+    private final Collection<DatabaseDiscoveryRuleSegment> rules;
 }

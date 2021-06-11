@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRDLStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Alter sharding table rule statement.
+ * Alter sharding broadcast table rules statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterShardingTableRuleStatement extends RDLStatement {
+public final class AlterShardingBroadcastTableRulesStatement extends AlterRDLStatement {
     
-    private final Collection<TableRuleSegment> tables = new LinkedList<>();
+    private final Collection<String> tables;
 }

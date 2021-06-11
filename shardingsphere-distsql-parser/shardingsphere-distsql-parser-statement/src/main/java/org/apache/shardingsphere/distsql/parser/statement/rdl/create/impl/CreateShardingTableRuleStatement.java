@@ -31,5 +31,5 @@ import java.util.Collection;
 @Getter
 public final class CreateShardingTableRuleStatement extends CreateRDLStatement {
     
-    private final Collection<TableRuleSegment> tables;
+    private final Collection<TableRuleSegment> rules;
 }

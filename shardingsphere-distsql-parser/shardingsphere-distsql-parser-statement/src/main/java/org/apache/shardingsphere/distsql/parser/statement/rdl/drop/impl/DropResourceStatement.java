@@ -18,16 +18,17 @@
 package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Drop resource statement.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DropResourceStatement extends DropRDLStatement {
     
-    private final Collection<String> resourceNames = new LinkedList<>();
+    private final Collection<String> names;
 }

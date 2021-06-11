@@ -77,11 +77,11 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     @Mock
     private ShardingSphereResource shardingSphereResource;
     
-    private CreateReadwriteSplittingRuleBackendHandler handler = new CreateReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
+    private final CreateReadwriteSplittingRuleBackendHandler handler = new CreateReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -124,7 +124,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test
     public void assertExecuteWithExistReadwriteConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration
@@ -157,7 +157,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = InvalidLoadBalancersException.class)
     public void assertExecuteWithInvalidLoadBalancer() {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment();

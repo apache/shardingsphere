@@ -69,13 +69,13 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
         Collection<String> existLogicTables = getAllTables(schemaName);
-        Set<String> duplicateTableNames = sqlStatement.getTables().stream().collect(Collectors.toMap(TableRuleSegment::getLogicTable, each -> 1, Integer::sum))
+        Set<String> duplicateTableNames = sqlStatement.getRules().stream().collect(Collectors.toMap(TableRuleSegment::getLogicTable, each -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-        duplicateTableNames.addAll(sqlStatement.getTables().stream().map(TableRuleSegment::getLogicTable).filter(existLogicTables::contains).collect(Collectors.toSet()));
+        duplicateTableNames.addAll(sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).filter(existLogicTables::contains).collect(Collectors.toSet()));
         if (!duplicateTableNames.isEmpty()) {
             throw new DuplicateTablesException(duplicateTableNames);
         }
-        Collection<String> invalidTableAlgorithms = sqlStatement.getTables().stream().map(each -> each.getTableStrategy().getAlgorithmName()).distinct()
+        Collection<String> invalidTableAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getAlgorithmName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidTableAlgorithms.isEmpty()) {
@@ -120,12 +120,12 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     
     private Collection<String> getResources(final CreateShardingTableRuleStatement sqlStatement) {
         Collection<String> result = new LinkedHashSet<>();
-        sqlStatement.getTables().forEach(each -> result.addAll(each.getDataSources()));
+        sqlStatement.getRules().forEach(each -> result.addAll(each.getDataSources()));
         return result;
     }
     
     private Collection<String> getKeyGenerators(final CreateShardingTableRuleStatement sqlStatement) {
-        return sqlStatement.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
+        return sqlStatement.getRules().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
                 .map(each -> each.getKeyGenerateStrategy().getAlgorithmName()).collect(Collectors.toSet());
     }
 }

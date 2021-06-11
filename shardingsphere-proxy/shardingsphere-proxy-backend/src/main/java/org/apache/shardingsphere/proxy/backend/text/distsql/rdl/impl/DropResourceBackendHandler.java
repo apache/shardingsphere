@@ -51,7 +51,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     
     @Override
     public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) {
-        Collection<String> toBeDroppedResourceNames = sqlStatement.getResourceNames();
+        Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
         check(schemaName, toBeDroppedResourceNames);
         drop(schemaName, toBeDroppedResourceNames);
         post(schemaName, toBeDroppedResourceNames);
