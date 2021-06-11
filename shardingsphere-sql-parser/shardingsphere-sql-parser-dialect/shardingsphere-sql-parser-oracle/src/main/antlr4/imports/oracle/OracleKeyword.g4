@@ -2178,3 +2178,111 @@ HIER_MEMBER_NAME
 HIER_MEMBER_UNIQUE_NAME
     : H I E R UL_ M E M B E R UL_ U N I Q U E UL_ N A M E
     ;
+
+VERSIONS
+    : V E R S I O N S
+    ;
+
+SCN
+    : S C N
+    ;
+
+PERIOD
+    : P E R I O D
+    ;
+
+LATERAL
+    : L A T E R A L
+    ;
+
+BADFILE
+    : B A D F I L E
+    ;
+
+DISCARDFILE
+    : D I S C A R D F I L E
+    ;
+
+PIVOT
+    : P I V O T
+    ;
+
+UNPIVOT
+    : U N P I V O T
+    ;
+
+INCLUDE
+    : I N C L U D E
+    ;
+
+EXCLUDE
+    : E X C L U D E
+    ;
+
+SAMPLE
+    : S A M P L E
+    ;
+
+SEED
+    : S E E D
+    ;
+
+OPTION
+    : O P T I O N
+    ;
+
+SHARDS
+    : S H A R D S
+    ;
+
+MATCH_RECOGNIZE
+    : M A T C H UL_ R E C O G N I Z E
+    ;
+
+PATTERN
+    : P A T T E R N
+    ;
+
+DEFINE
+    : D E F I N E
+    ;
+
+ONE
+    : O N E
+    ;
+
+PER
+    : P E R
+    ;
+
+MATCH
+    : M A T C H
+    ;
+
+PAST
+    : P A S T
+    ;
+
+PERMUTE
+    : P E R M U T E
+    ;
+
+CLASSIFIER
+    : C L A S S I F I E R
+    ;
+
+MATCH_NUMBER
+    : M A T C H UL_ N U M B E R
+    ;
+
+RUNNING
+    : R U N N I N G
+    ;
+
+FINAL
+    : F I N A L
+    ;
+
+PREV
+    : P R E V
+    ;
