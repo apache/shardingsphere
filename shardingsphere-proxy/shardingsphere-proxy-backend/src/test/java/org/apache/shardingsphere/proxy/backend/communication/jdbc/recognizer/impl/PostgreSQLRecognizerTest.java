@@ -31,7 +31,7 @@ public final class PostgreSQLRecognizerTest {
     
     @Test
     public void assertGetURLPrefixes() {
-        assertThat(recognizer.getURLPrefixes(), is(Collections.singletonList("jdbc:postgresql:")));
+        assertThat(recognizer.getURLPrefixes(), is(Collections.singleton("jdbc:postgresql:")));
     }
     
     @Test

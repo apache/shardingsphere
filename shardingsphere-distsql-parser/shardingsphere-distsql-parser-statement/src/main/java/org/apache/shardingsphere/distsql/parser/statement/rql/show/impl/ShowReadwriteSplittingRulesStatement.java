@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show.impl;
 
-import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Show encrypt rules statement.
+ * Show readwrite splitting rules statement.
  */
-@Getter
-public final class ShowEncryptRulesStatement extends ShowRulesStatement {
+public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement {
     
-    private final String tableName;
-    
-    public ShowEncryptRulesStatement(final String tableName, final SchemaSegment schema) {
+    public ShowReadwriteSplittingRulesStatement(final SchemaSegment schema) {
         super(schema);
-        this.tableName = tableName;
     }
 }

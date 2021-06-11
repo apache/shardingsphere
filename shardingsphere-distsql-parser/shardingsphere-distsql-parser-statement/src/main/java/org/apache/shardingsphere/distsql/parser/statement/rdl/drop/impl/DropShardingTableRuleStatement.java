@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropShardingTableRuleStatement extends DropRDLStatement {
+public final class DropShardingTableRuleStatement extends DropRuleStatement {
     
     private final Collection<TableNameSegment> tableNames;
 }
