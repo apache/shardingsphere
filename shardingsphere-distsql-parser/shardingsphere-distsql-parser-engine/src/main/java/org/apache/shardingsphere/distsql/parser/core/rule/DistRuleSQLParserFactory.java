@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.parser;
+package org.apache.shardingsphere.distsql.parser.core.rule;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,32 +26,27 @@ import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.spi.DistRuleSQLParserFacade;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 import java.nio.CharBuffer;
 
 /**
- * SQL parser factory.
+ * Dist rule SQL parser factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLParserFactory {
+public final class DistRuleSQLParserFactory {
     
     /**
      * New instance of SQL parser.
      * 
-     * @param databaseType database type
+     * @param facade dist rule SQL parser facade
      * @param sql SQL
      * @return SQL parser
      */
-    public static SQLParser newInstance(final String databaseType, final String sql) {
-        SQLParserFacade sqlParserFacade = SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseType);
-        return createSQLParser(sql, sqlParserFacade);
-    }
-    
-    private static SQLParser createSQLParser(final String sql, final SQLParserFacade sqlParserFacade) {
-        return createSQLParser(createTokenStream(sql, sqlParserFacade.getLexerClass()), sqlParserFacade.getParserClass());
+    public static SQLParser newInstance(final String sql, final DistRuleSQLParserFacade facade) {
+        return createSQLParser(createTokenStream(sql, facade.getLexerClass()), facade.getParserClass());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
