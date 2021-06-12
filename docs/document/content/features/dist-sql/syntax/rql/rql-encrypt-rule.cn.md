@@ -14,8 +14,8 @@ SHOW ENCRYPT TABLE RULE tableName [from schemaName]
 
 ## 说明
 
-| 列             | 说明         |
-| -------------- | ------------ |
+| 列             | 说明        |
+| -------------- | ---------- |
 | table          | 逻辑表名     |
 | logicColumn    | 逻辑列名     |
 | cipherColumn   | 密文列名     |
