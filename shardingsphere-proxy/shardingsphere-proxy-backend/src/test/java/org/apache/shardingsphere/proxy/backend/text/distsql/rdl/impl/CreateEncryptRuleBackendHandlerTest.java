@@ -71,7 +71,7 @@ public final class CreateEncryptRuleBackendHandlerTest {
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
     
-    private CreateEncryptRuleBackendHandler handler = new CreateEncryptRuleBackendHandler(sqlStatement, backendConnection);
+    private final CreateEncryptRuleBackendHandler handler = new CreateEncryptRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -85,7 +85,7 @@ public final class CreateEncryptRuleBackendHandlerTest {
     @Test
     public void assertExecute() {
         EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("MD5"));
-        when(sqlStatement.getEncryptRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
@@ -97,14 +97,14 @@ public final class CreateEncryptRuleBackendHandlerTest {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections
                 .singleton(encryptTableRuleConfiguration), Maps.newHashMap())));
         EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("MD5"));
-        when(sqlStatement.getEncryptRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         handler.execute("test", sqlStatement);
     }
 
     @Test(expected = InvalidEncryptorsException.class)
     public void assertExecuteWithInvalidEncryptors() {
         EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("notExistEncryptor"));
-        when(sqlStatement.getEncryptRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         handler.execute("test", sqlStatement);
     }
 

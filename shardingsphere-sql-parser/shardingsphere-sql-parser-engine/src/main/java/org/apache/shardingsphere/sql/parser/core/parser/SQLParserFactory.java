@@ -47,6 +47,10 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(final String databaseType, final String sql) {
         SQLParserFacade sqlParserFacade = SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseType);
+        return createSQLParser(sql, sqlParserFacade);
+    }
+    
+    private static SQLParser createSQLParser(final String sql, final SQLParserFacade sqlParserFacade) {
         return createSQLParser(createTokenStream(sql, sqlParserFacade.getLexerClass()), sqlParserFacade.getParserClass());
     }
     

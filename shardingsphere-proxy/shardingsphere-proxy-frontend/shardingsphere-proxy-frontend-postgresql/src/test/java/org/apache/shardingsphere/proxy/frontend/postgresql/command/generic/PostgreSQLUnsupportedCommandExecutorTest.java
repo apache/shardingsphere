@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.generic;
 
-import java.util.Collection;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.junit.Test;
+
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -30,7 +32,7 @@ public final class PostgreSQLUnsupportedCommandExecutorTest {
     
     @Test
     public void assertExecute() {
-        PostgreSQLUnsupportedCommandExecutor commandExecutor = new PostgreSQLUnsupportedCommandExecutor();
+        PostgreSQLUnsupportedCommandExecutor commandExecutor = new PostgreSQLUnsupportedCommandExecutor(new PostgreSQLConnectionContext());
         Collection<DatabasePacket<?>> actual = commandExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(PostgreSQLErrorResponsePacket.class));

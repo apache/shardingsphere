@@ -62,7 +62,13 @@ public enum CommonErrorCode implements SQLErrorCode {
     INVALID_ENCRYPTORS(1117, "C1117", "Invalid encryptors %s."),
 
     ENCRYPT_RULES_NOT_EXIST(1118, "C1118", "Encrypt rules %s do not exist in schema %s."),
-
+    
+    INVALID_SHARDING_ALGORITHMS(1119, "C1119", "Invalid sharding algorithms %s"),
+    
+    INVALID_KEY_GENERATORS(1120, "C1120", "Invalid key generators %s."),
+    
+    DUPLICATE_BINDING_TABLES(1121, "C1121", "Duplicate sharding binding tables %s."),
+    
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     
     SCALING_OPERATE_FAILED(1209, "C1209", "Scaling Operate Failed: [%s]"),

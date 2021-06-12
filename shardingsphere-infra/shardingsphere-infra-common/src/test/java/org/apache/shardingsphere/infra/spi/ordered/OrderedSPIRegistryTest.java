@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.spi.ordered;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterface;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterfaceImpl;
 import org.apache.shardingsphere.infra.spi.fixture.ordered.OrderedSPIFixture;
 import org.apache.shardingsphere.infra.spi.fixture.ordered.OrderedSPIFixtureImpl;
@@ -51,6 +52,7 @@ public final class OrderedSPIRegistryTest {
         field.set(null, new ConcurrentHashMap<>());
     }
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetRegisteredServicesByClass() {
         Map<Class<?>, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServicesByClass(Collections.singleton(FixtureCustomInterfaceImpl.class), OrderedSPIFixture.class);
@@ -58,6 +60,7 @@ public final class OrderedSPIRegistryTest {
         assertThat(actual.get(FixtureCustomInterfaceImpl.class), instanceOf(OrderedSPIFixtureImpl.class));
     }
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetRegisteredServices() {
         FixtureCustomInterfaceImpl key = new FixtureCustomInterfaceImpl();
@@ -68,7 +71,7 @@ public final class OrderedSPIRegistryTest {
 
     @Test
     public void assertGetRegisteredServicesFromCache() {
-        FixtureCustomInterfaceImpl key = new FixtureCustomInterfaceImpl();
+        FixtureCustomInterface key = new FixtureCustomInterfaceImpl();
         assertThat(OrderedSPIRegistry.getRegisteredServices(Collections.singleton(key), OrderedSPIFixture.class), 
                 is(OrderedSPIRegistry.getRegisteredServices(Collections.singleton(key), OrderedSPIFixture.class)));
     }

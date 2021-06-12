@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbdiscovery.rule.biulder.DatabaseDiscoveryRuleBuilder
-org.apache.shardingsphere.dbdiscovery.rule.biulder.AlgorithmProvidedDatabaseDiscoveryRuleBuilder
+org.apache.shardingsphere.dbdiscovery.rule.builder.DatabaseDiscoveryRuleBuilder
+org.apache.shardingsphere.dbdiscovery.rule.builder.AlgorithmProvidedDatabaseDiscoveryRuleBuilder

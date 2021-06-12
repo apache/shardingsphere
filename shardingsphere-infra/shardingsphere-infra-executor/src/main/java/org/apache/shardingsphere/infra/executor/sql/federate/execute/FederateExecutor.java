@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.execute;
 
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -31,12 +37,14 @@ public interface FederateExecutor {
     /**
      * Execute query.
      *
-     * @param sql sql
-     * @param parameters parameters
+     * @param executionContext execution context
+     * @param callback callback
+     * @param prepareEngine prepare engine
      * @return execute result
      * @throws SQLException SQL exception
      */
-    List<QueryResult> executeQuery(String sql, List<Object> parameters) throws SQLException;
+    List<QueryResult> executeQuery(ExecutionContext executionContext, JDBCExecutorCallback<? extends ExecuteResult> callback, 
+                                   DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException;
     
     /**
      * Close.

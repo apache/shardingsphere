@@ -35,7 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -63,7 +63,7 @@ public final class CreateShardingBroadcastTableRulesBackendHandlerTest {
     @Before
     public void setUp() throws Exception {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Arrays.asList("test"));
+        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
     }
@@ -71,8 +71,7 @@ public final class CreateShardingBroadcastTableRulesBackendHandlerTest {
     @Test
     public void assertExecuteWithoutShardingRuleConfiguration() {
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(new ArrayList<>());
-        CreateShardingBroadcastTableRulesStatement statement = new CreateShardingBroadcastTableRulesStatement();
-        statement.getTables().add("t_1");
+        CreateShardingBroadcastTableRulesStatement statement = new CreateShardingBroadcastTableRulesStatement(Collections.singleton("t_1"));
         CreateShardingBroadcastTableRulesBackendHandler handler = new CreateShardingBroadcastTableRulesBackendHandler(statement, backendConnection);
         ResponseHeader responseHeader = handler.execute("test", statement);
         assertNotNull(responseHeader);
@@ -83,18 +82,16 @@ public final class CreateShardingBroadcastTableRulesBackendHandlerTest {
     public void assertExecuteWithExistShardingBroadcastTableRules() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.getBroadcastTables().add("t_1");
-        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Arrays.asList(shardingRuleConfiguration));
-        CreateShardingBroadcastTableRulesStatement statement = new CreateShardingBroadcastTableRulesStatement();
-        statement.getTables().add("t_1");
+        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(shardingRuleConfiguration));
+        CreateShardingBroadcastTableRulesStatement statement = new CreateShardingBroadcastTableRulesStatement(Collections.singleton("t_1"));
         CreateShardingBroadcastTableRulesBackendHandler handler = new CreateShardingBroadcastTableRulesBackendHandler(statement, backendConnection);
         handler.execute("test", statement);
     }
     
     @Test
     public void assertExecuteWithNotExistShardingBroadcastTableRules() {
-        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Arrays.asList(new ShardingRuleConfiguration()));
-        CreateShardingBroadcastTableRulesStatement statement = new CreateShardingBroadcastTableRulesStatement();
-        statement.getTables().add("t_1");
+        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ShardingRuleConfiguration()));
+        CreateShardingBroadcastTableRulesStatement statement = new CreateShardingBroadcastTableRulesStatement(Collections.singleton("t_1"));
         CreateShardingBroadcastTableRulesBackendHandler handler = new CreateShardingBroadcastTableRulesBackendHandler(statement, backendConnection);
         ResponseHeader responseHeader = handler.execute("test", statement);
         assertNotNull(responseHeader);

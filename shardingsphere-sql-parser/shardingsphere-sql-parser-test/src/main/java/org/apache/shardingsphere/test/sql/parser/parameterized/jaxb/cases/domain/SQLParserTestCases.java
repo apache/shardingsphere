@@ -87,6 +87,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.RollbackStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetAutoCommitStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetConstraintsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.XATestCase;
 
@@ -138,6 +139,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-index")
     private final List<DropIndexStatementTestCase> dropIndexTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "set-constraints")
+    private final List<SetConstraintsStatementTestCase> setConstraintsTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-transaction")
     private final List<SetTransactionStatementTestCase> setTransactionTestCases = new LinkedList<>();
@@ -331,6 +335,7 @@ public final class SQLParserTestCases {
         putAll(createIndexTestCases, result);
         putAll(alterIndexTestCases, result);
         putAll(dropIndexTestCases, result);
+        putAll(setConstraintsTestCases, result);
         putAll(setTransactionTestCases, result);
         putAll(beginTransactionTestCases, result);
         putAll(setAutoCommitTestCases, result);

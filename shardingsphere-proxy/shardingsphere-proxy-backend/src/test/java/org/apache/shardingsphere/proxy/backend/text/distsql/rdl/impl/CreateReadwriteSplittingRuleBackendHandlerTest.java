@@ -77,11 +77,11 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     @Mock
     private ShardingSphereResource shardingSphereResource;
     
-    private CreateReadwriteSplittingRuleBackendHandler handler = new CreateReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
+    private final CreateReadwriteSplittingRuleBackendHandler handler = new CreateReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -99,7 +99,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("TEST");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
@@ -121,10 +121,10 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("TEST");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test
     public void assertExecuteWithExistReadwriteConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration
@@ -138,7 +138,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("TEST");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
@@ -154,10 +154,10 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setName("pr_ds");
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = InvalidLoadBalancersException.class)
     public void assertExecuteWithInvalidLoadBalancer() {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment();
@@ -165,7 +165,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         readwriteSplittingRuleSegment.setWriteDataSource("ds_write");
         readwriteSplittingRuleSegment.setReadDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         readwriteSplittingRuleSegment.setLoadBalancer("notExistLoadBalancer");
-        when(sqlStatement.getReadwriteSplittingRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(readwriteSplittingRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -61,6 +63,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -96,9 +99,8 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
     
     public ShardingRule(final ShardingRuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        Preconditions.checkArgument(null != config, "Sharding rule configuration cannot be null.");
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
-        dataSourceNames = getDataSourceNames(config.getTables(), dataSourceMap.keySet());
+        dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceMap.keySet());
         config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
         config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
         tableRules = new LinkedList<>(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
@@ -114,9 +116,8 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        Preconditions.checkArgument(null != config, "Sharding rule configuration cannot be null.");
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
-        dataSourceNames = getDataSourceNames(config.getTables(), dataSourceMap.keySet());
+        dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceMap.keySet());
         shardingAlgorithms.putAll(config.getShardingAlgorithms());
         keyGenerators.putAll(config.getKeyGenerators());
         tableRules = new LinkedList<>(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
@@ -130,7 +131,8 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
     }
     
-    private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, final Collection<String> dataSourceNames) {
+    private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, 
+                                                  final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigs, final Collection<String> dataSourceNames) {
         if (tableRuleConfigs.isEmpty()) {
             return dataSourceNames;
         }
@@ -139,7 +141,13 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         }
         Collection<String> result = new LinkedHashSet<>();
         tableRuleConfigs.forEach(each -> result.addAll(getDataSourceNames(each)));
+        autoTableRuleConfigs.forEach(each -> result.addAll(getDataSourceNames(each)));
         return result;
+    }
+    
+    private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
+        return Strings.isNullOrEmpty(shardingAutoTableRuleConfig.getActualDataSources()) 
+                ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(shardingAutoTableRuleConfig.getActualDataSources());
     }
     
     private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
@@ -326,6 +334,22 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     }
     
     /**
+     * Judge whether all tables are in same data source or not.
+     * 
+     * @param logicTableNames logic table names
+     * @return whether all tables are in same data source or not
+     */
+    public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames) {
+        Set<String> tableNames = Sets.newHashSet(logicTableNames);
+        Set<String> dataSourceNames = Sets.newHashSet();
+        dataSourceNames.addAll(tableRules.stream().filter(each -> tableNames.contains(each.getLogicTable())).flatMap(each 
+            -> each.getActualDataNodes().stream()).map(DataNode::getDataSourceName).collect(Collectors.toSet()));
+        dataSourceNames.addAll(broadcastTables.stream().filter(tableNames::contains).flatMap(each -> getDataSourceNames().stream()).collect(Collectors.toSet()));
+        dataSourceNames.addAll(singleTableRules.values().stream().filter(each -> tableNames.contains(each.getTableName())).map(SingleTableRule::getDataSourceName).collect(Collectors.toSet()));
+        return 1 == dataSourceNames.size();
+    }
+    
+    /**
      * Judge if there is at least one table rule for logic tables.
      *
      * @param logicTableNames logic table names
@@ -421,20 +445,6 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     public DataNode getDataNode(final String logicTableName) {
         TableRule tableRule = getTableRule(logicTableName);
         return tableRule.getActualDataNodes().get(0);
-    }
-    
-    /**
-     * Find data node by data source and logic table.
-     *
-     * @param dataSourceName data source name
-     * @param logicTableName logic table name
-     * @return data node
-     */
-    public DataNode getDataNode(final String dataSourceName, final String logicTableName) {
-        TableRule tableRule = getTableRule(logicTableName);
-        return tableRule.getActualDataNodes().stream().filter(each -> dataSourceNames.contains(each.getDataSourceName())
-                && each.getDataSourceName().equals(dataSourceName)).findFirst()
-                .orElseThrow(() -> new ShardingSphereConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName));
     }
     
     /**

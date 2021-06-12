@@ -20,14 +20,15 @@ package org.apache.shardingsphere.integration.scaling.test.mysql;
 import groovy.lang.Tuple2;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.integration.scaling.test.mysql.env.ITEnvironmentContext;
 import org.apache.shardingsphere.integration.scaling.test.mysql.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.scaling.test.mysql.fixture.FixtureWriteThread;
+import org.apache.shardingsphere.integration.scaling.test.mysql.fixture.DataImporter;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ExecuteUtil;
 import org.apache.shardingsphere.integration.scaling.test.mysql.util.ScalingUtil;
-import org.apache.shardingsphere.integration.scaling.test.mysql.util.TargetDataSourceUtil;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
@@ -40,18 +41,17 @@ public final class ScalingIT {
     
     private static final long WAIT_MS_BEFORE_CHECK_JOB = 15 * 1000;
     
-    private final FixtureWriteThread fixtureWriteThread = new FixtureWriteThread(TIMEOUT_MS, 1000);
-    
     @SneakyThrows(InterruptedException.class)
     @Test
     public void assertScaling() {
         if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
             IntegrationTestEnvironment.getInstance().waitForEnvironmentReady();
-            fixtureWriteThread.start();
-            Thread.sleep(WAIT_MS_BEFORE_START_JOB);
+            DataImporter dataImporter = new DataImporter();
+            dataImporter.createTables();
+            dataImporter.importData();
             String jobId = assertStartJob();
             waitInventoryFinish(jobId);
-            fixtureWriteThread.stop();
+            dataImporter.importData();
             Thread.sleep(WAIT_MS_BEFORE_CHECK_JOB);
             assertJobCheck(jobId);
         }
@@ -59,8 +59,8 @@ public final class ScalingIT {
     
     @SneakyThrows(IOException.class)
     private String assertStartJob() {
-        String configurations = TargetDataSourceUtil.createDockerConfigurations();
-        Tuple2<Boolean, String> response = ScalingUtil.getInstance().startJob(configurations);
+        String configuration = ITEnvironmentContext.INSTANCE.getScalingConfiguration();
+        Tuple2<Boolean, String> response = ScalingUtil.getInstance().startJob(configuration);
         assertTrue(response.getFirst());
         return response.getSecond();
     }
@@ -73,8 +73,10 @@ public final class ScalingIT {
     
     @SneakyThrows(IOException.class)
     private void assertJobCheck(final String jobId) {
-        Tuple2<Boolean, Boolean> checkResult = ScalingUtil.getInstance().getJobCheckResult(jobId);
-        assertTrue(checkResult.getFirst());
-        assertTrue(checkResult.getSecond());
+        Map<String, Tuple2<Boolean, Boolean>> checkResult = ScalingUtil.getInstance().getJobCheckResult(jobId);
+        for (Map.Entry<String, Tuple2<Boolean, Boolean>> entry : checkResult.entrySet()) {
+            assertTrue(entry.getValue().getFirst());
+            assertTrue(entry.getValue().getSecond());
+        }
     }
 }

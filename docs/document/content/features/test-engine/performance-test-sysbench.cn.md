@@ -1507,3 +1507,5 @@ if __name__ == '__main__':
     generate_graph(path, 'oltp_update_non_index')
     generate_graph(path, 'oltp_delete')
 ```
+
+目前在 ShardingSphere 的 benchmark 项目 [shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark) 中已经共享了 sysbench 的使用方式 : [sysbench 压测工具](https://github.com/apache/shardingsphere-benchmark/blob/master/sysbench/README_ZH.md)
