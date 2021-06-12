@@ -1,7 +1,7 @@
 +++
 pre = "<b>3.8.1. </b>"
 title = "Syntax"
-weight = 8
+weight = 1
 chapter = true
 +++
 
