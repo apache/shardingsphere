@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLParserFacade;
-import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLVisitorFacade;
+import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
@@ -40,21 +40,21 @@ import java.util.ServiceLoader;
  */
 public final class FeatureTypedSQLStatementParserEngine {
     
-    private static final Collection<FeatureTypedSQLParserFacade> FEATURE_TYPED_PARSER_FACADES = new LinkedList<>();
+    private static final Collection<FeatureTypedSQLParserFacade> PARSER_FACADES = new LinkedList<>();
     
-    private static final Map<String, FeatureTypedSQLVisitorFacade> FEATURE_TYPED_VISITOR_FACADES = new HashMap<>();
+    private static final Map<String, FeatureTypedSQLStatementVisitorFacade> VISITOR_FACADES = new HashMap<>();
     
     static {
         for (FeatureTypedSQLParserFacade each : ServiceLoader.load(FeatureTypedSQLParserFacade.class)) {
-            FEATURE_TYPED_PARSER_FACADES.add(each);
+            PARSER_FACADES.add(each);
         }
-        for (FeatureTypedSQLVisitorFacade each : ServiceLoader.load(FeatureTypedSQLVisitorFacade.class)) {
-            FEATURE_TYPED_VISITOR_FACADES.put(each.getFeatureType(), each);
+        for (FeatureTypedSQLStatementVisitorFacade each : ServiceLoader.load(FeatureTypedSQLStatementVisitorFacade.class)) {
+            VISITOR_FACADES.put(each.getFeatureType(), each);
         }
     }
     
     /**
-     * Parse Feature type based dist SQL.
+     * Parse SQL.
      *
      * @param sql SQL to be parsed
      * @return SQL statement
@@ -65,7 +65,7 @@ public final class FeatureTypedSQLStatementParserEngine {
     }
     
     private FeatureTypedParseASTNode parseToASTNode(final String sql) {
-        for (FeatureTypedSQLParserFacade each : FEATURE_TYPED_PARSER_FACADES) {
+        for (FeatureTypedSQLParserFacade each : PARSER_FACADES) {
             try {
                 ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
                 return new FeatureTypedParseASTNode(each.getFeatureType(), parseASTNode);
@@ -78,7 +78,7 @@ public final class FeatureTypedSQLStatementParserEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
     private SQLStatement getSQLStatement(final String sql, final String featureType, final ParseASTNode parseASTNode) {
-        SQLVisitor visitor = FEATURE_TYPED_VISITOR_FACADES.get(featureType).getVisitorClass().newInstance();
+        SQLVisitor visitor = VISITOR_FACADES.get(featureType).getVisitorClass().newInstance();
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }

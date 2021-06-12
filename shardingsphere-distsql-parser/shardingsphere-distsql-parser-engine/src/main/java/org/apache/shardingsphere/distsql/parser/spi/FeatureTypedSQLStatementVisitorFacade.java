@@ -20,9 +20,9 @@ package org.apache.shardingsphere.distsql.parser.spi;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * Feature type based SQL visitor facade.
+ * Feature type based SQL statement visitor facade.
  */
-public interface FeatureTypedSQLVisitorFacade {
+public interface FeatureTypedSQLStatementVisitorFacade {
     
     /**
      * Get visitor class.
