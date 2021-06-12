@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.api;
+package org.apache.shardingsphere.distsql.parser.core.standard;
 
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.shardingsphere.distsql.parser.core.feature.FeatureTypedSQLStatementParserEngine;
-import org.apache.shardingsphere.distsql.parser.core.standard.StandardSQLStatementParserEngine;
+import org.antlr.v4.runtime.tree.ErrorNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Dist SQL statement parser engine.
+ * Standard SQL statement parser engine.
  */
-public final class DistSQLStatementParserEngine {
+public final class StandardSQLStatementParserEngine {
     
     /**
      * Parse SQL.
@@ -34,10 +36,14 @@ public final class DistSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        try {
-            return new StandardSQLStatementParserEngine().parse(sql);
-        } catch (final ParseCancellationException ignored) {
-            return new FeatureTypedSQLStatementParserEngine().parse(sql);
+        ASTNode astNode = SQLParserFactory.newInstance(sql, StandardDistSQLLexer.class, StandardDistSQLParser.class).parse();
+        return getSQLStatement(sql, (ParseASTNode) astNode);
+    }
+    
+    private SQLStatement getSQLStatement(final String sql, final ParseASTNode parseASTNode) {
+        if (parseASTNode.getRootNode() instanceof ErrorNode) {
+            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
+        return (SQLStatement) (new StandardDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
     }
 }

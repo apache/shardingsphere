@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.spi;
+package org.apache.shardingsphere.distsql.parser.core.standard;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Feature type based SQL visitor facade.
+ * SQL parser for standard dist SQL.
  */
-public interface FeatureTypedSQLVisitorFacade {
+public final class StandardDistSQLParser extends DistSQLStatementParser implements SQLParser {
     
-    /**
-     * Get visitor class.
-     *
-     * @return visitor class
-     */
-    Class<? extends SQLVisitor> getVisitorClass();
+    public StandardDistSQLParser(final TokenStream input) {
+        super(input);
+    }
     
-    /**
-     * Get feature type.
-     *
-     * @return feature type
-     */
-    String getFeatureType();
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
 }
