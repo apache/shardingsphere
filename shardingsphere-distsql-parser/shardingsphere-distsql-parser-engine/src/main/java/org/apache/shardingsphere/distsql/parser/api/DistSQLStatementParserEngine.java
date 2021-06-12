@@ -37,11 +37,11 @@ import java.util.ServiceLoader;
  */
 public final class DistSQLStatementParserEngine {
     
-    private static final Collection<FeatureTypedSQLParserFacade> RULE_PARSER_FACADES = new LinkedList<>();
+    private static final Collection<FeatureTypedSQLParserFacade> FEATURE_TYPED_PARSER_FACADES = new LinkedList<>();
     
     static {
         for (FeatureTypedSQLParserFacade each : ServiceLoader.load(FeatureTypedSQLParserFacade.class)) {
-            RULE_PARSER_FACADES.add(each);
+            FEATURE_TYPED_PARSER_FACADES.add(each);
         }
     }
     
@@ -56,7 +56,7 @@ public final class DistSQLStatementParserEngine {
         try {
             parseASTNode = parseFromStandardParser(sql);
         } catch (final ParseCancellationException ex) {
-            parseASTNode = parseFromRuleParsers(sql);
+            parseASTNode = parseFromFeatureTypedParsers(sql);
         }
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
@@ -73,8 +73,8 @@ public final class DistSQLStatementParserEngine {
         }
     }
     
-    private ParseASTNode parseFromRuleParsers(final String sql) {
-        for (FeatureTypedSQLParserFacade each : RULE_PARSER_FACADES) {
+    private ParseASTNode parseFromFeatureTypedParsers(final String sql) {
+        for (FeatureTypedSQLParserFacade each : FEATURE_TYPED_PARSER_FACADES) {
             try {
                 return (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
             } catch (final ParseCancellationException ignored) {
