@@ -5,11 +5,11 @@ weight = 1
 chapter = true
 +++
 
-## SQLParserFacade
+## DatabaseTypedSQLParserFacade
 
-| *SPI Name*             | *Description*                          |
-| ---------------------- | -------------------------------------- |
-| SQLParserFacade        | SQL parser facade for lexer and parser |
+| *SPI Name*                   | *Description*                          |
+| ---------------------------- | -------------------------------------- |
+| DatabaseTypedSQLParserFacade | SQL parser facade for lexer and parser |
 
 | *Implementation Class* | *Description*                          |
 | ---------------------- | -------------------------------------- |

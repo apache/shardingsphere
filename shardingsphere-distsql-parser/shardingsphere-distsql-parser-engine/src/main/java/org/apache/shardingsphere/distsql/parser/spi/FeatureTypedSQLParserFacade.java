@@ -17,32 +17,17 @@
 
 package org.apache.shardingsphere.distsql.parser.spi;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 /**
- * Dist rule SQL parser facade.
+ * Feature type based SQL parser facade.
  */
-public interface DistRuleSQLParserFacade {
+public interface FeatureTypedSQLParserFacade extends SQLParserFacade {
     
     /**
-     * Get SQL lexer class type.
+     * Get feature type.
      *
-     * @return SQL lexer class type
+     * @return feature type
      */
-    Class<? extends SQLLexer> getLexerClass();
-    
-    /**
-     * Get SQL parser class type.
-     * 
-     * @return SQL parser class type
-     */
-    Class<? extends SQLParser> getParserClass();
-    
-    /**
-     * Get rule type.
-     *
-     * @return rule type
-     */
-    String getRuleType();
+    String getFeatureType();
 }
