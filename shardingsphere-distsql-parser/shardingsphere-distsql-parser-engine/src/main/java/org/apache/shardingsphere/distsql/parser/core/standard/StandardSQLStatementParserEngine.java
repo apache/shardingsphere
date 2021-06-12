@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.api;
+package org.apache.shardingsphere.distsql.parser.core.standard;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.shardingsphere.distsql.parser.core.feature.FeatureTypedSQLStatementParserEngine;
-import org.apache.shardingsphere.distsql.parser.core.standard.StandardSQLStatementParserEngine;
+import org.antlr.v4.runtime.tree.ErrorNode;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Dist SQL statement parser engine.
+ * Standard SQL statement parser engine.
  */
-public final class DistSQLStatementParserEngine {
+public final class StandardSQLStatementParserEngine {
     
     /**
      * Parse SQL.
@@ -34,10 +36,23 @@ public final class DistSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
+        ParseASTNode parseASTNode = parseToASTNode(sql);
+        return getSQLStatement(sql, parseASTNode);
+    }
+    
+    private ParseASTNode parseToASTNode(final String sql) {
+        SQLParser sqlParser = DistSQLParserFactory.newInstance(sql);
         try {
-            return new StandardSQLStatementParserEngine().parse(sql);
+            return (ParseASTNode) sqlParser.parse();
         } catch (final ParseCancellationException ex) {
-            return new FeatureTypedSQLStatementParserEngine().parse(sql);
+            throw new SQLParsingException("You have an error in your SQL syntax.");
         }
+    }
+    
+    private SQLStatement getSQLStatement(final String sql, final ParseASTNode parseASTNode) {
+        if (parseASTNode.getRootNode() instanceof ErrorNode) {
+            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
+        }
+        return (SQLStatement) (new DistSQLVisitor()).visit(parseASTNode.getRootNode());
     }
 }
