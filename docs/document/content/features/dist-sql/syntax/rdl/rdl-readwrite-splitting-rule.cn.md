@@ -23,7 +23,7 @@ dynamicReadwriteSplittingRuleDefinition:
     AUTO_AWARE_RESOURCE=resourceName
 
 loadBanlancerDefinition:
-		TYPE(NAME=loadBanlancerType [, PROPERTIES([algorithmProperties] )] )
+    TYPE(NAME=loadBanlancerType [, PROPERTIES([algorithmProperties] )] )
 
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
@@ -37,7 +37,7 @@ algorithmProperty:
 - `loadBanlancerType` 指定负载均衡算法类型，请参考 [负载均衡算法](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance/)
 - 重复的 `ruleName` 将无法被创建
 
-## Example
+## 示例
 
 ```sql
 // Static

@@ -19,7 +19,7 @@ resources:
     RESOURCES(resourceName [, resourceName] ...)
 
 discoveryTypeDefinition:
-		TYPE(NAME=discoveryType [, PROPERTIES([algorithmProperties] )] )
+    TYPE(NAME=discoveryType [, PROPERTIES([algorithmProperties] )] )
 
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
@@ -30,7 +30,7 @@ algorithmProperty:
 - `discoveryType` 指定数据库发现服务类型，`ShardingSphere` 内置支持 `MGR`
 - 重复的 `ruleName` 将无法被创建
 
-## Example
+## 示例
 
 ```sql
 CREATE DB_DISCOVERY RULE ha_group_0 (
