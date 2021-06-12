@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.cache;
+package org.apache.shardingsphere.sql.parser.core.database.cache;
 
+import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertThat;
-
-public final class ParseTreeCacheBuilderTest {
-
-    @Test
-    public void assertParseTreeCacheBuild() {
-        LoadingCache<String, ParseTree> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL");
-        assertThat(cache, isA(LoadingCache.class));
+/**
+ * Parse tree cache builder.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ParseTreeCacheBuilder {
+    
+    /**
+     * Build parse tree cache.
+     * 
+     * @param option cache option
+     * @param databaseType database type
+     * @return built parse tree cache
+     */
+    public static LoadingCache<String, ParseTree> build(final CacheOption option, final String databaseType) {
+        return CacheBuilder.newBuilder().softValues()
+                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new ParseTreeCacheLoader(databaseType));
     }
 }

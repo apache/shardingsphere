@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.cache;
+package org.apache.shardingsphere.sql.parser.core.database.visitor;
 
-import com.google.common.cache.CacheLoader;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
+import org.junit.Test;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Parse tree cache loader.
- */
-public final class ParseTreeCacheLoader extends CacheLoader<String, ParseTree> {
+public final class SQLVisitorRuleTest {
     
-    private final SQLParserExecutor sqlParserExecutor;
-    
-    public ParseTreeCacheLoader(final String databaseType) {
-        sqlParserExecutor = new SQLParserExecutor(databaseType);
+    @Test
+    public void assertValueOfParseTreeClassSuccess() {
+        assertThat(SQLVisitorRule.valueOf(SelectContext.class), is(SQLVisitorRule.SELECT));
     }
     
-    @ParametersAreNonnullByDefault
-    @Override
-    public ParseTree load(final String sql) {
-        return sqlParserExecutor.parse(sql);
+    @Test(expected = IllegalArgumentException.class)
+    public void assertValueOfParseTreeClassFailure() {
+        SQLVisitorRule.valueOf(ParseTree.class);
     }
 }

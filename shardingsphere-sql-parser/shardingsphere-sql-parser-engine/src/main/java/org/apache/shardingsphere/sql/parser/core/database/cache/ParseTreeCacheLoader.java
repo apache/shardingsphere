@@ -15,9 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.visitor;
+package org.apache.shardingsphere.sql.parser.core.database.cache;
 
+import com.google.common.cache.CacheLoader;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 
-public interface SelectContext extends ParseTree {
+import javax.annotation.ParametersAreNonnullByDefault;
+
+/**
+ * Parse tree cache loader.
+ */
+public final class ParseTreeCacheLoader extends CacheLoader<String, ParseTree> {
+    
+    private final SQLParserExecutor sqlParserExecutor;
+    
+    public ParseTreeCacheLoader(final String databaseType) {
+        sqlParserExecutor = new SQLParserExecutor(databaseType);
+    }
+    
+    @ParametersAreNonnullByDefault
+    @Override
+    public ParseTree load(final String sql) {
+        return sqlParserExecutor.parse(sql);
+    }
 }

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.distsql.parser.core.DistSQLParserFactory;
 import org.apache.shardingsphere.distsql.parser.core.DistSQLVisitor;
 import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLParserFacade;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
