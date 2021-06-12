@@ -22,11 +22,11 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for DistSQL.
+ * SQL lexer for standard dist SQL.
  */
-public final class DistSQLLexer extends DistSQLStatementLexer implements SQLLexer {
+public final class StandardDistSQLLexer extends DistSQLStatementLexer implements SQLLexer {
     
-    public DistSQLLexer(final CharStream input) {
+    public StandardDistSQLLexer(final CharStream input) {
         super(input);
     }
 }

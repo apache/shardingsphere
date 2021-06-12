@@ -24,11 +24,11 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL parser for Dist SQL.
+ * SQL parser for standard dist SQL.
  */
-public final class DistSQLParser extends DistSQLStatementParser implements SQLParser {
+public final class StandardDistSQLParser extends DistSQLStatementParser implements SQLParser {
     
-    public DistSQLParser(final TokenStream input) {
+    public StandardDistSQLParser(final TokenStream input) {
         super(input);
     }
     

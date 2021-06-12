@@ -36,7 +36,7 @@ public final class StandardSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        ASTNode astNode = SQLParserFactory.newInstance(sql, DistSQLLexer.class, DistSQLParser.class).parse();
+        ASTNode astNode = SQLParserFactory.newInstance(sql, StandardDistSQLLexer.class, StandardDistSQLParser.class).parse();
         return getSQLStatement(sql, (ParseASTNode) astNode);
     }
     
@@ -44,6 +44,6 @@ public final class StandardSQLStatementParserEngine {
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
-        return (SQLStatement) (new DistSQLVisitor()).visit(parseASTNode.getRootNode());
+        return (SQLStatement) (new StandardDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
     }
 }

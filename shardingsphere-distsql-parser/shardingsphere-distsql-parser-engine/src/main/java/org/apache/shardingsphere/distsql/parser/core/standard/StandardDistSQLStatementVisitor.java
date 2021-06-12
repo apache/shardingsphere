@@ -125,9 +125,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Dist SQL visitor.
+ * SQL statement visitor for standard dist SQL.
  */
-public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class StandardDistSQLStatementVisitor extends DistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitAddResource(final AddResourceContext ctx) {
