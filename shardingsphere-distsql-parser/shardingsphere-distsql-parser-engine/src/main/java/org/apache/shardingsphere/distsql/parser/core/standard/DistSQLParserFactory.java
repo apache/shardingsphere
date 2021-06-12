@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core;
+package org.apache.shardingsphere.distsql.parser.core.standard;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,10 +37,10 @@ import java.nio.CharBuffer;
 public final class DistSQLParserFactory {
     
     /**
-     * New instance of Dist SQL parser.
+     * New instance of dist SQL parser.
      *
      * @param sql SQL
-     * @return Dist SQL parser
+     * @return dist SQL parser
      */
     public static SQLParser newInstance(final String sql) {
         return new DistSQLParser(createTokenStream(sql));
