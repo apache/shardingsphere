@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.core.parser;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 
 import java.util.LinkedHashMap;
@@ -24,15 +25,15 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
- * SQL parser facade registry.
+ * Database type based SQL parser facade registry.
  */
-public final class SQLParserFacadeRegistry {
+public final class DatabaseTypedSQLParserFacadeRegistry {
     
-    private static final SQLParserFacadeRegistry INSTANCE = new SQLParserFacadeRegistry();
+    private static final DatabaseTypedSQLParserFacadeRegistry INSTANCE = new DatabaseTypedSQLParserFacadeRegistry();
     
     private final Map<String, DatabaseTypedSQLParserFacade> facades = new LinkedHashMap<>();
     
-    private SQLParserFacadeRegistry() {
+    private DatabaseTypedSQLParserFacadeRegistry() {
         for (DatabaseTypedSQLParserFacade each : ServiceLoader.load(DatabaseTypedSQLParserFacade.class)) {
             facades.put(each.getDatabaseType(), each);
         }
@@ -43,20 +44,18 @@ public final class SQLParserFacadeRegistry {
      *
      * @return instance
      */
-    public static SQLParserFacadeRegistry getInstance() {
+    public static DatabaseTypedSQLParserFacadeRegistry getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Get SQL parser facade.
+     * Get database type based SQL parser facade.
      * 
      * @param databaseType database type
-     * @return SQL parser facade
+     * @return database type based SQL parser facade
      */
-    public DatabaseTypedSQLParserFacade getSQLParserFacade(final String databaseType) {
-        if (facades.containsKey(databaseType)) {
-            return facades.get(databaseType);
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
+    public DatabaseTypedSQLParserFacade getFacade(final String databaseType) {
+        Preconditions.checkArgument(facades.containsKey(databaseType), "Cannot support database type '%s'", databaseType);
+        return facades.get(databaseType);
     }
 }
