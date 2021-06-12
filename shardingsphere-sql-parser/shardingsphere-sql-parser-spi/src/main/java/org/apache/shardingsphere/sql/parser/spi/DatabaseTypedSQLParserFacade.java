@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql.parser;
-
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+package org.apache.shardingsphere.sql.parser.spi;
 
 /**
- * SQL parser facade for MySQL.
+ * Database type based SQL parser facade.
  */
-public final class MySQLParserFacade implements DatabaseTypedSQLParserFacade {
+public interface DatabaseTypedSQLParserFacade extends SQLParserFacade {
     
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return MySQLLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return MySQLParser.class;
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "MySQL";
-    }
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    String getDatabaseType();
 }

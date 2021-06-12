@@ -26,7 +26,7 @@ import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.spi.DistRuleSQLParserFacade;
+import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLParserFacade;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
@@ -45,7 +45,7 @@ public final class DistRuleSQLParserFactory {
      * @param sql SQL
      * @return SQL parser
      */
-    public static SQLParser newInstance(final String sql, final DistRuleSQLParserFacade facade) {
+    public static SQLParser newInstance(final String sql, final FeatureTypedSQLParserFacade facade) {
         return createSQLParser(createTokenStream(sql, facade.getLexerClass()), facade.getParserClass());
     }
     
