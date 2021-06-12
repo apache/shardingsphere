@@ -1,3 +1,72 @@
+## 5.0.0-beta
+
+### New feature
+
+1. New DistSQL to load and show all the ShardingSphere configuration rules
+1. Support join SQL from different database instances
+1. Support multiple backend database types for new feature of database gateway
+1. Support creating and updating the authentication online
+1. Add new automated agent module
+
+### API Change
+
+1. `QueryReplica` configuration item is replaced by `read-write-splitting`
+1. `Authentication` configuration item of ShardingProxy is replaced by `AUTHORITY`
+1. Optimize the datasource configuration for ShardingJDBC with `dataSourceClassName`
+1. New API for automated sharding table configuration to provide standard and automated sharding tables
+1. Remove configuration item `acceptor-size` from ShardingProxy
+1. Create a built-in sharding algorithm SPI which allows users to directly configure the class name as in 4.x
+
+### Enhancement
+
+1. Improve metadata loading process distinctly
+1. Greatly enhance the SQL parsing for Oracle, SQLServer and PostgreSQL
+1. Support loading privileges from MySQL/PostgreSQL/SQLServer/Oracle
+1. Support DDL statement for encryption feature
+1. Support rewrite owner table name of projection if using sharding and encrypt together
+1. When using `SELECT *` from encrypt SQL, add quote char for rewritten column to avoid conflict with keyword
+1. Support PostgreSQL JSON/JSONB/pattern matching operator parse
+1. Support MySQL/PostgreSQL `CREATE/ALTER/DROP TABLESPACE` statement
+1. Support PostgreSQL `PREPARE, EXECUTE, DEALLOCATE` statement
+1. Support PostgreSQL `EXPLAIN` statement
+1. Support PostgreSQL `START/END TRANSACTION` statement
+1. Support PostgreSQL `ALTER/DROP INDEX` statement
+1. Support CREATE `TABLESPACE` of PostgreSQL
+1. Support MySQL `CREATE LOADABLE FUNCTION` statement
+1. Support MySQL/PostgreSQL `ALTER TABLE RENAME` statement
+1. Support PostgreSQL Close command
+
+### Refactor
+
+1. New schema structure in registry center
+1. Remove Nacos and Apollo config center support
+1. ShardingScaling leverages elasticJob as its job distribution
+1. Refactor the metadata content and its update process
+
+### Bug Fix
+
+1. Bug fix for cannot use `SELECT * wildcard` when readwrite-splitting only
+1. Fix instance error when the custom sharding algorithm does not match the configuration type.
+1. Fix NoSuchTableException when execute drop table if exists statement
+1. Fix wrong table rewrite in `UPDATE ... SET ...` statement
+1. Fix wrong table rewrite in CREATE/ALTER TABLE statement foreign key reference table
+1. Fix projection owner check exception when exist subquery temporary table
+1. Fix Oracle/SQL92 `SELECT ... WHERE ... LIKE` statement class cast exception
+1. Fix MySQL `SELECT EXISTS ... FROM ...` statement parse error
+1. Fix wrong result of SHOW INDEX statement
+1. Fix SELECT `... GROUP BY ...` statement rewrite and merge result error
+1. Fix CREATE TABLE statement rewrite error for encrypt
+1. Fix exception occur in PostgreSQL Proxy when reading text format parameter values
+1. Enhance the support of array object for PostgreSQL Proxy
+1. Fix the bug of Datetype casting for ShardingProxy
+1. PostgreSQL Proxy supports using numeric type 
+1. Fix PostgreSQL Proxy transaction command complete packet's tag incorrect
+1. Fix PostgreSQL Proxy may return packet which is not expected by client
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/14)
+
 ## 5.0.0-alpha
 
 ### Build & Dependencies
