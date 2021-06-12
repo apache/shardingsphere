@@ -33,10 +33,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ReadwriteSplittingRuleConfigurationCheckerTest {
+    
     static {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
-
+    
     @Test
     public void assertCheckPass() {
         ReadwriteSplittingRuleConfiguration ruleConfig = mock(ReadwriteSplittingRuleConfiguration.class);
@@ -48,7 +49,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         assertThat(checker, instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
     }
-
+    
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
         ReadwriteSplittingRuleConfiguration ruleConfig = mock(ReadwriteSplittingRuleConfiguration.class);
