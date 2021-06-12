@@ -36,7 +36,7 @@ public final class DistSQLStatementParserEngine {
     public SQLStatement parse(final String sql) {
         try {
             return new StandardSQLStatementParserEngine().parse(sql);
-        } catch (final ParseCancellationException ex) {
+        } catch (final ParseCancellationException ignored) {
             return new FeatureTypedSQLStatementParserEngine().parse(sql);
         }
     }

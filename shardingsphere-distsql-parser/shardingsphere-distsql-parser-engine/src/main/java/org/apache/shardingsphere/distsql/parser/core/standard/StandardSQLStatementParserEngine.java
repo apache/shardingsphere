@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.core.standard;
 
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -36,17 +36,8 @@ public final class StandardSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        ParseASTNode parseASTNode = parseToASTNode(sql);
-        return getSQLStatement(sql, parseASTNode);
-    }
-    
-    private ParseASTNode parseToASTNode(final String sql) {
-        SQLParser sqlParser = DistSQLParserFactory.newInstance(sql);
-        try {
-            return (ParseASTNode) sqlParser.parse();
-        } catch (final ParseCancellationException ex) {
-            throw new SQLParsingException("You have an error in your SQL syntax.");
-        }
+        ASTNode astNode = SQLParserFactory.newInstance(sql, DistSQLLexer.class, DistSQLParser.class).parse();
+        return getSQLStatement(sql, (ParseASTNode) astNode);
     }
     
     private SQLStatement getSQLStatement(final String sql, final ParseASTNode parseASTNode) {
