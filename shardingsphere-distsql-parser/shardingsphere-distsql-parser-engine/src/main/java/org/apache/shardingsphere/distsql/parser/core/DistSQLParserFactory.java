@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.standard;
+package org.apache.shardingsphere.distsql.parser.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

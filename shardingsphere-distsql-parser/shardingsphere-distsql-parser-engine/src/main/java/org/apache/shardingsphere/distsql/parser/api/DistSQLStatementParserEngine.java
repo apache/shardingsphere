@@ -19,12 +19,12 @@ package org.apache.shardingsphere.distsql.parser.api;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.apache.shardingsphere.distsql.parser.core.rule.DistRuleSQLParserFactory;
-import org.apache.shardingsphere.distsql.parser.core.standard.DistSQLParserFactory;
-import org.apache.shardingsphere.distsql.parser.core.standard.DistSQLVisitor;
+import org.apache.shardingsphere.distsql.parser.core.DistSQLParserFactory;
+import org.apache.shardingsphere.distsql.parser.core.DistSQLVisitor;
 import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLParserFacade;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -76,7 +76,7 @@ public final class DistSQLStatementParserEngine {
     private ParseASTNode parseFromRuleParsers(final String sql) {
         for (FeatureTypedSQLParserFacade each : RULE_PARSER_FACADES) {
             try {
-                return (ParseASTNode) DistRuleSQLParserFactory.newInstance(sql, each).parse();
+                return (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
             } catch (final ParseCancellationException ignored) {
             }
         }

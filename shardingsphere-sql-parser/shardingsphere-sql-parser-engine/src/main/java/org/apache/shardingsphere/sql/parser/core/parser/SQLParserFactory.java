@@ -28,8 +28,6 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 import java.nio.CharBuffer;
 
@@ -42,17 +40,13 @@ public final class SQLParserFactory {
     /**
      * New instance of SQL parser.
      * 
-     * @param databaseType database type
      * @param sql SQL
+     * @param lexerClass lexer class
+     * @param parserClass parser class
      * @return SQL parser
      */
-    public static SQLParser newInstance(final String databaseType, final String sql) {
-        DatabaseTypedSQLParserFacade sqlParserFacade = SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseType);
-        return createSQLParser(sql, sqlParserFacade);
-    }
-    
-    private static SQLParser createSQLParser(final String sql, final SQLParserFacade sqlParserFacade) {
-        return createSQLParser(createTokenStream(sql, sqlParserFacade.getLexerClass()), sqlParserFacade.getParserClass());
+    public static SQLParser newInstance(final String sql, final Class<? extends SQLLexer> lexerClass, final Class<? extends SQLParser> parserClass) {
+        return createSQLParser(createTokenStream(sql, lexerClass), parserClass);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
