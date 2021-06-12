@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.cache;
+package org.apache.shardingsphere.sql.parser.core.database.cache;
 
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
+import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -30,9 +30,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class ParseTreeCacheLoaderTest {
-
+    
     private static final String SQL = "select * from user where id=1";
-
+    
     @SneakyThrows
     @Test
     public void assertParseTreeCacheLoader() {

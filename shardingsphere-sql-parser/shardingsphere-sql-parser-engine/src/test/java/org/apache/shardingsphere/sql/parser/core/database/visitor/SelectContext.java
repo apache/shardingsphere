@@ -15,23 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.visitor;
+package org.apache.shardingsphere.sql.parser.core.database.visitor;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class SQLVisitorRuleTest {
-    
-    @Test
-    public void assertValueOfParseTreeClassSuccess() {
-        assertThat(SQLVisitorRule.valueOf(SelectContext.class), is(SQLVisitorRule.SELECT));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertValueOfParseTreeClassFailure() {
-        SQLVisitorRule.valueOf(ParseTree.class);
-    }
+public interface SelectContext extends ParseTree {
 }
