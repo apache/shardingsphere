@@ -63,6 +63,10 @@
 1. Fix PostgreSQL Proxy transaction command complete packet's tag incorrect
 1. Fix PostgreSQL Proxy may return packet which is not expected by client
 
+###  Change Logs
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/14)
+
 ## 5.0.0-alpha
 
 ### Build & Dependencies
