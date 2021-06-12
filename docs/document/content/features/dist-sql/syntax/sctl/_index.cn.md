@@ -1,7 +1,7 @@
 +++
 pre = "<b>3.8.1.3 </b>"
-title = "SCTL Syntax"
-weight = 8
+title = "SCTL 语法"
+weight = 3
 chapter = true
 +++
 
