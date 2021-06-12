@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.fixture.FixtureConfigurationYamlSwapper
+org.apache.shardingsphere.proxy.fixture.YamlRuleConfigurationSwapperFixture

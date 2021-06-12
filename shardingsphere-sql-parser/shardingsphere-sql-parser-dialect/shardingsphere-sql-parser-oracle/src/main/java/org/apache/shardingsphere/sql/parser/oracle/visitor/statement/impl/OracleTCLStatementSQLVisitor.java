@@ -18,16 +18,18 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SavepointContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleRollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.OracleSetTransactionStatement;
 
 import java.util.Properties;
@@ -60,5 +62,10 @@ public final class OracleTCLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
         return new OracleSavepointStatement();
+    }
+
+    @Override
+    public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
+        return new OracleSetConstraintsStatement();
     }
 }

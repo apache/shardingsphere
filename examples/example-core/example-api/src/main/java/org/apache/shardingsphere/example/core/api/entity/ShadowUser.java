@@ -33,7 +33,7 @@ public class ShadowUser implements Serializable {
     
     private String assistedQueryPwd;
     
-    private boolean shadow;
+    private Boolean shadow;
     
     public int getUserId() {
         return userId;
@@ -75,11 +75,11 @@ public class ShadowUser implements Serializable {
         this.assistedQueryPwd = assistedQueryPwd;
     }
     
-    public boolean isShadow() {
+    public Boolean isShadow() {
         return shadow;
     }
     
-    public void setShadow(final boolean shadow) {
+    public void setShadow(final Boolean shadow) {
         this.shadow = shadow;
     }
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<AlterReadwriteSplittingRuleStatement> {
     
     static {
+        // TODO consider about register once only
         ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
     }
     
@@ -100,7 +101,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     
     private void checkResources(final AlterReadwriteSplittingRuleStatement sqlStatement, final String schemaName) {
         Collection<String> resources = new LinkedHashSet<>();
-        sqlStatement.getReadwriteSplittingRules().stream().filter(each -> Strings.isNullOrEmpty(each.getAutoAwareResource())).forEach(each -> {
+        sqlStatement.getRules().stream().filter(each -> Strings.isNullOrEmpty(each.getAutoAwareResource())).forEach(each -> {
             resources.add(each.getWriteDataSource());
             resources.addAll(each.getReadDataSources());
         });
@@ -111,7 +112,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     }
     
     private void checkLoadBalancer(final AlterReadwriteSplittingRuleStatement sqlStatement) {
-        Collection<String> invalidLoadBalances = sqlStatement.getReadwriteSplittingRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
+        Collection<String> invalidLoadBalances = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidLoadBalances.isEmpty()) {
@@ -120,7 +121,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     }
     
     private Collection<String> getAlteredRuleNames(final AlterReadwriteSplittingRuleStatement sqlStatement) {
-        return sqlStatement.getReadwriteSplittingRules()
+        return sqlStatement.getRules()
                 .stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toSet());
     }
 }

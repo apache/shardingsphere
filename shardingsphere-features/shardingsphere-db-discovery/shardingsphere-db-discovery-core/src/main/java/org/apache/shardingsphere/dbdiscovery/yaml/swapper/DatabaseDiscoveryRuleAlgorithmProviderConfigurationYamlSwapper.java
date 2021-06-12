@@ -77,6 +77,6 @@ public final class DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwappe
     
     @Override
     public int getOrder() {
-        return DatabaseDiscoveryOrder.ALGORITHM_PROVIDER_DB_DISCOVERY_ORDER;
+        return DatabaseDiscoveryOrder.ALGORITHM_PROVIDER_ORDER;
     }
 }

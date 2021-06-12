@@ -32,7 +32,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -91,5 +94,27 @@ public abstract class AbstractShardingSphereDataSourceForFederateTest extends Ab
         }
         dataSource.close();
         dataSource = null;
+    }
+        
+    protected final ResultSet getResultSet(final PreparedStatement preparedStatement, final boolean executeQuery) throws SQLException {
+        ResultSet resultSet;
+        if (executeQuery) {
+            resultSet = preparedStatement.executeQuery();
+        } else {
+            preparedStatement.execute();
+            resultSet = preparedStatement.getResultSet();
+        }
+        return resultSet;
+    }
+    
+    protected final ResultSet getResultSet(final Statement statement, final String sql, final boolean executeQuery) throws SQLException {
+        ResultSet resultSet;
+        if (executeQuery) {
+            resultSet = statement.executeQuery(sql);
+        } else {
+            statement.execute(sql);
+            resultSet = statement.getResultSet();
+        }
+        return resultSet;
     }
 }

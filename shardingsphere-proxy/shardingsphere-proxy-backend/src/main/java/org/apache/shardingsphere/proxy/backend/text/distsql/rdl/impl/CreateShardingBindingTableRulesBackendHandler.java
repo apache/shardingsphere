@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -50,7 +52,8 @@ public final class CreateShardingBindingTableRulesBackendHandler extends RDLBack
         }
         Collection<String> invalidBindingTables = new HashSet<>();
         Collection<String> existLogicTables = getLogicTables(schemaName);
-        for (String bindingTable : ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables()) {
+        Collection<String> bindingTables = ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables();
+        for (String bindingTable : bindingTables) {
             for (String logicTable : Splitter.on(",").splitToList(bindingTable)) {
                 if (!existLogicTables.contains(logicTable.trim())) {
                     invalidBindingTables.add(logicTable);
@@ -60,6 +63,27 @@ public final class CreateShardingBindingTableRulesBackendHandler extends RDLBack
         if (!invalidBindingTables.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(schemaName, invalidBindingTables);
         }
+        bindingTables.addAll(shardingRuleConfig.get().getBindingTableGroups());
+        Collection<String> duplicateBindingTables = bindingTables.stream().filter(distinct()).collect(Collectors.toList());
+        if (!duplicateBindingTables.isEmpty()) {
+            throw new DuplicateBindingTablesException(duplicateBindingTables);
+        }
+    }
+    
+    private Predicate<String> distinct() {
+        Collection<String> tables = new HashSet<>();
+        return table -> notEquals(table, tables);
+    }
+    
+    private boolean notEquals(final String table, final Collection<String> tables) {
+        for (String each : tables) {
+            if (table.equals(each) || (table.length() == each.length() && Splitter.on(",").splitToList(each)
+                    .containsAll(Splitter.on(",").splitToList(table)))) {
+                return true;
+            }
+        }
+        tables.add(table);
+        return false;
     }
     
     @Override

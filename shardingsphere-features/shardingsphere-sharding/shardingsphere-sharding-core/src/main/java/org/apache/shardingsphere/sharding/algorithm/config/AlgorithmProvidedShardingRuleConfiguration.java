@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.sharding.algorithm.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -37,11 +35,9 @@ import java.util.Map;
 /**
  * Algorithm provided sharding rule configuration.
  */
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public final class AlgorithmProvidedShardingRuleConfiguration implements RuleConfiguration {
+public final class AlgorithmProvidedShardingRuleConfiguration implements SchemaRuleConfiguration {
     
     private Collection<ShardingTableRuleConfiguration> tables = new LinkedList<>();
     

@@ -30,16 +30,16 @@ import java.util.Map;
 /**
  * Algorithm provided encrypt rule builder.
  */
-public final class AlgorithmProvidedEncryptRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<EncryptRule, AlgorithmProvidedEncryptRuleConfiguration> {
+public final class AlgorithmProvidedEncryptRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<AlgorithmProvidedEncryptRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final AlgorithmProvidedEncryptRuleConfiguration ruleConfig) {
-        return new EncryptRule(ruleConfig);
+    public EncryptRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final AlgorithmProvidedEncryptRuleConfiguration config) {
+        return new EncryptRule(config);
     }
     
     @Override
     public int getOrder() {
-        return EncryptOrder.ORDER + 1;
+        return EncryptOrder.ALGORITHM_PROVIDER_ORDER;
     }
     
     @Override

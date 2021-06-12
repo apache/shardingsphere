@@ -34,7 +34,7 @@ public final class MySQLRecognizer implements JDBCDriverURLRecognizer {
     
     @Override
     public Collection<String> getURLPrefixes() {
-        return Collections.singletonList("jdbc:mysql:");
+        return Collections.singleton("jdbc:mysql:");
     }
     
     @Override

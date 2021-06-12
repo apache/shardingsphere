@@ -36,7 +36,7 @@ chapter = true
 | ------------------------------- | ------------------------------ |
 | AuthorityProvideAlgorithm       | User authority loading logic   |
 
-| *Implementation Class*                             | *Description*                                                  |
-| -------------------------------------------------- | -------------------------------------------------------------- |
-| NativeAuthorityProviderAlgorithm                   | Persist user authority into the backend database               |
-| AllPrivilegesPermittedAuthorityProviderAlgorithm   | All privileges granted to user by default (No authentication)  |
+| *Implementation Class*                             | *Type*                   | *Description*                                                                                                          |
+| -------------------------------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| NativeAuthorityProviderAlgorithm                   | NATIVE                   | Persist user authority defined in server.yaml into the backend database. An admin user will be created if not existed. |
+| AllPrivilegesPermittedAuthorityProviderAlgorithm   | ALL_PRIVILEGES_PERMITTED | All privileges granted to user by default (No authentication). Will not interact with the actual database.             |

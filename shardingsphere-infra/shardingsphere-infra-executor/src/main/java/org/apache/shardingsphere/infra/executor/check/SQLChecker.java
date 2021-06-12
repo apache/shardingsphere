@@ -29,7 +29,6 @@ import java.util.function.BiPredicate;
 
 /**
  * SQL checker.
- * 
  */
 public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
@@ -55,8 +54,7 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * @return SQL check result
      */
     SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, Grantee grantee, String currentSchema, Map<String, ShardingSphereMetaData> metaDataMap, T rule);
-
-
+    
     /**
      * Check User.
      * @param grantee grantee
@@ -64,14 +62,15 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * @return check result
      */
     boolean check(Grantee grantee, T rule);
-
+    
     /**
-     * Check User.
+     * Check user.
+     * 
      * @param grantee grantee
-     * @param validate password validate
+     * @param validator password validator
      * @param cipher cipher
      * @param rule rule
      * @return check result
      */
-    boolean check(Grantee grantee, BiPredicate<Object, Object> validate, Object cipher, T rule);
+    boolean check(Grantee grantee, BiPredicate<Object, Object> validator, Object cipher, T rule);
 }

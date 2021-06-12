@@ -47,7 +47,7 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         }
         return result;
     }
-
+    
     private static YamlDatabaseDiscoveryDataSourceRuleConfiguration buildDataSourceRuleConfiguration(final String databaseDiscoveryType,
                                                                                                      final DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment) {
         YamlDatabaseDiscoveryDataSourceRuleConfiguration result = new YamlDatabaseDiscoveryDataSourceRuleConfiguration();
@@ -56,14 +56,14 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         result.setProps(databaseDiscoveryRuleSegment.getProps());
         return result;
     }
-
+    
     private static YamlShardingSphereAlgorithmConfiguration buildDiscoveryType(final DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment) {
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(databaseDiscoveryRuleSegment.getDiscoveryTypeName());
         result.setProps(databaseDiscoveryRuleSegment.getProps());
         return result;
     }
-
+    
     private static String getDatabaseDiscoveryType(final String ruleName, final String databaseDiscoveryType) {
         return String.format("%s_%s", ruleName, databaseDiscoveryType);
     }

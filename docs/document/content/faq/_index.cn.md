@@ -14,11 +14,20 @@ chapter = true
 
 > 注意：5.x版本以后，`sql.show`参数调整为`sql-show`。
 
-## 2. 阅读源码时为什么会出现编译错误?
+## 2. 阅读源码时为什么会出现编译错误?IDEA不索引生成的代码？
 
 回答：
 
 ShardingSphere使用lombok实现极简代码。关于更多使用和安装细节，请参考[lombok官网](https://projectlombok.org/download.html)。
+
+`org.apache.shardingsphere.sql.parser.autogen` 包下的代码由 ANTLR 生成，可以执行以下命令快速生成：
+
+```bash
+./mvnw -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests install -T1C 
+```
+
+生成的代码例如 `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` 等 Java 文件由于较大，默认配置的 IDEA 可能不会索引该文件。
+可以调整 IDEA 的属性：`idea.max.intellisense.filesize=10000`
 
 ## 3. 使用Spring命名空间时找不到xsd?
 

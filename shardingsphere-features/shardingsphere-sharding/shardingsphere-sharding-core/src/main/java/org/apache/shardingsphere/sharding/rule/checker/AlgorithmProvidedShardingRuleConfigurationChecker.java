@@ -33,7 +33,7 @@ public final class AlgorithmProvidedShardingRuleConfigurationChecker extends Abs
     
     @Override
     public int getOrder() {
-        return ShardingOrder.ALGORITHM_PROVIDER_SHARDING_ORDER;
+        return ShardingOrder.ALGORITHM_PROVIDER_ORDER;
     }
     
     @Override

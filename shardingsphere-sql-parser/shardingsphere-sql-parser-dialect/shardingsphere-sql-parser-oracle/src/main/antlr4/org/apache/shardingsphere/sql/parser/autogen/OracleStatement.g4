@@ -50,5 +50,6 @@ execute
     | alterSession
     | alterDatabase
     | alterSystem
+    | setConstraints
     ) SEMI_?
     ;

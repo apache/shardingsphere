@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.rule.biulder.ReadwriteSplittingRuleBuilder
-org.apache.shardingsphere.readwritesplitting.rule.biulder.AlgorithmProvidedReadwriteSplittingRuleBuilder
+org.apache.shardingsphere.readwritesplitting.rule.builder.ReadwriteSplittingRuleBuilder
+org.apache.shardingsphere.readwritesplitting.rule.builder.AlgorithmProvidedReadwriteSplittingRuleBuilder

@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Authority rule builder.
  */
-public final class AuthorityRuleBuilder implements KernelRuleBuilder, GlobalRuleBuilder<AuthorityRule, AuthorityRuleConfiguration> {
+public final class AuthorityRuleBuilder implements KernelRuleBuilder, GlobalRuleBuilder<AuthorityRuleConfiguration> {
     
     @Override
     public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> mataDataMap) {

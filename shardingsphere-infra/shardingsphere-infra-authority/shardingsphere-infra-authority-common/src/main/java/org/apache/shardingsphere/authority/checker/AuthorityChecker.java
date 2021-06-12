@@ -39,7 +39,7 @@ import java.util.function.BiPredicate;
  * Authority checker.
  */
 public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
-
+    
     @Override
     public boolean check(final String schemaName, final Grantee grantee, final AuthorityRule authorityRule) {
         if (null == grantee) {
@@ -58,25 +58,21 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         // TODO add error msg
         return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(getPrivilege(sqlStatement))), "")).orElseGet(() -> new SQLCheckResult(false, ""));
     }
-
+    
     @Override
     public boolean check(final Grantee grantee, final AuthorityRule authorityRule) {
-        Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
-        return user.isPresent() ? true : false;
+        return authorityRule.findUser(grantee).isPresent();
     }
-
+    
     @Override
-    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validate, final Object cipher, final AuthorityRule authorityRule) {
+    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final AuthorityRule authorityRule) {
         Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
-        if (!user.isPresent()) {
-            return false;
-        }
-        if (validate.test(user.get(), cipher)) {
-            return true;
+        if (user.isPresent()) {
+            return validator.test(user.get(), cipher);
         }
         return false;
     }
-
+    
     private PrivilegeType getPrivilege(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLShowDatabasesStatement) {
             return PrivilegeType.SHOW_DB;
