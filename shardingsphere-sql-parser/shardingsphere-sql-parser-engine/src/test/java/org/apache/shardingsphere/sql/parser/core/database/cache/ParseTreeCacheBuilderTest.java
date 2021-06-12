@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.parser;
+package org.apache.shardingsphere.sql.parser.core.database.cache;
 
-import lombok.RequiredArgsConstructor;
+import com.google.common.cache.LoadingCache;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.junit.Test;
 
-/**
- * Parse AST node.
- */
-@RequiredArgsConstructor
-public final class ParseASTNode implements ASTNode {
+import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.assertThat;
+
+public final class ParseTreeCacheBuilderTest {
     
-    private final ParseTree parseTree;
-    
-    /**
-     * Get root node.
-     * 
-     * @return root node
-     */
-    public ParseTree getRootNode() {
-        return parseTree.getChild(0);
+    @Test
+    public void assertParseTreeCacheBuild() {
+        LoadingCache<String, ParseTree> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL");
+        assertThat(cache, isA(LoadingCache.class));
     }
 }

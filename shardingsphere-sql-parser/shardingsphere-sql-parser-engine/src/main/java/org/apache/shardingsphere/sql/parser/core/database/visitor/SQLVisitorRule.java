@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.visitor;
+package org.apache.shardingsphere.sql.parser.core.database.visitor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

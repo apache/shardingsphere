@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sql.parser.api;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
-import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorRule;
+import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorFactory;
+import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorRule;
 
 import java.util.Properties;
 

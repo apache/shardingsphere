@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.parser;
+package org.apache.shardingsphere.sql.parser.core.database.parser;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;

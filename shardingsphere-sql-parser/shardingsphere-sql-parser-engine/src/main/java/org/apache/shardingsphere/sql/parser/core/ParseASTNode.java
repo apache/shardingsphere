@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.cache;
+package org.apache.shardingsphere.sql.parser.core;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.LoadingCache;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Parse tree cache builder.
+ * Parse AST node.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParseTreeCacheBuilder {
+@RequiredArgsConstructor
+public final class ParseASTNode implements ASTNode {
+    
+    private final ParseTree parseTree;
     
     /**
-     * Build parse tree cache.
+     * Get root node.
      * 
-     * @param option cache option
-     * @param databaseType database type
-     * @return built parse tree cache
+     * @return root node
      */
-    public static LoadingCache<String, ParseTree> build(final CacheOption option, final String databaseType) {
-        return CacheBuilder.newBuilder().softValues()
-                .initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).concurrencyLevel(option.getConcurrencyLevel()).build(new ParseTreeCacheLoader(databaseType));
+    public ParseTree getRootNode() {
+        return parseTree.getChild(0);
     }
 }
