@@ -32,9 +32,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Readwrite-splitting rule configuration checker test.
- */
 public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     static {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
