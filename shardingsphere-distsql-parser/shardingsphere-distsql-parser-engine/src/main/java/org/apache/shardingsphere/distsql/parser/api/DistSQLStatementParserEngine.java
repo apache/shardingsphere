@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.distsql.parser.core.rule.DistRuleSQLParserFactory;
 import org.apache.shardingsphere.distsql.parser.core.standard.DistSQLParserFactory;
 import org.apache.shardingsphere.distsql.parser.core.standard.DistSQLVisitor;
-import org.apache.shardingsphere.distsql.parser.spi.DistRuleSQLParserFacade;
+import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLParserFacade;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -37,10 +37,10 @@ import java.util.ServiceLoader;
  */
 public final class DistSQLStatementParserEngine {
     
-    private static final Collection<DistRuleSQLParserFacade> RULE_PARSER_FACADES = new LinkedList<>();
+    private static final Collection<FeatureTypedSQLParserFacade> RULE_PARSER_FACADES = new LinkedList<>();
     
     static {
-        for (DistRuleSQLParserFacade each : ServiceLoader.load(DistRuleSQLParserFacade.class)) {
+        for (FeatureTypedSQLParserFacade each : ServiceLoader.load(FeatureTypedSQLParserFacade.class)) {
             RULE_PARSER_FACADES.add(each);
         }
     }
@@ -74,7 +74,7 @@ public final class DistSQLStatementParserEngine {
     }
     
     private ParseASTNode parseFromRuleParsers(final String sql) {
-        for (DistRuleSQLParserFacade each : RULE_PARSER_FACADES) {
+        for (FeatureTypedSQLParserFacade each : RULE_PARSER_FACADES) {
             try {
                 return (ParseASTNode) DistRuleSQLParserFactory.newInstance(sql, each).parse();
             } catch (final ParseCancellationException ignored) {
