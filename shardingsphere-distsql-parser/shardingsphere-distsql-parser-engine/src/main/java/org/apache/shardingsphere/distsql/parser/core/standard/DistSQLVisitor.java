@@ -15,23 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core;
+package org.apache.shardingsphere.distsql.parser.core.standard;
 
 import com.google.common.base.Joiner;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterDatabaseDiscoveryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterEncryptRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReadwriteSplittingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingBindingTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingBroadcastTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.BindTableRulesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CheckScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateDatabaseDiscoveryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateEncryptRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReadwriteSplittingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DatabaseDiscoveryRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropDatabaseDiscoveryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropEncryptRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReadwriteSplittingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingBindingTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingBroadcastTableRulesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DynamicReadwriteSplittingRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.EncryptRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.FunctionDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReadwriteSplittingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ResetScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingTableRuleDefinitionContext;
@@ -41,34 +63,13 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowScalingJobListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowScalingJobStatusContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StartScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StaticReadwriteSplittingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StopScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingTableRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingBindingTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingBroadcastTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReadwriteSplittingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReadwriteSplittingRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StaticReadwriteSplittingRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DynamicReadwriteSplittingRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReadwriteSplittingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingTableRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingBindingTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingBroadcastTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateDatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DatabaseDiscoveryRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterDatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropDatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateEncryptRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.EncryptRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ColumnDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterEncryptRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropEncryptRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReadwriteSplittingRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingBindingTableRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertiesContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
@@ -97,21 +98,22 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -125,15 +127,11 @@ import java.util.stream.Collectors;
 /**
  * Dist SQL visitor.
  */
-public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
+public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitAddResource(final AddResourceContext ctx) {
-        Collection<DataSourceSegment> connectionInfos = new LinkedList<>();
-        for (DataSourceContext each : ctx.dataSource()) {
-            connectionInfos.add((DataSourceSegment) visit(each));
-        }
-        return new AddResourceStatement(connectionInfos);
+        return new AddResourceStatement(ctx.dataSource().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -224,7 +222,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     public ASTNode visitStaticReadwriteSplittingRuleDefinition(final StaticReadwriteSplittingRuleDefinitionContext ctx) {
         ReadwriteSplittingRuleSegment result = new ReadwriteSplittingRuleSegment();
         result.setWriteDataSource(ctx.writeResourceName().getText());
-        result.setReadDataSources(ctx.resourceName().stream().map(each -> each.getText()).collect(Collectors.toList()));
+        result.setReadDataSources(ctx.resourceName().stream().map(RuleContext::getText).collect(Collectors.toList()));
         return result;
     }
     
@@ -237,8 +235,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitAlterReadwriteSplittingRule(final AlterReadwriteSplittingRuleContext ctx) {
-        return new AlterReadwriteSplittingRuleStatement(ctx.readwriteSplittingRuleDefinition()
-                .stream().map(each -> (ReadwriteSplittingRuleSegment) visit(each)).collect(Collectors.toList()));
+        return new AlterReadwriteSplittingRuleStatement(ctx.readwriteSplittingRuleDefinition().stream().map(each -> (ReadwriteSplittingRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
