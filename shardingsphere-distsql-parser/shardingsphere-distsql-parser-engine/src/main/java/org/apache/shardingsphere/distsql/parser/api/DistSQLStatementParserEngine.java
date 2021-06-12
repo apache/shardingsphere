@@ -38,16 +38,19 @@ public final class DistSQLStatementParserEngine {
      * @return AST node
      */
     public SQLStatement parse(final String sql) {
-        SQLParser sqlParser = DistSQLParserFactory.newInstance(sql);
-        ParseASTNode parseASTNode;
-        try {
-            parseASTNode = (ParseASTNode) sqlParser.parse();
-        } catch (final ParseCancellationException ex) {
-            throw new SQLParsingException("You have an error in your SQL syntax");
-        }
+        ParseASTNode parseASTNode = parseToASTNode(sql);
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
         return (SQLStatement) new DistSQLVisitor().visit(parseASTNode.getRootNode());
+    }
+    
+    private ParseASTNode parseToASTNode(final String sql) {
+        SQLParser sqlParser = DistSQLParserFactory.newInstance(sql);
+        try {
+            return (ParseASTNode) sqlParser.parse();
+        } catch (final ParseCancellationException ex) {
+            throw new SQLParsingException("You have an error in your SQL syntax");
+        }
     }
 }
