@@ -51,5 +51,6 @@ execute
     | alterDatabase
     | alterSystem
     | setConstraints
+    | analyze
     ) SEMI_?
     ;

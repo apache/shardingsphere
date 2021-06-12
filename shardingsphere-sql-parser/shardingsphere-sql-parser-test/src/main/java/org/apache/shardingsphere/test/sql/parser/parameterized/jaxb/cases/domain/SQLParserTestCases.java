@@ -57,6 +57,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSynonymStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
@@ -317,6 +318,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-sequence")
     private final List<DropSequenceStatementTestCase> dropSequenceTestCase = new LinkedList<>();
     
+    @XmlElement(name = "analyze")
+    private final List<AnalyzeStatementTestCase> analyzeTestCase = new LinkedList<>();
+
     /**
      * Get all SQL parser test cases.
      * 
@@ -394,6 +398,7 @@ public final class SQLParserTestCases {
         putAll(createSequenceTestCase, result);
         putAll(alterSequenceTestCase, result);
         putAll(dropSequenceTestCase, result);
+        putAll(analyzeTestCase, result);
         return result;
     }
     
