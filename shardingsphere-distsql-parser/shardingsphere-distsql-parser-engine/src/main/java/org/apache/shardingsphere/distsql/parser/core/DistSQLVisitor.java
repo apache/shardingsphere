@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.standard;
+package org.apache.shardingsphere.distsql.parser.core;
 
 import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.ParseTree;
