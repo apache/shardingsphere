@@ -24,7 +24,7 @@ shardingColumn:
     SHARDING_COLUMN=columnName
 
 shardingAlgorithm:
-		TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties] )] )
+    TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties] )] )
 
 keyGenerateStrategy:
     GENERATED_KEY(COLUMN=columnName,strategyDefinition)
@@ -68,7 +68,7 @@ DROP SHARDING BROADCAST TABLE RULES
 ```
 - `ALTER` 会使用新的配置直接覆盖数据库内的广播表配置
 
-## Example
+## 示例
 
 ### Sharding Table Rule
 

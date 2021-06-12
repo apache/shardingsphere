@@ -20,20 +20,20 @@ DROP RESOURCE dataSourceName [, dataSourceName] ...
 - `DROP RESOURCE` 只会删除逻辑资源，不会删除真实的数据源
 - 被规则引用的资源将无法被删除
 
-## Example
+## 示例
 
 ```sql
 ADD RESOURCE resource_0 (
-	HOST=127.0.0.1,
-	PORT=3306,
-	DB=db0,
-	USER=root,
-	PASSWORD=root
+    HOST=127.0.0.1,
+    PORT=3306,
+    DB=db0,
+    USER=root,
+    PASSWORD=root
 ),resource_1 (
-	HOST=127.0.0.1,
-	PORT=3306,
-	DB=db1,
-	USER=root
+    HOST=127.0.0.1,
+    PORT=3306,
+    DB=db1,
+    USER=root
 );
 
 DROP RESOURCE resource_0, resource_1;

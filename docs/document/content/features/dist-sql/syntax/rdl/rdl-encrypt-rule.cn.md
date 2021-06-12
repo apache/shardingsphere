@@ -19,7 +19,7 @@ columnDefinition:
     (NAME=columnName [, PLAIN=plainColumnName] , CIPHER=cipherColumnName, encryptAlgorithm)
 
 encryptAlgorithm:
-		TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] )
+    TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] )
 
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
@@ -31,7 +31,7 @@ algorithmProperty:
 - `encryptAlgorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt/)
 - 重复的 `tableName` 将无法被创建
 
-## Example
+## 示例
 
 ```sql
 CREATE ENCRYPT RULE t_encrypt (
