@@ -32,14 +32,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Database discovery rule configuration checker test.
- */
 public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
+    
     static {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
-
+    
     @Test
     public void assertCheckPass() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = mock(DatabaseDiscoveryRuleConfiguration.class);
@@ -51,7 +49,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
         assertThat(checker, instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
     }
-
+    
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = mock(DatabaseDiscoveryRuleConfiguration.class);

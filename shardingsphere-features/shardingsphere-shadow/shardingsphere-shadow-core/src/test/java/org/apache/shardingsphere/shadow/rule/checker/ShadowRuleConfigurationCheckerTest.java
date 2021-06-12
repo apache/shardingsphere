@@ -31,15 +31,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Shadow rule configuration checker test.
- */
 public final class ShadowRuleConfigurationCheckerTest {
-
+    
     static {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
-
+    
     @Test
     public void assertCheckPass() {
         ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
@@ -51,7 +48,7 @@ public final class ShadowRuleConfigurationCheckerTest {
         assertThat(checker, instanceOf(ShadowRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
     }
-
+    
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
         ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
@@ -63,5 +60,4 @@ public final class ShadowRuleConfigurationCheckerTest {
         assertThat(checker, instanceOf(ShadowRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
     }
-
 }
