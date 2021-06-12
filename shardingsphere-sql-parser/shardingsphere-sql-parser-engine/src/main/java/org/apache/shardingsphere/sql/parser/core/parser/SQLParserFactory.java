@@ -28,6 +28,7 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 import java.nio.CharBuffer;
@@ -46,7 +47,7 @@ public final class SQLParserFactory {
      * @return SQL parser
      */
     public static SQLParser newInstance(final String databaseType, final String sql) {
-        SQLParserFacade sqlParserFacade = SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseType);
+        DatabaseTypedSQLParserFacade sqlParserFacade = SQLParserFacadeRegistry.getInstance().getSQLParserFacade(databaseType);
         return createSQLParser(sql, sqlParserFacade);
     }
     
