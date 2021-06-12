@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.List;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 
