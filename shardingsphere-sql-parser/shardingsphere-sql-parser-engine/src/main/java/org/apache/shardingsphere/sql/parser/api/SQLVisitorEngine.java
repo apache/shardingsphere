@@ -34,7 +34,7 @@ public final class SQLVisitorEngine {
     private final String databaseType;
     
     private final String visitorType;
-
+    
     private final Properties props;
     
     /**
