@@ -19,8 +19,9 @@ package org.apache.shardingsphere.distsql.parser.api;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.apache.shardingsphere.distsql.parser.core.DistSQLParserFactory;
-import org.apache.shardingsphere.distsql.parser.core.DistSQLVisitor;
+import org.apache.shardingsphere.distsql.parser.core.feature.FeatureTypedParseASTNode;
+import org.apache.shardingsphere.distsql.parser.core.standard.DistSQLParserFactory;
+import org.apache.shardingsphere.distsql.parser.core.standard.DistSQLVisitor;
 import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLParserFacade;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
@@ -52,16 +53,13 @@ public final class DistSQLStatementParserEngine {
      * @return AST node
      */
     public SQLStatement parse(final String sql) {
-        ParseASTNode parseASTNode;
         try {
-            parseASTNode = parseFromStandardParser(sql);
+            ParseASTNode parseASTNode = parseFromStandardParser(sql);
+            return getSQLStatement(sql, parseASTNode, new DistSQLVisitor());
         } catch (final ParseCancellationException ex) {
-            parseASTNode = parseFromFeatureTypedParsers(sql);
+            FeatureTypedParseASTNode featureTypedParseASTNode = parseFromFeatureTypedParsers(sql);
+            return getSQLStatement(sql, featureTypedParseASTNode.getParseASTNode(), new DistSQLVisitor());
         }
-        if (parseASTNode.getRootNode() instanceof ErrorNode) {
-            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
-        }
-        return (SQLStatement) new DistSQLVisitor().visit(parseASTNode.getRootNode());
     }
     
     private ParseASTNode parseFromStandardParser(final String sql) {
@@ -73,13 +71,21 @@ public final class DistSQLStatementParserEngine {
         }
     }
     
-    private ParseASTNode parseFromFeatureTypedParsers(final String sql) {
+    private FeatureTypedParseASTNode parseFromFeatureTypedParsers(final String sql) {
         for (FeatureTypedSQLParserFacade each : FEATURE_TYPED_PARSER_FACADES) {
             try {
-                return (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
+                ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
+                return new FeatureTypedParseASTNode(each.getFeatureType(), parseASTNode);
             } catch (final ParseCancellationException ignored) {
             }
         }
         throw new SQLParsingException("You have an error in your SQL syntax.");
+    }
+    
+    private SQLStatement getSQLStatement(final String sql, final ParseASTNode parseASTNode, final DistSQLVisitor visitor) {
+        if (parseASTNode.getRootNode() instanceof ErrorNode) {
+            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
+        }
+        return (SQLStatement) visitor.visit(parseASTNode.getRootNode());
     }
 }
