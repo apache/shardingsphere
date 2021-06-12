@@ -1,6 +1,6 @@
 +++
-title = "数据分片"
+title = "Sharding"
 weight = 2
 +++
 
-# TODO
+## TODO
