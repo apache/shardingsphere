@@ -31,7 +31,7 @@ public final class OracleRecognizerTest {
     
     @Test
     public void assertGetURLPrefixes() {
-        assertThat(recognizer.getURLPrefixes(), is(Collections.singletonList("jdbc:oracle:")));
+        assertThat(recognizer.getURLPrefixes(), is(Collections.singleton("jdbc:oracle:")));
     }
     
     @Test

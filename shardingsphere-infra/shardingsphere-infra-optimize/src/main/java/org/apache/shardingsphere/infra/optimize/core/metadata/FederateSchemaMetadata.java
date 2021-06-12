@@ -109,4 +109,13 @@ public final class FederateSchemaMetadata {
     public void renew(final String tableName, final TableMetaData metaData) {
         tables.put(tableName, new FederateTableMetadata(tableName, metaData));
     }
+    
+    /**
+     * Remove.
+     * @param tableName table name
+     */
+    @Synchronized
+    public void remove(final String tableName) {
+        tables.remove(tableName);
+    }
 }

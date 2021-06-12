@@ -30,7 +30,7 @@ public final class P6SpyDriverRecognizerTest {
     
     @Test
     public void getURLPrefixes() {
-        assertThat(recognizer.getURLPrefixes(), is(Collections.singletonList("jdbc:p6spy:")));
+        assertThat(recognizer.getURLPrefixes(), is(Collections.singleton("jdbc:p6spy:")));
     }
     
     @Test

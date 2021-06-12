@@ -128,7 +128,7 @@ clusterName
     ;
 
 indexName
-    : identifier
+    : (owner DOT_)? name
     ;
 
 constraintName
@@ -256,11 +256,11 @@ partitionSetName
     ;
 
 partitionKeyValue
-    : NUMBER_ | dateTimeLiterals
+    : INTEGER_ | dateTimeLiterals
     ;
 
 subpartitionKeyValue
-    : NUMBER_ | dateTimeLiterals
+    : INTEGER_ | dateTimeLiterals
     ;
 
 zonemapName

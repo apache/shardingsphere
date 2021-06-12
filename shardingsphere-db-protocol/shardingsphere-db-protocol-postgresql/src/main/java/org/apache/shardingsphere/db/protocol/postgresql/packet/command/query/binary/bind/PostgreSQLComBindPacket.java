@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
@@ -48,7 +49,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     private final List<Object> parameters;
     
-    private final boolean binaryRowData;
+    private final List<Integer> resultFormatCodes;
     
     public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
         payload.readInt4();
@@ -62,7 +63,11 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
         sql = null == binaryStatement ? null : binaryStatement.getSql();
         parameters = null == sql ? Collections.emptyList() : getParameters(payload, parameterFormats, binaryStatement.getColumnTypes());
-        binaryRowData = isBinaryRowData(payload);
+        int resultFormatsLength = payload.readInt2();
+        resultFormatCodes = new ArrayList<>(resultFormatsLength);
+        for (int i = 0; i < resultFormatsLength; i++) {
+            resultFormatCodes.add(payload.readInt2());
+        }
     }
     
     private List<Object> getParameters(final PostgreSQLPacketPayload payload, final List<Integer> parameterFormats, final List<PostgreSQLBinaryColumnType> columnTypes) {
@@ -139,16 +144,20 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         return binaryProtocolValue.read(payload, parameterValueLength);
     }
     
-    private boolean isBinaryRowData(final PostgreSQLPacketPayload payload) {
-        int resultFormatsLength = payload.readInt2();
-        if (0 == resultFormatsLength) {
-            return false;
+    /**
+     * Get result format by column index.
+     *
+     * @param columnIndex column index
+     * @return result format
+     */
+    public PostgreSQLColumnFormat getResultFormatByColumnIndex(final int columnIndex) {
+        if (resultFormatCodes.isEmpty()) {
+            return PostgreSQLColumnFormat.TEXT;
         }
-        List<Integer> resultFormats = new ArrayList<>(resultFormatsLength);
-        for (int i = 0; i < resultFormatsLength; i++) {
-            resultFormats.add(payload.readInt2());
+        if (1 == resultFormatCodes.size()) {
+            return PostgreSQLColumnFormat.valueOf(resultFormatCodes.get(0));
         }
-        return resultFormats.stream().allMatch(each -> 1 == each);
+        return PostgreSQLColumnFormat.valueOf(resultFormatCodes.get(columnIndex));
     }
     
     @Override

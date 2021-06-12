@@ -19,17 +19,16 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Create sharding broadcast table rules statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateShardingBroadcastTableRulesStatement extends CreateRDLStatement {
+public final class CreateShardingBroadcastTableRulesStatement extends CreateRuleStatement {
     
-    private final Collection<String> tables = new LinkedList<>();
+    private final Collection<String> tables;
 }

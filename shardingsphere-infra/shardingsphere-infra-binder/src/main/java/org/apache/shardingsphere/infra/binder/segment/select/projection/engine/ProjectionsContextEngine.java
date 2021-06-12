@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;

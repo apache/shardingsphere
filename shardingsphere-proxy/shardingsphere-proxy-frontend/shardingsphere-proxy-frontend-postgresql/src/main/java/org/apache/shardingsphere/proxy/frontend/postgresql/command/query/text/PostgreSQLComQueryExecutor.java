@@ -48,7 +48,7 @@ import java.util.LinkedList;
  * Command query executor for PostgreSQL.
  */
 public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
-
+    
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
     @Getter
@@ -62,10 +62,10 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         ResponseHeader responseHeader = textProtocolBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
-            return Collections.singletonList(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
+            return Collections.singleton(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
         }
         responseType = ResponseType.UPDATE;
-        return Collections.singletonList(createUpdatePacket((UpdateResponseHeader) responseHeader));
+        return Collections.singleton(createUpdatePacket((UpdateResponseHeader) responseHeader));
     }
     
     private PostgreSQLRowDescriptionPacket createRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {

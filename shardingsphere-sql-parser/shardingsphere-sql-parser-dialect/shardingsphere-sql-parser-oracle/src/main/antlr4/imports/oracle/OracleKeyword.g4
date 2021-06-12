@@ -2286,3 +2286,27 @@ FINAL
 PREV
     : P R E V
     ;
+
+CHAINED
+    : C H A I N E D
+    ;
+
+STATISTICS
+    : S T A T I S T I C S
+    ;
+
+DANGLING
+    : D A N G L I N G
+    ;
+
+STRUCTURE
+    : S T R U C T U R E
+    ;
+
+FAST
+    : F A S T
+    ;
+
+COMPLETE
+    : C O M P L E T E
+    ;
