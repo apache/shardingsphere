@@ -58,5 +58,4 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
         assertThat(checker, instanceOf(AlgorithmProvidedEncryptRuleConfigurationChecker.class));
         checker.check("test", ruleConfig);
     }
-
 }
