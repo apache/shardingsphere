@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.distsql.parser.api;
 
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.distsql.parser.core.DistSQLParserFactory;
@@ -41,31 +38,16 @@ public final class DistSQLStatementParserEngine {
      * @return AST node
      */
     public SQLStatement parse(final String sql) {
-        ParseASTNode parseASTNode = twoPhaseParse(sql);
+        SQLParser sqlParser = DistSQLParserFactory.newInstance(sql);
+        ParseASTNode parseASTNode;
+        try {
+            parseASTNode = (ParseASTNode) sqlParser.parse();
+        } catch (final ParseCancellationException ex) {
+            throw new SQLParsingException("You have an error in your SQL syntax");
+        }
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
         return (SQLStatement) new DistSQLVisitor().visit(parseASTNode.getRootNode());
-    }
-    
-    private ParseASTNode twoPhaseParse(final String sql) {
-        SQLParser sqlParser = DistSQLParserFactory.newInstance(sql);
-        try {
-            setPredictionMode((Parser) sqlParser, PredictionMode.SLL);
-            return (ParseASTNode) sqlParser.parse();
-        } catch (final ParseCancellationException ex) {
-            ((Parser) sqlParser).reset();
-            setPredictionMode((Parser) sqlParser, PredictionMode.LL);
-            try {
-                return (ParseASTNode) sqlParser.parse();
-            } catch (final ParseCancellationException e) {
-                throw new SQLParsingException("You have an error in your SQL syntax");
-            }
-        }
-    }
-    
-    private void setPredictionMode(final Parser sqlParser, final PredictionMode mode) {
-        sqlParser.setErrorHandler(new BailErrorStrategy());
-        sqlParser.getInterpreter().setPredictionMode(mode);
     }
 }
