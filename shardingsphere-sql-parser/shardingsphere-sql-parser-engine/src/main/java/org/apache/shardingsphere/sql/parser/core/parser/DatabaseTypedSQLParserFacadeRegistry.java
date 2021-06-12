@@ -18,34 +18,26 @@
 package org.apache.shardingsphere.sql.parser.core.parser;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
  * Database type based SQL parser facade registry.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypedSQLParserFacadeRegistry {
     
-    private static final DatabaseTypedSQLParserFacadeRegistry INSTANCE = new DatabaseTypedSQLParserFacadeRegistry();
+    private static final Map<String, DatabaseTypedSQLParserFacade> FACADES = new HashMap<>();
     
-    private final Map<String, DatabaseTypedSQLParserFacade> facades = new LinkedHashMap<>();
-    
-    private DatabaseTypedSQLParserFacadeRegistry() {
+    static {
         for (DatabaseTypedSQLParserFacade each : ServiceLoader.load(DatabaseTypedSQLParserFacade.class)) {
-            facades.put(each.getDatabaseType(), each);
+            FACADES.put(each.getDatabaseType(), each);
         }
-    }
-    
-    /**
-     * Get instance.
-     *
-     * @return instance
-     */
-    public static DatabaseTypedSQLParserFacadeRegistry getInstance() {
-        return INSTANCE;
     }
     
     /**
@@ -54,8 +46,8 @@ public final class DatabaseTypedSQLParserFacadeRegistry {
      * @param databaseType database type
      * @return database type based SQL parser facade
      */
-    public DatabaseTypedSQLParserFacade getFacade(final String databaseType) {
-        Preconditions.checkArgument(facades.containsKey(databaseType), "Cannot support database type '%s'", databaseType);
-        return facades.get(databaseType);
+    public static DatabaseTypedSQLParserFacade getFacade(final String databaseType) {
+        Preconditions.checkArgument(FACADES.containsKey(databaseType), "Cannot support database type '%s'", databaseType);
+        return FACADES.get(databaseType);
     }
 }
