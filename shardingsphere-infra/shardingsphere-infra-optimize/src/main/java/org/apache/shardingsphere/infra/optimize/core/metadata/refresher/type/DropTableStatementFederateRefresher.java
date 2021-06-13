@@ -34,7 +34,7 @@ import java.util.Collection;
 public class DropTableStatementFederateRefresher implements FederateRefresher<DropTableStatement> {
 
     @Override
-    public void refresh(FederateSchemaMetadata schema, Collection<String> routeDataSourceNames, DropTableStatement sqlStatement, SchemaBuilderMaterials materials) throws SQLException {
+    public void refresh(final FederateSchemaMetadata schema, final Collection<String> routeDataSourceNames, final DropTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
         for (SimpleTableSegment each : sqlStatement.getTables()) {
             ShardingSphereEventBus.getInstance().post(new DropTableEvent(each.getTableName().getIdentifier().getValue()));
