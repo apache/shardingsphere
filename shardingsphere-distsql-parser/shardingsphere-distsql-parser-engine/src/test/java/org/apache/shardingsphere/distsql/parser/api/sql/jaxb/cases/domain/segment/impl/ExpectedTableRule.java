@@ -31,21 +31,21 @@ import java.util.List;
 @Setter
 public final class ExpectedTableRule extends SQLParserTestCase {
     
-    @XmlElement
-    private List<ExpectedTableName> logicTable;
+    @XmlElement(name = "table")
+    private String logicTable;
 
-    @XmlElement
-    private List<ExpectedDataSourceName> dataSource;
+    @XmlElement(name = "data-source")
+    private List<String> dataSources;
 
-    @XmlElement
-    private ExceptedColumn tableStrategyColumn;
+    @XmlElement(name = "table-strategy-column")
+    private String tableStrategyColumn;
 
-    @XmlElement
-    private ExceptedColumn keyGenerateStrategyColumn;
+    @XmlElement(name = "key-generate-strategy-column")
+    private String keyGenerateStrategyColumn;
 
-    @XmlElement
+    @XmlElement(name = "table-strategy")
     private ExpectedFunction tableStrategy;
 
-    @XmlElement
+    @XmlElement(name = "key-generate-strategy")
     private ExpectedFunction keyGenerateStrategy;
 }

@@ -20,12 +20,10 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segme
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.ExceptedLoadBalancer;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.ExpectedProperties;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.ExpectedDataSourceName;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,17 +33,17 @@ public final class ExceptedReadwriteSplittingRule extends AbstractExpectedIdenti
     private String name;
 
     @XmlElement(name = "auto-aware-resource")
-    private ExpectedDataSourceName autoAwareResource;
+    private String autoAwareResource;
 
-    @XmlElement(name = "write-data-resource")
-    private ExpectedDataSourceName writeDataSource;
+    @XmlElement(name = "write-data-source")
+    private String writeDataSource;
 
     @XmlElement(name = "read-data-source")
-    private Collection<ExpectedDataSourceName> readDataSources;
+    private List<String> readDataSources;
 
     @XmlElement(name = "load-balancer")
-    private ExceptedLoadBalancer loadBalancer;
+    private String loadBalancer;
 
-    @XmlElement
+    @XmlElement(name = "properties")
     private ExpectedProperties props;
 }

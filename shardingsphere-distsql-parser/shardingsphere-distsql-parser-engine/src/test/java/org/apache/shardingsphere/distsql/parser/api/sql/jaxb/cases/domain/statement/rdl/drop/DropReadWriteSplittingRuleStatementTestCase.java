@@ -19,7 +19,6 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.state
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.rdl.ExceptedReadwriteSplittingRule;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -27,12 +26,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Add resource statement test case.
+ * Drop read-write splitting rule statement test case.
  */
 @Getter
 @Setter
 public final class DropReadWriteSplittingRuleStatementTestCase extends SQLParserTestCase {
 
-    @XmlElement(name = "read-write-splitting")
-    private List<ExceptedReadwriteSplittingRule> readwriteSplittingRules = new LinkedList<>();
+    @XmlElement(name = "read-write-splitting-rule")
+    private List<String> readwriteSplittingRules = new LinkedList<>();
 }

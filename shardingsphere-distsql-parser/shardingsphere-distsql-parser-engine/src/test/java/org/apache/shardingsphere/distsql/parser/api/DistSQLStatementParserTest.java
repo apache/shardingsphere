@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.api;
 
-
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.SQLCaseAssertContext;
+import org.apache.shardingsphere.distsql.parser.api.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLStatementAssert;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.sql.loader.SQLCasesLoader;
@@ -32,7 +31,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
@@ -55,7 +55,7 @@ public final class DistSQLStatementParserTest {
     }
 
     @Test
-    public final void assertSupportedSQL() {
+    public void assertDistSQL() {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId);
         SQLStatement actual = parseSQLStatement(sql);

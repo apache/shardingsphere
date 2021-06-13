@@ -19,7 +19,6 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.state
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.rdl.ExpectedDatabaseDiscoveryRule;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -27,12 +26,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Add resource statement test case.
+ * Drop database discovery rule statement test case.
  */
 @Getter
 @Setter
 public final class DropDataBaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
 
-    @XmlElement(name = "database-discovery")
-    private final List<ExpectedDatabaseDiscoveryRule> databaseDiscoveryRules = new LinkedList<>();
+    @XmlElement(name = "rule-name")
+    private final List<String> databaseDiscoveryRules = new LinkedList<>();
 }

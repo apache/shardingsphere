@@ -30,7 +30,7 @@ public final class ExpectedFunction extends AbstractExpectedIdentifierSQLSegment
     @XmlElement
     private String algorithmName;
     
-    @XmlElement
+    @XmlElement(name = "properties")
     private ExpectedProperties algorithmProps;
     
     

@@ -26,6 +26,9 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Create sharding table rule statement test case.
+ */
 @Getter
 @Setter
 public final class CreateShardingTableRuleStatementTestCase extends SQLParserTestCase {

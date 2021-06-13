@@ -19,9 +19,9 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.state
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.api.asserts.rdl.RDLStatementAssert;
-import org.apache.shardingsphere.distsql.parser.api.asserts.rql.RQLStatementAssert;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.SQLCaseAssertContext;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.RDLStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rql.RQLStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;

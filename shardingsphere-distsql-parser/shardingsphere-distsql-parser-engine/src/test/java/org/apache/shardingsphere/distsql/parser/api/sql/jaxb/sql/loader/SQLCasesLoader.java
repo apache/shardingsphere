@@ -25,8 +25,15 @@ import org.apache.shardingsphere.distsql.parser.api.sql.loader.TestCaseFileLoade
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,7 +53,7 @@ public final class SQLCasesLoader {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         return file.isFile() ? loadFromJar(file, path) : loadFromTargetDirectory(path);
     }
-    
+
     private Map<String, SQLCase> loadFromJar(final File file, final String path) throws JAXBException {
         Map<String, SQLCase> result = new TreeMap<>();
         for (String each : TestCaseFileLoader.loadFileNamesFromJar(file, path)) {
@@ -75,8 +82,6 @@ public final class SQLCasesLoader {
      * Get SQL.
      *
      * @param sqlCaseId SQL case ID
-     * @param sqlCaseType SQL case type
-     * @param parameters  SQL parameters
      * @return SQL
      */
     public String getSQL(final String sqlCaseId) {

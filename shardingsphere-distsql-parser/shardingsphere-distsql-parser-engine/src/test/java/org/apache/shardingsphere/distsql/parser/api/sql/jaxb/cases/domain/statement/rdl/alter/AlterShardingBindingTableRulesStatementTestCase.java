@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.state
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.ExpectedTableName;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.rdl.ExpectedShardingBindingTableRule;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -27,12 +27,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Add resource statement test case.
+ * Alter sharding binding table rule statement test case.
  */
 @Getter
 @Setter
 public final class AlterShardingBindingTableRulesStatementTestCase extends SQLParserTestCase {
 
-    @XmlElement(name = "table")
-    private final List<ExpectedTableName> tables = new LinkedList<>();
+    @XmlElement(name = "rules")
+    private final List<ExpectedShardingBindingTableRule> rules = new LinkedList<>();
 }

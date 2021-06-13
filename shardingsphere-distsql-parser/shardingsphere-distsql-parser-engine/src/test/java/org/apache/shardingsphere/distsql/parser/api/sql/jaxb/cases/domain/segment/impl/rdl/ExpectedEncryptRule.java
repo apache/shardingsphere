@@ -20,24 +20,18 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segme
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.ExpectedFunction;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 @Getter
 @Setter
 public final class ExpectedEncryptRule extends AbstractExpectedIdentifierSQLSegment {
 
-    @XmlElement
-    private String name;
+    @XmlElement(name = "table")
+    private String tableName;
 
-    @XmlElement(name = "plain-column")
-    private String plainColumn;
-
-    @XmlElement(name = "cipher-column")
-    private String cipherColumn;
-
-    @XmlElement
-    private ExpectedFunction encryptor;
+    @XmlElement(name = "column")
+    private List<ExpectedEncryptColumn> columns;
 
 }

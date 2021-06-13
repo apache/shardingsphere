@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Add resource statement test case.
+ * Show sharding broadcast table rules statement test case.
  */
 @Getter
 @Setter

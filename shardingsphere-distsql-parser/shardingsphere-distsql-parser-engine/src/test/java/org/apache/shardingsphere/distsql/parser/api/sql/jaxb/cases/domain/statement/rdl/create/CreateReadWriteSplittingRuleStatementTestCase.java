@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Add resource statement test case.
+ * Create read-write splitting rule statement test case.
  */
 @Getter
 @Setter

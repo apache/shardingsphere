@@ -19,17 +19,15 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segme
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 @Getter
 @Setter
-public final class ExpectedProperties extends AbstractExpectedDelimiterSQLSegment {
-    
+public final class ExpectedProperties extends AbstractExpectedIdentifierSQLSegment {
+
     @XmlElement
-    private String key;
-    
-    @XmlElement
-    private String value;
+    private List<ExpectedProperty> property;
 }

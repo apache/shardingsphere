@@ -19,17 +19,12 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.state
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segment.impl.ExpectedDataSourceName;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
-
+/**
+ * Drop sharding broadcast table rules statement test cast.
+ */
 @Getter
 @Setter
 public final class DropShardingBroadcastTableRulesStatementTestCase extends SQLParserTestCase {
-
-    @XmlElement
-    private final List<ExpectedDataSourceName> dataSource = new LinkedList<>();
 }
