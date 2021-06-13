@@ -27,10 +27,12 @@
     </parent>
     <artifactId>shardingsphere-infra-rewrite</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
     
-    <modules>
-        <module>shardingsphere-infra-rewrite-engine</module>
-        <module>shardingsphere-infra-rewrite-test</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-route</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

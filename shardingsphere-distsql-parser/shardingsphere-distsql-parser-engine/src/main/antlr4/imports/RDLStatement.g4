@@ -159,10 +159,6 @@ dropShardingBroadcastTableRules
     : DROP SHARDING BROADCAST TABLE RULES
     ;
 
-showShardingRule
-    : SHOW SHARDING RULE (FROM schemaName)?
-    ;
-
 schemaNames
     : schemaName (COMMA schemaName)*
     ;
@@ -208,7 +204,7 @@ createEncryptRule
     ;
 
 encryptRuleDefinition
-    : tableName LP RESOURCE EQ resourceName COMMA COLUMNS LP columnDefinition (COMMA columnDefinition)*  RP RP
+    : tableName LP (RESOURCE EQ resourceName COMMA)? COLUMNS LP columnDefinition (COMMA columnDefinition)*  RP RP
     ;
 
 columnDefinition

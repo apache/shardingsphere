@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
@@ -49,6 +51,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Governance ShardingSphere data source.
@@ -81,7 +84,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
-        uploadLocalConfiguration(governanceFacade);
+        uploadLocalConfiguration(governanceFacade, ruleConfigs);
     }
     
     private GovernanceFacade createGovernanceFacade(final GovernanceConfiguration config) {
@@ -120,11 +123,12 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
     }
     
-    private void uploadLocalConfiguration(final GovernanceFacade governanceFacade) {
+    private void uploadLocalConfiguration(final GovernanceFacade governanceFacade, final Collection<RuleConfiguration> ruleConfigs) {
         Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(metaDataContexts.getDefaultMetaData().getResource().getDataSources());
-        Collection<RuleConfiguration> ruleConfigurations = metaDataContexts.getDefaultMetaData().getRuleMetaData().getConfigurations();
+        Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList());
+        Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         governanceFacade.onlineInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs),
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), metaDataContexts.getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getProps().getProps());
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, schemaRuleConfigs), globalRuleConfigs, metaDataContexts.getProps().getProps());
     }
     
     @Override

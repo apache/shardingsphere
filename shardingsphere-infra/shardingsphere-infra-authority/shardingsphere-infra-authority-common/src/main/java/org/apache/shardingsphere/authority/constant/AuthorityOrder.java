@@ -30,9 +30,4 @@ public final class AuthorityOrder {
      * Authority order.
      */
     public static final int ORDER = 500;
-    
-    /**
-     * Algorithm provider authority order.
-     */
-    public static final int ALGORITHM_PROVIDER_AUTHORITY_ORDER = ORDER + 1;
 }

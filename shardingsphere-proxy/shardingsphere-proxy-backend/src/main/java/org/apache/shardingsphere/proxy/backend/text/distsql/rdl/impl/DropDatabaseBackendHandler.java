@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataDroppedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -62,6 +62,6 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     
     private void post(final DropDatabaseStatement sqlStatement) {
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new MetaDataDroppedEvent(sqlStatement.getDatabaseName()));
+        ShardingSphereEventBus.getInstance().post(new DatabaseDroppedSQLNotificationEvent(sqlStatement.getDatabaseName()));
     }
 }

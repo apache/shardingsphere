@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.handshake;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+
+import java.util.Arrays;
 
 /**
  * MySQL authentication switch request packet.
@@ -30,12 +33,27 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 @RequiredArgsConstructor
 public final class MySQLAuthSwitchRequestPacket implements MySQLPacket {
     
+    /**
+     * Header of MySQL auth switch request packet.
+     */
+    public static final int HEADER = 0xfe;
+    
     @Getter
     private final int sequenceId;
     
     private final String authPluginName;
     
+    @Getter
     private final MySQLAuthPluginData authPluginData;
+    
+    public MySQLAuthSwitchRequestPacket(final MySQLPacketPayload payload) {
+        sequenceId = payload.readInt1();
+        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL auth switch request packet must be `0xfe`.");
+        authPluginName = payload.readStringNul();
+        String strAuthPluginData = payload.readStringNul();
+        authPluginData = new MySQLAuthPluginData(Arrays.copyOfRange(strAuthPluginData.getBytes(), 0, 8),
+                Arrays.copyOfRange(strAuthPluginData.getBytes(), 8, 20));
+    }
     
     @Override
     public void write(final MySQLPacketPayload payload) {

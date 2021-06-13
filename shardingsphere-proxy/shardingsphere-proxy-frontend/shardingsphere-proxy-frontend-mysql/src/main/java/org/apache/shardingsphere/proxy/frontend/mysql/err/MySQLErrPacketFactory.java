@@ -27,14 +27,17 @@ import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateRuleNamesException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidKeyGeneratorsException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
@@ -187,6 +190,15 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof DuplicateRuleNamesException) {
             return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_RULE_NAMES, ((DuplicateRuleNamesException) cause).getRuleNames(),
                     ((DuplicateRuleNamesException) cause).getSchemaName());
+        }
+        if (cause instanceof InvalidShardingAlgorithmsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.INVALID_SHARDING_ALGORITHMS, ((InvalidShardingAlgorithmsException) cause).getAlgorithms());
+        }
+        if (cause instanceof InvalidKeyGeneratorsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.INVALID_KEY_GENERATORS, ((InvalidKeyGeneratorsException) cause).getKeyGenerators());
+        }
+        if (cause instanceof DuplicateBindingTablesException) {
+            return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_BINDING_TABLES, ((DuplicateBindingTablesException) cause).getTableNames());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }

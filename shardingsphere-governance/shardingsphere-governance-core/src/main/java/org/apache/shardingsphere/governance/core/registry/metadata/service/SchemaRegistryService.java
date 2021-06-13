@@ -19,9 +19,9 @@ package org.apache.shardingsphere.governance.core.registry.metadata.service;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataCreatedEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseCreatedSQLNotificationEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -85,13 +85,13 @@ public final class SchemaRegistryService {
     }
     
     /**
-     * Update when meta data created.
+     * Update when database created.
      *
-     * @param event meta data created event
+     * @param event database created SQL notification event
      */
     @Subscribe
-    public void update(final MetaDataCreatedEvent event) {
-        repository.persist(SchemaMetadataNode.getSchemaNamePath(event.getSchemaName()), "");
+    public void update(final DatabaseCreatedSQLNotificationEvent event) {
+        repository.persist(SchemaMetadataNode.getSchemaNamePath(event.getDatabaseName()), "");
     }
     
     /**
@@ -105,12 +105,12 @@ public final class SchemaRegistryService {
     }
     
     /**
-     * Update when meta data dropped.
+     * Update when database dropped.
      *
-     * @param event meta data dropped event
+     * @param event database dropped SQL notification event
      */
     @Subscribe
-    public void update(final MetaDataDroppedEvent event) {
-        repository.delete(SchemaMetadataNode.getSchemaNamePath(event.getSchemaName()));
+    public void update(final DatabaseDroppedSQLNotificationEvent event) {
+        repository.delete(SchemaMetadataNode.getSchemaNamePath(event.getDatabaseName()));
     }
 }

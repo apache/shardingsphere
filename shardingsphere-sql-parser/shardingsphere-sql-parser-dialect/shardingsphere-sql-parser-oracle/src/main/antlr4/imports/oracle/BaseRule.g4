@@ -124,7 +124,7 @@ clusterName
     ;
 
 indexName
-    : identifier
+    : (owner DOT_)? name
     ;
 
 constraintName
@@ -252,7 +252,11 @@ partitionSetName
     ;
 
 partitionKeyValue
-    : NUMBER_ | dateTimeLiterals
+    : INTEGER_ | dateTimeLiterals
+    ;
+
+subpartitionKeyValue
+    : INTEGER_ | dateTimeLiterals
     ;
 
 zonemapName
@@ -296,7 +300,7 @@ columnCollationName
     ;
 
 alias
-    : IDENTIFIER_
+    : identifier | STRING_
     ;
 
 dataTypeLength
@@ -346,6 +350,7 @@ comparisonOperator
 predicate
     : bitExpr NOT? IN subquery
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
+    | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_ AND predicate
     | bitExpr NOT? BETWEEN bitExpr AND predicate
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
     | bitExpr
@@ -672,5 +677,57 @@ percent
     ;
 
 rollbackSegment
+    : identifier
+    ;
+
+queryName
+    : (owner DOT_)? name
+    ;
+
+cycleValue
+    : STRING_
+    ;
+
+noCycleValue
+    : STRING_
+    ;
+
+orderingColumn
+    : columnName
+    ;
+
+subavName
+    : (owner DOT_)? name
+    ;
+
+baseAvName
+    : (owner DOT_)? name
+    ;
+
+measName
+    : identifier
+    ;
+
+levelRef
+    : identifier
+    ;
+
+offsetExpr
+    : expr | numberLiterals
+    ;
+
+memberKeyExpr
+    : identifier
+    ;
+
+depthExpression
+    : identifier
+    ;
+
+unitName
+    : (owner DOT_)? name
+    ;
+
+procedureName
     : identifier
     ;

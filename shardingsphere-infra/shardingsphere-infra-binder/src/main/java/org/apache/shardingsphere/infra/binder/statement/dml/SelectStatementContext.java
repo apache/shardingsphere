@@ -21,6 +21,9 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
+import org.apache.shardingsphere.infra.binder.segment.select.having.HavingColumn;
+import org.apache.shardingsphere.infra.binder.segment.select.having.HavingContext;
+import org.apache.shardingsphere.infra.binder.segment.select.having.engine.HavingContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.engine.OrderByContextEngine;
@@ -70,6 +73,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final GroupByContext groupByContext;
     
+    private final HavingContext havingContext;
+    
     private final OrderByContext orderByContext;
     
     private final PaginationContext paginationContext;
@@ -84,6 +89,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         this.groupByContext = groupByContext;
+        this.havingContext = new HavingContextEngine().createHavingContext(sqlStatement);
         this.orderByContext = orderByContext;
         this.projectionsContext = projectionsContext;
         this.paginationContext = paginationContext;
@@ -95,6 +101,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
+        havingContext = new HavingContextEngine().createHavingContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
@@ -147,6 +154,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         setIndexForAggregationProjection(columnLabelIndexMap);
         setIndexForOrderItem(columnLabelIndexMap, orderByContext.getItems());
         setIndexForOrderItem(columnLabelIndexMap, groupByContext.getItems());
+        setIndexForHaving(columnLabelIndexMap);
+    }
+    
+    private void setIndexForHaving(final Map<String, Integer> columnLabelIndexMap) {
+        for (HavingColumn each : havingContext.getColumns()) {
+            String columnLabel = each.getSegment().getIdentifier().getValue();
+            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s.", each);
+            each.setIndex(columnLabelIndexMap.get(columnLabel));
+        }
     }
     
     private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {

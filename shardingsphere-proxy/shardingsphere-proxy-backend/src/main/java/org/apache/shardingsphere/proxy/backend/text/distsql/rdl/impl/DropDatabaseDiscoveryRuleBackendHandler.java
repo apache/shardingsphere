@@ -38,7 +38,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
     }
     
     @Override
-    protected void before(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
+    public void before(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = getDatabaseDiscoveryRuleConfiguration(schemaName);
         if (!ruleConfig.isPresent()) {
             throw new DatabaseDiscoveryRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
@@ -47,7 +47,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
     }
     
     @Override
-    protected void doExecute(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName).get();
         sqlStatement.getRuleNames().forEach(each -> {
             DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration = databaseDiscoveryRuleConfiguration.getDataSources()

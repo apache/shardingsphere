@@ -21,22 +21,20 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.core.registry.config.service.GlobalRegistryService;
 import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.config.service.GlobalRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -48,6 +46,7 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
     
     public GlobalRuleRegistryService(final RegistryCenterRepository repository) {
         this.repository = repository;
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     @Override
@@ -69,7 +68,6 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
         return !Strings.isNullOrEmpty(repository.get(GlobalNode.getGlobalRuleNode()));
     }
     
-    
     /**
      * Update when user created.
      *
@@ -80,8 +78,8 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
         Collection<RuleConfiguration> globalRuleConfigs = load();
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .findAny().map(each -> (AuthorityRuleConfiguration) each);
-        Preconditions.checkState(authorityRuleConfig.isPresent());
-        refreshAuthorityRuleConfiguration(authorityRuleConfig.get(), event.getUsers());
+        Preconditions.checkState(authorityRuleConfig.isPresent(), "No available authority rules for governance.");
+        authorityRuleConfig.get().getUsers().addAll(event.getUsers());
         persist(globalRuleConfigs, true);
     }
     
@@ -95,22 +93,5 @@ public final class GlobalRuleRegistryService implements GlobalRegistryService<Co
         if (!event.getUsers().isEmpty()) {
             repository.persist(StatesNode.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(event.getUsers())));
         }
-    }
-    
-    private void refreshAuthorityRuleConfiguration(final AuthorityRuleConfiguration authorityRuleConfig, final Collection<ShardingSphereUser> createdUsers) {
-        Collection<ShardingSphereUser> oldUsers = authorityRuleConfig.getUsers();
-        Collection<ShardingSphereUser> newUsers = oldUsers.isEmpty() ? createdUsers : getChangedUsers(oldUsers, createdUsers);
-        authorityRuleConfig.getUsers().removeAll(oldUsers);
-        authorityRuleConfig.getUsers().addAll(newUsers);
-    }
-    
-    private Collection<ShardingSphereUser> getChangedUsers(final Collection<ShardingSphereUser> oldUsers, final Collection<ShardingSphereUser> newUsers) {
-        Collection<ShardingSphereUser> result = new LinkedList<>(oldUsers);
-        ShardingSphereUsers shardingSphereUsers = new ShardingSphereUsers(oldUsers);
-        for (ShardingSphereUser each : newUsers) {
-            shardingSphereUsers.findUser(each.getGrantee()).ifPresent(result::remove);
-            result.add(each);
-        }
-        return result;
     }
 }

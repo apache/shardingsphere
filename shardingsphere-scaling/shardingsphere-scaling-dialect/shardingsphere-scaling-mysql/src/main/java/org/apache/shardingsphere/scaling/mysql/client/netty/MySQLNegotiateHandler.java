@@ -26,6 +26,9 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationM
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthMoreDataPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchRequestPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchResponsePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.scaling.mysql.client.PasswordEncryption;
@@ -44,6 +47,10 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private static final int CHARACTER_SET = 33;
     
+    private static final int REQUEST_PUBLIC_KEY = 2;
+    
+    private static final int PERFORM_FULL_AUTHENTICATION = 4;
+    
     private final String username;
     
     private final String password;
@@ -52,6 +59,11 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private ServerInfo serverInfo;
     
+    private byte[] seed;
+    
+    private boolean publicKeyRequested;
+    
+    @SneakyThrows
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         if (msg instanceof MySQLHandshakePacket) {
@@ -66,6 +78,18 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             serverInfo.setServerVersion(new ServerVersion(handshake.getServerVersion()));
             return;
         }
+        if (msg instanceof MySQLAuthSwitchRequestPacket) {
+            MySQLAuthSwitchRequestPacket authSwitchRequest = (MySQLAuthSwitchRequestPacket) msg;
+            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(authSwitchRequest.getSequenceId() + 1,
+                    PasswordEncryption.encryptWithSha2(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData())));
+            seed = authSwitchRequest.getAuthPluginData().getAuthenticationPluginData();
+            return;
+        }
+        if (msg instanceof MySQLAuthMoreDataPacket) {
+            MySQLAuthMoreDataPacket authMoreData = (MySQLAuthMoreDataPacket) msg;
+            handleCachingSha2Auth(ctx, authMoreData);
+            return;
+        }
         if (msg instanceof MySQLOKPacket) {
             ctx.channel().pipeline().remove(this);
             authResultCallback.setSuccess(serverInfo);
@@ -76,10 +100,25 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
         throw new RuntimeException(error.getErrorMessage());
     }
     
+    private void handleCachingSha2Auth(final ChannelHandlerContext ctx, final MySQLAuthMoreDataPacket authMoreData) {
+        // how caching_sha2_password works: https://dev.mysql.com/doc/dev/mysql-server/8.0.11/page_caching_sha2_authentication_exchanges.html#sect_caching_sha2_info
+        if (!publicKeyRequested) {
+            if (PERFORM_FULL_AUTHENTICATION == authMoreData.getPluginData()[0]) {
+                publicKeyRequested = true;
+                ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(authMoreData.getSequenceId() + 1, new byte[]{REQUEST_PUBLIC_KEY}));
+            }
+        } else {
+            ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(authMoreData.getSequenceId() + 1,
+                    PasswordEncryption.encryptWithRSAPublicKey(password, seed,
+                            serverInfo.getServerVersion().greaterThanOrEqualTo(8, 0, 5) ? "RSA/ECB/OAEPWithSHA-1AndMGF1Padding" : "RSA/ECB/PKCS1Padding",
+                            new String(authMoreData.getPluginData()))));
+        }
+    }
+    
     private int generateClientCapability() {
         return MySQLCapabilityFlag.calculateCapabilityFlags(MySQLCapabilityFlag.CLIENT_LONG_PASSWORD, MySQLCapabilityFlag.CLIENT_LONG_FLAG,
-            MySQLCapabilityFlag.CLIENT_PROTOCOL_41, MySQLCapabilityFlag.CLIENT_INTERACTIVE, MySQLCapabilityFlag.CLIENT_TRANSACTIONS,
-            MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION, MySQLCapabilityFlag.CLIENT_MULTI_STATEMENTS, MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH);
+                MySQLCapabilityFlag.CLIENT_PROTOCOL_41, MySQLCapabilityFlag.CLIENT_INTERACTIVE, MySQLCapabilityFlag.CLIENT_TRANSACTIONS,
+                MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION, MySQLCapabilityFlag.CLIENT_MULTI_STATEMENTS, MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH);
     }
     
     @SneakyThrows(NoSuchAlgorithmException.class)

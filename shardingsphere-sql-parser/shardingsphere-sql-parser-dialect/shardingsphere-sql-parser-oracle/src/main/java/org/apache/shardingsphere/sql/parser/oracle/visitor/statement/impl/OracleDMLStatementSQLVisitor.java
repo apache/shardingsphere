@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
@@ -61,6 +62,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Select
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryFactoringClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableReferenceContext;
@@ -69,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnionC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UsingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -77,6 +80,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Insert
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -95,6 +99,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Loc
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -285,6 +290,9 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitQueryBlock(final QueryBlockContext ctx) {
         OracleSelectStatement result = new OracleSelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        if (null != ctx.withClause()) {
+            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.duplicateSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
@@ -329,6 +337,29 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     
     @Override
     public ASTNode visitParenthesisSelectSubquery(final ParenthesisSelectSubqueryContext ctx) {
+        return visit(ctx.selectSubquery());
+    }
+    
+    @Override
+    public ASTNode visitWithClause(final WithClauseContext ctx) {
+        Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
+        if (null != ctx.subqueryFactoringClause()) {
+            for (SubqueryFactoringClauseContext each : ctx.subqueryFactoringClause()) {
+                SubquerySegment subquery = new SubquerySegment(each.selectSubquery().start.getStartIndex(), each.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(each));
+                IdentifierValue identifier = (IdentifierValue) visit(each.queryName().name().identifier());
+                CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier, subquery);
+                if (null != each.searchClause()) {
+                    ColumnNameContext columnName = each.searchClause().orderingColumn().columnName();
+                    commonTableExpression.getColumns().add((ColumnSegment) visit(columnName));
+                }
+                commonTableExpressions.add(commonTableExpression);
+            }
+        }
+        return new WithSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), commonTableExpressions);
+    }
+    
+    @Override
+    public ASTNode visitSubqueryFactoringClause(final SubqueryFactoringClauseContext ctx) {
         return visit(ctx.selectSubquery());
     }
     
@@ -406,7 +437,9 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             return result;
         }
         if (projection instanceof SubqueryExpressionSegment) {
-            SubqueryProjectionSegment result = new SubqueryProjectionSegment(((SubqueryExpressionSegment) projection).getSubquery());
+            SubqueryExpressionSegment subqueryExpressionSegment = (SubqueryExpressionSegment) projection;
+            String text = ctx.start.getInputStream().getText(new Interval(subqueryExpressionSegment.getStartIndex(), subqueryExpressionSegment.getStopIndex()));
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment(((SubqueryExpressionSegment) projection).getSubquery(), text);
             result.setAlias(alias);
             return result;
         }

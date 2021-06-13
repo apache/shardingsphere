@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.spring.boot.rule;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.readwritesplitting.common.yaml.config.YamlReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

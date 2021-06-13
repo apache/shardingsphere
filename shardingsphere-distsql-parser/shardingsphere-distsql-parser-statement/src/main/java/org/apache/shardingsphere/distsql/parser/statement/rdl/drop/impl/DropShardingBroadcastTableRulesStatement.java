@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 /**
  * Drop sharding broadcast table rules statement.
  */
-@Getter
-public final class DropShardingBroadcastTableRulesStatement extends DropRDLStatement {
+public final class DropShardingBroadcastTableRulesStatement extends DropRuleStatement {
 }

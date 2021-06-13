@@ -29,7 +29,6 @@ import org.apache.shardingsphere.governance.core.registry.config.event.props.Pro
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.schema.SchemaChangedEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
@@ -188,7 +187,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         governanceFacade.getRegistryCenter().getSchemaService().persist(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), 
                 metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
-        ShardingSphereEventBus.getInstance().post(new MetaDataChangedEvent(governanceFacade.getRegistryCenter().getSchemaService().loadAllNames()));
     }
     
     /**
@@ -448,6 +446,4 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     private Collection<ShardingSphereUser> getModifiedUsers(final ShardingSphereUsers oldUsers, final Collection<ShardingSphereUser> users) {
         return users.stream().filter(each -> oldUsers.findUser(each.getGrantee()).isPresent()).collect(Collectors.toSet());
     }
-    
-    // TODO subscribe for global rules changed
 }

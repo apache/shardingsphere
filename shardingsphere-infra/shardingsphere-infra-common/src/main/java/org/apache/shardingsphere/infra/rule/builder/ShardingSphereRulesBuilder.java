@@ -75,7 +75,7 @@ public final class ShardingSphereRulesBuilder {
             builders.put(entry.getValue().build(), entry.getKey());
         }
     }
-
+    
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Collection<SchemaRuleBuilder> getMissedKernelSchemaRuleBuilders(final Collection<SchemaRuleBuilder> configuredBuilders) {
         Collection<Class<SchemaRuleBuilder>> configuredBuilderClasses = configuredBuilders.stream().map(each -> (Class<SchemaRuleBuilder>) each.getClass()).collect(Collectors.toSet());

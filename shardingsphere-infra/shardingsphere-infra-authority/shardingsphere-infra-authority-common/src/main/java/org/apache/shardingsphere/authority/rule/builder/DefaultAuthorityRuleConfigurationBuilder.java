@@ -20,9 +20,11 @@ package org.apache.shardingsphere.authority.rule.builder;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 /**
@@ -32,7 +34,13 @@ public final class DefaultAuthorityRuleConfigurationBuilder implements DefaultKe
     
     @Override
     public AuthorityRuleConfiguration build() {
-        return new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+        return new AuthorityRuleConfiguration(getDefaultShardingSphereUsers(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
+    }
+    
+    private Collection<ShardingSphereUser> getDefaultShardingSphereUsers() {
+        Collection<ShardingSphereUser> users = new LinkedHashSet<>();
+        users.add(new ShardingSphereUser(DefaultUser.USER_NAME, DefaultUser.USER_PASSWORD, DefaultUser.USER_HOSTNAME));
+        return users;
     }
     
     @Override

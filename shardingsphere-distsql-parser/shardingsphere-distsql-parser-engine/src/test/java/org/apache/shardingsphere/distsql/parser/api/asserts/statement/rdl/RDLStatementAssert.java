@@ -19,15 +19,18 @@ package org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.impl.CreateRDLStatementAssert;
-import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.impl.DropRDLStatementAssert;
-import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.impl.alter.AlterDatabaseDiscoveryRuleStatementAssert;
-import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.impl.alter.AlterEncryptRuleStatementAssert;
-import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.impl.alter.AlterReadwriteSplittingRuleStatementAssert;
-import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.impl.alter.AlterShardingBindingTableRulesStatementAssert;
-import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.impl.alter.AlterShardingBroadcastTableRulesStatementAssert;
-import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.impl.alter.AlterShardingTableRuleStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.alter.AlterRuleStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.create.AddResourceStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.create.CreateRuleStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.alter.impl.AlterDatabaseDiscoveryRuleStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.alter.impl.AlterEncryptRuleStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.alter.impl.AlterReadwriteSplittingRuleStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.alter.impl.AlterShardingBindingTableRulesStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.alter.impl.AlterShardingBroadcastTableRulesStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.alter.impl.AlterShardingTableRuleStatementAssert;
 import org.apache.shardingsphere.distsql.parser.api.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.drop.DropResourceStatementAssert;
+import org.apache.shardingsphere.distsql.parser.api.asserts.statement.rdl.drop.DropRuleStatementAssert;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.alter.AlterDataBaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.alter.AlterEncryptRuleStatementTestCase;
@@ -35,15 +38,20 @@ import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statem
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.alter.AlterShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.alter.AlterShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.alter.AlterShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.create.AddResourceStatementTestCase;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.drop.DropResourceStatementTestCase;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterEncryptRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterEncryptRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 /**
  * RDL statement assert.
@@ -71,10 +79,16 @@ public final class RDLStatementAssert {
             AlterShardingBroadcastTableRulesStatementAssert.assertIs(assertContext, (AlterShardingBroadcastTableRulesStatement) actual, (AlterShardingBroadcastTableRulesStatementTestCase) expected);
         } else if (actual instanceof AlterShardingTableRuleStatement) {
             AlterShardingTableRuleStatementAssert.assertIs(assertContext, (AlterShardingTableRuleStatement) actual, (AlterShardingTableRuleStatementTestCase) expected);
-        } else if (actual instanceof CreateRDLStatement) {
-            CreateRDLStatementAssert.assertIs(assertContext, (CreateRDLStatement) actual, expected);
-        } else if (actual instanceof DropRDLStatement) {
-            DropRDLStatementAssert.assertIs(assertContext, (DropRDLStatement) actual, expected);
+        } else if (actual instanceof CreateRuleStatement) {
+            CreateRuleStatementAssert.assertIs(assertContext, (CreateRuleStatement) actual, expected);
+        } else if (actual instanceof AddResourceStatement) {
+            AddResourceStatementAssert.assertIs(assertContext, (AddResourceStatement) actual, (AddResourceStatementTestCase) expected);
+        } else if (actual instanceof AlterRuleStatement) {
+            AlterRuleStatementAssert.assertIs(assertContext, (AlterRuleStatement) actual, expected);
+        } else if (actual instanceof DropResourceStatement) {
+            DropResourceStatementAssert.assertIs(assertContext, (DropResourceStatement) actual, (DropResourceStatementTestCase) expected);
+        } else if (actual instanceof DropRuleStatement) {
+            DropRuleStatementAssert.assertIs(assertContext, (DropRuleStatement) actual, expected);
         }
     }
 }

@@ -31,7 +31,7 @@ public final class MySQLRecognizerTest {
     
     @Test
     public void assertGetURLPrefixes() {
-        assertThat(recognizer.getURLPrefixes(), is(Collections.singletonList("jdbc:mysql:")));
+        assertThat(recognizer.getURLPrefixes(), is(Collections.singleton("jdbc:mysql:")));
     }
     
     @Test

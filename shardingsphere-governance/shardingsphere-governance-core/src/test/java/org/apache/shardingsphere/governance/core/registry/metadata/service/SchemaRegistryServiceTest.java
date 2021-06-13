@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.governance.core.registry.metadata.service;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataCreatedEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.MetaDataDroppedEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseCreatedSQLNotificationEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -106,8 +106,8 @@ public final class SchemaRegistryServiceTest {
     }
     
     @Test
-    public void assertUpdateWithMetaDataCreatedEvent() {
-        MetaDataCreatedEvent event = new MetaDataCreatedEvent("bar_db");
+    public void assertUpdateWithDatabaseCreatedSQLNotificationEvent() {
+        DatabaseCreatedSQLNotificationEvent event = new DatabaseCreatedSQLNotificationEvent("bar_db");
         schemaRegistryService.update(event);
         verify(registryCenterRepository).persist("/metadata/bar_db", "");
     }
@@ -120,8 +120,8 @@ public final class SchemaRegistryServiceTest {
     }
     
     @Test
-    public void assertUpdateWithMetadataDroppedEvent() {
-        MetaDataDroppedEvent event = new MetaDataDroppedEvent("foo_db");
+    public void assertUpdateWithDatabaseDroppedSQLNotificationEvent() {
+        DatabaseDroppedSQLNotificationEvent event = new DatabaseDroppedSQLNotificationEvent("foo_db");
         schemaRegistryService.update(event);
         verify(registryCenterRepository).delete("/metadata/foo_db");
     }

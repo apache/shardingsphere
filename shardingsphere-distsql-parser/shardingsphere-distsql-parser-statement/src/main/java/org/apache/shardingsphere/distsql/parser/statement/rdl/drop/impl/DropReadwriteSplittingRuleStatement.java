@@ -18,16 +18,17 @@
 package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Drop readwrite splitting rule statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class DropReadwriteSplittingRuleStatement extends DropRDLStatement {
+public final class DropReadwriteSplittingRuleStatement extends DropRuleStatement {
     
-    private final Collection<String> ruleNames = new LinkedList<>();
+    private final Collection<String> ruleNames;
 }

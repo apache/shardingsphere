@@ -20,17 +20,14 @@ package org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.segme
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Abstract expected delimiter SQL segment.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public abstract class AbstractExpectedIdentifierSQLSegment {
+public abstract class AbstractExpectedIdentifierSQLSegment extends AbstractExpectedDelimiterSQLSegment implements ExpectedIdentifierSQLSegment {
 
     @XmlAttribute
     private String name;

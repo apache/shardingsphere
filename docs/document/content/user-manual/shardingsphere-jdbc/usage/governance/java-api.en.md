@@ -36,16 +36,13 @@ Using ZooKeeper as config center and registry center for example.
 // ...
 
 // Configure registry center
-RegistryCenterConfiguration configuration = new RegistryCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
+RegistryCenterConfiguration registryCenterConfig = new RegistryCenterConfiguration("Zookeeper", "localhost:2181", new Properties());
 
 // Configure governance
-Map<String, CenterConfiguration> configurationMap = new HashMap<String, CenterConfiguration>();
-configurationMap.put("governance-shardingsphere-data-source", configuration);
+        GovernanceConfiguration governanceConfiguration = new GovernanceConfiguration("governance-sharding-data-source", registryCenterConfig, true);
 
 // Create GovernanceShardingSphereDataSource
-DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
-        createDataSourceMap(), createShardingRuleConfig(), new Properties(),
-        new GovernanceConfiguration("shardingsphere-governance", configurationMap, true));
+DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfiguration);
 ```
 
 ## Use GovernanceShardingSphereDataSource
@@ -56,9 +53,7 @@ Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis
 Take native JDBC usage as an example:
 
 ```java
-DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(
-        createDataSourceMap(), createShardingRuleConfig(), new Properties(), 
-        new GovernanceConfiguration("shardingsphere-governance", configurationMap, true));
+DataSource dataSource = GovernanceShardingSphereDataSourceFactory.createDataSource(governanceConfiguration);
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();

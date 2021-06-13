@@ -38,7 +38,7 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
     }
     
     @Override
-    protected void before(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
+    public void before(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
         Optional<EncryptRuleConfiguration> ruleConfig = getEncryptRuleConfiguration(schemaName);
         if (!ruleConfig.isPresent()) {
             throw new EncryptRulesNotExistedException(schemaName, sqlStatement.getTables());
@@ -47,7 +47,7 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
     }
     
     @Override
-    protected void doExecute(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
         EncryptRuleConfiguration encryptRuleConfiguration = getEncryptRuleConfiguration(schemaName).get();
         sqlStatement.getTables().forEach(each -> {
             EncryptTableRuleConfiguration encryptTableRuleConfiguration = encryptRuleConfiguration.getTables()

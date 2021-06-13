@@ -20,8 +20,12 @@ package org.apache.shardingsphere.distsql.parser.api.asserts.statement.rql.impl.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.api.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.ShowEncryptRulesStatementTestCase;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowEncryptRulesStatement;
+import org.apache.shardingsphere.distsql.parser.api.asserts.segment.SchemaAssert;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.impl.ShowEncryptRulesStatementTestCase;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowEncryptRulesStatement;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * show encrypt rules statement assert.
@@ -37,5 +41,11 @@ public final class ShowEncryptRulesStatementAssert {
      * @param expected      expected show encrypt rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowEncryptRulesStatement actual, final ShowEncryptRulesStatementTestCase expected) {
+        if (null != expected.getSchema()) {
+            assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
+            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+        } else {
+            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getSchema().isPresent());
+        }
     }
 }

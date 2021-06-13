@@ -40,13 +40,12 @@ import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statem
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.drop.DropShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.drop.DropShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rdl.drop.DropShardingTableRuleStatementTestCase;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.ShowEncryptRulesStatementTestCase;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.ShowReadWriteSplittingRulesStatementTestCase;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.ShowShardingBindingTableRulesStatementTestCase;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.ShowShardingBroadcastTableRulesStatementTestCase;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.ShowShardingTableRulesStatementTestCase;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.ShowShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.impl.ShowDataBaseDiscoveryRulesStatementTestCase;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.impl.ShowEncryptRulesStatementTestCase;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.impl.ShowReadWriteSplittingRulesStatementTestCase;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.impl.ShowShardingBindingTableRulesStatementTestCase;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.impl.ShowShardingBroadcastTableRulesStatementTestCase;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.impl.ShowShardingTableRulesStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -143,7 +142,7 @@ public final class SQLParserTestCases {
     private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRulesTestCase = new LinkedList<>();
 
     @XmlElement(name = "show-sharding-table-rule")
-    private final List<ShowShardingTableRuleStatementTestCase> showShardingTableRuleTestCase = new LinkedList<>();
+    private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRuleTestCase = new LinkedList<>();
 
     /**
      * Get all SQL parser test cases.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.spring.boot;
 
-import org.apache.shardingsphere.dbdiscovery.common.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;

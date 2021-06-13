@@ -19,10 +19,20 @@ package org.apache.shardingsphere.infra.executor.sql.federate.execute;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.schema.SchemaPlus;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
-import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.FederateLogicSchema;
+import org.apache.shardingsphere.infra.executor.sql.federate.schema.row.FederateRowExecutor;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -43,9 +53,13 @@ public final class FederateJDBCExecutor implements FederateExecutor {
     
     public static final String DRIVER_NAME = "org.apache.calcite.jdbc.Driver";
     
-    public static final Properties PROPERTIES = new Properties();
+    private final String schema;
     
-    private final OptimizeContext context;
+    private final OptimizeContextFactory factory;
+    
+    private final ConfigurationProperties props;
+    
+    private final JDBCExecutor jdbcExecutor;
     
     private Statement statement;
     
@@ -57,23 +71,27 @@ public final class FederateJDBCExecutor implements FederateExecutor {
         }
     }
     
-    public FederateJDBCExecutor(final OptimizeContext context) {
-        this.context = context;
-        PROPERTIES.setProperty(CalciteConnectionProperty.LEX.camelName(), context.getConnectionProperties().getProperty(CalciteConnectionProperty.LEX.camelName()));
-        PROPERTIES.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), context.getConnectionProperties().getProperty(CalciteConnectionProperty.CONFORMANCE.camelName()));
+    public FederateJDBCExecutor(final String schema, final OptimizeContextFactory factory, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor) {
+        this.schema = schema;
+        this.factory = factory;
+        this.props = props;
+        this.jdbcExecutor = jdbcExecutor;
     }
     
     @Override
-    public List<QueryResult> executeQuery(final String sql, final List<Object> parameters) throws SQLException {
-        QueryResult result = new JDBCStreamQueryResult(execute(sql, parameters));
+    public List<QueryResult> executeQuery(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+                                          final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
+        QueryResult result = new JDBCStreamQueryResult(execute(executionContext, callback, prepareEngine));
         return Collections.singletonList(result);
     }
     
     @Override
     public void close() throws SQLException {
-        Connection connection = statement.getConnection();
-        connection.close();
-        statement.close();
+        if (null != statement && !statement.isClosed()) {
+            Connection connection = statement.getConnection();
+            statement.close();
+            connection.close();
+        }
     }
     
     @Override
@@ -81,20 +99,36 @@ public final class FederateJDBCExecutor implements FederateExecutor {
         return statement.getResultSet();
     }
     
-    private ResultSet execute(final String sql, final List<Object> parameters) throws SQLException {
-        PreparedStatement statement = getConnection().prepareStatement(sql);
-        setParameters(statement, parameters);
+    private ResultSet execute(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+                              final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
+        SQLUnit sqlUnit = executionContext.getExecutionUnits().iterator().next().getSqlUnit();
+        PreparedStatement statement = getConnection(executionContext, callback, prepareEngine).prepareStatement(SQLUtil.trimSemicolon(sqlUnit.getSql()));
+        setParameters(statement, sqlUnit.getParameters());
         this.statement = statement;
         return statement.executeQuery();
     }
     
-    private Connection getConnection() throws SQLException {
-        Connection result = DriverManager.getConnection(CONNECTION_URL, PROPERTIES);
+    private Connection getConnection(final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+                                     final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
+        Connection result = DriverManager.getConnection(CONNECTION_URL, getProperties());
         CalciteConnection calciteConnection = result.unwrap(CalciteConnection.class);
-        SchemaPlus rootSchema = calciteConnection.getRootSchema();
-        rootSchema.add(context.getSchemaName(), context.getLogicSchema());
-        calciteConnection.setSchema(context.getSchemaName());
+        addSchema(calciteConnection, executionContext, callback, prepareEngine);
         return result;
+    }
+    
+    private Properties getProperties() {
+        Properties result = new Properties();
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.LEX.camelName()));
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), factory.getProperties().getProperty(CalciteConnectionProperty.CONFORMANCE.camelName()));
+        return result;
+    }
+    
+    private void addSchema(final CalciteConnection calciteConnection, final ExecutionContext executionContext, final JDBCExecutorCallback<? extends ExecuteResult> callback, 
+                           final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine) throws SQLException {
+        FederateRowExecutor executor = new FederateRowExecutor(props, jdbcExecutor, executionContext, callback, prepareEngine);
+        FederateLogicSchema logicSchema = new FederateLogicSchema(factory.getSchemaMetadatas().getSchemaMetadataBySchemaName(schema), executor);
+        calciteConnection.getRootSchema().add(schema, logicSchema);
+        calciteConnection.setSchema(schema);
     }
     
     private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) throws SQLException {

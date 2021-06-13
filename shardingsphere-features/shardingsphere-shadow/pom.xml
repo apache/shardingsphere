@@ -31,9 +31,7 @@
     
     <modules>
         <module>shardingsphere-shadow-api</module>
-        <module>shardingsphere-shadow-common</module>
-        <module>shardingsphere-shadow-route</module>
-        <module>shardingsphere-shadow-rewrite</module>
+        <module>shardingsphere-shadow-core</module>
         <module>shardingsphere-shadow-spring</module>
     </modules>
 </project>

@@ -22,5 +22,6 @@
     <sql-case id="select_with_equal_subquery" value="SELECT * FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />
     <sql-case id="select_with_in_subquery" value="SELECT * FROM t_order WHERE user_id IN (SELECT user_id FROM t_order_item WHERE id IN (10, 11))" db-types="MySQL" />
     <sql-case id="select_with_between_subquery" value="SELECT * FROM t_order WHERE user_id BETWEEN (SELECT user_id FROM t_order_item WHERE order_id = 10) AND ?" db-types="MySQL" />
-    <sql-case id="select_with_exists_sub_query_with_project" value="SELECT EXISTS (SELECT 1 FROM t_order)" db-types="MySQL,PostgreSQL" />
+    <sql-case id="select_with_exists_sub_query_with_project_for_mysql" value="SELECT EXISTS (SELECT 1 FROM t_order)" db-types="MySQL" />
+    <sql-case id="select_with_exists_sub_query_with_project_for_postgresql" value="SELECT EXISTS (SELECT 1 FROM t_order)" db-types="PostgreSQL" />
 </sql-cases>

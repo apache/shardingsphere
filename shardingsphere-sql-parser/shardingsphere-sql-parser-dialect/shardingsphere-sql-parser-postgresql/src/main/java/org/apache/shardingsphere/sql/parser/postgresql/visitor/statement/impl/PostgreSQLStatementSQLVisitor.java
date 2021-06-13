@@ -881,7 +881,8 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
         if (null != expr.cExpr() && null != expr.cExpr().selectWithParens()) {
             PostgreSQLSelectStatement select = (PostgreSQLSelectStatement) visit(expr.cExpr().selectWithParens());
             SubquerySegment subquery = new SubquerySegment(expr.cExpr().selectWithParens().start.getStartIndex(), expr.cExpr().selectWithParens().stop.getStopIndex(), select);
-            SubqueryProjectionSegment projection = new SubqueryProjectionSegment(subquery);
+            String text = ctx.start.getInputStream().getText(new Interval(subquery.getStartIndex(), subquery.getStopIndex()));
+            SubqueryProjectionSegment projection = new SubqueryProjectionSegment(subquery, text);
             AliasSegment alias = null != ctx.identifier()
                     ? new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())) : null;
             projection.setAlias(alias);

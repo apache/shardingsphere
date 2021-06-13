@@ -34,8 +34,8 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.fixture.FixtureRuleConfiguration;
-import org.apache.shardingsphere.proxy.fixture.FixtureYamlRuleConfiguration;
+import org.apache.shardingsphere.proxy.fixture.RuleConfigurationFixture;
+import org.apache.shardingsphere.proxy.fixture.YamlRuleConfigurationFixture;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
@@ -83,7 +83,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations() {
-        FixtureYamlRuleConfiguration result = new FixtureYamlRuleConfiguration();
+        YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
         result.setName("testRule");
         return Collections.singletonList(result);
     }
@@ -155,8 +155,8 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     private void assertRuleConfiguration(final RuleConfiguration actual) {
-        assertThat(actual, instanceOf(FixtureRuleConfiguration.class));
-        assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
+        assertThat(actual, instanceOf(RuleConfigurationFixture.class));
+        assertThat(((RuleConfigurationFixture) actual).getName(), is("testRule"));
     }
     
     private void assertUsers(final ShardingSphereUsers actual) {

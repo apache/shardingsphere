@@ -20,8 +20,12 @@ package org.apache.shardingsphere.distsql.parser.api.asserts.statement.rql.impl.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.api.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.ShowShardingBindingTableRulesStatementTestCase;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.api.asserts.segment.SchemaAssert;
+import org.apache.shardingsphere.distsql.parser.api.sql.jaxb.cases.domain.statement.rql.impl.ShowShardingBindingTableRulesStatementTestCase;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowShardingBindingTableRulesStatement;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Show sharding binding table rules statement assert.
@@ -37,5 +41,11 @@ public final class ShowShardingBindingTableRulesStatementAssert {
      * @param expected      expected show sharding binding table rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingBindingTableRulesStatement actual, final ShowShardingBindingTableRulesStatementTestCase expected) {
+        if (null != expected.getSchema()) {
+            assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
+            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+        } else {
+            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getSchema().isPresent());
+        }
     }
 }

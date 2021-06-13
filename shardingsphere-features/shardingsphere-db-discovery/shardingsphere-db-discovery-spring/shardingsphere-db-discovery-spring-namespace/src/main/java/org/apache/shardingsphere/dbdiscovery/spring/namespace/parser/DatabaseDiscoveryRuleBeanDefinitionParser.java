@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.spring.namespace.parser;
 
-import org.apache.shardingsphere.dbdiscovery.common.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.spring.namespace.tag.DatabaseDiscoveryRuleBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;

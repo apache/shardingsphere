@@ -20,14 +20,12 @@ package org.apache.shardingsphere.scaling.mysql.client.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.scaling.mysql.client.InternalResultSet;
 
@@ -42,19 +40,12 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private States currentState = States.ResponsePacket;
     
-    private boolean authenticated;
-    
     private InternalResultSet internalResultSet;
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         MySQLPacketPayload payload = new MySQLPacketPayload(in);
-        if (!authenticated) {
-            out.add(decodeHandshakePacket(payload));
-            authenticated = true;
-        } else {
-            decodeCommandPacket(payload, out);
-        }
+        decodeCommandPacket(payload, out);
     }
     
     private void decodeCommandPacket(final MySQLPacketPayload payload, final List<Object> out) {
@@ -67,14 +58,6 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
             return;
         }
         decodeResponsePacket(payload, out);
-    }
-    
-    private MySQLHandshakePacket decodeHandshakePacket(final MySQLPacketPayload payload) {
-        MySQLHandshakePacket result = new MySQLHandshakePacket(payload);
-        if (!MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName().equals(result.getAuthPluginName())) {
-            throw new UnsupportedOperationException("Only supported SECURE_PASSWORD_AUTHENTICATION server");
-        }
-        return result;
     }
     
     private void decodeFieldPacket(final MySQLPacketPayload payload) {

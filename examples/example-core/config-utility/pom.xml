@@ -31,15 +31,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sharding-api</artifactId>
+            <artifactId>shardingsphere-sharding-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-encrypt-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-encrypt-api</artifactId>
+            <artifactId>shardingsphere-encrypt-core</artifactId>
         </dependency>
     </dependencies>
 </project>
