@@ -98,4 +98,3 @@ public class DropTableStatementFederateRefresherTest {
         return new FederateSchemaMetadata("t_order", metaData);
     }
 }
-git
