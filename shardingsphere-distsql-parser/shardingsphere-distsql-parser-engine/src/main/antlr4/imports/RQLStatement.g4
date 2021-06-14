@@ -23,18 +23,6 @@ showResources
     : SHOW RESOURCES (FROM schemaName)?
     ;
 
-showShardingTableRules
-    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
-    ;
-
-showShardingBindingTableRules
-    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
-    ;
-
-showShardingBroadcastTableRules
-    : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
-    ;
-
 showReadwriteSplittingRules
     : SHOW READWRITE_SPLITTING RULES (FROM schemaName)?
     ;
