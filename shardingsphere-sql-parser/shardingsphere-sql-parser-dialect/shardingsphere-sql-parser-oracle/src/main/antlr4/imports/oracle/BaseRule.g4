@@ -767,3 +767,7 @@ condition
 variableName
     : identifier | STRING_
     ;
+
+externalTableDataProps
+    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec) | USING CLOB subquery))? (LOCATION LP_ (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+ RP_)?
+    ;
