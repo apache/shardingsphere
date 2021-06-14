@@ -15,30 +15,18 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.sharding.distsql.parser.core;
 
-import Keyword, Literals, Symbol;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-showResources
-    : SHOW RESOURCES (FROM schemaName)?
-    ;
-
-showDatabaseDiscoveryRules
-    : SHOW DB_DISCOVERY RULES (FROM schemaName)?
-    ;
-
-showEncryptRules
-    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
-    ;
-
-tableRule
-    : RULE tableName
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
+/**
+ * SQL lexer for sharding rule.
+ */
+public final class ShardingRuleLexer extends ShardingRuleStatementLexer implements SQLLexer {
+    
+    public ShardingRuleLexer(final CharStream input) {
+        super(input);
+    }
+}

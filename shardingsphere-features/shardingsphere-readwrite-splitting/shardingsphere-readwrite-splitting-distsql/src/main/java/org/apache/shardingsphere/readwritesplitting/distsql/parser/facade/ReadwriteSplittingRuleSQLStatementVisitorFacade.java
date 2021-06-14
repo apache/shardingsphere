@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.facade;
 
-import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementVisitorFacade;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleDistSQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL lexer for sharding rule.
+ * SQL statement visitor facade for readwrite-splitting rule.
  */
-public final class ShardingRuleLexer extends ShardingRuleStatementLexer implements SQLLexer {
+public final class ReadwriteSplittingRuleSQLStatementVisitorFacade implements RuleSQLStatementVisitorFacade {
     
-    public ShardingRuleLexer(final CharStream input) {
-        super(input);
+    @Override
+    public Class<? extends SQLVisitor> getVisitorClass() {
+        return ReadwriteSplittingRuleDistSQLStatementVisitor.class;
+    }
+    
+    @Override
+    public String getRuleType() {
+        return "Readwrite-splitting";
     }
 }

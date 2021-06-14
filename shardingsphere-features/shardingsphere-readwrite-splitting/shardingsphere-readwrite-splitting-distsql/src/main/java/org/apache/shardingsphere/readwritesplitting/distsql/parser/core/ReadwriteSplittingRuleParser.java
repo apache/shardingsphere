@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.core;
 
-import Keyword, Literals, Symbol;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-showResources
-    : SHOW RESOURCES (FROM schemaName)?
-    ;
-
-showDatabaseDiscoveryRules
-    : SHOW DB_DISCOVERY RULES (FROM schemaName)?
-    ;
-
-showEncryptRules
-    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
-    ;
-
-tableRule
-    : RULE tableName
-    ;
-
-schemaName
-    : IDENTIFIER
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
+/**
+ * SQL parser for readwrite-splitting rule.
+ */
+public final class ReadwriteSplittingRuleParser extends ReadwriteSplittingRuleStatementParser implements SQLParser {
+    
+    public ReadwriteSplittingRuleParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
+}

@@ -59,32 +59,8 @@ password
     : IDENTIFIER | INT | STRING
     ;
 
-createReadwriteSplittingRule
-    : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
-    ;
-
-readwriteSplittingRuleDefinition
-    : ruleName LP (staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition) (COMMA functionDefinition)? RP
-    ;
-
-staticReadwriteSplittingRuleDefinition
-    : WRITE_RESOURCE EQ writeResourceName COMMA READ_RESOURCES LP resourceName (COMMA resourceName)* RP
-    ;
-
-dynamicReadwriteSplittingRuleDefinition
-    : AUTO_AWARE_RESOURCE EQ IDENTIFIER
-    ;
-
-alterReadwriteSplittingRule
-    : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
-    ;
-
 resources
     : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
-    ;
-
-writeResourceName
-    : resourceName
     ;
 
 resourceName
@@ -101,10 +77,6 @@ tableName
 
 columnName
     : IDENTIFIER
-    ;
-
-dropReadwriteSplittingRule
-    : DROP READWRITE_SPLITTING RULE IDENTIFIER (COMMA IDENTIFIER)*
     ;
 
 functionDefinition

@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.facade;
 
 import org.apache.shardingsphere.distsql.parser.spi.RuleSQLParserFacade;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleLexer;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
 /**
- * SQL parser facade for sharding rule.
+ * SQL parser facade for readwrite-splitting rule.
  */
-public final class ShardingRuleParserFacade implements RuleSQLParserFacade {
+public final class ReadwriteSplittingRuleParserFacade implements RuleSQLParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return ShardingRuleLexer.class;
+        return ReadwriteSplittingRuleLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return ShardingRuleParser.class;
+        return ReadwriteSplittingRuleParser.class;
     }
     
     @Override
     public String getRuleType() {
-        return "Sharding";
+        return "Readwrite-splitting";
     }
 }

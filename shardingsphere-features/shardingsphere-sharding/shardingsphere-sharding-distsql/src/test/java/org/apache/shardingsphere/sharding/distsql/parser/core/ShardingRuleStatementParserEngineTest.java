@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser;
+package org.apache.shardingsphere.sharding.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;

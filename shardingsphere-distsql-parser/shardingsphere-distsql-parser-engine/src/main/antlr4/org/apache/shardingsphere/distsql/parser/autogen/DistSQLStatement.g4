@@ -22,9 +22,6 @@ import Symbol, RDLStatement, RQLStatement, RALStatement;
 execute
     : (addResource
     | dropResource
-    | createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
     | createDatabaseDiscoveryRule
     | alterDatabaseDiscoveryRule
     | dropDatabaseDiscoveryRule
@@ -32,7 +29,6 @@ execute
     | alterEncryptRule
     | dropEncryptRule
     | showResources
-    | showReadwriteSplittingRules
     | showDatabaseDiscoveryRules
     | showEncryptRules
     | showScalingJobList
