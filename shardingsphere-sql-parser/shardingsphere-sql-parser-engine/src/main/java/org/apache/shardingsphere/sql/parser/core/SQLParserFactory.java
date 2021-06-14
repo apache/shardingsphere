@@ -20,11 +20,13 @@ package org.apache.shardingsphere.sql.parser.core;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CodePointBuffer;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
@@ -51,7 +53,9 @@ public final class SQLParserFactory {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static SQLParser createSQLParser(final TokenStream tokenStream, final Class<? extends SQLParser> parserClass) {
-        return parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
+        SQLParser result = parserClass.getConstructor(TokenStream.class).newInstance(tokenStream);
+        ((Parser) result).setErrorHandler(new BailErrorStrategy());
+        return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

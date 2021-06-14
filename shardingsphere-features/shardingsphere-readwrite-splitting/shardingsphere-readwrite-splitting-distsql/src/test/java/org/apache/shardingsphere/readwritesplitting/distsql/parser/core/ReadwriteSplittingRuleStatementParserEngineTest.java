@@ -102,8 +102,7 @@ public final class ReadwriteSplittingRuleStatementParserEngineTest {
         assertTrue(sqlStatement instanceof AlterReadwriteSplittingRuleStatement);
         AlterReadwriteSplittingRuleStatement statement = (AlterReadwriteSplittingRuleStatement) sqlStatement;
         assertThat(statement.getRules().size(), is(2));
-        List<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments
-                = new ArrayList<>(((AlterReadwriteSplittingRuleStatement) sqlStatement).getRules());
+        List<ReadwriteSplittingRuleSegment> readwriteSplittingRuleSegments = new ArrayList<>(((AlterReadwriteSplittingRuleStatement) sqlStatement).getRules());
         assertThat(readwriteSplittingRuleSegments.get(0).getName(), is("ms_group_0"));
         assertThat(readwriteSplittingRuleSegments.get(0).getAutoAwareResource(), is("group_0"));
         assertNull(readwriteSplittingRuleSegments.get(0).getWriteDataSource());

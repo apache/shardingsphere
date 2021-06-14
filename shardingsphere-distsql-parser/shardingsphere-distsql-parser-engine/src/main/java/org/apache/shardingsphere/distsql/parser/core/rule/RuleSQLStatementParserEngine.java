@@ -69,7 +69,7 @@ public final class RuleSQLStatementParserEngine {
             try {
                 ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
                 return new RuleParseASTNode(each.getRuleType(), parseASTNode);
-            } catch (final ParseCancellationException ignored) {
+            } catch (final ParseCancellationException | SQLParsingException ignored) {
             }
         }
         throw new SQLParsingException("You have an error in your SQL syntax.");
