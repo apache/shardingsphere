@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -69,14 +68,14 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     @Mock
     private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration;
-
+    
     @Mock
     private ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration;
     
-    private DropReadwriteSplittingRuleBackendHandler handler = new DropReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
+    private final DropReadwriteSplittingRuleBackendHandler handler = new DropReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -92,9 +91,8 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("pr_ds"));
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>(1, 1);
         loadBalancers.put("pr_ds", shardingSphereAlgorithmConfiguration);
-        when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>(Collections
-                .singletonList(new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections
-                        .singleton(readwriteSplittingDataSourceRuleConfiguration)), loadBalancers))));
+        when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>(
+                Collections.singleton(new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(readwriteSplittingDataSourceRuleConfiguration)), loadBalancers))));
         when(readwriteSplittingDataSourceRuleConfiguration.getName()).thenReturn("pr_ds");
         when(readwriteSplittingDataSourceRuleConfiguration.getLoadBalancerName()).thenReturn("pr_ds");
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
@@ -110,8 +108,8 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
 
     @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
     public void assertExecuteWithNoDroppedReadwriteSplittingRules() {
-        when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("pr_ds"));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
+        when(sqlStatement.getRuleNames()).thenReturn(Collections.singleton("pr_ds"));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
         handler.execute("test", sqlStatement);
     }
 }

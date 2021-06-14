@@ -34,7 +34,7 @@ public final class H2Recognizer implements JDBCDriverURLRecognizer {
     
     @Override
     public Collection<String> getURLPrefixes() {
-        return Collections.singletonList("jdbc:h2:");
+        return Collections.singleton("jdbc:h2:");
     }
     
     @Override

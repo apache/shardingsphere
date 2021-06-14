@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.bind;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLBinaryResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
+import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -42,6 +44,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.sql.JDBCType;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -135,20 +138,22 @@ public final class PostgreSQLComBindExecutorTest {
         PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, backendConnection);
         setMockFieldIntoExecutor(executor);
         PostgreSQLPacket actualQueryRowPacket = executor.getQueryRowPacket();
-        verify(queryResponseRow).getData();
+        verify(queryResponseRow).getCells();
         assertThat(actualQueryRowPacket, is(instanceOf(PostgreSQLDataRowPacket.class)));
     }
     
     @Test
     public void assertDataRowIsBinary() throws SQLException {
-        when(bindPacket.isBinaryRowData()).thenReturn(true);
+        when(bindPacket.getResultFormatByColumnIndex(0)).thenReturn(PostgreSQLColumnFormat.BINARY);
         QueryResponseRow queryResponseRow = mock(QueryResponseRow.class);
+        when(queryResponseRow.getCells()).thenReturn(Collections.singletonList(new BinaryQueryResponseCell(JDBCType.BIGINT.getVendorTypeNumber(), Long.MAX_VALUE)));
         when(databaseCommunicationEngine.getQueryResponseRow()).thenReturn(queryResponseRow);
         PostgreSQLComBindExecutor executor = new PostgreSQLComBindExecutor(connectionContext, bindPacket, backendConnection);
         setMockFieldIntoExecutor(executor);
         PostgreSQLPacket actualQueryRowPacket = executor.getQueryRowPacket();
-        verify(queryResponseRow).getCells();
-        assertThat(actualQueryRowPacket, is(instanceOf(PostgreSQLBinaryResultSetRowPacket.class)));
+        assertThat(actualQueryRowPacket, is(instanceOf(PostgreSQLDataRowPacket.class)));
+        Collection<Object> actualData = ((PostgreSQLDataRowPacket) actualQueryRowPacket).getData();
+        assertThat(actualData.iterator().next(), instanceOf(BinaryCell.class));
     }
     
     @Test

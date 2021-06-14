@@ -64,8 +64,8 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
     }
     
     private Collection<DatabasePacket<?>> closePortal() {
-        PostgreSQLErrorResponsePacket packet = PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.FEATURE_NOT_SUPPORTED,
-                "Not implemented: Close portal").build();
-        return Collections.singletonList(packet);
+        PostgreSQLErrorResponsePacket packet = PostgreSQLErrorResponsePacket.newBuilder(
+                PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.FEATURE_NOT_SUPPORTED, "Not implemented: Close portal").build();
+        return Collections.singleton(packet);
     }
 }

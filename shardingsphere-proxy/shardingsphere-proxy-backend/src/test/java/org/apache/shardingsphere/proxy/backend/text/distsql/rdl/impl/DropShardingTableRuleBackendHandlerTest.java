@@ -42,13 +42,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -75,7 +75,7 @@ public final class DropShardingTableRuleBackendHandlerTest {
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
     
-    private DropShardingTableRuleBackendHandler handler = new DropShardingTableRuleBackendHandler(sqlStatement, backendConnection);
+    private final DropShardingTableRuleBackendHandler handler = new DropShardingTableRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -89,12 +89,12 @@ public final class DropShardingTableRuleBackendHandlerTest {
     public void assertExecuteWithoutShardingRule() {
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = ShardingTableRuleNotExistedException.class)
     public void assertExecuteWithNotExistTableRule() {
         TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));
-        when(ruleMetaData.getConfigurations()).thenReturn(Arrays.asList(new ShardingRuleConfiguration()));
-        when(sqlStatement.getTableNames()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ShardingRuleConfiguration()));
+        when(sqlStatement.getTableNames()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
 
@@ -102,7 +102,7 @@ public final class DropShardingTableRuleBackendHandlerTest {
     public void assertExecuteWithBindingTableRule() {
         TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order_item"));
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        when(sqlStatement.getTableNames()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getTableNames()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
 
@@ -110,36 +110,36 @@ public final class DropShardingTableRuleBackendHandlerTest {
     public void assertExecute() {
         TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        when(sqlStatement.getTableNames()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getTableNames()).thenReturn(Collections.singleton(tableRuleSegment));
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
         ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) ProxyContext.getInstance()
                 .getMetaData("test").getRuleMetaData().getConfigurations().iterator().next();
         Collection<String> shardingTables = getShardingTables(shardingRuleConfiguration);
-        assertTrue(!shardingTables.contains("t_order"));
+        assertFalse(shardingTables.contains("t_order"));
         Collection<String> bindingTables = getBindingTables(shardingRuleConfiguration);
         assertTrue(bindingTables.contains("t_order_item"));
     }
     
     private Collection<RuleConfiguration> buildShardingConfigurations() {
-        ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
-        configuration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        configuration.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
-        configuration.setBindingTableGroups(Collections.singletonList("t_order_item"));
-        return new ArrayList<>(Collections.singletonList(configuration));
+        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
+        config.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
+        config.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
+        config.setBindingTableGroups(Collections.singleton("t_order_item"));
+        return new ArrayList<>(Collections.singleton(config));
     }
-
+    
     private Collection<String> getShardingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
         Collection<String> result = new LinkedList<>();
         result.addAll(shardingRuleConfiguration.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         result.addAll(shardingRuleConfiguration.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         return result;
     }
-
+    
     private Collection<String> getBindingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
-        Collection<String> bindTables = new LinkedHashSet<>();
-        shardingRuleConfiguration.getBindingTableGroups().forEach(each -> bindTables.addAll(Splitter.on(",").splitToList(each)));
-        return bindTables;
+        Collection<String> result = new LinkedHashSet<>();
+        shardingRuleConfiguration.getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").splitToList(each)));
+        return result;
     }
 }

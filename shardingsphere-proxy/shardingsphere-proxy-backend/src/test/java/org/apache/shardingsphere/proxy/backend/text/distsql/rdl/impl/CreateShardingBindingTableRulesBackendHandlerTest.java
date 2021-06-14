@@ -38,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -65,14 +66,14 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     @Before
     public void setUp() throws Exception {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Arrays.asList("test"));
+        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
     }
     
     @Test
     public void assertExecute() {
-        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Arrays.asList(buildShardingRuleConfiguration()));
+        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildShardingRuleConfiguration()));
         CreateShardingBindingTableRulesStatement statement = buildShardingTableRuleStatement();
         CreateShardingBindingTableRulesBackendHandler handler = new CreateShardingBindingTableRulesBackendHandler(statement, backendConnection);
         ResponseHeader responseHeader = handler.execute("test", statement);
@@ -82,7 +83,7 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
     public void assertExecuteWithNotExistTableRule() {
-        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Arrays.asList(new ShardingRuleConfiguration()));
+        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ShardingRuleConfiguration()));
         CreateShardingBindingTableRulesStatement statement = buildShardingTableRuleStatement();
         CreateShardingBindingTableRulesBackendHandler handler = new CreateShardingBindingTableRulesBackendHandler(statement, backendConnection);
         ResponseHeader responseHeader = handler.execute("test", statement);
@@ -92,7 +93,7 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     
     @Test(expected = DuplicateBindingTablesException.class)
     public void assertExecuteWithDuplicateTablesInSQL() {
-        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Arrays.asList(buildShardingRuleConfiguration()));
+        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildShardingRuleConfiguration()));
         CreateShardingBindingTableRulesStatement statement = buildDuplicateShardingTableRuleStatement();
         CreateShardingBindingTableRulesBackendHandler handler = new CreateShardingBindingTableRulesBackendHandler(statement, backendConnection);
         handler.execute("test", statement);
@@ -100,7 +101,7 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     
     @Test(expected = DuplicateBindingTablesException.class)
     public void assertExecuteWithDuplicateTablesInShardingRule() {
-        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Arrays.asList(buildShardingBindingTableRuleConfiguration()));
+        when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildShardingBindingTableRuleConfiguration()));
         CreateShardingBindingTableRulesStatement statement = buildShardingTableRuleStatement();
         CreateShardingBindingTableRulesBackendHandler handler = new CreateShardingBindingTableRulesBackendHandler(statement, backendConnection);
         handler.execute("test", statement);
@@ -126,24 +127,18 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     }
     
     private CreateShardingBindingTableRulesStatement buildShardingTableRuleStatement() {
-        CreateShardingBindingTableRulesStatement result = new CreateShardingBindingTableRulesStatement();
         ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
         segment.setTables("t_order,t_order_item");
-        result.getRules().add(segment);
         ShardingBindingTableRuleSegment segmentAnother = new ShardingBindingTableRuleSegment();
         segmentAnother.setTables("t_1,t_2");
-        result.getRules().add(segmentAnother);
-        return result;
+        return new CreateShardingBindingTableRulesStatement(Arrays.asList(segment, segmentAnother));
     }
     
     private CreateShardingBindingTableRulesStatement buildDuplicateShardingTableRuleStatement() {
-        CreateShardingBindingTableRulesStatement result = new CreateShardingBindingTableRulesStatement();
         ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
         segment.setTables("t_order,t_order_item");
-        result.getRules().add(segment);
         ShardingBindingTableRuleSegment segmentAnother = new ShardingBindingTableRuleSegment();
         segmentAnother.setTables("t_order,t_order_item");
-        result.getRules().add(segmentAnother);
-        return result;
+        return new CreateShardingBindingTableRulesStatement(Arrays.asList(segment, segmentAnother));
     }
 }

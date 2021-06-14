@@ -65,20 +65,20 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     @Mock
     private ShardingSphereSchema shardingSphereSchema;
     
-    private CreateShardingTableRuleBackendHandler handler = new CreateShardingTableRuleBackendHandler(sqlStatement, backendConnection);
+    private final CreateShardingTableRuleBackendHandler handler = new CreateShardingTableRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
+        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(shardingSphereMetaData.getSchema()).thenReturn(shardingSphereSchema);
-        when(shardingSphereSchema.getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(shardingSphereSchema.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
     }
     
     @Test
@@ -99,7 +99,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
@@ -108,7 +108,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        when(sqlStatement.getTables()).thenReturn(Collections.singletonList(tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
@@ -120,7 +120,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         FunctionSegment shardingAlgorithm = new FunctionSegment();
         shardingAlgorithm.setAlgorithmName("algorithm-not-exist");
         tableRuleSegment.setTableStrategy(shardingAlgorithm);
-        when(sqlStatement.getTables()).thenReturn(Arrays.asList(tableRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
 }

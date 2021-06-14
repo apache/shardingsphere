@@ -17,7 +17,7 @@ It is inevitably to have some unlisted SQLs, welcome to supplement for that. We 
 
 ### Route to multiple data nodes
 
-Fully support DML, DDL, DCL, TCL and some DAL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN (does not support cross-database relevance). Here is an example of a most complex kind of DML:
+Fully support DML, DDL, DCL, TCL and some DAL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN. Here is an example of a most complex kind of DML:
 
 - Main SELECT
 
@@ -54,8 +54,9 @@ Partially support CASE WHEN
 * `CASE WHEN` containing logical-table is not supported(please use alias of table)
 
 Do not support HAVING and UNION (ALL) 
+
 Partly available sub-query
-* If subquery contains `WHERE` condition, the sharding key must be included. If the outer query also contains the sharding key, the sharding key in subquery and outer query must be consistent.
+* If subquery and outer query specify sharding key at the same time, the value of sharding key must be consistent.
 
 Support not only pagination sub-query (see [pagination](https://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for more details), but also sub-query with the same mode. No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
 
@@ -63,14 +64,15 @@ For example, the following sub-query is available:
 
 ```sql
 SELECT COUNT(*) FROM (SELECT * FROM t_order) o;
+SELECT COUNT(*) FROM (SELECT * FROM t_order) o WHERE o.order_id = 1;
 SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o;
 SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 1;
+SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE product_id = 1) o;
 ```
 
 The following sub-query is unavailable:
 
 ```sql
-SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE product_id = 1) o;
 SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_id = 2;
 ```
 
@@ -105,8 +107,13 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                                         |
 | SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    |                                         |
 | SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                                         |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
+| SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
+| (SELECT * FROM tbl_name)                                                                    |                                         |
 | INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                                         |
 | INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                                         |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES(1 + 2, ?, ...)                                |                                         |
 | INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?, ....), (?, ?, ....)                    |                                         |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | The table inserted and the table selected must be the same or bind tables |
 | REPLACE INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ? | The table replaced and the table selected must be the same or bind tables |
@@ -119,22 +126,17 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | CREATE INDEX idx_name ON tbl_name                                                           |                                         |
 | DROP INDEX idx_name ON tbl_name                                                             |                                         |
 | DROP INDEX idx_name                                                                         |                                         |
-| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
-| SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
 
 ### Unsupported SQL
 
 | SQL                                                                                        | Reason                                              |
 | ------------------------------------------------------------------------------------------ | --------------------------------------------------- |
-| INSERT INTO tbl_name (col1, col2, ...) VALUES(1+2, ?, ...)                                 | VALUES clause does not support operation expression |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?               | SELECT clause does not support *-shorthand and built-in key generators |
 | REPLACE INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?              | SELECT clause does not support *-shorthand and built-in key generators |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                                               |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                                           |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | See DISTINCT availability detail                    |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | Lead to full routing                                |
-| (SELECT * FROM tbl_name)                                                                   | Contain brackets                              |
 | SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | The select function item contains TableName. Otherwise, If this query table had an alias, then TableAlias could work well in select function items. |
 
 ## DISTINCT Availability Explanation
