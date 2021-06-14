@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.standard;
+package org.apache.shardingsphere.distsql.parser.core.resource;
 
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser;
@@ -24,11 +24,11 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL parser for standard dist SQL.
+ * SQL parser for resource dist SQL.
  */
-public final class StandardDistSQLParser extends DistSQLStatementParser implements SQLParser {
+public final class ResourceDistSQLParser extends DistSQLStatementParser implements SQLParser {
     
-    public StandardDistSQLParser(final TokenStream input) {
+    public ResourceDistSQLParser(final TokenStream input) {
         super(input);
     }
     

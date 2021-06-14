@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.parser.api;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.shardingsphere.distsql.parser.core.feature.FeatureTypedSQLStatementParserEngine;
-import org.apache.shardingsphere.distsql.parser.core.standard.StandardSQLStatementParserEngine;
+import org.apache.shardingsphere.distsql.parser.core.resource.ResourceSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -35,7 +35,7 @@ public final class DistSQLStatementParserEngine {
      */
     public SQLStatement parse(final String sql) {
         try {
-            return new StandardSQLStatementParserEngine().parse(sql);
+            return new ResourceSQLStatementParserEngine().parse(sql);
         } catch (final ParseCancellationException ignored) {
             return new FeatureTypedSQLStatementParserEngine().parse(sql);
         }
