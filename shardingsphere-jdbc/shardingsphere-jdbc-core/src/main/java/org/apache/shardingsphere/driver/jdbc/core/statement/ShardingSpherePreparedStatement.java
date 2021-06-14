@@ -274,6 +274,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 Collection<ExecuteResult> executeResults = rawExecutor.execute(createRawExecutionGroupContext(), executionContext.getSqlStatementContext(), new RawSQLExecutorCallback());
                 return executeResults.iterator().next() instanceof QueryResult;
             }
+            if (executionContext.getRouteContext().isFederated()) {
+                List<QueryResult> queryResults = executeFederatedQuery();
+                return !queryResults.isEmpty();
+            }
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
             cacheStatements(executionGroupContext.getInputGroups());
             return driverJDBCExecutor.execute(executionGroupContext,
@@ -335,6 +339,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (Statement each : statements) {
             result.add(each.getResultSet());
+        }
+        if (executionContext.getRouteContext().isFederated()) {
+            result.add(federateExecutor.getResultSet());
         }
         return result;
     }

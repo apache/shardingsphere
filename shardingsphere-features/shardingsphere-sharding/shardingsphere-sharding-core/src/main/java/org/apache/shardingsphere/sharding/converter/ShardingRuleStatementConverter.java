@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
@@ -51,7 +51,7 @@ public final class ShardingRuleStatementConverter {
      * @return YAML sharding rule configuration
      */
     public static YamlShardingRuleConfiguration convert(final CreateShardingTableRuleStatement sqlStatement) {
-        return convertTableRuleSegments(sqlStatement.getTables());
+        return convertTableRuleSegments(sqlStatement.getRules());
     }
 
     /**
@@ -61,7 +61,7 @@ public final class ShardingRuleStatementConverter {
      * @return YAML sharding rule configuration
      */
     public static YamlShardingRuleConfiguration convert(final AlterShardingTableRuleStatement sqlStatement) {
-        return convertTableRuleSegments(sqlStatement.getTables());
+        return convertTableRuleSegments(sqlStatement.getRules());
     }
     
     /**

@@ -64,9 +64,9 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     
     @Override
     public void doExecute(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration = DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getDatabaseDiscoveryRules());
+        YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfig = DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules());
         DatabaseDiscoveryRuleConfiguration createdDatabaseDiscoveryRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singleton(yamlDatabaseDiscoveryRuleConfiguration))
+                .swapToRuleConfigurations(Collections.singleton(yamlDatabaseDiscoveryRuleConfig))
                 .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).findAny().map(each -> (DatabaseDiscoveryRuleConfiguration) each).get();
         if (getDatabaseDiscoveryRuleConfiguration(schemaName).isPresent()) {
             DatabaseDiscoveryRuleConfiguration existDatabaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName).get();
@@ -81,7 +81,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
         Optional<DatabaseDiscoveryRuleConfiguration> optional = getDatabaseDiscoveryRuleConfiguration(schemaName);
         if (optional.isPresent()) {
             Collection<String> existRuleNames = getRuleNames(optional.get());
-            Collection<String> duplicateRuleNames = sqlStatement.getDatabaseDiscoveryRules().stream()
+            Collection<String> duplicateRuleNames = sqlStatement.getRules().stream()
                     .map(DatabaseDiscoveryRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toSet());
             duplicateRuleNames.addAll(getDuplicateRuleNames(sqlStatement));
             if (!duplicateRuleNames.isEmpty()) {
@@ -91,7 +91,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     }
     
     private Collection<String> getDuplicateRuleNames(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        return sqlStatement.getDatabaseDiscoveryRules().stream()
+        return sqlStatement.getRules().stream()
                 .collect(Collectors.toMap(DatabaseDiscoveryRuleSegment::getName, e -> 1, Integer::sum))
                 .entrySet().stream()
                 .filter(entry -> entry.getValue() > 1)
@@ -101,7 +101,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     
     private void checkResources(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         Collection<String> resources = new LinkedHashSet<>();
-        sqlStatement.getDatabaseDiscoveryRules().forEach(each -> resources.addAll(each.getDataSources()));
+        sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
         Collection<String> notExistResources = getInvalidResources(schemaName, resources);
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
@@ -109,7 +109,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     }
     
     private void checkDiscoverTypes(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        Collection<String> invalidDiscoveryTypes = sqlStatement.getDatabaseDiscoveryRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
+        Collection<String> invalidDiscoveryTypes = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidDiscoveryTypes.isEmpty()) {

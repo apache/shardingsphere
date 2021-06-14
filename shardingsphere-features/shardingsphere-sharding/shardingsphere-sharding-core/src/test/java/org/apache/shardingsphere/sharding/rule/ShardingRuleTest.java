@@ -129,21 +129,21 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertIsNotAllBindingTable() {
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.singletonList("new_Table")));
+        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.singleton("new_Table")));
         assertFalse(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_Table", "new_Table")));
     }
     
     @Test
     public void assertIsAllBindingTable() {
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singletonList("logic_Table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singletonList("logic_table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singletonList("sub_Logic_Table")));
-        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singletonList("sub_logic_table")));
+        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("logic_Table")));
+        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("logic_table")));
+        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("sub_Logic_Table")));
+        assertTrue(createMaximumShardingRule().isAllBindingTables(Collections.singleton("sub_logic_table")));
         assertTrue(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_Table", "sub_Logic_Table")));
         assertTrue(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_table", "sub_logic_Table")));
         assertFalse(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_table", "sub_logic_Table", "new_table")));
         assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.emptyList()));
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.singletonList("new_Table")));
+        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.singleton("new_Table")));
     }
     
     @Test
@@ -170,7 +170,7 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertIsAllBroadcastTable() {
-        assertTrue(createMaximumShardingRule().isAllBroadcastTables(Collections.singletonList("Broadcast_Table")));
+        assertTrue(createMaximumShardingRule().isAllBroadcastTables(Collections.singleton("Broadcast_Table")));
     }
     
     @Test
@@ -285,7 +285,7 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertTableRuleExists() {
-        assertTrue(createMaximumShardingRule().tableRuleExists(Collections.singletonList("logic_table")));
+        assertTrue(createMaximumShardingRule().tableRuleExists(Collections.singleton("logic_table")));
     }
     
     @Test
@@ -295,7 +295,7 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertTableRuleNotExists() {
-        assertFalse(createMinimumShardingRule().tableRuleExists(Collections.singletonList("table_0")));
+        assertFalse(createMinimumShardingRule().tableRuleExists(Collections.singleton("table_0")));
     }
     
     @Test

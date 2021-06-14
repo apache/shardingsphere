@@ -22,16 +22,7 @@ import Symbol, RDLStatement, RQLStatement, RALStatement;
 execute
     : (addResource
     | dropResource
-    | createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
     | createReadwriteSplittingRule
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
     | alterReadwriteSplittingRule
     | dropReadwriteSplittingRule
     | createDatabaseDiscoveryRule
@@ -41,12 +32,9 @@ execute
     | alterEncryptRule
     | dropEncryptRule
     | showResources
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
     | showReadwriteSplittingRules
     | showDatabaseDiscoveryRules
     | showEncryptRules
-    | showShardingTableRules
     | showScalingJobList
     | showScalingJobStatus
     | startScalingJob

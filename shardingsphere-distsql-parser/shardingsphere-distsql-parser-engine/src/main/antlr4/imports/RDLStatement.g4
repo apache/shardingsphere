@@ -59,34 +59,6 @@ password
     : IDENTIFIER | INT | STRING
     ;
 
-createShardingTableRule
-    : CREATE SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
-    ;
-
-createShardingBindingTableRules
-    : CREATE SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
-    ;
-
-bindTableRulesDefinition
-    : LP tableName (COMMA tableName)* RP
-    ;
-
-createShardingBroadcastTableRules
-    : CREATE SHARDING BROADCAST TABLE RULES LP IDENTIFIER (COMMA IDENTIFIER)* RP
-    ;
-
-alterShardingTableRule
-    : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
-    ;
-
-alterShardingBindingTableRules
-    : ALTER SHARDING BINDING TABLE RULES LP bindTableRulesDefinition (COMMA bindTableRulesDefinition)* RP
-    ;
-
-alterShardingBroadcastTableRules
-    : ALTER SHARDING BROADCAST TABLE RULES LP IDENTIFIER (COMMA IDENTIFIER)* RP
-    ;
-
 createReadwriteSplittingRule
     : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
@@ -107,10 +79,6 @@ alterReadwriteSplittingRule
     : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
 
-shardingTableRuleDefinition
-    : tableName LP resources (COMMA shardingColumn)? (COMMA functionDefinition)? (COMMA keyGenerateStrategy)? RP
-    ;
-
 resources
     : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
@@ -121,14 +89,6 @@ writeResourceName
 
 resourceName
     : IDENTIFIER
-    ;
-
-shardingColumn
-    : SHARDING_COLUMN EQ columnName
-    ;
-
-keyGenerateStrategy
-    : GENERATED_KEY LP COLUMN EQ columnName COMMA functionDefinition RP
     ;
 
 ruleName
@@ -145,30 +105,6 @@ columnName
 
 dropReadwriteSplittingRule
     : DROP READWRITE_SPLITTING RULE IDENTIFIER (COMMA IDENTIFIER)*
-    ;
-
-dropShardingTableRule
-    : DROP SHARDING TABLE RULE tableName (COMMA tableName)*
-    ;
-
-dropShardingBindingTableRules
-    : DROP SHARDING BINDING TABLE RULES
-    ;
-
-dropShardingBroadcastTableRules
-    : DROP SHARDING BROADCAST TABLE RULES
-    ;
-
-showShardingRule
-    : SHOW SHARDING RULE (FROM schemaName)?
-    ;
-
-schemaNames
-    : schemaName (COMMA schemaName)*
-    ;
-
-schemaName
-    : IDENTIFIER
     ;
 
 functionDefinition
@@ -208,7 +144,7 @@ createEncryptRule
     ;
 
 encryptRuleDefinition
-    : tableName LP RESOURCE EQ resourceName COMMA COLUMNS LP columnDefinition (COMMA columnDefinition)*  RP RP
+    : tableName LP (RESOURCE EQ resourceName COMMA)? COLUMNS LP columnDefinition (COMMA columnDefinition)*  RP RP
     ;
 
 columnDefinition

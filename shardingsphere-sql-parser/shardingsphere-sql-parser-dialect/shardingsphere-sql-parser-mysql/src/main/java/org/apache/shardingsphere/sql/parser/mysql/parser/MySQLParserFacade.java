@@ -19,17 +19,12 @@ package org.apache.shardingsphere.sql.parser.mysql.parser;
 
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
+import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 
 /**
  * SQL parser facade for MySQL.
  */
-public final class MySQLParserFacade implements SQLParserFacade {
-    
-    @Override
-    public String getDatabaseType() {
-        return "MySQL";
-    }
+public final class MySQLParserFacade implements DatabaseTypedSQLParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
@@ -39,5 +34,10 @@ public final class MySQLParserFacade implements SQLParserFacade {
     @Override
     public Class<? extends SQLParser> getParserClass() {
         return MySQLParser.class;
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
     }
 }

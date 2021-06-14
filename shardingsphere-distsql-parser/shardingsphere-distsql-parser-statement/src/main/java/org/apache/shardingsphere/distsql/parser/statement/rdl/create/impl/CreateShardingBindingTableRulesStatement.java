@@ -20,17 +20,16 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Create sharding binding table rules statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateShardingBindingTableRulesStatement extends CreateRDLStatement {
+public final class CreateShardingBindingTableRulesStatement extends CreateRuleStatement {
     
-    private final Collection<ShardingBindingTableRuleSegment> rules = new LinkedList<>();
+    private final Collection<ShardingBindingTableRuleSegment> rules;
 }
