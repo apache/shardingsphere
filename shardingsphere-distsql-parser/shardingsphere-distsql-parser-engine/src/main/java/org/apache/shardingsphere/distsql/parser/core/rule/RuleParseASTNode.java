@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.spi;
+package org.apache.shardingsphere.distsql.parser.core.rule;
 
-import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Feature type based SQL parser facade.
+ * Rule parse AST node.
  */
-public interface FeatureTypedSQLParserFacade extends SQLParserFacade {
+@RequiredArgsConstructor
+@Getter
+public final class RuleParseASTNode {
     
-    /**
-     * Get feature type.
-     *
-     * @return feature type
-     */
-    String getFeatureType();
+    private final String ruleType;
+    
+    private final ParseASTNode parseASTNode;
 }

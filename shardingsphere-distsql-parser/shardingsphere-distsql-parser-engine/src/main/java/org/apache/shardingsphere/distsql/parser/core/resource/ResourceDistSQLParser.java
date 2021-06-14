@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.core.resource;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-execute
-    : (addResource
-    | dropResource
-    | createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showResources
-    | showReadwriteSplittingRules
-    | showDatabaseDiscoveryRules
-    | showEncryptRules
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * SQL parser for resource dist SQL.
+ */
+public final class ResourceDistSQLParser extends DistSQLStatementParser implements SQLParser {
+    
+    public ResourceDistSQLParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
+}

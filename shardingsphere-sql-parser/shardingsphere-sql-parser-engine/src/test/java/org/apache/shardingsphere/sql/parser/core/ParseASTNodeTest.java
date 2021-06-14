@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.sql.parser.core;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.junit.Test;
 
-execute
-    : (addResource
-    | dropResource
-    | createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showResources
-    | showReadwriteSplittingRules
-    | showDatabaseDiscoveryRules
-    | showEncryptRules
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public final class ParseASTNodeTest {
+    
+    @Test
+    public void assertGetRootNode() {
+        ParseTree parseTree = mock(ParseTree.class);
+        when(parseTree.getChild(0)).thenReturn(parseTree);
+        assertThat(new ParseASTNode(parseTree).getRootNode(), is(parseTree));
+    }
+}

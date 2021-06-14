@@ -15,32 +15,19 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.spi;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
-execute
-    : (addResource
-    | dropResource
-    | createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showResources
-    | showReadwriteSplittingRules
-    | showDatabaseDiscoveryRules
-    | showEncryptRules
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * Rule SQL parser facade.
+ */
+public interface RuleSQLParserFacade extends SQLParserFacade {
+    
+    /**
+     * Get rule type.
+     *
+     * @return rule type
+     */
+    String getRuleType();
+}

@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core;
+package org.apache.shardingsphere.sharding.distsql.parser;
 
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser for Dist SQL.
+ * Sharding rule SQL statement visitor facade.
  */
-public final class DistSQLParser extends DistSQLStatementParser implements SQLParser {
+public final class ShardingRuleSQLStatementVisitorFacade implements RuleSQLStatementVisitorFacade {
     
-    public DistSQLParser(final TokenStream input) {
-        super(input);
+    @Override
+    public Class<? extends SQLVisitor> getVisitorClass() {
+        return ShardingRuleDistSQLStatementVisitor.class;
     }
     
     @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute());
+    public String getRuleType() {
+        return "Sharding";
     }
 }

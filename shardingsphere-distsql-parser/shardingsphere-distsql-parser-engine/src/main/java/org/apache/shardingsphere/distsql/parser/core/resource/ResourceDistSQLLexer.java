@@ -15,32 +15,18 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.core.resource;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-execute
-    : (addResource
-    | dropResource
-    | createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showResources
-    | showReadwriteSplittingRules
-    | showDatabaseDiscoveryRules
-    | showEncryptRules
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * SQL lexer for resource dist SQL.
+ */
+public final class ResourceDistSQLLexer extends DistSQLStatementLexer implements SQLLexer {
+    
+    public ResourceDistSQLLexer(final CharStream input) {
+        super(input);
+    }
+}

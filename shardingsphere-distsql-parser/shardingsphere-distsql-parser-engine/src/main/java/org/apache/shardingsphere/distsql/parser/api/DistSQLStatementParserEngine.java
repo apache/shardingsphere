@@ -18,68 +18,26 @@
 package org.apache.shardingsphere.distsql.parser.api;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.apache.shardingsphere.distsql.parser.core.DistSQLParserFactory;
-import org.apache.shardingsphere.distsql.parser.core.DistSQLVisitor;
-import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLParserFacade;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.distsql.parser.core.resource.ResourceSQLStatementParserEngine;
+import org.apache.shardingsphere.distsql.parser.core.rule.RuleSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.ServiceLoader;
 
 /**
  * Dist SQL statement parser engine.
  */
 public final class DistSQLStatementParserEngine {
     
-    private static final Collection<FeatureTypedSQLParserFacade> RULE_PARSER_FACADES = new LinkedList<>();
-    
-    static {
-        for (FeatureTypedSQLParserFacade each : ServiceLoader.load(FeatureTypedSQLParserFacade.class)) {
-            RULE_PARSER_FACADES.add(each);
-        }
-    }
-    
     /**
      * Parse SQL.
      *
      * @param sql SQL to be parsed
-     * @return AST node
+     * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        ParseASTNode parseASTNode;
         try {
-            parseASTNode = parseFromStandardParser(sql);
-        } catch (final ParseCancellationException ex) {
-            parseASTNode = parseFromRuleParsers(sql);
+            return new ResourceSQLStatementParserEngine().parse(sql);
+        } catch (final ParseCancellationException ignored) {
+            return new RuleSQLStatementParserEngine().parse(sql);
         }
-        if (parseASTNode.getRootNode() instanceof ErrorNode) {
-            throw new SQLParsingException("Unsupported SQL of `%s`", sql);
-        }
-        return (SQLStatement) new DistSQLVisitor().visit(parseASTNode.getRootNode());
-    }
-    
-    private ParseASTNode parseFromStandardParser(final String sql) {
-        SQLParser sqlParser = DistSQLParserFactory.newInstance(sql);
-        try {
-            return (ParseASTNode) sqlParser.parse();
-        } catch (final ParseCancellationException ex) {
-            throw new SQLParsingException("You have an error in your SQL syntax.");
-        }
-    }
-    
-    private ParseASTNode parseFromRuleParsers(final String sql) {
-        for (FeatureTypedSQLParserFacade each : RULE_PARSER_FACADES) {
-            try {
-                return (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
-            } catch (final ParseCancellationException ignored) {
-            }
-        }
-        throw new SQLParsingException("You have an error in your SQL syntax.");
     }
 }

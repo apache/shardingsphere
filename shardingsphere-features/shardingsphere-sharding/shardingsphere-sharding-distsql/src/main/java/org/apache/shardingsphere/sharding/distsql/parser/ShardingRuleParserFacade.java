@@ -15,32 +15,29 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.sharding.distsql.parser;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.apache.shardingsphere.distsql.parser.spi.RuleSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
-execute
-    : (addResource
-    | dropResource
-    | createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showResources
-    | showReadwriteSplittingRules
-    | showDatabaseDiscoveryRules
-    | showEncryptRules
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * SQL parser facade for sharding rule.
+ */
+public final class ShardingRuleParserFacade implements RuleSQLParserFacade {
+    
+    @Override
+    public Class<? extends SQLLexer> getLexerClass() {
+        return ShardingRuleLexer.class;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return ShardingRuleParser.class;
+    }
+    
+    @Override
+    public String getRuleType() {
+        return "Sharding";
+    }
+}
