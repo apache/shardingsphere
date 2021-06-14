@@ -17,24 +17,17 @@
 
 package org.apache.shardingsphere.distsql.parser.spi;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 /**
- * Feature type based SQL statement visitor facade.
+ * Rule SQL parser facade.
  */
-public interface FeatureTypedSQLStatementVisitorFacade {
+public interface RuleSQLParserFacade extends SQLParserFacade {
     
     /**
-     * Get visitor class.
+     * Get rule type.
      *
-     * @return visitor class
+     * @return rule type
      */
-    Class<? extends SQLVisitor> getVisitorClass();
-    
-    /**
-     * Get feature type.
-     *
-     * @return feature type
-     */
-    String getFeatureType();
+    String getRuleType();
 }
