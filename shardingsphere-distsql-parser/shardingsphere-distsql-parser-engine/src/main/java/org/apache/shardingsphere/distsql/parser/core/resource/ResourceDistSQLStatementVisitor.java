@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.standard;
+package org.apache.shardingsphere.distsql.parser.core.resource;
 
 import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.RuleContext;
@@ -125,9 +125,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for standard dist SQL.
+ * SQL statement visitor for resource dist SQL.
  */
-public final class StandardDistSQLStatementVisitor extends DistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class ResourceDistSQLStatementVisitor extends DistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitAddResource(final AddResourceContext ctx) {

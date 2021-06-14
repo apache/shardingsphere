@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.standard;
+package org.apache.shardingsphere.distsql.parser.core.resource;
 
 import org.antlr.v4.runtime.CharStream;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for standard dist SQL.
+ * SQL lexer for resource dist SQL.
  */
-public final class StandardDistSQLLexer extends DistSQLStatementLexer implements SQLLexer {
+public final class ResourceDistSQLLexer extends DistSQLStatementLexer implements SQLLexer {
     
-    public StandardDistSQLLexer(final CharStream input) {
+    public ResourceDistSQLLexer(final CharStream input) {
         super(input);
     }
 }

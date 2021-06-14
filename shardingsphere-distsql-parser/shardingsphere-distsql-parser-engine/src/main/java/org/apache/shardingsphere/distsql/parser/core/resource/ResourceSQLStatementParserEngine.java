@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.standard;
+package org.apache.shardingsphere.distsql.parser.core.resource;
 
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Standard SQL statement parser engine.
+ * SQL statement parser engine for resource dist SQL.
  */
-public final class StandardSQLStatementParserEngine {
+public final class ResourceSQLStatementParserEngine {
     
     /**
      * Parse SQL.
@@ -36,7 +36,7 @@ public final class StandardSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        ASTNode astNode = SQLParserFactory.newInstance(sql, StandardDistSQLLexer.class, StandardDistSQLParser.class).parse();
+        ASTNode astNode = SQLParserFactory.newInstance(sql, ResourceDistSQLLexer.class, ResourceDistSQLParser.class).parse();
         return getSQLStatement(sql, (ParseASTNode) astNode);
     }
     
@@ -44,6 +44,6 @@ public final class StandardSQLStatementParserEngine {
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
-        return (SQLStatement) (new StandardDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
+        return (SQLStatement) (new ResourceDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
     }
 }
