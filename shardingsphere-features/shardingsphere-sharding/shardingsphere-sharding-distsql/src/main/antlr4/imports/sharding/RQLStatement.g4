@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+grammar RQLStatement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import Keyword, Literals, Symbol;
 
-execute
-    : (addResource
-    | dropResource
-    | createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showResources
-    | showReadwriteSplittingRules
-    | showDatabaseDiscoveryRules
-    | showEncryptRules
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
+showShardingTableRules
+    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
+    ;
+
+showShardingBindingTableRules
+    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
+    ;
+
+showShardingBroadcastTableRules
+    : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
+    ;
+
+tableRule
+    : RULE tableName
+    ;
+
+tableName
+    : IDENTIFIER
+    ;
+
+schemaName
+    : IDENTIFIER
     ;

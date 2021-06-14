@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+grammar ShardingRuleStatement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import Symbol, RDLStatement, RQLStatement;
 
 execute
-    : (addResource
-    | dropResource
-    | createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showResources
-    | showReadwriteSplittingRules
-    | showDatabaseDiscoveryRules
-    | showEncryptRules
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
+    : (createShardingTableRule
+    | createShardingBindingTableRules
+    | createShardingBroadcastTableRules
+    | alterShardingTableRule
+    | alterShardingBindingTableRules
+    | alterShardingBroadcastTableRules
+    | dropShardingTableRule
+    | dropShardingBindingTableRules
+    | dropShardingBroadcastTableRules
+    | showShardingTableRules
+    | showShardingBindingTableRules
+    | showShardingBroadcastTableRules
     ) SEMI?
     ;

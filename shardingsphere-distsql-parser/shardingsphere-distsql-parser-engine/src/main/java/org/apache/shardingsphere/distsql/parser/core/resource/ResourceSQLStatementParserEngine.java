@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.core.resource;
 
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
@@ -36,7 +39,9 @@ public final class ResourceSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        ASTNode astNode = SQLParserFactory.newInstance(sql, ResourceDistSQLLexer.class, ResourceDistSQLParser.class).parse();
+        SQLParser sqlParser = SQLParserFactory.newInstance(sql, ResourceDistSQLLexer.class, ResourceDistSQLParser.class);
+        ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
+        ASTNode astNode = sqlParser.parse();
         return getSQLStatement(sql, (ParseASTNode) astNode);
     }
     

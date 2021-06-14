@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.sharding.distsql.parser;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
-execute
-    : (addResource
-    | dropResource
-    | createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showResources
-    | showReadwriteSplittingRules
-    | showDatabaseDiscoveryRules
-    | showEncryptRules
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * Sharding rule SQL statement visitor facade.
+ */
+public final class ShardingRuleSQLStatementVisitorFacade implements RuleSQLStatementVisitorFacade {
+    
+    @Override
+    public Class<? extends SQLVisitor> getVisitorClass() {
+        return ShardingRuleDistSQLStatementVisitor.class;
+    }
+    
+    @Override
+    public String getRuleType() {
+        return "Sharding";
+    }
+}

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.distsql.parser.api;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.shardingsphere.distsql.parser.core.rule.RuleSQLStatementParserEngine;
 import org.apache.shardingsphere.distsql.parser.core.resource.ResourceSQLStatementParserEngine;
+import org.apache.shardingsphere.distsql.parser.core.rule.RuleSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**

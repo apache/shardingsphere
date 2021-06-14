@@ -15,32 +15,18 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.sharding.distsql.parser;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-execute
-    : (addResource
-    | dropResource
-    | createReadwriteSplittingRule
-    | alterReadwriteSplittingRule
-    | dropReadwriteSplittingRule
-    | createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showResources
-    | showReadwriteSplittingRules
-    | showDatabaseDiscoveryRules
-    | showEncryptRules
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * SQL lexer for sharding rule.
+ */
+public final class ShardingRuleLexer extends ShardingRuleStatementLexer implements SQLLexer {
+    
+    public ShardingRuleLexer(final CharStream input) {
+        super(input);
+    }
+}
