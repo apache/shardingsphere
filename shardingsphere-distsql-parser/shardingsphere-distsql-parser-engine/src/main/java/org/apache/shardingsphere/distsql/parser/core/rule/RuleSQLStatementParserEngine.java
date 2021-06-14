@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.feature;
+package org.apache.shardingsphere.distsql.parser.core.rule;
 
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLParserFacade;
-import org.apache.shardingsphere.distsql.parser.spi.FeatureTypedSQLStatementVisitorFacade;
+import org.apache.shardingsphere.distsql.parser.spi.RuleSQLParserFacade;
+import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
@@ -36,20 +36,20 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
- * Feature type based SQL statement parser engine.
+ * Rule SQL statement parser engine.
  */
-public final class FeatureTypedSQLStatementParserEngine {
+public final class RuleSQLStatementParserEngine {
     
-    private static final Collection<FeatureTypedSQLParserFacade> PARSER_FACADES = new LinkedList<>();
+    private static final Collection<RuleSQLParserFacade> PARSER_FACADES = new LinkedList<>();
     
-    private static final Map<String, FeatureTypedSQLStatementVisitorFacade> VISITOR_FACADES = new HashMap<>();
+    private static final Map<String, RuleSQLStatementVisitorFacade> VISITOR_FACADES = new HashMap<>();
     
     static {
-        for (FeatureTypedSQLParserFacade each : ServiceLoader.load(FeatureTypedSQLParserFacade.class)) {
+        for (RuleSQLParserFacade each : ServiceLoader.load(RuleSQLParserFacade.class)) {
             PARSER_FACADES.add(each);
         }
-        for (FeatureTypedSQLStatementVisitorFacade each : ServiceLoader.load(FeatureTypedSQLStatementVisitorFacade.class)) {
-            VISITOR_FACADES.put(each.getFeatureType(), each);
+        for (RuleSQLStatementVisitorFacade each : ServiceLoader.load(RuleSQLStatementVisitorFacade.class)) {
+            VISITOR_FACADES.put(each.getRuleType(), each);
         }
     }
     
@@ -60,15 +60,15 @@ public final class FeatureTypedSQLStatementParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        FeatureTypedParseASTNode featureTypedParseASTNode = parseToASTNode(sql);
-        return getSQLStatement(sql, featureTypedParseASTNode.getFeatureType(), featureTypedParseASTNode.getParseASTNode());
+        RuleParseASTNode ruleParseASTNode = parseToASTNode(sql);
+        return getSQLStatement(sql, ruleParseASTNode.getRuleType(), ruleParseASTNode.getParseASTNode());
     }
     
-    private FeatureTypedParseASTNode parseToASTNode(final String sql) {
-        for (FeatureTypedSQLParserFacade each : PARSER_FACADES) {
+    private RuleParseASTNode parseToASTNode(final String sql) {
+        for (RuleSQLParserFacade each : PARSER_FACADES) {
             try {
                 ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
-                return new FeatureTypedParseASTNode(each.getFeatureType(), parseASTNode);
+                return new RuleParseASTNode(each.getRuleType(), parseASTNode);
             } catch (final ParseCancellationException ignored) {
             }
         }
