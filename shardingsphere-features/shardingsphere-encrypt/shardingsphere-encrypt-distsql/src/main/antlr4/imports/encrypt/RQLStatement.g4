@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+grammar RQLStatement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import Keyword, Literals, Symbol;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
+showEncryptRules
+    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
+    ;
+
+tableRule
+    : RULE tableName
+    ;
+
+schemaName
+    : IDENTIFIER
+    ;
+
+tableName
+    : IDENTIFIER
     ;

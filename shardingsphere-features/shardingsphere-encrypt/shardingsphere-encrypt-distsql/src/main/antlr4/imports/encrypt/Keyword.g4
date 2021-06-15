@@ -15,20 +15,78 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+lexer grammar Keyword;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import Alphabet;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
+WS
+    : [ \t\r\n] + ->skip
+    ;
+
+CREATE
+    : C R E A T E
+    ;
+
+ALTER
+    : A L T E R
+    ;
+
+DROP
+    : D R O P
+    ;
+
+SHOW
+    : S H O W
+    ;
+
+RESOURCE
+    : R E S O U R C E
+    ;
+
+RULE
+    :  R U L E
+    ;
+
+FROM
+    : F R O M
+    ;
+
+ENCRYPT
+    : E N C R Y P T
+    ;
+
+TYPE
+    : T Y P E
+    ;
+    
+NAME
+    : N A M E
+    ;
+
+PROPERTIES
+    : P R O P E R T I E S
+    ;
+
+COLUMN
+    : C O L U M N
+    ;
+
+RULES
+    : R U L E S
+    ;
+
+TABLE
+    : T A B L E
+    ;
+
+COLUMNS
+    : C O L U M N S
+    ;
+
+CIPHER
+    : C I P H E R
+    ;
+
+PLAIN
+    : P L A I N
     ;

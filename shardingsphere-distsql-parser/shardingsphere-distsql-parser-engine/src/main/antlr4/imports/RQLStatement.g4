@@ -23,18 +23,6 @@ showResources
     : SHOW RESOURCES (FROM schemaName)?
     ;
 
-showEncryptRules
-    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
-    ;
-
-tableRule
-    : RULE tableName
-    ;
-
 schemaName
-    : IDENTIFIER
-    ;
-
-tableName
     : IDENTIFIER
     ;

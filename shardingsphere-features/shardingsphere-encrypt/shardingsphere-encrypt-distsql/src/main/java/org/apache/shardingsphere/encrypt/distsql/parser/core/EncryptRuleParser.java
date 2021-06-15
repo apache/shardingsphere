@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.encrypt.distsql.parser.core;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * SQL parser for encrypt rule.
+ */
+public final class EncryptRuleParser extends EncryptRuleStatementParser implements SQLParser {
+    
+    public EncryptRuleParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
+}
