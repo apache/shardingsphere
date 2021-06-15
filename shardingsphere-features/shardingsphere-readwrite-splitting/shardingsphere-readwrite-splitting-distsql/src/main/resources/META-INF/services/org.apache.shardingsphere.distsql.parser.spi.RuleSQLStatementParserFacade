@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingRuleParserFacade
+org.apache.shardingsphere.readwritesplitting.distsql.parser.facade.ReadwriteSplittingRuleStatementParserFacade
