@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.parser.core;
 
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleSta
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.CreateDatabaseDiscoveryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.DatabaseDiscoveryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.DropDatabaseDiscoveryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.RuleNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.ShowDatabaseDiscoveryRulesContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -59,7 +59,7 @@ public final class DatabaseDiscoveryRuleSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryRule(final DropDatabaseDiscoveryRuleContext ctx) {
-        return new DropDatabaseDiscoveryRuleStatement(ctx.IDENTIFIER().stream().map(TerminalNode::getText).collect(Collectors.toList()));
+        return new DropDatabaseDiscoveryRuleStatement(ctx.ruleName().stream().map(RuleNameContext::getText).collect(Collectors.toList()));
     }
     
     @Override

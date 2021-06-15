@@ -28,7 +28,7 @@ alterDatabaseDiscoveryRule
     ;
 
 dropDatabaseDiscoveryRule
-    : DROP DB_DISCOVERY RULE IDENTIFIER (COMMA IDENTIFIER)*
+    : DROP DB_DISCOVERY RULE ruleName (COMMA ruleName)*
     ;
 
 databaseDiscoveryRuleDefinition
