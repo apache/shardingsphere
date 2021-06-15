@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.yaml.converter;
 
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * Encrypt rule statement converter.
  */
 public final class EncryptRuleStatementConverter {
-
+    
     /**
      * Convert collection of encrypt rule segments to YAML encrypt rule configuration.
      *
@@ -46,7 +46,7 @@ public final class EncryptRuleStatementConverter {
         encryptRules.forEach(each -> result.getEncryptors().putAll(buildYamlShardingSphereAlgorithmConfigurations(each)));
         return result;
     }
-
+    
     private static YamlEncryptTableRuleConfiguration buildYamlEncryptTableRuleConfiguration(final EncryptRuleSegment encryptRuleSegment) {
         YamlEncryptTableRuleConfiguration result = new YamlEncryptTableRuleConfiguration();
         result.setName(encryptRuleSegment.getTableName());
@@ -55,7 +55,7 @@ public final class EncryptRuleStatementConverter {
                 .collect(Collectors.toMap(YamlEncryptColumnRuleConfiguration::getLogicColumn, each -> each)));
         return result;
     }
-
+    
     private static YamlEncryptColumnRuleConfiguration buildYamlEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment encryptColumnSegment) {
         YamlEncryptColumnRuleConfiguration result = new YamlEncryptColumnRuleConfiguration();
         result.setLogicColumn(encryptColumnSegment.getName());
@@ -64,19 +64,19 @@ public final class EncryptRuleStatementConverter {
         result.setEncryptorName(getEncryptorName(tableName, encryptColumnSegment.getName()));
         return result;
     }
-
+    
     private static Map<String, YamlShardingSphereAlgorithmConfiguration> buildYamlShardingSphereAlgorithmConfigurations(final EncryptRuleSegment encryptRuleSegment) {
         return encryptRuleSegment.getColumns().stream().collect(Collectors
-                .toMap(each -> getEncryptorName(encryptRuleSegment.getTableName(), each.getName()), each -> buildYamlShardingSphereAlgorithmConfiguration(each)));
+                .toMap(each -> getEncryptorName(encryptRuleSegment.getTableName(), each.getName()), EncryptRuleStatementConverter::buildYamlShardingSphereAlgorithmConfiguration));
     }
-
+    
     private static YamlShardingSphereAlgorithmConfiguration buildYamlShardingSphereAlgorithmConfiguration(final EncryptColumnSegment encryptColumnSegment) {
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(encryptColumnSegment.getEncryptor().getAlgorithmName());
         result.setProps(encryptColumnSegment.getEncryptor().getAlgorithmProps());
         return result;
     }
-
+    
     private static String getEncryptorName(final String tableName, final String columnName) {
         return String.format("%s_%s", tableName, columnName);
     }

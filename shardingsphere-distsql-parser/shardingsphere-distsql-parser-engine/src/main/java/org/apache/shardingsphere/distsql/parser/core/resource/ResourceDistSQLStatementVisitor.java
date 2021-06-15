@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.distsql.parser.core.resource;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CheckScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropResourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ResetScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowResourcesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowScalingJobListContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowScalingJobStatusContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StartScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StopScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.AddResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.CheckScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DataSourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DropResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DropScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ResetScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ShowResourcesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ShowScalingJobListContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ShowScalingJobStatusContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.StartScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.StopScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.CheckScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.DropScalingJobStatement;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for resource dist SQL.
  */
-public final class ResourceDistSQLStatementVisitor extends DistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class ResourceDistSQLStatementVisitor extends ResourceStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitAddResource(final AddResourceContext ctx) {

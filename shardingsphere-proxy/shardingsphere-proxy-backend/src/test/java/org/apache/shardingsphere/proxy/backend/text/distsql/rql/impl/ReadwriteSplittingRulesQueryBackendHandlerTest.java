@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -51,27 +51,27 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ReadwriteSplittingRulesQueryBackendHandlerTest {
-
+    
     @Mock
     private BackendConnection backendConnection;
-
+    
     @Mock
     private ShowReadwriteSplittingRulesStatement sqlStatement;
-
+    
     @Mock
     private MetaDataContexts metaDataContexts;
-
+    
     @Mock
     private TransactionContexts transactionContexts;
-
+    
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
-
+    
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     private ReadwriteSplittingRulesQueryBackendHandler handler;
-
+    
     @Before
     public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
@@ -81,7 +81,7 @@ public final class ReadwriteSplittingRulesQueryBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildReadwriteSplittingRuleConfiguration()));
     }
-
+    
     @Test
     public void assertExecute() {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
@@ -96,7 +96,7 @@ public final class ReadwriteSplittingRulesQueryBackendHandlerTest {
         assertTrue(rowData.contains("random"));
         assertTrue(rowData.contains("read_weight=2:1"));
     }
-
+    
     private ReadwriteSplittingRuleConfiguration buildReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration =
                 new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "ms_group",
@@ -104,11 +104,9 @@ public final class ReadwriteSplittingRulesQueryBackendHandlerTest {
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", buildProps());
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>();
         loadBalancers.put("test", shardingSphereAlgorithmConfiguration);
-        ReadwriteSplittingRuleConfiguration result =
-                new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfiguration), loadBalancers);
-        return result;
+        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfiguration), loadBalancers);
     }
-
+    
     private Properties buildProps() {
         Properties props = new Properties();
         props.setProperty("read_weight", "2:1");
