@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.distsql.parser.core;
 
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.AlgorithmPropertyContext;
@@ -62,7 +61,7 @@ public final class EncryptRuleSQLStatementVisitor extends EncryptRuleStatementBa
     
     @Override
     public ASTNode visitDropEncryptRule(final DropEncryptRuleContext ctx) {
-        return new DropEncryptRuleStatement(ctx.IDENTIFIER().stream().map(TerminalNode::getText).collect(Collectors.toList()));
+        return new DropEncryptRuleStatement(ctx.tableName().stream().map(TableNameContext::getText).collect(Collectors.toList()));
     }
     
     @Override

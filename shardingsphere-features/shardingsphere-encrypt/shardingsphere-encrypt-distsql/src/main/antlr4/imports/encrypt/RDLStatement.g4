@@ -28,7 +28,7 @@ alterEncryptRule
     ;
 
 dropEncryptRule
-    : DROP ENCRYPT RULE IDENTIFIER (COMMA IDENTIFIER)*
+    : DROP ENCRYPT RULE tableName (COMMA tableName)*
     ;
 
 encryptRuleDefinition
