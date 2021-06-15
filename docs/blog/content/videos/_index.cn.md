@@ -6,6 +6,8 @@ chapter = true
 
 欢迎观看 Apache ShardingSphere 的精选视频，也欢迎您的投稿！
 
+1. [opengauss](/cn/videos/opengauss/)
+
 1. [【开源总动员】零基础入门Apache ShardingSphere开源之道](/cn/videos/opensource/)
 
 2. [ShardingSphere的Apache共建之道](/cn/videos/build/)  
