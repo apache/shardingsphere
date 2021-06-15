@@ -19,15 +19,19 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateIndexStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Create index statement context.
@@ -37,9 +41,12 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     
     private final TablesContext tablesContext;
     
+    private final boolean generatedIndex;
+    
     public CreateIndexStatementContext(final CreateIndexStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
+        generatedIndex = null == sqlStatement.getIndex();
     }
     
     @Override
@@ -49,6 +56,10 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     
     @Override
     public Collection<IndexSegment> getIndexes() {
-        return null == getSqlStatement().getIndex() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getIndex());
+        Optional<Integer> startIndex = CreateIndexStatementHandler.getGeneratedIndexStartIndex(getSqlStatement());
+        final String generatedLogicIndexName = IndexMetaDataUtil.getGeneratedLogicIndexName(getSqlStatement().getColumns());
+        Collection<IndexSegment> generatedIndexSegments = startIndex.map(index -> Collections.singletonList(new IndexSegment(index, index, 
+                new IdentifierValue(generatedLogicIndexName)))).orElse(Collections.emptyList());
+        return null == getSqlStatement().getIndex() ? generatedIndexSegments : Collections.singletonList(getSqlStatement().getIndex());
     }
 }

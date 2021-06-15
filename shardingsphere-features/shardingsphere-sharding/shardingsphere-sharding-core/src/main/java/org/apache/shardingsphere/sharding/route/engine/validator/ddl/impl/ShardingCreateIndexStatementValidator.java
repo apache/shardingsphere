@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -38,7 +39,9 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         validateTableExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        String indexName = sqlStatementContext.getSqlStatement().getIndex().getIdentifier().getValue();
+        String indexName = null != sqlStatementContext.getSqlStatement().getIndex() 
+                ? sqlStatementContext.getSqlStatement().getIndex().getIdentifier().getValue()
+                : IndexMetaDataUtil.getGeneratedLogicIndexName(sqlStatementContext.getSqlStatement().getColumns());
         if (schema.get(tableName).getIndexes().containsKey(indexName)) {
             throw new ShardingSphereException("Index '%s' already exists.", indexName);
         }
