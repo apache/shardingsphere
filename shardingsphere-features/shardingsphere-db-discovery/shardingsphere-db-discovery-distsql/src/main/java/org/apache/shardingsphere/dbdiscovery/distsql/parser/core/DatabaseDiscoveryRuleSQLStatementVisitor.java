@@ -71,7 +71,7 @@ public final class DatabaseDiscoveryRuleSQLStatementVisitor extends DatabaseDisc
     public ASTNode visitDatabaseDiscoveryRuleDefinition(final DatabaseDiscoveryRuleDefinitionContext ctx) {
         DatabaseDiscoveryRuleSegment result = new DatabaseDiscoveryRuleSegment();
         result.setName(ctx.ruleName().getText());
-        result.setDataSources(ctx.resources().IDENTIFIER().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList()));
+        result.setDataSources(ctx.resources().resourceName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList()));
         result.setDiscoveryTypeName(ctx.algorithmDefinition().algorithmName().getText());
         result.setProps(getAlgorithmProperties(ctx.algorithmDefinition().algorithmProperties()));
         return result;

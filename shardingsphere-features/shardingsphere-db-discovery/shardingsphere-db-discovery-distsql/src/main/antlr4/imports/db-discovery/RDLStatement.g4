@@ -40,7 +40,11 @@ ruleName
     ;
 
 resources
-    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : RESOURCES LP resourceName (COMMA resourceName)* RP
+    ;
+
+resourceName
+    : IDENTIFIER
     ;
 
 algorithmDefinition
