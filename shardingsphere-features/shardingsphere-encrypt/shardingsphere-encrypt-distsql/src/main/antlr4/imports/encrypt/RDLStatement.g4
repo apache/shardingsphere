@@ -19,23 +19,51 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol;
 
-resourceName
-    : IDENTIFIER
+createEncryptRule
+    : CREATE ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
+    ;
+
+alterEncryptRule
+    : ALTER ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
+    ;
+
+dropEncryptRule
+    : DROP ENCRYPT RULE tableName (COMMA tableName)*
+    ;
+
+encryptRuleDefinition
+    : tableName LP (RESOURCE EQ resourceName COMMA)? COLUMNS LP columnDefinition (COMMA columnDefinition)*  RP RP
     ;
 
 tableName
     : IDENTIFIER
     ;
 
+resourceName
+    : IDENTIFIER
+    ;
+
+columnDefinition
+    : LP NAME EQ columnName (COMMA PLAIN EQ plainColumnName)? COMMA CIPHER EQ cipherColumnName COMMA algorithmDefinition RP
+    ;
+
 columnName
     : IDENTIFIER
     ;
 
-functionDefinition
-    : TYPE LP NAME EQ functionName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+plainColumnName
+    : IDENTIFIER
     ;
 
-functionName
+cipherColumnName
+    : IDENTIFIER
+    ;
+
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    ;
+
+algorithmName
     : IDENTIFIER
     ;
 
@@ -45,32 +73,4 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
-    ;
-
-createEncryptRule
-    : CREATE ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
-    ;
-
-encryptRuleDefinition
-    : tableName LP (RESOURCE EQ resourceName COMMA)? COLUMNS LP columnDefinition (COMMA columnDefinition)*  RP RP
-    ;
-
-columnDefinition
-    : LP NAME EQ columnName (COMMA PLAIN EQ plainColumnName)? COMMA CIPHER EQ cipherColumnName COMMA functionDefinition RP
-    ;
-
-alterEncryptRule
-    : ALTER ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
-    ;
-
-dropEncryptRule
-    : DROP ENCRYPT RULE IDENTIFIER (COMMA IDENTIFIER)*
-    ;
-
-plainColumnName
-    : IDENTIFIER
-    ;
-
-cipherColumnName
-    : IDENTIFIER
     ;

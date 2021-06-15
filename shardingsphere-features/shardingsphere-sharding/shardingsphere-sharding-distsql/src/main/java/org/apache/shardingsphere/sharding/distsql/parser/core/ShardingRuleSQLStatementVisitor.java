@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlterShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.AlterShardingBroadcastTableRulesContext;
@@ -32,16 +33,13 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementPar
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingTableRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.FunctionDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.TableNameContext;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
@@ -54,6 +52,8 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingT
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
@@ -134,6 +134,11 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     }
     
     @Override
+    public ASTNode visitShowShardingTableRules(final ShowShardingTableRulesContext ctx) {
+        return new ShowShardingTableRulesStatement(null == ctx.tableRule() ? null : ctx.tableRule().tableName().getText(), null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+    }
+    
+    @Override
     public ASTNode visitShardingTableRuleDefinition(final ShardingTableRuleDefinitionContext ctx) {
         TableRuleSegment result = new TableRuleSegment();
         result.setLogicTable(ctx.tableName().getText());
@@ -144,23 +149,23 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
             }
         }
         result.setDataSources(dataSources);
-        if (null != ctx.functionDefinition()) {
-            result.setTableStrategy((FunctionSegment) visit(ctx.functionDefinition()));
+        if (null != ctx.algorithmDefinition()) {
+            result.setTableStrategy((AlgorithmSegment) visit(ctx.algorithmDefinition()));
             result.setTableStrategyColumn(ctx.shardingColumn().columnName().getText());
         }
         if (null != ctx.keyGenerateStrategy()) {
-            result.setKeyGenerateStrategy((FunctionSegment) visit(ctx.keyGenerateStrategy().functionDefinition()));
+            result.setKeyGenerateStrategy((AlgorithmSegment) visit(ctx.keyGenerateStrategy().algorithmDefinition()));
             result.setKeyGenerateStrategyColumn(ctx.keyGenerateStrategy().columnName().getText());
         }
         return result;
     }
     
     @Override
-    public ASTNode visitFunctionDefinition(final FunctionDefinitionContext ctx) {
-        return new FunctionSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
+    public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
+        return new AlgorithmSegment(ctx.algorithmName().getText(), getAlgorithmProperties(ctx));
     }
     
-    private Properties getAlgorithmProperties(final FunctionDefinitionContext ctx) {
+    private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
         Properties result = new Properties();
         if (null == ctx.algorithmProperties()) {
             return result;
@@ -178,17 +183,11 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     
     @Override
     public ASTNode visitShowShardingBindingTableRules(final ShowShardingBindingTableRulesContext ctx) {
-        return new ShowShardingBindingTableRulesStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
+        return new ShowShardingBindingTableRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
     }
     
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
-    }
-    
-    @Override
-    public ASTNode visitShowShardingTableRules(final ShowShardingTableRulesContext ctx) {
-        return new ShowShardingTableRulesStatement(Objects.nonNull(ctx.tableRule()) ? ctx.tableRule().tableName().getText() : null,
-                Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
     }
 }

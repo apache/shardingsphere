@@ -17,29 +17,28 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.parser.core;
 
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.AlgorithmPropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.AlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.AlterDatabaseDiscoveryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.CreateDatabaseDiscoveryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.DatabaseDiscoveryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.DropDatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.FunctionDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.RuleNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.ShowDatabaseDiscoveryRulesContext;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.segment.DatabaseDiscoveryRuleSegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -54,23 +53,28 @@ public final class DatabaseDiscoveryRuleSQLStatementVisitor extends DatabaseDisc
     }
     
     @Override
-    public ASTNode visitDatabaseDiscoveryRuleDefinition(final DatabaseDiscoveryRuleDefinitionContext ctx) {
-        DatabaseDiscoveryRuleSegment result = new DatabaseDiscoveryRuleSegment();
-        result.setName(ctx.ruleName().getText());
-        result.setDataSources(ctx.resources().IDENTIFIER().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList()));
-        result.setDiscoveryTypeName(ctx.functionDefinition().functionName().getText());
-        result.setProps(buildAlgorithmProperties(ctx.functionDefinition().algorithmProperties()));
-        return result;
-    }
-    
-    @Override
     public ASTNode visitAlterDatabaseDiscoveryRule(final AlterDatabaseDiscoveryRuleContext ctx) {
         return new AlterDatabaseDiscoveryRuleStatement(ctx.databaseDiscoveryRuleDefinition().stream().map(each -> (DatabaseDiscoveryRuleSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryRule(final DropDatabaseDiscoveryRuleContext ctx) {
-        return new DropDatabaseDiscoveryRuleStatement(ctx.IDENTIFIER().stream().map(TerminalNode::getText).collect(Collectors.toList()));
+        return new DropDatabaseDiscoveryRuleStatement(ctx.ruleName().stream().map(RuleNameContext::getText).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public ASTNode visitShowDatabaseDiscoveryRules(final ShowDatabaseDiscoveryRulesContext ctx) {
+        return new ShowDatabaseDiscoveryRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+    }
+    
+    @Override
+    public ASTNode visitDatabaseDiscoveryRuleDefinition(final DatabaseDiscoveryRuleDefinitionContext ctx) {
+        DatabaseDiscoveryRuleSegment result = new DatabaseDiscoveryRuleSegment();
+        result.setName(ctx.ruleName().getText());
+        result.setDataSources(ctx.resources().resourceName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList()));
+        result.setDiscoveryTypeName(ctx.algorithmDefinition().algorithmName().getText());
+        result.setProps(getAlgorithmProperties(ctx.algorithmDefinition().algorithmProperties()));
+        return result;
     }
     
     @Override
@@ -79,29 +83,13 @@ public final class DatabaseDiscoveryRuleSQLStatementVisitor extends DatabaseDisc
     }
     
     @Override
-    public ASTNode visitShowDatabaseDiscoveryRules(final ShowDatabaseDiscoveryRulesContext ctx) {
-        return new ShowDatabaseDiscoveryRulesStatement(Objects.nonNull(ctx.schemaName()) ? (SchemaSegment) visit(ctx.schemaName()) : null);
+    public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
+        return new AlgorithmSegment(ctx.algorithmName().getText(), null == ctx.algorithmProperties() ? new Properties() : getAlgorithmProperties(ctx.algorithmProperties()));
     }
     
-    private Properties buildAlgorithmProperties(final AlgorithmPropertiesContext ctx) {
+    private Properties getAlgorithmProperties(final AlgorithmPropertiesContext ctx) {
         Properties result = new Properties();
         for (AlgorithmPropertyContext each : ctx.algorithmProperty()) {
-            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitFunctionDefinition(final FunctionDefinitionContext ctx) {
-        return new FunctionSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
-    }
-    
-    private Properties getAlgorithmProperties(final FunctionDefinitionContext ctx) {
-        Properties result = new Properties();
-        if (null == ctx.algorithmProperties()) {
-            return result;
-        }
-        for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
             result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
         }
         return result;

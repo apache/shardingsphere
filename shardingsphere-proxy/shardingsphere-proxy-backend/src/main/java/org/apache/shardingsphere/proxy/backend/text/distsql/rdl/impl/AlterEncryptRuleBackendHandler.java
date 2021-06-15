@@ -101,7 +101,7 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     private void checkEncryptors(final AlterEncryptRuleStatement sqlStatement) {
         Collection<String> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream()
-                .map(column -> column.getEncryptor().getAlgorithmName()).collect(Collectors.toSet())));
+                .map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
         Collection<String> invalidEncryptors = encryptors.stream().filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidEncryptors.isEmpty()) {

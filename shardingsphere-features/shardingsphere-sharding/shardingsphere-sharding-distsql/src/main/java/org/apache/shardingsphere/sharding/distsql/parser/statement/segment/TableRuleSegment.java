@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement.segment;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
@@ -39,7 +39,7 @@ public final class TableRuleSegment implements ASTNode {
     
     private String keyGenerateStrategyColumn;
     
-    private FunctionSegment tableStrategy;
+    private AlgorithmSegment tableStrategy;
     
-    private FunctionSegment keyGenerateStrategy;
+    private AlgorithmSegment keyGenerateStrategy;
 }

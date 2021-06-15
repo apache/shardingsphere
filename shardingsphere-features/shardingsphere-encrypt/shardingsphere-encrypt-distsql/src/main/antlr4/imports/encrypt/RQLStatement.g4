@@ -27,10 +27,10 @@ tableRule
     : RULE tableName
     ;
 
-schemaName
+tableName
     : IDENTIFIER
     ;
 
-tableName
+schemaName
     : IDENTIFIER
     ;

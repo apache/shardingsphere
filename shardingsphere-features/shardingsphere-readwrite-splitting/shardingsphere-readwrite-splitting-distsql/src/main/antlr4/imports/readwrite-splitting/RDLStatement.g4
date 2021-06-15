@@ -23,8 +23,16 @@ createReadwriteSplittingRule
     : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
 
+alterReadwriteSplittingRule
+    : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
+    ;
+
+dropReadwriteSplittingRule
+    : DROP READWRITE_SPLITTING RULE IDENTIFIER (COMMA IDENTIFIER)*
+    ;
+
 readwriteSplittingRuleDefinition
-    : ruleName LP (staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition) (COMMA functionDefinition)? RP
+    : ruleName LP (staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition) (COMMA algorithmDefinition)? RP
     ;
 
 staticReadwriteSplittingRuleDefinition
@@ -33,10 +41,6 @@ staticReadwriteSplittingRuleDefinition
 
 dynamicReadwriteSplittingRuleDefinition
     : AUTO_AWARE_RESOURCE EQ IDENTIFIER
-    ;
-
-alterReadwriteSplittingRule
-    : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
     ;
 
 writeResourceName
@@ -51,15 +55,11 @@ ruleName
     : IDENTIFIER
     ;
 
-dropReadwriteSplittingRule
-    : DROP READWRITE_SPLITTING RULE IDENTIFIER (COMMA IDENTIFIER)*
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
-functionDefinition
-    : TYPE LP NAME EQ functionName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-functionName
+algorithmName
     : IDENTIFIER
     ;
 
