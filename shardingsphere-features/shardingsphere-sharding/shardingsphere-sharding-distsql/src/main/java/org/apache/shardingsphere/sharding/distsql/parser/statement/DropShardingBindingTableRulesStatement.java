@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 /**
- * Create sharding broadcast table rules statement.
+ * Drop sharding binding table rules statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateShardingBroadcastTableRulesStatement extends CreateRuleStatement {
-    
-    private final Collection<String> tables;
+public final class DropShardingBindingTableRulesStatement extends DropRuleStatement {
 }

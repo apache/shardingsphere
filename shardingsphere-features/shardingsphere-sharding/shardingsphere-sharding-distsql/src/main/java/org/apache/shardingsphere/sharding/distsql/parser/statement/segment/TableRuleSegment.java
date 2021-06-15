@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+package org.apache.shardingsphere.sharding.distsql.parser.statement.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
 
 /**
- * Drop sharding table rule statement.
+ * Table rule segment.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DropShardingTableRuleStatement extends DropRuleStatement {
+@Setter
+public final class TableRuleSegment implements ASTNode {
     
-    private final Collection<TableNameSegment> tableNames;
+    private String logicTable;
+    
+    private Collection<String> dataSources;
+    
+    private String tableStrategyColumn;
+    
+    private String keyGenerateStrategyColumn;
+    
+    private FunctionSegment tableStrategy;
+    
+    private FunctionSegment keyGenerateStrategy;
 }

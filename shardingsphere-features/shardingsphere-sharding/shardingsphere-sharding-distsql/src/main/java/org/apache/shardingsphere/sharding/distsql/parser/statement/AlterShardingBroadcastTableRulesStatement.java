@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show.impl;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+
+import java.util.Collection;
 
 /**
- * Show sharding table rules statement.
+ * Alter sharding broadcast table rules statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ShowShardingTableRulesStatement extends ShowRulesStatement {
+public final class AlterShardingBroadcastTableRulesStatement extends AlterRuleStatement {
     
-    private final String tableName;
-    
-    public ShowShardingTableRulesStatement(final String tableName, final SchemaSegment schema) {
-        super(schema);
-        this.tableName = tableName;
-    }
+    private final Collection<String> tables;
 }

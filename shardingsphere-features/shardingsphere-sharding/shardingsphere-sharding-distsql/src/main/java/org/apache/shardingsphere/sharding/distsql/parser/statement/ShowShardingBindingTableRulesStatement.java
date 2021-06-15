@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Create sharding binding table rules statement.
+ * Show sharding binding table rules statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateShardingBindingTableRulesStatement extends CreateRuleStatement {
+public final class ShowShardingBindingTableRulesStatement extends ShowRulesStatement {
     
-    private final Collection<ShardingBindingTableRuleSegment> rules;
+    public ShowShardingBindingTableRulesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
 }

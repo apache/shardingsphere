@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+
+import java.util.Collection;
 
 /**
- * Drop sharding binding table rules statement.
+ * Alter sharding binding table rules statement.
  */
-public final class DropShardingBindingTableRulesStatement extends DropRuleStatement {
+@RequiredArgsConstructor
+@Getter
+public final class AlterShardingBindingTableRulesStatement extends AlterRuleStatement {
+    
+    private final Collection<ShardingBindingTableRuleSegment> rules;
 }

@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+package org.apache.shardingsphere.sharding.distsql.parser.statement.segment;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Drop sharding broadcast table rules statement.
+ * Sharding binding table rule segment.
  */
-public final class DropShardingBroadcastTableRulesStatement extends DropRuleStatement {
+@Getter
+@Setter
+public final class ShardingBindingTableRuleSegment implements ASTNode {
+    
+    private String tables;
 }

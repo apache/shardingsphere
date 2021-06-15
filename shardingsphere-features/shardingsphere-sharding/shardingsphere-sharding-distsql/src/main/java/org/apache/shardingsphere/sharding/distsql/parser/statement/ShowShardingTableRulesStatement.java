@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Sharding binding table rule segment.
+ * Show sharding table rules statement.
  */
 @Getter
-@Setter
-public final class ShardingBindingTableRuleSegment implements ASTNode {
+public final class ShowShardingTableRulesStatement extends ShowRulesStatement {
     
-    private String tables;
+    private final String tableName;
+    
+    public ShowShardingTableRulesStatement(final String tableName, final SchemaSegment schema) {
+        super(schema);
+        this.tableName = tableName;
+    }
 }
