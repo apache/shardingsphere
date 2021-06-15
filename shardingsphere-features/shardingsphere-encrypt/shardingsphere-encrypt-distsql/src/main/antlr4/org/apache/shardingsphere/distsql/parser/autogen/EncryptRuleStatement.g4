@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+grammar EncryptRuleStatement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import Symbol, RDLStatement, RQLStatement;
 
 execute
-    : (addResource
-    | dropResource
-    | showResources
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
+    : (createEncryptRule
+    | alterEncryptRule
+    | dropEncryptRule
+    | showEncryptRules
     ) SEMI?
     ;

@@ -15,20 +15,37 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+lexer grammar Literals;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import Alphabet, Symbol;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
+IDENTIFIER
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    | BQ ~'`'+ BQ
+    | (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
+    ;
+    
+STRING
+    : (DQ ('""' | ~('"'| '\\') )* DQ)
+    | (SQ ('\'\'' | ~('\'' | '\\'))* SQ)
+    ;
+
+INT
+    : [0-9]+
+    ;
+
+HEX
+    : [0-9a-fA-F]
+    ;
+
+NUMBER
+    : INT? DOT? INT (E (PLUS | MINUS)? INT)?
+    ;
+
+HEXDIGIT
+    : '0x' HEX+ | 'X' SQ HEX+ SQ
+    ;
+    
+BITNUM
+    : '0b' ('0' | '1')+ | B SQ ('0' | '1')+ SQ
     ;

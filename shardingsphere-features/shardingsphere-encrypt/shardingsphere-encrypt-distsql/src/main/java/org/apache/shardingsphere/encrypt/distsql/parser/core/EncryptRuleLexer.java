@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.encrypt.distsql.parser.core;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * SQL lexer for encrypt rule.
+ */
+public final class EncryptRuleLexer extends EncryptRuleStatementLexer implements SQLLexer {
+    
+    public EncryptRuleLexer(final CharStream input) {
+        super(input);
+    }
+}
