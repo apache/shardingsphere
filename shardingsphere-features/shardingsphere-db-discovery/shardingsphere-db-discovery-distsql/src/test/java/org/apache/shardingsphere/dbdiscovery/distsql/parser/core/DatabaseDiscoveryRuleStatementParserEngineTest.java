@@ -59,7 +59,6 @@ public final class DatabaseDiscoveryRuleStatementParserEngineTest {
     
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
-    
     @Test
     public void assertParseCreateDatabaseDiscoveryRule() {
         SQLStatement sqlStatement = engine.parse(CREATE_DATABASE_DISCOVERY_RULE);
