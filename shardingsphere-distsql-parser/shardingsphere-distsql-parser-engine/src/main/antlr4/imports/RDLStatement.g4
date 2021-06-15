@@ -59,15 +59,7 @@ password
     : IDENTIFIER | INT | STRING
     ;
 
-resources
-    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
-    ;
-
 resourceName
-    : IDENTIFIER
-    ;
-
-ruleName
     : IDENTIFIER
     ;
 
@@ -93,22 +85,6 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
-    ;
-
-createDatabaseDiscoveryRule
-    : CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
-    ;
-
-databaseDiscoveryRuleDefinition
-    : ruleName LP resources COMMA functionDefinition RP
-    ;
-
-alterDatabaseDiscoveryRule
-    : ALTER DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
-    ;
-
-dropDatabaseDiscoveryRule
-    : DROP DB_DISCOVERY RULE IDENTIFIER (COMMA IDENTIFIER)*
     ;
 
 createEncryptRule

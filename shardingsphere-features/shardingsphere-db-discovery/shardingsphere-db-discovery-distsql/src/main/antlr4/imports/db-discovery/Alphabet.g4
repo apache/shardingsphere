@@ -15,66 +15,34 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+lexer grammar Alphabet;
 
-import Alphabet;
+FOR_GENERATOR: 'DO NOT MATCH ANY THING, JUST FOR GENERATOR';
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
-
-CREATE
-    : C R E A T E
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-FROM
-    : F R O M
-    ;
-
-READWRITE_SPLITTING
-    : R E A D W R I T E UL_ S P L I T T I N G
-    ;
-
-WRITE_RESOURCE
-    : W R I T E UL_ R E S O U R C E
-    ;
-
-READ_RESOURCES
-    : R E A D UL_ R E S O U R C E S
-    ;
-
-AUTO_AWARE_RESOURCE
-    : A U T O UL_ A W A R E UL_ R E S O U R C E
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-RULES
-    : R U L E S
-    ;
+fragment A:   [Aa];
+fragment B:   [Bb];
+fragment C:   [Cc];
+fragment D:   [Dd];
+fragment E:   [Ee];
+fragment F:   [Ff];
+fragment G:   [Gg];
+fragment H:   [Hh];
+fragment I:   [Ii];
+fragment J:   [Jj];
+fragment K:   [Kk];
+fragment L:   [Ll];
+fragment M:   [Mm];
+fragment N:   [Nn];
+fragment O:   [Oo];
+fragment P:   [Pp];
+fragment Q:   [Qq];
+fragment R:   [Rr];
+fragment S:   [Ss];
+fragment T:   [Tt];
+fragment U:   [Uu];
+fragment V:   [Vv];
+fragment W:   [Ww];
+fragment X:   [Xx];
+fragment Y:   [Yy];
+fragment Z:   [Zz];
+fragment UL_: '_';

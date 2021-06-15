@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for sharding rule.
  */
-public final class ShardingRuleDistSQLStatementVisitor extends ShardingRuleStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitCreateShardingTableRule(final CreateShardingTableRuleContext ctx) {

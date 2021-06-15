@@ -39,8 +39,8 @@ SHOW
     : S H O W
     ;
 
-SHARDING
-    : S H A R D I N G
+RESOURCES
+    : R E S O U R C E S
     ;
 
 RULE
@@ -49,26 +49,6 @@ RULE
 
 FROM
     : F R O M
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
-GENERATED_KEY
-    : G E N E R A T E D UL_ K E Y
-    ;
-
-DEFAULT_TABLE_STRATEGY
-    : D E F A U L T UL_ T A B L E UL_ S T R A T E G Y
-    ;
-
-TABLE
-    : T A B L E
-    ;
-
-SHARDING_COLUMN
-    : S H A R D I N G UL_ C O L U M N
     ;
 
 TYPE
@@ -83,22 +63,10 @@ PROPERTIES
     : P R O P E R T I E S
     ;
 
-COLUMN
-    : C O L U M N
-    ;
-
-BINDING
-    : B I N D I N G
-    ;
-
-BROADCAST
-    : B R O A D C A S T
-    ;
-
 RULES
     : R U L E S
     ;
 
-COLUMNS
-    : C O L U M N S
+DB_DISCOVERY
+    : D B UL_ D I S C O V E R Y
     ;

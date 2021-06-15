@@ -18,18 +18,13 @@
 package org.apache.shardingsphere.distsql.parser.api;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropEncryptRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
@@ -55,24 +50,6 @@ public final class DistSQLStatementParserEngineTest {
     
     private static final String DROP_RESOURCE = "DROP RESOURCE ds_0,ds_1";
     
-    private static final String CREATE_DATABASE_DISCOVERY_RULE = "CREATE DB_DISCOVERY RULE ha_group_0 ("
-            + "RESOURCES(resource0,resource1),"
-            + "TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))),"
-            + "ha_group_1 ("
-            + "RESOURCES(resource2,resource3),"
-            + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
-            + ")";
-    
-    private static final String ALTER_DATABASE_DISCOVERY_RULE = "ALTER DB_DISCOVERY RULE ha_group_0 ("
-            + "RESOURCES(resource0,resource1),"
-            + "TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))),"
-            + "ha_group_1 ("
-            + "RESOURCES(resource2,resource3),"
-            + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
-            + ")";
-    
-    private static final String DROP_DATABASE_DISCOVERY_RULE = "DROP DB_DISCOVERY RULE ha_group_0,ha_group_1";
-    
     private static final String CREATE_ENCRYPT_RULE = "CREATE ENCRYPT RULE t_encrypt ("
             + "COLUMNS("
             + "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),"
@@ -86,8 +63,6 @@ public final class DistSQLStatementParserEngineTest {
             + "))";
     
     private static final String DROP_ENCRYPT_RULE = "DROP ENCRYPT RULE t_encrypt,t_encrypt_order";
-    
-    private static final String SHOW_DB_DISCOVERY_RULES = "SHOW DB_DISCOVERY RULES FROM db_discovery_db";
     
     private static final String SHOW_ENCRYPT_RULES = "SHOW ENCRYPT RULES FROM encrypt_db";
     
@@ -153,48 +128,6 @@ public final class DistSQLStatementParserEngineTest {
     }
     
     @Test
-    public void assertParseCreateDatabaseDiscoveryRule() {
-        SQLStatement sqlStatement = engine.parse(CREATE_DATABASE_DISCOVERY_RULE);
-        assertTrue(sqlStatement instanceof CreateDatabaseDiscoveryRuleStatement);
-        CreateDatabaseDiscoveryRuleStatement statement = (CreateDatabaseDiscoveryRuleStatement) sqlStatement;
-        assertThat(statement.getRules().size(), is(2));
-        List<DatabaseDiscoveryRuleSegment> databaseDiscoveryRuleSegments
-                = new ArrayList<>(((CreateDatabaseDiscoveryRuleStatement) sqlStatement).getRules());
-        assertThat(databaseDiscoveryRuleSegments.get(0).getName(), is("ha_group_0"));
-        assertThat(databaseDiscoveryRuleSegments.get(0).getDiscoveryTypeName(), is("mgr"));
-        assertThat(databaseDiscoveryRuleSegments.get(0).getDataSources(), is(Arrays.asList("resource0", "resource1")));
-        assertThat(databaseDiscoveryRuleSegments.get(0).getProps().get("groupName"), is("92504d5b-6dec"));
-        assertThat(databaseDiscoveryRuleSegments.get(1).getName(), is("ha_group_1"));
-        assertThat(databaseDiscoveryRuleSegments.get(1).getDiscoveryTypeName(), is("mgr2"));
-        assertThat(databaseDiscoveryRuleSegments.get(1).getDataSources(), is(Arrays.asList("resource2", "resource3")));
-        assertThat(databaseDiscoveryRuleSegments.get(1).getProps().get("groupName"), is("92504d5b-6dec-2"));
-    }
-    
-    @Test
-    public void assertParseAlterDatabaseDiscoveryRule() {
-        SQLStatement sqlStatement = engine.parse(ALTER_DATABASE_DISCOVERY_RULE);
-        assertTrue(sqlStatement instanceof AlterDatabaseDiscoveryRuleStatement);
-        AlterDatabaseDiscoveryRuleStatement statement = (AlterDatabaseDiscoveryRuleStatement) sqlStatement;
-        assertThat(statement.getRules().size(), is(2));
-        List<DatabaseDiscoveryRuleSegment> databaseDiscoveryRuleSegments = new ArrayList<>(((AlterDatabaseDiscoveryRuleStatement) sqlStatement).getRules());
-        assertThat(databaseDiscoveryRuleSegments.get(0).getName(), is("ha_group_0"));
-        assertThat(databaseDiscoveryRuleSegments.get(0).getDiscoveryTypeName(), is("mgr"));
-        assertThat(databaseDiscoveryRuleSegments.get(0).getDataSources(), is(Arrays.asList("resource0", "resource1")));
-        assertThat(databaseDiscoveryRuleSegments.get(0).getProps().get("groupName"), is("92504d5b-6dec"));
-        assertThat(databaseDiscoveryRuleSegments.get(1).getName(), is("ha_group_1"));
-        assertThat(databaseDiscoveryRuleSegments.get(1).getDiscoveryTypeName(), is("mgr2"));
-        assertThat(databaseDiscoveryRuleSegments.get(1).getDataSources(), is(Arrays.asList("resource2", "resource3")));
-        assertThat(databaseDiscoveryRuleSegments.get(1).getProps().get("groupName"), is("92504d5b-6dec-2"));
-    }
-    
-    @Test
-    public void assertParseDropDatabaseDiscoveryRule() {
-        SQLStatement sqlStatement = engine.parse(DROP_DATABASE_DISCOVERY_RULE);
-        assertTrue(sqlStatement instanceof DropDatabaseDiscoveryRuleStatement);
-        assertThat(((DropDatabaseDiscoveryRuleStatement) sqlStatement).getRuleNames(), is(Arrays.asList("ha_group_0", "ha_group_1")));
-    }
-    
-    @Test
     public void assertParseCreateEncryptRule() {
         SQLStatement sqlStatement = engine.parse(CREATE_ENCRYPT_RULE);
         assertTrue(sqlStatement instanceof CreateEncryptRuleStatement);
@@ -239,13 +172,6 @@ public final class DistSQLStatementParserEngineTest {
         SQLStatement sqlStatement = engine.parse(DROP_ENCRYPT_RULE);
         assertTrue(sqlStatement instanceof DropEncryptRuleStatement);
         assertThat(((DropEncryptRuleStatement) sqlStatement).getTables(), is(Arrays.asList("t_encrypt", "t_encrypt_order")));
-    }
-    
-    @Test
-    public void assertParseShowDatabaseDiscoveryRules() {
-        SQLStatement sqlStatement = engine.parse(SHOW_DB_DISCOVERY_RULES);
-        assertTrue(sqlStatement instanceof ShowDatabaseDiscoveryRulesStatement);
-        assertThat(((ShowDatabaseDiscoveryRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("db_discovery_db"));
     }
     
     @Test

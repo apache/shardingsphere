@@ -15,90 +15,37 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+lexer grammar Literals;
 
-import Alphabet;
+import Alphabet, Symbol;
 
-WS
-    : [ \t\r\n] + ->skip
+IDENTIFIER
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    | BQ ~'`'+ BQ
+    | (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
+    ;
+    
+STRING
+    : (DQ ('""' | ~('"'| '\\') )* DQ)
+    | (SQ ('\'\'' | ~('\'' | '\\'))* SQ)
     ;
 
-CREATE
-    : C R E A T E
+INT
+    : [0-9]+
     ;
 
-ALTER
-    : A L T E R
+HEX
+    : [0-9a-fA-F]
     ;
 
-DROP
-    : D R O P
+NUMBER
+    : INT? DOT? INT (E (PLUS | MINUS)? INT)?
     ;
 
-SHOW
-    : S H O W
+HEXDIGIT
+    : '0x' HEX+ | 'X' SQ HEX+ SQ
     ;
-
-SHARDING
-    : S H A R D I N G
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-FROM
-    : F R O M
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
-GENERATED_KEY
-    : G E N E R A T E D UL_ K E Y
-    ;
-
-DEFAULT_TABLE_STRATEGY
-    : D E F A U L T UL_ T A B L E UL_ S T R A T E G Y
-    ;
-
-TABLE
-    : T A B L E
-    ;
-
-SHARDING_COLUMN
-    : S H A R D I N G UL_ C O L U M N
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-COLUMN
-    : C O L U M N
-    ;
-
-BINDING
-    : B I N D I N G
-    ;
-
-BROADCAST
-    : B R O A D C A S T
-    ;
-
-RULES
-    : R U L E S
-    ;
-
-COLUMNS
-    : C O L U M N S
+    
+BITNUM
+    : '0b' ('0' | '1')+ | B SQ ('0' | '1')+ SQ
     ;

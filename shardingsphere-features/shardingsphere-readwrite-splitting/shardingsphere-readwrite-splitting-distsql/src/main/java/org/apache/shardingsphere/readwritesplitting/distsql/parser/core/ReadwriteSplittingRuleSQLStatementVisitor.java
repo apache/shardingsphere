@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for readwrite-splitting rule.
  */
-public final class ReadwriteSplittingRuleDistSQLStatementVisitor extends ReadwriteSplittingRuleStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class ReadwriteSplittingRuleSQLStatementVisitor extends ReadwriteSplittingRuleStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitCreateReadwriteSplittingRule(final CreateReadwriteSplittingRuleContext ctx) {

@@ -22,14 +22,10 @@ import Symbol, RDLStatement, RQLStatement, RALStatement;
 execute
     : (addResource
     | dropResource
-    | createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
     | createEncryptRule
     | alterEncryptRule
     | dropEncryptRule
     | showResources
-    | showDatabaseDiscoveryRules
     | showEncryptRules
     | showScalingJobList
     | showScalingJobStatus
