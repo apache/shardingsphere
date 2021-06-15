@@ -32,7 +32,7 @@ public class IndexMetaDataUtil {
     
     private static final String UNDERLINE = "_";
     
-    private static final String GENERATE_LOGIC_INDEX_NAME_SUFFIX = "idx";
+    private static final String GENERATED_LOGIC_INDEX_NAME_SUFFIX = "idx";
     
     /**
      * Get logic index name.
@@ -68,6 +68,6 @@ public class IndexMetaDataUtil {
         for (ColumnSegment each : columns) {
             builder.append(each.getIdentifier().getValue()).append(UNDERLINE);
         }
-        return builder.append(GENERATE_LOGIC_INDEX_NAME_SUFFIX).toString();
+        return builder.append(GENERATED_LOGIC_INDEX_NAME_SUFFIX).toString();
     }
 }

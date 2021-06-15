@@ -63,8 +63,8 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        String quoteIndexName = identifier.getQuoteCharacter().wrap(getIndexValue(routeUnit));
-        return isGeneratedIndex() ? " " + quoteIndexName + " " : quoteIndexName;
+        String quotedIndexName = identifier.getQuoteCharacter().wrap(getIndexValue(routeUnit));
+        return isGeneratedIndex() ? " " + quotedIndexName + " " : quotedIndexName;
     }
     
     private boolean isGeneratedIndex() {

@@ -57,7 +57,7 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     @Override
     public Collection<IndexSegment> getIndexes() {
         Optional<Integer> startIndex = CreateIndexStatementHandler.getGeneratedIndexStartIndex(getSqlStatement());
-        final String generatedLogicIndexName = IndexMetaDataUtil.getGeneratedLogicIndexName(getSqlStatement().getColumns());
+        String generatedLogicIndexName = IndexMetaDataUtil.getGeneratedLogicIndexName(getSqlStatement().getColumns());
         Collection<IndexSegment> generatedIndexSegments = startIndex.map(index -> Collections.singletonList(new IndexSegment(index, index, 
                 new IdentifierValue(generatedLogicIndexName)))).orElse(Collections.emptyList());
         return null == getSqlStatement().getIndex() ? generatedIndexSegments : Collections.singletonList(getSqlStatement().getIndex());
