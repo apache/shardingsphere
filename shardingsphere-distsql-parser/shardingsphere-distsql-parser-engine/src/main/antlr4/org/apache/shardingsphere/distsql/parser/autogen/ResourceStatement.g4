@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+grammar ResourceStatement;
 
 import Symbol, RDLStatement, RQLStatement, RALStatement;
 
