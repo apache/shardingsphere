@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 import java.util.Collection;

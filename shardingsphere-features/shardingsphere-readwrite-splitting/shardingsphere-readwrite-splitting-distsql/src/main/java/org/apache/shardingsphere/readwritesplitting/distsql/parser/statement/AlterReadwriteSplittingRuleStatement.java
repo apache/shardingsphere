@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show.impl;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+
+import java.util.Collection;
 
 /**
- * Show readwrite splitting rules statement.
+ * Alter readwrite splitting rule statement.
  */
-public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement {
+@RequiredArgsConstructor
+@Getter
+public final class AlterReadwriteSplittingRuleStatement extends AlterRuleStatement {
     
-    public ShowReadwriteSplittingRulesStatement(final SchemaSegment schema) {
-        super(schema);
-    }
+    private final Collection<ReadwriteSplittingRuleSegment> rules;
 }

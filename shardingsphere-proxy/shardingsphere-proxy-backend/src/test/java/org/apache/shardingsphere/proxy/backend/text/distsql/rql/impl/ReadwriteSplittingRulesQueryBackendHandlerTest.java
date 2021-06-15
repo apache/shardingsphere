@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -104,9 +104,7 @@ public final class ReadwriteSplittingRulesQueryBackendHandlerTest {
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", buildProps());
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>();
         loadBalancers.put("test", shardingSphereAlgorithmConfiguration);
-        ReadwriteSplittingRuleConfiguration result =
-                new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfiguration), loadBalancers);
-        return result;
+        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfiguration), loadBalancers);
     }
 
     private Properties buildProps() {

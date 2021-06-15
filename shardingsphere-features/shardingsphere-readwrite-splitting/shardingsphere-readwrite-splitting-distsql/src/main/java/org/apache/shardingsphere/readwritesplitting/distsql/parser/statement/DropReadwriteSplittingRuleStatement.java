@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
