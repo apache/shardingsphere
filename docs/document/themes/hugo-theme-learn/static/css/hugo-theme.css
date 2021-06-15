@@ -10,23 +10,23 @@
 }
 
 #TableOfContents {
-    font-size: 13px !important;
-    max-height: 85vh;
-    overflow: auto;
-    padding: 15px !important;
+    font-size: 1.1rem !important;
+    /* max-height: 85vh; */
+    overflow: visible;
+    padding: 5px !important;
 }
-
 
 #TableOfContents > ul > li > ul > li > ul li {
   margin-right: 8px;
 }
 
 #TableOfContents > ul > li > a   {
-  font-weight: bold; padding: 0 18px; margin: 0 2px;
+  /* font-weight: bold;  */
+  padding: 0 18px; margin: 0 2px;
 }
 
 #TableOfContents > ul > li > ul > li > a {
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 
 #TableOfContents > ul > li > ul > li > ul > li > ul > li > ul > li  {
@@ -160,22 +160,30 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   font-weight: inherit;
 }
 
-h2 {
-  font-size: 2.5rem;
+h1 {
+  font-size: 2.0rem;
   line-height: 110% !important;
-  margin: 2.5rem 0 1.5rem 0;
+  margin: 2.0rem 0 1.0rem 0;
+}
+
+h2 {
+  /* font-size: 1.75rem; */
+  font-size: 1.5rem;
+  line-height: 110% !important;
+  /* margin: 1.5rem 0 1.0rem 0; */
+  margin: 4.5rem 0 2rem 0;
 }
 
 h3 {
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 110% !important;
-  margin: 2rem 0 1rem 0;
+  margin: 1.2rem 0 0.8rem 0;
 }
 
 h4 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   line-height: 110% !important;
-  margin: 1.5rem 0 0.75rem 0;
+  margin: 1.1rem 0 0.6rem 0;
 }
 
 h5 {

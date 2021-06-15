@@ -1,12 +1,12 @@
 +++
-title = "Release Guide"
-weight = 6
+title = "ShardingSphere Release Guide"
+weight = 7
 chapter = true
 +++
 
 ## GPG Settings
 
-### Install GPG
+**1. Install GPG**
 
 Download installation package on [official GnuPG website](https://www.gnupg.org/download/index.html). 
 The command of GnuPG 1.x version can differ a little from that of 2.x version. 
@@ -17,7 +17,7 @@ After the installation, execute the following command to check the version numbe
 gpg --version
 ```
 
-### Create Key
+**2. Create Key**
 
 After the installation, execute the following command to create key.
 
@@ -35,7 +35,7 @@ gpg --gen-key
 
 Finish the key creation according to instructions:
 
-**Notice: Please use Apache mail for key creation.**
+> To be noticed: Please use Apache mail for key creation.
 
 ```shell
 gpg (GnuPG) 2.0.12; Copyright (C) 2009 Free Software Foundation, Inc.
@@ -73,7 +73,7 @@ Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
 You need a Passphrase to protect your secret key. # Input passwords
 ```
 
-### Check Generated Key
+**3. Check Generated Key**
 
 ```shell
 gpg --list-keys
@@ -89,9 +89,9 @@ sub   4096R/0B7EF5B2 2019-03-20
 
 Among them, 700E6065 is public key ID.
 
-### Upload the Public Key to Key Server
+**4. Upload the Public Key to Key Server**
 
-The command is as follow:
+The command is as follows:
 
 ```shell
 gpg --keyserver hkp://pool.sks-keyservers.net --send-key 700E6065
@@ -102,7 +102,7 @@ Each server will automatically synchronize with one another, so it would be okay
 
 ## Apache Maven Central Repository Release
 
-### Set settings.xml
+**1. Set settings.xml**
 
 Add the following template to `~/.m2/settings.xml`, all the passwords need to be filled in after encryption. 
 For encryption settings, please see [here](http://maven.apache.org/guides/mini/guide-encryption.html).
@@ -124,13 +124,17 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 </settings>
 ```
 
-### Update Release Notes
+**2. Update Release Notes And Example Version**
+
+Update the following file in master branch, and submit a PR to master branch:
 
 ```
 https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
 ```
 
-### Create Release Branch
+Update the POM of the module `examples`, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}.
+
+**3. Create Release Branch**
 
 Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere/` directory and the version to be released is `4.0.0-RC`. 
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
@@ -144,19 +148,19 @@ git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
 
-### Pre-Release Check
+**4. Pre-Release Check**
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
 ```
 
--Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of sharding-proxy.
+-Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of ShardingSphere-Proxy.
 
 -DautoVersionSubmodules=true: it can make the version number is inputted only once and not for each sub-module.
 
 -DdryRun=true: rehearsal, which means not to generate or submit new version number and new tag.
 
-### Prepare for the Release
+**5. Prepare for the Release**
 
 First, clean local pre-release check information.
 
@@ -164,7 +168,7 @@ First, clean local pre-release check information.
 mvn release:clean
 ```
 
-Then, prepare to execute the release.
+Then, prepare to execute the release. Before releasing, update the POM of the two modules of examples and shardingsphere-ui, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}.
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
@@ -177,11 +181,10 @@ It is basically the same as the previous rehearsal command, but deleting -DdryRu
 After making sure there is no mistake in local files, submit them to GitHub.
 
 ```shell
-git push
+git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
-
-### Deploy the Release
+**6. Deploy the Release**
 
 ```shell
 mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github username}
@@ -194,7 +197,7 @@ If there is any problem in gpg signature, `Close` will fail, but you can see the
 
 ## Apache SVN Repository Release
 
-### Checkout ShardingSphere Release Directory
+**1. Checkout ShardingSphere Release Directory**
 
 If there is no local work directory, create one at first.
 
@@ -210,7 +213,7 @@ svn --username=${APACHE LDAP username} co https://dist.apache.org/repos/dist/dev
 cd ~/ss_svn/dev/shardingsphere
 ```
 
-### Add gpg Public Key
+**2. Add gpg Public Key**
 
 Only the account in its first deployment needs to add that. 
 It is alright for `KEYS` to only include the public key of the deployed account.
@@ -219,7 +222,7 @@ It is alright for `KEYS` to only include the public key of the deployed account.
 gpg -a --export ${GPG username} >> KEYS
 ```
 
-### Add the Release Content to SVN Directory
+**3. Add the Release Content to SVN Directory**
 
 Create folder by version number.
 
@@ -228,32 +231,29 @@ mkdir -p ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cd ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
-Add source code packages, binary packages and executable binary packages of sharding-proxy to SVN working directory.
+Add source code packages, binary packages and executable binary packages of ShardingSphere-Proxy to SVN working directory.
 
 ```shell
-cp -f ~/shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-scaling-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-scaling-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
-### Generate sign files
+**4. Generate sign files**
 
 ```shell
-shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-${RELEASE.VERSION}-src.zip.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
+shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-src.zip > apache-shardingsphere-${RELEASE.VERSION}-src.zip.sha512
+shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz > apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz.sha512
 ```
 
-### Commit to Apache SVN
+**5. Commit to Apache SVN**
 
 ```shell
 svn add *
@@ -262,20 +262,18 @@ svn --username=${APACHE LDAP username} commit -m "release ${RELEASE.VERSION}"
 
 ## Check Release
 
-### Check sha512 hash
+**Check sha512 hash**
 
 ```shell
 shasum -c apache-shardingsphere-${RELEASE.VERSION}-src.zip.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz.sha512
 ```
 
-### Check gpg Signature
+**Check gpg Signature**
 
-First, import releaser's public key. 
-Import KEYS from SVN repository to local. (The releaser does not need to import again; the checking assistant needs to import it, with the user name filled as the releaser's. )
+First, import releaser's public key. Import KEYS from SVN repository to local. (The releaser does not need to import again; the checking assistant needs to import it, with the user name filled as the releaser's. )
 
 ```shell
 curl https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS >> KEYS
@@ -302,23 +300,23 @@ Then, check the gpg signature.
 
 ```shell
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-${RELEASE.VERSION}-src.zip
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz
+gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
+gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
+gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz
 ```
 
-### Check Released Files
+**Check Released Files**
 
-#### compare release source with github tag
+**Compare release source with github tag**
 
 ```
-curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/${RELEASE.VERSION}.zip | unzip
+curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/${RELEASE.VERSION}.zip
+unzip tag-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-${RELEASE.VERSION}-src.zip
-diff -r apache-shardingsphere-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
+diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RELEASE.VERSION}
 ```
 
-#### Check source package
+**Check source package**
 
 *   Check whether source tarball is oversized for including nonessential files
 *   `LICENSE` and `NOTICE` files exist
@@ -328,10 +326,10 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
 *   Codes can be compiled and pass the unit tests (./mvnw install)
 *   Check if there is any extra files or folders, empty folders for example
 
-#### Check binary packages
+**Check binary packages**
 
-Decompress `apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`, `apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz` ,
-`apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz` and `apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
+Decompress `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`, `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz` and
+`apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-scaling-bin.tar.gz`
 to check the following items:
 
 *   `LICENSE` and `NOTICE` files exist
@@ -345,7 +343,7 @@ to check the following items:
 
 ## Call for a Vote
 
-### Vote procedure
+**Vote procedure**
 
 1. ShardingSphere community vote: send the vote e-mail to `dev@shardingsphere.apache.org`. 
 PMC needs to check the rightness of the version according to the document before they vote. 
@@ -353,7 +351,7 @@ After at least 72 hours and with at least 3 `+1 PMC member` votes, it can come t
 
 2. Announce the vote result: send the result vote e-mail to `dev@shardingsphere.apache.org`.
 
-### Vote Templates
+**Vote Templates**
 
 1. ShardingSphere Community Vote Template
 
@@ -392,6 +390,9 @@ https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 Look at here for how to verify this release candidate:
 https://shardingsphere.apache.org/community/en/contribute/release/
 
+GPG user ID:
+${YOUR.GPG.USER.ID}
+
 The vote will be open for at least 72 hours or until necessary number of votes are reached.
 
 Please vote accordingly:
@@ -410,8 +411,6 @@ Checklist for reference:
 
 [ ] Checksums and PGP signatures are valid.
 
-[ ] DISCLAIMER is included.
-
 [ ] Source code distributions have correct names matching the current release.
 
 [ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
@@ -422,31 +421,6 @@ Checklist for reference:
 ```
 
 2. Announce the vote result:
-
-Body:
-
-```
-The vote to release Apache ShardingSphere ${RELEASE.VERSION} has passed.
-
-7 PMC member +1 binding votes:
-
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-xxx
-
-1 community +1 non-binding vote:
-xxx
-
-Thank you everyone for taking the time to review the release and help us. 
-```
-
-3. Announce the vote result:
-
-**Notice: Please include the votes from ShardingSphere community above.**
 
 Title：
 
@@ -472,7 +446,7 @@ I will process to publish the release and send ANNOUNCE.
 
 ## Finish the Release
 
-### Move source packages, binary packages and KEYS from the `dev` directory to `release` directory
+**1. Move source packages, binary packages and KEYS from the `dev` directory to `release` directory**
 
 ```shell
 svn mv https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer packages for ${RELEASE.VERSION}"
@@ -480,49 +454,40 @@ svn delete https://dist.apache.org/repos/dist/release/shardingsphere/KEYS -m "de
 svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
 ```
 
-### Find ShardingSphere in staging repository and click `Release`
+**2. Find ShardingSphere in staging repository and click `Release`**
 
-### Merge release branch to `master` and delete release branch on Github
+**3. Merge release branch to `master` and delete release branch on Github**
 
 ```shell
 git checkout master
 git merge origin/${RELEASE.VERSION}-release
-git push
+git pull
+git push origin master
 git push --delete origin ${RELEASE.VERSION}-release
+git branch -d ${RELEASE.VERSION}-release
 ```
 
-### Update README files
+**4. Update README files**
 
-Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md
-
-Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `CURRENT_VERSION` in `Dockerfile`
-
-Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `imageName` in Maven `Docker` plugin
+Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and README_ZH.md
 
 Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `SERVER_VERSION` in `MySQLServerInfo.java`
 
-### Update the download page
+**5. Docker Release**
 
-https://shardingsphere.apache.org/document/current/en/downloads/
+5.1 Preparation
 
-https://shardingsphere.apache.org/document/current/cn/downloads/
+Install and start docker service
 
-Keep two latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
-
-### Docker Release
-
-#### Preparation
-
-Install docker locally and start the docker service
-
-#### Compile Docker Image
+5.2 Compile Docker Image
 
 ```shell
-cd ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/
-mvn clean package docker:build
+git checkout ${RELEASE.VERSION}
+cd ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/
+mvn clean package -Prelease,docker
 ```
 
-#### Tag the local Docker Image
+5.3 Tag the local Docker Image
 
 Check the image ID through `docker images`, for example: e9ea51023687
 
@@ -531,24 +496,36 @@ docker tag e9ea51023687 apache/sharding-proxy:latest
 docker tag e9ea51023687 apache/sharding-proxy:${RELEASE.VERSION}
 ```
 
-#### Publish Docker Image
+5.4 Publish Docker Image
 
 ```shell
 docker push apache/sharding-proxy:latest
 docker push apache/sharding-proxy:${RELEASE_VERSION}
 ```
 
-#### Confirm the successful release
+5.5 Confirm the successful release
 
 Login [Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/) to check whether there are published images
 
-### Publish release in GitHub
+**6. Publish release in GitHub**
 
 Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere/releases)'s `${RELEASE_VERSION}` version
 
 Edit version number and release notes, click `Publish release`
 
-### Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
+**7. Update the download page**
+
+https://shardingsphere.apache.org/document/current/en/downloads/
+
+https://shardingsphere.apache.org/document/current/cn/downloads/
+
+GPG signatures and hashes (SHA* etc) should use URL start with `https://downloads.apache.org/shardingsphere/`
+
+Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
+
+**8. Announce release completed by email**
+
+Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
 Announcement e-mail template:
 
@@ -565,11 +542,11 @@ Hi all,
 
 Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ${RELEASE.VERSION}.
 
-ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, Sharding-JDBC & Sharding-Proxy. 
-They both provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
-Aiming at reasonably making full use of the computation and storage capacity of the database in a distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
-As the cornerstone of many enterprises, relational database still takes a huge market share. 
-Therefore, at the current stage, we prefer to focus on its increment instead of a total overturn.
+ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy.
+They both provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism and heterogeneous language.
+Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database.
+As the cornerstone of enterprises, relational database still takes a huge market share.
+Therefore, we prefer to focus on its increment instead of a total overturn.
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <!-- for without order by cases -->
+    <sql-case id="select_distinct_with_single_column_without_order_by" value="SELECT DISTINCT item_id FROM t_order_item" />
+    <sql-case id="select_distinct_with_multi_column_without_order_by" value="SELECT DISTINCT order_id, user_id, status FROM t_order" />
+
+    <sql-case id="select_distinct_with_owner_column_without_order_by" value="SELECT DISTINCT t_order.order_id FROM t_order order by t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_distinct_with_owner_star_without_order_by" value="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id" db-types="MySQL" />
+    <!-- for with owner column with group by without order by  -->
+    <sql-case id="select_distinct_with_owner_column_with_group_by" value="SELECT DISTINCT t_order.order_id FROM t_order GROUP BY t_order.order_id" db-types="MySQL" />
+
+    <sql-case id="select_distinct_with_single_column" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
+    <sql-case id="select_distinct_with_multi_column" value="SELECT DISTINCT order_id, user_id, status FROM t_order ORDER BY order_id" />
+    <sql-case id="select_distinct_with_owner_column" value="SELECT DISTINCT t_order.order_id FROM t_order ORDER BY order_id" />
+    <sql-case id="select_distinct_with_star" value="SELECT DISTINCT * FROM t_order WHERE order_id > 1100 ORDER BY order_id" />
+    <sql-case id="select_distinct_with_owner_star" value="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id ORDER BY t_order.order_id" />
+    <sql-case id="select_distinct_with_sum" value="SELECT SUM(DISTINCT order_id) s FROM t_order WHERE order_id &lt; 1100" />
+    <sql-case id="select_distinct_with_count" value="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" />
+    <sql-case id="select_distinct_with_avg" value="SELECT AVG(DISTINCT order_id) FROM t_order WHERE order_id &lt; 1100" db-types="MySQL" />
+    <!--TODO The metadata of MySQL is different from which of H2. For now, we could only specify one db-types from MySQL or H2. We need to support different expected data in one case.-->
+    <sql-case id="select_distinct_with_count_sum" value="SELECT COUNT(DISTINCT order_id), SUM(DISTINCT order_id) FROM t_order WHERE order_id &lt; 1100" db-types="MySQL" />
+    <sql-case id="select_distinct_with_single_count_group_by" value="SELECT order_id, COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100 GROUP BY order_id ORDER BY order_id" />
+    <sql-case id="select_distinct_with_count_group_by" value="SELECT COUNT(DISTINCT order_id) c, order_id FROM t_order GROUP BY order_id ORDER BY order_id" />
+    <sql-case id="select_distinct_function" value="SELECT DISTINCT(item_id) FROM t_order_item ORDER BY item_id" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />
+    <sql-case id="select_distinct_with_count_calculation" value="SELECT COUNT(DISTINCT user_id + order_id) c FROM t_order WHERE order_id &lt; 1100" />
+    <sql-case id="select_distinct_with_aggregation_functions" value="SELECT SUM(DISTINCT order_id),count(DISTINCT order_id),count(order_id)  FROM t_order WHERE order_id &lt; 1100" />
+</sql-cases>

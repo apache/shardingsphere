@@ -20,22 +20,22 @@ grammar DCLStatement;
 import Symbol, Keyword, SQL92Keyword, Literals, BaseRule;
 
 grant
-    : GRANT privilegeClause TO grantee_ (COMMA_ grantee_)* (WITH GRANT OPTION)?
+    : GRANT privilegeClause TO grantee (COMMA_ grantee)* (WITH GRANT OPTION)?
     ;
 
 revoke
-    : REVOKE (GRANT OPTION FOR)? privilegeClause FROM grantee_ (COMMA_ grantee_)* dropBehaviour_
+    : REVOKE (GRANT OPTION FOR)? privilegeClause FROM grantee (COMMA_ grantee)* dropBehaviour
     ;  
 
 privilegeClause
-    : privileges_ ON onObjectClause
+    : privileges ON onObjectClause
     ;
 
-privileges_
-    : privilegeType_ columnNames
+privileges
+    : privilegeType columnNames
     ;
 
-privilegeType_
+privilegeType
     : ALL PRIVILEGES
     | SELECT
     | DELETE
@@ -45,15 +45,15 @@ privilegeType_
     | USAGE
     ;
 
-grantee_
+grantee
     : PUBLIC | identifier
     ;
 
 onObjectClause
-    : objectType_? privilegeLevel
+    : objectType? privilegeLevel
     ;
 
-objectType_
+objectType
     : TABLE
     ;
 

@@ -1,48 +1,34 @@
-# ShardingSphere示例
+# Apache ShardingSphere 示例
 
-1.x的示例，请参阅 `https://github.com/apache/shardingsphere/tree/${tag}/sharding-jdbc-example`
+1.x 版本示例，请参阅 `https://github.com/apache/shardingsphere/tree/${tag}/shardingsphere-jdbc-example`
 
-2.x或3.x或4.x的示例，请参见 `https://github.com/apache/shardingsphere-example/tree/${tag}`
+2.x，3.x 或 4.x 版本示例，请参见 `https://github.com/apache/shardingsphere-example/tree/${tag}`
 
-**需要注意**
+**注意事项**
 
 - *请不要使用`dev`分支来运行您的示例，`dev`分支的示例尚未发布。*
 
-- *手动模式初始脚本位于 `https://github.com/apache/shardingsphere-example/blob/dev/src/resources/manual_schema.sql`，请在首次运行示例之前执行它。*
+- *如果采用手动模式，请在首次运行示例之前执行[初始化脚本](https://github.com/apache/shardingsphere/blob/master/examples/src/resources/manual_schema.sql)。*
 
-- *请确保MySQL上的主从数据同步正确运行。否则，此示例查询从库数据将是空。*
+- *请确保MySQL上的主从数据同步正确运行。否则，读写分离示例查询从库数据为空。*
 
-## 如果要使用`dev`分支，请在开始该example之前
+## 使用 `dev` 分支
 
-请确保已安装了来自[shardingsphere](https://github.com/apache/shardingsphere) 和 [shardingsphere-spi-impl](https://github.com/OpenSharding/shardingsphere-spi-impl)的某些依赖项，因为某些示例依赖于此。如果您是shardingsphere的新手，您可以准备如下依赖：
+请在开始该示例之前，请确保已安装了来自 [Apache ShardingSphere](https://github.com/apache/shardingsphere) 的全部依赖项。
+如果您是 ShardingSphere 的新手，您可以准备如下依赖：
 
-1.下载并安装[shardingsphere](https://github.com/apache/shardingsphere)：
+1. 下载并安装 [Apache ShardingSphere](https://github.com/apache/shardingsphere): 
 
 ```bash
-## 下载shardingsphere代码
+## 下载源码
 git clone https://github.com/apache/shardingsphere.git
 
-## 检出一个指定版本，比如是 4.0.0-RC1
-cd shardingsphere && git checkout 4.0.0-RC1
-
-## 安装依赖
+## 编译源码
+cd shardingsphere/examples
 mvn clean install -Prelease
 ```
 
-2.下载并安装[shardingsphere-spi-impl](https://github.com/OpenSharding/shardingsphere-spi-impl)：
-
-```bash
-## 下载shardingsphere-SPI-implement的代码
-git clone https://github.com/OpenSharding/shardingsphere-spi-impl.git
-
-## 检出一个指定版本，比如是 4.0.0-RC1
-cd shardingsphere-spi-impl && git checkout 4.0.0-RC1
-
-## 安装依赖
-mvn clean install
-```
-
-## shardingsphere-example模块设计
+## 模块设计
 
 ### 项目结构
 
@@ -54,67 +40,41 @@ shardingsphere-example
   │   ├── example-raw-jdbc
   │   ├── example-spring-jpa
   │   └── example-spring-mybatis
-  ├── sharding-jdbc-example
+  ├── shardingsphere-jdbc-example
   │   ├── sharding-example
   │   │   ├── sharding-raw-jdbc-example
   │   │   ├── sharding-spring-boot-jpa-example
   │   │   ├── sharding-spring-boot-mybatis-example
   │   │   ├── sharding-spring-namespace-jpa-example
   │   │   └── sharding-spring-namespace-mybatis-example
-  │   ├── orchestration-example
-  │   │   ├── orchestration-raw-jdbc-example
-  │   │   ├── orchestration-spring-boot-example
-  │   │   └── orchestration-spring-namespace-example
+  │   ├── governance-example
+  │   │   ├── governance-raw-jdbc-example
+  │   │   ├── governance-spring-boot-example
+  │   │   └── governance-spring-namespace-example
   │   ├── transaction-example
   │   │   ├── transaction-2pc-xa-example
-  │   │   └──transaction-base-seata-example
+  │   │   └── transaction-base-seata-example
   │   ├── other-feature-example
   │   │   ├── hint-example
   │   │   └── encrypt-example
-  ├── sharding-proxy-example
-  │   └── sharding-proxy-boot-mybatis-example
+  ├── shardingsphere-proxy-example
+  │   ├── shardingsphere-proxy-boot-mybatis-example
+  │   └── shardingsphere-proxy-hint-example
   └── src/resources
         └── manual_schema.sql
 ```
 
-### 分片数据的最佳实践
+## 用例列表
 
-* 分片数据库
-* 分片表
-* 分片数据库和表
-* 主从
-* 分片和主从
-
-您可以从[sharding-example](./sharding-jdbc-example/sharding-example)中获取更多详细信息
-
-### 分片与编排的最佳实践
-
-* 使用本地配置文件和zookeeper/etcd配置分片
-* 使用注册中心（zookeeper/etcd）的配置进行分片
-
-您可以从业务[orchestration-example](./sharding-jdbc-example/orchestration-example)中获取更多细节
-
-### 分片+分布式事务的最佳实践
-
-* 2pc-xa事务
-* base-seata事务
-
-您可以从[transaction-example](./sharding-jdbc-example/transaction-example)中获取更多详细信息
-
-### 提示路由的最佳实践
-
-您可以从[hint-example](./sharding-jdbc-example/other-feature-example/hint-example)中获取更多细节
-
-### 数据加密的最佳实践
-
-您可以从[encrypt-example](./sharding-jdbc-example/other-feature-example/encrypt-example)中获取更多详细信息
-
-### APM集成的最佳实践
-
-我们将在最近添加APM集成示例。
-
-### 分片代理的最佳实践
-
-我们希望最近添加一个docker基础示例。
-
-### [如何使用docker配置sharding-jdbc和sharding-proxy](./docker/docker-compose.md) (可选)
+| 例子 | 描述 |
+|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| [分片](shardingsphere-jdbc-example/sharding-example)                                                    | 演示通过 ShardingSphere-JDBC 进行分库、分表、主从等      |
+| [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example)         | 演示通过 SpringBoot JPA 对接 ShardingSphere-JDBC      |
+| [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | 演示通过 SpringBoot Mybatis 对接 ShardingSphere-JDBC  |
+| [治理](shardingsphere-jdbc-example/governance-example)                                                  | 演示在 ShardingSphere-JDBC 中使用治理                  |
+| [事务](shardingsphere-jdbc-example/transaction-example)                                                 | 演示在 ShardingSphere-JDBC 中使用事务                  |
+| [hint](shardingsphere-jdbc-example/other-feature-example/hint-example)                                  | 演示在 ShardingSphere-JDBC 中使用 hint                |
+| [加密](shardingsphere-jdbc-example/other-feature-example/encrypt-example)                               | 演示在 ShardingSphere-JDBC 中使用加密                  |
+| APM监控(Pending)                                                                                        | 演示在 ShardingSphere 中使用 APM 监控                  |
+| proxy(Pending)                                                                                          | 演示使用 ShardingSphere-Proxy                         |
+| [docker](./docker/docker-compose.md)                                                                    | 演示通过 docker 创建 ShardingSphere 所依赖的环境        |

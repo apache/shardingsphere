@@ -35,16 +35,16 @@ import java.util.List;
 
 public final class OrderServiceImpl implements ExampleService {
     
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
     
-    private OrderItemRepository orderItemRepository;
+    private final OrderItemRepository orderItemRepository;
     
-    private AddressRepository addressRepository;
+    private final AddressRepository addressRepository;
     
     public OrderServiceImpl(final DataSource dataSource) {
-        this.orderRepository = new OrderRepositoryImpl(dataSource);
-        this.orderItemRepository = new OrderItemRepositoryImpl(dataSource);
-        this.addressRepository = new AddressRepositoryImpl(dataSource);
+        orderRepository = new OrderRepositoryImpl(dataSource);
+        orderItemRepository = new OrderItemRepositoryImpl(dataSource);
+        addressRepository = new AddressRepositoryImpl(dataSource);
     }
     
     public OrderServiceImpl(final OrderRepository orderRepository, final OrderItemRepository orderItemRepository, final AddressRepository addressRepository) {

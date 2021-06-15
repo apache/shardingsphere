@@ -14,4 +14,4 @@ Before asking a question, make sure you have:
 - Read documentation: [ShardingSphere Doc](https://shardingsphere.apache.org/document/current/en/overview).
 
 Please pay attention on issues you submitted, because we maybe need more details. 
-If no response **more than 7 days** and we cannot reproduce it on current information, we will **close it**.
+If no response anymore and we cannot reproduce it on current information, we will **close it**.

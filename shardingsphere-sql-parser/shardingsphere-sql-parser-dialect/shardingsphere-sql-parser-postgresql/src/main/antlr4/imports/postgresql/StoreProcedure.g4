@@ -17,8 +17,15 @@
 
 grammar StoreProcedure;
 
-import Keyword;
+import Keyword, BaseRule;
 
 call
-    : CALL 
+    : CALL funcName LP_ callClauses? RP_
+    ;
+
+callClauses
+    : (ALL | DISTINCT)? funcArgList sortClause?
+    | VARIADIC funcArgExpr sortClause
+    | funcArgList COMMA_ VARIADIC funcArgExpr sortClause
+    | ASTERISK_
     ;

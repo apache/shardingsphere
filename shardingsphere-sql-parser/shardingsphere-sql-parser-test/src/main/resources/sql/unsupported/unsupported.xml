@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <!--  
+    <sql-case id="assertSelectDistinctWithSingleTable" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
+    <sql-case id="assertSelectIntoSQL" value="SELECT * INTO t_order_new FROM t_order" />
+    -->
+    <!--<sql-case id="assertSelectWindow" value="SELECT * FROM t_order WINDOW w AS (PARTITION BY order_id)" db-types="PostgreSQL" />-->
+    <!--<sql-case id="assertSelectFetch" value="SELECT * FROM t_order FETCH NEXT 1 ROW ONLY" db-types="PostgreSQL" />-->
+    <!--<sql-case id="assertSelectFor" value="SELECT * FROM t_order FOR UPDATE OF t_order" db-types="PostgreSQL" />-->
+    <!--<sql-case id="assertSelectRowNumberAndPartition" value="SELECT ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY order_id ASC) AS row_, user_id, order_id FROM t_order" db-types="SQLServer" />-->
+    <!--<sql-case id="assertSelectWithStartWith" value="SELECT * FROM t_order_item START WITH order_id = %s CONNECT BY NOCYCLE PRIOR item_id=item_id-1" db-types="Oracle" />-->
+    <!--<sql-case id="assertSelectWithModelIn" value="SELECT order_id_value,order_item_id_value FROM (select 1001 as order_id_value, 100001 as order_item_id_value from dual) MODEL RETURN UPDATED ROWS DIMENSION BY(order_item_id_value) MEASURES(order_id_value) RULES(order_id_value[1] = 10001)" db-types="Oracle" />-->
+    <!--<sql-case id="assertInsertWithAll" value="INSERT ALL INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />-->
+    <!--<sql-case id="assertInsertWithFirst" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />-->
+    <!--<sql-case id="assertDeleteTableAlias" value="DELETE ALIAS_XXX FROM TABLES_XXX AS ALIAS_XXX" db-types="MySQL,Oracle,SQLServer"/>-->
+    <!--<sql-case id="assertSelectWithCaseWithParameterMarker" value="SELECT * FROM t_order WHERE CASE WHEN order_id &gt; ? THEN ? ELSE ? END" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithOrSignWithParameterMarker" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithTildeWithParameterMarker" value="SELECT * FROM t_order WHERE ~t_order.order_id" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithBinaryWithParameterMarker" value="SELECT * FROM t_order WHERE BINARY t_order.order_id" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithJsonExtractSignWithParameterMarker" value="SELECT * FROM t_order WHERE order_id -&gt; ?" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithJsonUnquoteExtractSignWithParameterMarker" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; ?" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithRowWithParameterMarker" value="SELECT * FROM t_order WHERE ROW(?, now()) = (order_id, status)" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithOdbcEscapeSyntaxWithParameterMarker" value="SELECT * FROM t_order WHERE {ts ?}" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithMatchWithParameterMarker" value="SELECT * FROM t_order WHERE MATCH (order_id) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithCollateWithMarker" value="NOT SUPPORT SELECT * FROM t_order WHERE order_id collate ?" db-types="MySQL"/>-->
+    <!--<sql-case id="assertSelectWithMatchAgainstWithParameterMarker" value="SELECT * FROM TABLE_XXX WHERE MATCH(TABLE_XXX.COLUMN_XXX) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL" />-->
+    <!--<sql-case id="assertSelectLikeConcatWithParameterMarker" value="SELECT * FROM TABLE_XXX WHERE COLUMN_XXX LIKE CONCAT('%%', ?, '%%')" />-->
+    <!--<sql-case id="assertSelectGeographyWithParameterMarker" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL" />-->
+    <sql-case id="assertDistSQLShowRuleParseConflict" value="SHOW REPLICA_QUERY RULE FROM schema_name" />
+</sql-cases>

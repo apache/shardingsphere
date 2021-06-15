@@ -71,7 +71,7 @@ unreservedWord
     | ARRAY | LOCALTIME | LOCALTIMESTAMP | QUARTER | WEEK | MICROSECOND | ENABLE
     | DISABLE | BINARY | HIDDEN_ | MOD | PARTITION | TOP | ROW
     | XOR | ALWAYS | ROLE | START | ALGORITHM | AUTO | BLOCKERS
-    | CLUSTERED | COLUMNSTORE | CONTENT | DATABASE | DAYS | DENY | DETERMINISTIC
+    | CLUSTERED | COLUMNSTORE | CONTENT | CONCAT | DATABASE | DAYS | DENY | DETERMINISTIC
     | DISTRIBUTION | DOCUMENT | DURABILITY | ENCRYPTED | FILESTREAM | FILETABLE | FOLLOWING
     | HASH | HEAP | INBOUND | INFINITE | LOGIN | MASKED | MAXDOP 
     | MINUTES | MONTHS | MOVE | NOCHECK | NONCLUSTERED | OBJECT | OFF
@@ -96,6 +96,7 @@ unreservedWord
     | RULE | SYNONYM | COLLECTION | SCRIPT | KILL | BACKUP | LOG | SHOWPLAN
     | SUBSCRIBE | QUERY | NOTIFICATIONS | CHECKPOINT | SEQUENCE | INSTANCE | DO | DEFINER | LOCAL | CASCADED
     | NEXT | NAME | INTEGER | TYPE | MAX | MIN | SUM | COUNT | AVG | FIRST | DATETIME2
+    | OUTPUT | INSERTED | DELETED
     ;
 
 schemaName
@@ -119,6 +120,10 @@ name
     ;
 
 columnNames
+    : LP_ columnName (COMMA_ columnName)* RP_
+    ;
+
+columnNamesWithSort
     : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
     ;
 
@@ -127,6 +132,10 @@ tableNames
     ;
 
 indexName
+    : identifier
+    ;
+
+constraintName
     : identifier
     ;
 
@@ -149,7 +158,7 @@ primaryKey
 // TODO comb expr
 expr
     : expr logicalOperator expr
-    | notOperator_ expr
+    | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
     ;
@@ -158,7 +167,7 @@ logicalOperator
     : OR | OR_ | AND | AND_
     ;
 
-notOperator_
+notOperator
     : NOT | NOT_
     ;
 
@@ -235,26 +244,26 @@ castFunction
     ;
 
 charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
+    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
     ;
 
 regularFunction
-    : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
-regularFunctionName_
+regularFunctionName
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 caseExpression
-    : CASE simpleExpr? caseWhen_+ caseElse_?
+    : CASE simpleExpr? caseWhen+ caseElse?
     ;
 
-caseWhen_
+caseWhen
     : WHEN expr THEN expr
     ;
 
-caseElse_
+caseElse
     : ELSE expr
     ;
 
@@ -272,11 +281,11 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | numberLiterals | expr) (ASC | DESC)?
+    : (columnName | numberLiterals | expr) (COLLATE identifier)? (ASC | DESC)?
     ;
 
 dataType
-    : dataTypeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
+    : (ignoredIdentifier DOT_)? dataTypeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier RP_)?
     ;
 
 dataTypeName
@@ -371,6 +380,7 @@ eqKey
     | ALLOW_PAGE_LOCKS
     | COMPRESSION_DELAY
     | SORT_IN_TEMPDB
+    | OPTIMIZE_FOR_SEQUENTIAL_KEY
     ;
 
 eqOnOff
@@ -401,12 +411,12 @@ onLowPriorLockWait
     : ON (LP_ lowPriorityLockWait RP_)?
     ;
 
-ignoredIdentifier_
+ignoredIdentifier
     : IDENTIFIER_
     ;
 
-ignoredIdentifiers_
-    : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+ignoredIdentifiers
+    : ignoredIdentifier (COMMA_ ignoredIdentifier)*
     ;
 
 matchNone

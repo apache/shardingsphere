@@ -23,8 +23,8 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>example-core</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>5.0.0-alpha</version>
     </parent>
     <artifactId>example-api</artifactId>
-    <name>common::example-core::example-api</name>
+    <name>${project.artifactId}</name>
 </project>

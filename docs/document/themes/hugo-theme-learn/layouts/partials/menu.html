@@ -84,6 +84,18 @@
       </ul>
     </section>
     {{ end }}
+
+    <!-- download button -->
+    <hr />
+    {{ if eq .Lang "en"}}
+      <a class="padding" href="{{"https://shardingsphere.apache.org/pdf/shardingsphere_docs_en.pdf" | absURL}}">
+        <i class="fa fa-fw fa-file-pdf-o" ></i>&nbsp;Download PDF&nbsp;&nbsp;<!-- &nbsp; is a placeholder -->
+    {{ else }}  
+      <a class="padding" href="{{"https://shardingsphere.apache.org/pdf/shardingsphere_docs_cn.pdf" | absURL}}">
+        <i class="fa fa-fw fa-file-pdf-o" ></i>&nbsp;下载PDF文档&nbsp;&nbsp;<!-- &nbsp; is a placeholder -->
+    {{end}}
+    </a>
+    
     <section id="footer">
       {{ partial "menu-footer.html" . }}
     </section>

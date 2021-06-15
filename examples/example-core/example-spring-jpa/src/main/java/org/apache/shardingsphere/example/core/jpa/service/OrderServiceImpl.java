@@ -51,7 +51,7 @@ public class OrderServiceImpl implements ExampleService {
         for (int i = 1; i <= 10; i++) {
             AddressEntity entity = new AddressEntity();
             entity.setAddressId((long) i);
-            entity.setAddressName("address_" + String.valueOf(i));
+            entity.setAddressName("address_" + i);
             addressRepository.insert(entity);
         }
     }

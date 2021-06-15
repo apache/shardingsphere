@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+
+<sql-parser-test-cases>
+    <call sql-case-id="call_without_parameters">
+        <procedure-name name="p" start-index="5" stop-index="6"/>
+    </call>
+
+    <call sql-case-id="call_with_parameters_all_variable">
+        <procedure-name name="p" start-index="5" stop-index="6"/>
+        <parameters>
+            <parameter>
+                <common-expression literal-text="@order_id" start-index="7" stop-index="15"/>
+            </parameter>
+            <parameter>
+                <common-expression literal-text="@user_id" start-index="18" stop-index="25"/>
+            </parameter>
+        </parameters>
+    </call>
+
+    <call sql-case-id="call_with_parameters_all_placeholder">
+        <procedure-name name="p" start-index="5" stop-index="6"/>
+        <parameters>
+            <parameter>
+                <parameter-marker-expression value="0" start-index="7" stop-index="7"/>
+            </parameter>
+            <parameter>
+                <parameter-marker-expression value="1" start-index="10" stop-index="10"/>
+            </parameter>
+        </parameters>
+    </call>
+
+    <call sql-case-id="call_with_parameters_all_expression">
+        <procedure-name name="p" start-index="5" stop-index="6"/>
+        <parameters>
+            <parameter>
+                <literal-expression value="user" start-index="7" stop-index="12"/>
+            </parameter>
+            <parameter>
+                <literal-expression value="order" start-index="15" stop-index="21"/>
+            </parameter>
+        </parameters>
+    </call>
+
+    <call sql-case-id="call_with_parameters_mix">
+        <procedure-name name="p" start-index="5" stop-index="6"/>
+        <parameters>
+            <parameter>
+                <common-expression literal-text="@order_id" start-index="7" stop-index="15"/>
+            </parameter>
+            <parameter>
+                <literal-expression value="user" start-index="18" stop-index="23"/>
+            </parameter>
+            <parameter>
+                <parameter-marker-expression value="0" start-index="26" stop-index="26"/>
+            </parameter>
+        </parameters>
+    </call>
+</sql-parser-test-cases>

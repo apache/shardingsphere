@@ -1,7 +1,7 @@
 +++
-pre = "<b>6. </b>"
+pre = "<b>7. </b>"
 title = "FAQ"
-weight = 6
+weight = 7
 chapter = true
 +++
 
@@ -9,16 +9,25 @@ chapter = true
 
 回答：
 
-在Sharding-Proxy以及Sharding-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
+在ShardingSphere-Proxy以及ShardingSphere-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
 `sql.show`配置默认关闭，如果需要请通过配置开启。
 
-## 2. 阅读源码时为什么会出现编译错误?
+> 注意：5.x版本以后，`sql.show`参数调整为`sql-show`。
+
+## 2. 阅读源码时为什么会出现编译错误?IDEA不索引生成的代码？
 
 回答：
 
 ShardingSphere使用lombok实现极简代码。关于更多使用和安装细节，请参考[lombok官网](https://projectlombok.org/download.html)。
 
-sharding-orchestration-reg模块需要先执行`mvn install`命令，根据protobuf文件生成gRPC相关的java文件。
+`org.apache.shardingsphere.sql.parser.autogen` 包下的代码由 ANTLR 生成，可以执行以下命令快速生成：
+
+```bash
+./mvnw -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests install -T1C 
+```
+
+生成的代码例如 `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` 等 Java 文件由于较大，默认配置的 IDEA 可能不会索引该文件。
+可以调整 IDEA 的属性：`idea.max.intellisense.filesize=10000`
 
 ## 3. 使用Spring命名空间时找不到xsd?
 
@@ -26,7 +35,8 @@ sharding-orchestration-reg模块需要先执行`mvn install`命令，根据proto
 
 Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，但考虑到部分用户的需求，我们也将相关xsd文件部署至ShardingSphere官网。
 
-实际上sharding-jdbc-spring-namespace的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\sharding.xsd和META-INF\namespace\master-slave.xsd，只需确保jar包中该文件存在即可。
+实际上 shardingsphere-jdbc-spring-namespace 的 jar 包中 META-INF\spring.schemas 配置了 xsd 文件的位置：
+META-INF\namespace\sharding.xsd 和 META-INF\namespace\replica-query.xsd，只需确保 jar 包中该文件存在即可。
 
 ## 4. Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
@@ -94,7 +104,7 @@ SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 
 原因如下:
 
-com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()方法如下:
+`org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByValue#getOrderValues()`方法如下:
 
 ```java
     private List<Comparable<?>> getOrderValues() throws SQLException {
@@ -109,7 +119,7 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()�
 ```
 
 使用了resultSet.getObject(int index)方法，针对TimeStamp oracle会根据oracle.jdbc.J2EE13Compliant属性判断返回java.sql.TimeStamp还是自定义oralce.sql.TIMESTAMP
-详见ojdbc源码oracle.jdbc.driver.TimestampAccessor#getObject(int var1)方法：
+详见 ojdbc 源码 oracle.jdbc.driver.TimestampAccessor#getObject(int var1) 方法:
 
 ```java
     Object getObject(int var1) throws SQLException {
@@ -166,7 +176,7 @@ ShardingSphere采用snowflake算法作为默认的分布式自增主键策略，
 
 而snowflake算法的最后4位是在同一毫秒内的访问递增值。因此，如果毫秒内并发度不高，最后4位为零的几率则很大。因此并发度不高的应用生成偶数主键的几率会更高。
 
-在3.1.0版本中，尾数大多为偶数的问题已彻底解决，参见：https://github.com/sharding-sphere/sharding-sphere/issues/1617
+在3.1.0版本中，尾数大多为偶数的问题已彻底解决，参见：https://github.com/apache/shardingsphere/issues/1617
 
 ## 13. Windows环境下，通过Git克隆ShardingSphere源码时为什么提示文件名过长，如何解决？
 
@@ -189,17 +199,17 @@ git config --global core.longpaths true
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
 
-## 14. Windows环境下，运行Sharding-Proxy，找不到或无法加载主类 org.apache.shardingshpere.shardingproxy.Bootstrap，如何解决？
+## 14. Windows环境下，运行ShardingSphere-Proxy，找不到或无法加载主类 org.apache.shardingsphere.proxy.Bootstrap，如何解决？
 
 回答：
 
-某些解压缩工具在解压Sharding-Proxy二进制包时可能将文件名截断，导致找不到某些类。
+某些解压缩工具在解压ShardingSphere-Proxy二进制包时可能将文件名截断，导致找不到某些类。
 
 解决方案：
 
 打开cmd.exe并执行下面的命令：
 ```
-tar zxvf apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+tar zxvf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 ```
 
 ## 15. Type is required 异常的解决方法?
@@ -218,50 +228,67 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 
 与分布式主键`ShardingKeyGenerator`接口相同，其他ShardingSphere的[扩展功能](https://shardingsphere.apache.org/document/current/cn/features/spi/)也需要用相同的方式注入才能生效。
 
-## 17. JPA 和 数据脱敏无法一起使用，如何解决？
+## 17. JPA 和 数据加密无法一起使用，如何解决？
 
 回答：
 
-由于数据脱敏的DDL尚未开发完成，因此对于自动生成DDL语句的JPA与数据脱敏一起使用时，会导致JPA的实体类(Entity)无法同时满足DDL和DML的情况。
+由于数据加密的DDL尚未开发完成，因此对于自动生成DDL语句的JPA与数据加密一起使用时，会导致JPA的实体类(Entity)无法同时满足DDL和DML的情况。
 
 解决方案如下：
 
-1. 以需要脱敏的逻辑列名编写JPA的实体类(Entity)。
+1. 以需要加密的逻辑列名编写JPA的实体类(Entity)。
 2. 关闭JPA的auto-ddl，如 auto-ddl=none。
-3. 手动建表，建表时应使用数据脱敏配置的`cipherColumn`,`plainColumn`和`assistedQueryColumn`代替逻辑列。
+3. 手动建表，建表时应使用数据加密配置的`cipherColumn`,`plainColumn`和`assistedQueryColumn`代替逻辑列。
 
 ## 18. 服务启动时如何加快`metadata`加载速度？
 
 回答：
 
 1. 升级到`4.0.1`以上的版本，以提高`default dataSource`的table metadata的加载速度。
-2. 参照你采用的连接池，将配置项`max.connections.size.per.query`（默认值为1）调高（版本 >= 3.0.0.M3）。
+2. 参照你采用的连接池，将：
+- 配置项`max.connections.size.per.query`（默认值为1）调高（版本 >= 3.0.0.M3且低于5.0.0）。
+- 配置项`max-connections-size-per-query`（默认值为1）调高（版本 >= 5.0.0）。
 
 ## 19. 如何在inline分表策略时，允许执行范围查询操作（BETWEEN AND、\>、\<、\>=、\<=）？
 
 回答：
 
-1. 需要使用4.1.0以上版本。
-2. 将配置项`allow.range.query.with.inline.sharding`设置为true即可（默认为false）。
-3. 需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表。
+1. 需要使用4.1.0或更高版本。
+2. 调整以下配置项（需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表）：
+ - 4.x版本：`allow.range.query.with.inline.sharding`设置为true即可（默认为false）。
+ - 5.x版本：在InlineShardingStrategy中将`allow-range-query-with-inline-sharding`设置为true即可（默认为false）。
 
-## 20. 为什么配置了某个数据连接池的spring-boot-starter（比如druid）和sharding-jdbc-spring-boot-starter时，系统启动会报错？
+## 20. 为什么配置了某个数据连接池的spring-boot-starter（比如druid）和shardingsphere-jdbc-spring-boot-starter时，系统启动会报错？
 
 回答：
 
-1. 因为数据连接池的starter（比如druid）可能会先加载并且其创建一个默认数据源，这将会使得sharding-jdbc创建数据源时发生冲突。
+1. 因为数据连接池的starter（比如druid）可能会先加载并且其创建一个默认数据源，这将会使得ShardingSphere-JDBC创建数据源时发生冲突。
 2. 解决办法为，去掉数据连接池的starter即可，sharing-jdbc自己会创建数据连接池。
 
-## 21. 在使用sharing-proxy的时候，如何动态在sharding-ui上添加新的logic schema？
+## 21. 在使用sharing-proxy的时候，如何动态在ShardingSphere-UI上添加新的logic schema？
 
 回答：
 
 1. 4.1.0之前的版本不支持动态添加或删除logic schema的功能，例如一个proxy启动的时候有2个logic schema，就会一直持有这2个schema，只能感知这两个schema内部的表和rule的变更事件。
-2. 4.1.0版本支持在sharding-ui或直接在zookeeper上增加新的logic schema，删除logic schema的功能计划在5.0.0版本支持。
+2. 4.1.0版本支持在ShardingSphere-UI或直接在zookeeper上增加新的logic schema，删除logic schema的功能计划在5.0.0版本支持。
 
-## 22. 在使用sharing-proxy时，怎么使用合适的工具连接到proxy？
+## 22. 在使用ShardingSphere-Proxy时，怎么使用合适的工具连接到ShardingSphere-Proxy？
 
 回答：
 
-1. sharding-proxy可以看做是一个mysql server，所以首选支持mysql命令连接和操作。
+1. ShardingSphere-Proxy可以看做是一个mysql server，所以首选支持mysql命令连接和操作。
 2. 如果使用其他第三方数据库工具，可能由于不同工具的特定实现导致出现异常。建议选择特定版本的工具或者打开特定参数，例如使用Navicat 11.1.13版本(不建议12.x)，使用IDEA/DataGrip时打开`introspect using JDBC metadata`选项。
+
+## 23. 引入`shardingsphere-transaction-xa-core`后，如何避免spring-boot自动加载默认的JtaTransactionManager？
+
+回答:
+
+1. 需要在spring-boot的引导类中添加 `@SpringBootApplication(exclude = JtaAutoConfiguration.class)`。
+
+## 24. ANTLR 插件在 src 同级目录下生成代码，容易误提交，如何避免？
+
+回答：
+
+进入 [Settings -> Languages & Frameworks -> ANTLR v4 default project settings](jetbrains://idea/settings?name=Languages+%26+Frameworks--ANTLR+v4+default+project+settings) 配置生成代码的输出目录为 `target/gen`，如图：
+
+![Configure ANTLR plugin](https://shardingsphere.apache.org/document/current/img/faq/configure-antlr-plugin.png)

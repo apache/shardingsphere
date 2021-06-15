@@ -430,7 +430,7 @@ MAX
 MIN
     : M I N
     ;
-    
+
 SUM
     : S U M
     ;
@@ -570,4 +570,72 @@ TEXT
 
 VARCHAR
     : V A R C H A R
+    ;
+
+PERCENT
+    : P E R C E N T
+    ;
+
+TIES
+    : T I E S
+    ;
+
+EXCEPT
+    : E X C E P T
+    ;
+
+INTERSECT
+    : I N T E R S E C T
+    ;
+
+USE
+    : U S E
+    ;
+
+MERGE
+    : M E R G E
+    ;
+
+LOOP
+    : L O O P
+    ;
+
+EXPAND
+    : E X P A N D
+    ;
+
+VIEWS
+    : V I E W S
+    ;
+
+FAST
+    : F A S T
+    ;
+
+FORCE
+    : F O R C E
+    ;
+
+KEEP
+    : K E E P
+    ;
+
+PLAN
+    : P L A N
+    ;
+
+OPTIMIZE
+    : O P T I M I Z E
+    ;
+
+SIMPLE
+    : S I M P L E
+    ;
+
+FORCED
+    : F O R C E D
+    ;
+
+HINT
+    : H I N T
     ;

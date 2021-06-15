@@ -21,7 +21,6 @@ import org.apache.shardingsphere.example.core.api.entity.ShadowUser;
 import org.apache.shardingsphere.example.core.api.repository.ShadowUserRepository;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,28 +41,27 @@ public final class ShadowUserRepositoryImpl implements ShadowUserRepository {
     public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_user "
                 + "(user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), user_name_plain VARCHAR(200), pwd VARCHAR(200), assisted_query_pwd VARCHAR(200), PRIMARY KEY (user_id))";
-        try (Connection connection = dataSource.getConnection()) {
-            getStatement("actualConnection", connection).executeUpdate(sql);
-            getStatement("shadowConnection", connection).executeUpdate(sql);
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
         }
-        
     }
     
     @Override
     public void dropTable() throws SQLException {
         String sql = "DROP TABLE t_user";
-        try (Connection connection = dataSource.getConnection()) {
-            getStatement("actualConnection", connection).executeUpdate(sql);
-            getStatement("shadowConnection", connection).executeUpdate(sql);
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
         }
     }
     
     @Override
     public void truncateTable() throws SQLException {
         String sql = "TRUNCATE TABLE t_user";
-        try (Connection connection = dataSource.getConnection()) {
-            getStatement("actualConnection", connection).executeUpdate(sql);
-            getStatement("shadowConnection", connection).executeUpdate(sql);
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
         }
     }
     
@@ -121,17 +119,5 @@ public final class ShadowUserRepositoryImpl implements ShadowUserRepository {
             }
         }
         return result;
-    }
-    
-    private Statement getStatement(final String connectionName, final Connection connection) {
-        try {
-            Field actualConnection = connection.getClass().getDeclaredField(connectionName);
-            actualConnection.setAccessible(true);
-            Connection c = (Connection) actualConnection.get(connection);
-            return c.createStatement();
-        } catch (IllegalAccessException | SQLException | NoSuchFieldException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

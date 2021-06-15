@@ -106,7 +106,8 @@ input,
 optgroup,
 select,
 textarea {
-  color: gray;
+  /* color: gray; */
+  color: rgba(200, 200, 200, 1);
   font: inherit;
   margin: 0; }
 
@@ -530,9 +531,11 @@ h6 {
 p {
   margin: 1.7rem 0; }
 
-ul, ol {
+/* ul,  */
+ol {
   margin-top: 1.7rem;
-  margin-bottom: 1.7rem; }
+  margin-bottom: 1.7rem; 
+}
   ul ul, ul ol, ol ul, ol ol {
     margin-top: 0;
     margin-bottom: 0; }

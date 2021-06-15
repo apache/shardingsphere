@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.example.core.jdbc.service;
 
 import org.apache.shardingsphere.example.core.api.entity.ShadowUser;
-import org.apache.shardingsphere.example.core.api.entity.User;
 import org.apache.shardingsphere.example.core.api.repository.ShadowUserRepository;
-import org.apache.shardingsphere.example.core.api.repository.UserRepository;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 
 import java.sql.SQLException;
