@@ -17,14 +17,28 @@
 
 package org.apache.shardingsphere.sharding.distsql.parser.facade;
 
-import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementVisitorFacade;
+import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementParserFacade;
 import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingRuleDistSQLStatementVisitor;
+import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingRuleLexer;
+import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingRuleParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL statement visitor facade for sharding rule .
+ * SQL parser facade for sharding rule statement.
  */
-public final class ShardingRuleSQLStatementVisitorFacade implements RuleSQLStatementVisitorFacade {
+public final class ShardingRuleStatementParserFacade implements RuleSQLStatementParserFacade {
+    
+    @Override
+    public Class<? extends SQLLexer> getLexerClass() {
+        return ShardingRuleLexer.class;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return ShardingRuleParser.class;
+    }
     
     @Override
     public Class<? extends SQLVisitor> getVisitorClass() {

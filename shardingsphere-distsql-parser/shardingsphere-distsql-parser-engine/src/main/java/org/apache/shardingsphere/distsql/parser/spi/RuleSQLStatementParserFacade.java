@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.distsql.parser.spi;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 /**
- * Rule SQL statement visitor facade.
+ * Rule SQL statement parser facade.
  */
-public interface RuleSQLStatementVisitorFacade {
+public interface RuleSQLStatementParserFacade extends SQLParserFacade {
     
     /**
      * Get visitor class.
