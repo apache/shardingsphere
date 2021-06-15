@@ -157,15 +157,17 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     
     @Override
     public ASTNode visitFunctionDefinition(final FunctionDefinitionContext ctx) {
-        FunctionSegment result = new FunctionSegment();
-        result.setAlgorithmName(ctx.functionName().getText());
-        Properties algorithmProps = new Properties();
-        if (null != ctx.algorithmProperties()) {
-            for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
-                algorithmProps.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
-            }
+        return new FunctionSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
+    }
+    
+    private Properties getAlgorithmProperties(final FunctionDefinitionContext ctx) {
+        Properties result = new Properties();
+        if (null == ctx.algorithmProperties()) {
+            return result;
         }
-        result.setAlgorithmProps(algorithmProps);
+        for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+        }
         return result;
     }
     

@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -86,9 +87,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order_item");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        FunctionSegment shardingAlgorithm = new FunctionSegment();
-        shardingAlgorithm.setAlgorithmName("hash_mod");
-        tableRuleSegment.setTableStrategy(shardingAlgorithm);
+        tableRuleSegment.setTableStrategy(new FunctionSegment("hash_mod", new Properties()));
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
@@ -117,9 +116,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order_item");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        FunctionSegment shardingAlgorithm = new FunctionSegment();
-        shardingAlgorithm.setAlgorithmName("algorithm-not-exist");
-        tableRuleSegment.setTableStrategy(shardingAlgorithm);
+        tableRuleSegment.setTableStrategy(new FunctionSegment("algorithm-not-exist", new Properties()));
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }

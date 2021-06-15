@@ -52,12 +52,9 @@ public final class EncryptRuleStatementConverterTest {
         encryptColumnSegment.setName("user_id");
         encryptColumnSegment.setPlainColumn("user_plain");
         encryptColumnSegment.setCipherColumn("user_cipher");
-        FunctionSegment functionSegment = new FunctionSegment();
-        functionSegment.setAlgorithmName("MD5");
         Properties properties = new Properties();
         properties.setProperty("MD5-key", "MD5-value");
-        functionSegment.setAlgorithmProps(properties);
-        encryptColumnSegment.setEncryptor(functionSegment);
+        encryptColumnSegment.setEncryptor(new FunctionSegment("MD5", properties));
         return Collections.singleton(encryptColumnSegment);
     }
 }
