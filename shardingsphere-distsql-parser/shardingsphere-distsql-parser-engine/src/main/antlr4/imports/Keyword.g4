@@ -27,14 +27,6 @@ ADD
     : A D D
     ;
 
-CREATE
-    : C R E A T E
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
 DROP
     : D R O P
     ;
@@ -67,20 +59,8 @@ RESOURCES
     : R E S O U R C E S
     ;
 
-RULE
-    :  R U L E
-    ;
-
 FROM
     : F R O M
-    ;
-
-ENCRYPT
-    : E N C R Y P T
-    ;
-
-SHADOW
-    : S H A D O W
     ;
 
 SCALING
@@ -119,38 +99,6 @@ PASSWORD
     : P A S S W O R D
     ;
 
-TABLE
-    : T A B L E
-    ;
-
-TYPE
-    : T Y P E
-    ;
-    
 NAME
     : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-COLUMN
-    : C O L U M N
-    ;
-
-RULES
-    : R U L E S
-    ;
-
-COLUMNS
-    : C O L U M N S
-    ;
-
-CIPHER
-    : C I P H E R
-    ;
-
-PLAIN
-    : P L A I N
     ;
