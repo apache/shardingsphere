@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
@@ -97,21 +97,21 @@ public final class ShardingRuleStatementConverter {
         for (TableRuleSegment each : tableRuleSegments) {
             if (null != each.getTableStrategy()) {
                 result.getShardingAlgorithms().put(getAlgorithmName(each.getLogicTable(), 
-                        each.getTableStrategy().getAlgorithmName()), createAlgorithmConfiguration(each.getTableStrategy()));
+                        each.getTableStrategy().getName()), createAlgorithmConfiguration(each.getTableStrategy()));
                 result.getAutoTables().put(each.getLogicTable(), createAutoTableRuleConfiguration(each));
             }
             if (null != each.getKeyGenerateStrategy()) {
                 result.getKeyGenerators().put(getKeyGeneratorName(each.getLogicTable(), 
-                        each.getKeyGenerateStrategy().getAlgorithmName()), createAlgorithmConfiguration(each.getKeyGenerateStrategy()));
+                        each.getKeyGenerateStrategy().getName()), createAlgorithmConfiguration(each.getKeyGenerateStrategy()));
             }
         }
         return result;
     }
     
-    private static YamlShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final FunctionSegment segment) {
+    private static YamlShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
-        result.setType(segment.getAlgorithmName());
-        result.setProps(segment.getAlgorithmProps());
+        result.setType(segment.getName());
+        result.setProps(segment.getProps());
         return result;
     }
     
@@ -130,7 +130,7 @@ public final class ShardingRuleStatementConverter {
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
         standard.setShardingColumn(segment.getTableStrategyColumn());
-        standard.setShardingAlgorithmName(getAlgorithmName(segment.getLogicTable(), segment.getTableStrategy().getAlgorithmName()));
+        standard.setShardingAlgorithmName(getAlgorithmName(segment.getLogicTable(), segment.getTableStrategy().getName()));
         result.setStandard(standard);
         return result;
     }
@@ -138,7 +138,7 @@ public final class ShardingRuleStatementConverter {
     private static YamlKeyGenerateStrategyConfiguration createKeyGenerateStrategyConfiguration(final TableRuleSegment segment) {
         YamlKeyGenerateStrategyConfiguration result = new YamlKeyGenerateStrategyConfiguration();
         result.setColumn(segment.getKeyGenerateStrategyColumn());
-        result.setKeyGeneratorName(getKeyGeneratorName(segment.getLogicTable(), segment.getKeyGenerateStrategy().getAlgorithmName()));
+        result.setKeyGeneratorName(getKeyGeneratorName(segment.getLogicTable(), segment.getKeyGenerateStrategy().getName()));
         return result;
     }
     

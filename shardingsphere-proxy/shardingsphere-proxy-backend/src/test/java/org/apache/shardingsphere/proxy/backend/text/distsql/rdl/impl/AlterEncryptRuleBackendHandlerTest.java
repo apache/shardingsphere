@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
@@ -126,7 +126,7 @@ public final class AlterEncryptRuleBackendHandlerTest {
         result.setName("user_id");
         result.setPlainColumn("user_plain");
         result.setCipherColumn("user_cipher");
-        result.setEncryptor(new FunctionSegment(encryptorName, new Properties()));
+        result.setEncryptor(new AlgorithmSegment(encryptorName, new Properties()));
         return Collections.singleton(result);
     }
 }

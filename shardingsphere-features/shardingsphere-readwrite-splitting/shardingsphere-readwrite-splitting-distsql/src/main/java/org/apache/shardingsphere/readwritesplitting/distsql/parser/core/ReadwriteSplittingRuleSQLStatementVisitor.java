@@ -30,7 +30,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleSt
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.ShowReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.StaticReadwriteSplittingRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
@@ -107,7 +107,7 @@ public final class ReadwriteSplittingRuleSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitFunctionDefinition(final FunctionDefinitionContext ctx) {
-        return new FunctionSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
+        return new AlgorithmSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
     }
     
     private Properties getAlgorithmProperties(final FunctionDefinitionContext ctx) {

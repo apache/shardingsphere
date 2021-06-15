@@ -24,13 +24,13 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import java.util.Properties;
 
 /**
- * Function segment.
+ * Algorithm segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class FunctionSegment implements ASTNode {
+public final class AlgorithmSegment implements ASTNode {
     
-    private final String algorithmName;
+    private final String name;
     
-    private final Properties algorithmProps;
+    private final Properties props;
 }

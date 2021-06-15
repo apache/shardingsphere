@@ -72,8 +72,8 @@ public final class EncryptRuleStatementConverter {
     
     private static YamlShardingSphereAlgorithmConfiguration buildYamlShardingSphereAlgorithmConfiguration(final EncryptColumnSegment encryptColumnSegment) {
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
-        result.setType(encryptColumnSegment.getEncryptor().getAlgorithmName());
-        result.setProps(encryptColumnSegment.getEncryptor().getAlgorithmProps());
+        result.setType(encryptColumnSegment.getEncryptor().getName());
+        result.setProps(encryptColumnSegment.getEncryptor().getProps());
         return result;
     }
     

@@ -39,7 +39,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementPar
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.TableNameContext;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
@@ -145,11 +145,11 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
         }
         result.setDataSources(dataSources);
         if (null != ctx.functionDefinition()) {
-            result.setTableStrategy((FunctionSegment) visit(ctx.functionDefinition()));
+            result.setTableStrategy((AlgorithmSegment) visit(ctx.functionDefinition()));
             result.setTableStrategyColumn(ctx.shardingColumn().columnName().getText());
         }
         if (null != ctx.keyGenerateStrategy()) {
-            result.setKeyGenerateStrategy((FunctionSegment) visit(ctx.keyGenerateStrategy().functionDefinition()));
+            result.setKeyGenerateStrategy((AlgorithmSegment) visit(ctx.keyGenerateStrategy().functionDefinition()));
             result.setKeyGenerateStrategyColumn(ctx.keyGenerateStrategy().columnName().getText());
         }
         return result;
@@ -157,7 +157,7 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     
     @Override
     public ASTNode visitFunctionDefinition(final FunctionDefinitionContext ctx) {
-        return new FunctionSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
+        return new AlgorithmSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
     }
     
     private Properties getAlgorithmProperties(final FunctionDefinitionContext ctx) {

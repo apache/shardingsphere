@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
@@ -114,7 +114,7 @@ public final class CreateEncryptRuleBackendHandlerTest {
         result.setName("user_id");
         result.setPlainColumn("user_plain");
         result.setCipherColumn("user_cipher");
-        result.setEncryptor(new FunctionSegment(encryptorName, new Properties()));
+        result.setEncryptor(new AlgorithmSegment(encryptorName, new Properties()));
         return Collections.singleton(result);
     }
 }

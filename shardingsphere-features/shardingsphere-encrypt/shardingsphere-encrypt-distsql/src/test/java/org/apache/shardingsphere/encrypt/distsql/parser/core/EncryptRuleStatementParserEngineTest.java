@@ -72,11 +72,11 @@ public final class EncryptRuleStatementParserEngineTest {
         assertThat(encryptColumnSegments.get(0).getName(), is("user_id"));
         assertThat(encryptColumnSegments.get(0).getCipherColumn(), is("user_cipher"));
         assertThat(encryptColumnSegments.get(0).getPlainColumn(), is("user_plain"));
-        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmName(), is("AES"));
-        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmProps().get("aes-key-value"), is("123456abc"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getName(), is("AES"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getProps().get("aes-key-value"), is("123456abc"));
         assertThat(encryptColumnSegments.get(1).getName(), is("order_id"));
         assertThat(encryptColumnSegments.get(1).getCipherColumn(), is("order_cipher"));
-        assertThat(encryptColumnSegments.get(1).getEncryptor().getAlgorithmName(), is("MD5"));
+        assertThat(encryptColumnSegments.get(1).getEncryptor().getName(), is("MD5"));
     }
     
     @Test
@@ -92,11 +92,11 @@ public final class EncryptRuleStatementParserEngineTest {
         assertThat(encryptColumnSegments.get(0).getName(), is("user_id"));
         assertThat(encryptColumnSegments.get(0).getCipherColumn(), is("user_cipher"));
         assertThat(encryptColumnSegments.get(0).getPlainColumn(), is("user_plain"));
-        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmName(), is("AES"));
-        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmProps().get("aes-key-value"), is("123456abc"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getName(), is("AES"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getProps().get("aes-key-value"), is("123456abc"));
         assertThat(encryptColumnSegments.get(1).getName(), is("order_id"));
         assertThat(encryptColumnSegments.get(1).getCipherColumn(), is("order_cipher"));
-        assertThat(encryptColumnSegments.get(1).getEncryptor().getAlgorithmName(), is("MD5"));
+        assertThat(encryptColumnSegments.get(1).getEncryptor().getName(), is("MD5"));
     }
     
     @Test

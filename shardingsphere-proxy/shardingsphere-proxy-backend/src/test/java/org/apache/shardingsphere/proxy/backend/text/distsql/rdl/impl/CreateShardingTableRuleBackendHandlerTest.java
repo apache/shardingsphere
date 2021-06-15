@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -87,7 +87,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order_item");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        tableRuleSegment.setTableStrategy(new FunctionSegment("hash_mod", new Properties()));
+        tableRuleSegment.setTableStrategy(new AlgorithmSegment("hash_mod", new Properties()));
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
@@ -116,7 +116,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order_item");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        tableRuleSegment.setTableStrategy(new FunctionSegment("algorithm-not-exist", new Properties()));
+        tableRuleSegment.setTableStrategy(new AlgorithmSegment("algorithm-not-exist", new Properties()));
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }

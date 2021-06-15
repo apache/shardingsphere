@@ -78,7 +78,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
         if (!notExistTables.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(schemaName, notExistTables);
         }
-        Collection<String> invalidTableAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getAlgorithmName()).distinct()
+        Collection<String> invalidTableAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidTableAlgorithms.isEmpty()) {
@@ -144,6 +144,6 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     
     private Collection<String> getKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) {
         return sqlStatement.getRules().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
-                .map(each -> each.getKeyGenerateStrategy().getAlgorithmName()).collect(Collectors.toSet());
+                .map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
     }
 }

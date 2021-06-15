@@ -29,7 +29,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementPars
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.ShowEncryptRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptRuleStatementParser.TableNameContext;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
@@ -69,7 +69,7 @@ public final class EncryptRuleSQLStatementVisitor extends EncryptRuleStatementBa
         if (Objects.nonNull(ctx.plainColumnName())) {
             result.setPlainColumn(ctx.plainColumnName().getText());
         }
-        result.setEncryptor((FunctionSegment) visit(ctx.functionDefinition()));
+        result.setEncryptor((AlgorithmSegment) visit(ctx.functionDefinition()));
         return result;
     }
     
@@ -91,7 +91,7 @@ public final class EncryptRuleSQLStatementVisitor extends EncryptRuleStatementBa
     
     @Override
     public ASTNode visitFunctionDefinition(final FunctionDefinitionContext ctx) {
-        return new FunctionSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
+        return new AlgorithmSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
     }
     
     private Properties getAlgorithmProperties(final FunctionDefinitionContext ctx) {

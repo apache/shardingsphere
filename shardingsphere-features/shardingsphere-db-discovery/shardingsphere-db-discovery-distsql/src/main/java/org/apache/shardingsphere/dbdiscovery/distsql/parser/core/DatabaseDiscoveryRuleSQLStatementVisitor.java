@@ -28,7 +28,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleSta
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.FunctionDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.ShowDatabaseDiscoveryRulesContext;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
@@ -93,7 +93,7 @@ public final class DatabaseDiscoveryRuleSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitFunctionDefinition(final FunctionDefinitionContext ctx) {
-        return new FunctionSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
+        return new AlgorithmSegment(ctx.functionName().getText(), getAlgorithmProperties(ctx));
     }
     
     private Properties getAlgorithmProperties(final FunctionDefinitionContext ctx) {
