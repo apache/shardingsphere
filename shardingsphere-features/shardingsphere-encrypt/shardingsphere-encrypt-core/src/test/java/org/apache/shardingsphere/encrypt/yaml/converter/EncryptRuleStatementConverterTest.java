@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.encrypt.yaml.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.junit.Test;
 

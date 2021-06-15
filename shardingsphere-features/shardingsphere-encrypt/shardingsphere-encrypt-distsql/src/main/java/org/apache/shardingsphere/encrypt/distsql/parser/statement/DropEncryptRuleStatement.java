@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
+package org.apache.shardingsphere.encrypt.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+
+import java.util.Collection;
 
 /**
- * Encrypt column segment.
+ * Drop encrypt rule statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class EncryptColumnSegment implements ASTNode {
+public final class DropEncryptRuleStatement extends DropRuleStatement {
     
-    private String name;
-    
-    private String plainColumn;
-    
-    private String cipherColumn;
-    
-    private FunctionSegment encryptor;
+    private final Collection<String> tables;
 }

@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
+package org.apache.shardingsphere.encrypt.distsql.parser.statement.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
 
 /**
- * Create encrypt rule statement.
+ * Encrypt rule segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateEncryptRuleStatement extends CreateRuleStatement {
+public final class EncryptRuleSegment implements ASTNode {
     
-    private final Collection<EncryptRuleSegment> rules;
+    private final String tableName;
+    
+    private final Collection<EncryptColumnSegment> columns;
 }
