@@ -80,7 +80,7 @@ public final class TableMetaDataBuilder {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
+    public static TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
         TableMetaData result = null;
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {
