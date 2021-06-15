@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Properties;
@@ -26,11 +26,11 @@ import java.util.Properties;
 /**
  * Function segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class FunctionSegment implements ASTNode {
     
-    private String algorithmName;
+    private final String algorithmName;
     
-    private Properties algorithmProps;
+    private final Properties algorithmProps;
 }
