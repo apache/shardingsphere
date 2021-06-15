@@ -15,14 +15,25 @@
  * limitations under the License.
  */
 
-grammar DbDiscoveryRuleStatement;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.core;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-execute
-    : (createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | showDatabaseDiscoveryRules
-    ) SEMI?
-    ;
+/**
+ * SQL parser for database discovery rule.
+ */
+public final class DatabaseDiscoveryRuleParser extends DatabaseDiscoveryRuleStatementParser implements SQLParser {
+    
+    public DatabaseDiscoveryRuleParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
+}

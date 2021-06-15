@@ -15,38 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.facade;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.facade;
 
 import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementParserFacade;
-import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingRuleDistSQLStatementVisitor;
-import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingRuleLexer;
-import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingRuleParser;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleSQLStatementVisitor;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleLexer;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for sharding rule statement.
+ * SQL parser facade for readwrite-splitting rule SQL statement.
  */
-public final class ShardingRuleStatementParserFacade implements RuleSQLStatementParserFacade {
+public final class ReadwriteSplittingRuleSQLStatementParserFacade implements RuleSQLStatementParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return ShardingRuleLexer.class;
+        return ReadwriteSplittingRuleLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return ShardingRuleParser.class;
+        return ReadwriteSplittingRuleParser.class;
     }
     
     @Override
     public Class<? extends SQLVisitor> getVisitorClass() {
-        return ShardingRuleDistSQLStatementVisitor.class;
+        return ReadwriteSplittingRuleSQLStatementVisitor.class;
     }
     
     @Override
     public String getRuleType() {
-        return "Sharding";
+        return "readwrite-splitting";
     }
 }

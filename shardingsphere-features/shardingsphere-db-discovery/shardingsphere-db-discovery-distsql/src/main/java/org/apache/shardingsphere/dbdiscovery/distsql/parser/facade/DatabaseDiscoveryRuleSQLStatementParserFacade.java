@@ -15,38 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.parser.facade;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.facade;
 
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.core.DatabaseDiscoveryRuleLexer;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.core.DatabaseDiscoveryRuleParser;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.core.DatabaseDiscoveryRuleSQLStatementVisitor;
 import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementParserFacade;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleDistSQLStatementVisitor;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleLexer;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.core.ReadwriteSplittingRuleParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for readwrite-splitting rule statement.
+ * SQL parser facade for database discovery rule SQL statement.
  */
-public final class ReadwriteSplittingRuleStatementParserFacade implements RuleSQLStatementParserFacade {
+public final class DatabaseDiscoveryRuleSQLStatementParserFacade implements RuleSQLStatementParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return ReadwriteSplittingRuleLexer.class;
+        return DatabaseDiscoveryRuleLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return ReadwriteSplittingRuleParser.class;
+        return DatabaseDiscoveryRuleParser.class;
     }
     
     @Override
     public Class<? extends SQLVisitor> getVisitorClass() {
-        return ReadwriteSplittingRuleDistSQLStatementVisitor.class;
+        return DatabaseDiscoveryRuleSQLStatementVisitor.class;
     }
     
     @Override
     public String getRuleType() {
-        return "Readwrite-splitting";
+        return "database-discovery";
     }
 }
