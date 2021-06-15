@@ -19,19 +19,35 @@ grammar RDLStatement;
 
 import Keyword, Literals, Symbol;
 
-resources
-    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+createDatabaseDiscoveryRule
+    : CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    ;
+
+alterDatabaseDiscoveryRule
+    : ALTER DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
+    ;
+
+dropDatabaseDiscoveryRule
+    : DROP DB_DISCOVERY RULE IDENTIFIER (COMMA IDENTIFIER)*
+    ;
+
+databaseDiscoveryRuleDefinition
+    : ruleName LP resources COMMA algorithmDefinition RP
     ;
 
 ruleName
     : IDENTIFIER
     ;
 
-functionDefinition
-    : TYPE LP NAME EQ functionName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+resources
+    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
-functionName
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    ;
+
+algorithmName
     : IDENTIFIER
     ;
 
@@ -41,20 +57,4 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
-    ;
-
-createDatabaseDiscoveryRule
-    : CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
-    ;
-
-databaseDiscoveryRuleDefinition
-    : ruleName LP resources COMMA functionDefinition RP
-    ;
-
-alterDatabaseDiscoveryRule
-    : ALTER DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
-    ;
-
-dropDatabaseDiscoveryRule
-    : DROP DB_DISCOVERY RULE IDENTIFIER (COMMA IDENTIFIER)*
     ;
