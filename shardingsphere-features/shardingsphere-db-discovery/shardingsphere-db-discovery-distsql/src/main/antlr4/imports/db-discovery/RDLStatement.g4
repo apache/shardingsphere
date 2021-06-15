@@ -15,90 +15,46 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+grammar RDLStatement;
 
-import Alphabet;
+import Keyword, Literals, Symbol;
 
-WS
-    : [ \t\r\n] + ->skip
+resources
+    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
-CREATE
-    : C R E A T E
+ruleName
+    : IDENTIFIER
     ;
 
-ALTER
-    : A L T E R
+functionDefinition
+    : TYPE LP NAME EQ functionName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
     ;
 
-DROP
-    : D R O P
+functionName
+    : IDENTIFIER
     ;
 
-SHOW
-    : S H O W
+algorithmProperties
+    : algorithmProperty (COMMA algorithmProperty)*
     ;
 
-SHARDING
-    : S H A R D I N G
+algorithmProperty
+    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
     ;
 
-RULE
-    :  R U L E
+createDatabaseDiscoveryRule
+    : CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
     ;
 
-FROM
-    : F R O M
+databaseDiscoveryRuleDefinition
+    : ruleName LP resources COMMA functionDefinition RP
     ;
 
-RESOURCES
-    : R E S O U R C E S
+alterDatabaseDiscoveryRule
+    : ALTER DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
     ;
 
-GENERATED_KEY
-    : G E N E R A T E D UL_ K E Y
-    ;
-
-DEFAULT_TABLE_STRATEGY
-    : D E F A U L T UL_ T A B L E UL_ S T R A T E G Y
-    ;
-
-TABLE
-    : T A B L E
-    ;
-
-SHARDING_COLUMN
-    : S H A R D I N G UL_ C O L U M N
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-COLUMN
-    : C O L U M N
-    ;
-
-BINDING
-    : B I N D I N G
-    ;
-
-BROADCAST
-    : B R O A D C A S T
-    ;
-
-RULES
-    : R U L E S
-    ;
-
-COLUMNS
-    : C O L U M N S
+dropDatabaseDiscoveryRule
+    : DROP DB_DISCOVERY RULE IDENTIFIER (COMMA IDENTIFIER)*
     ;

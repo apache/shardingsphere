@@ -75,26 +75,6 @@ FROM
     : F R O M
     ;
 
-SHARDING
-    : S H A R D I N G
-    ;
-
-READWRITE_SPLITTING
-    : R E A D W R I T E UL_ S P L I T T I N G
-    ;
-
-WRITE_RESOURCE
-    : W R I T E UL_ R E S O U R C E
-    ;
-
-READ_RESOURCES
-    : R E A D UL_ R E S O U R C E S
-    ;
-
-AUTO_AWARE_RESOURCE
-    : A U T O UL_ A W A R E UL_ R E S O U R C E
-    ;
-
 ENCRYPT
     : E N C R Y P T
     ;
@@ -154,17 +134,13 @@ NAME
 PROPERTIES
     : P R O P E R T I E S
     ;
-    
+
 COLUMN
     : C O L U M N
     ;
 
 RULES
     : R U L E S
-    ;
-
-DB_DISCOVERY
-    : D B UL_ D I S C O V E R Y
     ;
 
 COLUMNS

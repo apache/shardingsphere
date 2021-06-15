@@ -23,10 +23,6 @@ showResources
     : SHOW RESOURCES (FROM schemaName)?
     ;
 
-showDatabaseDiscoveryRules
-    : SHOW DB_DISCOVERY RULES (FROM schemaName)?
-    ;
-
 showEncryptRules
     : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM schemaName)?
     ;
