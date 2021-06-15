@@ -23,10 +23,6 @@ showResources
     : SHOW RESOURCES (FROM schemaName)?
     ;
 
-showReadwriteSplittingRules
-    : SHOW READWRITE_SPLITTING RULES (FROM schemaName)?
-    ;
-
 showDatabaseDiscoveryRules
     : SHOW DB_DISCOVERY RULES (FROM schemaName)?
     ;

@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser;
+package org.apache.shardingsphere.sharding.distsql.parser.facade;
 
-import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.distsql.parser.spi.RuleSQLParserFacade;
+import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingRuleLexer;
+import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingRuleParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
 /**
- * Sharding rule SQL statement visitor facade.
+ * SQL parser facade for sharding rule.
  */
-public final class ShardingRuleSQLStatementVisitorFacade implements RuleSQLStatementVisitorFacade {
+public final class ShardingRuleParserFacade implements RuleSQLParserFacade {
     
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
-        return ShardingRuleDistSQLStatementVisitor.class;
+    public Class<? extends SQLLexer> getLexerClass() {
+        return ShardingRuleLexer.class;
+    }
+    
+    @Override
+    public Class<? extends SQLParser> getParserClass() {
+        return ShardingRuleParser.class;
     }
     
     @Override
