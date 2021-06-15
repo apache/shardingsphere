@@ -38,18 +38,18 @@ import static org.junit.Assert.assertTrue;
 // TODO use Parameterized + XML instead of static test
 public final class ReadwriteSplittingRuleStatementParserEngineTest {
     
-    private static final String RDL_CREATE_STATIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_0 ("
+    private static final String CREATE_STATIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_0 ("
             + "WRITE_RESOURCE=primary_ds,"
             + "READ_RESOURCES(replica_ds_0,replica_ds_1),"
             + "TYPE(NAME=random)"
             + ")";
     
-    private static final String RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_1 ("
+    private static final String CREATE_DYNAMIC_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE ms_group_1 ("
             + "AUTO_AWARE_RESOURCE=group_0,"
             + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))"
             + ")";
     
-    private static final String RDL_ALTER_READWRITE_SPLITTING_RULE = "ALTER READWRITE_SPLITTING RULE ms_group_0 ("
+    private static final String ALTER_READWRITE_SPLITTING_RULE = "ALTER READWRITE_SPLITTING RULE ms_group_0 ("
             + "AUTO_AWARE_RESOURCE=group_0,"
             + "TYPE(NAME=random,PROPERTIES(read_weight='2:1'))),"
             + "ms_group_1 ("
@@ -58,15 +58,15 @@ public final class ReadwriteSplittingRuleStatementParserEngineTest {
             + "TYPE(NAME=random)"
             + ")";
     
-    private static final String RDL_DROP_READWRITE_SPLITTING_RULE = "DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1";
+    private static final String DROP_READWRITE_SPLITTING_RULE = "DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1";
     
-    private static final String RQL_SHOW_READWRITE_SPLITTING_RULES = "SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db";
+    private static final String SHOW_READWRITE_SPLITTING_RULES = "SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db";
     
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
     @Test
     public void assertParseStaticReadwriteSplittingRule() {
-        SQLStatement sqlStatement = engine.parse(RDL_CREATE_STATIC_READWRITE_SPLITTING_RULE);
+        SQLStatement sqlStatement = engine.parse(CREATE_STATIC_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
         CreateReadwriteSplittingRuleStatement statement = (CreateReadwriteSplittingRuleStatement) sqlStatement;
         assertThat(statement.getRules().size(), is(1));
@@ -81,7 +81,7 @@ public final class ReadwriteSplittingRuleStatementParserEngineTest {
     
     @Test
     public void assertParseDynamicReadwriteSplittingRule() {
-        SQLStatement sqlStatement = engine.parse(RDL_CREATE_DYNAMIC_READWRITE_SPLITTING_RULE);
+        SQLStatement sqlStatement = engine.parse(CREATE_DYNAMIC_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof CreateReadwriteSplittingRuleStatement);
         CreateReadwriteSplittingRuleStatement statement = (CreateReadwriteSplittingRuleStatement) sqlStatement;
         assertThat(statement.getRules().size(), is(1));
@@ -98,7 +98,7 @@ public final class ReadwriteSplittingRuleStatementParserEngineTest {
     
     @Test
     public void assertParseAlterReadwriteSplittingRule() {
-        SQLStatement sqlStatement = engine.parse(RDL_ALTER_READWRITE_SPLITTING_RULE);
+        SQLStatement sqlStatement = engine.parse(ALTER_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof AlterReadwriteSplittingRuleStatement);
         AlterReadwriteSplittingRuleStatement statement = (AlterReadwriteSplittingRuleStatement) sqlStatement;
         assertThat(statement.getRules().size(), is(2));
@@ -119,14 +119,14 @@ public final class ReadwriteSplittingRuleStatementParserEngineTest {
     
     @Test
     public void assertParseDropReadwriteSplittingRule() {
-        SQLStatement sqlStatement = engine.parse(RDL_DROP_READWRITE_SPLITTING_RULE);
+        SQLStatement sqlStatement = engine.parse(DROP_READWRITE_SPLITTING_RULE);
         assertTrue(sqlStatement instanceof DropReadwriteSplittingRuleStatement);
         assertThat(((DropReadwriteSplittingRuleStatement) sqlStatement).getRuleNames(), is(Arrays.asList("ms_group_0", "ms_group_1")));
     }
     
     @Test
     public void assertParseShowReadwriteSplittingRules() {
-        SQLStatement sqlStatement = engine.parse(RQL_SHOW_READWRITE_SPLITTING_RULES);
+        SQLStatement sqlStatement = engine.parse(SHOW_READWRITE_SPLITTING_RULES);
         assertTrue(sqlStatement instanceof ShowReadwriteSplittingRulesStatement);
         assertThat(((ShowReadwriteSplittingRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("readwrite_splitting_db"));
     }

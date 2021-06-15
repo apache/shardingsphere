@@ -46,16 +46,16 @@ import static org.junit.Assert.assertTrue;
 // TODO use Parameterized + XML instead of static test
 public final class DistSQLStatementParserEngineTest {
     
-    private static final String RDL_ADD_RESOURCE_SINGLE_WITHOUT_PASSWORD = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT);";
+    private static final String ADD_RESOURCE_SINGLE_WITHOUT_PASSWORD = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT);";
     
-    private static final String RDL_ADD_RESOURCE_SINGLE_WITH_PASSWORD = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PASSWORD=123456);";
+    private static final String ADD_RESOURCE_SINGLE_WITH_PASSWORD = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PASSWORD=123456);";
     
-    private static final String RDL_ADD_RESOURCE_MULTIPLE = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PASSWORD=123456),"
+    private static final String ADD_RESOURCE_MULTIPLE = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PASSWORD=123456),"
             + "ds_1(HOST=127.0.0.1,PORT=3306,DB=test1,USER=ROOT,PASSWORD=123456);";
     
-    private static final String RDL_DROP_RESOURCE = "DROP RESOURCE ds_0,ds_1";
+    private static final String DROP_RESOURCE = "DROP RESOURCE ds_0,ds_1";
     
-    private static final String RDL_CREATE_DATABASE_DISCOVERY_RULE = "CREATE DB_DISCOVERY RULE ha_group_0 ("
+    private static final String CREATE_DATABASE_DISCOVERY_RULE = "CREATE DB_DISCOVERY RULE ha_group_0 ("
             + "RESOURCES(resource0,resource1),"
             + "TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))),"
             + "ha_group_1 ("
@@ -63,7 +63,7 @@ public final class DistSQLStatementParserEngineTest {
             + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
             + ")";
     
-    private static final String RDL_ALTER_DATABASE_DISCOVERY_RULE = "ALTER DB_DISCOVERY RULE ha_group_0 ("
+    private static final String ALTER_DATABASE_DISCOVERY_RULE = "ALTER DB_DISCOVERY RULE ha_group_0 ("
             + "RESOURCES(resource0,resource1),"
             + "TYPE(NAME=mgr,PROPERTIES(groupName='92504d5b-6dec',keepAliveCron=''))),"
             + "ha_group_1 ("
@@ -71,33 +71,33 @@ public final class DistSQLStatementParserEngineTest {
             + "TYPE(NAME=mgr2,PROPERTIES(groupName='92504d5b-6dec-2',keepAliveCron=''))"
             + ")";
     
-    private static final String RDL_DROP_DATABASE_DISCOVERY_RULE = "DROP DB_DISCOVERY RULE ha_group_0,ha_group_1";
+    private static final String DROP_DATABASE_DISCOVERY_RULE = "DROP DB_DISCOVERY RULE ha_group_0,ha_group_1";
     
-    private static final String RDL_CREATE_ENCRYPT_RULE = "CREATE ENCRYPT RULE t_encrypt ("
+    private static final String CREATE_ENCRYPT_RULE = "CREATE ENCRYPT RULE t_encrypt ("
             + "COLUMNS("
             + "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),"
             + "(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))"
             + "))";
     
-    private static final String RDL_ALTER_ENCRYPT_RULE = "ALTER ENCRYPT RULE t_encrypt ("
+    private static final String ALTER_ENCRYPT_RULE = "ALTER ENCRYPT RULE t_encrypt ("
             + "COLUMNS("
             + "(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),"
             + "(NAME=order_id, CIPHER =order_cipher,TYPE(NAME=MD5))"
             + "))";
     
-    private static final String RDL_DROP_ENCRYPT_RULE = "DROP ENCRYPT RULE t_encrypt,t_encrypt_order";
+    private static final String DROP_ENCRYPT_RULE = "DROP ENCRYPT RULE t_encrypt,t_encrypt_order";
     
-    private static final String RQL_SHOW_DB_DISCOVERY_RULES = "SHOW DB_DISCOVERY RULES FROM db_discovery_db";
+    private static final String SHOW_DB_DISCOVERY_RULES = "SHOW DB_DISCOVERY RULES FROM db_discovery_db";
     
-    private static final String RQL_SHOW_ENCRYPT_RULES = "SHOW ENCRYPT RULES FROM encrypt_db";
+    private static final String SHOW_ENCRYPT_RULES = "SHOW ENCRYPT RULES FROM encrypt_db";
     
-    private static final String RQL_SHOW_ENCRYPT_TABLE_RULE = "SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db";
+    private static final String SHOW_ENCRYPT_TABLE_RULE = "SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db";
     
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
     @Test
     public void assertParseAddSingleResourceWithoutPassword() {
-        SQLStatement sqlStatement = engine.parse(RDL_ADD_RESOURCE_SINGLE_WITHOUT_PASSWORD);
+        SQLStatement sqlStatement = engine.parse(ADD_RESOURCE_SINGLE_WITHOUT_PASSWORD);
         assertTrue(sqlStatement instanceof AddResourceStatement);
         assertThat(((AddResourceStatement) sqlStatement).getDataSources().size(), is(1));
         DataSourceSegment dataSourceSegment = ((AddResourceStatement) sqlStatement).getDataSources().iterator().next();
@@ -110,7 +110,7 @@ public final class DistSQLStatementParserEngineTest {
     
     @Test
     public void assertParseAddSingleResourceWithPassword() {
-        SQLStatement sqlStatement = engine.parse(RDL_ADD_RESOURCE_SINGLE_WITH_PASSWORD);
+        SQLStatement sqlStatement = engine.parse(ADD_RESOURCE_SINGLE_WITH_PASSWORD);
         assertTrue(sqlStatement instanceof AddResourceStatement);
         assertThat(((AddResourceStatement) sqlStatement).getDataSources().size(), is(1));
         DataSourceSegment dataSourceSegment = ((AddResourceStatement) sqlStatement).getDataSources().iterator().next();
@@ -124,7 +124,7 @@ public final class DistSQLStatementParserEngineTest {
     
     @Test
     public void assertParseAddMultipleResources() {
-        SQLStatement sqlStatement = engine.parse(RDL_ADD_RESOURCE_MULTIPLE);
+        SQLStatement sqlStatement = engine.parse(ADD_RESOURCE_MULTIPLE);
         assertTrue(sqlStatement instanceof AddResourceStatement);
         assertThat(((AddResourceStatement) sqlStatement).getDataSources().size(), is(2));
         List<DataSourceSegment> dataSourceSegments = new ArrayList<>(((AddResourceStatement) sqlStatement).getDataSources());
@@ -146,7 +146,7 @@ public final class DistSQLStatementParserEngineTest {
     
     @Test
     public void assertParseDropResource() {
-        SQLStatement sqlStatement = engine.parse(RDL_DROP_RESOURCE);
+        SQLStatement sqlStatement = engine.parse(DROP_RESOURCE);
         assertTrue(sqlStatement instanceof DropResourceStatement);
         assertThat(((DropResourceStatement) sqlStatement).getNames().size(), is(2));
         assertTrue(((DropResourceStatement) sqlStatement).getNames().containsAll(Arrays.asList("ds_0", "ds_1")));
@@ -154,7 +154,7 @@ public final class DistSQLStatementParserEngineTest {
     
     @Test
     public void assertParseCreateDatabaseDiscoveryRule() {
-        SQLStatement sqlStatement = engine.parse(RDL_CREATE_DATABASE_DISCOVERY_RULE);
+        SQLStatement sqlStatement = engine.parse(CREATE_DATABASE_DISCOVERY_RULE);
         assertTrue(sqlStatement instanceof CreateDatabaseDiscoveryRuleStatement);
         CreateDatabaseDiscoveryRuleStatement statement = (CreateDatabaseDiscoveryRuleStatement) sqlStatement;
         assertThat(statement.getRules().size(), is(2));
@@ -172,7 +172,7 @@ public final class DistSQLStatementParserEngineTest {
     
     @Test
     public void assertParseAlterDatabaseDiscoveryRule() {
-        SQLStatement sqlStatement = engine.parse(RDL_ALTER_DATABASE_DISCOVERY_RULE);
+        SQLStatement sqlStatement = engine.parse(ALTER_DATABASE_DISCOVERY_RULE);
         assertTrue(sqlStatement instanceof AlterDatabaseDiscoveryRuleStatement);
         AlterDatabaseDiscoveryRuleStatement statement = (AlterDatabaseDiscoveryRuleStatement) sqlStatement;
         assertThat(statement.getRules().size(), is(2));
@@ -189,14 +189,14 @@ public final class DistSQLStatementParserEngineTest {
     
     @Test
     public void assertParseDropDatabaseDiscoveryRule() {
-        SQLStatement sqlStatement = engine.parse(RDL_DROP_DATABASE_DISCOVERY_RULE);
+        SQLStatement sqlStatement = engine.parse(DROP_DATABASE_DISCOVERY_RULE);
         assertTrue(sqlStatement instanceof DropDatabaseDiscoveryRuleStatement);
         assertThat(((DropDatabaseDiscoveryRuleStatement) sqlStatement).getRuleNames(), is(Arrays.asList("ha_group_0", "ha_group_1")));
     }
     
     @Test
     public void assertParseCreateEncryptRule() {
-        SQLStatement sqlStatement = engine.parse(RDL_CREATE_ENCRYPT_RULE);
+        SQLStatement sqlStatement = engine.parse(CREATE_ENCRYPT_RULE);
         assertTrue(sqlStatement instanceof CreateEncryptRuleStatement);
         CreateEncryptRuleStatement createEncryptRuleStatement = (CreateEncryptRuleStatement) sqlStatement;
         assertThat(createEncryptRuleStatement.getRules().size(), is(1));
@@ -216,7 +216,7 @@ public final class DistSQLStatementParserEngineTest {
     
     @Test
     public void assertParseAlterEncryptRule() {
-        SQLStatement sqlStatement = engine.parse(RDL_ALTER_ENCRYPT_RULE);
+        SQLStatement sqlStatement = engine.parse(ALTER_ENCRYPT_RULE);
         assertTrue(sqlStatement instanceof AlterEncryptRuleStatement);
         AlterEncryptRuleStatement alterEncryptRuleStatement = (AlterEncryptRuleStatement) sqlStatement;
         assertThat(alterEncryptRuleStatement.getRules().size(), is(1));
@@ -236,21 +236,21 @@ public final class DistSQLStatementParserEngineTest {
     
     @Test
     public void assertParseDropEncryptRule() {
-        SQLStatement sqlStatement = engine.parse(RDL_DROP_ENCRYPT_RULE);
+        SQLStatement sqlStatement = engine.parse(DROP_ENCRYPT_RULE);
         assertTrue(sqlStatement instanceof DropEncryptRuleStatement);
         assertThat(((DropEncryptRuleStatement) sqlStatement).getTables(), is(Arrays.asList("t_encrypt", "t_encrypt_order")));
     }
     
     @Test
     public void assertParseShowDatabaseDiscoveryRules() {
-        SQLStatement sqlStatement = engine.parse(RQL_SHOW_DB_DISCOVERY_RULES);
+        SQLStatement sqlStatement = engine.parse(SHOW_DB_DISCOVERY_RULES);
         assertTrue(sqlStatement instanceof ShowDatabaseDiscoveryRulesStatement);
         assertThat(((ShowDatabaseDiscoveryRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("db_discovery_db"));
     }
     
     @Test
     public void assertParseShowEncryptRules() {
-        SQLStatement sqlStatement = engine.parse(RQL_SHOW_ENCRYPT_RULES);
+        SQLStatement sqlStatement = engine.parse(SHOW_ENCRYPT_RULES);
         assertTrue(sqlStatement instanceof ShowEncryptRulesStatement);
         assertNull(((ShowEncryptRulesStatement) sqlStatement).getTableName());
         assertThat(((ShowEncryptRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("encrypt_db"));
@@ -258,7 +258,7 @@ public final class DistSQLStatementParserEngineTest {
     
     @Test
     public void assertParseShowEncryptTableRule() {
-        SQLStatement sqlStatement = engine.parse(RQL_SHOW_ENCRYPT_TABLE_RULE);
+        SQLStatement sqlStatement = engine.parse(SHOW_ENCRYPT_TABLE_RULE);
         assertTrue(sqlStatement instanceof ShowEncryptRulesStatement);
         assertThat(((ShowEncryptRulesStatement) sqlStatement).getSchema().get().getIdentifier().getValue(), is("encrypt_db"));
         assertThat(((ShowEncryptRulesStatement) sqlStatement).getTableName(), is("t_encrypt"));
