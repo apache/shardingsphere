@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment.rdl;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.segment;
 
 import lombok.Getter;
 import lombok.Setter;

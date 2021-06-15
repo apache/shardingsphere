@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 
 /**
- * Drop database discovery rule statement.
+ * Show database discovery rules statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropDatabaseDiscoveryRuleStatement extends DropRuleStatement {
+public final class ShowDatabaseDiscoveryRulesStatement extends ShowRulesStatement {
     
-    private final Collection<String> ruleNames;
+    public ShowDatabaseDiscoveryRulesStatement(final SchemaSegment schema) {
+        super(schema);
+    }
 }
