@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type;
 
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.DropTableEvent;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
 import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.FederateRefresher;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
 import java.sql.SQLException;
@@ -37,8 +34,5 @@ public final class DropTableStatementFederateRefresher implements FederateRefres
     public void refresh(final FederateSchemaMetadata schema, final Collection<String> routeDataSourceNames, final DropTableStatement sqlStatement, final SchemaBuilderMaterials materials)
             throws SQLException {
         sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
-        for (SimpleTableSegment each : sqlStatement.getTables()) {
-            ShardingSphereEventBus.getInstance().post(new DropTableEvent(each.getTableName().getIdentifier().getValue()));
-        }
     }
 }

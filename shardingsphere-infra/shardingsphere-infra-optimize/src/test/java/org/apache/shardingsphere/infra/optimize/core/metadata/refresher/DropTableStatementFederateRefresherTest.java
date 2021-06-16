@@ -25,7 +25,7 @@ import java.util.Map;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
-public class DropTableStatementFederateRefresherTest {
+public final class DropTableStatementFederateRefresherTest {
 
     @Test
     public void refreshForMySQL() throws SQLException {
