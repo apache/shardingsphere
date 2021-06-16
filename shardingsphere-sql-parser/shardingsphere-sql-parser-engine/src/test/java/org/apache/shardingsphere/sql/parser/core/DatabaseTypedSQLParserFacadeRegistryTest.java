@@ -34,10 +34,10 @@ public class DatabaseTypedSQLParserFacadeRegistryTest {
 
     @Test
     public void assertGetFacade() {
-        DatabaseTypedSQLParserFacade mysql = DatabaseTypedSQLParserFacadeRegistry.getFacade("DATABASE");
-        assertThat(mysql.getClass(), equalTo(DatabaseParserFacade.class));
-        assertThat(mysql.getDatabaseType(), is("DATABASE"));
-        assertThat(mysql.getLexerClass(), equalTo(DatabaseLexer.class));
-        assertThat(mysql.getParserClass(), equalTo(DatabaseParser.class));
+        DatabaseTypedSQLParserFacade databaseTypedSQLParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade("DATABASE");
+        assertThat(databaseTypedSQLParserFacade.getClass(), equalTo(DatabaseParserFacade.class));
+        assertThat(databaseTypedSQLParserFacade.getDatabaseType(), is("DATABASE"));
+        assertThat(databaseTypedSQLParserFacade.getLexerClass(), equalTo(DatabaseLexer.class));
+        assertThat(databaseTypedSQLParserFacade.getParserClass(), equalTo(DatabaseParser.class));
     }
 }
