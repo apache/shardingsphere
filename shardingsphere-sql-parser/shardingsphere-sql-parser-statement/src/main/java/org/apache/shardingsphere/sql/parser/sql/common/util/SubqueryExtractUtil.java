@@ -45,8 +45,8 @@ public final class SubqueryExtractUtil {
     /**
      * Get subquery segment from SelectStatement.
      *
-     * @param selectStatement SelectStatement.
-     * @return subquery segment collection.
+     * @param selectStatement SelectStatement
+     * @return subquery segment collection
      */
     public static Collection<SubquerySegment> getSubquerySegments(final SelectStatement selectStatement) {
         Collection<SubquerySegment> result = new LinkedList<>();

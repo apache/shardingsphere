@@ -40,7 +40,7 @@ public final class WhereExtractUtil {
      * Get join where segment from SelectStatement.
      *
      * @param selectStatement SelectStatement
-     * @return join where segment collection.
+     * @return join where segment collection
      */
     public static Collection<WhereSegment> getJoinWhereSegments(final SelectStatement selectStatement) {
         if (null == selectStatement.getFrom()) {
@@ -59,8 +59,8 @@ public final class WhereExtractUtil {
     /**
      * Get subquery where segment from SelectStatement.
      *
-     * @param selectStatement SelectStatement.
-     * @return subquery where segment collection.
+     * @param selectStatement SelectStatement
+     * @return subquery where segment collection
      */
     public static Collection<WhereSegment> getSubqueryWhereSegments(final SelectStatement selectStatement) {
         Collection<WhereSegment> result = new LinkedList<>();
