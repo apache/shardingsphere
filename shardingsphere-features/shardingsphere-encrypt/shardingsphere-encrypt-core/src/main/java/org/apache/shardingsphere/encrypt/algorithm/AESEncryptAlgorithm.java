@@ -65,8 +65,8 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         if (null == plaintext) {
             return null;
         }
-        byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(StringUtils.getBytesUtf8(String.valueOf(plaintext)));
-        return Base64.encodeBase64String(result);
+        byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plaintext).getBytes("UTF-8"));
+        return DatatypeConverter.printBase64Binary(result);
     }
     
     @SneakyThrows(GeneralSecurityException.class)
@@ -75,7 +75,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         if (null == ciphertext) {
             return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.decodeBase64(ciphertext));
+        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(DatatypeConverter.parseBase64Binary(ciphertext));
         return new String(result, StandardCharsets.UTF_8);
     }
     
