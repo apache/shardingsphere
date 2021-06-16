@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.core.database.parser;
 
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -56,21 +55,16 @@ public final class SQLParserExecutor {
         DatabaseTypedSQLParserFacade sqlParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade(databaseType);
         SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass());
         try {
-            setPredictionMode((Parser) sqlParser, PredictionMode.SLL);
+            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
             return (ParseASTNode) sqlParser.parse();
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
-            setPredictionMode((Parser) sqlParser, PredictionMode.LL);
+            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
             try {
                 return (ParseASTNode) sqlParser.parse();
             } catch (final ParseCancellationException e) {
                 throw new SQLParsingException("You have an error in your SQL syntax");
             }
         }
-    }
-    
-    private void setPredictionMode(final Parser sqlParser, final PredictionMode mode) {
-        sqlParser.setErrorHandler(new BailErrorStrategy());
-        sqlParser.getInterpreter().setPredictionMode(mode);
     }
 }

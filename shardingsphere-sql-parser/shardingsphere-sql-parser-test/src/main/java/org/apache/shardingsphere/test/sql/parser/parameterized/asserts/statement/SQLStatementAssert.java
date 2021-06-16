@@ -19,20 +19,24 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.parameter.ParameterMarkerAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.DALStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.DCLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.DDLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.DMLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.TCLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.parameter.ParameterMarkerAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.DALStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.DCLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.DDLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.RDLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.RQLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.DMLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.TCLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
  * SQL statement assert.
@@ -59,6 +63,10 @@ public final class SQLStatementAssert {
             DCLStatementAssert.assertIs(assertContext, (DCLStatement) actual, expected);
         } else if (actual instanceof DALStatement) {
             DALStatementAssert.assertIs(assertContext, (DALStatement) actual, expected);
+        } else if (actual instanceof RDLStatement) {
+            RDLStatementAssert.assertIs(assertContext, (RDLStatement) actual, expected);
+        } else if (actual instanceof RQLStatement) {
+            RQLStatementAssert.assertIs(assertContext, (RQLStatement) actual, expected);
         }
     }
 }

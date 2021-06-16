@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -31,11 +32,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.S
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.SQLCasesRegistry;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.Assert.fail;
 
@@ -85,6 +82,6 @@ public abstract class SQLParserParameterizedTest {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        return new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType).parse(sql, false));
+       return  "DistSQL".equals(databaseType) ? new DistSQLStatementParserEngine().parse(sql) : new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType).parse(sql, false));
     }
 }
