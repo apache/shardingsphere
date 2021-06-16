@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -92,7 +92,7 @@ public final class ReadwriteSplittingRulesQueryBackendHandler extends SchemaRequ
                 ? loadBalancers.get(ruleConfig.getLoadBalancerName()).getProps() : null;
         return Arrays.asList(ruleConfig.getName(), ruleConfig.getAutoAwareDataSourceName(),
                 ruleConfig.getWriteDataSourceName(), Joiner.on(",").join(ruleConfig.getReadDataSourceNames()),
-                loadBalancers.get(ruleConfig.getLoadBalancerName()).getType(),
+                null == loadBalancers.get(ruleConfig.getLoadBalancerName()) ? null : loadBalancers.get(ruleConfig.getLoadBalancerName()).getType(),
                 Objects.nonNull(loadBalancerProps) ? Joiner.on(",").join(loadBalancerProps.entrySet().stream()
                         .map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
     }

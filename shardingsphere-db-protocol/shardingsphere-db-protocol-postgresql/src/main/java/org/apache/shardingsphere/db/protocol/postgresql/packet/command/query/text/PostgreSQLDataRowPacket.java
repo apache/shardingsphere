@@ -19,6 +19,9 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.te
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -41,20 +44,33 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt2(data.size());
         for (Object each : data) {
-            if (null == each) {
-                payload.writeInt4(0xFFFFFFFF);
+            if (each instanceof BinaryCell) {
+                writeBinaryValue(payload, (BinaryCell) each);
             } else {
-                if (each instanceof byte[]) {
-                    payload.writeInt4(((byte[]) each).length);
-                    payload.writeBytes((byte[]) each);
-                } else if (each instanceof SQLXML) {
-                    writeSQLXMLData(payload, each);
-                } else {
-                    String columnData = each.toString();
-                    payload.writeInt4(columnData.getBytes().length);
-                    payload.writeStringEOF(columnData);
-                }
+                writeTextValue(payload, each);
             }
+        }
+    }
+    
+    private void writeBinaryValue(final PostgreSQLPacketPayload payload, final BinaryCell each) {
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType());
+        Object value = each.getData();
+        payload.writeInt4(binaryProtocolValue.getColumnLength(value));
+        binaryProtocolValue.write(payload, value);
+    }
+    
+    private void writeTextValue(final PostgreSQLPacketPayload payload, final Object each) {
+        if (null == each) {
+            payload.writeInt4(0xFFFFFFFF);
+        } else if (each instanceof byte[]) {
+            payload.writeInt4(((byte[]) each).length);
+            payload.writeBytes((byte[]) each);
+        } else if (each instanceof SQLXML) {
+            writeSQLXMLData(payload, each);
+        } else {
+            String columnData = each.toString();
+            payload.writeInt4(columnData.getBytes().length);
+            payload.writeStringEOF(columnData);
         }
     }
     

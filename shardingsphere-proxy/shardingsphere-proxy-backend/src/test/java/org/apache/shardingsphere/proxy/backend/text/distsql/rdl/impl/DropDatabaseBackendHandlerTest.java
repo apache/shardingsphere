@@ -47,13 +47,13 @@ public final class DropDatabaseBackendHandlerTest {
     
     @Mock
     private DropDatabaseStatement sqlStatement;
-
+    
     @Mock
     private TransactionContexts transactionContexts;
     
     @Mock
     private MetaDataContexts metaDataContexts;
-
+    
     private DropDatabaseBackendHandler handler;
     
     @Before

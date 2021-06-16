@@ -21,8 +21,8 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.segment.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -78,7 +78,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
     @Mock
     private ShardingSphereResource shardingSphereResource;
     
-    private CreateDatabaseDiscoveryRuleBackendHandler handler = new CreateDatabaseDiscoveryRuleBackendHandler(sqlStatement, backendConnection);
+    private final CreateDatabaseDiscoveryRuleBackendHandler handler = new CreateDatabaseDiscoveryRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
@@ -95,7 +95,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
         databaseDiscoveryRuleSegment.setName("pr_ds");
         databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         databaseDiscoveryRuleSegment.setDiscoveryTypeName("TEST");
-        when(sqlStatement.getDatabaseDiscoveryRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
@@ -115,7 +115,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
         databaseDiscoveryRuleSegment.setName("pr_ds");
         databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         databaseDiscoveryRuleSegment.setDiscoveryTypeName("TEST");
-        when(sqlStatement.getDatabaseDiscoveryRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
@@ -124,7 +124,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
         DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment();
         databaseDiscoveryRuleSegment.setName("pr_ds");
         databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
-        when(sqlStatement.getDatabaseDiscoveryRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
         handler.execute("test", sqlStatement);
     }
 
@@ -134,7 +134,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
         databaseDiscoveryRuleSegment.setName("pr_ds");
         databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_read_0", "ds_read_1"));
         databaseDiscoveryRuleSegment.setDiscoveryTypeName("notExistDiscoveryType");
-        when(sqlStatement.getDatabaseDiscoveryRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
         when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);

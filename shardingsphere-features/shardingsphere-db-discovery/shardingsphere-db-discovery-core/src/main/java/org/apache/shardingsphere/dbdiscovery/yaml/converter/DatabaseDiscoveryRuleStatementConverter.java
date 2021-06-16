@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
 import java.util.Collection;
@@ -47,7 +47,7 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         }
         return result;
     }
-
+    
     private static YamlDatabaseDiscoveryDataSourceRuleConfiguration buildDataSourceRuleConfiguration(final String databaseDiscoveryType,
                                                                                                      final DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment) {
         YamlDatabaseDiscoveryDataSourceRuleConfiguration result = new YamlDatabaseDiscoveryDataSourceRuleConfiguration();
@@ -56,14 +56,14 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         result.setProps(databaseDiscoveryRuleSegment.getProps());
         return result;
     }
-
+    
     private static YamlShardingSphereAlgorithmConfiguration buildDiscoveryType(final DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment) {
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(databaseDiscoveryRuleSegment.getDiscoveryTypeName());
         result.setProps(databaseDiscoveryRuleSegment.getProps());
         return result;
     }
-
+    
     private static String getDatabaseDiscoveryType(final String ruleName, final String databaseDiscoveryType) {
         return String.format("%s_%s", ruleName, databaseDiscoveryType);
     }

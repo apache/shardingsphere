@@ -42,7 +42,7 @@ public final class PostgreSQLComSyncExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() {
         connectionContext.clearContext();
-        return Collections.singletonList(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
+        return Collections.singleton(new PostgreSQLReadyForQueryPacket(backendConnection.getTransactionStatus().isInTransaction()));
     }
     
     @Override

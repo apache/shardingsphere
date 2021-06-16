@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -64,7 +64,7 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     public void doExecute(final String schemaName, final AlterEncryptRuleStatement sqlStatement) {
         EncryptRuleConfiguration encryptRuleConfiguration = getEncryptRuleConfiguration(schemaName).get();
         EncryptRuleConfiguration alteredEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singletonList(EncryptRuleStatementConverter.convert(sqlStatement.getEncryptRules()))).stream()
+                .swapToRuleConfigurations(Collections.singletonList(EncryptRuleStatementConverter.convert(sqlStatement.getRules()))).stream()
                 .map(each -> (EncryptRuleConfiguration) each).findFirst().get();
         drop(sqlStatement, encryptRuleConfiguration);
         encryptRuleConfiguration.getTables().addAll(alteredEncryptRuleConfiguration.getTables());
@@ -100,8 +100,8 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     
     private void checkEncryptors(final AlterEncryptRuleStatement sqlStatement) {
         Collection<String> encryptors = new LinkedHashSet<>();
-        sqlStatement.getEncryptRules().forEach(each -> encryptors.addAll(each.getColumns().stream()
-                .map(column -> column.getEncryptor().getAlgorithmName()).collect(Collectors.toSet())));
+        sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream()
+                .map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
         Collection<String> invalidEncryptors = encryptors.stream().filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidEncryptors.isEmpty()) {
@@ -110,7 +110,7 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     }
     
     private Collection<String> getAlteredRuleNames(final AlterEncryptRuleStatement sqlStatement) {
-        return sqlStatement.getEncryptRules()
+        return sqlStatement.getRules()
                 .stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toList());
     }
 }

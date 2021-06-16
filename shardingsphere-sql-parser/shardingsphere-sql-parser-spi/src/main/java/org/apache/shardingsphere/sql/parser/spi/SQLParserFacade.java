@@ -26,13 +26,6 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 public interface SQLParserFacade {
     
     /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    String getDatabaseType();
-    
-    /**
      * Get SQL lexer class type.
      *
      * @return SQL lexer class type

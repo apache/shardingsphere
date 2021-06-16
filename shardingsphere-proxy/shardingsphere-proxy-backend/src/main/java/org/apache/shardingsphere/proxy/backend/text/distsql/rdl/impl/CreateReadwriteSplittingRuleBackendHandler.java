@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadwriteSplittingRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -81,7 +81,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
         Optional<ReadwriteSplittingRuleConfiguration> optional = getReadwriteSplittingRuleConfiguration(schemaName);
         if (optional.isPresent()) {
             Collection<String> existRuleNames = getRuleNames(optional.get());
-            Collection<String> duplicateRuleNames = sqlStatement.getReadwriteSplittingRules()
+            Collection<String> duplicateRuleNames = sqlStatement.getRules()
                     .stream().map(ReadwriteSplittingRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toList());
             if (!duplicateRuleNames.isEmpty()) {
                 throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
@@ -97,7 +97,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
     }
     
     private void checkLoadBalancers(final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        Collection<String> invalidLoadBalances = sqlStatement.getReadwriteSplittingRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
+        Collection<String> invalidLoadBalances = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidLoadBalances.isEmpty()) {
@@ -107,7 +107,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
     
     private Collection<String> getResources(final CreateReadwriteSplittingRuleStatement sqlStatement) {
         Collection<String> result = new LinkedHashSet<>();
-        sqlStatement.getReadwriteSplittingRules().stream().filter(each -> Strings.isNullOrEmpty(each.getAutoAwareResource())).forEach(each -> {
+        sqlStatement.getRules().stream().filter(each -> Strings.isNullOrEmpty(each.getAutoAwareResource())).forEach(each -> {
             result.add(each.getWriteDataSource());
             result.addAll(each.getReadDataSources());
         });

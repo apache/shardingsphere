@@ -67,6 +67,8 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     INVALID_KEY_GENERATORS(1120, "C1120", "Invalid key generators %s."),
     
+    DUPLICATE_BINDING_TABLES(1121, "C1121", "Duplicate sharding binding tables %s."),
+    
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     
     SCALING_OPERATE_FAILED(1209, "C1209", "Scaling Operate Failed: [%s]"),
