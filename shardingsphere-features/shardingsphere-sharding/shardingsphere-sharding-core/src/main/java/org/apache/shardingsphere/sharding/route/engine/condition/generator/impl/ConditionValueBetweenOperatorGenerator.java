@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.generator.Condi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -43,7 +43,7 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
         Optional<Comparable<?>> betweenConditionValue = new ConditionValue(predicate.getBetweenExpr(), parameters).getValue();
         Optional<Comparable<?>> andConditionValue = new ConditionValue(predicate.getAndExpr(), parameters).getValue();
         if (betweenConditionValue.isPresent() && andConditionValue.isPresent()) {
-            return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtils.safeClosed(betweenConditionValue.get(), andConditionValue.get())));
+            return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtil.safeClosed(betweenConditionValue.get(), andConditionValue.get())));
         }
         Date datetime = RequiredSPIRegistry.getRegisteredService(DatetimeService.class).getDatetime();
         if (!betweenConditionValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getBetweenExpr())) {
