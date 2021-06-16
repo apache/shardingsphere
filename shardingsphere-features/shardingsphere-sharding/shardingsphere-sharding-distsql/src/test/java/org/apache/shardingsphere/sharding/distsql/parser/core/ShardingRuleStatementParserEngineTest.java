@@ -18,20 +18,20 @@
 package org.apache.shardingsphere.sharding.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingTableRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
@@ -96,11 +96,11 @@ public final class ShardingRuleStatementParserEngineTest {
         assertThat(tableRuleSegment.getLogicTable(), is("t_order"));
         assertTrue(tableRuleSegment.getDataSources().containsAll(Arrays.asList("ms_group_0", "ms_group_1")));
         assertThat(tableRuleSegment.getTableStrategyColumn(), is("order_id"));
-        assertThat(tableRuleSegment.getKeyGenerateStrategy().getAlgorithmName(), is("snowflake"));
-        assertThat(tableRuleSegment.getKeyGenerateStrategy().getAlgorithmProps().getProperty("worker-id"), is("123"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategy().getName(), is("snowflake"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategy().getProps().getProperty("worker-id"), is("123"));
         assertThat(tableRuleSegment.getKeyGenerateStrategyColumn(), is("another_id"));
-        assertThat(tableRuleSegment.getTableStrategy().getAlgorithmName(), is("hash_mod"));
-        assertThat(tableRuleSegment.getTableStrategy().getAlgorithmProps().getProperty("sharding-count"), is("4"));
+        assertThat(tableRuleSegment.getTableStrategy().getName(), is("hash_mod"));
+        assertThat(tableRuleSegment.getTableStrategy().getProps().getProperty("sharding-count"), is("4"));
     }
     
     @Test
@@ -132,11 +132,11 @@ public final class ShardingRuleStatementParserEngineTest {
         assertThat(tableRuleSegment.getLogicTable(), is("t_order"));
         assertTrue(tableRuleSegment.getDataSources().containsAll(Arrays.asList("ms_group_0", "ms_group_1")));
         assertThat(tableRuleSegment.getTableStrategyColumn(), is("order_id"));
-        assertThat(tableRuleSegment.getKeyGenerateStrategy().getAlgorithmName(), is("snowflake"));
-        assertThat(tableRuleSegment.getKeyGenerateStrategy().getAlgorithmProps().getProperty("worker-id"), is("123"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategy().getName(), is("snowflake"));
+        assertThat(tableRuleSegment.getKeyGenerateStrategy().getProps().getProperty("worker-id"), is("123"));
         assertThat(tableRuleSegment.getKeyGenerateStrategyColumn(), is("another_id"));
-        assertThat(tableRuleSegment.getTableStrategy().getAlgorithmName(), is("hash_mod"));
-        assertThat(tableRuleSegment.getTableStrategy().getAlgorithmProps().getProperty("sharding-count"), is("4"));
+        assertThat(tableRuleSegment.getTableStrategy().getName(), is("hash_mod"));
+        assertThat(tableRuleSegment.getTableStrategy().getProps().getProperty("sharding-count"), is("4"));
     }
     
     @Test

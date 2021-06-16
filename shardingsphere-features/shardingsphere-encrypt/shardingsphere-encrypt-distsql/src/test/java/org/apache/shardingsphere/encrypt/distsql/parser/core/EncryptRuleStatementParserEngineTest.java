@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.encrypt.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterEncryptRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateEncryptRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropEncryptRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowEncryptRulesStatement;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
@@ -72,11 +72,11 @@ public final class EncryptRuleStatementParserEngineTest {
         assertThat(encryptColumnSegments.get(0).getName(), is("user_id"));
         assertThat(encryptColumnSegments.get(0).getCipherColumn(), is("user_cipher"));
         assertThat(encryptColumnSegments.get(0).getPlainColumn(), is("user_plain"));
-        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmName(), is("AES"));
-        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmProps().get("aes-key-value"), is("123456abc"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getName(), is("AES"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getProps().get("aes-key-value"), is("123456abc"));
         assertThat(encryptColumnSegments.get(1).getName(), is("order_id"));
         assertThat(encryptColumnSegments.get(1).getCipherColumn(), is("order_cipher"));
-        assertThat(encryptColumnSegments.get(1).getEncryptor().getAlgorithmName(), is("MD5"));
+        assertThat(encryptColumnSegments.get(1).getEncryptor().getName(), is("MD5"));
     }
     
     @Test
@@ -92,11 +92,11 @@ public final class EncryptRuleStatementParserEngineTest {
         assertThat(encryptColumnSegments.get(0).getName(), is("user_id"));
         assertThat(encryptColumnSegments.get(0).getCipherColumn(), is("user_cipher"));
         assertThat(encryptColumnSegments.get(0).getPlainColumn(), is("user_plain"));
-        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmName(), is("AES"));
-        assertThat(encryptColumnSegments.get(0).getEncryptor().getAlgorithmProps().get("aes-key-value"), is("123456abc"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getName(), is("AES"));
+        assertThat(encryptColumnSegments.get(0).getEncryptor().getProps().get("aes-key-value"), is("123456abc"));
         assertThat(encryptColumnSegments.get(1).getName(), is("order_id"));
         assertThat(encryptColumnSegments.get(1).getCipherColumn(), is("order_cipher"));
-        assertThat(encryptColumnSegments.get(1).getEncryptor().getAlgorithmName(), is("MD5"));
+        assertThat(encryptColumnSegments.get(1).getEncryptor().getName(), is("MD5"));
     }
     
     @Test

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
-import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -86,9 +87,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order_item");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        FunctionSegment shardingAlgorithm = new FunctionSegment();
-        shardingAlgorithm.setAlgorithmName("hash_mod");
-        tableRuleSegment.setTableStrategy(shardingAlgorithm);
+        tableRuleSegment.setTableStrategy(new AlgorithmSegment("hash_mod", new Properties()));
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
@@ -117,9 +116,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order_item");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        FunctionSegment shardingAlgorithm = new FunctionSegment();
-        shardingAlgorithm.setAlgorithmName("algorithm-not-exist");
-        tableRuleSegment.setTableStrategy(shardingAlgorithm);
+        tableRuleSegment.setTableStrategy(new AlgorithmSegment("algorithm-not-exist", new Properties()));
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }

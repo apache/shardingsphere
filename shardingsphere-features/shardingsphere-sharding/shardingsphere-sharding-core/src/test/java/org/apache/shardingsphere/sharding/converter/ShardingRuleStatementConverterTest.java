@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.converter;
 
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
-import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -47,12 +47,9 @@ public final class ShardingRuleStatementConverterTest {
         segment.setLogicTable("t_order");
         segment.setDataSources(Arrays.asList("ds0", "ds1"));
         segment.setTableStrategyColumn("order_id");
-        FunctionSegment functionSegment = new FunctionSegment();
-        functionSegment.setAlgorithmName("MOD");
         Properties props = new Properties();
         props.setProperty("sharding_count", "2");
-        functionSegment.setAlgorithmProps(props);
-        segment.setTableStrategy(functionSegment);
+        segment.setTableStrategy(new AlgorithmSegment("MOD", props));
         sqlStatement = new CreateShardingTableRuleStatement(Collections.singleton(segment));
     }
     

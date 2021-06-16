@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.core.resource;
 
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 /**
  * SQL parser for resource dist SQL.
  */
-public final class ResourceDistSQLParser extends DistSQLStatementParser implements SQLParser {
+public final class ResourceDistSQLParser extends ResourceStatementParser implements SQLParser {
     
     public ResourceDistSQLParser(final TokenStream input) {
         super(input);
