@@ -18,7 +18,7 @@ chapter = true
 
 ## 代码提交行为规范
 
- - 确保通过全部测试用例，确保执行`./mvnw clean install`可以编译和测试通过。
+ - 确保通过全部测试用例，确保执行 `./mvnw -T 1C clean install` 可以编译和测试通过。
  - 确保覆盖率不低于master分支。
  - 确保使用Checkstyle检查代码，违反验证规则的需要有特殊理由。模板位置在`https://github.com/apache/shardingsphere/blob/master/src/resources/checkstyle.xml`，请使用checkstyle 8.8运行规则。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。

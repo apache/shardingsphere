@@ -29,6 +29,18 @@
         <output sql="CREATE INDEX index_name_not_exist_t_account_1 ON t_account_1 (status)" />
     </rewrite-assertion>
     
+    <rewrite-assertion id="create_index_without_index_name_with_single_column_for_postgresql" db-type="PostgreSQL">
+        <input sql="CREATE INDEX ON t_account (status)" />
+        <output sql="CREATE INDEX status_idx_t_account_0 ON t_account_0 (status)" />
+        <output sql="CREATE INDEX status_idx_t_account_1 ON t_account_1 (status)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="create_index_without_index_name_with_multi_column_for_postgresql" db-type="PostgreSQL">
+        <input sql="CREATE INDEX ON t_account (status, account_id)" />
+        <output sql="CREATE INDEX status_account_id_idx_t_account_0 ON t_account_0 (status, account_id)" />
+        <output sql="CREATE INDEX status_account_id_idx_t_account_1 ON t_account_1 (status, account_id)" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="drop_index_for_mysql" db-type="MySQL">
         <input sql="DROP INDEX index_name ON t_account" />
         <output sql="DROP INDEX index_name_t_account_0 ON t_account_0" />
