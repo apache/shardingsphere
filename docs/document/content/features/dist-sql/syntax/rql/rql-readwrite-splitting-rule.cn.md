@@ -19,3 +19,38 @@ SHOW READWRITE_SPLITTING RULES [FROM schemaName]
 | readDataSourceNames     | 读数据源名称列表                         |
 | loadBalancerType        | 负载均衡算法类型                         |
 | loadBalancerProps       | 负载均衡算法参数                         |
+
+## 示例
+
+*静态读写分离规则*
+```sql
+mysql> show readwrite_splitting rules;
++------------+-------------------------+---------------------+--------------------------+------------------+------------------------+
+| name       | autoAwareDataSourceName | writeDataSourceName | readDataSourceNames      | loadBalancerType | loadBalancerProps      |
++------------+-------------------------+---------------------+--------------------------+------------------+------------------------+
+| ms_group_0 | NULL                    | ds_primary          |  ds_slave_0, ds_slave_1  | random           |                        |
++------------+-------------------------+---------------------+--------------------------+------------------+------------------------+
+1 row in set (0.00 sec)
+```
+
+*动态读写分离规则*
+```sql
+mysql> show readwrite_splitting rules from readwrite_splitting_db;
++-------+-------------------------+---------------------+---------------------+------------------+------------------------+
+| name  | autoAwareDataSourceName | writeDataSourceName | readDataSourceNames | loadBalancerType | loadBalancerProps      |
++-------+-------------------------+---------------------+---------------------+------------------+------------------------+
+| pr_ds | ms_group_0              | NULL                |                     | random           |  read_weight=2:1}      |
++-------+-------------------------+---------------------+---------------------+------------------+------------------------+
+1 row in set (0.01 sec)
+```
+
+*静态读写分离规则和动态读写分离规则*
+```sql
+mysql> show readwrite_splitting rules from readwrite_splitting_db;
++-------+-------------------------+---------------------+------------------------+------------------+------------------------+
+| name  | autoAwareDataSourceName | writeDataSourceName | readDataSourceNames    | loadBalancerType | loadBalancerProps      |
++-------+-------------------------+---------------------+------------------------+------------------+------------------------+
+| pr_ds | ms_group_0              | write_ds            |  read_ds_0, read_ds_1  | random           |  read_weight=2:1       |
++-------+-------------------------+---------------------+------------------------+------------------+------------------------+
+1 row in set (0.00 sec)
+```
