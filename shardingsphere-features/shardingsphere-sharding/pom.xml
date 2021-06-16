@@ -30,6 +30,7 @@
     <modules>
         <module>shardingsphere-sharding-api</module>
         <module>shardingsphere-sharding-core</module>
+        <module>shardingsphere-sharding-distsql</module>
         <module>shardingsphere-sharding-spring</module>
     </modules>
 </project>

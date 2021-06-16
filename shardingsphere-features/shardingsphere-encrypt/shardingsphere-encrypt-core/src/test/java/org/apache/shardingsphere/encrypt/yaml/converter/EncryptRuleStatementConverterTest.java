@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.yaml.converter;
 
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.junit.Test;
 
@@ -52,12 +52,9 @@ public final class EncryptRuleStatementConverterTest {
         encryptColumnSegment.setName("user_id");
         encryptColumnSegment.setPlainColumn("user_plain");
         encryptColumnSegment.setCipherColumn("user_cipher");
-        FunctionSegment functionSegment = new FunctionSegment();
-        functionSegment.setAlgorithmName("MD5");
         Properties properties = new Properties();
         properties.setProperty("MD5-key", "MD5-value");
-        functionSegment.setAlgorithmProps(properties);
-        encryptColumnSegment.setEncryptor(functionSegment);
+        encryptColumnSegment.setEncryptor(new AlgorithmSegment("MD5", properties));
         return Collections.singleton(encryptColumnSegment);
     }
 }

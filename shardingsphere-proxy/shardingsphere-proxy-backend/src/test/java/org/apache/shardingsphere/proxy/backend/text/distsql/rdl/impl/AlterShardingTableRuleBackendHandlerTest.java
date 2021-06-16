@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
-import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -101,10 +101,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     public void assertExecute() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order");
-        FunctionSegment functionSegment = new FunctionSegment();
-        functionSegment.setAlgorithmName("hash_mod");
-        functionSegment.setAlgorithmProps(new Properties());
-        tableRuleSegment.setTableStrategy(functionSegment);
+        tableRuleSegment.setTableStrategy(new AlgorithmSegment("hash_mod", new Properties()));
         tableRuleSegment.setDataSources(Collections.singleton("ds_0"));
         tableRuleSegment.setTableStrategyColumn("order_id");
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
@@ -143,20 +140,18 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment();
         tableRuleSegment.setLogicTable("t_order_item");
         tableRuleSegment.setDataSources(Collections.emptyList());
-        FunctionSegment shardingAlgorithm = new FunctionSegment();
-        shardingAlgorithm.setAlgorithmName("algorithm-not-exist");
-        tableRuleSegment.setTableStrategy(shardingAlgorithm);
+        tableRuleSegment.setTableStrategy(new AlgorithmSegment("algorithm-not-exist", new Properties()));
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         handler.execute("test", sqlStatement);
     }
     
     private Collection<RuleConfiguration> buildShardingConfigurations() {
-        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
-        config.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
         ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("t_order");
         shardingAutoTableRuleConfiguration.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "test"));
-        config.getAutoTables().add(shardingAutoTableRuleConfiguration);
-        return new ArrayList<>(Collections.singleton(config));
+        result.getAutoTables().add(shardingAutoTableRuleConfiguration);
+        return new ArrayList<>(Collections.singleton(result));
     }
 }

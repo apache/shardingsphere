@@ -143,8 +143,8 @@ public final class SQLUtil {
     /**
      * Get subquery from tableSegment.
      *
-     * @param tableSegment TableSegment.
-     * @return exactly SubqueryTableSegment list.
+     * @param tableSegment TableSegment
+     * @return exactly SubqueryTableSegment list
      */
     public static List<SubqueryTableSegment> getSubqueryTableSegmentFromTableSegment(final TableSegment tableSegment) {
         List<SubqueryTableSegment> result = new LinkedList<>();
