@@ -15,30 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
-import lombok.Setter;
-import lombok.ToString;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateIndexStatement;
 
 import java.util.Optional;
 
 /**
- * PostgreSQL create index statement.
+ * Create index statement handler for different dialect SQL statements.
  */
-@Setter
-@ToString
-public final class PostgreSQLCreateIndexStatement extends CreateIndexStatement implements PostgreSQLStatement {
-    
-    private Integer generatedIndexStartIndex;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CreateIndexStatementHandler implements SQLStatementHandler {
     
     /**
      * Get generated index start index.
      *
+     * @param createIndexStatement create index statement
      * @return generated index start index
      */
-    public Optional<Integer> getGeneratedIndexStartIndex() {
-        return Optional.ofNullable(generatedIndexStartIndex);
+    public static Optional<Integer> getGeneratedIndexStartIndex(final CreateIndexStatement createIndexStatement) {
+        if (createIndexStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLCreateIndexStatement) createIndexStatement).getGeneratedIndexStartIndex();
+        }
+        return Optional.empty();
     }
 }
