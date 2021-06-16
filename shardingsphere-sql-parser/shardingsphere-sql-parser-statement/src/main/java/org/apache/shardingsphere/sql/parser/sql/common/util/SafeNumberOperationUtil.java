@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * Safe number operation utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SafeNumberOperationUtils {
+public final class SafeNumberOperationUtil {
     
     /**
      * Execute range intersection method by safe mode.
