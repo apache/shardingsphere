@@ -19,18 +19,20 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedFunction;
 import org.hamcrest.CoreMatchers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNull;
 
 /**
  * Function assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FunctionAssert {
+public final class AlgorithmAssert {
 
     /**
      * Assert function is correct with expected parser result.
@@ -39,12 +41,12 @@ public final class FunctionAssert {
      * @param actual        actual function
      * @param expected      expected function test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final FunctionSegment actual, final ExpectedFunction expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final ExpectedFunction expected) {
         if (null != expected) {
             assertNotNull(assertContext.getText("Actual dataSource should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s function segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getAlgorithmName(), CoreMatchers.is(expected.getAlgorithmName()));
-            PropertiesAssert.assertIs(assertContext, actual.getAlgorithmProps(), expected.getAlgorithmProps());
+                    actual.getName(), CoreMatchers.is(expected.getAlgorithmName()));
+            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getAlgorithmProps());
         } else {
             assertNull(assertContext.getText("Actual dataSource should not exist."), actual);
         }

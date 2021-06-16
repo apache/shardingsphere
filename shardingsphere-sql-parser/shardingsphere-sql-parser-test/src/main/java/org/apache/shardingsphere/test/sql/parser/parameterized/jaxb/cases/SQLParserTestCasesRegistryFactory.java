@@ -28,7 +28,10 @@ public final class SQLParserTestCasesRegistryFactory {
     
     @Getter
     private final SQLParserTestCasesRegistry registry = new SQLParserTestCasesRegistry("case/");
-    
+
+    @Getter
+    private final SQLParserTestCasesRegistry distSQLRegistry = new SQLParserTestCasesRegistry("distSQL/case/");
+
     /**
      * Get singleton instance.
      *

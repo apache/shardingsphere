@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedEncryptColumn;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedEncryptRule;

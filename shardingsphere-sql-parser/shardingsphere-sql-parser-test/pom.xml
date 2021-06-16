@@ -25,11 +25,11 @@
     </parent>
     <artifactId>shardingsphere-sql-parser-test</artifactId>
     <name>${project.artifactId}</name>
-    
+
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -41,7 +41,7 @@
             <artifactId>shardingsphere-sql-parser-statement</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -50,14 +50,32 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-distsql-parser-statement</artifactId>
-            <version>5.0.0-RC1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-distsql-parser-engine</artifactId>
-            <version>5.0.0-RC1-SNAPSHOT</version>
-            <scope>compile</scope>
+<version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-db-discovery-distsql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-readwrite-splitting-distsql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sharding-distsql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-encrypt-distsql</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

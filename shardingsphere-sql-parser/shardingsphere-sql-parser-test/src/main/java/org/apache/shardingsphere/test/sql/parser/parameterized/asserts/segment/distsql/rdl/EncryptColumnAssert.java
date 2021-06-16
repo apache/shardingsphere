@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.FunctionAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.AlgorithmAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedEncryptColumn;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -48,7 +48,7 @@ public class EncryptColumnAssert {
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getPlainColumn(), is(expected.getPlainColumn()));
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getCipherColumn(), is(expected.getCipherColumn()));
-            FunctionAssert.assertIs(assertContext, actual.getEncryptor(), expected.getEncryptor());
+            AlgorithmAssert.assertIs(assertContext, actual.getEncryptor(), expected.getEncryptor());
         } else {
             assertNull(assertContext.getText("Actual should not exist."), actual);
         }

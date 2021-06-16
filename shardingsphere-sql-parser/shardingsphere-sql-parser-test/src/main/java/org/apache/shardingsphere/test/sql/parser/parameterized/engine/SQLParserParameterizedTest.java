@@ -32,7 +32,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.S
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.SQLCasesRegistry;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Properties;
 
 import static org.junit.Assert.fail;
 
@@ -82,6 +86,7 @@ public abstract class SQLParserParameterizedTest {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-       return  "DistSQL".equals(databaseType) ? new DistSQLStatementParserEngine().parse(sql) : new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType).parse(sql, false));
+        return "DistSQL".equals(databaseType) ? new DistSQLStatementParserEngine().parse(sql)
+                : new SQLVisitorEngine(databaseType, "STATEMENT", new Properties()).visit(new SQLParserEngine(databaseType).parse(sql, false));
     }
 }
