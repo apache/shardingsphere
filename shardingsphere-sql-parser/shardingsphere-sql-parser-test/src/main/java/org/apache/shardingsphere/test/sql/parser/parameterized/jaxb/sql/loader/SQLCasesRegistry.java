@@ -28,13 +28,9 @@ public final class SQLCasesRegistry {
     
     @Getter
     private final SQLCasesLoader sqlCasesLoader;
-
-    @Getter
-    private final SQLCasesLoader distSQLCasesLoader;
     
     private SQLCasesRegistry() {
         sqlCasesLoader = new SQLCasesLoader("sql/supported/");
-        distSQLCasesLoader = new SQLCasesLoader("distSQL/sql/");
     }
     
     /**
