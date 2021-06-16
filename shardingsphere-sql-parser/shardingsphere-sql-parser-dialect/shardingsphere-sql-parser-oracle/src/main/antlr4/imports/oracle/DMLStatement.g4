@@ -459,7 +459,11 @@ inlineExternalTable
     ;
 
 inlineExternalTableProperties
-    : (TYPE accessDriverType)? externalTableDataProps (REJECT LIMIT (INTEGER_ | UNLIMITED))?
+    : (TYPE accessDriverType)? externalTableDataProperties (REJECT LIMIT (INTEGER_ | UNLIMITED))?
+    ;
+
+externalTableDataProperties
+    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec) | USING CLOB subquery))? (LOCATION LP_ (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+ RP_)?
     ;
 
 subqueryRestrictionClause
