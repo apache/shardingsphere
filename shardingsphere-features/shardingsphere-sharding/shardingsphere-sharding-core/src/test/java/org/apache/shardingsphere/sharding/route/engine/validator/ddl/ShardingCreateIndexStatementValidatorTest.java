@@ -93,6 +93,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
+        sqlStatement.setGeneratedIndexStartIndex(10);
         when(schema.containsTable("t_order")).thenReturn(true);
         TableMetaData tableMetaData = mock(TableMetaData.class);
         when(schema.get("t_order")).thenReturn(tableMetaData);
@@ -106,6 +107,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
+        sqlStatement.setGeneratedIndexStartIndex(10);
         when(schema.containsTable("t_order")).thenReturn(false);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), schema);
     }
@@ -115,6 +117,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
+        sqlStatement.setGeneratedIndexStartIndex(10);
         when(schema.containsTable("t_order")).thenReturn(true);
         TableMetaData tableMetaData = mock(TableMetaData.class);
         when(schema.get("t_order")).thenReturn(tableMetaData);

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndex
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Sharding create index statement validator.
@@ -40,9 +39,9 @@ public final class ShardingCreateIndexStatementValidator extends ShardingDDLStat
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         validateTableExist(schema, Collections.singletonList(sqlStatementContext.getSqlStatement().getTable()));
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        Optional<String> indexName = ((IndexAvailable) sqlStatementContext).getIndexes().stream().map(each -> each.getIdentifier().getValue()).findFirst();
-        if (indexName.isPresent() && schema.get(tableName).getIndexes().containsKey(indexName.get())) {
-            throw new ShardingSphereException("Index '%s' already exists.", indexName.get());
+        String indexName = ((IndexAvailable) sqlStatementContext).getIndexes().stream().map(each -> each.getIdentifier().getValue()).findFirst().orElse(null);
+        if (schema.get(tableName).getIndexes().containsKey(indexName)) {
+            throw new ShardingSphereException("Index '%s' already exists.", indexName);
         }
     }
     
