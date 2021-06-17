@@ -135,4 +135,5 @@ public final class MetaDataContextsBuilder {
     private ShardingSphereSchema buildSchema(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         return SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
     }
+
 }
