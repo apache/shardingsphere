@@ -32,6 +32,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Properties;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * AES encrypt algorithm.
