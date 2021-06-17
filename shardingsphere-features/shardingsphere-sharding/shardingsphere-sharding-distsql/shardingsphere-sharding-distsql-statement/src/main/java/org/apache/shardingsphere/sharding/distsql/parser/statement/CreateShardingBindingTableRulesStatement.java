@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 import java.util.Collection;
@@ -31,5 +31,5 @@ import java.util.Collection;
 @Getter
 public final class CreateShardingBindingTableRulesStatement extends CreateRuleStatement {
     
-    private final Collection<ShardingBindingTableRuleSegment> rules;
+    private final Collection<BindingTableRuleSegment> rules;
 }

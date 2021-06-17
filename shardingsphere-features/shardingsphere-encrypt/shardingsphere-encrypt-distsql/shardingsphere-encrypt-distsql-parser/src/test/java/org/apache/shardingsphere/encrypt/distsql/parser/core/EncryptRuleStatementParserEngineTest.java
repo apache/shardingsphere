@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.encrypt.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;

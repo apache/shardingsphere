@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.parser.statement.segment;
+package org.apache.shardingsphere.encrypt.distsql.parser.segment;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -15,18 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement.segment;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser.segment;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
+import java.util.Collection;
+import java.util.Properties;
+
 /**
- * Sharding binding table rule segment.
+ * Readwrite-splitting rule segment.
  */
 @Getter
 @Setter
-public final class ShardingBindingTableRuleSegment implements ASTNode {
+public final class ReadwriteSplittingRuleSegment implements ASTNode {
     
-    private String tables;
+    private String name;
+    
+    private String autoAwareResource;
+    
+    private String writeDataSource;
+    
+    private Collection<String> readDataSources;
+    
+    private String loadBalancer;
+    
+    private Properties props;
 }

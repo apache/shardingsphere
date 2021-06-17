@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
@@ -107,11 +107,11 @@ public final class ShardingRuleStatementParserEngineTest {
     public void assertParseCreateShardingBindingTableRules() {
         SQLStatement sqlStatement = engine.parse(CREATE_SHARDING_BINDING_TABLE_RULES);
         assertTrue(sqlStatement instanceof CreateShardingBindingTableRulesStatement);
-        List<ShardingBindingTableRuleSegment> shardingBindingTableRuleSegments = new ArrayList<>(((CreateShardingBindingTableRulesStatement) sqlStatement).getRules());
-        assertThat(shardingBindingTableRuleSegments.size(), is(2));
-        ShardingBindingTableRuleSegment segment = shardingBindingTableRuleSegments.get(0);
+        List<BindingTableRuleSegment> bindingTableRuleSegments = new ArrayList<>(((CreateShardingBindingTableRulesStatement) sqlStatement).getRules());
+        assertThat(bindingTableRuleSegments.size(), is(2));
+        BindingTableRuleSegment segment = bindingTableRuleSegments.get(0);
         assertThat(segment.getTables(), is("t_order,t_order_item"));
-        segment = shardingBindingTableRuleSegments.get(1);
+        segment = bindingTableRuleSegments.get(1);
         assertThat(segment.getTables(), is("t_1,t_2"));
     }
     
@@ -143,11 +143,11 @@ public final class ShardingRuleStatementParserEngineTest {
     public void assertParseAlterShardingBindingTableRules() {
         SQLStatement sqlStatement = engine.parse(ALTER_SHARDING_BINDING_TABLE_RULES);
         assertTrue(sqlStatement instanceof AlterShardingBindingTableRulesStatement);
-        List<ShardingBindingTableRuleSegment> shardingBindingTableRuleSegments = new ArrayList<>(((AlterShardingBindingTableRulesStatement) sqlStatement).getRules());
-        assertThat(shardingBindingTableRuleSegments.size(), is(2));
-        ShardingBindingTableRuleSegment segment = shardingBindingTableRuleSegments.get(0);
+        List<BindingTableRuleSegment> bindingTableRuleSegments = new ArrayList<>(((AlterShardingBindingTableRulesStatement) sqlStatement).getRules());
+        assertThat(bindingTableRuleSegments.size(), is(2));
+        BindingTableRuleSegment segment = bindingTableRuleSegments.get(0);
         assertThat(segment.getTables(), is("t_order,t_order_item"));
-        segment = shardingBindingTableRuleSegments.get(1);
+        segment = bindingTableRuleSegments.get(1);
         assertThat(segment.getTables(), is("t_1,t_2"));
     }
 

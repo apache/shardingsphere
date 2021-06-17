@@ -15,31 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.segment;
+package org.apache.shardingsphere.encrypt.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
-import java.util.Properties;
 
 /**
- * Readwrite-splitting rule segment.
+ * Encrypt rule segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ReadwriteSplittingRuleSegment implements ASTNode {
+public final class EncryptRuleSegment implements ASTNode {
     
-    private String name;
+    private final String tableName;
     
-    private String autoAwareResource;
-    
-    private String writeDataSource;
-    
-    private Collection<String> readDataSources;
-    
-    private String loadBalancer;
-    
-    private Properties props;
+    private final Collection<EncryptColumnSegment> columns;
 }
