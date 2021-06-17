@@ -73,7 +73,6 @@ import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
@@ -259,7 +258,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             
             @Override
             protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement) {
-                return Optional.of(0);
+                return Optional.empty();
             }
         };
     }
@@ -309,7 +308,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             
             @Override
             protected Optional<Boolean> getSaneResult(final SQLStatement sqlStatement) {
-                return Optional.of(sqlStatement instanceof SelectStatement);
+                return Optional.empty();
             }
         };
     }
