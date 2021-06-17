@@ -45,7 +45,7 @@ public class SQLParserEngineTest {
                         @ParametersAreNonnullByDefault
                         @Override
                         public ParseTree load(final String sql) {
-                          return sqlParserExecutor.parse(sql);
+                            return sqlParserExecutor.parse(sql);
                         }
                     }
                 );
