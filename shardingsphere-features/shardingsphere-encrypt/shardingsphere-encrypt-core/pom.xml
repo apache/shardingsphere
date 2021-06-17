@@ -36,7 +36,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-encrypt-distsql</artifactId>
+            <artifactId>shardingsphere-encrypt-distsql-statement</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-encrypt-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
         
