@@ -34,7 +34,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sharding-distsql</artifactId>
+            <artifactId>shardingsphere-sharding-distsql-statement</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sharding-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
         
