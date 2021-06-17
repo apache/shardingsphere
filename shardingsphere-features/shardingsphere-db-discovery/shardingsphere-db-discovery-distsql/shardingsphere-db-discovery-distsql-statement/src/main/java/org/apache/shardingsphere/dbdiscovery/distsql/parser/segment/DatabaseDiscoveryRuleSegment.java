@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement.segment;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
+import java.util.Properties;
 
 /**
- * Table rule segment.
+ * Database discovery rule segment.
  */
 @Getter
 @Setter
-public final class TableRuleSegment implements ASTNode {
+public final class DatabaseDiscoveryRuleSegment implements ASTNode {
     
-    private String logicTable;
+    private String name;
     
     private Collection<String> dataSources;
     
-    private String tableStrategyColumn;
+    private String discoveryTypeName;
     
-    private String keyGenerateStrategyColumn;
-    
-    private AlgorithmSegment tableStrategy;
-    
-    private AlgorithmSegment keyGenerateStrategy;
+    private Properties props;
 }

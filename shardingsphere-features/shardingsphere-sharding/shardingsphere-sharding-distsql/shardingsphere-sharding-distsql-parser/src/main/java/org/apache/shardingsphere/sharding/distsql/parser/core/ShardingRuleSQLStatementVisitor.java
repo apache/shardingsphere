@@ -52,8 +52,8 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingT
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
@@ -78,9 +78,9 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     
     @Override
     public ASTNode visitCreateShardingBindingTableRules(final CreateShardingBindingTableRulesContext ctx) {
-        Collection<ShardingBindingTableRuleSegment> rules = new LinkedList<>();
+        Collection<BindingTableRuleSegment> rules = new LinkedList<>();
         for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
-            ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
+            BindingTableRuleSegment segment = new BindingTableRuleSegment();
             segment.setTables(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
             rules.add(segment);
         }
@@ -104,9 +104,9 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     
     @Override
     public ASTNode visitAlterShardingBindingTableRules(final AlterShardingBindingTableRulesContext ctx) {
-        Collection<ShardingBindingTableRuleSegment> rules = new LinkedList<>();
+        Collection<BindingTableRuleSegment> rules = new LinkedList<>();
         for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
-            ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
+            BindingTableRuleSegment segment = new BindingTableRuleSegment();
             segment.setTables(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
             rules.add(segment);
         }
