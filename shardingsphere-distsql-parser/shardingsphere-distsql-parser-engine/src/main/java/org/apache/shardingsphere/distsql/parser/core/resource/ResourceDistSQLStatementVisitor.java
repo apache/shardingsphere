@@ -61,14 +61,8 @@ public final class ResourceDistSQLStatementVisitor extends ResourceStatementBase
     
     @Override
     public ASTNode visitDataSource(final DataSourceContext ctx) {
-        DataSourceSegment result = new DataSourceSegment();
-        result.setName(ctx.dataSourceName().getText());
-        result.setHostName(ctx.hostName().getText());
-        result.setPort(ctx.port().getText());
-        result.setDb(ctx.dbName().getText());
-        result.setUser(ctx.user().getText());
-        result.setPassword(null == ctx.password() ? "" : ctx.password().getText());
-        return result;
+        return new DataSourceSegment(
+                ctx.dataSourceName().getText(), ctx.hostName().getText(), ctx.port().getText(), ctx.dbName().getText(), ctx.user().getText(), null == ctx.password() ? "" : ctx.password().getText());
     }
     
     @Override
