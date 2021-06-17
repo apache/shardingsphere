@@ -58,6 +58,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Command batch bind executor for openGauss.
+ */
 @RequiredArgsConstructor
 public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor {
     
