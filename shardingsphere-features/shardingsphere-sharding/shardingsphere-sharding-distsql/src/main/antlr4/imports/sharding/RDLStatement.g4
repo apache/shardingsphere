@@ -56,7 +56,7 @@ dropShardingBroadcastTableRules
     ;
 
 shardingTableRuleDefinition
-    : tableName LP resources (COMMA shardingColumn)? (COMMA functionDefinition)? (COMMA keyGenerateStrategy)? RP
+    : tableName LP resources (COMMA shardingColumn)? (COMMA algorithmDefinition)? (COMMA keyGenerateStrategy)? RP
     ;
 
 resources
@@ -68,7 +68,7 @@ shardingColumn
     ;
 
 keyGenerateStrategy
-    : GENERATED_KEY LP COLUMN EQ columnName COMMA functionDefinition RP
+    : GENERATED_KEY LP COLUMN EQ columnName COMMA algorithmDefinition RP
     ;
 
 tableName
@@ -79,11 +79,15 @@ columnName
     : IDENTIFIER
     ;
 
-functionDefinition
-    : TYPE LP NAME EQ functionName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+bindTableRulesDefinition
+    : LP tableName (COMMA tableName)* RP
     ;
 
-functionName
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+    ;
+
+algorithmName
     : IDENTIFIER
     ;
 
@@ -93,8 +97,4 @@ algorithmProperties
 
 algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
-    ;
-
-bindTableRulesDefinition
-    : LP tableName (COMMA tableName)* RP
     ;

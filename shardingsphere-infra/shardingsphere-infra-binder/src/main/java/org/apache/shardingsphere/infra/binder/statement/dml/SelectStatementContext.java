@@ -50,7 +50,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sub
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
@@ -110,13 +110,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private boolean containsSubquery() {
-        Collection<WhereSegment> subqueryPredicateSegments = WhereSegmentExtractUtils.getSubqueryWhereSegments(getSqlStatement());
-        for (WhereSegment each : subqueryPredicateSegments) {
-            if (null != each) {
-                return true;
-            }
-        }
-        return false;
+        return !SubqueryExtractUtil.getSubquerySegments(getSqlStatement()).isEmpty();
     }
     
     private int generateOrderByStartIndex() {

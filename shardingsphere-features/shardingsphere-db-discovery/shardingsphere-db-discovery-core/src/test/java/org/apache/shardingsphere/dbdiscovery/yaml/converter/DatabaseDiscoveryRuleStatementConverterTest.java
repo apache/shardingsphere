@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.yaml.converter;
 
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.segment.DatabaseDiscoveryRuleSegment;
 import org.junit.Test;
 
 import java.util.Arrays;

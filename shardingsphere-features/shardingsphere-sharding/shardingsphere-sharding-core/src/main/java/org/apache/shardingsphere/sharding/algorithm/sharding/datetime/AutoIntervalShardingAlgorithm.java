@@ -84,8 +84,9 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        String tableNameSuffix = String.valueOf(doSharding(parseDate(shardingValue.getValue())));
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(doSharding(parseDate(shardingValue.getValue()))))) {
+            if (each.endsWith(tableNameSuffix)) {
                 return each;
             }
         }

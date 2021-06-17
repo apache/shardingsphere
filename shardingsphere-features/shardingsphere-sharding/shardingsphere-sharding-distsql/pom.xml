@@ -21,8 +21,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>shardingsphere-sharding</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere-sharding</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sharding-distsql</artifactId>
@@ -36,13 +36,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-distsql-parser-statement</artifactId>
-            <version>5.0.0-RC1-SNAPSHOT</version>
+            <artifactId>shardingsphere-distsql-parser-engine</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-distsql-parser-engine</artifactId>
-            <version>${project.version}</version>
+            <artifactId>shardingsphere-distsql-parser-statement</artifactId>
+            <version>5.0.0-RC1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     
