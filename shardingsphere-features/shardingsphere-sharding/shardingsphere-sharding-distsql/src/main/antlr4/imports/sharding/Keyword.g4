@@ -70,11 +70,11 @@ TABLE
 SHARDING_COLUMN
     : S H A R D I N G UL_ C O L U M N
     ;
-    
+
 TYPE
     : T Y P E
     ;
-    
+
 NAME
     : N A M E
     ;
@@ -82,7 +82,7 @@ NAME
 PROPERTIES
     : P R O P E R T I E S
     ;
-    
+
 COLUMN
     : C O L U M N
     ;

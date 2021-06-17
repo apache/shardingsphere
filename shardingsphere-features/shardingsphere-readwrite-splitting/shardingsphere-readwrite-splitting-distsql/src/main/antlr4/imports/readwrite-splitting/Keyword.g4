@@ -62,11 +62,11 @@ READ_RESOURCES
 AUTO_AWARE_RESOURCE
     : A U T O UL_ A W A R E UL_ R E S O U R C E
     ;
-    
+
 TYPE
     : T Y P E
     ;
-    
+
 NAME
     : N A M E
     ;

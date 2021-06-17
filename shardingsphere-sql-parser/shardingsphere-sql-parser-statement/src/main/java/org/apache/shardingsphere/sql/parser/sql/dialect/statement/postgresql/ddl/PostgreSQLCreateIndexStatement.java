@@ -17,13 +17,28 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
+import java.util.Optional;
+
 /**
  * PostgreSQL create index statement.
  */
+@Setter
 @ToString
 public final class PostgreSQLCreateIndexStatement extends CreateIndexStatement implements PostgreSQLStatement {
+    
+    private Integer generatedIndexStartIndex;
+    
+    /**
+     * Get generated index start index.
+     *
+     * @return generated index start index
+     */
+    public Optional<Integer> getGeneratedIndexStartIndex() {
+        return Optional.ofNullable(generatedIndexStartIndex);
+    }
 }

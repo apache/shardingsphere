@@ -21,17 +21,14 @@ import lombok.SneakyThrows;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.distsql.parser.spi.RuleSQLParserFacade;
-import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementVisitorFacade;
+import org.apache.shardingsphere.distsql.parser.spi.RuleSQLStatementParserFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -40,16 +37,11 @@ import java.util.ServiceLoader;
  */
 public final class RuleSQLStatementParserEngine {
     
-    private static final Collection<RuleSQLParserFacade> PARSER_FACADES = new LinkedList<>();
-    
-    private static final Map<String, RuleSQLStatementVisitorFacade> VISITOR_FACADES = new HashMap<>();
+    private static final Map<String, RuleSQLStatementParserFacade> FACADES = new HashMap<>();
     
     static {
-        for (RuleSQLParserFacade each : ServiceLoader.load(RuleSQLParserFacade.class)) {
-            PARSER_FACADES.add(each);
-        }
-        for (RuleSQLStatementVisitorFacade each : ServiceLoader.load(RuleSQLStatementVisitorFacade.class)) {
-            VISITOR_FACADES.put(each.getRuleType(), each);
+        for (RuleSQLStatementParserFacade each : ServiceLoader.load(RuleSQLStatementParserFacade.class)) {
+            FACADES.put(each.getRuleType(), each);
         }
     }
     
@@ -65,7 +57,7 @@ public final class RuleSQLStatementParserEngine {
     }
     
     private RuleParseASTNode parseToASTNode(final String sql) {
-        for (RuleSQLParserFacade each : PARSER_FACADES) {
+        for (RuleSQLStatementParserFacade each : FACADES.values()) {
             try {
                 ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, each.getLexerClass(), each.getParserClass()).parse();
                 return new RuleParseASTNode(each.getRuleType(), parseASTNode);
@@ -78,7 +70,7 @@ public final class RuleSQLStatementParserEngine {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("rawtypes")
     private SQLStatement getSQLStatement(final String sql, final String featureType, final ParseASTNode parseASTNode) {
-        SQLVisitor visitor = VISITOR_FACADES.get(featureType).getVisitorClass().newInstance();
+        SQLVisitor visitor = FACADES.get(featureType).getVisitorClass().newInstance();
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
