@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.parser.core;
+package org.apache.shardingsphere.readwritesplitting.distsql.parser;
 
 import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.segment.ReadwriteSplittingRuleSegment;
