@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.ColumnMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.adapter.MetaDataLoaderConnectionAdapter;
@@ -36,8 +37,14 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -59,12 +66,15 @@ public final class SchemaBuilder {
         ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
 
-    public static Map<Map<String, TableMetaData>, Map<String, TableMetaData>> build(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<Map<String, TableMetaData>, Map<String, TableMetaData>> result = new HashMap<>();
-        Map<String, TableMetaData> actualTableMetaMap = new HashMap<>();
-        Map<String, TableMetaData> logicTableMetaMap = new HashMap<>();
-        addRuleConfiguredTables(materials, logicTableMetaMap);
-        appendRemainTables(materials, actualTableMetaMap);
+    public static Map<ShardingSphereSchema, ShardingSphereSchema> build(final SchemaBuilderMaterials materials) throws SQLException {
+        Map<ShardingSphereSchema, ShardingSphereSchema> result = new HashMap<>();
+        Map<String, TableMetaData> actualTables = new HashMap<>();
+        Map<String, TableMetaData> logicTables = new HashMap<>();
+        addRuleConfiguredTables(materials, actualTables);
+        appendRemainTables(materials, logicTables);
+        ShardingSphereSchema actualSchema = new ShardingSphereSchema(actualTables);
+        ShardingSphereSchema logicSchema = new ShardingSphereSchema(logicTables);
+        result.put(actualSchema, logicSchema);
         return result;
     }
     
@@ -80,14 +90,14 @@ public final class SchemaBuilder {
         }
     }
     
-    private static void appendRemainTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> actualTableMetaMap) throws SQLException {
+    private static void appendRemainTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
         Optional<DialectTableMetaDataLoader> dialectLoader = findDialectTableMetaDataLoader(materials);
         if (dialectLoader.isPresent()) {
-            appendDialectRemainTables(dialectLoader.get(), materials, actualTableMetaMap);
+            appendDialectRemainTables(dialectLoader.get(), materials, tables);
             return;
         }
-        appendDefaultRemainTables(materials, actualTableMetaMap);
-        appendRemainTable(materials, actualTableMetaMap);
+        appendDefaultRemainTables(materials, tables);
+        appendRemainTable(materials, tables);
     }
 
     private static void appendRemainTable(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> actualTableMetaMap) {
@@ -130,13 +140,13 @@ public final class SchemaBuilder {
         }
     }
     
-    private static void appendDefaultRemainTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> actualTableMetaMap) throws SQLException {
-        Collection<String> existedTableNames = getExistedTables(materials.getRules(), actualTableMetaMap);
+    private static void appendDefaultRemainTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
+        Collection<String> existedTableNames = getExistedTables(materials.getRules(), tables);
         for (Entry<String, DataSource> entry : materials.getDataSourceMap().entrySet()) {
             Collection<String> tableNames = SchemaMetaDataLoader.loadAllTableNames(entry.getValue(), materials.getDatabaseType());
             tableNames.removeAll(existedTableNames);
             for (String each : tableNames) {
-                schema.put(each, loadTableMetaData(each, entry.getValue(), materials.getDatabaseType()));
+                tables.put(each, loadTableMetaData(each, entry.getValue(), materials.getDatabaseType()));
             }
         }
     }
