@@ -37,6 +37,8 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQL
     
     BIND_COMMAND('B'),
     
+    BATCH_BIND_COMMAND('U'),
+    
     DESCRIBE_COMMAND('D'),
     
     EXECUTE_COMMAND('E'),
