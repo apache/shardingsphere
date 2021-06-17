@@ -19,18 +19,19 @@ package org.apache.shardingsphere.sql.parser.postgresql.parser;
 
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
+import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 
 /**
  * SQL parser facade for OpenGauss.
  */
-public final class OpenGaussParserFacade implements SQLParserFacade {
-
+public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
+    
     /**
      * Get Database Type.
      *
      * @return Database Type
      */
+    @Override
     public String getDatabaseType() {
         return "OpenGauss";
     }
