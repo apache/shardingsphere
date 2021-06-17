@@ -66,6 +66,12 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-backend</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -138,6 +144,12 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-scaling-postgresql</artifactId>
             <version>${project.parent.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -147,7 +159,8 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
+            <scope>system</scope>
+            <systemPath>/Users/wuweijie/IdeaProjects/shardingsphere/shardingsphere-proxy/shardingsphere-proxy-bootstrap/jar/opengauss-jdbc-2.0.2.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
