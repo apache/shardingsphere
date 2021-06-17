@@ -192,7 +192,7 @@ public final class ShardingRouteEngineFactory {
         if (!select.isContainsJoinQuery() && !select.isContainsSubquery() && !select.isContainsHaving()) {
             return false;
         }
-        if (shardingRule.isAllTablesInSameDataSource(tableNames)) {
+        if (shardingRule.isAllTablesInSameDataSource(tableNames) && !select.isContainsHaving()) {
             return false;
         }
         return shardingRule.isAllShardingTables(tableNames) || (shardingRule.tableRuleExists(tableNames) && shardingRule.singleTableRuleExists(tableNames));
