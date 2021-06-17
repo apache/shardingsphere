@@ -67,6 +67,16 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         this.props = props;
         stateContext = new StateContext();
     }
+
+    public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
+                                    final ExecutorEngine executorEngine, final ConfigurationProperties props, final OptimizeContextFactory optimizeContextFactory) {
+        this.metaDataMap = new LinkedHashMap<>(metaDataMap);
+        this.globalRuleMetaData = globalRuleMetaData;
+        this.executorEngine = executorEngine;
+        this.optimizeContextFactory = optimizeContextFactory;
+        this.props = props;
+        stateContext = new StateContext();
+    }
     
     @Override
     public Collection<String> getAllSchemaNames() {

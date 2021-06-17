@@ -33,6 +33,8 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 
@@ -86,19 +88,29 @@ public final class MetaDataContextsBuilder {
      */
     public StandardMetaDataContexts build() throws SQLException {
         Map<String, ShardingSphereMetaData> mataDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
+        Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>();
+        Map<String, TableMetaData> logicTableMetaDataTable = new HashMap<>();
         for (String each : schemaRuleConfigs.keySet()) {
-            mataDataMap.put(each, buildMetaData(each));
+            Map<String, DataSource> dataSourceMap = dataSources.get(each);
+            Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
+            DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
+            Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(each, ruleConfigs, databaseType, dataSourceMap);
+            Map<Map<String, TableMetaData>, Map<String, TableMetaData>> tableMetaDataMap = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
+            addToMap(tableMetaDataMap.keySet(), actualTableMetaDataMap);
+            addToMap(tableMetaDataMap.values(), logicTableMetaDataTable);
+            ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
+            ShardingSphereSchema schema = new ShardingSphereSchema();
+            schema.put(each, logicTableMetaDataTable.get(each));
+            mataDataMap.put(each, new ShardingSphereMetaData(each, buildResource(databaseType, dataSourceMap), ruleMetaData, schema));
         }
+        OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(null, actualTableMetaDataMap);
         return new StandardMetaDataContexts(mataDataMap, buildGlobalSchemaMetaData(mataDataMap), executorEngine, props);
     }
-    
-    private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
-        Map<String, DataSource> dataSourceMap = dataSources.get(schemaName);
-        Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(schemaName);
-        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(schemaName, ruleConfigs, databaseType, dataSourceMap);
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
-        return new ShardingSphereMetaData(schemaName, buildResource(databaseType, dataSourceMap), ruleMetaData, buildSchema(databaseType, dataSourceMap, rules));
+
+    private void addToMap(Collection<Map<String, TableMetaData>> mapList, Map<String, TableMetaData> tableMetaDataMap) {
+        for (Map<String, TableMetaData> map : mapList) {
+            tableMetaDataMap.putAll(map);
+        }
     }
 
     private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> mataDataMap) {
@@ -130,10 +142,6 @@ public final class MetaDataContextsBuilder {
         try (Connection connection = dataSources.values().iterator().next().getConnection()) {
             return Optional.of(new CachedDatabaseMetaData(connection.getMetaData()));
         }
-    }
-    
-    private ShardingSphereSchema buildSchema(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
-        return SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
     }
 
 }

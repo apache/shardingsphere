@@ -51,6 +51,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadatas;
 import org.apache.shardingsphere.infra.optimize.core.plan.PlannerInitializer;
 
@@ -83,6 +84,19 @@ public final class OptimizeContextFactory {
     
     public OptimizeContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
+        initProperties(databaseType);
+        typeFactory = new JavaTypeFactoryImpl();
+        cluster = newCluster();
+        schemaMetadatas = new FederateSchemaMetadatas(metaDataMap);
+        connectionConfig = new CalciteConnectionConfigImpl(properties);
+        parserConfig = SqlParser.config()
+                .withLex(connectionConfig.lex())
+                .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH)
+                .withConformance(connectionConfig.conformance())
+                .withParserFactory(SqlParserImpl.FACTORY);
+    }
+
+    public OptimizeContextFactory(final DatabaseType databaseType, final Map<String, TableMetaData> metaDataMap) {
         initProperties(databaseType);
         typeFactory = new JavaTypeFactoryImpl();
         cluster = newCluster();

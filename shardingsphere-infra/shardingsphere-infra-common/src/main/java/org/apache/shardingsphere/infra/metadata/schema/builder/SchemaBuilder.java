@@ -65,6 +65,7 @@ public final class SchemaBuilder {
         Map<String, TableMetaData> logicTableMetaMap = new HashMap<>();
         addRuleConfiguredTables(materials, logicTableMetaMap);
         appendRemainTables(materials, actualTableMetaMap);
+        result.put(actualTableMetaMap, logicTableMetaMap);
         return result;
     }
     
@@ -136,7 +137,7 @@ public final class SchemaBuilder {
             Collection<String> tableNames = SchemaMetaDataLoader.loadAllTableNames(entry.getValue(), materials.getDatabaseType());
             tableNames.removeAll(existedTableNames);
             for (String each : tableNames) {
-                schema.put(each, loadTableMetaData(each, entry.getValue(), materials.getDatabaseType()));
+                actualTableMetaMap.put(each, loadTableMetaData(each, entry.getValue(), materials.getDatabaseType()));
             }
         }
     }
