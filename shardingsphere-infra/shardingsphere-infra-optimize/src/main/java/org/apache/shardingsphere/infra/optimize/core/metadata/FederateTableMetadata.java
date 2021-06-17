@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.core.metadata;
 
 import lombok.Getter;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rel.type.RelProtoDataType;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,6 +43,8 @@ import java.util.Optional;
  */
 @Getter
 public final class FederateTableMetadata {
+    
+    private static final RelDataTypeFactory TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     
     private final String name;
     
@@ -71,11 +75,10 @@ public final class FederateTableMetadata {
     }
     
     private RelProtoDataType createRelDataType(final TableMetaData tableMetaData) {
-        RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
-        RelDataTypeFactory.Builder fieldInfo = typeFactory.builder();
+        RelDataTypeFactory.Builder fieldInfo = TYPE_FACTORY.builder();
         for (Map.Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
             SqlTypeName sqlTypeName = SqlTypeName.getNameForJdbcType(entry.getValue().getDataType());
-            fieldInfo.add(entry.getKey(), null == sqlTypeName ? typeFactory.createUnknownType() : typeFactory.createTypeWithNullability(typeFactory.createSqlType(sqlTypeName), true));
+            fieldInfo.add(entry.getKey(), null == sqlTypeName ? TYPE_FACTORY.createUnknownType() : TYPE_FACTORY.createTypeWithNullability(TYPE_FACTORY.createSqlType(sqlTypeName), true));
         }
         return RelDataTypeImpl.proto(fieldInfo.build());
     }
@@ -87,5 +90,14 @@ public final class FederateTableMetadata {
             result = dataSourceRules.get(logicDataSource).iterator().next();
         }
         return dataSources.get(result);
+    }
+    
+    /**
+     * Get rel data type field.
+     * 
+     * @return rel data type field collection
+     */
+    public List<RelDataTypeField> getRelDataTypeField() {
+        return relProtoDataType.apply(TYPE_FACTORY).getFieldList();
     }
 }
