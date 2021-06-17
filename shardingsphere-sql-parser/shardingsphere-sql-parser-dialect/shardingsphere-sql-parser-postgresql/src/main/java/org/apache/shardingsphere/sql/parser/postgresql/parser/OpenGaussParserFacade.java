@@ -25,7 +25,12 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
  * SQL parser facade for OpenGauss.
  */
 public final class OpenGaussParserFacade implements SQLParserFacade {
-    
+
+    /**
+     * Get Database Type.
+     *
+     * @return Database Type
+     */
     public String getDatabaseType() {
         return "OpenGauss";
     }
