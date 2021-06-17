@@ -220,7 +220,7 @@ diff -r apache-shardingsphere-elasticjob-${RELEASE.VERSION}-ui-src shardingspher
 - `NOTICE`文件中的年份正确
 - 只存在文本文件，不存在二进制文件
 - 所有文件的开头都有ASF许可证
-- 能够正确编译，单元测试可以通过 (./mvnw install)
+- 能够正确编译，单元测试可以通过 (./mvnw -T 1C install)
 - 检查是否有多余文件或文件夹，例如空文件夹等
 
 **检查二进制包的文件内容**

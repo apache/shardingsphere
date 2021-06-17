@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -132,10 +132,10 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
     @SuppressWarnings("unchecked")
     private boolean isSameValue(final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
         if (shardingConditionValue1 instanceof ListShardingConditionValue && shardingConditionValue2 instanceof ListShardingConditionValue) {
-            return SafeNumberOperationUtils.safeCollectionEquals(
+            return SafeNumberOperationUtil.safeCollectionEquals(
                 ((ListShardingConditionValue) shardingConditionValue1).getValues(), ((ListShardingConditionValue) shardingConditionValue2).getValues());
         } else if (shardingConditionValue1 instanceof RangeShardingConditionValue && shardingConditionValue2 instanceof RangeShardingConditionValue) {
-            return SafeNumberOperationUtils.safeRangeEquals(
+            return SafeNumberOperationUtil.safeRangeEquals(
                 ((RangeShardingConditionValue) shardingConditionValue1).getValueRange(), ((RangeShardingConditionValue) shardingConditionValue2).getValueRange());
         }
         return false;

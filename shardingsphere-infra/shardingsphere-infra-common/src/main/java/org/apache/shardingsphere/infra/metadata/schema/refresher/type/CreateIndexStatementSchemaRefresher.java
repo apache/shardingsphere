@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
@@ -32,11 +34,11 @@ public final class CreateIndexStatementSchemaRefresher implements SchemaRefreshe
     
     @Override
     public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, final CreateIndexStatement sqlStatement, final SchemaBuilderMaterials materials) {
-        if (null == sqlStatement.getIndex()) {
+        String indexName = null != sqlStatement.getIndex() ? sqlStatement.getIndex().getIdentifier().getValue() : IndexMetaDataUtil.getGeneratedLogicIndexName(sqlStatement.getColumns());
+        if (Strings.isNullOrEmpty(indexName)) {
             return;
         }
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        String indexName = sqlStatement.getIndex().getIdentifier().getValue();
         schema.get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
     }
 }

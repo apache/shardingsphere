@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class IntervalShardingAlgorithmTest {
@@ -94,6 +95,7 @@ public final class IntervalShardingAlgorithmTest {
     @Test
     public void assertPreciseDoShardingByMonth() {
         assertThat(shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources, new PreciseShardingValue<>("t_order", "create_time", "2020-01-01 00:00:01")), is("t_order_202001"));
+        assertNull(shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources, new PreciseShardingValue<>("t_order", "create_time", "2030-01-01 00:00:01")));
     }
     
     @Test
