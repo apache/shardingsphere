@@ -26,7 +26,10 @@ import org.junit.Test;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 public class SQLParserEngineTest {
 
@@ -39,12 +42,12 @@ public class SQLParserEngineTest {
 
         LoadingCache<String, ParseTree> parseTreeCache = CacheBuilder.newBuilder().softValues()
                 .initialCapacity(128).maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseTree>() {
-                          @ParametersAreNonnullByDefault
-                          @Override
-                          public ParseTree load(String sql) {
-                              return sqlParserExecutor.parse(sql);
-                          }
-                      }
+                        @ParametersAreNonnullByDefault
+                        @Override
+                        public ParseTree load(final String sql) {
+                          return sqlParserExecutor.parse(sql);
+                        }
+                    }
                 );
 
         parseTreeCache.getUnchecked("");

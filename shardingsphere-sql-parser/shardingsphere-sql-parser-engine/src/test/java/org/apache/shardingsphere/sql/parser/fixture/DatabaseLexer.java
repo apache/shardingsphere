@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.fixture;
 
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-
 public class DatabaseLexer implements SQLLexer {
 
 }

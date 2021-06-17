@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.shardingsphere.sql.parser.core;
 
+package org.apache.shardingsphere.sql.parser.core;
 
 import org.apache.shardingsphere.sql.parser.core.database.parser.DatabaseTypedSQLParserFacadeRegistry;
 import org.apache.shardingsphere.sql.parser.fixture.DatabaseLexer;
@@ -28,9 +28,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-
 public class DatabaseTypedSQLParserFacadeRegistryTest {
-
 
     @Test
     public void assertGetFacade() {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.fixture;
 
-
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
