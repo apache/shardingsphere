@@ -81,13 +81,13 @@ public final class DropShardingBroadcastTableRulesBackendHandlerTest {
     public void assertExecuteWithoutShardingRule() {
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = ShardingBroadcastTableRulesNotExistsException.class)
     public void assertExecuteWithNotExistBroadcastTableRule() {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ShardingRuleConfiguration()));
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test
     public void assertExecute() {
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());

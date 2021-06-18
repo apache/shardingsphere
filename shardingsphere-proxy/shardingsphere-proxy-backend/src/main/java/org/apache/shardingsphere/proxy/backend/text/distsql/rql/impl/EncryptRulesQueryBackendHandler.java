@@ -51,11 +51,11 @@ import java.util.stream.Collectors;
  * Backend handler for show encrypt rules.
  */
 public final class EncryptRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowEncryptRulesStatement> {
-
+    
     private Iterator<Entry<String, EncryptColumnRuleConfiguration>> data;
-
+    
     private Map<String, ShardingSphereAlgorithmConfiguration> encryptors;
-
+    
     public EncryptRulesQueryBackendHandler(final ShowEncryptRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
@@ -83,7 +83,7 @@ public final class EncryptRulesQueryBackendHandler extends SchemaRequiredBackend
         }
         return result;
     }
-
+    
     private Map<String, EncryptColumnRuleConfiguration> buildEncryptColumnRuleConfigurationMap(final EncryptTableRuleConfiguration encryptTableRuleConfiguration) {
         return encryptTableRuleConfiguration.getColumns().stream().collect(Collectors.toMap(each -> Joiner.on(".")
                 .join(encryptTableRuleConfiguration.getName(), each.getLogicColumn()), each -> each));

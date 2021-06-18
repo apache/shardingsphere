@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -47,27 +46,27 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingBindingTableRulesQueryBackendHandlerTest {
-
+    
     @Mock
     private BackendConnection backendConnection;
-
+    
     @Mock
     private ShowShardingBindingTableRulesStatement sqlStatement;
-
+    
     @Mock
     private MetaDataContexts metaDataContexts;
-
+    
     @Mock
     private TransactionContexts transactionContexts;
-
+    
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
-
+    
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     private ShardingBindingTableRulesQueryBackendHandler handler;
-
+    
     @Before
     public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
@@ -78,7 +77,7 @@ public final class ShardingBindingTableRulesQueryBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildShardingRuleConfiguration()));
     }
-
+    
     @Test
     public void assertExecute() {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
@@ -87,14 +86,14 @@ public final class ShardingBindingTableRulesQueryBackendHandlerTest {
         assertTrue(handler.next());
         assertTrue(handler.getRowData().contains("t_order,t_order_item"));
     }
-
+    
     private ShardingRuleConfiguration buildShardingRuleConfiguration() {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_1"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_2"));
-        shardingRuleConfiguration.getBindingTableGroups().addAll(Arrays.asList("t_order,t_order_item"));
-        return shardingRuleConfiguration;
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_1"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_2"));
+        result.getBindingTableGroups().addAll(Collections.singleton("t_order,t_order_item"));
+        return result;
     }
 }
