@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -25,10 +24,11 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,11 +38,11 @@ import java.util.Optional;
  * Backend handler for show sharding binding table rules.
  */
 public final class ShardingBindingTableRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowShardingBindingTableRulesStatement> {
-
+    
     private Iterator<String> data;
-
+    
     private final String schema;
-
+    
     public ShardingBindingTableRulesQueryBackendHandler(final ShowShardingBindingTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
         schema = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : backendConnection.getSchemaName();
@@ -54,7 +54,7 @@ public final class ShardingBindingTableRulesQueryBackendHandler extends SchemaRe
         data = loadRuleConfiguration();
         return new QueryResponseHeader(queryHeader);
     }
-
+    
     private List<QueryHeader> getQueryHeader() {
         List<QueryHeader> result = new LinkedList<>();
         result.add(new QueryHeader(schema, "", "shardingBindingTables", "shardingBindingTables", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
@@ -78,6 +78,6 @@ public final class ShardingBindingTableRulesQueryBackendHandler extends SchemaRe
     
     @Override
     public Collection<Object> getRowData() {
-        return Arrays.asList(data.next());
+        return Collections.singleton(data.next());
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -25,10 +24,11 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
 
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,11 +38,11 @@ import java.util.Optional;
  * Backend handler for show sharding broadcast table rules.
  */
 public final class ShardingBroadcastTableRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowShardingBroadcastTableRulesStatement> {
-
+    
     private Iterator<String> data;
-
+    
     private final String schema;
-
+    
     public ShardingBroadcastTableRulesQueryBackendHandler(final ShowShardingBroadcastTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
         schema = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : backendConnection.getSchemaName();
@@ -62,10 +62,9 @@ public final class ShardingBroadcastTableRulesQueryBackendHandler extends Schema
     }
     
     private Iterator<String> loadBroadcastTableRules() {
-        Collection<String> result = new LinkedList<>();
-        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-        return shardingRuleConfiguration.isPresent() ? shardingRuleConfiguration.get().getBroadcastTables().iterator() : result.iterator();
+        return shardingRuleConfig.map(optional -> optional.getBroadcastTables().iterator()).orElse(Collections.emptyIterator());
     }
     
     @Override
@@ -75,6 +74,6 @@ public final class ShardingBroadcastTableRulesQueryBackendHandler extends Schema
     
     @Override
     public Collection<Object> getRowData() {
-        return Arrays.asList(data.next());
+        return Collections.singleton(data.next());
     }
 }
