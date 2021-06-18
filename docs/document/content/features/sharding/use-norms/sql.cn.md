@@ -105,7 +105,7 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                          |
 | SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    |                          |
 | SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                          |
-| SELECT col1, SUM(col2) FROM tbl_name GROUP BY col1 HAVING SUM(col2) > 10                   |                          |    
+| SELECT col1, SUM(col2) FROM tbl_name GROUP BY col1 HAVING SUM(col2) > 10                    |                          |    
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                          |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                          |
 | SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |

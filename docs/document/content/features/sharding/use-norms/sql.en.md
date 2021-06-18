@@ -107,7 +107,6 @@ When shardingColumn in expressions and functions, ShardingSphere will use full r
 | SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                                         |
 | SELECT col1, SUM(col2) FROM tbl_name GROUP BY col1 HAVING SUM(col2) > 10                    |                                         |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          |                                         |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
 | SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
 | SELECT (SELECT MAX(col1) FROM tbl_name) a, col2 from tbl_name                               |                                         |
