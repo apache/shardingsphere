@@ -53,7 +53,7 @@ tbl_name [AS] alias] [index_hint_list]
 * `CASE WHEN` 中包含子查询不支持
 * `CASE WHEN` 中使用逻辑表名不支持（请使用表别名）
 
-不支持 HAVING、UNION (ALL)
+不支持 UNION (ALL)
 
 部分支持子查询
 * 子查询和外层查询同时指定分片键时，分片键的值必须保持一致
@@ -77,8 +77,6 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order WHERE order_id = 1) o WHERE o.order_
 ```
 
 简单来说，通过子查询进行非功能需求，在大部分情况下是可以支持的。比如分页、统计总数等；而通过子查询实现业务查询当前并不能支持。
-
-由于归并的限制，子查询中包含聚合函数目前无法支持。
 
 不支持包含schema的SQL。因为ShardingSphere的理念是像使用一个数据源一样使用多数据源，因此对SQL的访问都是在同一个逻辑schema之上。
 
@@ -107,9 +105,11 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                          |
 | SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    |                          |
 | SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                          |
+| SELECT col1, SUM(col2) FROM tbl_name GROUP BY col1 HAVING SUM(col2) > 10                    |                          |    
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                          |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                          |
 | SELECT subquery_alias.col1 FROM (select tbl_name.col1 from tbl_name where tbl_name.col2=?) subquery_alias                                                   |                                         |
+| SELECT (SELECT MAX(col1) FROM tbl_name) a, col2 from tbl_name                               |                          |
 | (SELECT * FROM tbl_name)                                                                    |                          |
 | INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                          |
 | INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                          |
@@ -135,7 +135,6 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | REPLACE INTO tbl_name (col1, col2, ...) SELECT * FROM tbl_name WHERE col3 = ?              | SELECT子句暂不支持使用*号简写及内置的分布式主键生成器 |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                      | UNION                      |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                  | UNION ALL                  |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                         | 详见DISTINCT支持情况详细说明 |
 | SELECT * FROM tbl_name WHERE to_date(create_time, 'yyyy-mm-dd') = ?                        | 会导致全路由                |
 | SELECT MAX(tbl_name.col1) FROM tbl_name                                                    | 查询列是函数表达式时,查询列前不能使用表名;若查询表存在别名,则可使用表的别名|
 
@@ -153,6 +152,7 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 | SELECT DISTINCT(col1) FROM tbl_name                           |
 | SELECT AVG(DISTINCT col1) FROM tbl_name                       |
 | SELECT SUM(DISTINCT col1) FROM tbl_name                       |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name            |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                     |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1       |
 | SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name              |
@@ -164,4 +164,4 @@ SELECT * FROM t_order WHERE to_date(create_time, 'yyyy-mm-dd') = '2019-01-01';
 
 | SQL                                                                                         | 不支持原因                          |
 | ------------------------------------------------------------------------------------------- |----------------------------------- |
-| SELECT SUM(DISTINCT tbl_name.col1), SUM(tbl_name.col1) FROM tbl_name                        | 查询列是函数表达式时,查询列前不能使用表名;若查询表存在别名,则可使用表的别名 |
+| SELECT SUM(DISTINCT tbl_name.col1), tbl_name.col2 FROM tbl_name                             | 查询列是函数表达式时,查询列前不能使用表名;若查询表存在别名,则可使用表的别名 |
