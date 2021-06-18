@@ -1,6 +1,6 @@
 +++
 title = "How to develop ShardingSphere community with Apache way"
-weight = 2
+weight = 3
 chapter = true
 +++
 
