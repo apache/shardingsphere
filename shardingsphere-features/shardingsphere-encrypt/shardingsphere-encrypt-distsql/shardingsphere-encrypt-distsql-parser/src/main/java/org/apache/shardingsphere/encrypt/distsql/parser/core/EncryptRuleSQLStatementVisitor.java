@@ -77,14 +77,8 @@ public final class EncryptRuleSQLStatementVisitor extends EncryptRuleStatementBa
     
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
-        EncryptColumnSegment result = new EncryptColumnSegment();
-        result.setName(ctx.columnName().getText());
-        result.setCipherColumn(ctx.cipherColumnName().getText());
-        if (null != ctx.plainColumnName()) {
-            result.setPlainColumn(ctx.plainColumnName().getText());
-        }
-        result.setEncryptor((AlgorithmSegment) visit(ctx.algorithmDefinition()));
-        return result;
+        return new EncryptColumnSegment(ctx.columnName().getText(), 
+                ctx.cipherColumnName().getText(), null == ctx.plainColumnName() ? null : ctx.plainColumnName().getText(), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
