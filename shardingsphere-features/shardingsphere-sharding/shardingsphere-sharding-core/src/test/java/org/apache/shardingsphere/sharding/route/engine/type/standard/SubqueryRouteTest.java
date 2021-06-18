@@ -26,30 +26,30 @@ import java.util.List;
 public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     
     @Test
-    public void assertOneTableError() {
+    public void assertOneTableDifferentConditionWithFederate() {
         String sql = "select (select max(id) from t_order b where b.user_id =? ) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(3);
         parameters.add(2);
-        assertRoute(sql, parameters);
+        assertRoute(sql, parameters, 2);
     }
     
     @Test
-    public void assertOneTable() {
+    public void assertOneTableSameConditionWithFederate() {
         String sql = "select (select max(id) from t_order b where b.user_id = ? and b.user_id = a.user_id) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        assertRoute(sql, parameters);
+        assertRoute(sql, parameters, 2);
     }
     
     @Test
-    public void assertBindingTable() {
+    public void assertBindingTableWithFederate() {
         String sql = "select (select max(id) from t_order_item b where b.user_id = ?) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        assertRoute(sql, parameters);
+        assertRoute(sql, parameters, 2);
     }
     
     @Test
@@ -62,33 +62,33 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     }
     
     @Test
-    public void assertBindingTableWithDifferentValue() {
+    public void assertBindingTableWithDifferentValueWithFederate() {
         String sql = "select (select max(id) from t_order_item b where b.user_id = ? ) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(2);
         parameters.add(3);
-        assertRoute(sql, parameters);
+        assertRoute(sql, parameters, 2);
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertTwoTableWithDifferentOperator() {
+    @Test
+    public void assertTwoTableWithDifferentOperatorWithFederate() {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(2);
         parameters.add(1);
         String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id = ? ";
-        assertRoute(sql, parameters);
+        assertRoute(sql, parameters, 2);
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertTwoTableWithIn() {
+    @Test
+    public void assertTwoTableWithInWithFederate() {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(2);
         parameters.add(1);
         parameters.add(3);
         String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ";
-        assertRoute(sql, parameters);
+        assertRoute(sql, parameters, 2);
     }
     
     @Test
