@@ -172,7 +172,7 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1235));
         assertThat(actual.getSqlState(), is("42000"));
-        assertThat(actual.getErrorMessage(), is("This version of ShardingProxy doesn't yet support this SQL. 'No reason'"));
+        assertThat(actual.getErrorMessage(), is("This version of ShardingSphere-Proxy doesn't yet support this SQL. 'No reason'"));
     }
     
     @Test

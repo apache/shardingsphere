@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
@@ -62,7 +63,12 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        return identifier.getQuoteCharacter().wrap(getIndexValue(routeUnit));
+        String quotedIndexName = identifier.getQuoteCharacter().wrap(getIndexValue(routeUnit));
+        return isGeneratedIndex() ? " " + quotedIndexName + " " : quotedIndexName;
+    }
+    
+    private boolean isGeneratedIndex() {
+        return sqlStatementContext instanceof CreateIndexStatementContext && ((CreateIndexStatementContext) sqlStatementContext).isGeneratedIndex();
     }
     
     private String getIndexValue(final RouteUnit routeUnit) {

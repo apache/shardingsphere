@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.datanode;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,7 +47,8 @@ public final class DataNodes {
      * @return data nodes
      */
     public Collection<DataNode> getDataNodes(final String tableName) {
-        Optional<DataNodeContainedRule> dataNodeContainedRule = rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
+        Optional<DataNodeContainedRule> dataNodeContainedRule = rules.stream().filter(each 
+            -> isDataNodeContainedRuleContainsTable(each, tableName)).findFirst().map(rule -> (DataNodeContainedRule) rule);
         if (!dataNodeContainedRule.isPresent()) {
             return Collections.emptyList();
         }
@@ -62,6 +63,10 @@ public final class DataNodes {
             }
         }
         return result;
+    }
+    
+    private boolean isDataNodeContainedRuleContainsTable(final ShardingSphereRule each, final String tableName) {
+        return each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).getAllDataNodes().containsKey(tableName);
     }
     
     private Collection<DataNode> findDataNodes(final Collection<DataNode> dataNodes, final String logicDataSource) {

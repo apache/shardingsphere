@@ -21,9 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
-import org.apache.shardingsphere.infra.binder.segment.select.having.HavingColumn;
-import org.apache.shardingsphere.infra.binder.segment.select.having.HavingContext;
-import org.apache.shardingsphere.infra.binder.segment.select.having.engine.HavingContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.engine.OrderByContextEngine;
@@ -50,7 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sub
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
@@ -73,8 +70,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final GroupByContext groupByContext;
     
-    private final HavingContext havingContext;
-    
     private final OrderByContext orderByContext;
     
     private final PaginationContext paginationContext;
@@ -82,6 +77,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private final boolean containsSubquery;
     
     private final int generateOrderByStartIndex;
+    
+    private final boolean containsHaving;
 
     // TODO to be remove, for test case only
     public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
@@ -89,34 +86,28 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         this.groupByContext = groupByContext;
-        this.havingContext = new HavingContextEngine().createHavingContext(sqlStatement);
         this.orderByContext = orderByContext;
         this.projectionsContext = projectionsContext;
         this.paginationContext = paginationContext;
         containsSubquery = containsSubquery();
         generateOrderByStartIndex = generateOrderByStartIndex();
+        containsHaving = sqlStatement.getHaving().isPresent();
     }
     
     public SelectStatementContext(final ShardingSphereSchema schema, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
-        havingContext = new HavingContextEngine().createHavingContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
         generateOrderByStartIndex = generateOrderByStartIndex();
+        containsHaving = sqlStatement.getHaving().isPresent();
     }
     
     private boolean containsSubquery() {
-        Collection<WhereSegment> subqueryPredicateSegments = WhereSegmentExtractUtils.getSubqueryWhereSegments(getSqlStatement());
-        for (WhereSegment each : subqueryPredicateSegments) {
-            if (null != each) {
-                return true;
-            }
-        }
-        return false;
+        return !SubqueryExtractUtil.getSubquerySegments(getSqlStatement()).isEmpty();
     }
     
     private int generateOrderByStartIndex() {
@@ -154,15 +145,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         setIndexForAggregationProjection(columnLabelIndexMap);
         setIndexForOrderItem(columnLabelIndexMap, orderByContext.getItems());
         setIndexForOrderItem(columnLabelIndexMap, groupByContext.getItems());
-        setIndexForHaving(columnLabelIndexMap);
-    }
-    
-    private void setIndexForHaving(final Map<String, Integer> columnLabelIndexMap) {
-        for (HavingColumn each : havingContext.getColumns()) {
-            String columnLabel = each.getSegment().getIdentifier().getValue();
-            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s.", each);
-            each.setIndex(columnLabelIndexMap.get(columnLabel));
-        }
     }
     
     private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {

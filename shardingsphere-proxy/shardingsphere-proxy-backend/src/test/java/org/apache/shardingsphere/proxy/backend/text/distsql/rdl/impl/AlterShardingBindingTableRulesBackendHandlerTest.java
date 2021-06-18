@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ShardingBindingTableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.impl.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -110,17 +110,17 @@ public final class AlterShardingBindingTableRulesBackendHandlerTest {
     }
     
     private AlterShardingBindingTableRulesStatement buildShardingTableRuleStatement() {
-        ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
+        BindingTableRuleSegment segment = new BindingTableRuleSegment();
         segment.setTables("t_order,t_order_item");
-        ShardingBindingTableRuleSegment segmentAnother = new ShardingBindingTableRuleSegment();
+        BindingTableRuleSegment segmentAnother = new BindingTableRuleSegment();
         segmentAnother.setTables("t_1,t_2");
         return new AlterShardingBindingTableRulesStatement(Arrays.asList(segment, segmentAnother));
     }
     
     private AlterShardingBindingTableRulesStatement buildDuplicateShardingTableRuleStatement() {
-        ShardingBindingTableRuleSegment segment = new ShardingBindingTableRuleSegment();
+        BindingTableRuleSegment segment = new BindingTableRuleSegment();
         segment.setTables("t_order,t_order_item");
-        ShardingBindingTableRuleSegment segmentAnother = new ShardingBindingTableRuleSegment();
+        BindingTableRuleSegment segmentAnother = new BindingTableRuleSegment();
         segmentAnother.setTables("t_order,t_order_item");
         return new AlterShardingBindingTableRulesStatement(Arrays.asList(segment, segmentAnother));
     }

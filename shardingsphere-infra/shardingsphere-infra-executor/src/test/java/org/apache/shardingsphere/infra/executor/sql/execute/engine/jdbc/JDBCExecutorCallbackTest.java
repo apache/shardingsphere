@@ -83,7 +83,7 @@ public final class JDBCExecutorCallbackTest {
             
             @Override
             protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement) {
-                return Optional.of(0);
+                return Optional.empty();
             }
         };
         Field field = JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");

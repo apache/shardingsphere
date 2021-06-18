@@ -40,8 +40,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereSegmentExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +71,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         List<ShardingCondition> result = new ArrayList<>();
         ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(segment -> result.addAll(createShardingConditions(sqlStatementContext, segment.getExpr(), parameters)));
         Collection<WhereSegment> joinWhereSegments = sqlStatementContext.getSqlStatement() instanceof SelectStatement
-                ? WhereSegmentExtractUtils.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
+                ? WhereExtractUtil.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
         for (WhereSegment each : joinWhereSegments) {
             Collection<ShardingCondition> joinShardingConditions = createShardingConditions(sqlStatementContext, each.getExpr(), parameters);
             if (!result.containsAll(joinShardingConditions)) {
@@ -79,7 +79,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             }
         }
         Collection<WhereSegment> subqueryWhereSegments = sqlStatementContext.getSqlStatement() instanceof SelectStatement
-                ? WhereSegmentExtractUtils.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
+                ? WhereExtractUtil.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
         for (WhereSegment each : subqueryWhereSegments) {
             Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(sqlStatementContext, each.getExpr(), parameters);
             if (!result.containsAll(subqueryShardingConditions)) {
@@ -181,13 +181,13 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     }
     
     private Range<Comparable<?>> mergeRangeShardingValues(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {
-        return null == value2 ? value1 : SafeNumberOperationUtils.safeIntersection(value1, value2);
+        return null == value2 ? value1 : SafeNumberOperationUtil.safeIntersection(value1, value2);
     }
     
     private Collection<Comparable<?>> mergeListAndRangeShardingValues(final Collection<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
         Collection<Comparable<?>> result = new LinkedList<>();
         for (Comparable<?> each : listValue) {
-            if (SafeNumberOperationUtils.safeContains(rangeValue, each)) {
+            if (SafeNumberOperationUtil.safeContains(rangeValue, each)) {
                 result.add(each);
             }
         }
