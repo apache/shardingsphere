@@ -31,11 +31,10 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 public final class DatabaseDiscoveryRuleStatementConverterTest {
-
+    
     @Test
     public void assertConvert() {
-        YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration
-                = DatabaseDiscoveryRuleStatementConverter.convert(buildDatabaseDiscoveryRuleSegments());
+        YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration = DatabaseDiscoveryRuleStatementConverter.convert(buildDatabaseDiscoveryRuleSegments());
         assertNotNull(yamlDatabaseDiscoveryRuleConfiguration);
         assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDataSources().keySet(), is(Collections.singleton("pr_ds")));
         assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDataSources().get("pr_ds").getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
@@ -44,15 +43,10 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
         assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes().get("pr_ds_MGR").getType(), is("MGR"));
         assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes().get("pr_ds_MGR").getProps().get("test"), is("value"));
     }
-
+    
     private Collection<DatabaseDiscoveryRuleSegment> buildDatabaseDiscoveryRuleSegments() {
-        DatabaseDiscoveryRuleSegment segment = new DatabaseDiscoveryRuleSegment();
-        segment.setName("pr_ds");
-        segment.setDiscoveryTypeName("MGR");
-        segment.setDataSources(Arrays.asList("resource0", "resource1"));
-        Properties properties = new Properties();
-        properties.setProperty("test", "value");
-        segment.setProps(properties);
-        return Collections.singleton(segment);
+        Properties props = new Properties();
+        props.setProperty("test", "value");
+        return Collections.singleton(new DatabaseDiscoveryRuleSegment("pr_ds", Arrays.asList("resource0", "resource1"), "MGR", props));
     }
 }

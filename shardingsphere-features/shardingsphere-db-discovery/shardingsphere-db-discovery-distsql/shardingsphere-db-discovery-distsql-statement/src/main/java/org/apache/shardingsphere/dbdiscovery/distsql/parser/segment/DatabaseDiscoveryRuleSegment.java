@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
@@ -27,15 +27,15 @@ import java.util.Properties;
 /**
  * Database discovery rule segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class DatabaseDiscoveryRuleSegment implements ASTNode {
     
-    private String name;
+    private final String name;
     
-    private Collection<String> dataSources;
+    private final Collection<String> dataSources;
     
-    private String discoveryTypeName;
+    private final String discoveryTypeName;
     
-    private Properties props;
+    private final Properties props;
 }
