@@ -1,6 +1,6 @@
 +++
 title = "ShardingSphere 与 openGauss 的化学反应"
-weight = 5
+weight = 1
 chapter = true
 +++
 

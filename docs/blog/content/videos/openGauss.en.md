@@ -1,6 +1,6 @@
 +++
 title = "The Cooperation Between ShardingSphere and openGauss"
-weight = 5
+weight = 1
 chapter = true
 +++
 
