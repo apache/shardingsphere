@@ -85,7 +85,7 @@ public final class CreateEncryptRuleBackendHandlerTest {
     
     @Test
     public void assertExecute() {
-        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("MD5"));
+        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildEncryptColumnSegments("MD5"));
         when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
@@ -97,24 +97,19 @@ public final class CreateEncryptRuleBackendHandlerTest {
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList());
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections
                 .singleton(encryptTableRuleConfiguration), Maps.newHashMap())));
-        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("MD5"));
+        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildEncryptColumnSegments("MD5"));
         when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
     @Test(expected = InvalidEncryptorsException.class)
     public void assertExecuteWithInvalidEncryptors() {
-        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("notExistEncryptor"));
+        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildEncryptColumnSegments("notExistEncryptor"));
         when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
-    private Collection<EncryptColumnSegment> buildColumns(final String encryptorName) {
-        EncryptColumnSegment result = new EncryptColumnSegment();
-        result.setName("user_id");
-        result.setPlainColumn("user_plain");
-        result.setCipherColumn("user_cipher");
-        result.setEncryptor(new AlgorithmSegment(encryptorName, new Properties()));
-        return Collections.singleton(result);
+    private Collection<EncryptColumnSegment> buildEncryptColumnSegments(final String encryptorName) {
+        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", new AlgorithmSegment(encryptorName, new Properties())));
     }
 }

@@ -18,22 +18,22 @@
 package org.apache.shardingsphere.encrypt.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
  * Encrypt column segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class EncryptColumnSegment implements ASTNode {
     
-    private String name;
+    private final String name;
     
-    private String plainColumn;
+    private final String cipherColumn;
     
-    private String cipherColumn;
+    private final String plainColumn;
     
-    private AlgorithmSegment encryptor;
+    private final AlgorithmSegment encryptor;
 }
