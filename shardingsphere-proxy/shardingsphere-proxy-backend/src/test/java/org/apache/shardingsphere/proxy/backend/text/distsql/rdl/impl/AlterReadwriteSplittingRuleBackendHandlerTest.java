@@ -44,6 +44,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -98,7 +99,7 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment("pr_ds", "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "TEST", new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(readwriteSplittingRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(
-                Collections.singleton(new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(readwriteSplittingDataSourceRuleConfiguration)), Collections.emptyMap())));
+                Collections.singleton(new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(readwriteSplittingDataSourceRuleConfiguration)), new LinkedHashMap<>())));
         when(readwriteSplittingDataSourceRuleConfiguration.getName()).thenReturn("pr_ds");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
