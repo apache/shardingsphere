@@ -45,7 +45,7 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext, 
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
-        if (needCheckDatabaseInstance) {
+        if (!routeContext.isFederated() && needCheckDatabaseInstance) {
             Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
         }
     }

@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
@@ -78,7 +79,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final int generateOrderByStartIndex;
     
-    private final boolean containsHaving;
+    private final boolean containsSubqueyAggregation;
 
     // TODO to be remove, for test case only
     public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
@@ -91,7 +92,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         this.paginationContext = paginationContext;
         containsSubquery = containsSubquery();
         generateOrderByStartIndex = generateOrderByStartIndex();
-        containsHaving = sqlStatement.getHaving().isPresent();
+        containsSubqueyAggregation = containsSubqueyAggregation();
     }
     
     public SelectStatementContext(final ShardingSphereSchema schema, final List<Object> parameters, final SelectStatement sqlStatement) {
@@ -103,11 +104,16 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
         generateOrderByStartIndex = generateOrderByStartIndex();
-        containsHaving = sqlStatement.getHaving().isPresent();
+        containsSubqueyAggregation = containsSubqueyAggregation();
     }
     
     private boolean containsSubquery() {
         return !SubqueryExtractUtil.getSubquerySegments(getSqlStatement()).isEmpty();
+    }
+    
+    private boolean containsSubqueyAggregation() {
+        return SubqueryExtractUtil.getSubquerySegments(getSqlStatement()).stream().flatMap(each 
+            -> each.getSelect().getProjections().getProjections().stream()).anyMatch(each -> each instanceof AggregationProjectionSegment);
     }
     
     private int generateOrderByStartIndex() {
@@ -128,12 +134,32 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     /**
-     * Whether it contain join query.
+     * Judge whether contains join query or not.
      *
-     * @return contain join query or not
+     * @return whether contains join query or not
      */
     public boolean isContainsJoinQuery() {
         return getSqlStatement().getFrom() instanceof JoinTableSegment;
+    }
+    
+    /**
+     * Judge whether contains having or not.
+     *
+     * @return whether contains having or not
+     */
+    public boolean isContainsHaving() {
+        return getSqlStatement().getHaving().isPresent();
+    }
+    
+    /**
+     * Judge whether contains partial distinct aggregation.
+     *
+     * @return whether contains partial distinct aggregation
+     */
+    public boolean isContainsPartialDistinctAggregation() {
+        Collection<Projection> aggregationProjections = projectionsContext.getProjections().stream().filter(each -> each instanceof AggregationProjection).collect(Collectors.toList());
+        return aggregationProjections.size() > 1 && projectionsContext.getAggregationDistinctProjections().size() > 0 
+                && aggregationProjections.size() != projectionsContext.getAggregationDistinctProjections().size();
     }
     
     /**
