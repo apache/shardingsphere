@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator;
 
+import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.rex.RexNode;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Federate execution sql generator.
@@ -35,6 +39,8 @@ public final class FederateExecutionSQLGenerator {
     
     private final int[] projects;
     
+    private final List<String> columnNames;
+    
     /**
      * Generate sql.
      *
@@ -42,7 +48,8 @@ public final class FederateExecutionSQLGenerator {
      * @return sql
      */
     public String generate(final String table) {
-        // TODO
-        return String.format("SELECT * FROM %s", table);
+        // TODO generate sql with filters
+        Collection<String> actualColumnNames = null == projects ? columnNames : Arrays.stream(projects).mapToObj(columnNames::get).collect(Collectors.toList());
+        return String.format("SELECT %s FROM %s", Joiner.on(", ").join(actualColumnNames), table);
     }
 }

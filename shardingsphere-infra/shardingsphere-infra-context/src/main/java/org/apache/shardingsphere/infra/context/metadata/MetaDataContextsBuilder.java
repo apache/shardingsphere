@@ -88,6 +88,7 @@ public final class MetaDataContextsBuilder {
      */
     public StandardMetaDataContexts build() throws SQLException {
         Map<String, ShardingSphereMetaData> mataDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
+        Map<String, ShardingSphereMetaData> actualDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
         Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>();
         Map<String, TableMetaData> logicTableMetaDataTable = new HashMap<>();
         for (String each : schemaRuleConfigs.keySet()) {
@@ -99,15 +100,16 @@ public final class MetaDataContextsBuilder {
             addToMap(tableMetaDataMap.keySet(), actualTableMetaDataMap);
             addToMap(tableMetaDataMap.values(), logicTableMetaDataTable);
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
-            ShardingSphereSchema schema = new ShardingSphereSchema();
-            schema.put(each, logicTableMetaDataTable.get(each));
-            mataDataMap.put(each, new ShardingSphereMetaData(each, buildResource(databaseType, dataSourceMap), ruleMetaData, schema));
+            ShardingSphereSchema logicSchema = new ShardingSphereSchema(logicTableMetaDataTable);
+            ShardingSphereSchema actualSchema = new ShardingSphereSchema(logicTableMetaDataTable);
+            mataDataMap.put(each, new ShardingSphereMetaData(each, buildResource(databaseType, dataSourceMap), ruleMetaData, logicSchema));
+            actualDataMap.put(each, new ShardingSphereMetaData(each, buildResource(databaseType, dataSourceMap), ruleMetaData, actualSchema));
         }
-        OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(null, actualTableMetaDataMap);
-        return new StandardMetaDataContexts(mataDataMap, buildGlobalSchemaMetaData(mataDataMap), executorEngine, props);
+        OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(actualDataMap);
+        return new StandardMetaDataContexts(mataDataMap, buildGlobalSchemaMetaData(mataDataMap), executorEngine, props, optimizeContextFactory);
     }
 
-    private void addToMap(Collection<Map<String, TableMetaData>> mapList, Map<String, TableMetaData> tableMetaDataMap) {
+    private void addToMap(final Collection<Map<String, TableMetaData>> mapList, final Map<String, TableMetaData> tableMetaDataMap) {
         for (Map<String, TableMetaData> map : mapList) {
             tableMetaDataMap.putAll(map);
         }

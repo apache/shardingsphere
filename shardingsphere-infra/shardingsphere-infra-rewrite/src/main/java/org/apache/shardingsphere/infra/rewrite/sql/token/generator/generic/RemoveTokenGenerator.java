@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.generic;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
@@ -46,9 +45,6 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (sqlStatementContext.getSqlStatement() instanceof MySQLShowColumnsStatement) {
             return ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
         }
-        if (sqlStatementContext.getSqlStatement() instanceof SelectStatement) {
-            return ((SelectStatement) sqlStatementContext.getSqlStatement()).getHaving().isPresent();
-        }
         return false;
     }
     
@@ -67,11 +63,6 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (sqlStatementContext.getSqlStatement() instanceof MySQLShowColumnsStatement) {
             Preconditions.checkState(((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
             RemoveAvailable removeAvailable = ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
-            return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
-        }
-        if (sqlStatementContext.getSqlStatement() instanceof SelectStatement) {
-            Preconditions.checkState(((SelectStatement) sqlStatementContext.getSqlStatement()).getHaving().isPresent());
-            RemoveAvailable removeAvailable = ((SelectStatement) sqlStatementContext.getSqlStatement()).getHaving().get();
             return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
         }
         return Collections.emptyList();

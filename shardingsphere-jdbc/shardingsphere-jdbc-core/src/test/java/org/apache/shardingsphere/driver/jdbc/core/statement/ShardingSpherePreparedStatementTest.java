@@ -63,6 +63,8 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     private static final String UPDATE_BATCH_SQL = "UPDATE t_order SET status=? WHERE status=?";
     
+    private static final String UPDATE_WITH_ERROR_COLUMN = "UPDATE t_order SET error_column=?";
+    
     @Test
     public void assertAddBatch() throws SQLException {
         try (
@@ -529,6 +531,14 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     public void assertGetParameterMetaData() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER)) {
             assertThat(preparedStatement.getParameterMetaData().getParameterCount(), is(2));
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertColumnNotFoundException() throws SQLException {
+        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_WITH_ERROR_COLUMN)) {
+            preparedStatement.setString(1, "OK");
+            preparedStatement.executeUpdate();
         }
     }
 }

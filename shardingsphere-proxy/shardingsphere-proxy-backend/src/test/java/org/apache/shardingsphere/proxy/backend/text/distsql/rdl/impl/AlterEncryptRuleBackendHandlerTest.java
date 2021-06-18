@@ -21,8 +21,8 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -89,7 +89,7 @@ public final class AlterEncryptRuleBackendHandlerTest {
     
     @Test
     public void assertExecute() {
-        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("MD5"));
+        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildEncryptColumnSegments("MD5"));
         when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(encryptTableRuleConfig)), new HashMap<>())));
         when(encryptTableRuleConfig.getName()).thenReturn("t_encrypt");
@@ -106,7 +106,7 @@ public final class AlterEncryptRuleBackendHandlerTest {
     
     @Test(expected = EncryptRulesNotExistedException.class)
     public void assertExecuteWithNoAlteredEncryptRules() {
-        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("MD5"));
+        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildEncryptColumnSegments("MD5"));
         when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections.emptyList(), new HashMap<>())));
         handler.execute("test", sqlStatement);
@@ -114,19 +114,14 @@ public final class AlterEncryptRuleBackendHandlerTest {
     
     @Test(expected = InvalidEncryptorsException.class)
     public void assertExecuteWithInvalidEncryptors() {
-        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildColumns("notExistEncryptor"));
+        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildEncryptColumnSegments("notExistEncryptor"));
         when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), new HashMap<>())));
         when(encryptTableRuleConfig.getName()).thenReturn("t_encrypt");
         handler.execute("test", sqlStatement);
     }
     
-    private Collection<EncryptColumnSegment> buildColumns(final String encryptorName) {
-        EncryptColumnSegment result = new EncryptColumnSegment();
-        result.setName("user_id");
-        result.setPlainColumn("user_plain");
-        result.setCipherColumn("user_cipher");
-        result.setEncryptor(new AlgorithmSegment(encryptorName, new Properties()));
-        return Collections.singleton(result);
+    private Collection<EncryptColumnSegment> buildEncryptColumnSegments(final String encryptorName) {
+        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", new AlgorithmSegment(encryptorName, new Properties())));
     }
 }

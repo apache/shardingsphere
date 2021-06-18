@@ -17,18 +17,11 @@
 
 grammar ResourceStatement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import Symbol, RDLStatement, RQLStatement;
 
 execute
     : (addResource
     | dropResource
     | showResources
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
     ) SEMI?
     ;

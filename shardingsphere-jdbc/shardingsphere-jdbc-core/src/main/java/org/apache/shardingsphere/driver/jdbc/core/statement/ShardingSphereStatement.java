@@ -73,7 +73,6 @@ import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -275,7 +274,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             
             @Override
             protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement) {
-                return Optional.of(0);
+                return Optional.empty();
             }
         };
         return driverJDBCExecutor.executeUpdate(executionGroupContext, sqlStatementContext, routeUnits, callback);
@@ -327,7 +326,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             
             @Override
             protected Optional<Boolean> getSaneResult(final SQLStatement sqlStatement) {
-                return Optional.of(sqlStatement instanceof SelectStatement);
+                return Optional.empty();
             }
         };
         return driverJDBCExecutor.execute(executionGroupContext, executionContext.getSqlStatementContext(), routeUnits, jdbcExecutorCallback);
