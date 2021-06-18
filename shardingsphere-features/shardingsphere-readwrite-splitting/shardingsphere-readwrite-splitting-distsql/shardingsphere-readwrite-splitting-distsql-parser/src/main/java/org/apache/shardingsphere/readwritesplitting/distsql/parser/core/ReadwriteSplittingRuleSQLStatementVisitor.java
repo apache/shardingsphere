@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.core;
 
 import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.AlgorithmPropertyContext;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleSt
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.CreateReadwriteSplittingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.DropReadwriteSplittingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.ReadwriteSplittingRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.RuleNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.ShowReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingRuleStatementParser.StaticReadwriteSplittingRuleDefinitionContext;
@@ -61,7 +61,7 @@ public final class ReadwriteSplittingRuleSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitDropReadwriteSplittingRule(final DropReadwriteSplittingRuleContext ctx) {
-        return new DropReadwriteSplittingRuleStatement(ctx.IDENTIFIER().stream().map(TerminalNode::getText).collect(Collectors.toList()));
+        return new DropReadwriteSplittingRuleStatement(ctx.ruleName().stream().map(RuleNameContext::getText).collect(Collectors.toList()));
     }
     
     @Override
@@ -77,11 +77,12 @@ public final class ReadwriteSplittingRuleSQLStatementVisitor extends ReadwriteSp
         }
         if (null == ctx.staticReadwriteSplittingRuleDefinition()) {
             return new ReadwriteSplittingRuleSegment(
-                    ctx.ruleName().getText(), ctx.dynamicReadwriteSplittingRuleDefinition().IDENTIFIER().getText(), ctx.algorithmDefinition().algorithmName().getText(), props);
+                    ctx.ruleName().getText(), ctx.dynamicReadwriteSplittingRuleDefinition().resourceName().getText(), ctx.algorithmDefinition().algorithmName().getText(), props);
         }
         StaticReadwriteSplittingRuleDefinitionContext staticRuleDefinitionCtx = ctx.staticReadwriteSplittingRuleDefinition();
-        return new ReadwriteSplittingRuleSegment(ctx.ruleName().getText(), staticRuleDefinitionCtx.writeResourceName().getText(),
-                staticRuleDefinitionCtx.resourceName().stream().map(RuleContext::getText).collect(Collectors.toList()), ctx.algorithmDefinition().algorithmName().getText(), props);
+        return new ReadwriteSplittingRuleSegment(ctx.ruleName().getText(), 
+                staticRuleDefinitionCtx.writeResourceName().getText(), staticRuleDefinitionCtx.readResourceNames().resourceName().stream().map(RuleContext::getText).collect(Collectors.toList()), 
+                ctx.algorithmDefinition().algorithmName().getText(), props);
     }
     
     @Override

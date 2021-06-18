@@ -28,7 +28,7 @@ alterReadwriteSplittingRule
     ;
 
 dropReadwriteSplittingRule
-    : DROP READWRITE_SPLITTING RULE IDENTIFIER (COMMA IDENTIFIER)*
+    : DROP READWRITE_SPLITTING RULE ruleName (COMMA ruleName)*
     ;
 
 readwriteSplittingRuleDefinition
@@ -36,22 +36,26 @@ readwriteSplittingRuleDefinition
     ;
 
 staticReadwriteSplittingRuleDefinition
-    : WRITE_RESOURCE EQ writeResourceName COMMA READ_RESOURCES LP resourceName (COMMA resourceName)* RP
+    : WRITE_RESOURCE EQ writeResourceName COMMA READ_RESOURCES LP readResourceNames RP
     ;
 
 dynamicReadwriteSplittingRuleDefinition
-    : AUTO_AWARE_RESOURCE EQ IDENTIFIER
+    : AUTO_AWARE_RESOURCE EQ resourceName
+    ;
+
+ruleName
+    : IDENTIFIER
     ;
 
 writeResourceName
     : resourceName
     ;
 
-resourceName
-    : IDENTIFIER
+readResourceNames
+    : resourceName (COMMA resourceName)*
     ;
 
-ruleName
+resourceName
     : IDENTIFIER
     ;
 
