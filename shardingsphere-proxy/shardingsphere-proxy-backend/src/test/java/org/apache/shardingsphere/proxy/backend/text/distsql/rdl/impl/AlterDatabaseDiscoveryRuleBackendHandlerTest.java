@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -75,34 +76,30 @@ public final class AlterDatabaseDiscoveryRuleBackendHandlerTest {
     
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     @Mock
     private ShardingSphereResource shardingSphereResource;
-
+    
     @Mock
     private DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration;
     
-    private AlterDatabaseDiscoveryRuleBackendHandler handler = new AlterDatabaseDiscoveryRuleBackendHandler(sqlStatement, backendConnection);
+    private final AlterDatabaseDiscoveryRuleBackendHandler handler = new AlterDatabaseDiscoveryRuleBackendHandler(sqlStatement, backendConnection);
     
     @Before
     public void setUp() {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
+        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
     @Test
     public void assertExecute() {
-        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment();
-        databaseDiscoveryRuleSegment.setName("ha_group");
-        databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_0", "ds_1"));
-        databaseDiscoveryRuleSegment.setDiscoveryTypeName("TEST");
-        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections
-                .singletonList(new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections
-                        .singleton(databaseDiscoveryDataSourceRuleConfiguration)), Maps.newHashMap())));
+        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("ha_group", Arrays.asList("ds_0", "ds_1"), "TEST", new Properties());
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));
+        when(ruleMetaData.getConfigurations()).thenReturn(
+                Collections.singleton(new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(databaseDiscoveryDataSourceRuleConfiguration)), Maps.newHashMap())));
         when(databaseDiscoveryDataSourceRuleConfiguration.getName()).thenReturn("ha_group");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
@@ -118,42 +115,31 @@ public final class AlterDatabaseDiscoveryRuleBackendHandlerTest {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = DatabaseDiscoveryRulesNotExistedException.class)
     public void assertExecuteWithNoAlteredDatabaseDiscoveryRule() {
-        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment();
-        databaseDiscoveryRuleSegment.setName("ha_group");
-        databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_0", "ds_1"));
-        databaseDiscoveryRuleSegment.setDiscoveryTypeName("TEST");
-        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
+        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("ha_group", Arrays.asList("ds_0", "ds_1"), "TEST", new Properties());
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
         handler.execute("test", sqlStatement);
     }
     
     @Test(expected = ResourceNotExistedException.class)
     public void assertExecuteWithNotExistResources() {
-        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment();
-        databaseDiscoveryRuleSegment.setName("ha_group");
-        databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_0", "ds_1"));
-        databaseDiscoveryRuleSegment.setDiscoveryTypeName("TEST");
-        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections
-                .singletonList(new DatabaseDiscoveryRuleConfiguration(Collections
-                        .singleton(databaseDiscoveryDataSourceRuleConfiguration), Maps.newHashMap())));
+        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("ha_group", Arrays.asList("ds_0", "ds_1"), "TEST", new Properties());
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));
+        when(ruleMetaData.getConfigurations()).thenReturn(
+                Collections.singleton(new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfiguration), Collections.emptyMap())));
         when(databaseDiscoveryDataSourceRuleConfiguration.getName()).thenReturn("ha_group");
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = InvalidDatabaseDiscoveryTypesException.class)
     public void assertExecuteWithInvalidDiscoveryTypes() {
-        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment();
-        databaseDiscoveryRuleSegment.setName("ha_group");
-        databaseDiscoveryRuleSegment.setDataSources(Arrays.asList("ds_0", "ds_1"));
-        databaseDiscoveryRuleSegment.setDiscoveryTypeName("notExistType");
-        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(databaseDiscoveryRuleSegment));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections
-                .singletonList(new DatabaseDiscoveryRuleConfiguration(Collections
-                        .singleton(databaseDiscoveryDataSourceRuleConfiguration), Maps.newHashMap())));
+        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("ha_group", Arrays.asList("ds_0", "ds_1"), "notExistType", new Properties());
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));
+        when(ruleMetaData.getConfigurations()).thenReturn(
+                Collections.singleton(new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfiguration), Collections.emptyMap())));
         when(databaseDiscoveryDataSourceRuleConfiguration.getName()).thenReturn("ha_group");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         Map<String, DataSource> dataSourceMap = mock(Map.class);
