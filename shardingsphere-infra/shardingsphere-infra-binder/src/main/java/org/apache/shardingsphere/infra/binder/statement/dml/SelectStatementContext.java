@@ -157,8 +157,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      * @return whether contains partial distinct aggregation
      */
     public boolean isContainsPartialDistinctAggregation() {
-        return projectionsContext.getAggregationProjections().size() > 1 && projectionsContext.getAggregationDistinctProjections().size() > 0 
-                && projectionsContext.getAggregationProjections().size() != projectionsContext.getAggregationDistinctProjections().size();
+        Collection<Projection> aggregationProjections = projectionsContext.getProjections().stream().filter(each -> each instanceof AggregationProjection).collect(Collectors.toList());
+        return aggregationProjections.size() > 1 && projectionsContext.getAggregationDistinctProjections().size() > 0 
+                && aggregationProjections.size() != projectionsContext.getAggregationDistinctProjections().size();
     }
     
     /**
