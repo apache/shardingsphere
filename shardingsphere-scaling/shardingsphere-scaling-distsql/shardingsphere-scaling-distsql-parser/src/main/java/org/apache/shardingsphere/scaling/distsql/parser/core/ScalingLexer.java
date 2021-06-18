@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.impl;
+package org.apache.shardingsphere.scaling.distsql.parser.core;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * Show scaling job list statement.
+ * SQL lexer for scaling.
  */
-public final class ShowScalingJobListStatement extends RALStatement {
+public final class ScalingLexer extends ScalingStatementLexer implements SQLLexer {
+    
+    public ScalingLexer(final CharStream input) {
+        super(input);
+    }
 }

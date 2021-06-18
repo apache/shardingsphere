@@ -15,13 +15,17 @@
  * limitations under the License.
  */
 
-grammar ResourceStatement;
+grammar ScalingStatement;
 
-import Symbol, RDLStatement, RQLStatement;
+import Symbol, RALStatement;
 
 execute
-    : (addResource
-    | dropResource
-    | showResources
+    : (showScalingJobList
+    | showScalingJobStatus
+    | startScalingJob
+    | stopScalingJob
+    | dropScalingJob
+    | resetScalingJob
+    | checkScalingJob
     ) SEMI?
     ;

@@ -20,25 +20,11 @@ package org.apache.shardingsphere.distsql.parser.core.resource;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.AddResourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.CheckScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DropResourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DropScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ResetScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ShowResourcesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ShowScalingJobListContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ShowScalingJobStatusContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.StartScalingJobContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.StopScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.CheckScalingJobStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.DropScalingJobStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ResetScalingJobStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJobListStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJobStatusStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StartScalingJobStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StopScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
@@ -78,40 +64,5 @@ public final class ResourceDistSQLStatementVisitor extends ResourceStatementBase
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
-    }
-    
-    @Override
-    public ASTNode visitShowScalingJobList(final ShowScalingJobListContext ctx) {
-        return new ShowScalingJobListStatement();
-    }
-    
-    @Override
-    public ASTNode visitShowScalingJobStatus(final ShowScalingJobStatusContext ctx) {
-        return new ShowScalingJobStatusStatement(Long.parseLong(ctx.jobId().getText()));
-    }
-    
-    @Override
-    public ASTNode visitStartScalingJob(final StartScalingJobContext ctx) {
-        return new StartScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
-    }
-    
-    @Override
-    public ASTNode visitStopScalingJob(final StopScalingJobContext ctx) {
-        return new StopScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
-    }
-    
-    @Override
-    public ASTNode visitDropScalingJob(final DropScalingJobContext ctx) {
-        return new DropScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
-    }
-    
-    @Override
-    public ASTNode visitResetScalingJob(final ResetScalingJobContext ctx) {
-        return new ResetScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
-    }
-    
-    @Override
-    public ASTNode visitCheckScalingJob(final CheckScalingJobContext ctx) {
-        return new CheckScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
     }
 }

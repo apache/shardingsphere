@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.impl;
+package org.apache.shardingsphere.scaling.distsql.parser.core;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Check scaling job statement.
+ * SQL parser for scaling.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CheckScalingJobStatement extends RALStatement {
+public final class ScalingParser extends ScalingStatementParser implements SQLParser {
     
-    private final long jobId;
+    public ScalingParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
 }

@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-grammar ResourceStatement;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
-import Symbol, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    ) SEMI?
-    ;
+/**
+ * Show scaling job list statement.
+ */
+public final class ShowScalingJobListStatement extends RALStatement {
+}
