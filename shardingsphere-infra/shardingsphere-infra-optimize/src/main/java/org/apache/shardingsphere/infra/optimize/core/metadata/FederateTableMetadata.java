@@ -96,13 +96,4 @@ public final class FederateTableMetadata {
         }
         return dataSources.get(result);
     }
-    
-    /**
-     * Get column names.
-     * 
-     * @return column names collection
-     */
-    public List<String> getColumnNames() {
-        return columnNames;
-    }
 }
