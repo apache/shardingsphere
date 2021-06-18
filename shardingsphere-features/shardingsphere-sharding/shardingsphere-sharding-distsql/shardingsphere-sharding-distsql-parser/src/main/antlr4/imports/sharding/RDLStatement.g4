@@ -28,7 +28,7 @@ createShardingBindingTableRules
     ;
 
 createShardingBroadcastTableRules
-    : CREATE SHARDING BROADCAST TABLE RULES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : CREATE SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
     ;
 
 alterShardingTableRule
@@ -40,7 +40,7 @@ alterShardingBindingTableRules
     ;
 
 alterShardingBroadcastTableRules
-    : ALTER SHARDING BROADCAST TABLE RULES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    : ALTER SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
     ;
 
 dropShardingTableRule
