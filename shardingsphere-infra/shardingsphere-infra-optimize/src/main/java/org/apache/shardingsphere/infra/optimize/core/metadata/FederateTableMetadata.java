@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.optimize.core.metadata;
 
 import lombok.Getter;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rel.type.RelProtoDataType;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +50,12 @@ public final class FederateTableMetadata {
     
     private final RelProtoDataType relProtoDataType;
     
+    private final List<String> columnNames = new ArrayList<>();
+    
     public FederateTableMetadata(final String name, final TableMetaData tableMetaData) {
         this.name = name;
         relProtoDataType = createRelDataType(tableMetaData);
+        columnNames.addAll(tableMetaData.getColumns().keySet());
     }
     
     /**
@@ -63,7 +66,9 @@ public final class FederateTableMetadata {
     public FederateTableMetadata(final String name, final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
                                  final Collection<DataNode> tableDataNodes, final DatabaseType databaseType) throws SQLException {
         this.name = name;
-        relProtoDataType = createRelDataType(createTableMetaData(dataSources, dataSourceRules, tableDataNodes, databaseType));
+        TableMetaData tableMetaData = createTableMetaData(dataSources, dataSourceRules, tableDataNodes, databaseType);
+        relProtoDataType = createRelDataType(tableMetaData);
+        columnNames.addAll(tableMetaData.getColumns().keySet());
     }
     
     private TableMetaData createTableMetaData(final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
@@ -93,11 +98,11 @@ public final class FederateTableMetadata {
     }
     
     /**
-     * Get rel data type field.
+     * Get column names.
      * 
-     * @return rel data type field collection
+     * @return column names collection
      */
-    public List<RelDataTypeField> getRelDataTypeField() {
-        return relProtoDataType.apply(TYPE_FACTORY).getFieldList();
+    public List<String> getColumnNames() {
+        return columnNames;
     }
 }

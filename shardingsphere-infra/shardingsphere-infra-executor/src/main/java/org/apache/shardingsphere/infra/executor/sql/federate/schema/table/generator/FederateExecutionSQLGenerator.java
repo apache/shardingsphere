@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.executor.sql.federate.schema.table.gener
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
-import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexNode;
 
 import java.util.Arrays;
@@ -38,7 +37,7 @@ public final class FederateExecutionSQLGenerator {
     
     private final int[] projects;
     
-    private final List<RelDataTypeField> fields;
+    private final List<String> columnNames;
     
     /**
      * Generate sql.
@@ -48,7 +47,7 @@ public final class FederateExecutionSQLGenerator {
      */
     public String generate(final String table) {
         // TODO generate sql with filters
-        String project = null == projects || 0 == projects.length ? "*" : Arrays.stream(projects).mapToObj(each -> fields.get(each).getName()).collect(Collectors.joining(", "));
+        String project = null == projects ? "*" : Arrays.stream(projects).mapToObj(columnNames::get).collect(Collectors.joining(", "));
         return String.format("SELECT %s FROM %s", project, table);
     }
 }

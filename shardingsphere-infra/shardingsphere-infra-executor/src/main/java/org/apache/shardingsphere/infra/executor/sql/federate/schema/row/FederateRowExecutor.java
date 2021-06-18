@@ -68,7 +68,7 @@ public final class FederateRowExecutor {
      */
     public Collection<QueryResult> execute(final FederateTableMetadata metadata, final DataContext root, final List<RexNode> filters, final int[] projects) {
         FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(metadata.getName(), routeExecutionContext, 
-                new FederateExecutionSQLGenerator(root, filters, projects, metadata.getRelDataTypeField()));
+                new FederateExecutionSQLGenerator(root, filters, projects, metadata.getColumnNames()));
         return execute(generator.generate());
     }
     
