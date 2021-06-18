@@ -58,7 +58,7 @@ public abstract class AbstractBaseExecutorTest {
     @Before
     public void setUp() throws SQLException {
         MockitoAnnotations.initMocks(this);
-        SQLExecutorExceptionHandler.setExceptionThrown(false);
+        SQLExecutorExceptionHandler.setExceptionThrown(true);
         executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
         setConnection();
     }
