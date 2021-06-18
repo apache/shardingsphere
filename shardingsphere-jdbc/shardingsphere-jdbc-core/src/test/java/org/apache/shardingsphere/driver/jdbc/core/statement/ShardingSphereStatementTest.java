@@ -95,4 +95,12 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
             assertNull(statement.getResultSet());
         }
     }
+    
+    @Test(expected = SQLException.class)
+    public void assertColumnNotFoundException() throws SQLException {
+        String sql = "UPDATE t_order_item SET error_column = '%s'";
+        try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
+            statement.executeUpdate(String.format(sql, "OK"));
+        }
+    }
 }
