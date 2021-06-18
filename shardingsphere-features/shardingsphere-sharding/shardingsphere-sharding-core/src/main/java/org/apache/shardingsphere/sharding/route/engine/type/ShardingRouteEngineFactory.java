@@ -169,7 +169,7 @@ public final class ShardingRouteEngineFactory {
         if (!shardingRule.tableRuleExists(tableNames)) {
             return new SingleTablesRoutingEngine(tableNames, sqlStatement);
         }
-        if (shardingRule.isAllShardingTables(tableNames) && 1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
+        if (isShardingStandardQuery(sqlStatementContext, shardingRule, tableNames)) {
             return new ShardingStandardRoutingEngine(tableNames.iterator().next(), shardingConditions, props);
         }
         if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule)) {
@@ -179,15 +179,20 @@ public final class ShardingRouteEngineFactory {
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
     }
     
+    private static boolean isShardingStandardQuery(final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule, final Collection<String> tableNames) {
+        boolean containsHaving = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsHaving(); 
+        return (shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllShardingTables(tableNames) && 1 == tableNames.size()) && !containsHaving;
+    }
+    
     private static boolean isShardingFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final ShardingRule shardingRule) {
         if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        if (!select.isContainsJoinQuery() && !select.isContainsSubquery()) {
+        if (!select.isContainsJoinQuery() && !select.isContainsSubquery() && !select.isContainsHaving()) {
             return false;
         }
-        if (shardingRule.isAllTablesInSameDataSource(tableNames)) {
+        if (shardingRule.isAllTablesInSameDataSource(tableNames) && !select.isContainsHaving()) {
             return false;
         }
         return shardingRule.isAllShardingTables(tableNames) || (shardingRule.tableRuleExists(tableNames) && shardingRule.singleTableRuleExists(tableNames));

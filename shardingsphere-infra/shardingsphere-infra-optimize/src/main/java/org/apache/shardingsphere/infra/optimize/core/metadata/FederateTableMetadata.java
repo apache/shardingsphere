@@ -32,7 +32,9 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,13 +44,18 @@ import java.util.Optional;
 @Getter
 public final class FederateTableMetadata {
     
+    private static final RelDataTypeFactory TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
+    
     private final String name;
     
     private final RelProtoDataType relProtoDataType;
     
+    private final List<String> columnNames = new ArrayList<>();
+    
     public FederateTableMetadata(final String name, final TableMetaData tableMetaData) {
         this.name = name;
         relProtoDataType = createRelDataType(tableMetaData);
+        columnNames.addAll(tableMetaData.getColumns().keySet());
     }
     
     /**
@@ -59,7 +66,9 @@ public final class FederateTableMetadata {
     public FederateTableMetadata(final String name, final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
                                  final Collection<DataNode> tableDataNodes, final DatabaseType databaseType) throws SQLException {
         this.name = name;
-        relProtoDataType = createRelDataType(createTableMetaData(dataSources, dataSourceRules, tableDataNodes, databaseType));
+        TableMetaData tableMetaData = createTableMetaData(dataSources, dataSourceRules, tableDataNodes, databaseType);
+        relProtoDataType = createRelDataType(tableMetaData);
+        columnNames.addAll(tableMetaData.getColumns().keySet());
     }
     
     private TableMetaData createTableMetaData(final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
@@ -71,11 +80,10 @@ public final class FederateTableMetadata {
     }
     
     private RelProtoDataType createRelDataType(final TableMetaData tableMetaData) {
-        RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
-        RelDataTypeFactory.Builder fieldInfo = typeFactory.builder();
+        RelDataTypeFactory.Builder fieldInfo = TYPE_FACTORY.builder();
         for (Map.Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
             SqlTypeName sqlTypeName = SqlTypeName.getNameForJdbcType(entry.getValue().getDataType());
-            fieldInfo.add(entry.getKey(), null == sqlTypeName ? typeFactory.createUnknownType() : typeFactory.createTypeWithNullability(typeFactory.createSqlType(sqlTypeName), true));
+            fieldInfo.add(entry.getKey(), null == sqlTypeName ? TYPE_FACTORY.createUnknownType() : TYPE_FACTORY.createTypeWithNullability(TYPE_FACTORY.createSqlType(sqlTypeName), true));
         }
         return RelDataTypeImpl.proto(fieldInfo.build());
     }

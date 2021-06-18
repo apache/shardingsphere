@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;

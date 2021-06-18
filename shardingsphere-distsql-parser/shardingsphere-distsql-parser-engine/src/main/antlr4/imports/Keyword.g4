@@ -35,22 +35,6 @@ SHOW
     : S H O W
     ;
 
-START
-    : S T A R T
-    ;
-
-STOP
-    : S T O P
-    ;
-
-RESET
-    : R E S E T
-    ;
-
-CHECK
-    : C H E C K
-    ;
-
 RESOURCE
     : R E S O U R C E
     ;
@@ -61,22 +45,6 @@ RESOURCES
 
 FROM
     : F R O M
-    ;
-
-SCALING
-    : S C A L I N G
-    ;
-
-JOB
-    : J O B
-    ;
-
-LIST
-    : L I S T
-    ;
-
-STATUS
-    : S T A T U S
     ;
 
 HOST

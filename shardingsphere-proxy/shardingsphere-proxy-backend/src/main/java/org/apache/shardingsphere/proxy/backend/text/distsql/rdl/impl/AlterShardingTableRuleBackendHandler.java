@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;

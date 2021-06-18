@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
 
 /**
  * Having segment.
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAva
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class HavingSegment implements RemoveAvailable {
+public final class HavingSegment implements SQLSegment {
     
     private final int startIndex;
     

@@ -31,6 +31,7 @@
     <modules>
         <module>shardingsphere-scaling-bootstrap</module>
         <module>shardingsphere-scaling-core</module>
+        <module>shardingsphere-scaling-distsql</module>
         <module>shardingsphere-scaling-dialect</module>
     </modules>
 </project>

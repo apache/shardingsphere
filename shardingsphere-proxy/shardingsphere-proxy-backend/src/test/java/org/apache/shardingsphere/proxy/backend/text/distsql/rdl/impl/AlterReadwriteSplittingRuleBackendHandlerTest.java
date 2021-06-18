@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;

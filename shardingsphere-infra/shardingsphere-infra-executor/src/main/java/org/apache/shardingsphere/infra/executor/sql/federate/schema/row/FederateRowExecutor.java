@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.genera
 import org.apache.shardingsphere.infra.executor.sql.federate.schema.table.generator.FederateExecutionSQLGenerator;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateTableMetadata;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -59,14 +60,15 @@ public final class FederateRowExecutor {
     /**
      * Execute.
      *
-     * @param logicTable logic table
+     * @param metadata metadata
      * @param root root
      * @param filters filter
      * @param projects projects
      * @return a query result list
      */
-    public Collection<QueryResult> execute(final String logicTable, final DataContext root, final List<RexNode> filters, final int[] projects) {
-        FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(logicTable, routeExecutionContext, new FederateExecutionSQLGenerator(root, filters, projects));
+    public Collection<QueryResult> execute(final FederateTableMetadata metadata, final DataContext root, final List<RexNode> filters, final int[] projects) {
+        FederateExecutionContextGenerator generator = new FederateExecutionContextGenerator(metadata.getName(), routeExecutionContext, 
+                new FederateExecutionSQLGenerator(root, filters, projects, metadata.getColumnNames()));
         return execute(generator.generate());
     }
     
