@@ -110,18 +110,10 @@ public final class AlterShardingBindingTableRulesBackendHandlerTest {
     }
     
     private AlterShardingBindingTableRulesStatement buildShardingTableRuleStatement() {
-        BindingTableRuleSegment segment = new BindingTableRuleSegment();
-        segment.setTables("t_order,t_order_item");
-        BindingTableRuleSegment segmentAnother = new BindingTableRuleSegment();
-        segmentAnother.setTables("t_1,t_2");
-        return new AlterShardingBindingTableRulesStatement(Arrays.asList(segment, segmentAnother));
+        return new AlterShardingBindingTableRulesStatement(Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_1,t_2")));
     }
     
     private AlterShardingBindingTableRulesStatement buildDuplicateShardingTableRuleStatement() {
-        BindingTableRuleSegment segment = new BindingTableRuleSegment();
-        segment.setTables("t_order,t_order_item");
-        BindingTableRuleSegment segmentAnother = new BindingTableRuleSegment();
-        segmentAnother.setTables("t_order,t_order_item");
-        return new AlterShardingBindingTableRulesStatement(Arrays.asList(segment, segmentAnother));
+        return new AlterShardingBindingTableRulesStatement(Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_order,t_order_item")));
     }
 }
