@@ -15,4 +15,4 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.sql.parser.fixture.DatabaseParserFacade
+org.apache.shardingsphere.sql.parser.fixture.DatabaseTypedSQLParserFacadeFixture

@@ -21,20 +21,20 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 
-public class DatabaseParserFacade implements DatabaseTypedSQLParserFacade {
-
+public final class DatabaseTypedSQLParserFacadeFixture implements DatabaseTypedSQLParserFacade {
+    
     @Override
     public String getDatabaseType() {
-        return "DATABASE";
+        return "Fixture";
     }
-
+    
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return DatabaseLexer.class;
+        return LexerFixture.class;
     }
-
+    
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return DatabaseParser.class;
+        return ParserFixture.class;
     }
 }

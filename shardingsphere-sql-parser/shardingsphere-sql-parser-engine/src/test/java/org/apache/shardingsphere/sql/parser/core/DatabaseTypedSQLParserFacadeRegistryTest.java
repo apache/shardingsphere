@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sql.parser.core;
 
 import org.apache.shardingsphere.sql.parser.core.database.parser.DatabaseTypedSQLParserFacadeRegistry;
-import org.apache.shardingsphere.sql.parser.fixture.DatabaseLexer;
-import org.apache.shardingsphere.sql.parser.fixture.DatabaseParser;
-import org.apache.shardingsphere.sql.parser.fixture.DatabaseParserFacade;
+import org.apache.shardingsphere.sql.parser.fixture.LexerFixture;
+import org.apache.shardingsphere.sql.parser.fixture.DatabaseTypedSQLParserFacadeFixture;
+import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
 import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
 import org.junit.Test;
 
@@ -28,14 +28,14 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class DatabaseTypedSQLParserFacadeRegistryTest {
-
+public final class DatabaseTypedSQLParserFacadeRegistryTest {
+    
     @Test
     public void assertGetFacade() {
-        DatabaseTypedSQLParserFacade databaseTypedSQLParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade("DATABASE");
-        assertThat(databaseTypedSQLParserFacade.getClass(), equalTo(DatabaseParserFacade.class));
-        assertThat(databaseTypedSQLParserFacade.getDatabaseType(), is("DATABASE"));
-        assertThat(databaseTypedSQLParserFacade.getLexerClass(), equalTo(DatabaseLexer.class));
-        assertThat(databaseTypedSQLParserFacade.getParserClass(), equalTo(DatabaseParser.class));
+        DatabaseTypedSQLParserFacade databaseTypedSQLParserFacade = DatabaseTypedSQLParserFacadeRegistry.getFacade("Fixture");
+        assertThat(databaseTypedSQLParserFacade.getClass(), equalTo(DatabaseTypedSQLParserFacadeFixture.class));
+        assertThat(databaseTypedSQLParserFacade.getDatabaseType(), is("Fixture"));
+        assertThat(databaseTypedSQLParserFacade.getLexerClass(), equalTo(LexerFixture.class));
+        assertThat(databaseTypedSQLParserFacade.getParserClass(), equalTo(ParserFixture.class));
     }
 }
