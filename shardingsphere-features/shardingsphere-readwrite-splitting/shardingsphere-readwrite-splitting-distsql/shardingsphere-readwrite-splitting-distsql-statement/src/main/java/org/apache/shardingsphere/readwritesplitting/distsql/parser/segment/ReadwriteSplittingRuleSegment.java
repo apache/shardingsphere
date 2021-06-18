@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.segment;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
@@ -27,19 +28,27 @@ import java.util.Properties;
 /**
  * Readwrite-splitting rule segment.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@Setter
 public final class ReadwriteSplittingRuleSegment implements ASTNode {
     
-    private String name;
+    private final String name;
     
-    private String autoAwareResource;
+    private final String autoAwareResource;
     
-    private String writeDataSource;
+    private final String writeDataSource;
     
-    private Collection<String> readDataSources;
+    private final Collection<String> readDataSources;
     
-    private String loadBalancer;
+    private final String loadBalancer;
     
-    private Properties props;
+    private final Properties props;
+    
+    public ReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties props) {
+        this(name, autoAwareResource, null, null, loadBalancer, props);
+    }
+    
+    public ReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final Collection<String> readDataSources, final String loadBalancer, final Properties props) {
+        this(name, null, writeDataSource, readDataSources, loadBalancer, props);
+    }
 }
