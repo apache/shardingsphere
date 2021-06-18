@@ -416,6 +416,7 @@ public final class SelectStatementContextTest {
         when(projectionSegment.getSubquery().getSelect().getWhere()).thenReturn(Optional.of(mock(WhereSegment.class)));
         WhereSegment whereSegment = new WhereSegment(0, 0, null);
         subSelectStatement.setWhere(whereSegment);
+        subSelectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement);
         when(projectionSegment.getSubquery()).thenReturn(subquerySegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
@@ -457,6 +458,7 @@ public final class SelectStatementContextTest {
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "=", null);
         WhereSegment subWhereSegment = new WhereSegment(0, 0, expression);
         subSelectStatement.setWhere(subWhereSegment);
+        subSelectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(new SubquerySegment(0, 0, subSelectStatement));
         SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
         WhereSegment whereSegment = new WhereSegment(0, 0, subqueryExpressionSegment);
