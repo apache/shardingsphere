@@ -17,13 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.fixture;
 
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-public class DatabaseParser implements SQLParser {
-
-    @Override
-    public ASTNode parse() {
-        return null;
-    }
+public final class LexerFixture implements SQLLexer {
 }
