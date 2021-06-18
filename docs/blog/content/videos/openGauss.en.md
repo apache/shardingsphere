@@ -1,5 +1,5 @@
 +++
-title = "The cooperation between ShardingSphere and openGauss"
+title = "The Cooperation Between ShardingSphere and openGauss"
 weight = 5
 chapter = true
 +++
