@@ -40,7 +40,7 @@
             <artifactId>snakeyaml</artifactId>
         </dependency>
     </dependencies>
-
+    
     <build>
         <plugins>
             <plugin>
