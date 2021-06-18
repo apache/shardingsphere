@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
@@ -27,19 +27,19 @@ import java.util.Collection;
 /**
  * Table rule segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class TableRuleSegment implements ASTNode {
     
-    private String logicTable;
+    private final String logicTable;
     
-    private Collection<String> dataSources;
+    private final Collection<String> dataSources;
     
-    private String tableStrategyColumn;
+    private final String tableStrategyColumn;
     
-    private String keyGenerateStrategyColumn;
+    private final AlgorithmSegment tableStrategy;
     
-    private AlgorithmSegment tableStrategy;
+    private final String keyGenerateStrategyColumn;
     
-    private AlgorithmSegment keyGenerateStrategy;
+    private final AlgorithmSegment keyGenerateStrategy;
 }

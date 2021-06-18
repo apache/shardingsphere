@@ -99,11 +99,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     
     @Test
     public void assertExecute() {
-        TableRuleSegment tableRuleSegment = new TableRuleSegment();
-        tableRuleSegment.setLogicTable("t_order");
-        tableRuleSegment.setTableStrategy(new AlgorithmSegment("hash_mod", new Properties()));
-        tableRuleSegment.setDataSources(Collections.singleton("ds_0"));
-        tableRuleSegment.setTableStrategyColumn("order_id");
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Collections.singleton("ds_0"), "order_id", new AlgorithmSegment("hash_mod", new Properties()), null, null);
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
@@ -118,18 +114,14 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     
     @Test(expected = DuplicateTablesException.class)
     public void assertExecuteWithDuplicateTablesInRDL() {
-        TableRuleSegment tableRuleSegment = new TableRuleSegment();
-        tableRuleSegment.setLogicTable("t_order");
-        tableRuleSegment.setDataSources(Collections.emptyList());
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, null, null, null);
         when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
     public void assertExecuteWithoutExistTable() {
-        TableRuleSegment tableRuleSegment = new TableRuleSegment();
-        tableRuleSegment.setLogicTable("t_order_1");
-        tableRuleSegment.setDataSources(Collections.emptyList());
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_1", Collections.emptyList(), null, null, null, null);
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
@@ -137,10 +129,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     
     @Test(expected = InvalidShardingAlgorithmsException.class)
     public void assertExecuteWithInvalidAlgorithms() {
-        TableRuleSegment tableRuleSegment = new TableRuleSegment();
-        tableRuleSegment.setLogicTable("t_order_item");
-        tableRuleSegment.setDataSources(Collections.emptyList());
-        tableRuleSegment.setTableStrategy(new AlgorithmSegment("algorithm-not-exist", new Properties()));
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_item", Collections.emptyList(), null, new AlgorithmSegment("algorithm-not-exist", new Properties()), null, null);
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         handler.execute("test", sqlStatement);
