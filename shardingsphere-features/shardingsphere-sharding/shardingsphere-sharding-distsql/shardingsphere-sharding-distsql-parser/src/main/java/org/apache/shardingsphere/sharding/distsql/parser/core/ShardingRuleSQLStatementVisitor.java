@@ -80,9 +80,7 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     public ASTNode visitCreateShardingBindingTableRules(final CreateShardingBindingTableRulesContext ctx) {
         Collection<BindingTableRuleSegment> rules = new LinkedList<>();
         for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
-            BindingTableRuleSegment segment = new BindingTableRuleSegment();
-            segment.setTables(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
-            rules.add(segment);
+            rules.add(new BindingTableRuleSegment(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList()))));
         }
         return new CreateShardingBindingTableRulesStatement(rules);
     }
@@ -106,9 +104,7 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     public ASTNode visitAlterShardingBindingTableRules(final AlterShardingBindingTableRulesContext ctx) {
         Collection<BindingTableRuleSegment> rules = new LinkedList<>();
         for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
-            BindingTableRuleSegment segment = new BindingTableRuleSegment();
-            segment.setTables(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
-            rules.add(segment);
+            rules.add(new BindingTableRuleSegment(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList()))));
         }
         return new AlterShardingBindingTableRulesStatement(rules);
     }
@@ -140,24 +136,25 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     
     @Override
     public ASTNode visitShardingTableRuleDefinition(final ShardingTableRuleDefinitionContext ctx) {
-        TableRuleSegment result = new TableRuleSegment();
-        result.setLogicTable(ctx.tableName().getText());
         Collection<String> dataSources = new LinkedList<>();
         if (null != ctx.resources()) {
             for (TerminalNode each : ctx.resources().IDENTIFIER()) {
                 dataSources.add(new IdentifierValue(each.getText()).getValue());
             }
         }
-        result.setDataSources(dataSources);
+        String tableStrategyColumn = null;
+        AlgorithmSegment tableStrategy = null;
         if (null != ctx.algorithmDefinition()) {
-            result.setTableStrategy((AlgorithmSegment) visit(ctx.algorithmDefinition()));
-            result.setTableStrategyColumn(ctx.shardingColumn().columnName().getText());
+            tableStrategyColumn = ctx.shardingColumn().columnName().getText();
+            tableStrategy = (AlgorithmSegment) visit(ctx.algorithmDefinition());
         }
+        String keyGenerateStrategyColumn = null;
+        AlgorithmSegment keyGenerateStrategy = null;
         if (null != ctx.keyGenerateStrategy()) {
-            result.setKeyGenerateStrategy((AlgorithmSegment) visit(ctx.keyGenerateStrategy().algorithmDefinition()));
-            result.setKeyGenerateStrategyColumn(ctx.keyGenerateStrategy().columnName().getText());
+            keyGenerateStrategyColumn = ctx.keyGenerateStrategy().columnName().getText();
+            keyGenerateStrategy = (AlgorithmSegment) visit(ctx.keyGenerateStrategy().algorithmDefinition());
         }
-        return result;
+        return new TableRuleSegment(ctx.tableName().getText(), dataSources, tableStrategyColumn, tableStrategy, keyGenerateStrategyColumn, keyGenerateStrategy);
     }
     
     @Override

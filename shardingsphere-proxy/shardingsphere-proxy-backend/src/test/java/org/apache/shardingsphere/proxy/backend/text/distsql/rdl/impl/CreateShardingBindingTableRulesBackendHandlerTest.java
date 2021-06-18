@@ -108,37 +108,29 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     }
     
     private ShardingRuleConfiguration buildShardingRuleConfiguration() {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_1"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_2"));
-        return shardingRuleConfiguration;
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_1"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_2"));
+        return shardingRuleConfig;
     }
     
     private ShardingRuleConfiguration buildShardingBindingTableRuleConfiguration() {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_1"));
-        shardingRuleConfiguration.getTables().add(new ShardingTableRuleConfiguration("t_2"));
-        shardingRuleConfiguration.getBindingTableGroups().add("t_order,t_order_item");
-        return shardingRuleConfiguration;
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_1"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_2"));
+        shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
+        return shardingRuleConfig;
     }
     
     private CreateShardingBindingTableRulesStatement buildShardingTableRuleStatement() {
-        BindingTableRuleSegment segment = new BindingTableRuleSegment();
-        segment.setTables("t_order,t_order_item");
-        BindingTableRuleSegment segmentAnother = new BindingTableRuleSegment();
-        segmentAnother.setTables("t_1,t_2");
-        return new CreateShardingBindingTableRulesStatement(Arrays.asList(segment, segmentAnother));
+        return new CreateShardingBindingTableRulesStatement(Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_1,t_2")));
     }
     
     private CreateShardingBindingTableRulesStatement buildDuplicateShardingTableRuleStatement() {
-        BindingTableRuleSegment segment = new BindingTableRuleSegment();
-        segment.setTables("t_order,t_order_item");
-        BindingTableRuleSegment segmentAnother = new BindingTableRuleSegment();
-        segmentAnother.setTables("t_order,t_order_item");
-        return new CreateShardingBindingTableRulesStatement(Arrays.asList(segment, segmentAnother));
+        return new CreateShardingBindingTableRulesStatement(Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_order,t_order_item")));
     }
 }
