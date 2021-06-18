@@ -45,20 +45,17 @@
 
     <rewrite-assertion id="select_with_having">
         <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias , amount AS GROUP_BY_DERIVED_0 FROM t_account_0 GROUP BY amount  ORDER BY amount ASC " parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias , amount AS GROUP_BY_DERIVED_0 FROM t_account_1 GROUP BY amount  ORDER BY amount ASC " parameters="1"/>
+        <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_having_and_window_for_mysql" db-type="MySQL">
         <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias , amount AS GROUP_BY_DERIVED_0 FROM t_account_0 GROUP BY amount  WINDOW w AS (PARTITION BY account_id) ORDER BY amount ASC " parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias , amount AS GROUP_BY_DERIVED_0 FROM t_account_1 GROUP BY amount  WINDOW w AS (PARTITION BY account_id) ORDER BY amount ASC " parameters="1"/>
+        <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_having_and_window_for_postgresql" db-type="PostgreSQL">
         <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias , amount AS GROUP_BY_DERIVED_0 FROM t_account_0 GROUP BY amount  WINDOW w AS (PARTITION BY account_id) ORDER BY amount ASC " parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias , amount AS GROUP_BY_DERIVED_0 FROM t_account_1 GROUP BY amount  WINDOW w AS (PARTITION BY account_id) ORDER BY amount ASC " parameters="1"/>
+        <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_schema">
