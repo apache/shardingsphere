@@ -87,7 +87,7 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     
     @Override
     public ASTNode visitCreateShardingBroadcastTableRules(final CreateShardingBroadcastTableRulesContext ctx) {
-        return new CreateShardingBroadcastTableRulesStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
+        return new CreateShardingBroadcastTableRulesStatement(ctx.tableName().stream().map(ParseTree::getText).collect(Collectors.toList()));
     }
     
     @Override
@@ -111,7 +111,7 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     
     @Override
     public ASTNode visitAlterShardingBroadcastTableRules(final AlterShardingBroadcastTableRulesContext ctx) {
-        return new AlterShardingBroadcastTableRulesStatement(ctx.IDENTIFIER().stream().map(ParseTree::getText).collect(Collectors.toList()));
+        return new AlterShardingBroadcastTableRulesStatement(ctx.tableName().stream().map(ParseTree::getText).collect(Collectors.toList()));
     }
     
     @Override
