@@ -55,7 +55,7 @@
                     <execution>
                         <id>antlr</id>
                         <configuration>
-                            <libDirectory>src/main/antlr4/imports/db-discovery/</libDirectory>
+                            <libDirectory>src/main/antlr4/imports/scaling/</libDirectory>
                             <listener>false</listener>
                             <visitor>true</visitor>
                         </configuration>

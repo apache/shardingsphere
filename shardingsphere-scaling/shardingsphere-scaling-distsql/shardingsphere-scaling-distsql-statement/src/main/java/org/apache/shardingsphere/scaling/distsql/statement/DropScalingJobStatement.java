@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-grammar ResourceStatement;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 
-execute
-    : (addResource
-    | dropResource
-    | showResources
-    ) SEMI?
-    ;
+/**
+ * Drop scaling job statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DropScalingJobStatement extends RALStatement {
+    
+    private final long jobId;
+}

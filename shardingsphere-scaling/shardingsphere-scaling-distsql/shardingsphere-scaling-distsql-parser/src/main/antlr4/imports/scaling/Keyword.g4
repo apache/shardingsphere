@@ -15,18 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.impl;
+lexer grammar Keyword;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import Alphabet;
 
-/**
- * Start scaling job statement.
- */
-@RequiredArgsConstructor
-@Getter
-public final class StartScalingJobStatement extends RALStatement {
-    
-    private final long jobId;
-}
+WS
+    : [ \t\r\n] + ->skip
+    ;
+
+DROP
+    : D R O P
+    ;
+
+SHOW
+    : S H O W
+    ;
+
+START
+    : S T A R T
+    ;
+
+STOP
+    : S T O P
+    ;
+
+RESET
+    : R E S E T
+    ;
+
+CHECK
+    : C H E C K
+    ;
+
+SCALING
+    : S C A L I N G
+    ;
+
+JOB
+    : J O B
+    ;
+
+LIST
+    : L I S T
+    ;
+
+STATUS
+    : S T A T U S
+    ;

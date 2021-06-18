@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.impl;
+package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 
 /**
- * Reset scaling job statement.
+ * Stop scaling job statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ResetScalingJobStatement extends RALStatement {
+public final class StopScalingJobStatement extends RALStatement {
     
     private final long jobId;
 }
