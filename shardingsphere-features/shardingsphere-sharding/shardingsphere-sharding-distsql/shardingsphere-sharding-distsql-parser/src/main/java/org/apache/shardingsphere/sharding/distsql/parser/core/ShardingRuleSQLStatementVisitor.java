@@ -80,9 +80,7 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     public ASTNode visitCreateShardingBindingTableRules(final CreateShardingBindingTableRulesContext ctx) {
         Collection<BindingTableRuleSegment> rules = new LinkedList<>();
         for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
-            BindingTableRuleSegment segment = new BindingTableRuleSegment();
-            segment.setTables(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
-            rules.add(segment);
+            rules.add(new BindingTableRuleSegment(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList()))));
         }
         return new CreateShardingBindingTableRulesStatement(rules);
     }
@@ -106,9 +104,7 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     public ASTNode visitAlterShardingBindingTableRules(final AlterShardingBindingTableRulesContext ctx) {
         Collection<BindingTableRuleSegment> rules = new LinkedList<>();
         for (BindTableRulesDefinitionContext each : ctx.bindTableRulesDefinition()) {
-            BindingTableRuleSegment segment = new BindingTableRuleSegment();
-            segment.setTables(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList())));
-            rules.add(segment);
+            rules.add(new BindingTableRuleSegment(Joiner.on(",").join(each.tableName().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList()))));
         }
         return new AlterShardingBindingTableRulesStatement(rules);
     }
