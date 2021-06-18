@@ -50,13 +50,13 @@ import java.util.stream.Collectors;
  * Backend handler for show sharding table rules.
  */
 public final class ShardingTableRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowShardingTableRulesStatement> {
-
+    
     private Iterator<ShardingTableRuleConfiguration> tables;
-
+    
     private Iterator<ShardingAutoTableRuleConfiguration> autoTables;
-
+    
     private ShardingRuleConfiguration shardingRuleConfiguration;
-
+    
     public ShardingTableRulesQueryBackendHandler(final ShowShardingTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
@@ -74,12 +74,12 @@ public final class ShardingTableRulesQueryBackendHandler extends SchemaRequiredB
             tables = ruleConfig.map(optional -> optional.getTables().iterator()).orElse(Collections.emptyIterator());
             autoTables = ruleConfig.map(optional -> optional.getAutoTables().iterator()).orElse(Collections.emptyIterator());
         } else {
-            tables = ruleConfig.isPresent() ? ruleConfig.get().getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable()))
-                    .collect(Collectors.toList()).iterator() : Collections.emptyIterator();
-            autoTables = ruleConfig.isPresent() ? ruleConfig.get().getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable()))
-                    .collect(Collectors.toList()).iterator() : Collections.emptyIterator();
+            tables = ruleConfig.map(optional
+                -> optional.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator()).orElse(Collections.emptyIterator());
+            autoTables = ruleConfig.map(optional
+                -> optional.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator()).orElse(Collections.emptyIterator());
         }
-        shardingRuleConfiguration = ruleConfig.isPresent() ? ruleConfig.get() : null;
+        shardingRuleConfiguration = ruleConfig.orElse(null);
     }
     
     private List<QueryHeader> getQueryHeader(final String schemaName) {
@@ -110,129 +110,122 @@ public final class ShardingTableRulesQueryBackendHandler extends SchemaRequiredB
     public Collection<Object> getRowData() {
         return tables.hasNext() ? buildTableRowData(tables.next()) : buildAutoTableRowData(autoTables.next());
     }
-
-    private Collection<Object> buildTableRowData(final ShardingTableRuleConfiguration shardingTableRuleConfiguration) {
+    
+    private Collection<Object> buildTableRowData(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
         Collection<Object> result = new LinkedList<>();
-        result.add(shardingTableRuleConfiguration.getLogicTable());
-        result.add(shardingTableRuleConfiguration.getActualDataNodes());
+        result.add(shardingTableRuleConfig.getLogicTable());
+        result.add(shardingTableRuleConfig.getActualDataNodes());
         result.add("");
-        result.add(getDatabaseStrategyType(shardingTableRuleConfiguration));
-        result.add(getDatabaseShardingColumn(shardingTableRuleConfiguration));
-        result.add(getAlgorithmType(getDatabaseShardingStrategy(shardingTableRuleConfiguration)));
-        result.add(getAlgorithmProps(getDatabaseShardingStrategy(shardingTableRuleConfiguration)));
-        result.add(getTableStrategyType(shardingTableRuleConfiguration.getTableShardingStrategy()));
-        result.add(getTableShardingColumn(shardingTableRuleConfiguration.getTableShardingStrategy()));
-        result.add(getAlgorithmType(getTableShardingStrategy(shardingTableRuleConfiguration.getTableShardingStrategy())));
-        result.add(getAlgorithmProps(getTableShardingStrategy(shardingTableRuleConfiguration.getTableShardingStrategy())));
-        result.add(getKeyGenerateColumn(shardingTableRuleConfiguration.getKeyGenerateStrategy()));
-        result.add(getKeyGeneratorType(shardingTableRuleConfiguration.getKeyGenerateStrategy()));
-        result.add(getKeyGeneratorProps(shardingTableRuleConfiguration.getKeyGenerateStrategy()));
+        result.add(getDatabaseStrategyType(shardingTableRuleConfig));
+        result.add(getDatabaseShardingColumn(shardingTableRuleConfig));
+        result.add(getAlgorithmType(getDatabaseShardingStrategy(shardingTableRuleConfig)));
+        result.add(getAlgorithmProps(getDatabaseShardingStrategy(shardingTableRuleConfig)));
+        result.add(getTableStrategyType(shardingTableRuleConfig.getTableShardingStrategy()));
+        result.add(getTableShardingColumn(shardingTableRuleConfig.getTableShardingStrategy()));
+        result.add(getAlgorithmType(getTableShardingStrategy(shardingTableRuleConfig.getTableShardingStrategy())));
+        result.add(getAlgorithmProps(getTableShardingStrategy(shardingTableRuleConfig.getTableShardingStrategy())));
+        result.add(getKeyGenerateColumn(shardingTableRuleConfig.getKeyGenerateStrategy()));
+        result.add(getKeyGeneratorType(shardingTableRuleConfig.getKeyGenerateStrategy()));
+        result.add(getKeyGeneratorProps(shardingTableRuleConfig.getKeyGenerateStrategy()));
         return result;
     }
-
-    private Collection<Object> buildAutoTableRowData(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration) {
+    
+    private Collection<Object> buildAutoTableRowData(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
         Collection<Object> result = new LinkedList<>();
-        result.add(shardingAutoTableRuleConfiguration.getLogicTable());
+        result.add(shardingAutoTableRuleConfig.getLogicTable());
         result.add("");
-        result.add(shardingAutoTableRuleConfiguration.getActualDataSources());
-        result.add("");
-        result.add("");
+        result.add(shardingAutoTableRuleConfig.getActualDataSources());
         result.add("");
         result.add("");
-        result.add(getTableStrategyType(shardingAutoTableRuleConfiguration.getShardingStrategy()));
-        result.add(getTableShardingColumn(shardingAutoTableRuleConfiguration.getShardingStrategy()));
-        result.add(getAlgorithmType(getTableShardingStrategy(shardingAutoTableRuleConfiguration.getShardingStrategy())));
-        result.add(getAlgorithmProps(getTableShardingStrategy(shardingAutoTableRuleConfiguration.getShardingStrategy())));
-        result.add(getKeyGenerateColumn(shardingAutoTableRuleConfiguration.getKeyGenerateStrategy()));
-        result.add(getKeyGeneratorType(shardingAutoTableRuleConfiguration.getKeyGenerateStrategy()));
-        result.add(getKeyGeneratorProps(shardingAutoTableRuleConfiguration.getKeyGenerateStrategy()));
+        result.add("");
+        result.add("");
+        result.add(getTableStrategyType(shardingAutoTableRuleConfig.getShardingStrategy()));
+        result.add(getTableShardingColumn(shardingAutoTableRuleConfig.getShardingStrategy()));
+        result.add(getAlgorithmType(getTableShardingStrategy(shardingAutoTableRuleConfig.getShardingStrategy())));
+        result.add(getAlgorithmProps(getTableShardingStrategy(shardingAutoTableRuleConfig.getShardingStrategy())));
+        result.add(getKeyGenerateColumn(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
+        result.add(getKeyGeneratorType(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
+        result.add(getKeyGeneratorProps(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
         return result;
     }
-
-    private String getDatabaseStrategyType(final ShardingTableRuleConfiguration shardingTableRuleConfiguration) {
-        Optional<ShardingStrategyConfiguration> databaseShardingStrategy = getDatabaseShardingStrategy(shardingTableRuleConfiguration);
+    
+    private String getDatabaseStrategyType(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
+        Optional<ShardingStrategyConfiguration> databaseShardingStrategy = getDatabaseShardingStrategy(shardingTableRuleConfig);
         return databaseShardingStrategy.isPresent() && !(databaseShardingStrategy.get() instanceof NoneShardingStrategyConfiguration)
                 ? getAlgorithmConfiguration(databaseShardingStrategy.get().getShardingAlgorithmName()).getType() : "";
     }
-
-    private String getDatabaseShardingColumn(final ShardingTableRuleConfiguration shardingTableRuleConfiguration) {
-        Optional<ShardingStrategyConfiguration> databaseShardingStrategy = getDatabaseShardingStrategy(shardingTableRuleConfiguration);
+    
+    private String getDatabaseShardingColumn(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
+        Optional<ShardingStrategyConfiguration> databaseShardingStrategy = getDatabaseShardingStrategy(shardingTableRuleConfig);
         return databaseShardingStrategy.isPresent() ? getShardingColumn(databaseShardingStrategy.get()) : "";
     }
-
-    private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        if (shardingStrategyConfiguration instanceof StandardShardingStrategyConfiguration) {
-            return ((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumn();
-        } else if (shardingStrategyConfiguration instanceof ComplexShardingStrategyConfiguration) {
-            return ((ComplexShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumns();
+    
+    private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig) {
+        if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
+            return ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
+        }
+        if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
+            return ((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns();
         }
         return "";
     }
-
+    
     private String getAlgorithmType(final Optional<ShardingStrategyConfiguration> databaseShardingStrategy) {
         return databaseShardingStrategy.isPresent() && !(databaseShardingStrategy.get() instanceof NoneShardingStrategyConfiguration)
                 ? getAlgorithmConfiguration(databaseShardingStrategy.get().getShardingAlgorithmName()).getType() : "";
     }
-
+    
     private String getAlgorithmProps(final Optional<ShardingStrategyConfiguration> databaseShardingStrategy) {
         return databaseShardingStrategy.isPresent() && !(databaseShardingStrategy.get() instanceof NoneShardingStrategyConfiguration)
                 ? buildProperties(getAlgorithmConfiguration(databaseShardingStrategy.get().getShardingAlgorithmName()).getProps()) : "";
     }
-
-    private Optional<ShardingStrategyConfiguration> getDatabaseShardingStrategy(final ShardingTableRuleConfiguration shardingTableRuleConfiguration) {
-        return Objects.nonNull(shardingTableRuleConfiguration.getDatabaseShardingStrategy())
-                ? Optional.ofNullable(shardingTableRuleConfiguration.getDatabaseShardingStrategy())
-                : Optional.ofNullable(shardingRuleConfiguration.getDefaultDatabaseShardingStrategy());
+    
+    private Optional<ShardingStrategyConfiguration> getDatabaseShardingStrategy(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
+        return null == shardingTableRuleConfig.getDatabaseShardingStrategy()
+                ? Optional.ofNullable(shardingRuleConfiguration.getDefaultDatabaseShardingStrategy()) : Optional.ofNullable(shardingTableRuleConfig.getDatabaseShardingStrategy());
     }
-
+    
     private ShardingSphereAlgorithmConfiguration getAlgorithmConfiguration(final String algorithmName) {
         return shardingRuleConfiguration.getShardingAlgorithms().get(algorithmName);
     }
-
-    private String getTableStrategyType(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        Optional<ShardingStrategyConfiguration> tableShardingStrategy = getTableShardingStrategy(shardingStrategyConfiguration);
+    
+    private String getTableStrategyType(final ShardingStrategyConfiguration shardingStrategyConfig) {
+        Optional<ShardingStrategyConfiguration> tableShardingStrategy = getTableShardingStrategy(shardingStrategyConfig);
         return tableShardingStrategy.isPresent() ? getStrategyType(tableShardingStrategy.get()) : "";
     }
-
-    private String getStrategyType(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        return shardingStrategyConfiguration instanceof NoneShardingStrategyConfiguration ? "none"
-                : getAlgorithmConfiguration(shardingStrategyConfiguration.getShardingAlgorithmName()).getType();
+    
+    private String getStrategyType(final ShardingStrategyConfiguration shardingStrategyConfig) {
+        return shardingStrategyConfig instanceof NoneShardingStrategyConfiguration ? "none" : getAlgorithmConfiguration(shardingStrategyConfig.getShardingAlgorithmName()).getType();
     }
-
-    private Optional<ShardingStrategyConfiguration> getTableShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        return Objects.nonNull(shardingStrategyConfiguration)
-                ? Optional.ofNullable(shardingStrategyConfiguration)
-                : Optional.ofNullable(shardingRuleConfiguration.getDefaultTableShardingStrategy());
+    
+    private Optional<ShardingStrategyConfiguration> getTableShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig) {
+        return null == shardingStrategyConfig ? Optional.ofNullable(shardingRuleConfiguration.getDefaultTableShardingStrategy()) : Optional.of(shardingStrategyConfig);
     }
-
-    private String getTableShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        Optional<ShardingStrategyConfiguration> tableShardingStrategy = getTableShardingStrategy(shardingStrategyConfiguration);
+    
+    private String getTableShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig) {
+        Optional<ShardingStrategyConfiguration> tableShardingStrategy = getTableShardingStrategy(shardingStrategyConfig);
         return tableShardingStrategy.isPresent() ? getShardingColumn(tableShardingStrategy.get()) : "";
     }
-
-    private String getKeyGenerateColumn(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfiguration) {
-        return getKeyGenerateStrategyConfiguration(keyGenerateStrategyConfiguration).isPresent()
-                ? getKeyGenerateStrategyConfiguration(keyGenerateStrategyConfiguration).get().getColumn() : "";
+    
+    private String getKeyGenerateColumn(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
+        return getKeyGenerateStrategyConfiguration(keyGenerateStrategyConfig).isPresent() ? getKeyGenerateStrategyConfiguration(keyGenerateStrategyConfig).get().getColumn() : "";
     }
-
+    
     private String getKeyGeneratorType(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfiguration) {
-        Optional<KeyGenerateStrategyConfiguration> optional = getKeyGenerateStrategyConfiguration(keyGenerateStrategyConfiguration);
-        return optional.isPresent() ? shardingRuleConfiguration.getKeyGenerators().get(optional.get().getKeyGeneratorName()).getType() : "";
+        Optional<KeyGenerateStrategyConfiguration> keyGenerateStrategyConfig = getKeyGenerateStrategyConfiguration(keyGenerateStrategyConfiguration);
+        return keyGenerateStrategyConfig.isPresent() ? shardingRuleConfiguration.getKeyGenerators().get(keyGenerateStrategyConfig.get().getKeyGeneratorName()).getType() : "";
     }
-
-    private String getKeyGeneratorProps(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfiguration) {
-        Optional<KeyGenerateStrategyConfiguration> optional = getKeyGenerateStrategyConfiguration(keyGenerateStrategyConfiguration);
-        return optional.isPresent() ? buildProperties(shardingRuleConfiguration.getKeyGenerators().get(optional.get().getKeyGeneratorName()).getProps()) : "";
+    
+    private String getKeyGeneratorProps(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
+        return getKeyGenerateStrategyConfiguration(keyGenerateStrategyConfig).map(
+            optional -> buildProperties(shardingRuleConfiguration.getKeyGenerators().get(optional.getKeyGeneratorName()).getProps())).orElse("");
     }
-
-    private Optional<KeyGenerateStrategyConfiguration> getKeyGenerateStrategyConfiguration(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfiguration) {
-        return Objects.nonNull(keyGenerateStrategyConfiguration)
-                ? Optional.ofNullable(keyGenerateStrategyConfiguration)
-                : Optional.ofNullable(shardingRuleConfiguration.getDefaultKeyGenerateStrategy());
+    
+    private Optional<KeyGenerateStrategyConfiguration> getKeyGenerateStrategyConfiguration(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
+        return null == keyGenerateStrategyConfig ? Optional.ofNullable(shardingRuleConfiguration.getDefaultKeyGenerateStrategy()) : Optional.of(keyGenerateStrategyConfig);
     }
-
+    
     private String buildProperties(final Properties properties) {
-        return Objects.nonNull(properties) ? Joiner.on(",").join(properties.entrySet().stream()
-                .map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "";
+        return null == properties ? "" : Joiner.on(",").join(properties.entrySet().stream().map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList()));
     }
 }

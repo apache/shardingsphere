@@ -105,7 +105,7 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
     public void assertExecuteWithNoDroppedReadwriteSplittingRules() {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singleton("pr_ds"));
