@@ -90,29 +90,24 @@ public final class MetaDataContextsBuilder {
         Map<String, ShardingSphereMetaData> mataDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
         Map<String, ShardingSphereMetaData> actualDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
         Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>();
-        Map<String, TableMetaData> logicTableMetaDataTable = new HashMap<>();
+        Map<String, TableMetaData> logicTableMetaDataMap = new HashMap<>();
         for (String each : schemaRuleConfigs.keySet()) {
             Map<String, DataSource> dataSourceMap = dataSources.get(each);
             Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
             Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(each, ruleConfigs, databaseType, dataSourceMap);
             Map<Map<String, TableMetaData>, Map<String, TableMetaData>> tableMetaDataMap = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
-            addToMap(tableMetaDataMap.keySet(), actualTableMetaDataMap);
-            addToMap(tableMetaDataMap.values(), logicTableMetaDataTable);
+            logicTableMetaDataMap.putAll(tableMetaDataMap.values().iterator().next());
+            logicTableMetaDataMap.putAll(tableMetaDataMap.keySet().iterator().next());
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
-            ShardingSphereSchema logicSchema = new ShardingSphereSchema(logicTableMetaDataTable);
-            ShardingSphereSchema actualSchema = new ShardingSphereSchema(logicTableMetaDataTable);
-            mataDataMap.put(each, new ShardingSphereMetaData(each, buildResource(databaseType, dataSourceMap), ruleMetaData, logicSchema));
-            actualDataMap.put(each, new ShardingSphereMetaData(each, buildResource(databaseType, dataSourceMap), ruleMetaData, actualSchema));
+            ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);
+            ShardingSphereSchema actualSchema = new ShardingSphereSchema(actualTableMetaDataMap);
+            ShardingSphereSchema logicSchema = new ShardingSphereSchema(logicTableMetaDataMap);
+            actualDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, actualSchema));
+            mataDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, logicSchema));
         }
-        OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(actualDataMap);
+        OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(mataDataMap);
         return new StandardMetaDataContexts(mataDataMap, buildGlobalSchemaMetaData(mataDataMap), executorEngine, props, optimizeContextFactory);
-    }
-
-    private void addToMap(final Collection<Map<String, TableMetaData>> mapList, final Map<String, TableMetaData> tableMetaDataMap) {
-        for (Map<String, TableMetaData> map : mapList) {
-            tableMetaDataMap.putAll(map);
-        }
     }
 
     private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> mataDataMap) {
