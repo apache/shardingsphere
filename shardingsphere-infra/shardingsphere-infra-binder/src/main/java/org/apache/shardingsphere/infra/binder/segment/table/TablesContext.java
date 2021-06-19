@@ -38,30 +38,30 @@ import java.util.stream.Collectors;
 @Getter
 @ToString
 public final class TablesContext {
-    
+
     private final Collection<SimpleTableSegment> tables;
-    
+
     public TablesContext(final SimpleTableSegment tableSegment) {
         this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment));
     }
-    
+
     public TablesContext(final Collection<SimpleTableSegment> tableSegments) {
         Collection<SimpleTableSegment> actualTables = new LinkedList<>(tableSegments);
         Set<String> tableSets = new HashSet<>(actualTables.size(), 1);
         actualTables.removeIf(each -> !tableSets.add(each.getTableName().getIdentifier().getValue()));
         tables = actualTables;
     }
-    
+
     /**
      * Get table names.
-     * 
+     *
      * @return table names
      */
     public Collection<String> getTableNames() {
         return tables.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(
                 Collectors.toSet());
     }
-    
+
     /**
      * Find table name.
      *
@@ -78,7 +78,7 @@ public final class TablesContext {
         }
         return findTableNameFromMetaData(column.getIdentifier().getValue(), schema);
     }
-    
+
     /**
      * Find table name.
      *
@@ -95,7 +95,7 @@ public final class TablesContext {
         }
         return findTableNameFromMetaData(column.getName(), schema);
     }
-    
+
     /**
      * Find table name from SQL.
      * @param tableNameOrAlias table name or alias
@@ -103,13 +103,13 @@ public final class TablesContext {
      */
     public Optional<String> findTableNameFromSQL(final String tableNameOrAlias) {
         for (SimpleTableSegment each : tables) {
-            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
+            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equalsIgnoreCase(each.getAlias().orElse(null))) {
                 return Optional.of(each.getTableName().getIdentifier().getValue());
             }
         }
         return Optional.empty();
     }
-    
+
     private Optional<String> findTableNameFromMetaData(final String columnName, final ShardingSphereSchema schema) {
         for (SimpleTableSegment each : tables) {
             if (schema.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {

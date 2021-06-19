@@ -39,20 +39,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TablesContextTest {
-    
+
     @Test
     public void assertGetTableNames() {
         TablesContext tablesContext = new TablesContext(Arrays.asList(createTableSegment("table_1", "tbl_1"), createTableSegment("table_2", "tbl_2")));
         assertThat(tablesContext.getTableNames(), is(Sets.newHashSet("table_1", "table_2")));
     }
-    
+
     @Test
     public void assertInstanceCreatedWhenNoExceptionThrown() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(0, 10, new IdentifierValue("tbl"));
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
         new TablesContext(Collections.singletonList(tableSegment));
     }
-    
+
     @Test
     public void assertFindTableNameWhenSingleTable() {
         SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
@@ -60,7 +60,7 @@ public final class TablesContextTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("table_1"));
     }
-    
+
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerPresent() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
@@ -71,7 +71,7 @@ public final class TablesContextTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("table_1"));
     }
-    
+
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerAbsent() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
@@ -79,7 +79,7 @@ public final class TablesContextTest {
         Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(createColumnSegment(), mock(ShardingSphereSchema.class));
         assertFalse(actual.isPresent());
     }
-    
+
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndSchemaMetaDataContainsColumn() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
@@ -90,14 +90,23 @@ public final class TablesContextTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("table_1"));
     }
-    
+
+    @Test
+    public void assertFindTableNameWhenTableNameOrAliasIgnoreCase() {
+        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableNameFromSQL("Tbl_1");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("table_1"));
+    }
+
     private SimpleTableSegment createTableSegment(final String tableName, final String alias) {
         SimpleTableSegment result = new SimpleTableSegment(0, 0, new IdentifierValue(tableName));
         AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
         result.setAlias(aliasSegment);
         return result;
     }
-    
+
     private ColumnSegment createColumnSegment() {
         return new ColumnSegment(0, 0, new IdentifierValue("col"));
     }
