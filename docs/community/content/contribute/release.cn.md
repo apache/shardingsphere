@@ -495,6 +495,7 @@ docker tag e9ea51023687 apache/sharding-proxy:${RELEASE.VERSION}
 5.4 发布 Docker 镜像
 
 ```shell
+docker login
 docker push apache/sharding-proxy:latest
 docker push apache/sharding-proxy:${RELEASE_VERSION}
 ```
