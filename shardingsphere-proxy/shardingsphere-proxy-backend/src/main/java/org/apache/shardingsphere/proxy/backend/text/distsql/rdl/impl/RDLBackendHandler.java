@@ -47,7 +47,7 @@ public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRe
     }
     
     @Override
-    protected ResponseHeader execute(final String schemaName, final T sqlStatement) {
+    protected final ResponseHeader execute(final String schemaName, final T sqlStatement) {
         before(schemaName, sqlStatement);
         doExecute(schemaName, sqlStatement);
         after(schemaName);
@@ -63,27 +63,27 @@ public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRe
                 ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
     }
     
-    protected Optional<ReadwriteSplittingRuleConfiguration> getReadwriteSplittingRuleConfiguration(final String schemaName) {
+    protected final Optional<ReadwriteSplittingRuleConfiguration> getReadwriteSplittingRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst();
     }
     
-    protected Optional<EncryptRuleConfiguration> getEncryptRuleConfiguration(final String schemaName) {
+    protected final Optional<EncryptRuleConfiguration> getEncryptRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findFirst();
     }
     
-    protected Optional<DatabaseDiscoveryRuleConfiguration> getDatabaseDiscoveryRuleConfiguration(final String schemaName) {
+    protected final Optional<DatabaseDiscoveryRuleConfiguration> getDatabaseDiscoveryRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst();
     }
     
-    protected Optional<ShardingRuleConfiguration> getShardingRuleConfiguration(final String schemaName) {
+    protected final Optional<ShardingRuleConfiguration> getShardingRuleConfiguration(final String schemaName) {
         return ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
     }
     
-    protected Collection<String> getInvalidResources(final String schemaName, final Collection<String> resources) {
+    protected final Collection<String> getInvalidResources(final String schemaName, final Collection<String> resources) {
         return resources.stream().filter(each -> !isValidResource(schemaName, each)).collect(Collectors.toSet());
     }
     

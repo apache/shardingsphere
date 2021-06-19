@@ -31,17 +31,15 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 
-public class SQLParserEngineTest {
-
+public final class SQLParserEngineTest {
+    
     @Test
     public void assertParse() {
-        ParseTree parseTree = mock(ParseTree.class);
-
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
-        when(sqlParserExecutor.parse("")).thenReturn(parseTree);
-
+        when(sqlParserExecutor.parse("")).thenReturn(mock(ParseTree.class));
         LoadingCache<String, ParseTree> parseTreeCache = CacheBuilder.newBuilder().softValues()
                 .initialCapacity(128).maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseTree>() {
+                    
                         @ParametersAreNonnullByDefault
                         @Override
                         public ParseTree load(final String sql) {
@@ -49,7 +47,6 @@ public class SQLParserEngineTest {
                         }
                     }
                 );
-
         parseTreeCache.getUnchecked("");
         verify(sqlParserExecutor, times(1)).parse("");
         parseTreeCache.getUnchecked("");

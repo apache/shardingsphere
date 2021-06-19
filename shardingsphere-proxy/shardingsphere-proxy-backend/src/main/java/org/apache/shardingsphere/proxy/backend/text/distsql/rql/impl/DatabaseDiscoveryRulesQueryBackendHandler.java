@@ -47,11 +47,11 @@ import java.util.stream.Collectors;
  * Backend handler for show database discovery rules.
  */
 public final class DatabaseDiscoveryRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowDatabaseDiscoveryRulesStatement> {
-
+    
     private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> data;
-
+    
     private Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes;
-
+    
     public DatabaseDiscoveryRulesQueryBackendHandler(final ShowDatabaseDiscoveryRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }

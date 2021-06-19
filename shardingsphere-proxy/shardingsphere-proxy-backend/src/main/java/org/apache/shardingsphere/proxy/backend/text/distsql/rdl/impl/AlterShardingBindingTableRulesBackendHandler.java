@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
@@ -28,9 +26,11 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConverter;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -69,8 +69,7 @@ public final class AlterShardingBindingTableRulesBackendHandler extends RDLBacke
     @Override
     public void doExecute(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement) {
         getShardingRuleConfiguration(schemaName).get().getBindingTableGroups().clear();
-        getShardingRuleConfiguration(schemaName).get().getBindingTableGroups()
-                .addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());
+        getShardingRuleConfiguration(schemaName).get().getBindingTableGroups().addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());
     }
     
     private Collection<String> getLogicTables(final String schemaName) {
@@ -85,7 +84,7 @@ public final class AlterShardingBindingTableRulesBackendHandler extends RDLBacke
         Collection<String> tables = new HashSet<>();
         return table -> notEquals(table, tables);
     }
-
+    
     private boolean notEquals(final String table, final Collection<String> tables) {
         for (String each : tables) {
             if (table.equals(each) || (table.length() == each.length() && Splitter.on(",").splitToList(each)

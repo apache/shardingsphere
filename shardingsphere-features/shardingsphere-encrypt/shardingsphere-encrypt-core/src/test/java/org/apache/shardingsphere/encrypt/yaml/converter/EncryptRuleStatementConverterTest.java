@@ -32,11 +32,10 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 public final class EncryptRuleStatementConverterTest {
-
+    
     @Test
     public void assertCovert() {
-        YamlEncryptRuleConfiguration encryptRuleConfiguration = EncryptRuleStatementConverter.convert(Collections
-                .singleton(new EncryptRuleSegment("t_encrypt", buildColumns())));
+        YamlEncryptRuleConfiguration encryptRuleConfiguration = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", buildColumns())));
         assertNotNull(encryptRuleConfiguration);
         assertThat(encryptRuleConfiguration.getTables().keySet(), is(Collections.singleton("t_encrypt")));
         assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getName(), is("t_encrypt"));
@@ -46,15 +45,10 @@ public final class EncryptRuleStatementConverterTest {
         assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getPlainColumn(), is("user_plain"));
         assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getEncryptorName(), is("t_encrypt_user_id"));
     }
-
+    
     private Collection<EncryptColumnSegment> buildColumns() {
-        EncryptColumnSegment encryptColumnSegment = new EncryptColumnSegment();
-        encryptColumnSegment.setName("user_id");
-        encryptColumnSegment.setPlainColumn("user_plain");
-        encryptColumnSegment.setCipherColumn("user_cipher");
-        Properties properties = new Properties();
-        properties.setProperty("MD5-key", "MD5-value");
-        encryptColumnSegment.setEncryptor(new AlgorithmSegment("MD5", properties));
-        return Collections.singleton(encryptColumnSegment);
+        Properties props = new Properties();
+        props.setProperty("MD5-key", "MD5-value");
+        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", new AlgorithmSegment("MD5", props)));
     }
 }

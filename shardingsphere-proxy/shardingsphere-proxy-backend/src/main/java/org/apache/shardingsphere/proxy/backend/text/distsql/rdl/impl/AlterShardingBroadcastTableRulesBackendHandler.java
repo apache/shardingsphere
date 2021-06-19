@@ -32,7 +32,7 @@ public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBac
     public AlterShardingBroadcastTableRulesBackendHandler(final AlterShardingBroadcastTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
-
+    
     @Override
     public void before(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = getShardingRuleConfiguration(schemaName);

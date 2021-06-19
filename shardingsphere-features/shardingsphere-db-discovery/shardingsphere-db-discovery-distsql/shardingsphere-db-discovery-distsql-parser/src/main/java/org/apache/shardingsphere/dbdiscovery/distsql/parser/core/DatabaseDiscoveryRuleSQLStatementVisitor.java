@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.parser.core;
 
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryRuleStatementParser.AlgorithmPropertiesContext;
@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Collection;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -69,12 +70,9 @@ public final class DatabaseDiscoveryRuleSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDatabaseDiscoveryRuleDefinition(final DatabaseDiscoveryRuleDefinitionContext ctx) {
-        DatabaseDiscoveryRuleSegment result = new DatabaseDiscoveryRuleSegment();
-        result.setName(ctx.ruleName().getText());
-        result.setDataSources(ctx.resources().resourceName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList()));
-        result.setDiscoveryTypeName(ctx.algorithmDefinition().algorithmName().getText());
-        result.setProps(getAlgorithmProperties(ctx.algorithmDefinition().algorithmProperties()));
-        return result;
+        Collection<String> dataSources = ctx.resources().resourceName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList());
+        return new DatabaseDiscoveryRuleSegment(ctx.ruleName().getText(), 
+                dataSources, ctx.algorithmDefinition().algorithmName().getText(), getAlgorithmProperties(ctx.algorithmDefinition().algorithmProperties()));
     }
     
     @Override

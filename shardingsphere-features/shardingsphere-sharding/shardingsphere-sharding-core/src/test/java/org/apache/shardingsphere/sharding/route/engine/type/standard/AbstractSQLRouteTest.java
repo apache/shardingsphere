@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -49,6 +49,10 @@ import static org.mockito.Mockito.mock;
 public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
+        return assertRoute(sql, parameters, 1);
+    }
+    
+    protected final RouteContext assertRoute(final String sql, final List<Object> parameters, final int routeUnitSize) {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereSchema schema = buildSchema();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
@@ -58,7 +62,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(shardingRule));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, schema);
         RouteContext result = new SQLRouteEngine(Collections.singletonList(shardingRule), props).route(logicSQL, metaData);
-        assertThat(result.getRouteUnits().size(), is(1));
+        assertThat(result.getRouteUnits().size(), is(routeUnitSize));
         return result;
     }
     
