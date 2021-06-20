@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.util.Map;
 import java.util.Map.Entry;
