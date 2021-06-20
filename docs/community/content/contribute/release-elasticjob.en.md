@@ -400,6 +400,7 @@ docker tag e9ea51023687 apache/shardingsphere-elasticjob-cloud-scheduler:${RELEA
 4.4 Publish Docker Image
 
 ```shell
+docker login
 docker push apache/shardingsphere-elasticjob-cloud-scheduler:latest
 docker push apache/shardingsphere-elasticjob-cloud-scheduler:${RELEASE_VERSION}
 ```
