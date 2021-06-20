@@ -46,7 +46,7 @@ public final class MetadataRefresherFactoryTest {
     
     @Test
     public void assertNewInstanceWithDropTableStatement() {
-        assertThat(MetadataRefresherFactory.newInstance(mock(DropTableStatement.class)).size(), is(1));
+        assertThat(MetadataRefresherFactory.newInstance(mock(DropTableStatement.class)).size(), is(2));
     }
     
     @Test

@@ -421,6 +421,7 @@ docker tag e9ea51023687 apache/shardingsphere-elasticjob-lite-ui:${RELEASE.VERSI
 4.4 Publish Docker Image
 
 ```shell
+docker login
 docker push apache/shardingsphere-elasticjob-lite-ui:latest
 docker push apache/shardingsphere-elasticjob-lite-ui:${RELEASE_VERSION}
 ```

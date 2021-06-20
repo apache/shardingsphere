@@ -68,7 +68,7 @@ public final class DataSourcesQueryBackendHandler extends SchemaRequiredBackendH
     }
     
     private List<QueryHeader> generateResponseHeader() {
-        List<QueryHeader> result = new LinkedList();
+        List<QueryHeader> result = new LinkedList<>();
         result.add(new QueryHeader(schema, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader(schema, "", "type", "type", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader(schema, "", "host", "host", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
@@ -87,7 +87,7 @@ public final class DataSourcesQueryBackendHandler extends SchemaRequiredBackendH
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
         DataSourceMetaData dataSourceMetaData = ProxyContext.getInstance().getMetaData(schema).getResource().getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
-        Map<Object, Object> attributeMap = new HashMap();
+        Map<Object, Object> attributeMap = new HashMap<>();
         attributeMap.put("connectionTimeoutMilliseconds", dataSourceParameterMap.get(dataSourceName).getConnectionTimeoutMilliseconds());
         attributeMap.put("idleTimeoutMilliseconds", dataSourceParameterMap.get(dataSourceName).getIdleTimeoutMilliseconds());
         attributeMap.put("maxLifetimeMilliseconds", dataSourceParameterMap.get(dataSourceName).getMaxLifetimeMilliseconds());

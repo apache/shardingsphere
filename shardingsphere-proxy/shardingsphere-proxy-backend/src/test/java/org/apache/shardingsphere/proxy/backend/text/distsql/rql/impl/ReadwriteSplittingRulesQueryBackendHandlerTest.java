@@ -98,18 +98,18 @@ public final class ReadwriteSplittingRulesQueryBackendHandlerTest {
     }
     
     private ReadwriteSplittingRuleConfiguration buildReadwriteSplittingRuleConfiguration() {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration =
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
                 new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "ms_group",
                         "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
-        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", buildProps());
+        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", buildProperties());
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>();
         loadBalancers.put("test", shardingSphereAlgorithmConfiguration);
-        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfiguration), loadBalancers);
+        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), loadBalancers);
     }
     
-    private Properties buildProps() {
-        Properties props = new Properties();
-        props.setProperty("read_weight", "2:1");
-        return props;
+    private Properties buildProperties() {
+        Properties result = new Properties();
+        result.setProperty("read_weight", "2:1");
+        return result;
     }
 }

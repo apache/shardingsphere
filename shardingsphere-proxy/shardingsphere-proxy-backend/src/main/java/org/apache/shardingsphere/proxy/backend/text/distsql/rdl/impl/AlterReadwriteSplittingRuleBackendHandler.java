@@ -65,21 +65,20 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     
     @Override
     public void doExecute(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
-        ReadwriteSplittingRuleConfiguration alterReadwriteSplittingRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
+        ReadwriteSplittingRuleConfiguration alterReadwriteSplittingRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(ReadwriteSplittingRuleStatementConverter.convert(sqlStatement))).stream()
                 .map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst().get();
         ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = getReadwriteSplittingRuleConfiguration(schemaName).get();
         drop(sqlStatement, readwriteSplittingRuleConfiguration);
-        readwriteSplittingRuleConfiguration.getDataSources().addAll(alterReadwriteSplittingRuleConfiguration.getDataSources());
-        readwriteSplittingRuleConfiguration.getLoadBalancers().putAll(alterReadwriteSplittingRuleConfiguration.getLoadBalancers());
+        readwriteSplittingRuleConfiguration.getDataSources().addAll(alterReadwriteSplittingRuleConfig.getDataSources());
+        readwriteSplittingRuleConfiguration.getLoadBalancers().putAll(alterReadwriteSplittingRuleConfig.getLoadBalancers());
     }
     
-    private void drop(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration) {
+    private void drop(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration ruleConfig) {
         getAlteredRuleNames(sqlStatement).forEach(each -> {
-            ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration = readwriteSplittingRuleConfiguration
-                    .getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
-            readwriteSplittingRuleConfiguration.getDataSources().remove(readwriteSplittingDataSourceRuleConfiguration);
-            readwriteSplittingRuleConfiguration.getLoadBalancers().remove(readwriteSplittingDataSourceRuleConfiguration.getLoadBalancerName());
+            ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = ruleConfig.getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
+            ruleConfig.getDataSources().remove(dataSourceRuleConfig);
+            ruleConfig.getLoadBalancers().remove(dataSourceRuleConfig.getLoadBalancerName());
         });
     }
     
