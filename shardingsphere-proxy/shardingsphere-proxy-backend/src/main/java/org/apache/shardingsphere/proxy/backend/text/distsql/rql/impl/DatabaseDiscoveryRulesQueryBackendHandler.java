@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -38,10 +38,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Backend handler for show database discovery rules.
@@ -50,7 +47,7 @@ public final class DatabaseDiscoveryRulesQueryBackendHandler extends SchemaRequi
     
     private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> data;
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes;
+    private Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes;
     
     public DatabaseDiscoveryRulesQueryBackendHandler(final ShowDatabaseDiscoveryRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
@@ -66,7 +63,7 @@ public final class DatabaseDiscoveryRulesQueryBackendHandler extends SchemaRequi
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findAny();
         data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElse(Collections.emptyIterator());
-        discoverTypes = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes).orElse(Maps.newHashMap());
+        discoveryTypes = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes).orElse(Collections.emptyMap());
     }
     
     private List<QueryHeader> getQueryHeader(final String schemaName) {
@@ -85,12 +82,8 @@ public final class DatabaseDiscoveryRulesQueryBackendHandler extends SchemaRequi
     
     @Override
     public Collection<Object> getRowData() {
-        DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = data.next();
-        Properties discoverProps = Objects.nonNull(discoverTypes.get(ruleConfig.getDiscoveryTypeName())) 
-                ? discoverTypes.get(ruleConfig.getDiscoveryTypeName()).getProps() : null;
-        return Arrays.asList(ruleConfig.getName(), Joiner.on(",").join(ruleConfig.getDataSourceNames()),
-                discoverTypes.get(ruleConfig.getDiscoveryTypeName()).getType(),
-                Objects.nonNull(discoverProps) ? Joiner.on(",").join(discoverProps.entrySet().stream()
-                        .map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = data.next();
+        return Arrays.asList(dataSourceRuleConfig.getName(), Joiner.on(",").join(dataSourceRuleConfig.getDataSourceNames()), 
+                discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName()).getType(), PropertiesConverter.convert(discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName()).getProps()));
     }
 }
