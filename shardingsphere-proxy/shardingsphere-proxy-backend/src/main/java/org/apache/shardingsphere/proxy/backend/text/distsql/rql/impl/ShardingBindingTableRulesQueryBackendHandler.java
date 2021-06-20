@@ -63,10 +63,10 @@ public final class ShardingBindingTableRulesQueryBackendHandler extends SchemaRe
     
     private Iterator<String> loadRuleConfiguration() {
         Collection<String> result = new LinkedList<>();
-        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-        if (shardingRuleConfiguration.isPresent()) {
-            result = shardingRuleConfiguration.get().getBindingTableGroups();
+        if (shardingRuleConfig.isPresent()) {
+            result = shardingRuleConfig.get().getBindingTableGroups();
         }
         return result.iterator();
     }

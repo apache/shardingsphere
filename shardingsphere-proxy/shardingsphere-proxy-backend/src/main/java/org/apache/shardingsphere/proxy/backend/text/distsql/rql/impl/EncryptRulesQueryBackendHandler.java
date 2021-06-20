@@ -73,20 +73,19 @@ public final class EncryptRulesQueryBackendHandler extends SchemaRequiredBackend
         encryptors = ruleConfig.map(EncryptRuleConfiguration::getEncryptors).orElse(Maps.newHashMap());
     }
 
-    private Map<String, EncryptColumnRuleConfiguration> getAllEncryptColumns(final EncryptRuleConfiguration encryptRuleConfiguration, final String tableName) {
+    private Map<String, EncryptColumnRuleConfiguration> getAllEncryptColumns(final EncryptRuleConfiguration encryptRuleConfig, final String tableName) {
         Map<String, EncryptColumnRuleConfiguration> result = new HashMap<>();
         if (Objects.nonNull(tableName)) {
-            encryptRuleConfiguration.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getName()))
+            encryptRuleConfig.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getName()))
                     .findAny().ifPresent(each -> result.putAll(buildEncryptColumnRuleConfigurationMap(each)));
         } else {
-            encryptRuleConfiguration.getTables().forEach(each -> result.putAll(buildEncryptColumnRuleConfigurationMap(each)));
+            encryptRuleConfig.getTables().forEach(each -> result.putAll(buildEncryptColumnRuleConfigurationMap(each)));
         }
         return result;
     }
     
-    private Map<String, EncryptColumnRuleConfiguration> buildEncryptColumnRuleConfigurationMap(final EncryptTableRuleConfiguration encryptTableRuleConfiguration) {
-        return encryptTableRuleConfiguration.getColumns().stream().collect(Collectors.toMap(each -> Joiner.on(".")
-                .join(encryptTableRuleConfiguration.getName(), each.getLogicColumn()), each -> each));
+    private Map<String, EncryptColumnRuleConfiguration> buildEncryptColumnRuleConfigurationMap(final EncryptTableRuleConfiguration encryptTableRuleConfig) {
+        return encryptTableRuleConfig.getColumns().stream().collect(Collectors.toMap(each -> Joiner.on(".").join(encryptTableRuleConfig.getName(), each.getLogicColumn()), each -> each));
     }
     
     private List<QueryHeader> getQueryHeader(final String schemaName) {
