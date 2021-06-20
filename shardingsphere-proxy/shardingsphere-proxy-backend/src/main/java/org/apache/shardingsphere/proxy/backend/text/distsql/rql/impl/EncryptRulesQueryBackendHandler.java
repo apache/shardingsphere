@@ -20,11 +20,12 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -44,7 +45,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -108,11 +108,7 @@ public final class EncryptRulesQueryBackendHandler extends SchemaRequiredBackend
     @Override
     public Collection<Object> getRowData() {
         Entry<String, EncryptColumnRuleConfiguration> entry = data.next();
-        Properties encryptProps = Objects.nonNull(encryptors.get(entry.getValue().getEncryptorName()))
-                ? encryptors.get(entry.getValue().getEncryptorName()).getProps() : null;
-        return Arrays.asList(Splitter.on(".").splitToList(entry.getKey()).get(0), entry.getValue().getLogicColumn(),
-                entry.getValue().getCipherColumn(), entry.getValue().getPlainColumn(), encryptors.get(entry.getValue().getEncryptorName()).getType(),
-                Objects.nonNull(encryptProps) ? Joiner.on(",").join(encryptProps.entrySet().stream()
-                        .map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList())) : "");
+        return Arrays.asList(Splitter.on(".").splitToList(entry.getKey()).get(0), entry.getValue().getLogicColumn(), entry.getValue().getCipherColumn(), entry.getValue().getPlainColumn(), 
+                encryptors.get(entry.getValue().getEncryptorName()).getType(), PropertiesConverter.convert(encryptors.get(entry.getValue().getEncryptorName()).getProps()));
     }
 }

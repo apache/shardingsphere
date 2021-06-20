@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import com.google.common.base.Joiner;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexSh
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -43,7 +43,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -177,7 +176,7 @@ public final class ShardingTableRulesQueryBackendHandler extends SchemaRequiredB
     
     private String getAlgorithmProps(final Optional<ShardingStrategyConfiguration> databaseShardingStrategy) {
         return databaseShardingStrategy.isPresent() && !(databaseShardingStrategy.get() instanceof NoneShardingStrategyConfiguration)
-                ? buildProperties(getAlgorithmConfiguration(databaseShardingStrategy.get().getShardingAlgorithmName()).getProps()) : "";
+                ? PropertiesConverter.convert(getAlgorithmConfiguration(databaseShardingStrategy.get().getShardingAlgorithmName()).getProps()) : "";
     }
     
     private Optional<ShardingStrategyConfiguration> getDatabaseShardingStrategy(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
@@ -218,14 +217,10 @@ public final class ShardingTableRulesQueryBackendHandler extends SchemaRequiredB
     
     private String getKeyGeneratorProps(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
         return getKeyGenerateStrategyConfiguration(keyGenerateStrategyConfig).map(
-            optional -> buildProperties(shardingRuleConfiguration.getKeyGenerators().get(optional.getKeyGeneratorName()).getProps())).orElse("");
+            optional -> PropertiesConverter.convert(shardingRuleConfiguration.getKeyGenerators().get(optional.getKeyGeneratorName()).getProps())).orElse("");
     }
     
     private Optional<KeyGenerateStrategyConfiguration> getKeyGenerateStrategyConfiguration(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
         return null == keyGenerateStrategyConfig ? Optional.ofNullable(shardingRuleConfiguration.getDefaultKeyGenerateStrategy()) : Optional.of(keyGenerateStrategyConfig);
-    }
-    
-    private String buildProperties(final Properties properties) {
-        return null == properties ? "" : Joiner.on(",").join(properties.entrySet().stream().map(each -> Joiner.on("=").join(each.getKey(), each.getValue())).collect(Collectors.toList()));
     }
 }
