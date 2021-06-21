@@ -29,9 +29,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultS
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,27 +40,21 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class DatabaseDiscoveryRuleQueryResultSetTest {
-    
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
-    @Mock
-    private ShardingSphereRuleMetaData ruleMetaData;
     
     @Before
     public void setUp() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
-        when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
+        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildDatabaseDiscoveryRuleConfiguration()));
+        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
+        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
     }
     
     private DatabaseDiscoveryRuleConfiguration buildDatabaseDiscoveryRuleConfiguration() {
@@ -78,10 +69,10 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
     public void assertGetRowData() {
         RuleQueryResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
         resultSet.init("test", mock(ShowDatabaseDiscoveryRulesStatement.class));
-        Collection<Object> rowData = resultSet.getRowData();
-        assertThat(rowData.size(), is(4));
-        assertTrue(rowData.contains("ms_group"));
-        assertTrue(rowData.contains("ds_0,ds_1"));
-        assertTrue(rowData.contains("MGR"));
+        Collection<Object> actual = resultSet.getRowData();
+        assertThat(actual.size(), is(4));
+        assertTrue(actual.contains("ms_group"));
+        assertTrue(actual.contains("ds_0,ds_1"));
+        assertTrue(actual.contains("MGR"));
     }
 }
