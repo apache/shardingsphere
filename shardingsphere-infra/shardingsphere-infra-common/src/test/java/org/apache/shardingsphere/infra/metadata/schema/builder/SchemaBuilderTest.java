@@ -48,36 +48,36 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaBuilderTest {
-
+    
     private static final String TEST_CATALOG = "catalog";
-
+    
     private static final String TEST_SCHEMA = "schema";
-
+    
     private static final String TABLE_TYPE = "TABLE";
-
+    
     private static final String VIEW_TYPE = "VIEW";
-
+    
     private static final String TABLE_NAME = "TABLE_NAME";
-
+    
     private final String[] singleTableNames = {"single_table1", "single_table2"};
-
+    
     private SchemaBuilderMaterials schemaBuilderMaterials;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DatabaseType databaseType;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
-
+    
     @Mock
     private ConfigurationProperties props;
-
+    
     @Before
     public void setUp() {
         schemaBuilderMaterials = new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props);
     }
-
+    
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
         Map<Map<String, TableMetaData>, Map<String, TableMetaData>> actual = SchemaBuilder.build(schemaBuilderMaterials);
@@ -87,14 +87,14 @@ public final class SchemaBuilderTest {
         assertThat(logicTables.size(), is(2));
         assertSchemaOfShardingTables(actualTables);
     }
-
+    
     private void assertSchemaOfShardingTables(final Map<String, TableMetaData> actual) {
         assertTrue(actual.containsKey("data_node_routed_table1"));
         assertThat(actual.get("data_node_routed_table1").getColumns().size(), is(0));
         assertTrue(actual.containsKey("data_node_routed_table2"));
         assertThat(actual.get("data_node_routed_table2").getColumns().size(), is(0));
     }
-
+    
     @Test
     @SneakyThrows(SQLException.class)
     public void assertBuildOfShardingTablesAndSingleTables() {
@@ -115,7 +115,7 @@ public final class SchemaBuilderTest {
         assertThat(actualTables.size(), is(4));
         assertActualOfShardingTablesAndSingleTables(actualTables);
     }
-
+    
     private void assertActualOfShardingTablesAndSingleTables(final Map<String, TableMetaData> actual) {
         assertTrue(actual.containsKey(singleTableNames[0]));
         assertThat(actual.get(singleTableNames[0]).getColumns().size(), is(0));
