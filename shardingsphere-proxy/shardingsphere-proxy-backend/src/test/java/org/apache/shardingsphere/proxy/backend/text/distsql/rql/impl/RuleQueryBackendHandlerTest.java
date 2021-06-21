@@ -50,7 +50,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DatabaseDiscoveryRulesQueryBackendHandlerTest {
+public final class RuleQueryBackendHandlerTest {
     
     @Mock
     private BackendConnection backendConnection;
@@ -70,12 +70,12 @@ public final class DatabaseDiscoveryRulesQueryBackendHandlerTest {
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
     
-    private DatabaseDiscoveryRulesQueryBackendHandler handler;
+    private RuleQueryBackendHandler handler;
     
     @Before
     public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        handler = new DatabaseDiscoveryRulesQueryBackendHandler(sqlStatement, backendConnection);
+        handler = new RuleQueryBackendHandler(sqlStatement, backendConnection, new DatabaseDiscoveryRuleQueryResultSet());
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);

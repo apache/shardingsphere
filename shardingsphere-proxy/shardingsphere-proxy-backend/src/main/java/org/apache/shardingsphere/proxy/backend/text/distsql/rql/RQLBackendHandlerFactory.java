@@ -20,22 +20,23 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DatabaseDiscoveryRulesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.EncryptRulesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRulesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBindingTableRulesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBroadcastTableRulesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingTableRulesQueryBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DatabaseDiscoveryRuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.EncryptRuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.RuleQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBindingTableRuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBroadcastTableRuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingTableRuleQueryResultSet;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 
 import java.util.Optional;
 
@@ -52,27 +53,27 @@ public final class RQLBackendHandlerFactory {
      * @param backendConnection backend connection
      * @return RDL backend handler
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    public static Optional<TextProtocolBackendHandler> newInstance(final RQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof ShowResourcesStatement) {
             return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof ShowShardingBindingTableRulesStatement) {
-            return Optional.of(new ShardingBindingTableRulesQueryBackendHandler((ShowShardingBindingTableRulesStatement) sqlStatement, backendConnection));
+            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new ShardingBindingTableRuleQueryResultSet()));
         }
         if (sqlStatement instanceof ShowShardingBroadcastTableRulesStatement) {
-            return Optional.of(new ShardingBroadcastTableRulesQueryBackendHandler((ShowShardingBroadcastTableRulesStatement) sqlStatement, backendConnection));
+            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new ShardingBroadcastTableRuleQueryResultSet()));
         }
         if (sqlStatement instanceof ShowReadwriteSplittingRulesStatement) {
-            return Optional.of(new ReadwriteSplittingRulesQueryBackendHandler((ShowReadwriteSplittingRulesStatement) sqlStatement, backendConnection));
+            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new ReadwriteSplittingRuleQueryResultSet()));
         }
         if (sqlStatement instanceof ShowDatabaseDiscoveryRulesStatement) {
-            return Optional.of(new DatabaseDiscoveryRulesQueryBackendHandler((ShowDatabaseDiscoveryRulesStatement) sqlStatement, backendConnection));
+            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new DatabaseDiscoveryRuleQueryResultSet()));
         }
         if (sqlStatement instanceof ShowEncryptRulesStatement) {
-            return Optional.of(new EncryptRulesQueryBackendHandler((ShowEncryptRulesStatement) sqlStatement, backendConnection));
+            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new EncryptRuleQueryResultSet()));
         }
         if (sqlStatement instanceof ShowShardingTableRulesStatement) {
-            return Optional.of(new ShardingTableRulesQueryBackendHandler((ShowShardingTableRulesStatement) sqlStatement, backendConnection));
+            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new ShardingTableRuleQueryResultSet()));
         }
         return Optional.empty();
     }

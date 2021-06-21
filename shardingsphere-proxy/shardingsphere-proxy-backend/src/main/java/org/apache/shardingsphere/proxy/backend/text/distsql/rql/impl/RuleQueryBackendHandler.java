@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -30,19 +31,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Backend handler for show database discovery rules.
+ * Rule query backend handler.
  */
-public final class DatabaseDiscoveryRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowDatabaseDiscoveryRulesStatement> {
+public final class RuleQueryBackendHandler extends SchemaRequiredBackendHandler<RQLStatement> {
     
-    private final DatabaseDiscoveryRuleQueryResultSet resultSet;
+    private final RuleQueryResultSet resultSet;
     
-    public DatabaseDiscoveryRulesQueryBackendHandler(final ShowDatabaseDiscoveryRulesStatement sqlStatement, final BackendConnection backendConnection) {
+    public RuleQueryBackendHandler(final RQLStatement sqlStatement, final BackendConnection backendConnection, final RuleQueryResultSet resultSet) {
         super(sqlStatement, backendConnection);
-        resultSet = new DatabaseDiscoveryRuleQueryResultSet();
+        this.resultSet = resultSet;
     }
     
     @Override
-    protected ResponseHeader execute(final String schemaName, final ShowDatabaseDiscoveryRulesStatement sqlStatement) {
+    protected ResponseHeader execute(final String schemaName, final RQLStatement sqlStatement) {
         resultSet.init(schemaName, sqlStatement);
         List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream().map(
             each -> new QueryHeader(schemaName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
