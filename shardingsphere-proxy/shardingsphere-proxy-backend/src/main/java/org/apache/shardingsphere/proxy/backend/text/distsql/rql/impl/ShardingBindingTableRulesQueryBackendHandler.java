@@ -34,15 +34,15 @@ import java.util.stream.Collectors;
  */
 public final class ShardingBindingTableRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowShardingBindingTableRulesStatement> {
     
-    private ShardingBindingTableRuleQueryResultSet resultSet;
+    private final ShardingBindingTableRuleQueryResultSet resultSet;
     
     public ShardingBindingTableRulesQueryBackendHandler(final ShowShardingBindingTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
+        resultSet = new ShardingBindingTableRuleQueryResultSet();
     }
     
     @Override
     protected ResponseHeader execute(final String schemaName, final ShowShardingBindingTableRulesStatement sqlStatement) {
-        resultSet = new ShardingBindingTableRuleQueryResultSet(getSqlStatement(), getBackendConnection());
         resultSet.init(schemaName, sqlStatement);
         List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream().map(
             each -> new QueryHeader(schemaName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
