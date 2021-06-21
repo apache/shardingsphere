@@ -35,7 +35,7 @@ import java.sql.SQLException;
  * 2. Please make sure sharding-governance-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  * 3. Please make sure sharding-governance-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
-public final class YamlConfigurationExampleMain {
+public final class GovernanceRawYamlConfigurationExample {
     
       private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING;
@@ -78,7 +78,7 @@ public final class YamlConfigurationExampleMain {
     }
     
     private static File getFile(final String fileName) {
-        return new File(YamlConfigurationExampleMain.class.getResource(fileName).getFile());
+        return new File(GovernanceRawYamlConfigurationExample.class.getResource(fileName).getFile());
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
