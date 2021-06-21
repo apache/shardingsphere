@@ -20,22 +20,31 @@ package org.apache.shardingsphere.infra.optimize.core.convert;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.impl.SelectStatementSqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Optional;
 
 /**
- * SqlNode converter.
+ * SqlNode convert engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SqlNodeConverter {
+public final class SqlNodeConvertEngine {
     
     /**
      *  Convert.
-     * @param statementContext statement context
+     * @param statement statement
      * @return sqlNode optional
      */
-    public static Optional<SqlNode> convert(final SQLStatementContext<?> statementContext) {
-        return Optional.empty();
+    public static Optional<SqlNode> convert(final SQLStatement statement) {
+        try {
+            if (statement instanceof SelectStatement) {
+                return new SelectStatementSqlNodeConverter().convert((SelectStatement) statement);
+            }
+            return Optional.empty();
+        } catch (final UnsupportedOperationException ex) {
+            return Optional.empty();
+        }
     }
 }
