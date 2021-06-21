@@ -16,6 +16,6 @@
 #
 
 driverClassName: com.mysql.jdbc.Driver
-jdbcUrl: jdbc:mysql://localhost:3307/write_only
+jdbcUrl: jdbc:mysql://localhost:3307/write_only?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
 username: root
 password: root

@@ -28,8 +28,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public final class ExampleMain {
-    
+public final class ProxyHintExample {
+
     private static final HintType TYPE = HintType.DATABASE_TABLES;
 //    private static final HintType TYPE = HintType.DATABASE_ONLY;
 //    private static final HintType TYPE = HintType.WRITE_ONLY;
@@ -56,7 +56,7 @@ public final class ExampleMain {
     }
     
     private static File getFile(final String configFile) {
-        return new File(ExampleMain.class.getResource(configFile).getFile());
+        return new File(ProxyHintExample.class.getResource(configFile).getFile());
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
