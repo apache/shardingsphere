@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -43,57 +38,23 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class EncryptRulesQueryBackendHandlerTest {
-    
-    @Mock
-    private BackendConnection backendConnection;
-    
-    @Mock
-    private ShowEncryptRulesStatement sqlStatement;
-    
-    @Mock
-    private MetaDataContexts metaDataContexts;
-    
-    @Mock
-    private TransactionContexts transactionContexts;
-    
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
-    @Mock
-    private ShardingSphereRuleMetaData ruleMetaData;
-    
-    private EncryptRulesQueryBackendHandler handler;
+public final class EncryptRuleQueryResultSetTest {
     
     @Before
     public void setUp() {
-        ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        handler = new EncryptRulesQueryBackendHandler(sqlStatement, backendConnection);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
-        when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
+        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildEncryptRuleConfiguration()));
-    }
-    
-    @Test
-    public void assertExecute() {
-        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof QueryResponseHeader);
-        Collection<Object> rowData = handler.getRowData();
-        assertThat(rowData.size(), is(6));
-        assertTrue(rowData.contains("t_encrypt"));
-        assertTrue(rowData.contains("user_id"));
-        assertTrue(rowData.contains("user_cipher"));
-        assertTrue(rowData.contains("user_plain"));
-        assertTrue(rowData.contains("md5"));
+        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
+        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
+        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
     }
     
     private EncryptRuleConfiguration buildEncryptRuleConfiguration() {
@@ -103,5 +64,18 @@ public final class EncryptRulesQueryBackendHandlerTest {
         Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>();
         encryptors.put("test", shardingSphereAlgorithmConfig);
         return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptors);
+    }
+    
+    @Test
+    public void assertGetRowData() {
+        RuleQueryResultSet resultSet = new EncryptRuleQueryResultSet();
+        resultSet.init("test", mock(ShowEncryptRulesStatement.class));
+        Collection<Object> actual = resultSet.getRowData();
+        assertThat(actual.size(), is(6));
+        assertTrue(actual.contains("t_encrypt"));
+        assertTrue(actual.contains("user_id"));
+        assertTrue(actual.contains("user_cipher"));
+        assertTrue(actual.contains("user_plain"));
+        assertTrue(actual.contains("md5"));
     }
 }
