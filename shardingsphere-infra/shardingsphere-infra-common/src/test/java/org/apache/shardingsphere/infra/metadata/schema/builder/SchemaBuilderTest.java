@@ -68,7 +68,7 @@ public final class SchemaBuilderTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
-    
+
     @Mock
     private ConfigurationProperties props;
 
