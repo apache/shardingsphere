@@ -20,12 +20,19 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.util;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+
+import java.util.Collection;
 
 /**
  * Index meta data utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class IndexMetaDataUtil {
+    
+    private static final String UNDERLINE = "_";
+    
+    private static final String GENERATED_LOGIC_INDEX_NAME_SUFFIX = "idx";
     
     /**
      * Get logic index name.
@@ -35,7 +42,7 @@ public class IndexMetaDataUtil {
      * @return logic index name
      */
     public static String getLogicIndexName(final String actualIndexName, final String actualTableName) {
-        String indexNameSuffix = "_" + actualTableName;
+        String indexNameSuffix = UNDERLINE + actualTableName;
         return actualIndexName.endsWith(indexNameSuffix) ? actualIndexName.substring(0, actualIndexName.lastIndexOf(indexNameSuffix)) : actualIndexName;
     }
     
@@ -47,6 +54,20 @@ public class IndexMetaDataUtil {
      * @return actual index name
      */
     public static String getActualIndexName(final String logicIndexName, final String actualTableName) {
-        return Strings.isNullOrEmpty(actualTableName) ? logicIndexName : logicIndexName + "_" + actualTableName;
+        return Strings.isNullOrEmpty(actualTableName) ? logicIndexName : logicIndexName + UNDERLINE + actualTableName;
+    }
+    
+    /**
+     * Get generated logic index name.
+     *
+     * @param columns column segments 
+     * @return generated logic index name
+     */
+    public static String getGeneratedLogicIndexName(final Collection<ColumnSegment> columns) {
+        StringBuilder builder = new StringBuilder();
+        for (ColumnSegment each : columns) {
+            builder.append(each.getIdentifier().getValue()).append(UNDERLINE);
+        }
+        return builder.append(GENERATED_LOGIC_INDEX_NAME_SUFFIX).toString();
     }
 }

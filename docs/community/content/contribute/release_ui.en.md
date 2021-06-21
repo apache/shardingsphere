@@ -218,7 +218,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src shardings
 *   Correct year in `NOTICE` file
 *   There is only text files but no binary files
 *   All source files have ASF headers
-*   Codes can be compiled and pass the unit tests (./mvnw install)
+*   Codes can be compiled and pass the unit tests (./mvnw -T 1C install)
 *   Check if there is any extra files or folders, empty folders for example
 
 **Check binary packages**
@@ -230,7 +230,7 @@ to check the following items:
 *   Correct year in `NOTICE` file
 *   All text files have ASF headers
 *   Check the third party dependency license:
-    *   The software have a compatible license
+    *   The software has a compatible license
     *   All software licenses mentioned in `LICENSE`
     *   All the third party dependency licenses are under `licenses` folder
     *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
@@ -382,6 +382,7 @@ docker tag e9ea51023687 apache/shardingsphere-ui:${RELEASE.VERSION}
 3.4 Publish Docker Image
 
 ```shell
+docker login
 docker push apache/shardingsphere-ui:latest
 docker push apache/shardingsphere-ui:${RELEASE_VERSION}
 ```

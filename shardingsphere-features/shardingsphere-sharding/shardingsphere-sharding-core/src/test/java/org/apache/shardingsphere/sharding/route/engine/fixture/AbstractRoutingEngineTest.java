@@ -152,6 +152,21 @@ public abstract class AbstractRoutingEngineTest {
         return result;
     }
     
+    protected final ShardingRule createIntervalTableShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(createTableRuleConfig("t_interval_test", "ds_0.t_interval_test_202101,ds_1.t_interval_test_202102",
+                null, new StandardShardingStrategyConfiguration("create_at", "interval_test")));
+        Properties props0 = new Properties();
+        props0.setProperty("datetime-pattern", "yyyy-MM-dd HH:mm:ss");
+        props0.setProperty("datetime-lower", "2021-01-01 00:00:00");
+        props0.setProperty("datetime-upper", "2021-01-02 00:00:00");
+        props0.setProperty("sharding-suffix-pattern", "yyyyMM");
+        props0.setProperty("datetime-interval-amount", "1");
+        props0.setProperty("datetime-interval-unit", "MONTHS");
+        shardingRuleConfig.getShardingAlgorithms().put("interval_test", new ShardingSphereAlgorithmConfiguration("INTERVAL", props0));
+        return new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
+    }
+    
     private ShardingTableRuleConfiguration createInlineTableRuleConfig(final String tableName, final String actualDataNodes, final String algorithmExpression, final String dsAlgorithmExpression) {
         return createTableRuleConfig(tableName, actualDataNodes,
             createStandardShardingStrategyConfiguration("ds_inline", dsAlgorithmExpression), createStandardShardingStrategyConfiguration(tableName + "_inline", algorithmExpression));
@@ -197,6 +212,15 @@ public abstract class AbstractRoutingEngineTest {
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue1);
         shardingCondition.getValues().add(shardingConditionValue2);
+        result.add(shardingCondition);
+        return new ShardingConditions(result);
+    }
+    
+    protected final ShardingConditions createIntervalShardingConditions(final String tableName) {
+        List<ShardingCondition> result = new ArrayList<>(1);
+        ShardingConditionValue shardingConditionValue = new ListShardingConditionValue<>("create_at", tableName, Collections.singleton("2021-01-01 20:20:20"));
+        ShardingCondition shardingCondition = new ShardingCondition();
+        shardingCondition.getValues().add(shardingConditionValue);
         result.add(shardingCondition);
         return new ShardingConditions(result);
     }

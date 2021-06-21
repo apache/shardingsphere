@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -97,7 +97,7 @@ public final class DropShardingTableRuleBackendHandlerTest {
         when(sqlStatement.getTableNames()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test(expected = ShardingTableRulesInUsedException.class)
     public void assertExecuteWithBindingTableRule() {
         TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order_item"));
@@ -105,7 +105,7 @@ public final class DropShardingTableRuleBackendHandlerTest {
         when(sqlStatement.getTableNames()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
     }
-
+    
     @Test
     public void assertExecute() {
         TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));

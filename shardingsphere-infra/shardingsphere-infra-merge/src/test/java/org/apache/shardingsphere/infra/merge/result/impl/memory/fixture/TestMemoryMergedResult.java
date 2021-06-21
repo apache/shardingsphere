@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.infra.merge.result.impl.memory.fixture;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.fixture.rule.IndependentRuleFixture;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -43,7 +42,7 @@ public final class TestMemoryMergedResult extends MemoryMergedResult<Independent
     
     @Override
     protected List<MemoryQueryResultRow> init(final IndependentRuleFixture rule, final ShardingSphereSchema schema, 
-                                              final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults, final MergedResult mergedResult) {
+                                              final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
         memoryQueryResultRow = mock(MemoryQueryResultRow.class);
         return Collections.singletonList(memoryQueryResultRow);
     }

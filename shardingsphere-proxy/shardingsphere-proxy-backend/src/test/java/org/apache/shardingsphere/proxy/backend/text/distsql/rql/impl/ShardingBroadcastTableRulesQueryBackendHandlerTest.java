@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -48,27 +48,27 @@ import static org.hamcrest.CoreMatchers.is;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingBroadcastTableRulesQueryBackendHandlerTest {
-
+    
     @Mock
     private BackendConnection backendConnection;
-
+    
     @Mock
     private ShowShardingBroadcastTableRulesStatement sqlStatement;
-
+    
     @Mock
     private MetaDataContexts metaDataContexts;
-
+    
     @Mock
     private TransactionContexts transactionContexts;
-
+    
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
-
+    
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     private ShardingBroadcastTableRulesQueryBackendHandler handler;
-
+    
     @Before
     public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
@@ -79,19 +79,19 @@ public final class ShardingBroadcastTableRulesQueryBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildShardingRuleConfiguration()));
     }
-
+    
     @Test
     public void assertExecute() {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof QueryResponseHeader);
         assertTrue(handler.next());
-        assertThat(handler.getRowData(), is(Arrays.asList("t_order")));
+        assertThat(handler.getRowData(), is(Collections.singleton("t_order")));
     }
-
+    
     private ShardingRuleConfiguration buildShardingRuleConfiguration() {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getBroadcastTables().addAll(Arrays.asList("t_order", "t_order_item"));
-        return shardingRuleConfiguration;
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getBroadcastTables().addAll(Arrays.asList("t_order", "t_order_item"));
+        return result;
     }
 }

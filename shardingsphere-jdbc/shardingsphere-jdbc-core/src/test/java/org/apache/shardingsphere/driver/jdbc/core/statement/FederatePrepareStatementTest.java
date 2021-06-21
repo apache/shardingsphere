@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForFederateTest;
 import org.junit.Test;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -62,6 +63,15 @@ public final class FederatePrepareStatementTest extends AbstractShardingSphereDa
     private static final String SELECT_SQL_BY_ID_ACROSS_TWO_SHARDING_TABLES =
             "select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i "
                     + "where o.order_id_sharding = i.item_id and i.order_id > ?";
+    
+    private static final String SELECT_HAVING_SQL_FOR_SHARDING_TABLE =
+            "SELECT user_id, SUM(order_id_sharding) FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?";
+    
+    private static final String SELECT_SUBQUEY_AGGREGATION_SQL_FOR_SHARDING_TABLE =
+            "SELECT (SELECT MAX(user_id) FROM t_order_federate_sharding) max_user_id, order_id_sharding, status FROM t_order_federate_sharding WHERE order_id_sharding > ?";
+    
+    private static final String SELECT_PARTIAL_DISTINCT_AGGREGATION_SQL_FOR_SHARDING_TABLE =
+            "SELECT SUM(DISTINCT user_id), SUM(order_id_sharding) FROM t_order_federate_sharding WHERE order_id_sharding > ?";
 
     @Test
     public void assertQueryWithFederateInSingleTablesByExecuteQuery() throws SQLException {
@@ -252,5 +262,73 @@ public final class FederatePrepareStatementTest extends AbstractShardingSphereDa
         assertThat(resultSet.getInt(1), is(1011));
         assertThat(resultSet.getInt(2), is(10001));
         assertFalse(resultSet.next());
+    }
+    
+    @Test
+    public void assertHavingForShardingTableWithFederateByExecuteQuery() throws SQLException {
+        assertHavingForShardingTableWithFederate(true);
+    }
+    
+    @Test
+    public void assertHavingForShardingTableWithFederateByExecute() throws SQLException {
+        assertHavingForShardingTableWithFederate(false);
+    }
+    
+    private void assertHavingForShardingTableWithFederate(final boolean executeQuery) throws SQLException {
+        PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_HAVING_SQL_FOR_SHARDING_TABLE);
+        preparedStatement.setInt(1, 1000);
+        ResultSet resultSet = getResultSet(preparedStatement, executeQuery);
+        assertNotNull(resultSet);
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(10));
+        assertThat(resultSet.getInt(2), is(2110));
+        assertNotNull(resultSet);
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(11));
+        assertThat(resultSet.getInt(2), is(2112));
+        assertFalse(resultSet.next());
+    }
+    
+    @Test
+    public void assertSubqueyAggregationForShardingTableWithFederateByExecuteQuery() throws SQLException {
+        assertSubqueyAggregationForShardingTableWithFederate(true);
+    }
+    
+    @Test
+    public void assertSubqueyAggregationForShardingTableWithFederateByExecute() throws SQLException {
+        assertSubqueyAggregationForShardingTableWithFederate(false);
+    }
+    
+    private void assertSubqueyAggregationForShardingTableWithFederate(final boolean executeQuery) throws SQLException {
+        PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SUBQUEY_AGGREGATION_SQL_FOR_SHARDING_TABLE);
+        preparedStatement.setInt(1, 1100);
+        ResultSet resultSet = getResultSet(preparedStatement, executeQuery);
+        assertNotNull(resultSet);
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(11));
+        assertThat(resultSet.getInt(2), is(1101));
+        assertThat(resultSet.getString(3), is("init"));
+        assertNotNull(resultSet);
+    }
+    
+    @Test
+    public void assertPartialDistinctAggregationForShardingTableWithFederateByExecuteQuery() throws SQLException {
+        assertPartialDistinctAggregationForShardingTableWithFederate(true);
+    }
+    
+    @Test
+    public void assertPartialDistinctAggregationForShardingTableWithFederateByExecute() throws SQLException {
+        assertPartialDistinctAggregationForShardingTableWithFederate(false);
+    }
+    
+    private void assertPartialDistinctAggregationForShardingTableWithFederate(final boolean executeQuery) throws SQLException {
+        PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_PARTIAL_DISTINCT_AGGREGATION_SQL_FOR_SHARDING_TABLE);
+        preparedStatement.setInt(1, 1000);
+        ResultSet resultSet = getResultSet(preparedStatement, executeQuery);
+        assertNotNull(resultSet);
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(21));
+        assertThat(resultSet.getInt(2), is(4222));
+        assertNotNull(resultSet);
     }
 }

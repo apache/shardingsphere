@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.impl.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -53,27 +53,27 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ShardingTableRulesQueryBackendHandlerTest {
-
+    
     @Mock
     private BackendConnection backendConnection;
-
+    
     @Mock
     private ShowShardingTableRulesStatement sqlStatement;
-
+    
     @Mock
     private MetaDataContexts metaDataContexts;
-
+    
     @Mock
     private TransactionContexts transactionContexts;
-
+    
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
-
+    
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     private ShardingTableRulesQueryBackendHandler handler;
-
+    
     @Before
     public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
@@ -83,7 +83,7 @@ public final class ShardingTableRulesQueryBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfiguration());
     }
-
+    
     @Test
     public void assertExecute() {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
@@ -108,11 +108,11 @@ public final class ShardingTableRulesQueryBackendHandlerTest {
         assertThat(rowDataList.get(12), is("SNOWFLAKE"));
         assertThat(rowDataList.get(13), is("worker-id=123"));
     }
-
+    
     private Collection<RuleConfiguration> buildShardingConfiguration() {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(), Collection.class));
     }
-
+    
     @SneakyThrows
     private String readYAML() {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/config-sharding.yaml").toURI()))

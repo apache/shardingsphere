@@ -78,15 +78,6 @@ public final class ReadwriteSplittingRule implements FeatureRule, SchemaRule, Da
     }
     
     /**
-     * Get all logic data source names.
-     *
-     * @return all logic data source names
-     */
-    public Collection<String> getAllLogicDataSourceNames() {
-        return dataSourceRules.keySet();
-    }
-    
-    /**
      * Get single data source rule.
      *
      * @return replica query data source rule
