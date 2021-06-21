@@ -34,7 +34,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3
 **说明**
 
 * 可以自定义端口 `3308` 和 `13308`。`3308` 表示 docker 容器端口, `13308` 表示宿主机端口。
-* 必须挂载配置路径到 /opt/shardingsphere-proxy/conf。
+* 必须挂载配置路径到 `/opt/shardingsphere-proxy/conf`。
 
 ```bash
 docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
@@ -50,7 +50,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${you
 
 **说明**
 
-* 如需使用外部 jar 包，可将其所在目录挂载到 /opt/shardingsphere-proxy/ext-lib。
+* 如需使用外部 jar 包，可将其所在目录挂载到 `/opt/shardingsphere-proxy/ext-lib`。
 
 ## 访问 ShardingSphere-Proxy
 
@@ -68,12 +68,12 @@ psql -U ${your_user_name} -h ${your_host} -p 13308
 
 问题2：启动时报无法连接到数据库错误？
 
-回答：请确保 /${your_work_dir}/conf/config-xxx.yaml 配置文件中指定的 PostgreSQL 数据库的 IP 可以被 Docker 容器内部访问到。
+回答：请确保 `/${your_work_dir}/conf/config-xxx.yaml` 配置文件中指定的 PostgreSQL 数据库的 IP 可以被 Docker 容器内部访问到。
 
 问题3：如何使用后端数据库为 MySQL 的 ShardingSphere-Proxy？
 
-回答：将 `mysql-connector.jar` 所在目录挂载到 /opt/shardingsphere-proxy/ext-lib。
+回答：将 `mysql-connector.jar` 所在目录挂载到 `/opt/shardingsphere-proxy/ext-lib`。
 
 问题4：如何使用自定义分片算法？
 
-回答：实现对应的分片算法接口，将编译出的分片算法 jar 所在目录挂载到 /opt/shardingsphere-proxy/ext-lib。
+回答：实现对应的分片算法接口，将编译出的分片算法 jar 所在目录挂载到 `/opt/shardingsphere-proxy/ext-lib`。

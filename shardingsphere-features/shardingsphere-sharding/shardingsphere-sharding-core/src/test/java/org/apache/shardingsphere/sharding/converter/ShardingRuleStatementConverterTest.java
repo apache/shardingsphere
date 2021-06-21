@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -43,13 +43,9 @@ public final class ShardingRuleStatementConverterTest {
     @Before
     public void setUp() {
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
-        segment = new TableRuleSegment();
-        segment.setLogicTable("t_order");
-        segment.setDataSources(Arrays.asList("ds0", "ds1"));
-        segment.setTableStrategyColumn("order_id");
         Properties props = new Properties();
         props.setProperty("sharding_count", "2");
-        segment.setTableStrategy(new AlgorithmSegment("MOD", props));
+        segment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"), "order_id", new AlgorithmSegment("MOD", props), null, null);
         sqlStatement = new CreateShardingTableRuleStatement(Collections.singleton(segment));
     }
     

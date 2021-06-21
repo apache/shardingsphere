@@ -169,7 +169,7 @@ public final class ShardingRouteEngineFactory {
         if (!shardingRule.tableRuleExists(tableNames)) {
             return new SingleTablesRoutingEngine(tableNames, sqlStatement);
         }
-        if (shardingRule.isAllShardingTables(tableNames) && 1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
+        if (isShardingStandardQuery(sqlStatementContext, tableNames, shardingRule)) {
             return new ShardingStandardRoutingEngine(tableNames.iterator().next(), shardingConditions, props);
         }
         if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule)) {
@@ -179,17 +179,26 @@ public final class ShardingRouteEngineFactory {
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
     }
     
+    private static boolean isShardingStandardQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final ShardingRule shardingRule) {
+        boolean needExecuteByCalcite = sqlStatementContext instanceof SelectStatementContext && isNeedExecuteByCalcite((SelectStatementContext) sqlStatementContext); 
+        return (shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllShardingTables(tableNames) && 1 == tableNames.size()) && !needExecuteByCalcite;
+    }
+    
     private static boolean isShardingFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final ShardingRule shardingRule) {
         if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        if (!select.isContainsJoinQuery() && !select.isContainsSubquery()) {
-            return false;
+        if (isNeedExecuteByCalcite(select)) {
+            return true;
         }
-        if (shardingRule.isAllTablesInSameDataSource(tableNames)) {
+        if ((!select.isContainsJoinQuery() && !select.isContainsSubquery()) || shardingRule.isAllTablesInSameDataSource(tableNames)) {
             return false;
         }
         return shardingRule.isAllShardingTables(tableNames) || (shardingRule.tableRuleExists(tableNames) && shardingRule.singleTableRuleExists(tableNames));
+    }
+    
+    private static boolean isNeedExecuteByCalcite(final SelectStatementContext select) {
+        return select.isContainsHaving() || select.isContainsSubqueyAggregation() || select.isContainsPartialDistinctAggregation();
     }
 }

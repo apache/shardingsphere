@@ -1,6 +1,6 @@
 +++
 title = "从New SQL角度看Apache ShardingSphere"
-weight = 3
+weight = 4
 chapter = true
 +++
 

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ResetScalingJobStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingJobStatement;
 import org.apache.shardingsphere.proxy.backend.exception.ScalingJobOperateException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;

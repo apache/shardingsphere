@@ -51,27 +51,27 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DatabaseDiscoveryRulesQueryBackendHandlerTest {
-
+    
     @Mock
     private BackendConnection backendConnection;
-
+    
     @Mock
     private ShowDatabaseDiscoveryRulesStatement sqlStatement;
-
+    
     @Mock
     private MetaDataContexts metaDataContexts;
-
+    
     @Mock
     private TransactionContexts transactionContexts;
-
+    
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
-
+    
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
-
+    
     private DatabaseDiscoveryRulesQueryBackendHandler handler;
-
+    
     @Before
     public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
@@ -81,7 +81,7 @@ public final class DatabaseDiscoveryRulesQueryBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildDatabaseDiscoveryRuleConfiguration()));
     }
-
+    
     @Test
     public void assertExecute() {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
@@ -93,15 +93,13 @@ public final class DatabaseDiscoveryRulesQueryBackendHandlerTest {
         assertTrue(rowData.contains("ds_0,ds_1"));
         assertTrue(rowData.contains("MGR"));
     }
-
+    
     private DatabaseDiscoveryRuleConfiguration buildDatabaseDiscoveryRuleConfiguration() {
-        DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration =
+        DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig =
                 new DatabaseDiscoveryDataSourceRuleConfiguration("ms_group", Arrays.asList("ds_0", "ds_1"), "test");
-        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("MGR", new Properties());
+        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MGR", new Properties());
         Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = new HashMap<>();
-        discoverTypes.put("test", shardingSphereAlgorithmConfiguration);
-        DatabaseDiscoveryRuleConfiguration result =
-                new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfiguration), discoverTypes);
-        return result;
+        discoverTypes.put("test", shardingSphereAlgorithmConfig);
+        return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), discoverTypes);
     }
 }
