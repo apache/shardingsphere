@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,17 +44,17 @@ import java.util.stream.Collectors;
 /**
  * Result set for show encrypt rule.
  */
-public final class EncryptRuleQueryResultSet implements RuleQueryResultSet<ShowEncryptRulesStatement> {
+public final class EncryptRuleQueryResultSet implements RuleQueryResultSet {
     
     private Iterator<Entry<String, EncryptColumnRuleConfiguration>> data;
     
     private Map<String, ShardingSphereAlgorithmConfiguration> encryptors;
     
     @Override
-    public void init(final String schemaName, final ShowEncryptRulesStatement sqlStatement) {
+    public void init(final String schemaName, final SQLStatement sqlStatement) {
         Optional<EncryptRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findAny();
-        data = ruleConfig.map(optional -> getAllEncryptColumns(optional, sqlStatement.getTableName()).entrySet().iterator()).orElse(Collections.emptyIterator());
+        data = ruleConfig.map(optional -> getAllEncryptColumns(optional, ((ShowEncryptRulesStatement) sqlStatement).getTableName()).entrySet().iterator()).orElse(Collections.emptyIterator());
         encryptors = ruleConfig.map(EncryptRuleConfiguration::getEncryptors).orElse(Maps.newHashMap());
     }
     

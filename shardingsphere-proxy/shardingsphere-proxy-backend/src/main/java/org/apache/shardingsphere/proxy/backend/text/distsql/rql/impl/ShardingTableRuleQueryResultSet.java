@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * Result set for show sharding table rules.
  */
-public final class ShardingTableRuleQueryResultSet implements RuleQueryResultSet<ShowShardingTableRulesStatement> {
+public final class ShardingTableRuleQueryResultSet implements RuleQueryResultSet {
     
     private Iterator<ShardingTableRuleConfiguration> tables;
     
@@ -52,8 +53,8 @@ public final class ShardingTableRuleQueryResultSet implements RuleQueryResultSet
     private ShardingRuleConfiguration shardingRuleConfig;
     
     @Override
-    public void init(final String schemaName, final ShowShardingTableRulesStatement sqlStatement) {
-        final String tableName = sqlStatement.getTableName();
+    public void init(final String schemaName, final SQLStatement sqlStatement) {
+        String tableName = ((ShowShardingTableRulesStatement) sqlStatement).getTableName();
         Optional<ShardingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
         if (Objects.isNull(tableName)) {

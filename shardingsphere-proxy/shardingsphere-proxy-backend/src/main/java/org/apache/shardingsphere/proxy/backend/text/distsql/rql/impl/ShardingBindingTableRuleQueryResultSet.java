@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,12 +30,12 @@ import java.util.Optional;
 /**
  * Result set for show sharding binding table rules.
  */
-public final class ShardingBindingTableRuleQueryResultSet implements RuleQueryResultSet<ShowShardingBindingTableRulesStatement> {
+public final class ShardingBindingTableRuleQueryResultSet implements RuleQueryResultSet {
     
     private Iterator<String> data;
     
     @Override
-    public void init(final String schemaName, final ShowShardingBindingTableRulesStatement sqlStatement) {
+    public void init(final String schemaName, final SQLStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
         data = shardingRuleConfig.map(shardingRuleConfiguration -> shardingRuleConfiguration.getBindingTableGroups().iterator()).orElse(Collections.emptyIterator());

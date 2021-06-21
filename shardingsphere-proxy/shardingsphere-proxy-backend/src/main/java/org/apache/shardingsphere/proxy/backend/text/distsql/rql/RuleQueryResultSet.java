@@ -23,17 +23,15 @@ import java.util.Collection;
 
 /**
  * Rule query result set.
- * 
- * @param <T> type of SQL statement
  */
-public interface RuleQueryResultSet<T extends SQLStatement> {
+public interface RuleQueryResultSet {
     
     /**
      * Initialize rule data.
      * @param schemaName schema name
      * @param sqlStatement SQL statement
      */
-    void init(String schemaName, T sqlStatement);
+    void init(String schemaName, SQLStatement sqlStatement);
     
     /**
      * Get result set column names.
