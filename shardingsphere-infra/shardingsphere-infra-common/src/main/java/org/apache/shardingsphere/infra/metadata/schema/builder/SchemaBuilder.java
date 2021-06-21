@@ -73,35 +73,20 @@ public final class SchemaBuilder {
      */
     public static Map<Map<String, TableMetaData>, Map<String, TableMetaData>> build(final SchemaBuilderMaterials materials) throws SQLException {
         Map<Map<String, TableMetaData>, Map<String, TableMetaData>> result = new HashMap<>();
-        Map<String, TableMetaData> logicTableMetaMap = addRuleConfiguredTables(materials);
-        Map<String, TableMetaData> actualTableMetaMap = decorate(materials);
+        Map<String, TableMetaData> actualTableMetaMap = appendRemainTables(materials);
+        Map<String, TableMetaData> logicTableMetaMap = addRuleConfiguredTables(materials, actualTableMetaMap);
         result.put(actualTableMetaMap, logicTableMetaMap);
         return result;
     }
     
-    private static Map<String, TableMetaData> addRuleConfiguredTables(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>();
-        for (ShardingSphereRule rule : materials.getRules()) {
-            if (rule instanceof TableContainedRule) {
-                for (String table : ((TableContainedRule) rule).getTables()) {
-                    if (!result.containsKey(table)) {
-                        TableMetaDataBuilder.load(table, materials).map(optional -> result.put(table, optional));
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private static Map<String, TableMetaData> decorate(final SchemaBuilderMaterials materials) throws SQLException {
+    private static Map<String, TableMetaData> appendRemainTables(final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>();
         appendRemainTables(materials, result);
         for (ShardingSphereRule rule : materials.getRules()) {
             if (rule instanceof TableContainedRule) {
                 for (String table : ((TableContainedRule) rule).getTables()) {
-                    if (result.containsKey(table)) {
-                        TableMetaData metaData = TableMetaDataBuilder.decorate(table, result.get(table), materials.getRules());
-                        result.put(table, metaData);
+                    if (!result.containsKey(table)) {
+                        TableMetaDataBuilder.load(table, materials).map(optional -> result.put(table, optional));
                     }
                 }
             }
@@ -116,6 +101,21 @@ public final class SchemaBuilder {
             return;
         }
         appendDefaultRemainTables(materials, tables);
+    }
+
+    private static Map<String, TableMetaData> addRuleConfiguredTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
+        Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
+        for (ShardingSphereRule rule : materials.getRules()) {
+            if (rule instanceof TableContainedRule) {
+                for (String table : ((TableContainedRule) rule).getTables()) {
+                    if (tables.containsKey(table)) {
+                        TableMetaData metaData = TableMetaDataBuilder.decorate(table, tables.get(table), materials.getRules());
+                        result.put(table, metaData);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final SchemaBuilderMaterials materials) {

@@ -83,9 +83,9 @@ public final class SchemaBuilderTest {
         Map<Map<String, TableMetaData>, Map<String, TableMetaData>> actual = SchemaBuilder.build(schemaBuilderMaterials);
         Map<String, TableMetaData> actualTables = actual.keySet().iterator().next();
         Map<String, TableMetaData> logicTables = actual.values().iterator().next();
-        assertThat(actualTables.size(), is(0));
+        assertThat(actualTables.size(), is(2));
         assertThat(logicTables.size(), is(2));
-        assertSchemaOfShardingTables(logicTables);
+        assertSchemaOfShardingTables(actualTables);
     }
     
     private void assertSchemaOfShardingTables(final Map<String, TableMetaData> actual) {
@@ -112,9 +112,7 @@ public final class SchemaBuilderTest {
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], mockReturnTables);
         Map<Map<String, TableMetaData>, Map<String, TableMetaData>> actual = SchemaBuilder.build(schemaBuilderMaterials);
         Map<String, TableMetaData> actualTables = actual.keySet().iterator().next();
-        Map<String, TableMetaData> logicTables = actual.values().iterator().next();
-        assertThat(actualTables.size(), is(2));
-        assertThat(logicTables.size(), is(2));
+        assertThat(actualTables.size(), is(4));
         assertActualOfShardingTablesAndSingleTables(actualTables);
     }
 
