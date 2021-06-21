@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.base.seata.raw.jdbc;
+package org.apache.shardingsphere.example.transaction.base.seata.spring.boot;
 
-import java.io.IOException;
-import java.sql.SQLException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
+
+import javax.annotation.PostConstruct;
 
 /**
  Requirement before running this test:
@@ -29,12 +33,20 @@ import java.sql.SQLException;
  - config.ype = "file"
  - service.vgroup_mapping.my_test_tx_group = "default"
  */
-public final class ExampleMain {
+@SpringBootApplication
+@Import(TransactionConfiguration.class)
+public class TransactionBaseSeataSpringBootExample {
     
-    public static void main(final String[] args) throws IOException, SQLException {
-        SeataATOrderService orderService = new SeataATOrderService("/META-INF/sharding-databases-tables.yaml");
+    @Autowired
+    private SeataATOrderService orderService;
+    
+    public static void main(final String[] args) {
+        SpringApplication.run(TransactionBaseSeataSpringBootExample.class, args);
+    }
+    
+    @PostConstruct
+    public void executeOrderService() {
         orderService.init();
-        orderService.insert();
         orderService.selectAll();
         orderService.cleanup();
     }

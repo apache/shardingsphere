@@ -26,13 +26,13 @@ import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 @Import(TransactionConfiguration.class)
-public class ExampleMainApplication {
+public class TransactionXaSpringBootExample {
     
     @Autowired
     private XAOrderService orderService;
     
     public static void main(final String[] args) {
-        SpringApplication.run(ExampleMainApplication.class, args);
+        SpringApplication.run(TransactionXaSpringBootExample.class, args);
     }
     
     @PostConstruct

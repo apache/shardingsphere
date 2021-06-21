@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.xa.spring.namspace;
+package org.apache.shardingsphere.example.transaction.xa.raw.jdbc;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ImportResource;
+import java.io.IOException;
+import java.sql.SQLException;
 
-@ImportResource(locations = "/META-INF/application-sharding-databases-tables.xml")
-public final class ExampleMain {
+public final class TransactionXaRawExample {
     
-    public static void main(final String[] args) {
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(ExampleMain.class);
-        XAOrderService xaOrderService = applicationContext.getBean("XAOrderService", XAOrderService.class);
-        xaOrderService.init();
-        xaOrderService.init();
-        xaOrderService.selectAll();
-        xaOrderService.cleanup();
+    public static void main(final String[] args) throws IOException, SQLException {
+        XAOrderService orderService = new XAOrderService("/META-INF/sharding-databases-tables.yaml");
+        orderService.init();
+        orderService.insert();
+        orderService.cleanup();
     }
 }
