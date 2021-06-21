@@ -57,7 +57,7 @@ public final class ShardingBroadcastTableRuleQueryResultSetTest {
     }
     
     @Test
-    public void assertExecute() {
+    public void assertGetRowData() {
         ShardingBroadcastTableRuleQueryResultSet resultSet = new ShardingBroadcastTableRuleQueryResultSet();
         resultSet.init("test", mock(ShowShardingBroadcastTableRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
