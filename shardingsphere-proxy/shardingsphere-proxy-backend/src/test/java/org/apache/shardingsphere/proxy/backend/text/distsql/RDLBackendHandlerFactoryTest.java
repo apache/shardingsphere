@@ -269,9 +269,7 @@ public final class RDLBackendHandlerFactoryTest {
             assertThat(ex.getMessage(), is("No Registry center to execute `ShowResourcesStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        Optional<TextProtocolBackendHandler> rdlBackendHandler = RQLBackendHandlerFactory.newInstance(mock(ShowResourcesStatement.class), connection);
-        assertTrue(rdlBackendHandler.isPresent());
-        ResponseHeader response = rdlBackendHandler.get().execute();
+        ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowResourcesStatement.class), connection).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
