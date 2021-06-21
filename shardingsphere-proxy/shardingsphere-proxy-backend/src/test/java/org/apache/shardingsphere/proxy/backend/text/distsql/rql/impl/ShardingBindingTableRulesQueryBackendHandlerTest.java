@@ -27,8 +27,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +35,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -70,7 +67,6 @@ public final class ShardingBindingTableRulesQueryBackendHandlerTest {
     @Before
     public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        when(sqlStatement.getSchema()).thenReturn(Optional.of(new SchemaSegment(0, 1, new IdentifierValue("test"))));
         handler = new ShardingBindingTableRulesQueryBackendHandler(sqlStatement, backendConnection);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
