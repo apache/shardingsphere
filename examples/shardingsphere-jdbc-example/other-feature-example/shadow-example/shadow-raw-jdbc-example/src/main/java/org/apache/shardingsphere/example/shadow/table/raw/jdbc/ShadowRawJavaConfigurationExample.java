@@ -31,7 +31,7 @@ import org.apache.shardingsphere.example.type.ShardingType;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public final class JavaConfigurationExampleMain {
+public final class ShadowRawJavaConfigurationExample {
     
     private static ShardingType shardingType = ShardingType.SHADOW;
 //    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING_SHADOW;

@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.shadow.table.spring.boot;
+package org.apache.shardingsphere.example.shadow.table.spring.namespace;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-@ComponentScan("org.apache.shardingsphere.example.core.jpa")
-@EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
-@SpringBootApplication(exclude = JtaAutoConfiguration.class)
-public class ExampleMain {
+public final class ShadowSpringNamespaceExample {
+    
+    private static final String CONFIG_FILE = "META-INF/application-shadow-databases.xml";
+//    private static final String CONFIG_FILE = "META-INF/application-sharding-shadow-databases.xml";
+//    private static final String CONFIG_FILE = "META-INF/application-readwrite-splitting-shadow-databases.xml";
+//    private static final String CONFIG_FILE = "META-INF/application-encrypt-shadow-databases.xml";
     
     public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
-            ExampleExecuteTemplate.run(applicationContext.getBean("shadowExample", ExampleService.class));
+        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
+            ExampleExecuteTemplate.run(applicationContext.getBean("shadow", ExampleService.class));
         }
     }
 }

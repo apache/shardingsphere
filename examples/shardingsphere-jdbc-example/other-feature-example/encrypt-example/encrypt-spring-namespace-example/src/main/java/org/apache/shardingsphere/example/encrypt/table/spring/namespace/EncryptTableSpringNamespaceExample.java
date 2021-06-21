@@ -24,7 +24,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public final class ExampleMain {
+public final class EncryptTableSpringNamespaceExample {
     
     private static final String CONFIG_FILE = "META-INF/application-encrypt-databases.xml";
     

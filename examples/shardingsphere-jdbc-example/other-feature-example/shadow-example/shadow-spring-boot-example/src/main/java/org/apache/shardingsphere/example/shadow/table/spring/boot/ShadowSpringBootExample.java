@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.encrypt.table.spring.boot;
+package org.apache.shardingsphere.example.shadow.table.spring.boot;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
@@ -31,11 +31,11 @@ import java.sql.SQLException;
 @ComponentScan("org.apache.shardingsphere.example.core.jpa")
 @EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
-public class ExampleMain {
+public class ShadowSpringBootExample {
     
     public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
-            ExampleExecuteTemplate.run(applicationContext.getBean("encryptExample", ExampleService.class));
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ShadowSpringBootExample.class, args)) {
+            ExampleExecuteTemplate.run(applicationContext.getBean("shadowExample", ExampleService.class));
         }
     }
 }
