@@ -48,13 +48,13 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
     @Before
     public void setUp() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
-        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
+        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildDatabaseDiscoveryRuleConfiguration()));
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
+        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
     }
     
     private DatabaseDiscoveryRuleConfiguration buildDatabaseDiscoveryRuleConfiguration() {
