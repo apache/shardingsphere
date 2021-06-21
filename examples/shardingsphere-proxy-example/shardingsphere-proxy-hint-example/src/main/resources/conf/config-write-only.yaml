@@ -19,7 +19,7 @@ schemaName: write_only
 
 dataSources:
   write_ds:
-    url: jdbc:mysql://localhost:3306/demo_write_ds
+    url: jdbc:mysql://localhost:3306/demo_write_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -29,7 +29,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   read_ds_0:
-    url: jdbc:mysql://localhost:3306/demo_read_ds_0
+    url: jdbc:mysql://localhost:3306/demo_read_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -39,7 +39,7 @@ dataSources:
     minPoolSize: 1
     maintenanceIntervalMilliseconds: 30000
   read_ds_1:
-    url: jdbc:mysql://localhost:3306/demo_read_ds_1
+    url: jdbc:mysql://localhost:3306/demo_read_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
