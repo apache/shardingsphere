@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSources
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DatabaseDiscoveryRuleQueryResultSet;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.EncryptRuleQueryResultSet;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRuleQueryResultSet;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.RuleQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBindingTableRuleQueryResultSet;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBroadcastTableRuleQueryResultSet;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingTableRuleQueryResultSet;
