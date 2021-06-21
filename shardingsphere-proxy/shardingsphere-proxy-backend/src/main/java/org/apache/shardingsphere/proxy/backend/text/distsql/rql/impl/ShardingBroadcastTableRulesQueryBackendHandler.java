@@ -34,15 +34,15 @@ import java.util.stream.Collectors;
  */
 public final class ShardingBroadcastTableRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowShardingBroadcastTableRulesStatement> {
     
-    private ShardingBroadcastTableRuleQueryResultSet resultSet;
+    private final ShardingBroadcastTableRuleQueryResultSet resultSet;
     
     public ShardingBroadcastTableRulesQueryBackendHandler(final ShowShardingBroadcastTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
+        resultSet = new ShardingBroadcastTableRuleQueryResultSet();
     }
     
     @Override
     protected ResponseHeader execute(final String schemaName, final ShowShardingBroadcastTableRulesStatement sqlStatement) {
-        resultSet = new ShardingBroadcastTableRuleQueryResultSet(getSqlStatement(), getBackendConnection());
         resultSet.init(schemaName, sqlStatement);
         List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream().map(
             each -> new QueryHeader(schemaName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
