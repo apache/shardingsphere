@@ -56,24 +56,29 @@ public final class RQLBackendHandlerFactory {
         if (sqlStatement instanceof ShowResourcesStatement) {
             return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection));
         }
+        return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, getRuleQueryResultSet(sqlStatement)));
+        
+    }
+    
+    private static RuleQueryResultSet getRuleQueryResultSet(final RQLStatement sqlStatement) {
         if (sqlStatement instanceof ShowShardingBindingTableRulesStatement) {
-            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new ShardingBindingTableRuleQueryResultSet()));
+            return new ShardingBindingTableRuleQueryResultSet();
         }
         if (sqlStatement instanceof ShowShardingBroadcastTableRulesStatement) {
-            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new ShardingBroadcastTableRuleQueryResultSet()));
+            return new ShardingBroadcastTableRuleQueryResultSet();
         }
         if (sqlStatement instanceof ShowReadwriteSplittingRulesStatement) {
-            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new ReadwriteSplittingRuleQueryResultSet()));
+            return new ReadwriteSplittingRuleQueryResultSet();
         }
         if (sqlStatement instanceof ShowDatabaseDiscoveryRulesStatement) {
-            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new DatabaseDiscoveryRuleQueryResultSet()));
+            return new DatabaseDiscoveryRuleQueryResultSet();
         }
         if (sqlStatement instanceof ShowEncryptRulesStatement) {
-            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new EncryptRuleQueryResultSet()));
+            return new EncryptRuleQueryResultSet();
         }
         if (sqlStatement instanceof ShowShardingTableRulesStatement) {
-            return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, new ShardingTableRuleQueryResultSet()));
+            return new ShardingTableRuleQueryResultSet();
         }
-        return Optional.empty();
+        throw new UnsupportedOperationException(String.format("Cannot support SQL statement %s", sqlStatement.getClass().getCanonicalName()));
     }
 }
