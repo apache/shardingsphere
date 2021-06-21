@@ -17,8 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <begin-transaction sql-case-id="startTransaction" />
-    <begin-transaction sql-case-id="startReadCommitted" />
-    <begin-transaction sql-case-id="startReadOnly" />
+    <begin-transaction sql-case-id="start_transaction" />
+    <begin-transaction sql-case-id="start_read_committed" />
+    <begin-transaction sql-case-id="start_read_only" />
     <begin-transaction sql-case-id="start_with_transaction_mode" />
 </sql-parser-test-cases>
