@@ -165,7 +165,11 @@ accessor
     ;
 
 unitKind
-    : FUNCTION | PROCEDURE | PACKAGE | TRIGGER | TYPE
+    : FUNCTION
+    | PROCEDURE
+    | PACKAGE
+    | TRIGGER
+    | TYPE
     ;
 
 defaultCollationClause
@@ -229,7 +233,11 @@ avExpression
     ;
 
 avMeasExpression
-    : leadLagExpression | windowExpression | rankExpression | shareOfExpression | qdrExpression
+    : leadLagExpression
+    | windowExpression
+    | rankExpression
+    | shareOfExpression
+    | qdrExpression
     ;
 
 leadLagExpression
@@ -237,7 +245,12 @@ leadLagExpression
     ;
 
 leadLagFunctionName
-    : LAG | LAG_DIFF | LAG_DIF_PERCENT | LEAD | LEAD_DIFF | LEAD_DIFF_PERCENT
+    : LAG
+    | LAG_DIFF
+    | LAG_DIF_PERCENT
+    | LEAD
+    | LEAD_DIFF
+    | LEAD_DIFF_PERCENT
     ;
 
 leadLagClause
@@ -289,7 +302,11 @@ shareClause
     ;
 
 memberExpression
-    : levelMemberLiteral | hierNavigationExpression | CURRENT MEMBER | NULL | ALL
+    : levelMemberLiteral
+    | hierNavigationExpression
+    | CURRENT MEMBER
+    | NULL
+    | ALL
     ;
 
 levelMemberLiteral
@@ -337,7 +354,12 @@ avHierExpression
     ;
 
 hierFunctionName
-    : HIER_CAPTION | HIER_DEPTH | HIER_DESCRIPTION | HIER_LEVEL | HIER_MEMBER_NAME | HIER_MEMBER_UNIQUE_NAME
+    : HIER_CAPTION
+    | HIER_DEPTH
+    | HIER_DESCRIPTION
+    | HIER_LEVEL
+    | HIER_MEMBER_NAME
+    | HIER_MEMBER_UNIQUE_NAME
     ;
 
 duplicateSpecification
@@ -365,7 +387,8 @@ selectList
     ;
 
 selectProjection
-    : ((queryName | (tableName | viewName | materializedViewName) | alias) DOT_ASTERISK_) | selectProjectionExprClause
+    : (queryName | (tableName | viewName | materializedViewName) | alias) DOT_ASTERISK_
+    | selectProjectionExprClause
     ;
 
 selectProjectionExprClause
@@ -406,7 +429,7 @@ fromClauseList
     ;
 
 fromClauseOption
-    : joinClause | parenthesisJoinClause | selectTableReference | inlineAnalyticView
+    : joinClause | LP_ joinClause RP_ | selectTableReference | inlineAnalyticView
     ;
 
 selectTableReference
@@ -422,7 +445,7 @@ shardsClause
     ;
 
 queryTableExpressionClause
-    : (ONLY LP_ queryTableExpression RP_ | queryTableExpression) flashbackQueryClause?
+    : (ONLY LP_ queryTableExpression RP_ | queryTableExpression) flashbackQueryClause? (pivotClause | unpivotClause | rowPatternClause)?
     ;
 
 queryTableExpression
@@ -430,12 +453,16 @@ queryTableExpression
     ;
 
 flashbackQueryClause
-    : (VERSIONS (BETWEEN (SCN | TIMESTAMP) | PERIOD FOR validTimeColumn BETWEEN) (expr | MINVALUE) AND (expr | MAXVALUE)) 
+    : VERSIONS (BETWEEN (SCN | TIMESTAMP) | PERIOD FOR validTimeColumn BETWEEN) (expr | MINVALUE) AND (expr | MAXVALUE)
     | AS OF ((SCN | TIMESTAMP) expr | PERIOD FOR validTimeColumn expr)
     ;
 
 queryTableExpressionSampleClause
-    : (queryTableExpressionTableClause | queryTableExpressionViewClause | hierarchyName | queryTableExpressionAnalyticClause | (owner DOT_)? inlineExternalTable) sampleClause?
+    : (queryTableExpressionTableClause
+    | queryTableExpressionViewClause
+    | hierarchyName
+    | queryTableExpressionAnalyticClause
+    | (owner DOT_)? inlineExternalTable) sampleClause?
     ;
 
 queryTableExpressionTableClause
@@ -447,7 +474,7 @@ queryTableExpressionViewClause
     ;
 
 queryTableExpressionAnalyticClause
-    : analyticViewName (HIERARCHIES LP_ (((attrDim DOT_)? hierarchyName) (COMMA_ ((attrDim DOT_)? hierarchyName))*)? RP_)?
+    : analyticViewName (HIERARCHIES LP_ ((attrDim DOT_)? hierarchyName (COMMA_ (attrDim DOT_)? hierarchyName)*)? RP_)?
     ;
 
 lateralClause
@@ -463,7 +490,8 @@ inlineExternalTableProperties
     ;
 
 externalTableDataProperties
-    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec) | USING CLOB subquery))? (LOCATION LP_ (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+ RP_)?
+    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec) | USING CLOB subquery))? 
+    (LOCATION LP_ (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+ RP_)?
     ;
 
 subqueryRestrictionClause
@@ -475,13 +503,14 @@ mofifiedExternalTable
     ;
 
 modifyExternalTableProperties
-    : (DEFAULT DIRECTORY directoryName)? (LOCATION LP_ ((directoryName COLON_)? SQ_ locationSpecifier SQ_) (COMMA_ ((directoryName COLON_)? SQ_ locationSpecifier SQ_))* RP_)? 
+    : (DEFAULT DIRECTORY directoryName)?
+    (LOCATION LP_ (directoryName COLON_)? SQ_ locationSpecifier SQ_ (COMMA_ (directoryName COLON_)? SQ_ locationSpecifier SQ_)* RP_)? 
     (ACCESS PARAMETERS (BADFILE fileName | LOGFILE fileName | DISCARDFILE fileName))? (REJECT LIMIT (INTEGER_ | UNLIMITED))?
     ;
 
 partitionExtensionClause
-    : (PARTITION (LP_ partitionName RP_ | FOR LP_ partitionKeyValue (COMMA_ partitionKeyValue)* RP_)) 
-    | (SUBPARTITION (LP_ subpartitionName RP_ | FOR LP_ subpartitionKeyValue (COMMA_ subpartitionKeyValue)* RP_))
+    : PARTITION (LP_ partitionName RP_ | FOR LP_ partitionKeyValue (COMMA_ partitionKeyValue)* RP_)
+    | SUBPARTITION (LP_ subpartitionName RP_ | FOR LP_ subpartitionKeyValue (COMMA_ subpartitionKeyValue)* RP_)
     ;
 
 sampleClause
@@ -490,10 +519,6 @@ sampleClause
 
 joinClause
     : selectTableReference selectJoin+
-    ;
-
-parenthesisJoinClause
-    : LP_ joinClause RP_
     ;
 
 selectJoin
@@ -517,7 +542,7 @@ crossJoinClause
     ;
 
 selectJoinSpecification
-    : ON condition | USING LP_ columnName (COMMA_ columnName)* RP_
+    : ON condition | USING columnNames
     ;
 
 outerJoinClause
@@ -525,7 +550,7 @@ outerJoinClause
     ;
 
 queryPartitionClause
-    : PARTITION BY ((expr (COMMA_ expr)*) | LP_ expr (COMMA_ expr)* RP_)
+    : PARTITION BY (exprs | exprList)
     ;
 
 outerJoinType
@@ -630,4 +655,147 @@ mergeColumnValue
 
 errorLoggingClause
     : LOG ERRORS (INTO tableName)? (LP_ simpleExpr RP_)? (REJECT LIMIT (numberLiterals | UNLIMITED))?
+    ;
+
+pivotClause
+    : PIVOT XML? LP_ aggregationFunction LP_ expr RP_ (AS? alias)? (COMMA_ aggregationFunction LP_ expr RP_ (AS? alias)?)* pivotForClause pivotInClause RP_
+    ;
+
+pivotForClause
+    : FOR (columnName | columnNames)
+    ;
+
+pivotInClause
+    : IN LP_ ((expr | exprList) (AS? alias)? (COMMA_ (expr | exprList) (AS? alias)?)* | selectSubquery | ANY (COMMA_ ANY)*) RP_
+    ;
+
+unpivotClause
+    : UNPIVOT ((INCLUDE | EXCLUDE) NULLS)? LP_ (columnName | columnNames) pivotForClause unpivotInClause RP_
+    ;
+
+unpivotInClause
+    : IN LP_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))? (COMMA_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))?)* RP_
+    ;
+
+rowPatternClause
+    : MATCH_RECOGNIZE LP_
+    rowPatternPartitionBy?
+    rowPatternOrderBy?
+    rowPatternMeasures?
+    rowPatternRowsPerMatch?
+    rowPatternSkipTo?
+    PATTERN LP_ rowPattern RP_
+    rowPatternSubsetClause?
+    DEFINE rowPatternDefinitionList RP_
+    ;
+
+rowPatternPartitionBy
+    : PARTITION BY columnNames
+    ;
+
+rowPatternOrderBy
+    : ORDER BY columnNames
+    ;
+
+rowPatternMeasures
+    : MEASURES rowPatternMeasureColumn (COMMA_ rowPatternMeasureColumn)*
+    ;
+
+rowPatternMeasureColumn
+    : patternMeasExpression AS alias
+    ;
+
+rowPatternRowsPerMatch
+    : (ONE ROW | ALL ROWS) PER MATCH
+    ;
+
+rowPatternSkipTo
+    : AFTER MATCH SKIP_SYMBOL (((TO NEXT | PAST LAST) ROW) | (TO (FIRST | LAST)? variableName))
+    ;
+
+rowPattern
+    : rowPatternTerm
+    ;
+
+rowPatternTerm
+    : rowPatternFactor
+    ;
+
+rowPatternFactor
+    : rowPatternPrimary rowPatternQuantifier?
+    ;
+
+rowPatternPrimary
+    : variableName
+    | DOLLAR_
+    | CARET_
+    | LP_ rowPattern? RP_
+    | LBE_ MINUS_ rowPattern MINUS_ RBE_
+    | rowPatternPermute
+    ;
+
+rowPatternPermute
+    : PERMUTE LP_ rowPattern (COMMA_ rowPattern)* RP_
+    ;
+
+rowPatternQuantifier
+    : ASTERISK_ QUESTION_?
+    | PLUS_ QUESTION_?
+    | QUESTION_ QUESTION_?
+    | (LBE_ INTEGER_? COMMA_ INTEGER_? RBE_ QUESTION_?
+    | LBE_ INTEGER_ RBE_)
+    ;
+
+rowPatternSubsetClause
+    : SUBSET rowPatternSubsetItem (COMMA_ rowPatternSubsetItem)*
+    ;
+
+rowPatternSubsetItem
+    : variableName EQ_ LP_ variableName (COMMA_ variableName)* RP_
+    ;
+
+rowPatternDefinitionList
+    : rowPatternDefinition (COMMA_ rowPatternDefinition)*
+    ;
+
+rowPatternDefinition
+    : variableName AS condition
+    ;
+
+patternMeasExpression
+    : stringLiterals 
+    | numberLiterals 
+    | columnName 
+    | rowPatternClassifierFunc 
+    | rowPatternMatchNumFunc 
+    | rowPatternNavigationFunc 
+    | rowPatternAggregateFunc
+    ;
+
+rowPatternClassifierFunc
+    : CLASSIFIER LP_ RP_
+    ;
+
+rowPatternMatchNumFunc
+    : MATCH_NUMBER LP_ RP_
+    ;
+
+rowPatternNavigationFunc
+    : rowPatternNavLogical | rowPatternNavPhysical | rowPatternNavCompound
+    ;
+
+rowPatternNavLogical
+    : (RUNNING | FINAL)? (FIRST | LAST) LP_ expr (COMMA_ offset)? RP_
+    ;
+
+rowPatternNavPhysical
+    : (PREV | NEXT) LP_ expr (COMMA_ offset)? RP_
+    ;
+
+rowPatternNavCompound
+    : (PREV | NEXT) LP_ (RUNNING | FINAL)? (FIRST | LAST) LP_ expr (COMMA_ offset)? RP_ (COMMA_ offset)? RP_
+    ;
+
+rowPatternAggregateFunc
+    : (RUNNING | FINAL)? aggregationFunction
     ;
