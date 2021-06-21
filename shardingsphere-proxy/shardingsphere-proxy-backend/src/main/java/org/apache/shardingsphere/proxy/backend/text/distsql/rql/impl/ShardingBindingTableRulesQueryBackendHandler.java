@@ -18,66 +18,44 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 
 import java.sql.Types;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Backend handler for show sharding binding table rules.
  */
 public final class ShardingBindingTableRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowShardingBindingTableRulesStatement> {
     
-    private Iterator<String> data;
-    
-    private final String schema;
+    private ShardingBindingTableRuleQueryResultSet resultSet;
     
     public ShardingBindingTableRulesQueryBackendHandler(final ShowShardingBindingTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
-        schema = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : backendConnection.getSchemaName();
     }
     
     @Override
     protected ResponseHeader execute(final String schemaName, final ShowShardingBindingTableRulesStatement sqlStatement) {
-        List<QueryHeader> queryHeader = getQueryHeader();
-        data = loadRuleConfiguration();
-        return new QueryResponseHeader(queryHeader);
-    }
-    
-    private List<QueryHeader> getQueryHeader() {
-        List<QueryHeader> result = new LinkedList<>();
-        result.add(new QueryHeader(schema, "", "shardingBindingTables", "shardingBindingTables", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        return result;
-    }
-    
-    private Iterator<String> loadRuleConfiguration() {
-        Collection<String> result = new LinkedList<>();
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-        if (shardingRuleConfig.isPresent()) {
-            result = shardingRuleConfig.get().getBindingTableGroups();
-        }
-        return result.iterator();
+        resultSet = new ShardingBindingTableRuleQueryResultSet(getSqlStatement(), getBackendConnection());
+        resultSet.init(schemaName, sqlStatement);
+        List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream().map(
+            each -> new QueryHeader(schemaName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
+        return new QueryResponseHeader(queryHeaders);
     }
     
     @Override
     public boolean next() {
-        return data.hasNext();
+        return resultSet.next();
     }
     
     @Override
     public Collection<Object> getRowData() {
-        return Collections.singleton(data.next());
+        return resultSet.getRowData();
     }
 }

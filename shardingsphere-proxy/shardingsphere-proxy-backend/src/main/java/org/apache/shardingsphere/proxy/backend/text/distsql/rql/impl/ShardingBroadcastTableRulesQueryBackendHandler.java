@@ -18,62 +18,44 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
 
 import java.sql.Types;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Backend handler for show sharding broadcast table rules.
  */
 public final class ShardingBroadcastTableRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowShardingBroadcastTableRulesStatement> {
     
-    private Iterator<String> data;
-    
-    private final String schema;
+    private ShardingBroadcastTableRuleQueryResultSet resultSet;
     
     public ShardingBroadcastTableRulesQueryBackendHandler(final ShowShardingBroadcastTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
-        schema = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : backendConnection.getSchemaName();
     }
     
     @Override
     protected ResponseHeader execute(final String schemaName, final ShowShardingBroadcastTableRulesStatement sqlStatement) {
-        List<QueryHeader> queryHeader = getQueryHeader();
-        data = loadBroadcastTableRules();
-        return new QueryResponseHeader(queryHeader);
-    }
-
-    private List<QueryHeader> getQueryHeader() {
-        List<QueryHeader> result = new LinkedList<>();
-        result.add(new QueryHeader(schema, "", "shardingBroadcastTables", "shardingBroadcastTables", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        return result;
-    }
-    
-    private Iterator<String> loadBroadcastTableRules() {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
-        return shardingRuleConfig.map(optional -> optional.getBroadcastTables().iterator()).orElse(Collections.emptyIterator());
+        resultSet = new ShardingBroadcastTableRuleQueryResultSet(getSqlStatement(), getBackendConnection());
+        resultSet.init(schemaName, sqlStatement);
+        List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream().map(
+            each -> new QueryHeader(schemaName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
+        return new QueryResponseHeader(queryHeaders);
     }
     
     @Override
     public boolean next() {
-        return data.hasNext();
+        return resultSet.next();
     }
     
     @Override
     public Collection<Object> getRowData() {
-        return Collections.singleton(data.next());
+        return resultSet.getRowData();
     }
 }
