@@ -17,16 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -40,36 +35,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public final class ReadwriteSplittingRuleQueryResultSetTest {
+public final class ReadwriteSplittingRuleQueryResultSetTest extends BaseRuleQueryResultSet {
     
-    @Before
-    public void setUp() {
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildReadwriteSplittingRuleConfiguration()));
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
-        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
-    }
-    
-    private ReadwriteSplittingRuleConfiguration buildReadwriteSplittingRuleConfiguration() {
+    @Override
+    protected Collection<RuleConfiguration> buildRuleConfigurations() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
-                new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "ms_group",
-                        "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
-        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", buildProperties());
+                new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "ms_group", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
+        Properties props = new Properties();
+        props.setProperty("read_weight", "2:1");
+        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", props);
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>();
         loadBalancers.put("test", shardingSphereAlgorithmConfiguration);
-        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), loadBalancers);
-    }
-    
-    private Properties buildProperties() {
-        Properties result = new Properties();
-        result.setProperty("read_weight", "2:1");
-        return result;
+        return Collections.singleton(new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), loadBalancers));
     }
     
     @Test
