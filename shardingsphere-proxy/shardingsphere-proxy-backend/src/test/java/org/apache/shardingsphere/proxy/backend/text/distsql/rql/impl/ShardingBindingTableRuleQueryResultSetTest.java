@@ -20,67 +20,35 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class ShardingBindingTableRulesQueryBackendHandlerTest {
-    
-    @Mock
-    private BackendConnection backendConnection;
-    
-    @Mock
-    private ShowShardingBindingTableRulesStatement sqlStatement;
-    
-    @Mock
-    private MetaDataContexts metaDataContexts;
-    
-    @Mock
-    private TransactionContexts transactionContexts;
-    
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
-    @Mock
-    private ShardingSphereRuleMetaData ruleMetaData;
-    
-    private ShardingBindingTableRulesQueryBackendHandler handler;
+public final class ShardingBindingTableRuleQueryResultSetTest {
     
     @Before
     public void setUp() {
-        ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        handler = new ShardingBindingTableRulesQueryBackendHandler(sqlStatement, backendConnection);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
-        when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
+        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildShardingRuleConfiguration()));
-    }
-    
-    @Test
-    public void assertExecute() {
-        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof QueryResponseHeader);
-        assertTrue(handler.next());
-        assertTrue(handler.getRowData().contains("t_order,t_order_item"));
+        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
+        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
+        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
     }
     
     private ShardingRuleConfiguration buildShardingRuleConfiguration() {
@@ -91,5 +59,14 @@ public final class ShardingBindingTableRulesQueryBackendHandlerTest {
         result.getTables().add(new ShardingTableRuleConfiguration("t_2"));
         result.getBindingTableGroups().addAll(Collections.singleton("t_order,t_order_item"));
         return result;
+    }
+    
+    @Test
+    public void assertGetRowData() {
+        ShardingBindingTableRuleQueryResultSet resultSet = new ShardingBindingTableRuleQueryResultSet();
+        resultSet.init("test", mock(ShowShardingBindingTableRulesStatement.class));
+        Collection<Object> actual = resultSet.getRowData();
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.contains("t_order,t_order_item"));
     }
 }
