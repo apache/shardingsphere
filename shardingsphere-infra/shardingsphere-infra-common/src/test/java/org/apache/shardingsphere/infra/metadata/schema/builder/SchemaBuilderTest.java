@@ -62,22 +62,22 @@ public final class SchemaBuilderTest {
     private final String[] singleTableNames = {"single_table1", "single_table2"};
 
     private SchemaBuilderMaterials schemaBuilderMaterials;
-    
+
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DatabaseType databaseType;
-    
+
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
     
     @Mock
     private ConfigurationProperties props;
-    
+
     @Before
     public void setUp() {
         schemaBuilderMaterials = new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props);
     }
-    
+
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
         Map<Map<String, TableMetaData>, Map<String, TableMetaData>> actual = SchemaBuilder.build(schemaBuilderMaterials);
@@ -87,7 +87,7 @@ public final class SchemaBuilderTest {
         assertThat(logicTables.size(), is(2));
         assertSchemaOfShardingTables(actualTables);
     }
-    
+
     private void assertSchemaOfShardingTables(final Map<String, TableMetaData> actual) {
         assertTrue(actual.containsKey("data_node_routed_table1"));
         assertThat(actual.get("data_node_routed_table1").getColumns().size(), is(0));

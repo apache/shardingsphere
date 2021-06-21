@@ -37,6 +37,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Collection;
@@ -78,7 +79,7 @@ public final class SchemaBuilder {
         result.put(actualTableMetaMap, logicTableMetaMap);
         return result;
     }
-    
+
     private static Map<String, TableMetaData> appendRemainTables(final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>();
         appendRemainTables(materials, result);
@@ -147,7 +148,7 @@ public final class SchemaBuilder {
 
     private static void appendDefaultRemainTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
         Collection<String> existedTableNames = getExistedTables(materials.getRules(), tables);
-        for (Map.Entry<String, DataSource> entry : materials.getDataSourceMap().entrySet()) {
+        for (Entry<String, DataSource> entry : materials.getDataSourceMap().entrySet()) {
             Collection<String> tableNames = SchemaMetaDataLoader.loadAllTableNames(entry.getValue(), materials.getDatabaseType());
             tableNames.removeAll(existedTableNames);
             for (String each : tableNames) {

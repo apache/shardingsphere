@@ -47,7 +47,7 @@ public final class FederateSchemaMetadatas {
     public FederateSchemaMetadata getDefaultSchemaMetadata() {
         return schemas.get(DefaultSchema.LOGIC_NAME);
     }
-    
+
     /**
      * Get schema metadata by schema name.
      * 
