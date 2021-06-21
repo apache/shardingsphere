@@ -44,19 +44,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DatabaseDiscoveryRuleQueryResultSetTest {
-    
-    @Mock
-    private ShowDatabaseDiscoveryRulesStatement sqlStatement;
-    
-    @Mock
-    private MetaDataContexts metaDataContexts;
-    
-    @Mock
-    private TransactionContexts transactionContexts;
     
     @Mock
     private ShardingSphereMetaData shardingSphereMetaData;
@@ -66,30 +58,30 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
     
     @Before
     public void setUp() {
-        ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildDatabaseDiscoveryRuleConfiguration()));
     }
     
+    private DatabaseDiscoveryRuleConfiguration buildDatabaseDiscoveryRuleConfiguration() {
+        DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ms_group", Arrays.asList("ds_0", "ds_1"), "test");
+        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MGR", new Properties());
+        Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = new HashMap<>(1, 1);
+        discoverTypes.put("test", shardingSphereAlgorithmConfig);
+        return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), discoverTypes);
+    }
+    
     @Test
     public void assertGetRowData() {
         RuleQueryResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
-        resultSet.init("test", sqlStatement);
+        resultSet.init("test", mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<Object> rowData = resultSet.getRowData();
         assertThat(rowData.size(), is(4));
         assertTrue(rowData.contains("ms_group"));
         assertTrue(rowData.contains("ds_0,ds_1"));
         assertTrue(rowData.contains("MGR"));
-    }
-    
-    private DatabaseDiscoveryRuleConfiguration buildDatabaseDiscoveryRuleConfiguration() {
-        DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig =
-                new DatabaseDiscoveryDataSourceRuleConfiguration("ms_group", Arrays.asList("ds_0", "ds_1"), "test");
-        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MGR", new Properties());
-        Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = new HashMap<>();
-        discoverTypes.put("test", shardingSphereAlgorithmConfig);
-        return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), discoverTypes);
     }
 }
