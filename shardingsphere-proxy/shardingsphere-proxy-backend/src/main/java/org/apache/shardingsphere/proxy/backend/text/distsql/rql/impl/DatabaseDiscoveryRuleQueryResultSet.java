@@ -20,59 +20,39 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Backend handler for show database discovery rules.
+ * Result set for show database discovery rule.
  */
-public final class DatabaseDiscoveryRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowDatabaseDiscoveryRulesStatement> {
+public final class DatabaseDiscoveryRuleQueryResultSet implements RuleQueryResultSet {
     
     private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> data;
     
     private Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes;
     
-    public DatabaseDiscoveryRulesQueryBackendHandler(final ShowDatabaseDiscoveryRulesStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
-    }
-    
     @Override
-    protected ResponseHeader execute(final String schemaName, final ShowDatabaseDiscoveryRulesStatement sqlStatement) {
-        loadRuleConfiguration(schemaName);
-        return new QueryResponseHeader(getQueryHeader(schemaName));
-    }
-    
-    private void loadRuleConfiguration(final String schemaName) {
+    public void init(final String schemaName, final SQLStatement sqlStatement) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findAny();
         data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElse(Collections.emptyIterator());
         discoveryTypes = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes).orElse(Collections.emptyMap());
     }
     
-    private List<QueryHeader> getQueryHeader(final String schemaName) {
-        List<QueryHeader> result = new LinkedList<>();
-        result.add(new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "dataSourceNames", "dataSourceNames", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "discoverType", "discoverType", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "discoverProps", "discoverProps", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        return result;
+    @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "dataSourceNames", "discoverType", "discoverProps");
     }
     
     @Override

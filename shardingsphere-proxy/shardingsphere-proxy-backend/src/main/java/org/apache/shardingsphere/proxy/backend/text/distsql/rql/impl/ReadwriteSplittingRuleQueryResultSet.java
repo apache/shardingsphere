@@ -21,61 +21,39 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Backend handler for show readwrite splitting rules.
+ * Result set for show readwrite splitting rule.
  */
-public final class ReadwriteSplittingRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowReadwriteSplittingRulesStatement> {
+public final class ReadwriteSplittingRuleQueryResultSet implements RuleQueryResultSet {
     
     private Iterator<ReadwriteSplittingDataSourceRuleConfiguration> data;
-
+    
     private Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers;
     
-    public ReadwriteSplittingRulesQueryBackendHandler(final ShowReadwriteSplittingRulesStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
-    }
-    
     @Override
-    protected ResponseHeader execute(final String schemaName, final ShowReadwriteSplittingRulesStatement sqlStatement) {
-        loadRuleConfiguration(schemaName);
-        return new QueryResponseHeader(getQueryHeader(schemaName));
-    }
-    
-    private void loadRuleConfiguration(final String schemaName) {
+    public void init(final String schemaName, final SQLStatement sqlStatement) {
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findAny();
         data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElse(Collections.emptyIterator());
         loadBalancers = ruleConfig.map(ReadwriteSplittingRuleConfiguration::getLoadBalancers).orElse(Maps.newHashMap());
     }
     
-    private List<QueryHeader> getQueryHeader(final String schemaName) {
-        List<QueryHeader> result = new LinkedList<>();
-        result.add(new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "autoAwareDataSourceName", "autoAwareDataSourceName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "writeDataSourceName", "writeDataSourceName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "readDataSourceNames", "readDataSourceNames", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "loadBalancerType", "loadBalancerType", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "loadBalancerProps", "loadBalancerProps", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        return result;
+    @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "autoAwareDataSourceName", "writeDataSourceName", "readDataSourceNames", "loadBalancerType", "loadBalancerProps");
     }
     
     @Override
