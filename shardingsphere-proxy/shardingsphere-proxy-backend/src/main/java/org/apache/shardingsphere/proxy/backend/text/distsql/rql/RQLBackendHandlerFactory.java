@@ -37,8 +37,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingB
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 
-import java.util.Optional;
-
 /**
  * RQL backend handler factory.
  */
@@ -52,12 +50,11 @@ public final class RQLBackendHandlerFactory {
      * @param backendConnection backend connection
      * @return RDL backend handler
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final RQLStatement sqlStatement, final BackendConnection backendConnection) {
+    public static TextProtocolBackendHandler newInstance(final RQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof ShowResourcesStatement) {
-            return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection));
+            return new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection);
         }
-        return Optional.of(new RuleQueryBackendHandler(sqlStatement, backendConnection, getRuleQueryResultSet(sqlStatement)));
-        
+        return new RuleQueryBackendHandler(sqlStatement, backendConnection, getRuleQueryResultSet(sqlStatement));
     }
     
     private static RuleQueryResultSet getRuleQueryResultSet(final RQLStatement sqlStatement) {
