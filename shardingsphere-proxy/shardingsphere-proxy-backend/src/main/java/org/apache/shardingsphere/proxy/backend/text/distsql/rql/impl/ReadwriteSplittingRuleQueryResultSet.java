@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -49,7 +48,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements RQLResultSet 
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findAny();
         data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElse(Collections.emptyIterator());
-        loadBalancers = ruleConfig.map(ReadwriteSplittingRuleConfiguration::getLoadBalancers).orElse(Maps.newHashMap());
+        loadBalancers = ruleConfig.map(ReadwriteSplittingRuleConfiguration::getLoadBalancers).orElse(Collections.emptyMap());
     }
     
     @Override
