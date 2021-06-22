@@ -42,7 +42,7 @@ public final class ShardingBroadcastTableRuleQueryResultSetTest extends BaseRule
     @Test
     public void assertGetRowData() {
         ShardingBroadcastTableRuleQueryResultSet resultSet = new ShardingBroadcastTableRuleQueryResultSet();
-        resultSet.init("test", mock(ShowShardingBroadcastTableRulesStatement.class));
+        resultSet.init(getShardingSphereMetaData(), mock(ShowShardingBroadcastTableRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(1));
         assertThat(actual, is(Collections.singleton("t_order")));

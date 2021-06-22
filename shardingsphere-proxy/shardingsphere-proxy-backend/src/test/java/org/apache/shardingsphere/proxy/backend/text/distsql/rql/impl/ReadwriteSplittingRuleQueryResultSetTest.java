@@ -53,7 +53,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest extends BaseRuleQuer
     @Test
     public void assertGetRowData() {
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
-        resultSet.init("test", mock(ShowReadwriteSplittingRulesStatement.class));
+        resultSet.init(getShardingSphereMetaData(), mock(ShowReadwriteSplittingRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(6));
         assertTrue(actual.contains("pr_ds"));

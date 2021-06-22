@@ -53,7 +53,7 @@ public final class ShardingTableRuleQueryResultSetTest extends BaseRuleQueryResu
     @Test
     public void assertGetRowData() {
         RQLResultSet resultSet = new ShardingTableRuleQueryResultSet();
-        resultSet.init("test", mock(ShowShardingTableRulesStatement.class));
+        resultSet.init(getShardingSphereMetaData(), mock(ShowShardingTableRulesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(14));
         assertThat(actual.get(0), is("t_order"));

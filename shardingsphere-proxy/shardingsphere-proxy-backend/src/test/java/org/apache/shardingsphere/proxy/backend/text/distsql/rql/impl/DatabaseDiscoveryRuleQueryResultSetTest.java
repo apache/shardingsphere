@@ -51,7 +51,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest extends BaseRuleQuery
     @Test
     public void assertGetRowData() {
         RQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
-        resultSet.init("test", mock(ShowDatabaseDiscoveryRulesStatement.class));
+        resultSet.init(getShardingSphereMetaData(), mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(4));
         assertTrue(actual.contains("ms_group"));

@@ -52,7 +52,7 @@ public final class EncryptRuleQueryResultSetTest extends BaseRuleQueryResultSet 
     @Test
     public void assertGetRowData() {
         RQLResultSet resultSet = new EncryptRuleQueryResultSet();
-        resultSet.init("test", mock(ShowEncryptRulesStatement.class));
+        resultSet.init(getShardingSphereMetaData(), mock(ShowEncryptRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(6));
         assertTrue(actual.contains("t_encrypt"));

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -29,10 +30,11 @@ public interface RQLResultSet extends TypedSPI {
     
     /**
      * Initialize data.
-     * @param schemaName schema name
+     * 
+     * @param metaData meta data for ShardingSphere
      * @param sqlStatement SQL statement
      */
-    void init(String schemaName, SQLStatement sqlStatement);
+    void init(ShardingSphereMetaData metaData, SQLStatement sqlStatement);
     
     /**
      * Get result set column names.

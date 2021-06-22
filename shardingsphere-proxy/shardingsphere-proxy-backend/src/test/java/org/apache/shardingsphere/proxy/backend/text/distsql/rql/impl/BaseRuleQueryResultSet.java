@@ -17,32 +17,29 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
-import java.util.Collections;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
+@Getter
 public abstract class BaseRuleQueryResultSet {
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereMetaData shardingSphereMetaData;
     
     @Before
     public final void setUp() {
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getConfigurations()).thenReturn(buildRuleConfigurations());
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
-        when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
-        ProxyContext.getInstance().init(metaDataContexts, mock(TransactionContexts.class));
+        when(shardingSphereMetaData.getRuleMetaData().getConfigurations()).thenReturn(buildRuleConfigurations());
     }
     
     protected abstract Collection<RuleConfiguration> buildRuleConfigurations();

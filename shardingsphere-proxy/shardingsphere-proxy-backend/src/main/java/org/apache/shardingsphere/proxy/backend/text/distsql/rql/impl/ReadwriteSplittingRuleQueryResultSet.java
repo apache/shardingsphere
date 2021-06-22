@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -44,8 +44,8 @@ public final class ReadwriteSplittingRuleQueryResultSet implements RQLResultSet 
     private Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers;
     
     @Override
-    public void init(final String schemaName, final SQLStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
+    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).map(each -> (ReadwriteSplittingRuleConfiguration) each).findAny();
         data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElse(Collections.emptyIterator());
         loadBalancers = ruleConfig.map(ReadwriteSplittingRuleConfiguration::getLoadBalancers).orElse(Collections.emptyMap());

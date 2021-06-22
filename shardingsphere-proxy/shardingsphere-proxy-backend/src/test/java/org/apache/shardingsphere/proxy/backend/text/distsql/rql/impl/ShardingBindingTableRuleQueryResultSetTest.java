@@ -47,7 +47,7 @@ public final class ShardingBindingTableRuleQueryResultSetTest extends BaseRuleQu
     @Test
     public void assertGetRowData() {
         ShardingBindingTableRuleQueryResultSet resultSet = new ShardingBindingTableRuleQueryResultSet();
-        resultSet.init("test", mock(ShowShardingBindingTableRulesStatement.class));
+        resultSet.init(getShardingSphereMetaData(), mock(ShowShardingBindingTableRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(1));
         assertTrue(actual.contains("t_order,t_order_item"));

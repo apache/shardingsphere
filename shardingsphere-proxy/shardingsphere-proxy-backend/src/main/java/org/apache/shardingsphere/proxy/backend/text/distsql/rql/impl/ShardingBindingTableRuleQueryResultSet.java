@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
@@ -36,8 +36,8 @@ public final class ShardingBindingTableRuleQueryResultSet implements RQLResultSe
     private Iterator<String> data;
     
     @Override
-    public void init(final String schemaName, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
+    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
         data = shardingRuleConfig.map(shardingRuleConfiguration -> shardingRuleConfiguration.getBindingTableGroups().iterator()).orElse(Collections.emptyIterator());
     }
