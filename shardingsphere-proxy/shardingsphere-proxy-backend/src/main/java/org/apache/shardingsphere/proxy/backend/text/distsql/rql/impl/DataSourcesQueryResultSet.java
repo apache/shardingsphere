@@ -65,18 +65,22 @@ public final class DataSourcesQueryResultSet implements RQLResultSet {
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
         DataSourceMetaData dataSourceMetaData = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
-        Map<Object, Object> attributeMap = new HashMap<>();
-        attributeMap.put("connectionTimeoutMilliseconds", dataSourceParameterMap.get(dataSourceName).getConnectionTimeoutMilliseconds());
-        attributeMap.put("idleTimeoutMilliseconds", dataSourceParameterMap.get(dataSourceName).getIdleTimeoutMilliseconds());
-        attributeMap.put("maxLifetimeMilliseconds", dataSourceParameterMap.get(dataSourceName).getMaxLifetimeMilliseconds());
-        attributeMap.put("maxPoolSize", dataSourceParameterMap.get(dataSourceName).getMaxPoolSize());
-        attributeMap.put("minPoolSize", dataSourceParameterMap.get(dataSourceName).getMinPoolSize());
-        attributeMap.put("maintenanceIntervalMilliseconds", dataSourceParameterMap.get(dataSourceName).getMaintenanceIntervalMilliseconds());
-        attributeMap.put("readOnly", dataSourceParameterMap.get(dataSourceName).isReadOnly());
         String type = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDatabaseType().getName();
         String host = dataSourceMetaData.getHostName();
         int port = dataSourceMetaData.getPort();
         String db = dataSourceMetaData.getCatalog();
-        return Arrays.asList(dataSourceName, type, host, port, db, (new Gson()).toJson(attributeMap));
+        return Arrays.asList(dataSourceName, type, host, port, db, (new Gson()).toJson(getAttributeMap(dataSourceParameterMap.get(dataSourceName))));
+    }
+    
+    private Map<Object, Object> getAttributeMap(final DataSourceParameter dataSourceParameter) {
+        Map<Object, Object> result = new HashMap<>(7, 1);
+        result.put("connectionTimeoutMilliseconds", dataSourceParameter.getConnectionTimeoutMilliseconds());
+        result.put("idleTimeoutMilliseconds", dataSourceParameter.getIdleTimeoutMilliseconds());
+        result.put("maxLifetimeMilliseconds", dataSourceParameter.getMaxLifetimeMilliseconds());
+        result.put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
+        result.put("minPoolSize", dataSourceParameter.getMinPoolSize());
+        result.put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
+        result.put("readOnly", dataSourceParameter.isReadOnly());
+        return result;
     }
 }
