@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -24,10 +25,10 @@ import java.util.Collection;
 /**
  * RQL result set.
  */
-public interface RQLResultSet {
+public interface RQLResultSet extends TypedSPI {
     
     /**
-     * Initialize rule data.
+     * Initialize data.
      * @param schemaName schema name
      * @param sqlStatement SQL statement
      */

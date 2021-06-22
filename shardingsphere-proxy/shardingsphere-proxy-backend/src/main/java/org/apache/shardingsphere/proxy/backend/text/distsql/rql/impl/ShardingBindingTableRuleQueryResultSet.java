@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -54,5 +55,10 @@ public final class ShardingBindingTableRuleQueryResultSet implements RQLResultSe
     @Override
     public Collection<Object> getRowData() {
         return Collections.singleton(data.next());
+    }
+    
+    @Override
+    public String getType() {
+        return ShowShardingBindingTableRulesStatement.class.getCanonicalName();
     }
 }

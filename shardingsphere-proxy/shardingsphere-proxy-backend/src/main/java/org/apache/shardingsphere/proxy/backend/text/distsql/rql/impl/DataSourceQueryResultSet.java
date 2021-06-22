@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
 import com.google.gson.Gson;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -33,9 +34,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Result set for show resources.
+ * Result set for show data source.
  */
-public final class DataSourcesQueryResultSet implements RQLResultSet {
+public final class DataSourceQueryResultSet implements RQLResultSet {
     
     private Map<String, DataSourceParameter> dataSourceParameterMap;
     
@@ -82,5 +83,10 @@ public final class DataSourcesQueryResultSet implements RQLResultSet {
         result.put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.put("readOnly", dataSourceParameter.isReadOnly());
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return ShowResourcesStatement.class.getCanonicalName();
     }
 }

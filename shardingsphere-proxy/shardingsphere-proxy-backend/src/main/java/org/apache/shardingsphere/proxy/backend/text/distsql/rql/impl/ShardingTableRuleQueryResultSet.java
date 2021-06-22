@@ -198,4 +198,9 @@ public final class ShardingTableRuleQueryResultSet implements RQLResultSet {
     private Optional<KeyGenerateStrategyConfiguration> getKeyGenerateStrategyConfiguration(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
         return null == keyGenerateStrategyConfig ? Optional.ofNullable(shardingRuleConfig.getDefaultKeyGenerateStrategy()) : Optional.of(keyGenerateStrategyConfig);
     }
+    
+    @Override
+    public String getType() {
+        return ShowShardingTableRulesStatement.class.getCanonicalName();
+    }
 }

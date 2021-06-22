@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -65,5 +66,10 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements RQLResultSet {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = data.next();
         return Arrays.asList(dataSourceRuleConfig.getName(), Joiner.on(",").join(dataSourceRuleConfig.getDataSourceNames()), 
                 discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName()).getType(), PropertiesConverter.convert(discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName()).getProps()));
+    }
+    
+    @Override
+    public String getType() {
+        return ShowDatabaseDiscoveryRulesStatement.class.getCanonicalName();
     }
 }

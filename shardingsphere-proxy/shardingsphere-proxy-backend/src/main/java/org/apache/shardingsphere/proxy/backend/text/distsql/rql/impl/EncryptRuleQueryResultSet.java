@@ -89,4 +89,9 @@ public final class EncryptRuleQueryResultSet implements RQLResultSet {
         return Arrays.asList(Splitter.on(".").splitToList(entry.getKey()).get(0), entry.getValue().getLogicColumn(), entry.getValue().getCipherColumn(), entry.getValue().getPlainColumn(), 
                 encryptors.get(entry.getValue().getEncryptorName()).getType(), PropertiesConverter.convert(encryptors.get(entry.getValue().getEncryptorName()).getProps()));
     }
+    
+    @Override
+    public String getType() {
+        return ShowEncryptRulesStatement.class.getCanonicalName();
+    }
 }

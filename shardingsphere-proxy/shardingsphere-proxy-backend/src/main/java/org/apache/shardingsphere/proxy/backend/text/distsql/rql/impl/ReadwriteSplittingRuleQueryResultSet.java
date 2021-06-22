@@ -25,6 +25,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -67,5 +68,10 @@ public final class ReadwriteSplittingRuleQueryResultSet implements RQLResultSet 
         return Arrays.asList(ruleConfig.getName(), ruleConfig.getAutoAwareDataSourceName(), ruleConfig.getWriteDataSourceName(), Joiner.on(",").join(ruleConfig.getReadDataSourceNames()),
                 null == loadBalancers.get(ruleConfig.getLoadBalancerName()) ? null : loadBalancers.get(ruleConfig.getLoadBalancerName()).getType(),
                 PropertiesConverter.convert(loadBalancers.get(ruleConfig.getLoadBalancerName()).getProps()));
+    }
+    
+    @Override
+    public String getType() {
+        return ShowReadwriteSplittingRulesStatement.class.getCanonicalName();
     }
 }
