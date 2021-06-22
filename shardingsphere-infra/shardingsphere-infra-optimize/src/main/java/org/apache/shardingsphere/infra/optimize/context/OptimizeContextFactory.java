@@ -94,7 +94,7 @@ public final class OptimizeContextFactory {
                 .withConformance(connectionConfig.conformance())
                 .withParserFactory(SqlParserImpl.FACTORY);
     }
-
+    
     private void initProperties(final DatabaseType databaseType) {
         // TODO Logic could be improved.
         if (databaseType instanceof MySQLDatabaseType || databaseType == null) {
