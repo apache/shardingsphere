@@ -90,7 +90,7 @@ public final class TablesContextTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("table_1"));
     }
-
+    
     @Test
     public void assertFindTableNameWhenTableNameOrAliasIgnoreCase() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
@@ -99,7 +99,7 @@ public final class TablesContextTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("table_1"));
     }
-
+    
     private SimpleTableSegment createTableSegment(final String tableName, final String alias) {
         SimpleTableSegment result = new SimpleTableSegment(0, 0, new IdentifierValue(tableName));
         AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
