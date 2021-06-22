@@ -19,7 +19,13 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomPrivilegeBuilder {
-
+    /**
+     * Build privileges.
+     *
+     * @param users users
+     * @param props props
+     * @return privileges
+     */
     public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users, final Properties props) {
 
         Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>();

@@ -21,17 +21,17 @@ public class CustomPrivilegesPermittedShardingSpherePrivileges implements Shardi
     }
 
     @Override
-    public boolean hasPrivileges(String schema) {
+    public boolean hasPrivileges(final String schema) {
         return schemas.contains(schema);
     }
 
     @Override
-    public boolean hasPrivileges(Collection<PrivilegeType> privileges) {
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
         return true;
     }
 
     @Override
-    public boolean hasPrivileges(AccessSubject accessSubject, Collection<PrivilegeType> privileges) {
+    public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
         if (accessSubject instanceof SchemaAccessSubject) {
             return hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema());
         }
