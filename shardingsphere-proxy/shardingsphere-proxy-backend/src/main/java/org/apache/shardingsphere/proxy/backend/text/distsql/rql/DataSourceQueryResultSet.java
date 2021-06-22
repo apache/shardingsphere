@@ -22,8 +22,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResources
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.distsql.RQLResultSet;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -42,11 +43,11 @@ public final class DataSourceQueryResultSet implements RQLResultSet {
     
     private Iterator<String> dataSourceNames;
     
-    private ShardingSphereMetaData metaData;
+    private ShardingSphereResource resource;
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        this.metaData = metaData;
+        resource = metaData.getResource();
         dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(DataSourceConverter.getDataSourceConfigurationMap(metaData.getResource().getDataSources()));
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
     }
@@ -64,8 +65,8 @@ public final class DataSourceQueryResultSet implements RQLResultSet {
     @Override
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
-        DataSourceMetaData dataSourceMetaData = metaData.getResource().getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
-        String type = metaData.getResource().getDatabaseType().getName();
+        DataSourceMetaData dataSourceMetaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
+        String type = resource.getDatabaseType().getName();
         String host = dataSourceMetaData.getHostName();
         int port = dataSourceMetaData.getPort();
         String db = dataSourceMetaData.getCatalog();
