@@ -78,7 +78,7 @@ public final class PostgreSQLCommandExecutorFactory {
             case SYNC_COMMAND:
                 return new PostgreSQLComSyncExecutor(connectionContext, backendConnection);
             case CLOSE_COMMAND:
-                connectionContext.getPendingExecutors().add(new PostgreSQLComCloseExecutor((PostgreSQLComClosePacket) commandPacket, backendConnection));
+                connectionContext.getPendingExecutors().add(new PostgreSQLComCloseExecutor(connectionContext, (PostgreSQLComClosePacket) commandPacket, backendConnection));
                 break;
             case TERMINATE:
                 return new PostgreSQLComTerminationExecutor();

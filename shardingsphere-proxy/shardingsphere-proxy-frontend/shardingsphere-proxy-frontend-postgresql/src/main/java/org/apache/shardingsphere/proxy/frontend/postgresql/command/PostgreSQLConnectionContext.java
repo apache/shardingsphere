@@ -94,6 +94,15 @@ public final class PostgreSQLConnectionContext {
     }
     
     /**
+     * Close portal.
+     *
+     * @param portal portal name
+     */
+    public void closePortal(final String portal) {
+        portals.remove(portal);
+    }
+    
+    /**
      * Get describe command executor.
      *
      * @return describe command executor
