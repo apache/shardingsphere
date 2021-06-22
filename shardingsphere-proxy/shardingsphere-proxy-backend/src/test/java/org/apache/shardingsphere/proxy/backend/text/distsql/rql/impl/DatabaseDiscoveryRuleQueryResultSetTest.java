@@ -22,6 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.junit.Test;
 
@@ -35,27 +36,30 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class DatabaseDiscoveryRuleQueryResultSetTest extends BaseRuleQueryResultSet {
-    
-    @Override
-    protected Collection<RuleConfiguration> buildRuleConfigurations() {
-        DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ms_group", Arrays.asList("ds_0", "ds_1"), "test");
-        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MGR", new Properties());
-        Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = new HashMap<>(1, 1);
-        discoverTypes.put("test", shardingSphereAlgorithmConfig);
-        return Collections.singleton(new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), discoverTypes));
-    }
+public final class DatabaseDiscoveryRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         RQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
-        resultSet.init(getShardingSphereMetaData(), mock(ShowDatabaseDiscoveryRulesStatement.class));
+        resultSet.init(metaData, mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(4));
         assertTrue(actual.contains("ms_group"));
         assertTrue(actual.contains("ds_0,ds_1"));
         assertTrue(actual.contains("MGR"));
+    }
+    
+    private RuleConfiguration createRuleConfiguration() {
+        DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ms_group", Arrays.asList("ds_0", "ds_1"), "test");
+        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MGR", new Properties());
+        Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = new HashMap<>(1, 1);
+        discoverTypes.put("test", shardingSphereAlgorithmConfig);
+        return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), discoverTypes);
     }
 }
