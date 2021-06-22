@@ -72,7 +72,7 @@ public final class ShardingTableRuleQueryResultSetTest {
     
     @SneakyThrows
     private String readYAML() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/config-sharding.yaml").toURI()))
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/distsql/sharding-rule-config.yaml").toURI()))
                 .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
