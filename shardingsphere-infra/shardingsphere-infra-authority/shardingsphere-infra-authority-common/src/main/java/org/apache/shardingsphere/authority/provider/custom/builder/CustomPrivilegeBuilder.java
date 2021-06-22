@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.custom.CustomPrivilegesPermittedAuthorityProviderAlgorithm;
 import org.apache.shardingsphere.authority.provider.custom.model.privilege.CustomPrivilegesPermittedShardingSpherePrivileges;
