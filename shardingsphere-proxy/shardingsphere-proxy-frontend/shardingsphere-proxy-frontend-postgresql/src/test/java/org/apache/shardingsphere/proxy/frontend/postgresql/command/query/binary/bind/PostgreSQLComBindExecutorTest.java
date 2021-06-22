@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnFormat;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
@@ -144,7 +144,7 @@ public final class PostgreSQLComBindExecutorTest {
     
     @Test
     public void assertDataRowIsBinary() throws SQLException {
-        when(bindPacket.getResultFormatByColumnIndex(0)).thenReturn(PostgreSQLColumnFormat.BINARY);
+        when(bindPacket.getResultFormats()).thenReturn(Collections.singletonList(PostgreSQLValueFormat.BINARY));
         QueryResponseRow queryResponseRow = mock(QueryResponseRow.class);
         when(queryResponseRow.getCells()).thenReturn(Collections.singletonList(new BinaryQueryResponseCell(JDBCType.BIGINT.getVendorTypeNumber(), Long.MAX_VALUE)));
         when(databaseCommunicationEngine.getQueryResponseRow()).thenReturn(queryResponseRow);
