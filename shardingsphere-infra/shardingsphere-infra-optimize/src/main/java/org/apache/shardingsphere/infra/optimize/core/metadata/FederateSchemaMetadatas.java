@@ -38,7 +38,7 @@ public final class FederateSchemaMetadatas {
             schemas.put(each.getKey(), new FederateSchemaMetadata(each.getKey(), each.getValue().getSchema().getTables()));
         }
     }
-
+    
     /**
      * Get default schema metadata.
      * 
@@ -47,7 +47,7 @@ public final class FederateSchemaMetadatas {
     public FederateSchemaMetadata getDefaultSchemaMetadata() {
         return schemas.get(DefaultSchema.LOGIC_NAME);
     }
-
+    
     /**
      * Get schema metadata by schema name.
      * 
