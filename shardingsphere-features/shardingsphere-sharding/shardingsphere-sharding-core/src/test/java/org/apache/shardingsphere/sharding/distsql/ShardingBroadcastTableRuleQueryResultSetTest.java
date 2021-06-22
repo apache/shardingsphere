@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
+package org.apache.shardingsphere.sharding.distsql;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
 import org.junit.Test;
@@ -28,23 +29,26 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class ShardingBroadcastTableRuleQueryResultSetTest extends BaseRuleQueryResultSet {
-    
-    @Override
-    protected Collection<RuleConfiguration> buildRuleConfigurations() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getBroadcastTables().addAll(Arrays.asList("t_order", "t_order_item"));
-        return Collections.singleton(result);
-    }
+public final class ShardingBroadcastTableRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         ShardingBroadcastTableRuleQueryResultSet resultSet = new ShardingBroadcastTableRuleQueryResultSet();
-        resultSet.init("test", mock(ShowShardingBroadcastTableRulesStatement.class));
+        resultSet.init(metaData, mock(ShowShardingBroadcastTableRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(1));
         assertThat(actual, is(Collections.singleton("t_order")));
+    }
+    
+    private RuleConfiguration createRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getBroadcastTables().addAll(Arrays.asList("t_order", "t_order_item"));
+        return result;
     }
 }

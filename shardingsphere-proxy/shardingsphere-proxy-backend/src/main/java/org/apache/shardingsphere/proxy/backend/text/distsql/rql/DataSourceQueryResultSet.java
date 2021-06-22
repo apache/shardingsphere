@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import com.google.gson.Gson;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.distsql.RQLResultSet;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -33,21 +34,20 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Result set for show resources.
+ * Result set for show data source.
  */
-public final class DataSourcesQueryResultSet implements RQLResultSet {
+public final class DataSourceQueryResultSet implements RQLResultSet {
     
     private Map<String, DataSourceParameter> dataSourceParameterMap;
     
     private Iterator<String> dataSourceNames;
     
-    private String schemaName;
+    private ShardingSphereMetaData metaData;
     
     @Override
-    public void init(final String schemaName, final SQLStatement sqlStatement) {
-        this.schemaName = schemaName;
-        dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(
-                DataSourceConverter.getDataSourceConfigurationMap(ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources()));
+    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+        this.metaData = metaData;
+        dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(DataSourceConverter.getDataSourceConfigurationMap(metaData.getResource().getDataSources()));
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
     }
     
@@ -64,19 +64,28 @@ public final class DataSourcesQueryResultSet implements RQLResultSet {
     @Override
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
-        DataSourceMetaData dataSourceMetaData = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
-        Map<Object, Object> attributeMap = new HashMap<>();
-        attributeMap.put("connectionTimeoutMilliseconds", dataSourceParameterMap.get(dataSourceName).getConnectionTimeoutMilliseconds());
-        attributeMap.put("idleTimeoutMilliseconds", dataSourceParameterMap.get(dataSourceName).getIdleTimeoutMilliseconds());
-        attributeMap.put("maxLifetimeMilliseconds", dataSourceParameterMap.get(dataSourceName).getMaxLifetimeMilliseconds());
-        attributeMap.put("maxPoolSize", dataSourceParameterMap.get(dataSourceName).getMaxPoolSize());
-        attributeMap.put("minPoolSize", dataSourceParameterMap.get(dataSourceName).getMinPoolSize());
-        attributeMap.put("maintenanceIntervalMilliseconds", dataSourceParameterMap.get(dataSourceName).getMaintenanceIntervalMilliseconds());
-        attributeMap.put("readOnly", dataSourceParameterMap.get(dataSourceName).isReadOnly());
-        String type = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDatabaseType().getName();
+        DataSourceMetaData dataSourceMetaData = metaData.getResource().getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
+        String type = metaData.getResource().getDatabaseType().getName();
         String host = dataSourceMetaData.getHostName();
         int port = dataSourceMetaData.getPort();
         String db = dataSourceMetaData.getCatalog();
-        return Arrays.asList(dataSourceName, type, host, port, db, (new Gson()).toJson(attributeMap));
+        return Arrays.asList(dataSourceName, type, host, port, db, (new Gson()).toJson(getAttributeMap(dataSourceParameterMap.get(dataSourceName))));
+    }
+    
+    private Map<Object, Object> getAttributeMap(final DataSourceParameter dataSourceParameter) {
+        Map<Object, Object> result = new HashMap<>(7, 1);
+        result.put("connectionTimeoutMilliseconds", dataSourceParameter.getConnectionTimeoutMilliseconds());
+        result.put("idleTimeoutMilliseconds", dataSourceParameter.getIdleTimeoutMilliseconds());
+        result.put("maxLifetimeMilliseconds", dataSourceParameter.getMaxLifetimeMilliseconds());
+        result.put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
+        result.put("minPoolSize", dataSourceParameter.getMinPoolSize());
+        result.put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
+        result.put("readOnly", dataSourceParameter.isReadOnly());
+        return result;
+    }
+    
+    @Override
+    public String getType() {
+        return ShowResourcesStatement.class.getCanonicalName();
     }
 }

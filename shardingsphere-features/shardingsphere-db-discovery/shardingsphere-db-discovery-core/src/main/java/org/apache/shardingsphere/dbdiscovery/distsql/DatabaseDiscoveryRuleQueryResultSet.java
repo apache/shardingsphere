@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
+package org.apache.shardingsphere.dbdiscovery.distsql;
 
-import com.google.common.base.Joiner;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
+import org.apache.shardingsphere.infra.distsql.RQLResultSet;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -43,8 +43,8 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements RQLResultSet {
     private Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes;
     
     @Override
-    public void init(final String schemaName, final SQLStatement sqlStatement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
+    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).map(each -> (DatabaseDiscoveryRuleConfiguration) each).findAny();
         data = ruleConfig.map(optional -> optional.getDataSources().iterator()).orElse(Collections.emptyIterator());
         discoveryTypes = ruleConfig.map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes).orElse(Collections.emptyMap());
@@ -63,7 +63,12 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements RQLResultSet {
     @Override
     public Collection<Object> getRowData() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = data.next();
-        return Arrays.asList(dataSourceRuleConfig.getName(), Joiner.on(",").join(dataSourceRuleConfig.getDataSourceNames()), 
+        return Arrays.asList(dataSourceRuleConfig.getName(), String.join(",", dataSourceRuleConfig.getDataSourceNames()), 
                 discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName()).getType(), PropertiesConverter.convert(discoveryTypes.get(dataSourceRuleConfig.getDiscoveryTypeName()).getProps()));
+    }
+    
+    @Override
+    public String getType() {
+        return ShowDatabaseDiscoveryRulesStatement.class.getCanonicalName();
     }
 }

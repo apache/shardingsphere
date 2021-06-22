@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
+package org.apache.shardingsphere.encrypt.distsql;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
+import org.apache.shardingsphere.infra.distsql.RQLResultSet;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -51,11 +48,11 @@ public final class EncryptRuleQueryResultSet implements RQLResultSet {
     private Map<String, ShardingSphereAlgorithmConfiguration> encryptors;
     
     @Override
-    public void init(final String schemaName, final SQLStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
+    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+        Optional<EncryptRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findAny();
         data = ruleConfig.map(optional -> getAllEncryptColumns(optional, ((ShowEncryptRulesStatement) sqlStatement).getTableName()).entrySet().iterator()).orElse(Collections.emptyIterator());
-        encryptors = ruleConfig.map(EncryptRuleConfiguration::getEncryptors).orElse(Maps.newHashMap());
+        encryptors = ruleConfig.map(EncryptRuleConfiguration::getEncryptors).orElse(Collections.emptyMap());
     }
     
     private Map<String, EncryptColumnRuleConfiguration> getAllEncryptColumns(final EncryptRuleConfiguration encryptRuleConfig, final String tableName) {
@@ -70,7 +67,7 @@ public final class EncryptRuleQueryResultSet implements RQLResultSet {
     }
     
     private Map<String, EncryptColumnRuleConfiguration> buildEncryptColumnRuleConfigurationMap(final EncryptTableRuleConfiguration encryptTableRuleConfig) {
-        return encryptTableRuleConfig.getColumns().stream().collect(Collectors.toMap(each -> Joiner.on(".").join(encryptTableRuleConfig.getName(), each.getLogicColumn()), each -> each));
+        return encryptTableRuleConfig.getColumns().stream().collect(Collectors.toMap(each -> String.join(".", encryptTableRuleConfig.getName(), each.getLogicColumn()), each -> each));
     }
     
     @Override
@@ -86,7 +83,12 @@ public final class EncryptRuleQueryResultSet implements RQLResultSet {
     @Override
     public Collection<Object> getRowData() {
         Entry<String, EncryptColumnRuleConfiguration> entry = data.next();
-        return Arrays.asList(Splitter.on(".").splitToList(entry.getKey()).get(0), entry.getValue().getLogicColumn(), entry.getValue().getCipherColumn(), entry.getValue().getPlainColumn(), 
+        return Arrays.asList(entry.getKey().split("\\.")[0], entry.getValue().getLogicColumn(), entry.getValue().getCipherColumn(), entry.getValue().getPlainColumn(), 
                 encryptors.get(entry.getValue().getEncryptorName()).getType(), PropertiesConverter.convert(encryptors.get(entry.getValue().getEncryptorName()).getProps()));
+    }
+    
+    @Override
+    public String getType() {
+        return ShowEncryptRulesStatement.class.getCanonicalName();
     }
 }

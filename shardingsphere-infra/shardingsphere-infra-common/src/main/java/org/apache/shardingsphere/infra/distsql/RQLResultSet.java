@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
+package org.apache.shardingsphere.infra.distsql;
 
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -24,14 +26,15 @@ import java.util.Collection;
 /**
  * RQL result set.
  */
-public interface RQLResultSet {
+public interface RQLResultSet extends TypedSPI {
     
     /**
-     * Initialize rule data.
-     * @param schemaName schema name
+     * Initialize data.
+     * 
+     * @param metaData meta data for ShardingSphere
      * @param sqlStatement SQL statement
      */
-    void init(String schemaName, SQLStatement sqlStatement);
+    void init(ShardingSphereMetaData metaData, SQLStatement sqlStatement);
     
     /**
      * Get result set column names.
