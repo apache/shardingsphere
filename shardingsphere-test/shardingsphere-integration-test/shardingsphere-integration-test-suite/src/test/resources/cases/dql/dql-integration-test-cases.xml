@@ -514,8 +514,7 @@
     <test-case sql="SELECT * FROM t_user WHERE pwd in ('a10', 'b11') OR user_id = 10" scenario-types="encrypt">
         <assertion expected-data-file="select_in_or_encrypt.xml"/>
     </test-case>
-
-    <!--fixme encrypt Expected column count is 8 but was 4-->
+    
     <test-case sql="SELECT * FROM t_user u INNER JOIN t_user_item m ON u.user_id=m.user_id" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="select_join_encrypt.xml"/>
     </test-case>
