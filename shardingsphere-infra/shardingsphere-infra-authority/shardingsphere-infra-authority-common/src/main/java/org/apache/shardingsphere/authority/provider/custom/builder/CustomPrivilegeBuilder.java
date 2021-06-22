@@ -20,20 +20,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomPrivilegeBuilder {
 
-	public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users, final Properties props){
-		
-		Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>();
-		
-		Map<String, Set<String>> userSchemaMappings = new HashMap<>();
-		String[] mappings = StringUtils.split(props.getProperty(CustomPrivilegesPermittedAuthorityProviderAlgorithm.PROP_USER_SCHEMA_MAPPINGS, ""), ",");
-		for(String mapping : mappings){
-			String[] userSchemaPair = StringUtils.split(mapping.trim(), "=");
-			Set<String> schemas = userSchemaMappings.getOrDefault(userSchemaPair[0], new HashSet<>());
-			schemas.add(userSchemaPair[1]);
-			userSchemaMappings.putIfAbsent(userSchemaPair[0], schemas);
-		}
-		users.forEach(each -> result.put(each, new CustomPrivilegesPermittedShardingSpherePrivileges(userSchemaMappings.getOrDefault(each.getGrantee().getUsername(), Collections.emptySet()))));
-		return result;
-	}
-	
+    public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users, final Properties props) {
+
+        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>();
+
+        Map<String, Set<String>> userSchemaMappings = new HashMap<>();
+        String[] mappings = StringUtils.split(props.getProperty(CustomPrivilegesPermittedAuthorityProviderAlgorithm.PROP_USER_SCHEMA_MAPPINGS, ""), ",");
+        for (String mapping : mappings) {
+            String[] userSchemaPair = StringUtils.split(mapping.trim(), "=");
+            Set<String> schemas = userSchemaMappings.getOrDefault(userSchemaPair[0], new HashSet<>());
+            schemas.add(userSchemaPair[1]);
+            userSchemaMappings.putIfAbsent(userSchemaPair[0], schemas);
+        }
+        users.forEach(each -> result.put(each, new CustomPrivilegesPermittedShardingSpherePrivileges(userSchemaMappings.getOrDefault(each.getGrantee().getUsername(), Collections.emptySet()))));
+        return result;
+    }
+
 }

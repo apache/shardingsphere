@@ -11,31 +11,31 @@ import org.apache.shardingsphere.authority.provider.natived.model.subject.Schema
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class CustomPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges{
+public class CustomPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
 
-	private Set<String> schemas;
-	
-	@Override
-	public void setSuperPrivilege() {
-		
-	}
+    private Set<String> schemas;
 
-	@Override
-	public boolean hasPrivileges(String schema) {
-		return schemas.contains(schema);
-	}
+    @Override
+    public void setSuperPrivilege() {
 
-	@Override
-	public boolean hasPrivileges(Collection<PrivilegeType> privileges) {
-		return true;
-	}
+    }
 
-	@Override
-	public boolean hasPrivileges(AccessSubject accessSubject, Collection<PrivilegeType> privileges) {
-		if (accessSubject instanceof SchemaAccessSubject) {
-			return hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema());
-		}
-		throw new UnsupportedOperationException(accessSubject.getClass().getCanonicalName());
-	}
+    @Override
+    public boolean hasPrivileges(String schema) {
+        return schemas.contains(schema);
+    }
+
+    @Override
+    public boolean hasPrivileges(Collection<PrivilegeType> privileges) {
+        return true;
+    }
+
+    @Override
+    public boolean hasPrivileges(AccessSubject accessSubject, Collection<PrivilegeType> privileges) {
+        if (accessSubject instanceof SchemaAccessSubject) {
+            return hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema());
+        }
+        throw new UnsupportedOperationException(accessSubject.getClass().getCanonicalName());
+    }
 
 }
