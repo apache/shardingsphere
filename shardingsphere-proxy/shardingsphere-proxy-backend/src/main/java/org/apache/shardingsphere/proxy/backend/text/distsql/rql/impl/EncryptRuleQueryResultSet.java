@@ -27,7 +27,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRul
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * Result set for show encrypt rule.
  */
-public final class EncryptRuleQueryResultSet implements RuleQueryResultSet {
+public final class EncryptRuleQueryResultSet implements RQLResultSet {
     
     private Iterator<Entry<String, EncryptColumnRuleConfiguration>> data;
     

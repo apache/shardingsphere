@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * Result set for show sharding table rules.
  */
-public final class ShardingTableRuleQueryResultSet implements RuleQueryResultSet {
+public final class ShardingTableRuleQueryResultSet implements RQLResultSet {
     
     private Iterator<ShardingTableRuleConfiguration> tables;
     

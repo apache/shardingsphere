@@ -22,9 +22,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Collection;
 
 /**
- * Rule query result set.
+ * RQL result set.
  */
-public interface RuleQueryResultSet {
+public interface RQLResultSet {
     
     /**
      * Initialize rule data.

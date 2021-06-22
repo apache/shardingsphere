@@ -35,13 +35,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RuleQueryBackendHandlerTest {
+public final class RQLBackendHandlerTest {
     
     @Test
     public void assertExecute() {
-        RuleQueryResultSet resultSet = mock(RuleQueryResultSet.class);
+        RQLResultSet resultSet = mock(RQLResultSet.class);
         when(resultSet.getColumnNames()).thenReturn(Arrays.asList("foo", "bar"));
-        RuleQueryBackendHandler handler = new RuleQueryBackendHandler(mock(RQLStatement.class), mock(BackendConnection.class), resultSet);
+        RQLBackendHandler handler = new RQLBackendHandler(mock(RQLStatement.class), mock(BackendConnection.class), resultSet);
         ResponseHeader responseHeader = handler.execute("test", mock(RQLStatement.class));
         assertThat(((QueryResponseHeader) responseHeader).getQueryHeaders().size(), is(2));
         assertQueryHeader(((QueryResponseHeader) responseHeader).getQueryHeaders().get(0), "foo");
@@ -65,9 +65,9 @@ public final class RuleQueryBackendHandlerTest {
     
     @Test
     public void assertGetRowData() {
-        RuleQueryResultSet resultSet = mock(RuleQueryResultSet.class);
+        RQLResultSet resultSet = mock(RQLResultSet.class);
         when(resultSet.getRowData()).thenReturn(Arrays.asList("foo_value", "bar_value"));
-        RuleQueryBackendHandler handler = new RuleQueryBackendHandler(mock(RQLStatement.class), mock(BackendConnection.class), resultSet);
+        RQLBackendHandler handler = new RQLBackendHandler(mock(RQLStatement.class), mock(BackendConnection.class), resultSet);
         handler.execute("test", mock(RQLStatement.class));
         Collection<Object> rowData = handler.getRowData();
         assertThat(rowData.size(), is(2));

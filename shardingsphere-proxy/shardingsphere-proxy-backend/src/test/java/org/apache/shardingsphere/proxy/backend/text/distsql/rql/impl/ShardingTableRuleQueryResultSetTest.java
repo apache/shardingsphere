@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.junit.Test;
 
@@ -52,7 +52,7 @@ public final class ShardingTableRuleQueryResultSetTest extends BaseRuleQueryResu
     
     @Test
     public void assertGetRowData() {
-        RuleQueryResultSet resultSet = new ShardingTableRuleQueryResultSet();
+        RQLResultSet resultSet = new ShardingTableRuleQueryResultSet();
         resultSet.init("test", mock(ShowShardingTableRulesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(14));

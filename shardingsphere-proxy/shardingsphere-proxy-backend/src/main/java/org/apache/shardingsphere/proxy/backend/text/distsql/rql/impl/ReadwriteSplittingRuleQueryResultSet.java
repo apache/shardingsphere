@@ -22,7 +22,7 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -37,7 +37,7 @@ import java.util.Optional;
 /**
  * Result set for show readwrite splitting rule.
  */
-public final class ReadwriteSplittingRuleQueryResultSet implements RuleQueryResultSet {
+public final class ReadwriteSplittingRuleQueryResultSet implements RQLResultSet {
     
     private Iterator<ReadwriteSplittingDataSourceRuleConfiguration> data;
     
