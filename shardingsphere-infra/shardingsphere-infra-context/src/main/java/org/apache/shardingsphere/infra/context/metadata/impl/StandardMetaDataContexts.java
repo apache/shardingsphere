@@ -57,7 +57,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         this(new LinkedHashMap<>(), 
                 new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null, new ConfigurationProperties(new Properties()));
     }
-
+    
     /**
      * todo remove this deprecated constructor.
      * @deprecated old
@@ -72,7 +72,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         this.props = props;
         stateContext = new StateContext();
     }
-
+    
     public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
                                     final ExecutorEngine executorEngine, final ConfigurationProperties props, final OptimizeContextFactory optimizeContextFactory) {
         this.metaDataMap = new LinkedHashMap<>(metaDataMap);
