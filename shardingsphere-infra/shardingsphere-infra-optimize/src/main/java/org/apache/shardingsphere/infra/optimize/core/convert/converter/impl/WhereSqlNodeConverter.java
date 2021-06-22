@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.core.convert.converter;
+package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
 import java.util.Optional;
 
 /**
- * SqlNode converter.
+ * Where converter.
  */
-public interface SqlNodeConverter<T extends ASTNode, R extends SqlNode> {
-    
-    /**
-     *  Convert.
-     * @param astNode ast node
-     * @return sqlNode optional
-     */
-    Optional<R> convert(T astNode);
+public final class WhereSqlNodeConverter implements SqlNodeConverter<WhereSegment, SqlNode> {
+    @Override
+    public Optional<SqlNode> convert(WhereSegment where) {
+        if(where == null) {
+            return Optional.empty();
+        }
+        ExpressionSegment whereExpr = where.getExpr();
+        return new ExpressionSqlNodeConverter().convert(whereExpr);
+    }
 }

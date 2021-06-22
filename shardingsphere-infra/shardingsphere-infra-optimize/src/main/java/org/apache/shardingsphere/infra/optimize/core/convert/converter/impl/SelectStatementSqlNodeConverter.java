@@ -22,20 +22,69 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
+import java.util.AbstractMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Select statement sql node converter.
  */
-public final class SelectStatementSqlNodeConverter implements SqlNodeConverter<SelectStatement> {
+public final class SelectStatementSqlNodeConverter implements SqlNodeConverter<SelectStatement, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final SelectStatement selectStatement) {
-        Optional<SqlNode> distinct = new DistinctSqlNodeConverter().convert(selectStatement.getProjections());
-        // TODO : prepare other sqlNodes referring to `distinct`.
-        return Optional.of(new SqlSelect(SqlParserPos.ZERO, (SqlNodeList) distinct.orElse(null), null, null, null, null, null,
-                null, null, null, null, null));
+        Optional<SqlNodeList> distinct = new DistinctSqlNodeConverter().convert(selectStatement.getProjections());
+        Optional<SqlNodeList> projections = new ProjectionsSqlNodeConverter().convert(selectStatement.getProjections());
+        Optional<SqlNode> from = new TableSqlNodeConverter().convert(selectStatement.getFrom());
+        Optional<SqlNode> where = new WhereSqlNodeConverter().convert(selectStatement.getWhere().orElse(null));
+        Optional<SqlNodeList> groupBy = new GroupBySqlNodeConverter().convert(selectStatement.getGroupBy().orElse(null));
+        Optional<SqlNode> having = new HavingSqlNodeConverter().convert(selectStatement.getHaving().orElse(null));
+        Optional<SqlNodeList> orderBy = new OrderBySqlNodeConverter().convert(selectStatement.getOrderBy().orElse(null));
+        Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
+        Map.Entry<SqlNode, SqlNode> offsetRowCount = convertPagination(limit.orElse(null));
+        return Optional.of(new SqlSelect(SqlParserPos.ZERO, 
+                distinct.orElse(null), 
+                projections.orElse(null), 
+                from.orElse(null), 
+                where.orElse(null), 
+                groupBy.orElse(null), 
+                having.orElse(null),
+                null, 
+                orderBy.orElse(null), 
+                offsetRowCount.getKey(), 
+                offsetRowCount.getValue(), 
+                null));
     }
+
+    /**
+     * convert pagination.
+     * @param limitSegment pagination clause
+     * @return offset and fetch <code>SqlNode</code>.
+     */
+    public static Map.Entry<SqlNode, SqlNode> convertPagination(final LimitSegment limitSegment) {
+        if (limitSegment == null) {
+            return new AbstractMap.SimpleEntry<>(null, null);
+        }
+
+        Optional<SqlNode> offsetSqlNode = Optional.empty();
+        Optional<SqlNode> fetchSqlNode = Optional.empty();
+
+        Optional<PaginationValueSegment> offset = limitSegment.getOffset();
+        Optional<PaginationValueSegment> fetch = limitSegment.getRowCount();
+
+        if (offset.isPresent()) {
+            offsetSqlNode = new PaginationValueSqlConverter().convert(offset.get());
+        }
+
+        if (fetch.isPresent()) {
+            fetchSqlNode = new PaginationValueSqlConverter().convert(fetch.get());
+        }
+        return new AbstractMap.SimpleEntry<>(offsetSqlNode.orElse(null), fetchSqlNode.orElse(null));
+    }
+
 }

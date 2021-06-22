@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.core.convert.converter;
+package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 
 import java.util.Optional;
 
 /**
- * SqlNode converter.
+ * Having converter.
  */
-public interface SqlNodeConverter<T extends ASTNode, R extends SqlNode> {
-    
-    /**
-     *  Convert.
-     * @param astNode ast node
-     * @return sqlNode optional
-     */
-    Optional<R> convert(T astNode);
+public final class HavingSqlNodeConverter implements SqlNodeConverter<HavingSegment, SqlNode> {
+    @Override
+    public Optional<SqlNode> convert(HavingSegment having) {
+        // TODO 
+        return Optional.empty();
+    }
 }

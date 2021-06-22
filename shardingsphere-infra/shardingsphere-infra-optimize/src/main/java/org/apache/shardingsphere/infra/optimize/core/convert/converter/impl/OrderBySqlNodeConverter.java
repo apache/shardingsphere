@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.core.convert.converter;
+package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
- * SqlNode converter.
+ * Order by converter. 
  */
-public interface SqlNodeConverter<T extends ASTNode, R extends SqlNode> {
+public final class OrderBySqlNodeConverter extends AbstractOrderBySqlNodeConverter implements SqlNodeConverter<OrderBySegment, SqlNodeList> {
     
-    /**
-     *  Convert.
-     * @param astNode ast node
-     * @return sqlNode optional
-     */
-    Optional<R> convert(T astNode);
+    @Override
+    public Optional<SqlNodeList> convert(OrderBySegment orderBy) {
+        if (orderBy == null) {
+            return null;
+        }
+        List<SqlNode> orderBySqlNodes = convertOrderByItems(orderBy.getOrderByItems());
+        return Optional.of(new SqlNodeList(orderBySqlNodes, SqlParserPos.ZERO));
+    }
 }

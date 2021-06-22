@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.core.convert.converter;
+package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
+import org.apache.calcite.sql.SqlCharStringLiteral;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 
 import java.util.Optional;
 
-/**
- * SqlNode converter.
- */
-public interface SqlNodeConverter<T extends ASTNode, R extends SqlNode> {
-    
-    /**
-     *  Convert.
-     * @param astNode ast node
-     * @return sqlNode optional
-     */
-    Optional<R> convert(T astNode);
+public final class ExpressionProjectionSqlNodeConverter implements SqlNodeConverter<ExpressionProjectionSegment, SqlNode> {
+    @Override
+    public Optional<SqlNode> convert(ExpressionProjectionSegment expressionProjection) {
+        // TODO expression has not been parsed now.
+        String expression = expressionProjection.getText();
+        return Optional.of(SqlCharStringLiteral.createCharString(expression, SqlParserPos.ZERO));
+    }
 }

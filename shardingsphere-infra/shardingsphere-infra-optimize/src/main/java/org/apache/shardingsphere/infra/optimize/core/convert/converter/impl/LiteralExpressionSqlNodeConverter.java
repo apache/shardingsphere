@@ -17,24 +17,22 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import org.apache.calcite.sql.SqlNodeList;
-import org.apache.calcite.sql.SqlSelectKeyword;
+import org.apache.calcite.sql.SqlLiteral;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 
-import java.util.Collections;
 import java.util.Optional;
 
-/**
- * Distinct sql node converter.
- */
-public final class DistinctSqlNodeConverter implements SqlNodeConverter<ProjectionsSegment, SqlNodeList> {
-    
+public final class LiteralExpressionSqlNodeConverter implements SqlNodeConverter<LiteralExpressionSegment, SqlNode> {
     @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
-        if (projectionsSegment.isDistinctRow()) {
-            return Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO));
+    public Optional<SqlNode> convert(LiteralExpressionSegment literalExpression) {
+        Object literals = literalExpression.getLiterals();
+        if (literals.getClass() == Integer.class) {
+            return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(literalExpression.getLiterals()), SqlParserPos.ZERO));
+        } else if (literals.getClass() == String.class) {
+            return Optional.of(SqlLiteral.createCharString((String) literalExpression.getLiterals(), SqlParserPos.ZERO));
         }
         return Optional.empty();
     }

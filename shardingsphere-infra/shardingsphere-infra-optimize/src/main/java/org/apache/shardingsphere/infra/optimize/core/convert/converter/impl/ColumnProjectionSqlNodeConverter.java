@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.core.convert.converter;
+package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 
 import java.util.Optional;
 
 /**
- * SqlNode converter.
+ * Column projection converter. 
  */
-public interface SqlNodeConverter<T extends ASTNode, R extends SqlNode> {
+public final class ColumnProjectionSqlNodeConverter implements SqlNodeConverter<ColumnProjectionSegment, SqlNode> {
     
-    /**
-     *  Convert.
-     * @param astNode ast node
-     * @return sqlNode optional
-     */
-    Optional<R> convert(T astNode);
+    @Override
+    public Optional<SqlNode> convert(ColumnProjectionSegment columnProjection) {
+        ColumnSegment column = columnProjection.getColumn();
+        return new ColumnSqlNodeConverter().convert(column);
+    }
 }

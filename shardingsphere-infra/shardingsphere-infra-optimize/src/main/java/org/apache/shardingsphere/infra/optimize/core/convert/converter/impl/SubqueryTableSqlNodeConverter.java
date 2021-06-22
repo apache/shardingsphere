@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.core.convert.converter;
+package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 
 import java.util.Optional;
 
 /**
- * SqlNode converter.
+ * Subquery converter.
  */
-public interface SqlNodeConverter<T extends ASTNode, R extends SqlNode> {
-    
-    /**
-     *  Convert.
-     * @param astNode ast node
-     * @return sqlNode optional
-     */
-    Optional<R> convert(T astNode);
+public final class SubqueryTableSqlNodeConverter implements SqlNodeConverter<SubqueryTableSegment, SqlNode> {
+    @Override
+    public Optional<SqlNode> convert(SubqueryTableSegment astNode) {
+        // TODO 
+        return Optional.empty();
+    }
 }
