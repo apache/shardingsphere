@@ -20,12 +20,15 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,6 +45,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,6 +56,12 @@ public final class PostgreSQLComExecuteExecutorTest {
     private PostgreSQLConnectionContext connectionContext;
     
     @Mock
+    private PostgreSQLComExecutePacket packet;
+    
+    @Mock
+    private PostgreSQLPortal portal;
+    
+    @Mock
     private QueryCommandExecutor queryCommandExecutor;
     
     @Mock
@@ -60,13 +70,19 @@ public final class PostgreSQLComExecuteExecutorTest {
     @Mock
     private PostgreSQLDataRowPacket dataRowPacket;
     
+    @Before
+    public void setup() {
+        when(packet.getPortal()).thenReturn("");
+        when(connectionContext.getPortal(anyString())).thenReturn(portal);
+    }
+    
     @Test
     public void assertExecuteQuery() throws SQLException {
         when(connectionContext.getPendingExecutors()).thenReturn(new ArrayList<>(Collections.singletonList(queryCommandExecutor)));
         when(queryCommandExecutor.execute()).thenReturn(Collections.singletonList(postgreSQLPacket));
-        when(queryCommandExecutor.next()).thenReturn(true, false);
-        when((PostgreSQLDataRowPacket) queryCommandExecutor.getQueryRowPacket()).thenReturn(dataRowPacket);
-        PostgreSQLComExecuteExecutor actual = new PostgreSQLComExecuteExecutor(connectionContext);
+        when(portal.next()).thenReturn(true, false);
+        when(portal.nextPacket()).thenReturn(dataRowPacket);
+        PostgreSQLComExecuteExecutor actual = new PostgreSQLComExecuteExecutor(connectionContext, packet);
         Collection<DatabasePacket<?>> actualPackets = actual.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(postgreSQLPacket));
@@ -80,7 +96,8 @@ public final class PostgreSQLComExecuteExecutorTest {
     @Test
     public void assertExecuteUpdate() throws SQLException {
         when(connectionContext.getSqlStatement()).thenReturn(Optional.of(mock(EmptyStatement.class)));
-        PostgreSQLComExecuteExecutor actual = new PostgreSQLComExecuteExecutor(connectionContext);
+        when(portal.next()).thenReturn(false);
+        PostgreSQLComExecuteExecutor actual = new PostgreSQLComExecuteExecutor(connectionContext, packet);
         assertTrue(actual.next());
         assertThat(actual.getQueryRowPacket(), is(instanceOf(PostgreSQLEmptyQueryResponsePacket.class)));
         assertFalse(actual.next());
@@ -88,7 +105,7 @@ public final class PostgreSQLComExecuteExecutorTest {
     
     @Test
     public void assertResponseType() {
-        ResponseType actual = new PostgreSQLComExecuteExecutor(connectionContext).getResponseType();
+        ResponseType actual = new PostgreSQLComExecuteExecutor(connectionContext, packet).getResponseType();
         assertThat(actual, is(ResponseType.QUERY));
     }
 }
