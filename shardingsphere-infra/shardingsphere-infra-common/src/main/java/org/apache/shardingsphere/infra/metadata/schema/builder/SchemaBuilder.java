@@ -64,7 +64,7 @@ public final class SchemaBuilder {
     static {
         ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
-
+    
     /**
      * build actual and logic table meta data.
      *
@@ -79,7 +79,7 @@ public final class SchemaBuilder {
         result.put(actualTableMetaMap, logicTableMetaMap);
         return result;
     }
-
+    
     private static Map<String, TableMetaData> appendRemainTables(final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>();
         appendRemainTables(materials, result);
@@ -94,7 +94,7 @@ public final class SchemaBuilder {
         }
         return result;
     }
-
+    
     private static void appendRemainTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
         Optional<DialectTableMetaDataLoader> dialectLoader = findDialectTableMetaDataLoader(materials);
         if (dialectLoader.isPresent()) {
@@ -103,7 +103,7 @@ public final class SchemaBuilder {
         }
         appendDefaultRemainTables(materials, tables);
     }
-
+    
     private static Map<String, TableMetaData> addRuleConfiguredTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
         for (ShardingSphereRule rule : materials.getRules()) {
@@ -118,7 +118,7 @@ public final class SchemaBuilder {
         }
         return result;
     }
-
+    
     private static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final SchemaBuilderMaterials materials) {
         for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
             if (each.getDatabaseType().equals(materials.getDatabaseType().getName())) {
@@ -127,7 +127,7 @@ public final class SchemaBuilder {
         }
         return Optional.empty();
     }
-
+    
     private static void appendDialectRemainTables(final DialectTableMetaDataLoader dialectLoader, final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         Collection<String> existedTables = getExistedTables(materials.getRules(), tables);
@@ -145,7 +145,7 @@ public final class SchemaBuilder {
             }
         }
     }
-
+    
     private static void appendDefaultRemainTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
         Collection<String> existedTableNames = getExistedTables(materials.getRules(), tables);
         for (Entry<String, DataSource> entry : materials.getDataSourceMap().entrySet()) {
@@ -156,7 +156,7 @@ public final class SchemaBuilder {
             }
         }
     }
-
+    
     private static TableMetaData loadTableMetaData(final String tableName, final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         TableMetaData result = new TableMetaData();
         try (Connection connection = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
@@ -164,11 +164,11 @@ public final class SchemaBuilder {
         }
         return result;
     }
-
+    
     private static Map<String, ColumnMetaData> loadColumnMetaDataMap(final String tableName, final DatabaseType databaseType, final Connection connection) throws SQLException {
         return ColumnMetaDataLoader.load(connection, tableName, databaseType).stream().collect(Collectors.toMap(ColumnMetaData::getName, each -> each, (a, b) -> b, LinkedHashMap::new));
     }
-
+    
     private static Collection<String> getExistedTables(final Collection<ShardingSphereRule> rules, final Map<String, TableMetaData> tables) {
         Collection<String> result = new LinkedHashSet<>();
         for (ShardingSphereRule each : rules) {
