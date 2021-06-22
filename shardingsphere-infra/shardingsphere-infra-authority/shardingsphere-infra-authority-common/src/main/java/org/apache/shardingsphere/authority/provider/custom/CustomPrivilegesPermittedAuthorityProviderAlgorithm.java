@@ -14,15 +14,15 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 public final class CustomPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+    
+    public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
 
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
-
-    public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
 
     private Properties props;
 
     @Override
-    public void setProps(Properties props) {
+    public void setProps(final Properties props) {
         this.props = props;
     }
 
@@ -32,17 +32,17 @@ public final class CustomPrivilegesPermittedAuthorityProviderAlgorithm implement
     }
 
     @Override
-    public void init(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users) {
+    public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
         this.userPrivilegeMap.putAll(CustomPrivilegeBuilder.build(users, props));
     }
 
     @Override
-    public void refresh(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users) {
+    public void refresh(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
         this.userPrivilegeMap.putAll(CustomPrivilegeBuilder.build(users, props));
     }
 
     @Override
-    public Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee) {
+    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
         return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
     }
 
