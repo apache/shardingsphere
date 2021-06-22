@@ -18,37 +18,37 @@ public final class CustomPrivilegesPermittedAuthorityProviderAlgorithm implement
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
 
     public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
-    
-	private Properties props;
-	
-	@Override
-	public void setProps(Properties props) {
-		this.props = props;
-	}
 
-	@Override
-	public Properties getProps() {
-		return this.props;
-	}
+    private Properties props;
 
-	@Override
-	public void init(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users) {
-		this.userPrivilegeMap.putAll(CustomPrivilegeBuilder.build(users, props));
-	}
+    @Override
+    public void setProps(Properties props) {
+        this.props = props;
+    }
 
-	@Override
-	public void refresh(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users) {
-		this.userPrivilegeMap.putAll(CustomPrivilegeBuilder.build(users, props));
-	}
+    @Override
+    public Properties getProps() {
+        return this.props;
+    }
 
-	@Override
-	public Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee) {
-		 return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
-	}
-	
-	@Override
-	public String getType() {
-		return "CUSTOM_PRIVILEGES_PERMITTED";
-	}
-	
+    @Override
+    public void init(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users) {
+        this.userPrivilegeMap.putAll(CustomPrivilegeBuilder.build(users, props));
+    }
+
+    @Override
+    public void refresh(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users) {
+        this.userPrivilegeMap.putAll(CustomPrivilegeBuilder.build(users, props));
+    }
+
+    @Override
+    public Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee) {
+        return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
+    }
+
+    @Override
+    public String getType() {
+        return "CUSTOM_PRIVILEGES_PERMITTED";
+    }
+
 }

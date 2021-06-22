@@ -54,10 +54,10 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
         try {
             MetaDataContexts contexts = ProxyContext.getInstance().getMetaDataContexts();
-            SQLCheckEngine.check(new MySQLShowDatabasesStatement(), Collections.emptyList(), 
-                    contexts.getGlobalRuleMetaData().getRules(), backendConnection.getSchemaName(), contexts.getMetaDataMap(), backendConnection.getGrantee());
+            SQLCheckEngine.check(new MySQLShowDatabasesStatement(), Collections.emptyList(), contexts.getGlobalRuleMetaData().getRules(), backendConnection.getSchemaName(), contexts.getMetaDataMap(),
+                    backendConnection.getGrantee());
         } catch (final SQLCheckException ex) {
-            //ignore
+            // ignore
         }
         Collection<Object> result = new LinkedList<>();
         for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
