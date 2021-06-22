@@ -37,20 +37,20 @@ import java.util.Map;
 @Getter
 public final class FederateTableMetadata {
     
-    private static final RelDataTypeFactory TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
-
+    private static final RelDataTypeFactory TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);   
+    
     private final String name;
     
     private final RelProtoDataType relProtoDataType;
     
     private final List<String> columnNames = new ArrayList<>();
-
+    
     public FederateTableMetadata(final String name, final TableMetaData tableMetaData) {
         this.name = name;
         relProtoDataType = createRelDataType(tableMetaData);
         columnNames.addAll(tableMetaData.getColumns().keySet());
     }
-
+    
     private RelProtoDataType createRelDataType(final TableMetaData tableMetaData) {
         RelDataTypeFactory.Builder fieldInfo = TYPE_FACTORY.builder();
         for (Map.Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
