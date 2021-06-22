@@ -15,38 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.constant;
+package org.apache.shardingsphere.infra.optimize.core.convert.converter;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+
+import java.util.Optional;
 
 /**
- * PostgreSQL column format.
+ * SqlNode converter.
  */
-@RequiredArgsConstructor
-@Getter
-public enum PostgreSQLColumnFormat {
-    
-    TEXT(0),
-    
-    BINARY(1);
-    
-    private final int code;
+public interface SqlNodeConverter<T extends ASTNode> {
     
     /**
-     * Value of.
-     *
-     * @param code format code
-     * @return PostgreSQL column format
+     *  Convert.
+     * @param astNode ast node
+     * @return sqlNode optional
      */
-    public static PostgreSQLColumnFormat valueOf(final int code) {
-        switch (code) {
-            case 0:
-                return TEXT;
-            case 1:
-                return BINARY;
-            default:
-                throw new UnsupportedOperationException("Unsupported PostgreSQL format code " + code);
-        }
-    }
+    Optional<SqlNode> convert(T astNode);
 }

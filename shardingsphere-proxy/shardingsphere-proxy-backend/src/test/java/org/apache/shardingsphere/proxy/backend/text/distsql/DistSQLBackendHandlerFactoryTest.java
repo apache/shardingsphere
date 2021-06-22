@@ -68,7 +68,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RDLBackendHandlerFactoryTest {
+public final class DistSQLBackendHandlerFactoryTest {
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
@@ -269,9 +269,7 @@ public final class RDLBackendHandlerFactoryTest {
             assertThat(ex.getMessage(), is("No Registry center to execute `ShowResourcesStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        Optional<TextProtocolBackendHandler> rdlBackendHandler = RQLBackendHandlerFactory.newInstance(mock(ShowResourcesStatement.class), connection);
-        assertTrue(rdlBackendHandler.isPresent());
-        ResponseHeader response = rdlBackendHandler.get().execute();
+        ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowResourcesStatement.class), connection).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
