@@ -33,7 +33,7 @@ import java.util.Optional;
 public final class ColumnSqlNodeConverter implements SqlNodeConverter<ColumnSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(ColumnSegment columnSegment) {
+    public Optional<SqlNode> convert(final ColumnSegment columnSegment) {
         Optional<OwnerSegment> owner = columnSegment.getOwner();
         String columnName = columnSegment.getIdentifier().getValue();
         if (owner.isPresent()) {

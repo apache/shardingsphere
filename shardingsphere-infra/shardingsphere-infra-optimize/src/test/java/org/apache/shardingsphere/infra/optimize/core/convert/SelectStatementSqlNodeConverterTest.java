@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
  * result of calcite parser.
  * </p>
  */
-public final class SqlNodeConverterTest {
+public final class SelectStatementSqlNodeConverterTest {
 
     private ShardingSphereSQLParserEngine sqlStatementParserEngine;
 
@@ -54,7 +54,7 @@ public final class SqlNodeConverterTest {
     public void testConvertSimpleSelect() {
         String sql = "select order_id, user_id from t_order";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-        Optional<SqlNode> optional = SqlNodeConverter.convert(sqlStatement);
+        Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
         assertTrue(optional.isPresent());
         Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) optional.get();
@@ -73,7 +73,7 @@ public final class SqlNodeConverterTest {
         String sql = "select order_id, user_id from t_order where order_id = 10";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
 
-        Optional<SqlNode> optional = SqlNodeConverter.convert(sqlStatement);
+        Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
         assertTrue(optional.isPresent());
         Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) optional.get();
@@ -86,7 +86,7 @@ public final class SqlNodeConverterTest {
         String sql = "select order_id, user_id from t_order where order_id = 10 group by order_id";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
 
-        Optional<SqlNode> optional = SqlNodeConverter.convert(sqlStatement);
+        Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
         assertTrue(optional.isPresent());
         Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) optional.get();
@@ -100,7 +100,7 @@ public final class SqlNodeConverterTest {
         String sql = "select order_id, user_id from t_order where user_id = 10 order by order_id desc";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
 
-        Optional<SqlNode> optional = SqlNodeConverter.convert(sqlStatement);
+        Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
         assertTrue(optional.isPresent());
         Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) optional.get();
@@ -116,7 +116,7 @@ public final class SqlNodeConverterTest {
                 + "o1.order_id desc";
 
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-        Optional<SqlNode> optional = SqlNodeConverter.convert(sqlStatement);
+        Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
         Assert.assertTrue(optional.isPresent());
         Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) optional.get();
@@ -131,7 +131,7 @@ public final class SqlNodeConverterTest {
                 + "o1.order_id desc";
 
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-        Optional<SqlNode> optional = SqlNodeConverter.convert(sqlStatement);
+        Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
         Assert.assertTrue(optional.isPresent());
         // TODO outer join is not supported by parser of ShardingSphere 
     }

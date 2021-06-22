@@ -31,15 +31,13 @@ import java.util.Optional;
 /**
  * Group by converter.
  */
-public final class GroupBySqlNodeConverter extends AbstractOrderBySqlNodeConverter implements SqlNodeConverter<GroupBySegment, SqlNodeList> {
+public final class GroupBySqlNodeConverter implements SqlNodeConverter<GroupBySegment, SqlNodeList> {
     @Override
-    public Optional<SqlNodeList> convert(GroupBySegment groupBy) {
+    public Optional<SqlNodeList> convert(final GroupBySegment groupBy) {
         if (groupBy == null || groupBy.getGroupByItems() == null || groupBy.getGroupByItems().isEmpty()) {
             return Optional.empty();
         }
         Collection<OrderByItemSegment> groupByItems = groupBy.getGroupByItems();
-
-        // TODO group by having is not supported yet.
         List<SqlNode> groupBySqlNodes = convertOrderByItems(groupByItems);
         return Optional.of(new SqlNodeList(groupBySqlNodes, SqlParserPos.ZERO));
     }

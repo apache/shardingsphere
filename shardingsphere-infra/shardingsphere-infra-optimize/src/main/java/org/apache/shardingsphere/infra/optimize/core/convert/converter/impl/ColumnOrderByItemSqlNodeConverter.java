@@ -34,7 +34,7 @@ import java.util.Optional;
 public final class ColumnOrderByItemSqlNodeConverter implements SqlNodeConverter<ColumnOrderByItemSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(ColumnOrderByItemSegment columnOrderBy) {
+    public Optional<SqlNode> convert(final ColumnOrderByItemSegment columnOrderBy) {
         Optional<SqlNode> optional = new ColumnSqlNodeConverter().convert(columnOrderBy.getColumn());
         if (optional.isPresent() && Objects.equals(OrderDirection.DESC, columnOrderBy.getOrderDirection())) {
             optional = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {optional.get()}, SqlParserPos.ZERO));

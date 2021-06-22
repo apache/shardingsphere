@@ -33,9 +33,9 @@ import java.util.Optional;
  */
 public final class ExpressionSqlNodeConverter implements SqlNodeConverter<ExpressionSegment, SqlNode> {
     @Override
-    public Optional<SqlNode> convert(ExpressionSegment expression) {
+    public Optional<SqlNode> convert(final ExpressionSegment expression) {
         if (expression == null) {
-            return null;
+            return Optional.empty();
         }
         if (expression instanceof LiteralExpressionSegment) {
             return new LiteralExpressionSqlNodeConverter().convert((LiteralExpressionSegment) expression);

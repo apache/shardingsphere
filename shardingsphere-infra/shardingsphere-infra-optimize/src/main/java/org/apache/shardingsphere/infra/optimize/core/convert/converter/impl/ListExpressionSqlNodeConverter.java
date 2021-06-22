@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 public final class ListExpressionSqlNodeConverter implements SqlNodeConverter<ListExpression, SqlNode> {
     @Override
-    public Optional<SqlNode> convert(ListExpression expression) {
+    public Optional<SqlNode> convert(final ListExpression expression) {
         List<ExpressionSegment> items = expression.getItems();
         SqlNode left = null;
         for (ExpressionSegment item : items) {

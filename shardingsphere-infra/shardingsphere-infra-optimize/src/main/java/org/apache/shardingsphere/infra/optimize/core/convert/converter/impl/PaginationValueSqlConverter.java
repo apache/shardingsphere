@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 public final class PaginationValueSqlConverter implements SqlNodeConverter<PaginationValueSegment, SqlNode> {
     @Override
-    public Optional<SqlNode> convert(PaginationValueSegment paginationValue) {
+    public Optional<SqlNode> convert(final PaginationValueSegment paginationValue) {
         if (paginationValue instanceof NumberLiteralPaginationValueSegment) {
             NumberLiteralPaginationValueSegment offsetValue = (NumberLiteralPaginationValueSegment) paginationValue;
             return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(offsetValue.getValue()), SqlParserPos.ZERO));

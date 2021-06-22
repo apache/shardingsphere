@@ -32,7 +32,7 @@ import java.util.Optional;
 public final class BinaryOperationExpressionSqlNodeConverter implements SqlNodeConverter<BinaryOperationExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(BinaryOperationExpression binaryOperationExpression) {
+    public Optional<SqlNode> convert(final BinaryOperationExpression binaryOperationExpression) {
         SqlNode left = new ExpressionSqlNodeConverter().convert(binaryOperationExpression.getLeft()).get();
         SqlNode right = new ExpressionSqlNodeConverter().convert(binaryOperationExpression.getRight()).get();
         String operator = binaryOperationExpression.getOperator();

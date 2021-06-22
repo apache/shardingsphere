@@ -31,9 +31,9 @@ import java.util.Optional;
  */
 public final class TableSqlNodeConverter implements SqlNodeConverter<TableSegment, SqlNode> {
     @Override
-    public Optional<SqlNode> convert(TableSegment table) {
+    public Optional<SqlNode> convert(final TableSegment table) {
         if (table instanceof SimpleTableSegment) {
-            new SimpleTableSqlNodeConverter().convert((SimpleTableSegment) table);
+            return new SimpleTableSqlNodeConverter().convert((SimpleTableSegment) table);
         } else if (table instanceof JoinTableSegment) {
             return new JoinTableSqlNodeConverter().convert((JoinTableSegment) table);
         } else if (table instanceof SubqueryTableSegment) {

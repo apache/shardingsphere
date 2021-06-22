@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 public final class SimpleTableSqlNodeConverter implements SqlNodeConverter<SimpleTableSegment, SqlNode> {
     @Override
-    public Optional<SqlNode> convert(SimpleTableSegment simpleTable) {
+    public Optional<SqlNode> convert(final SimpleTableSegment simpleTable) {
         TableNameSegment tableName = simpleTable.getTableName();
         SqlNode tableNameSqlNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
         SqlNode sqlNode;

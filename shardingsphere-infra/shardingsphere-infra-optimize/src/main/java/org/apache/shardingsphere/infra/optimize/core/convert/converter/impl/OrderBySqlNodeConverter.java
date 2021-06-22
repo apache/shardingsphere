@@ -29,12 +29,12 @@ import java.util.Optional;
 /**
  * Order by converter. 
  */
-public final class OrderBySqlNodeConverter extends AbstractOrderBySqlNodeConverter implements SqlNodeConverter<OrderBySegment, SqlNodeList> {
+public final class OrderBySqlNodeConverter implements SqlNodeConverter<OrderBySegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(OrderBySegment orderBy) {
+    public Optional<SqlNodeList> convert(final OrderBySegment orderBy) {
         if (orderBy == null) {
-            return null;
+            return Optional.empty();
         }
         List<SqlNode> orderBySqlNodes = convertOrderByItems(orderBy.getOrderByItems());
         return Optional.of(new SqlNodeList(orderBySqlNodes, SqlParserPos.ZERO));

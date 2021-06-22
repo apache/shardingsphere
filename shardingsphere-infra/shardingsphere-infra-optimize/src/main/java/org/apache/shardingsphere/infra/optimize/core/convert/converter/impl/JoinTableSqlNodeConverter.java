@@ -43,7 +43,7 @@ public final class JoinTableSqlNodeConverter implements SqlNodeConverter<JoinTab
     private static final String JOIN_TYPE_FULL = "FULL";
     
     @Override
-    public Optional<SqlNode> convert(JoinTableSegment join) {
+    public Optional<SqlNode> convert(final JoinTableSegment join) {
         String joinType = join.getJoinType();
         SqlNode left = new TableSqlNodeConverter().convert(join.getLeft()).get();
         SqlNode right = new TableSqlNodeConverter().convert(join.getRight()).get();

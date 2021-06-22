@@ -29,8 +29,8 @@ import java.util.Optional;
  */
 public final class WhereSqlNodeConverter implements SqlNodeConverter<WhereSegment, SqlNode> {
     @Override
-    public Optional<SqlNode> convert(WhereSegment where) {
-        if(where == null) {
+    public Optional<SqlNode> convert(final WhereSegment where) {
+        if (where == null) {
             return Optional.empty();
         }
         ExpressionSegment whereExpr = where.getExpr();

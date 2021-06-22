@@ -28,8 +28,10 @@ import java.util.Optional;
  */
 public final class HavingSqlNodeConverter implements SqlNodeConverter<HavingSegment, SqlNode> {
     @Override
-    public Optional<SqlNode> convert(HavingSegment having) {
-        // TODO 
-        return Optional.empty();
+    public Optional<SqlNode> convert(final HavingSegment having) {
+        if (having == null) {
+            return Optional.empty();
+        }
+        return new ExpressionSqlNodeConverter().convert(having.getExpr());
     }
 }

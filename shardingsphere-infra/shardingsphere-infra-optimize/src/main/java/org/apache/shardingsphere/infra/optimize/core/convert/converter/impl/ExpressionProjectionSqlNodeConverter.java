@@ -27,7 +27,7 @@ import java.util.Optional;
 
 public final class ExpressionProjectionSqlNodeConverter implements SqlNodeConverter<ExpressionProjectionSegment, SqlNode> {
     @Override
-    public Optional<SqlNode> convert(ExpressionProjectionSegment expressionProjection) {
+    public Optional<SqlNode> convert(final ExpressionProjectionSegment expressionProjection) {
         // TODO expression has not been parsed now.
         String expression = expressionProjection.getText();
         return Optional.of(SqlCharStringLiteral.createCharString(expression, SqlParserPos.ZERO));

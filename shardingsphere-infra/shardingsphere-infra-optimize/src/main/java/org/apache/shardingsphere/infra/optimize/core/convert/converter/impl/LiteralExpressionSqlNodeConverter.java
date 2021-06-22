@@ -27,7 +27,7 @@ import java.util.Optional;
 
 public final class LiteralExpressionSqlNodeConverter implements SqlNodeConverter<LiteralExpressionSegment, SqlNode> {
     @Override
-    public Optional<SqlNode> convert(LiteralExpressionSegment literalExpression) {
+    public Optional<SqlNode> convert(final LiteralExpressionSegment literalExpression) {
         Object literals = literalExpression.getLiterals();
         if (literals.getClass() == Integer.class) {
             return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(literalExpression.getLiterals()), SqlParserPos.ZERO));

@@ -37,7 +37,7 @@ import java.util.Optional;
 public final class ProjectionsSqlNodeConverter implements SqlNodeConverter<ProjectionsSegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(ProjectionsSegment projectionsSegment) {
+    public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
         Collection<ProjectionSegment> projections = projectionsSegment.getProjections();
         List<SqlNode> columnNodes = new ArrayList<>(projections.size());
         for (ProjectionSegment projection : projections) {
@@ -48,7 +48,7 @@ public final class ProjectionsSqlNodeConverter implements SqlNodeConverter<Proje
                 optional = new ExpressionProjectionSqlNodeConverter().convert((ExpressionProjectionSegment) projection);
             }
             // TODO other Projection
-            if(optional.isPresent()) {
+            if (optional.isPresent()) {
                 columnNodes.add(optional.get());
             }
         }
