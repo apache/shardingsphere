@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnFormat;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
@@ -152,10 +152,15 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         List<Object> result = new ArrayList<>(cells.size());
         List<QueryResponseCell> columns = new ArrayList<>(cells);
         for (int i = 0; i < columns.size(); i++) {
-            PostgreSQLColumnFormat format = packet.getResultFormatByColumnIndex(i);
-            result.add(PostgreSQLColumnFormat.BINARY == format ? createBinaryCell(columns.get(i)) : columns.get(i).getData());
+            PostgreSQLValueFormat format = determineValueFormat(i);
+            result.add(PostgreSQLValueFormat.BINARY == format ? createBinaryCell(columns.get(i)) : columns.get(i).getData());
         }
         return result;
+    }
+    
+    private PostgreSQLValueFormat determineValueFormat(final int columnIndex) {
+        List<PostgreSQLValueFormat> resultFormats = packet.getResultFormats();
+        return resultFormats.isEmpty() ? PostgreSQLValueFormat.TEXT : resultFormats.get(columnIndex % resultFormats.size());
     }
     
     private BinaryCell createBinaryCell(final QueryResponseCell cell) {

@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * PostgreSQL column format.
+ * PostgreSQL value format.
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLColumnFormat {
+public enum PostgreSQLValueFormat {
     
     TEXT(0),
     
@@ -37,9 +37,9 @@ public enum PostgreSQLColumnFormat {
      * Value of.
      *
      * @param code format code
-     * @return PostgreSQL column format
+     * @return PostgreSQL value format
      */
-    public static PostgreSQLColumnFormat valueOf(final int code) {
+    public static PostgreSQLValueFormat valueOf(final int code) {
         switch (code) {
             case 0:
                 return TEXT;
