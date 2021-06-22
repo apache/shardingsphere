@@ -15,10 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourceQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingTableRuleQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBindingTableRuleQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBroadcastTableRuleQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRuleQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DatabaseDiscoveryRuleQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.EncryptRuleQueryResultSet
+org.apache.shardingsphere.encrypt.distsql.EncryptRuleQueryResultSet
