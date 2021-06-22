@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResources
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryResultSet;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DatabaseDiscoveryRuleQueryResultSet;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.EncryptRuleQueryResultSet;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRuleQueryResultSet;
@@ -51,13 +51,13 @@ public final class RQLBackendHandlerFactory {
      * @return RDL backend handler
      */
     public static TextProtocolBackendHandler newInstance(final RQLStatement sqlStatement, final BackendConnection backendConnection) {
-        if (sqlStatement instanceof ShowResourcesStatement) {
-            return new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection);
-        }
         return new RuleQueryBackendHandler(sqlStatement, backendConnection, getRuleQueryResultSet(sqlStatement));
     }
     
     private static RuleQueryResultSet getRuleQueryResultSet(final RQLStatement sqlStatement) {
+        if (sqlStatement instanceof ShowResourcesStatement) {
+            return new DataSourcesQueryResultSet();
+        }
         if (sqlStatement instanceof ShowShardingBindingTableRulesStatement) {
             return new ShardingBindingTableRuleQueryResultSet();
         }
