@@ -87,8 +87,8 @@ public final class MetaDataContextsBuilder {
      * @return meta data contexts
      */
     public StandardMetaDataContexts build() throws SQLException {
-        Map<String, ShardingSphereMetaData> logicMetaDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
-        Map<String, ShardingSphereMetaData> actualDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
+        Map<String, ShardingSphereMetaData> actualMetaDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
         for (String each : schemaRuleConfigs.keySet()) {
             Map<String, DataSource> dataSourceMap = dataSources.get(each);
             Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
@@ -98,12 +98,18 @@ public final class MetaDataContextsBuilder {
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
             ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);
             ShardingSphereSchema actualSchema = new ShardingSphereSchema(tableMetaDataMap.keySet().iterator().next());
-            ShardingSphereSchema logicSchema = new ShardingSphereSchema(tableMetaDataMap.values().iterator().next());
-            actualDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, actualSchema));
-            logicMetaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, logicSchema));
+            actualMetaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, actualSchema));
+            metaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, buildSchema(tableMetaDataMap)));
         }
-        OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(actualDataMap);
-        return new StandardMetaDataContexts(logicMetaDataMap, buildGlobalSchemaMetaData(logicMetaDataMap), executorEngine, props, optimizeContextFactory);
+        OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(actualMetaDataMap);
+        return new StandardMetaDataContexts(metaDataMap, buildGlobalSchemaMetaData(metaDataMap), executorEngine, props, optimizeContextFactory);
+    }
+
+    private ShardingSphereSchema buildSchema(final Map<Map<String, TableMetaData>, Map<String, TableMetaData>> tableMetaDataMap) {
+        Map<String, TableMetaData> tables = new HashMap<>(tableMetaDataMap.size(), 1);
+        tables.putAll(tableMetaDataMap.keySet().iterator().next());
+        tables.putAll(tableMetaDataMap.values().iterator().next());
+        return new ShardingSphereSchema(tables);
     }
 
     private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> mataDataMap) {

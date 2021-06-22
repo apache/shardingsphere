@@ -57,7 +57,12 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         this(new LinkedHashMap<>(), 
                 new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null, new ConfigurationProperties(new Properties()));
     }
-    
+
+    /**
+     * todo remove this deprecated constructor.
+     * @deprecated old
+     */
+    @Deprecated
     public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData, 
                                     final ExecutorEngine executorEngine, final ConfigurationProperties props) {
         this.metaDataMap = new LinkedHashMap<>(metaDataMap);
