@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,17 +15,15 @@
   ~ limitations under the License.
   -->
 
-<configuration>
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-    <logger name="org.apache.shardingsphere" level="warn" additivity="true">
-        <appender-ref ref="console" />
-    </logger>
-    <root>
-        <level value="error" />
-        <appender-ref ref="console" />
-    </root>
-</configuration> 
+<dataset>
+    <metadata>
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
+        <column name="item_id" />
+        <column name="order_id0" />
+        <column name="user_id0" />
+        <column name="status0" />
+    </metadata>
+    <row values="1000, 10, init, 100000, 1000, 10, init" />
+</dataset>
