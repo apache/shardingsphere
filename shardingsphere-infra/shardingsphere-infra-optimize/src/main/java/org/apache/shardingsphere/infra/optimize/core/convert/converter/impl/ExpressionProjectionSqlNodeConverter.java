@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Expressi
 import java.util.Optional;
 
 public final class ExpressionProjectionSqlNodeConverter implements SqlNodeConverter<ExpressionProjectionSegment, SqlNode> {
+    
     @Override
     public Optional<SqlNode> convert(final ExpressionProjectionSegment expressionProjection) {
         // TODO expression has not been parsed now.

@@ -32,6 +32,7 @@ import java.util.Optional;
  * List expression converter.
  */
 public final class ListExpressionSqlNodeConverter implements SqlNodeConverter<ListExpression, SqlNode> {
+    
     @Override
     public Optional<SqlNode> convert(final ListExpression expression) {
         List<ExpressionSegment> items = expression.getItems();

@@ -32,6 +32,7 @@ import java.util.Optional;
  * Pagination value converter.
  */
 public final class PaginationValueSqlConverter implements SqlNodeConverter<PaginationValueSegment, SqlNode> {
+    
     @Override
     public Optional<SqlNode> convert(final PaginationValueSegment paginationValue) {
         if (paginationValue instanceof NumberLiteralPaginationValueSegment) {

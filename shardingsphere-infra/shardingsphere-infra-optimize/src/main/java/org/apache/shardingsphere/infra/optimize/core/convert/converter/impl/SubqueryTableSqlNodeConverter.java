@@ -27,6 +27,7 @@ import java.util.Optional;
  * Subquery converter.
  */
 public final class SubqueryTableSqlNodeConverter implements SqlNodeConverter<SubqueryTableSegment, SqlNode> {
+    
     @Override
     public Optional<SqlNode> convert(final SubqueryTableSegment astNode) {
         // TODO 

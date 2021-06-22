@@ -27,6 +27,7 @@ import java.util.Optional;
  * Having converter.
  */
 public final class HavingSqlNodeConverter implements SqlNodeConverter<HavingSegment, SqlNode> {
+    
     @Override
     public Optional<SqlNode> convert(final HavingSegment having) {
         if (having == null) {

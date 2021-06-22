@@ -32,6 +32,7 @@ import java.util.Optional;
  * Expression converter entry.
  */
 public final class ExpressionSqlNodeConverter implements SqlNodeConverter<ExpressionSegment, SqlNode> {
+    
     @Override
     public Optional<SqlNode> convert(final ExpressionSegment expression) {
         if (expression == null) {

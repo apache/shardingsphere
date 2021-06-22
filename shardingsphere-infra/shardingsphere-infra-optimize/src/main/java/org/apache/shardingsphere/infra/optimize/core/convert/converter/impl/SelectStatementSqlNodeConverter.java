@@ -73,14 +73,11 @@ public final class SelectStatementSqlNodeConverter implements SqlNodeConverter<S
 
         Optional<SqlNode> offsetSqlNode = Optional.empty();
         Optional<SqlNode> fetchSqlNode = Optional.empty();
-
         Optional<PaginationValueSegment> offset = limitSegment.getOffset();
         Optional<PaginationValueSegment> fetch = limitSegment.getRowCount();
-
         if (offset.isPresent()) {
             offsetSqlNode = new PaginationValueSqlConverter().convert(offset.get());
         }
-
         if (fetch.isPresent()) {
             fetchSqlNode = new PaginationValueSqlConverter().convert(fetch.get());
         }

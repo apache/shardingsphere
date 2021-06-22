@@ -32,6 +32,10 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * testcase of converting shardingshphere ast to calcite ast.
@@ -58,8 +62,8 @@ public final class SelectStatementSqlNodeConverterTest {
         assertTrue(optional.isPresent());
         Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) optional.get();
-        Assert.assertEquals(2, sqlSelect.getSelectList().size());
-        Assert.assertNull(sqlSelect.getWhere());
+        assertEquals(2, sqlSelect.getSelectList().size());
+        assertNull(sqlSelect.getWhere());
         /* 
          TODO compare ast from calcite parser and ast converted from ss ast if possible
         SqlParser parser = SqlParser.create(sql);
@@ -72,41 +76,38 @@ public final class SelectStatementSqlNodeConverterTest {
     public void testConvertSimpleSelectFilter() {
         String sql = "select order_id, user_id from t_order where order_id = 10";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-
         Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
         assertTrue(optional.isPresent());
         Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) optional.get();
-        Assert.assertEquals(2, sqlSelect.getSelectList().size());
-        Assert.assertNotNull(sqlSelect.getWhere());
+        assertEquals(2, sqlSelect.getSelectList().size());
+        assertNotNull(sqlSelect.getWhere());
     }
 
     @Test
     public void testConvertSimpleSelectFilterGroupBy() {
         String sql = "select order_id, user_id from t_order where order_id = 10 group by order_id";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-
         Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
         assertTrue(optional.isPresent());
         Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) optional.get();
-        Assert.assertEquals(2, sqlSelect.getSelectList().size());
-        Assert.assertNotNull(sqlSelect.getWhere());
-        Assert.assertEquals(1, sqlSelect.getGroup().size());
+        assertEquals(2, sqlSelect.getSelectList().size());
+        assertNotNull(sqlSelect.getWhere());
+        assertEquals(1, sqlSelect.getGroup().size());
     }
 
     @Test
     public void testConvertSimpleSelectFilterOrderBy() {
         String sql = "select order_id, user_id from t_order where user_id = 10 order by order_id desc";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-
         Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
         assertTrue(optional.isPresent());
-        Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
+        assertThat(optional.get(), instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) optional.get();
-        Assert.assertEquals(2, sqlSelect.getSelectList().size());
-        Assert.assertNotNull(sqlSelect.getWhere());
-        Assert.assertEquals(1, sqlSelect.getOrderList().size());
+        assertEquals(2, sqlSelect.getSelectList().size());
+        assertNotNull(sqlSelect.getWhere());
+        assertEquals(1, sqlSelect.getOrderList().size());
     }
 
     @Test
@@ -114,14 +115,13 @@ public final class SelectStatementSqlNodeConverterTest {
         String sql = "select 10 + 30, o1.order_id + 10, o1.order_id, o1.user_id, o2.status from t_order o1 join t_order_item o2 on "
                 + "o1.order_id = o2.order_id where o1.status='FINISHED' and o2.order_item_id > 1024 and 1=1 order by "
                 + "o1.order_id desc";
-
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
-        Assert.assertTrue(optional.isPresent());
-        Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
+        assertTrue(optional.isPresent());
+        assertThat(optional.get(), instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) optional.get();
-        Assert.assertThat(sqlSelect.getFrom(), instanceOf(SqlJoin.class));
-        Assert.assertEquals(1, sqlSelect.getOrderList().size());
+        assertThat(sqlSelect.getFrom(), instanceOf(SqlJoin.class));
+        assertEquals(1, sqlSelect.getOrderList().size());
     }
 
     @Test
@@ -129,10 +129,9 @@ public final class SelectStatementSqlNodeConverterTest {
         String sql = "select 10 + 30, o1.order_id + 10, o1.order_id, o1.user_id, o2.status from t_order o1 left outer join t_order_item o2 on "
                 + "o1.order_id = o2.order_id where o1.status='FINISHED' and o2.order_item_id > 1024 and 1=1 order by "
                 + "o1.order_id desc";
-
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
-        Assert.assertTrue(optional.isPresent());
+        assertTrue(optional.isPresent());
         // TODO outer join is not supported by parser of ShardingSphere 
     }
 

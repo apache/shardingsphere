@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import java.util.Optional;
 
 public final class LiteralExpressionSqlNodeConverter implements SqlNodeConverter<LiteralExpressionSegment, SqlNode> {
+    
     @Override
     public Optional<SqlNode> convert(final LiteralExpressionSegment literalExpression) {
         Object literals = literalExpression.getLiterals();

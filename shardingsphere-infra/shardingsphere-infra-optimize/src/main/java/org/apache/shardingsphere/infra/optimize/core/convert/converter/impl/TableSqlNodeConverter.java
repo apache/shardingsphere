@@ -30,6 +30,7 @@ import java.util.Optional;
  * convert from clause.
  */
 public final class TableSqlNodeConverter implements SqlNodeConverter<TableSegment, SqlNode> {
+    
     @Override
     public Optional<SqlNode> convert(final TableSegment table) {
         if (table instanceof SimpleTableSegment) {
