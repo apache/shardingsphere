@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.execute.PostgreSQLComExecutePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -27,12 +29,12 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExe
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -44,19 +46,16 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
     
     private final PostgreSQLConnectionContext connectionContext;
     
-    private final Collection<QueryCommandExecutor> queryCommandExecutors = new LinkedList<>();
+    private final PostgreSQLComExecutePacket packet;
     
     private long dataRows;
     
-    private boolean commandComplete;
+    private boolean executionComplete;
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         for (CommandExecutor each : connectionContext.getPendingExecutors()) {
-            if (each instanceof QueryCommandExecutor) {
-                queryCommandExecutors.add((QueryCommandExecutor) each);
-            }
             result.addAll(each.execute());
         }
         connectionContext.getPendingExecutors().clear();
@@ -70,21 +69,34 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
     
     @Override
     public boolean next() throws SQLException {
-        return !commandComplete;
+        return !executionComplete;
     }
     
     @Override
     public DatabasePacket<?> getQueryRowPacket() throws SQLException {
-        Optional<DatabasePacket<?>> result = getPacketFromQueryCommandExecutors();
+        if (reachedMaxRows()) {
+            executionComplete = true;
+            return new PostgreSQLPortalSuspendedPacket();
+        }
+        Optional<DatabasePacket<?>> result = getPacketFromPortal();
         if (result.isPresent()) {
             dataRows++;
             return result.get();
         }
+        executionComplete = true;
         return createCommandCompletePacket();
     }
     
+    private boolean reachedMaxRows() {
+        return packet.getMaxRows() > 0 && dataRows == packet.getMaxRows();
+    }
+    
+    private Optional<DatabasePacket<?>> getPacketFromPortal() throws SQLException {
+        PostgreSQLPortal portal = connectionContext.getPortal(packet.getPortal());
+        return portal.next() ? Optional.of(portal.nextPacket()) : Optional.empty();
+    }
+    
     private PostgreSQLIdentifierPacket createCommandCompletePacket() {
-        commandComplete = true;
         if (connectionContext.getSqlStatement().map(EmptyStatement.class::isInstance).orElse(false)) {
             return new PostgreSQLEmptyQueryResponsePacket();
         }
@@ -92,18 +104,5 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
         PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(sqlCommand, Math.max(dataRows, connectionContext.getUpdateCount()));
         connectionContext.clearContext();
         return result;
-    }
-    
-    private Optional<DatabasePacket<?>> getPacketFromQueryCommandExecutors() throws SQLException {
-        Iterator<QueryCommandExecutor> iterator = queryCommandExecutors.iterator();
-        while (iterator.hasNext()) {
-            QueryCommandExecutor next = iterator.next();
-            if (next.next()) {
-                return Optional.of(next.getQueryRowPacket());
-            } else {
-                iterator.remove();
-            }
-        }
-        return Optional.empty();
     }
 }

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Res
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.bind.PostgreSQLComBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutor;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -127,14 +126,5 @@ public final class PostgreSQLCommandExecuteEngineTest {
         verify(channelHandlerContext).write(isA(PostgreSQLCommandCompletePacket.class));
         verify(channelHandlerContext).flush();
         verify(channelHandlerContext).write(isA(PostgreSQLReadyForQueryPacket.class));
-    }
-    
-    @Test
-    public void assertWriteQueryDataWithComBindWithUpdateResponse() throws SQLException {
-        PostgreSQLComBindExecutor bindExecutor = mock(PostgreSQLComBindExecutor.class);
-        when(bindExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
-        PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
-        boolean actual = commandExecuteEngine.writeQueryData(channelHandlerContext, backendConnection, bindExecutor, 0);
-        assertFalse(actual);
     }
 }

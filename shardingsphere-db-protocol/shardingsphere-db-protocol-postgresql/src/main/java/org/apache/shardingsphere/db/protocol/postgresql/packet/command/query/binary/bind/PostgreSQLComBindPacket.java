@@ -43,6 +43,8 @@ import java.util.List;
 @Getter
 public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
+    private final String portal;
+    
     private final String statementId;
     
     private final String sql;
@@ -53,7 +55,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
         payload.readInt4();
-        payload.readStringNul();
+        portal = payload.readStringNul();
         statementId = payload.readStringNul();
         int parameterFormatCount = payload.readInt2();
         List<Integer> parameterFormats = new ArrayList<>(parameterFormatCount);
