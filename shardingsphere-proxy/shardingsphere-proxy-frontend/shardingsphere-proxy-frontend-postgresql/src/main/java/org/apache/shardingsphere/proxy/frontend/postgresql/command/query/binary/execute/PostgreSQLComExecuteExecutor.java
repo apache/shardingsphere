@@ -25,8 +25,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
@@ -42,15 +40,13 @@ import java.util.Optional;
  * Command execute executor for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor {
+public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
     
     private final PostgreSQLConnectionContext connectionContext;
     
     private final PostgreSQLComExecutePacket packet;
     
     private long dataRows;
-    
-    private boolean executionComplete;
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
@@ -59,36 +55,22 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
             result.addAll(each.execute());
         }
         connectionContext.getPendingExecutors().clear();
+        result.addAll(doExecute());
+        result.add(createExecutionCompletedPacket());
         return result;
     }
     
-    @Override
-    public ResponseType getResponseType() {
-        return ResponseType.QUERY;
-    }
-    
-    @Override
-    public boolean next() throws SQLException {
-        return !executionComplete;
-    }
-    
-    @Override
-    public DatabasePacket<?> getQueryRowPacket() throws SQLException {
-        if (reachedMaxRows()) {
-            executionComplete = true;
-            return new PostgreSQLPortalSuspendedPacket();
-        }
-        Optional<DatabasePacket<?>> result = getPacketFromPortal();
-        if (result.isPresent()) {
+    private Collection<? extends DatabasePacket<?>> doExecute() throws SQLException {
+        Collection<DatabasePacket<?>> result = new LinkedList<>();
+        while (!reachedMaxRows()) {
+            Optional<DatabasePacket<?>> packet = getPacketFromPortal();
+            if (!packet.isPresent()) {
+                break;
+            }
             dataRows++;
-            return result.get();
+            result.add(packet.get());
         }
-        executionComplete = true;
-        return createCommandCompletePacket();
-    }
-    
-    private boolean reachedMaxRows() {
-        return packet.getMaxRows() > 0 && dataRows == packet.getMaxRows();
+        return result;
     }
     
     private Optional<DatabasePacket<?>> getPacketFromPortal() throws SQLException {
@@ -96,7 +78,10 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
         return portal.next() ? Optional.of(portal.nextPacket()) : Optional.empty();
     }
     
-    private PostgreSQLIdentifierPacket createCommandCompletePacket() {
+    private PostgreSQLIdentifierPacket createExecutionCompletedPacket() {
+        if (reachedMaxRows()) {
+            return new PostgreSQLPortalSuspendedPacket();
+        }
         if (connectionContext.getSqlStatement().map(EmptyStatement.class::isInstance).orElse(false)) {
             return new PostgreSQLEmptyQueryResponsePacket();
         }
@@ -104,5 +89,9 @@ public final class PostgreSQLComExecuteExecutor implements QueryCommandExecutor 
         PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(sqlCommand, Math.max(dataRows, connectionContext.getUpdateCount()));
         connectionContext.clearContext();
         return result;
+    }
+    
+    private boolean reachedMaxRows() {
+        return packet.getMaxRows() > 0 && dataRows == packet.getMaxRows();
     }
 }
