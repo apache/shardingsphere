@@ -26,21 +26,15 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -48,56 +42,40 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Backend handler for show encrypt rules.
+ * Result set for show encrypt rule.
  */
-public final class EncryptRulesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowEncryptRulesStatement> {
+public final class EncryptRuleQueryResultSet implements RuleQueryResultSet {
     
     private Iterator<Entry<String, EncryptColumnRuleConfiguration>> data;
     
     private Map<String, ShardingSphereAlgorithmConfiguration> encryptors;
     
-    public EncryptRulesQueryBackendHandler(final ShowEncryptRulesStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
-    }
-    
     @Override
-    protected ResponseHeader execute(final String schemaName, final ShowEncryptRulesStatement sqlStatement) {
-        loadRuleConfiguration(schemaName, sqlStatement.getTableName());
-        return new QueryResponseHeader(getQueryHeader(schemaName));
-    }
-    
-    private void loadRuleConfiguration(final String schemaName, final String tableName) {
+    public void init(final String schemaName, final SQLStatement sqlStatement) {
         Optional<EncryptRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof EncryptRuleConfiguration).map(each -> (EncryptRuleConfiguration) each).findAny();
-        data = ruleConfig.map(optional -> getAllEncryptColumns(optional, tableName).entrySet().iterator()).orElse(Collections.emptyIterator());
+        data = ruleConfig.map(optional -> getAllEncryptColumns(optional, ((ShowEncryptRulesStatement) sqlStatement).getTableName()).entrySet().iterator()).orElse(Collections.emptyIterator());
         encryptors = ruleConfig.map(EncryptRuleConfiguration::getEncryptors).orElse(Maps.newHashMap());
     }
-
-    private Map<String, EncryptColumnRuleConfiguration> getAllEncryptColumns(final EncryptRuleConfiguration encryptRuleConfiguration, final String tableName) {
+    
+    private Map<String, EncryptColumnRuleConfiguration> getAllEncryptColumns(final EncryptRuleConfiguration encryptRuleConfig, final String tableName) {
         Map<String, EncryptColumnRuleConfiguration> result = new HashMap<>();
         if (Objects.nonNull(tableName)) {
-            encryptRuleConfiguration.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getName()))
+            encryptRuleConfig.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getName()))
                     .findAny().ifPresent(each -> result.putAll(buildEncryptColumnRuleConfigurationMap(each)));
         } else {
-            encryptRuleConfiguration.getTables().forEach(each -> result.putAll(buildEncryptColumnRuleConfigurationMap(each)));
+            encryptRuleConfig.getTables().forEach(each -> result.putAll(buildEncryptColumnRuleConfigurationMap(each)));
         }
         return result;
     }
     
-    private Map<String, EncryptColumnRuleConfiguration> buildEncryptColumnRuleConfigurationMap(final EncryptTableRuleConfiguration encryptTableRuleConfiguration) {
-        return encryptTableRuleConfiguration.getColumns().stream().collect(Collectors.toMap(each -> Joiner.on(".")
-                .join(encryptTableRuleConfiguration.getName(), each.getLogicColumn()), each -> each));
+    private Map<String, EncryptColumnRuleConfiguration> buildEncryptColumnRuleConfigurationMap(final EncryptTableRuleConfiguration encryptTableRuleConfig) {
+        return encryptTableRuleConfig.getColumns().stream().collect(Collectors.toMap(each -> Joiner.on(".").join(encryptTableRuleConfig.getName(), each.getLogicColumn()), each -> each));
     }
     
-    private List<QueryHeader> getQueryHeader(final String schemaName) {
-        List<QueryHeader> result = new LinkedList<>();
-        result.add(new QueryHeader(schemaName, "", "table", "table", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "logicColumn", "logicColumn", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "cipherColumn", "cipherColumn", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "plainColumn", "plainColumn", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "encryptorType", "encryptorType", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schemaName, "", "encryptorProps", "encryptorProps", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        return result;
+    @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("table", "logicColumn", "cipherColumn", "plainColumn", "encryptorType", "encryptorProps");
     }
     
     @Override
