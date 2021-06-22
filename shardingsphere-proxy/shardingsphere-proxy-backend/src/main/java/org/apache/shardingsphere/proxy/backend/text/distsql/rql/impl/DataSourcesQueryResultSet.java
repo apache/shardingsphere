@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * Result set for show resources.
  */
-public final class DataSourcesQueryResultSet implements RuleQueryResultSet {
+public final class DataSourcesQueryResultSet implements RQLResultSet {
     
     private Map<String, DataSourceParameter> dataSourceParameterMap;
     

@@ -30,13 +30,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Rule query backend handler.
+ * RQL backend handler.
  */
-public final class RuleQueryBackendHandler extends SchemaRequiredBackendHandler<RQLStatement> {
+public final class RQLBackendHandler extends SchemaRequiredBackendHandler<RQLStatement> {
     
-    private final RuleQueryResultSet resultSet;
+    private final RQLResultSet resultSet;
     
-    public RuleQueryBackendHandler(final RQLStatement sqlStatement, final BackendConnection backendConnection, final RuleQueryResultSet resultSet) {
+    public RQLBackendHandler(final RQLStatement sqlStatement, final BackendConnection backendConnection, final RQLResultSet resultSet) {
         super(sqlStatement, backendConnection);
         this.resultSet = resultSet;
     }

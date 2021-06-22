@@ -51,10 +51,10 @@ public final class RQLBackendHandlerFactory {
      * @return RDL backend handler
      */
     public static TextProtocolBackendHandler newInstance(final RQLStatement sqlStatement, final BackendConnection backendConnection) {
-        return new RuleQueryBackendHandler(sqlStatement, backendConnection, getRuleQueryResultSet(sqlStatement));
+        return new RQLBackendHandler(sqlStatement, backendConnection, getRuleQueryResultSet(sqlStatement));
     }
     
-    private static RuleQueryResultSet getRuleQueryResultSet(final RQLStatement sqlStatement) {
+    private static RQLResultSet getRuleQueryResultSet(final RQLStatement sqlStatement) {
         if (sqlStatement instanceof ShowResourcesStatement) {
             return new DataSourcesQueryResultSet();
         }

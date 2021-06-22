@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest extends BaseRuleQuery
     
     @Test
     public void assertGetRowData() {
-        RuleQueryResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
+        RQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
         resultSet.init("test", mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(4));

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RuleQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -51,7 +51,7 @@ public final class EncryptRuleQueryResultSetTest extends BaseRuleQueryResultSet 
     
     @Test
     public void assertGetRowData() {
-        RuleQueryResultSet resultSet = new EncryptRuleQueryResultSet();
+        RQLResultSet resultSet = new EncryptRuleQueryResultSet();
         resultSet.init("test", mock(ShowEncryptRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(6));
