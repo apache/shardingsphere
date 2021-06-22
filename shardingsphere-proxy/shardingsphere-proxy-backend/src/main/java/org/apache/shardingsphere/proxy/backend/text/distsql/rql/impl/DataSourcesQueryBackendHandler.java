@@ -46,35 +46,31 @@ public final class DataSourcesQueryBackendHandler extends SchemaRequiredBackendH
     
     private Map<String, DataSourceParameter> dataSourceParameterMap;
     
-    private final String schema;
-    
     private Iterator<String> dataSourceNames;
+    
+    private String schemaName;
     
     public DataSourcesQueryBackendHandler(final ShowResourcesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
-        if (sqlStatement.getSchema().isPresent()) {
-            schema = sqlStatement.getSchema().get().getIdentifier().getValue();
-        } else {
-            schema = backendConnection.getSchemaName();
-        }
     }
     
     @Override
     public ResponseHeader execute(final String schemaName, final ShowResourcesStatement sqlStatement) {
+        this.schemaName = schemaName;
         dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(
-                DataSourceConverter.getDataSourceConfigurationMap(ProxyContext.getInstance().getMetaData(schema).getResource().getDataSources()));
+                DataSourceConverter.getDataSourceConfigurationMap(ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources()));
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
-        return new QueryResponseHeader(generateResponseHeader());
+        return new QueryResponseHeader(generateResponseHeader(schemaName));
     }
     
-    private List<QueryHeader> generateResponseHeader() {
+    private List<QueryHeader> generateResponseHeader(final String schemaName) {
         List<QueryHeader> result = new LinkedList<>();
-        result.add(new QueryHeader(schema, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "type", "type", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "host", "host", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "port", "port", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "db", "db", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "attribute", "attribute", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "type", "type", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "host", "host", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "port", "port", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "db", "db", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "attribute", "attribute", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return result;
     }
     
@@ -86,7 +82,7 @@ public final class DataSourcesQueryBackendHandler extends SchemaRequiredBackendH
     @Override
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
-        DataSourceMetaData dataSourceMetaData = ProxyContext.getInstance().getMetaData(schema).getResource().getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
+        DataSourceMetaData dataSourceMetaData = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
         Map<Object, Object> attributeMap = new HashMap<>();
         attributeMap.put("connectionTimeoutMilliseconds", dataSourceParameterMap.get(dataSourceName).getConnectionTimeoutMilliseconds());
         attributeMap.put("idleTimeoutMilliseconds", dataSourceParameterMap.get(dataSourceName).getIdleTimeoutMilliseconds());
@@ -95,7 +91,7 @@ public final class DataSourcesQueryBackendHandler extends SchemaRequiredBackendH
         attributeMap.put("minPoolSize", dataSourceParameterMap.get(dataSourceName).getMinPoolSize());
         attributeMap.put("maintenanceIntervalMilliseconds", dataSourceParameterMap.get(dataSourceName).getMaintenanceIntervalMilliseconds());
         attributeMap.put("readOnly", dataSourceParameterMap.get(dataSourceName).isReadOnly());
-        String type = ProxyContext.getInstance().getMetaData(schema).getResource().getDatabaseType().getName();
+        String type = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDatabaseType().getName();
         String host = dataSourceMetaData.getHostName();
         int port = dataSourceMetaData.getPort();
         String db = dataSourceMetaData.getCatalog();
