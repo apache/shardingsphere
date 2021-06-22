@@ -391,32 +391,32 @@ public final class ProjectionsContextEngineTest {
                 .createProjectionsContext(selectStatementContext.getFromSimpleTableSegments(), projectionsSegment, groupByContext, new OrderByContext(Collections.emptyList(), false));
         assertNotNull(actual);
     }
-
+    
     @Test
     public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForMySQL() {
         assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new MySQLSelectStatement(), new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForOracle() {
         assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new OracleSelectStatement(), new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForPostgreSQL() {
         assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new PostgreSQLSelectStatement(), new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForSQL92() {
         assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new SQL92SelectStatement(), new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForSQLServer() {
         assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new SQLServerSelectStatement(), new SQLServerSelectStatement());
     }
-
+    
     private void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(final SelectStatement selectStatement, final SelectStatement subquerySelectStatement) {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
