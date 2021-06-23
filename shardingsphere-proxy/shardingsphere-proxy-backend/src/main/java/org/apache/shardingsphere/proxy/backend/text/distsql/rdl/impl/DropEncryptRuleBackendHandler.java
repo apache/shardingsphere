@@ -48,15 +48,15 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
     
     @Override
     public void doExecute(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
-        EncryptRuleConfiguration encryptRuleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class).get();
+        EncryptRuleConfiguration ruleConfig = getRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
         sqlStatement.getTables().forEach(each -> {
-            EncryptTableRuleConfiguration encryptTableRuleConfiguration = encryptRuleConfig.getTables()
+            EncryptTableRuleConfiguration encryptTableRuleConfiguration = ruleConfig.getTables()
                     .stream().filter(tableRule -> tableRule.getName().equals(each)).findAny().get();
-            encryptRuleConfig.getTables().remove(encryptTableRuleConfiguration);
-            encryptTableRuleConfiguration.getColumns().forEach(column -> encryptRuleConfig.getEncryptors().remove(column.getEncryptorName()));
+            ruleConfig.getTables().remove(encryptTableRuleConfiguration);
+            encryptTableRuleConfiguration.getColumns().forEach(column -> ruleConfig.getEncryptors().remove(column.getEncryptorName()));
         });
-        if (encryptRuleConfig.getTables().isEmpty()) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(encryptRuleConfig);
+        if (ruleConfig.getTables().isEmpty()) {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(ruleConfig);
         }
     }
     

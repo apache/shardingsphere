@@ -35,14 +35,14 @@ public final class DropShardingBroadcastTableRulesBackendHandler extends RDLBack
     
     @Override
     public void before(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
-        if (!shardingRuleConfiguration.isPresent() || shardingRuleConfiguration.get().getBroadcastTables().isEmpty()) {
+        Optional<ShardingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+        if (!ruleConfig.isPresent() || ruleConfig.get().getBroadcastTables().isEmpty()) {
             throw new ShardingBroadcastTableRulesNotExistsException(schemaName);
         }
     }
     
     @Override
     public void doExecute(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement) {
-        findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).get().getBroadcastTables().clear();
+        getRuleConfiguration(schemaName, ShardingRuleConfiguration.class).getBroadcastTables().clear();
     }
 }

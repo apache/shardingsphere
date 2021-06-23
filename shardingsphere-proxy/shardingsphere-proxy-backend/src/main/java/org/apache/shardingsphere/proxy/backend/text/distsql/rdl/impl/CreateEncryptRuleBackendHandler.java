@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleStatementConverter;
@@ -66,8 +66,9 @@ public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<Cre
         EncryptRuleConfiguration createdEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlEncryptRuleConfiguration))
                 .stream().filter(each -> each instanceof EncryptRuleConfiguration).findAny().map(each -> (EncryptRuleConfiguration) each).get();
-        if (findRuleConfiguration(schemaName, EncryptRuleConfiguration.class).isPresent()) {
-            EncryptRuleConfiguration existEncryptRuleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class).get();
+        Optional<EncryptRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
+        if (ruleConfig.isPresent()) {
+            EncryptRuleConfiguration existEncryptRuleConfig = ruleConfig.get();
             existEncryptRuleConfig.getTables().addAll(createdEncryptRuleConfiguration.getTables());
             existEncryptRuleConfig.getEncryptors().putAll(createdEncryptRuleConfiguration.getEncryptors());
         } else {
@@ -76,11 +77,10 @@ public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<Cre
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> optional = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
-        if (optional.isPresent()) {
-            Collection<String> existRuleNames = getRuleNames(optional.get());
-            Collection<String> duplicateRuleNames = sqlStatement.getRules().stream()
-                    .map(EncryptRuleSegment::getTableName).filter(existRuleNames::contains).collect(Collectors.toList());
+        Optional<EncryptRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
+        if (ruleConfig.isPresent()) {
+            Collection<String> existRuleNames = getRuleNames(ruleConfig.get());
+            Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(existRuleNames::contains).collect(Collectors.toList());
             if (!duplicateRuleNames.isEmpty()) {
                 throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
             }
@@ -89,8 +89,7 @@ public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<Cre
     
     private void checkEncryptors(final CreateEncryptRuleStatement sqlStatement) {
         Collection<String> encryptors = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream()
-                .map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
+        sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
         Collection<String> invalidEncryptors = encryptors.stream().filter(
             each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!invalidEncryptors.isEmpty()) {
@@ -98,7 +97,7 @@ public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<Cre
         }
     }
     
-    private Collection<String> getRuleNames(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        return encryptRuleConfiguration.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+    private Collection<String> getRuleNames(final EncryptRuleConfiguration encryptRuleConfig) {
+        return encryptRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
     }
 }

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
 
 import java.util.Optional;
 
@@ -40,16 +40,16 @@ public final class CreateShardingBroadcastTableRulesBackendHandler extends RDLBa
     
     @Override
     public void doExecute(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
-        if (!shardingRuleConfig.isPresent()) {
+        Optional<ShardingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+        if (ruleConfig.isPresent()) {
+            if (!ruleConfig.get().getBroadcastTables().isEmpty()) {
+                throw new ShardingBroadcastTableRulesExistsException(schemaName);
+            }
+            ruleConfig.get().getBroadcastTables().addAll(sqlStatement.getTables());
+        } else {
             ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
             shardingRuleConfiguration.setBroadcastTables(sqlStatement.getTables());
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(shardingRuleConfiguration);
-        } else {
-            if (!shardingRuleConfig.get().getBroadcastTables().isEmpty()) {
-                throw new ShardingBroadcastTableRulesExistsException(schemaName);
-            }
-            shardingRuleConfig.get().getBroadcastTables().addAll(sqlStatement.getTables());
         }
     }
 }

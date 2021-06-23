@@ -64,34 +64,33 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     
     @Override
     public void doExecute(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = findRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class).get();
+        DatabaseDiscoveryRuleConfiguration ruleConfig = getRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         DatabaseDiscoveryRuleConfiguration alteredDatabaseDiscoveryRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules()))).stream()
                 .map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst().get();
-        drop(sqlStatement, databaseDiscoveryRuleConfig);
-        databaseDiscoveryRuleConfig.getDataSources().addAll(alteredDatabaseDiscoveryRuleConfiguration.getDataSources());
-        databaseDiscoveryRuleConfig.getDiscoveryTypes().putAll(alteredDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes());
+        drop(sqlStatement, ruleConfig);
+        ruleConfig.getDataSources().addAll(alteredDatabaseDiscoveryRuleConfiguration.getDataSources());
+        ruleConfig.getDiscoveryTypes().putAll(alteredDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes());
     }
     
     private void drop(final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig) {
         getAlteredRuleNames(sqlStatement).forEach(each -> {
-            DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration = databaseDiscoveryRuleConfig.getDataSources()
+            DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = databaseDiscoveryRuleConfig.getDataSources()
                     .stream().filter(dataSource -> dataSource.getName().equals(each)).findAny().get();
-            databaseDiscoveryRuleConfig.getDataSources().remove(databaseDiscoveryDataSourceRuleConfiguration);
-            databaseDiscoveryRuleConfig.getDiscoveryTypes().remove(databaseDiscoveryDataSourceRuleConfiguration.getDiscoveryTypeName());
+            databaseDiscoveryRuleConfig.getDataSources().remove(databaseDiscoveryDataSourceRuleConfig);
+            databaseDiscoveryRuleConfig.getDiscoveryTypes().remove(databaseDiscoveryDataSourceRuleConfig.getDiscoveryTypeName());
         });
     }
     
-    private void check(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
-                       final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration) {
-        checkAlteredRules(schemaName, databaseDiscoveryRuleConfiguration, sqlStatement);
+    private void check(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig) {
+        checkAlteredRules(schemaName, databaseDiscoveryRuleConfig, sqlStatement);
         checkResources(schemaName, sqlStatement);
         checkDiscoveryType(sqlStatement);
     }
     
-    private void checkAlteredRules(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration,
+    private void checkAlteredRules(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig,
                                    final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        Set<String> existRuleNames = databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Set<String> existRuleNames = databaseDiscoveryRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistRuleNames = getAlteredRuleNames(sqlStatement).stream()
                 .filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistRuleNames.isEmpty()) {

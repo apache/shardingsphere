@@ -68,7 +68,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
         ReadwriteSplittingRuleConfiguration alterReadwriteSplittingRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(ReadwriteSplittingRuleStatementConverter.convert(sqlStatement))).stream()
                 .map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst().get();
-        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class).get();
+        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = getRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         drop(sqlStatement, readwriteSplittingRuleConfig);
         readwriteSplittingRuleConfig.getDataSources().addAll(alterReadwriteSplittingRuleConfig.getDataSources());
         readwriteSplittingRuleConfig.getLoadBalancers().putAll(alterReadwriteSplittingRuleConfig.getLoadBalancers());

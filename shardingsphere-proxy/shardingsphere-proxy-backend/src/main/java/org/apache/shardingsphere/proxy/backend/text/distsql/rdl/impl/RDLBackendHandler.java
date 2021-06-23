@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -64,6 +65,12 @@ public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRe
     protected final <R extends SchemaRuleConfiguration> Optional<R> findRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
         return ProxyContext.getInstance().getMetaData(schemaName)
                 .getRuleMetaData().getConfigurations().stream().filter(each -> configRuleClass.isAssignableFrom(each.getClass())).map(each -> (R) each).findFirst();
+    }
+    
+    protected final <R extends SchemaRuleConfiguration> R getRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
+        Optional<R> result = findRuleConfiguration(schemaName, configRuleClass);
+        Preconditions.checkState(result.isPresent(), "Can not find rule type: `%s`.", configRuleClass);
+        return result.get();
     }
     
     protected final Collection<String> getInvalidResources(final String schemaName, final Collection<String> resources) {
