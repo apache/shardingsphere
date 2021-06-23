@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -39,7 +40,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -74,9 +74,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
-    
-    private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
+    private final Collection<DatabaseCommunicationEngine> cachedDatabaseCommunicationEngines = new CopyOnWriteArrayList<>();
     
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
@@ -213,56 +211,28 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     /**
-     * Add statement.
+     * Add database communication engine.
      *
-     * @param statement statement to be added
+     * @param databaseCommunicationEngine database communication engine to be added
      */
-    public void add(final Statement statement) {
-        cachedStatements.add(statement);
+    public void add(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+        cachedDatabaseCommunicationEngines.add(databaseCommunicationEngine);
     }
     
     /**
-     * Add result set.
+     * Close database communication engines.
      *
-     * @param resultSet result set to be added
+     * @return SQL exception when engine close
      */
-    public void add(final ResultSet resultSet) {
-        cachedResultSets.add(resultSet);
-    }
-    
-    /**
-     * Close result sets.
-     *
-     * @return SQL exception when result sets close
-     */
-    public synchronized Collection<SQLException> closeResultSets() {
+    public synchronized Collection<SQLException> closeDatabaseCommunicationEngines() {
         Collection<SQLException> result = new LinkedList<>();
-        for (ResultSet each : cachedResultSets) {
+        for (DatabaseCommunicationEngine each : cachedDatabaseCommunicationEngines) {
             try {
                 each.close();
             } catch (final SQLException ex) {
                 result.add(ex);
             }
         }
-        cachedResultSets.clear();
-        return result;
-    }
-    
-    /**
-     * Close statements.
-     *
-     * @return SQL exception when statements close
-     */
-    public synchronized Collection<SQLException> closeStatements() {
-        Collection<SQLException> result = new LinkedList<>();
-        for (Statement each : cachedStatements) {
-            try {
-                each.close();
-            } catch (final SQLException ex) {
-                result.add(ex);
-            }
-        }
-        cachedStatements.clear();
         return result;
     }
     

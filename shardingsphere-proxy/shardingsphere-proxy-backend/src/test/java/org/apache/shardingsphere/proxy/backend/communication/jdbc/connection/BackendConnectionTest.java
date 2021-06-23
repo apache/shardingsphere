@@ -44,7 +44,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -257,78 +256,6 @@ public final class BackendConnectionTest {
         setFetchSizeMethod.setAccessible(true);
         setFetchSizeMethod.invoke(backendConnection, statement);
         verify(statement, times(1)).setFetchSize(Integer.MIN_VALUE);
-    }
-    
-    @Test
-    public void assertAddStatementCorrectly() throws NoSuchFieldException, IllegalAccessException {
-        Statement statement = mock(Statement.class);
-        backendConnection.add(statement);
-        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
-        field.setAccessible(true);
-        assertTrue(((Collection<?>) field.get(backendConnection)).contains(statement));
-    }
-    
-    @Test
-    public void assertAddResultSetCorrectly() throws NoSuchFieldException, IllegalAccessException {
-        ResultSet resultSet = mock(ResultSet.class);
-        backendConnection.add(resultSet);
-        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
-        field.setAccessible(true);
-        assertTrue(((Collection<?>) field.get(backendConnection)).contains(resultSet));
-    }
-    
-    @Test
-    public void assertCloseResultSetsCorrectly() throws NoSuchFieldException, SQLException, IllegalAccessException {
-        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
-        field.setAccessible(true);
-        Collection<ResultSet> cachedResultSets = (Collection<ResultSet>) field.get(backendConnection);
-        ResultSet resultSet = mock(ResultSet.class);
-        cachedResultSets.add(resultSet);
-        backendConnection.closeResultSets();
-        verify(resultSet, times(1)).close();
-        assertTrue(cachedResultSets.isEmpty());
-    }
-    
-    @Test
-    public void assertCloseResultSetsWithExceptionThrown() throws NoSuchFieldException, SQLException, IllegalAccessException {
-        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
-        field.setAccessible(true);
-        Collection<ResultSet> cachedResultSets = (Collection<ResultSet>) field.get(backendConnection);
-        ResultSet resultSet = mock(ResultSet.class);
-        SQLException sqlException = new SQLException("");
-        doThrow(sqlException).when(resultSet).close();
-        cachedResultSets.add(resultSet);
-        Collection<SQLException> result = backendConnection.closeResultSets();
-        verify(resultSet, times(1)).close();
-        assertTrue(cachedResultSets.isEmpty());
-        assertTrue(result.contains(sqlException));
-    }
-    
-    @Test
-    public void assertCloseStatementsCorrectly() throws NoSuchFieldException, SQLException, IllegalAccessException {
-        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
-        field.setAccessible(true);
-        Collection<Statement> cachedStatement = (Collection<Statement>) field.get(backendConnection);
-        Statement statement = mock(Statement.class);
-        cachedStatement.add(statement);
-        backendConnection.closeStatements();
-        verify(statement, times(1)).close();
-        assertTrue(cachedStatement.isEmpty());
-    }
-    
-    @Test
-    public void assertCloseStatementsWithExceptionThrown() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
-        field.setAccessible(true);
-        Collection<Statement> cachedStatement = (Collection<Statement>) field.get(backendConnection);
-        Statement statement = mock(Statement.class);
-        cachedStatement.add(statement);
-        SQLException sqlException = new SQLException("");
-        doThrow(sqlException).when(statement).close();
-        Collection<SQLException> result = backendConnection.closeStatements();
-        verify(statement, times(1)).close();
-        assertTrue(cachedStatement.isEmpty());
-        assertTrue(result.contains(sqlException));
     }
     
     @Test
