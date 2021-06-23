@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentContext;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.Escaped
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GroupByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.JoinSpecificationContext;
@@ -74,6 +76,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -236,9 +239,18 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
+        if (null != ctx.havingClause()) {
+            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+        }
         return result;
     }
-
+    
+    @Override
+    public ASTNode visitHavingClause(final HavingClauseContext ctx) {
+        ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
+        return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
+    }
+    
     private boolean isDistinct(final SelectSpecificationContext ctx) {
         return ((BooleanLiteralValue) visit(ctx.duplicateSpecification())).getValue();
     }
@@ -313,7 +325,9 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
             return result;
         }
         if (projection instanceof SubqueryExpressionSegment) {
-            SubqueryProjectionSegment result = new SubqueryProjectionSegment(((SubqueryExpressionSegment) projection).getSubquery());
+            SubqueryExpressionSegment subqueryExpressionSegment = (SubqueryExpressionSegment) projection;
+            String text = ctx.start.getInputStream().getText(new Interval(subqueryExpressionSegment.getStartIndex(), subqueryExpressionSegment.getStopIndex()));
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment(((SubqueryExpressionSegment) projection).getSubquery(), text);
             result.setAlias(alias);
             return result;
         }

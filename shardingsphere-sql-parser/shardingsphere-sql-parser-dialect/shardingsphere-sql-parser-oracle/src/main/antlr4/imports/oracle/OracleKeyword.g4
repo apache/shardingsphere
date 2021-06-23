@@ -795,6 +795,10 @@ SHARDED
     : S H A R D E D
     ;
 
+SHARD
+    : S H A R D
+    ;
+
 DUPLICATED
     : D U P L I C A T E D
     ;
@@ -901,6 +905,10 @@ CLEANUP
 
 PARALLEL
     : P A R A L L E L
+    ;
+
+NOPARALLEL
+    : N O P A R A L L E L
     ;
 
 LOG
@@ -1037,6 +1045,10 @@ FREELISTS
 
 DML
     : D M L
+    ;
+
+DDL
+    : D D L
     ;
 
 CAPACITY
@@ -1180,7 +1192,7 @@ PCTTHRESHOLD
     ;
 
 PARAMETERS
-    : P A R A M E  T E R S
+    : P A R A M E T E R S
     ;
 
 LOCATION
@@ -1349,4 +1361,844 @@ ZONEMAP
 
 WITHOUT
     : W I T H O U T
+    ;
+
+XMLTYPE
+    : X M L T Y P E
+    ;
+
+RELATIONAL
+    : R E L A T I O N A L
+    ;
+
+XML
+    : X M L
+    ;
+
+VARRAYS
+    : V A R R A Y S
+    ;
+
+LOBS
+    : L O B S
+    ;
+
+TABLES
+    : T A B L E S
+    ;
+
+ALLOW
+    : A L L O W
+    ;
+
+DISALLOW
+    : D I S A L L O W
+    ;
+
+NONSCHEMA
+    : N O N S C H E M A
+    ;
+
+ANYSCHEMA
+    : A N Y S C H E M A
+    ;
+
+XMLSCHEMA
+    : X M L S C H E M A
+    ;
+
+COLUMNS
+    : C O L U M N S
+    ;
+
+OIDINDEX
+    : O I D I N D E X
+    ;
+
+EDITIONABLE
+    : E D I T I O N A B L E
+    ;
+
+NONEDITIONABLE
+    : N O N E D I T I O N A B L E
+    ;
+
+DEPENDENT
+    : D E P E N D E N T
+    ;
+
+INDEXES
+    : I N D E X E S
+    ;
+
+SHRINK
+    : S H R I N K
+    ;
+
+SPACE
+    : S P A C E
+    ;
+
+COMPACT
+    : C O M P A C T
+    ;
+
+SUPPLEMENTAL
+    : S U P P L E M E N T A L
+    ;
+
+ADVISE
+    : A D V I S E
+    ;
+
+NOTHING
+    : N O T H I N G
+    ;
+
+GUARD
+    : G U A R D
+    ;
+
+SYNC
+    : S Y N C
+    ;
+
+VISIBILITY
+    : V I S I B I L I T Y
+    ;
+
+ACTIVE
+    : A C T I V E
+    ;
+
+DEFAULT_COLLATION
+    : D E F A U L T UL_ C O L L A T I O N
+    ;
+
+MOUNT
+    : M O U N T
+    ;
+
+STANDBY
+    : S T A N D B Y
+    ;
+
+CLONE
+    : C L O N E
+    ;
+
+RESETLOGS
+    : R E S E T L O G S
+    ;
+
+NORESETLOGS
+    : N O R E S E T L O G S
+    ;
+
+UPGRADE
+    : U P G R A D E
+    ;
+
+DOWNGRADE
+    : D O W N G R A D E
+    ;
+
+RECOVER
+    : R E C O V E R
+    ;
+
+LOGFILE
+    : L O G F I L E
+    ;
+
+TEST
+    : T E S T
+    ;
+
+CORRUPTION
+    : C O R R U P T I O N
+    ;
+
+CONTINUE
+    : C O N T I N U E
+    ;
+
+CANCEL
+    : C A N C E L
+    ;
+
+UNTIL
+    : U N T I L
+    ;
+
+CONTROLFILE
+    : C O N T R O L F I L E
+    ;
+
+SNAPSHOT
+    : S N A P S H O T
+    ;
+
+DATAFILE
+    : D A T A F I L E
+    ;
+
+MANAGED
+    : M A N A G E D
+    ;
+
+ARCHIVED
+    : A R C H I V E D
+    ;
+
+DISCONNECT
+    : D I S C O N N E C T
+    ;
+
+NODELAY
+    : N O D E L A Y
+    ;
+
+INSTANCES
+    : I N S T A N C E S
+    ;
+
+FINISH
+    : F I N I S H
+    ;
+
+LOGICAL
+    : L O G I C A L
+    ;
+
+FILE
+    : F I L E
+    ;
+
+SIZE
+    : S I Z E
+    ;
+
+AUTOEXTEND
+    : A U T O E X T E N D
+    ;
+
+BLOCKSIZE
+    : B L O C K S I Z E
+    ;
+
+OFFLINE
+    : O F F L I N E
+    ;
+
+RESIZE
+    : R E S I Z E
+    ;
+
+TEMPFILE
+    : T E M P F I L E
+    ;
+
+DATAFILES
+    : D A T A F I L E S
+    ;
+
+ARCHIVELOG
+    : A R C H I V E L O G
+    ;
+
+MANUAL
+    : M A N U A L
+    ;
+
+NOARCHIVELOG
+    : N O A R C H I V E L O G
+    ;
+
+AVAILABILITY
+    : A V A I L A B I L I T Y
+    ;
+
+PERFORMANCE
+    : P E R F O R M A N C E
+    ;
+
+CLEAR
+    : C L E A R
+    ;
+
+UNARCHIVED
+    : U N A R C H I V E D
+    ;
+
+UNRECOVERABLE
+    : U N R E C O V E R A B L E
+    ;
+
+THREAD
+    : T H R E A D
+    ;
+
+MEMBER
+    : M E M B E R
+    ;
+
+PHYSICAL
+    : P H Y S I C A L
+    ;
+
+FAR
+    : F A R
+    ;
+
+TRACE
+    : T R A C E
+    ;
+
+DISTRIBUTED
+    : D I S T R I B U T E D
+    ;
+
+RECOVERY
+    : R E C O V E R Y
+    ;
+
+FLUSH
+    : F L U S H
+    ;
+
+NOREPLY
+    : N O R E P L Y
+    ;
+
+SWITCH
+    : S W I T C H
+    ;
+
+LOGFILES
+    : L O G F I L E S
+    ;
+
+PROCEDURAL
+    : P R O C E D U R A L
+    ;
+
+REPLICATION
+    : R E P L I C A T I O N
+    ;
+
+SUBSET
+    : S U B S E T
+    ;
+
+ACTIVATE
+    : A C T I V A T E
+    ;
+
+APPLY
+    : A P P L Y
+    ;
+
+MAXIMIZE
+    : M A X I M I Z E
+    ;
+
+PROTECTION
+    : P R O T E C T I O N
+    ;
+
+SUSPEND
+    : S U S P E N D
+    ;
+
+RESUME
+    : R E S U M E
+    ;
+
+QUIESCE
+    : Q U I E S C E
+    ;
+
+UNQUIESCE
+    : U N Q U I E S C E
+    ;
+
+SHUTDOWN
+    : S H U T D O W N
+    ;
+
+REGISTER
+    : R E G I S T E R
+    ;
+
+PREPARE
+    : P R E P A R E
+    ;
+
+SWITCHOVER
+    : S W I T C H O V E R
+    ;
+
+FAILED
+    : F A I L E D
+    ;
+
+SKIP_SYMBOL
+    : S K I P
+    ;
+
+STOP
+    : S T O P
+    ;
+
+ABORT
+    : A B O R T
+    ;
+
+VERIFY
+    : V E R I F Y
+    ;
+
+CONVERT
+    : C O N V E R T
+    ;
+
+FAILOVER
+    : F A I L O V E R
+    ;
+
+BIGFILE
+    : B I G F I L E
+    ;
+
+SMALLFILE
+    : S M A L L F I L E
+    ;
+
+TRACKING
+    : T R A C K I N G
+    ;
+
+CACHING
+    : C A C H I N G
+    ;
+
+CONTAINERS
+    : C O N T A I N E R S
+    ;
+
+TARGET
+    : T A R G E T
+    ;
+
+UNDO
+    : U N D O
+    ;
+
+MOVE
+    : M O V E
+    ;
+
+MIRROR
+    : M I R R O R
+    ;
+
+COPY
+    : C O P Y
+    ;
+
+UNPROTECTED
+    : U N P R O T E C T E D
+    ;
+
+REDUNDANCY
+    : R E D U N D A N C Y
+    ;
+
+REMOVE
+    : R E M O V E
+    ;
+
+LOST
+    : L O S T
+    ;
+
+LEAD_CDB
+    : L E A D UL_ C D B
+    ;
+
+LEAD_CDB_URI
+    : L E A D UL_ C D B UL_ U R I
+    ;
+
+PROPERTY
+    : P R O P E R T Y
+    ;
+
+DEFAULT_CREDENTIAL
+    : D E F A U L T UL_ C R E D E N T I A L
+    ;
+
+TIME_ZONE
+    : T I M E UL_ Z O N E
+    ;
+
+RESET
+    : R E S E T
+    ;
+
+RELOCATE
+    : R E L O C A T E
+    ;
+
+CLIENT
+    : C L I E N T
+    ;
+
+PASSWORDFILE_METADATA_CACHE
+    : P A S S W O R D F I L E UL_ M E T A D A T A UL_ C A C H E
+    ;
+
+NOSWITCH
+    : N O S W I T C H
+    ;
+
+POST_TRANSACTION
+    : P O S T UL_ T R A N S A C T I O N
+    ;
+
+KILL
+    : K I L L
+    ;
+
+ROLLING
+    : R O L L I N G
+    ;
+
+MIGRATION
+    : M I G R A T I O N
+    ;
+
+PATCH
+    : P A T C H
+    ;
+
+ENCRYPTION
+    : E N C R Y P T I O N
+    ;
+
+WALLET
+    : W A L L E T
+    ;
+
+AFFINITY
+    : A F F I N I T Y
+    ;
+
+MEMORY
+    : M E M O R Y
+    ;
+
+SPFILE
+    : S P F I L E
+    ;
+
+BOTH
+    : B O T H
+    ;
+
+SID
+    : S I D
+    ;
+
+SHARED_POOL
+    : S H A R E D UL_ P O O L
+    ;
+
+BUFFER_CACHE
+    : B U F F E R UL_ C A C H E
+    ;
+
+REDO
+    : R E D O
+    ;
+
+CONFIRM
+    : C O N F I R M
+    ;
+
+MIGRATE
+    : M I G R A T E
+    ;
+
+USE_STORED_OUTLINES
+    : U S E UL_ S T O R E D UL_ O U T L I N E S
+    ;
+
+GLOBAL_TOPIC_ENABLED
+    : G L O B A L UL_ T O P I C UL_ E N A B L E D
+    ;
+
+INTERSECT
+    : I N T E R S E C T
+    ;
+
+MINUS
+    : M I N U S
+    ;
+
+LOCKED
+    : L O C K E D
+    ;
+
+FETCH
+    : F E T C H
+    ;
+
+PERCENT
+    : P E R C E N T
+    ;
+
+TIES
+    : T I E S
+    ;
+
+SIBLINGS
+    : S I B L I N G S
+    ;
+
+NULLS
+    : N U L L S
+    ;
+
+LAST
+    : L A S T
+    ;
+
+ISOLATION
+    : I S O L A T I O N
+    ;
+
+SERIALIZABLE
+    : S E R I A L I Z A B L E
+    ;
+
+COMMITTED
+    : C O M M I T T E D
+    ;
+
+FILTER
+    : F I L T E R
+    ;
+
+FACT
+    : F A C T
+    ;
+
+DETERMINISTIC
+    : D E T E R M I N I S T I C
+    ;
+
+PIPELINED
+    : P I P E L I N E D
+    ;
+
+PARALLEL_ENABLE
+    : P A R A L L E L UL_ E N A B L E
+    ;
+
+OUT
+    : O U T
+    ;
+
+NOCOPY
+    : N O C O P Y
+    ;
+
+ACCESSIBLE
+    : A C C E S S I B L E
+    ;
+
+PACKAGE
+    : P A C K A G E
+    ;
+
+USING_NLS_COMP
+    : U S I N G UL_ N L S UL_ C O M P
+    ;
+
+AUTHID
+    : A U T H I D
+    ;
+
+SEARCH
+    : S E A R C H
+    ;
+
+DEPTH
+    : D E P T H
+    ;
+
+BREADTH
+    : B R E A D T H
+    ;
+
+ANALYTIC
+    : A N A L Y T I C
+    ;
+
+HIERARCHIES
+    : H I E R A R C H I E S
+    ;
+
+MEASURES
+    : M E A S U R E S
+    ;
+
+OVER
+    : O V E R
+    ;
+
+LAG
+    : L A G
+    ;
+
+LAG_DIFF
+    : L A G UL_ D I F F
+    ;
+
+LAG_DIF_PERCENT
+    : L A G UL_ D I F UL_ P E R C E N T
+    ;
+
+LEAD
+    : L E A D
+    ;
+
+LEAD_DIFF
+    : L E A D UL_ D I F F
+    ;
+
+LEAD_DIFF_PERCENT
+    : L E A D UL_ D I F F UL_ P E R C E N T
+    ;
+
+HIERARCHY
+    : H I E R A R C H Y
+    ;
+
+WITHIN
+    : W I T H I N
+    ;
+
+ACROSS
+    : A C R O S S
+    ;
+
+ANCESTOR
+    : A N C E S T O R
+    ;
+
+BEGINNING
+    : B E G I N N I N G
+    ;
+
+UNBOUNDED
+    : U N B O U N D E D
+    ;
+
+PRECEDING
+    : P R E C E D I N G
+    ;
+
+FOLLOWING
+    : F O L L O W I N G
+    ;
+
+RANK
+    : R A N K
+    ;
+
+DENSE_RANK
+    : D E N S E UL_ R A N K
+    ;
+
+AVERAGE_RANK
+    : A V E R A G E UL_ R A N K
+    ;
+
+ROW_NUMBER
+    : R O W UL_ N U M B E R
+    ;
+
+SHARE_OF
+    : S H A R E UL_ O F
+    ;
+
+HIER_ANCESTOR
+    : H I E R UL_ A N C E S T O R
+    ;
+
+HIER_PARENT
+    : H I E R UL_ P A R E N T
+    ;
+
+HIER_LEAD
+    : H I E R UL_ L E A D
+    ;
+
+HIER_LAG
+    : H I E R UL_ L A G
+    ;
+
+QUALIFY
+    : Q U A L I F Y
+    ;
+
+HIER_CAPTION
+    : H I E R UL_ C A P T I O N
+    ;
+
+HIER_DEPTH
+    : H I E R UL_ D E P T H
+    ;
+
+HIER_DESCRIPTION
+    : H I E R UL_ D E S C R I P T I O N
+    ;
+
+HIER_LEVEL
+    : H I E R UL_ L E V E L
+    ;
+
+HIER_MEMBER_NAME
+    : H I E R UL_ M E M B E R UL_ N A M E
+    ;
+
+HIER_MEMBER_UNIQUE_NAME
+    : H I E R UL_ M E M B E R UL_ U N I Q U E UL_ N A M E
+    ;
+
+CHAINED
+    : C H A I N E D
+    ;
+
+STATISTICS
+    : S T A T I S T I C S
+    ;
+
+DANGLING
+    : D A N G L I N G
+    ;
+
+STRUCTURE
+    : S T R U C T U R E
+    ;
+
+FAST
+    : F A S T
+    ;
+
+COMPLETE
+    : C O M P L E T E
     ;

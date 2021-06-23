@@ -26,12 +26,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLStringBinaryProtocolValueTest {
@@ -44,16 +43,13 @@ public final class PostgreSQLStringBinaryProtocolValueTest {
     
     @Test
     public void assertNewInstance() {
-        when(byteBuf.readerIndex()).thenReturn(8);
         doAnswer((Answer<ByteBuf>) invocation -> {
             ((byte[]) invocation.getArguments()[0])[0] = 97;
             return byteBuf;
         }).when(byteBuf).readBytes(any(byte[].class));
         PostgreSQLStringBinaryProtocolValue actual = new PostgreSQLStringBinaryProtocolValue();
-        assertThat(actual.getColumnLength("str"), equalTo("str".length()));
-        when(payload.readInt4()).thenReturn(1);
-        assertThat(actual.read(payload), equalTo("a"));
-        verify(byteBuf).readerIndex(4);
+        assertThat(actual.getColumnLength("str"), is("str".length()));
+        assertThat(actual.read(payload, "a".length()), is("a"));
         actual.write(payload, "a");
         verify(byteBuf).writeBytes("a".getBytes());
         actual.write(payload, new byte[1]);

@@ -29,3 +29,14 @@ chapter = true
 | OracleRecognizer        |  使用 Oracle 的 JDBC 驱动执行 SQL     |
 | SQLServerRecognizer     |  使用 SQLServer 的 JDBC 驱动执行 SQL  |
 | H2Recognizer            |  使用 H2 的 JDBC 驱动执行 SQL         |
+
+## AuthorityProvideAlgorithm
+
+| *SPI 名称*                       | *详细说明*                    |
+| ------------------------------- | ---------------------------- |
+| AuthorityProvideAlgorithm       | 用户权限加载逻辑                |
+
+| *已知实现类*                                         | *Type*                   | *详细说明*                                                                           |
+| -------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------- |
+| NativeAuthorityProviderAlgorithm                   | NATIVE                   | 基于后端数据库存取 server.yaml 中配置的权限信息。如果用户不存在，则自动创建用户并默认赋予最高权限。 |
+| AllPrivilegesPermittedAuthorityProviderAlgorithm   | ALL_PRIVILEGES_PERMITTED | 默认授予所有权限（不鉴权），不会与实际数据库数据库交互。                                      |

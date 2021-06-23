@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -167,7 +166,8 @@ public final class ShardingCTLHintBackendHandlerTest {
         metaDataContexts.setAccessible(true);
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(props)));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), mock(ShardingSphereRuleMetaData.class), 
+                mock(ExecutorEngine.class), new ConfigurationProperties(props)));
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         ResponseHeader responseHeader = defaultHintBackendHandler.execute();

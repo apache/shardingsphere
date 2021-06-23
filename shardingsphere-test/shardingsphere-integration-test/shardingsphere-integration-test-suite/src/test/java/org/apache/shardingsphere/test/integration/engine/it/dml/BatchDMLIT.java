@@ -17,57 +17,56 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
-import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.engine.it.BatchIT;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.model.CaseParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.it.BatchITCase;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.runners.Parameterized;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
-public final class BatchDMLIT extends BatchIT {
+public final class BatchDMLIT extends BatchITCase {
     
-    private final IntegrationTestCaseContext testCaseContext;
+    @ClassRule
+    public static ComposeManager composeManager = new ComposeManager("BatchDMLIT");
     
-    public BatchDMLIT(final CaseParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException {
+    public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
         super(parameterizedArray);
-        testCaseContext = parameterizedArray.getTestCaseContext();
     }
     
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getParameters() {
-        return ParameterizedArrayFactory.getCaseParameterizedArray(SQLCommandType.DML);
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<ParameterizedArray> getParameters() {
+        return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML)
+                .stream()
+                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                .collect(Collectors.toList());
     }
     
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
-        // TODO fix replica_query
-        if ("replica_query".equals(getScenario())) {
-            return;
-        }
-        // TODO fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
-        // TODO fix encrypt
-        if ("encrypt".equals(getScenario())) {
-            return;
+        switch (getScenario()) {
+            case "replica_query":
+            case "shadow":
+            case "encrypt":
+                return;
+            default:
         }
         int[] actualUpdateCounts;
         try (Connection connection = getTargetDataSource().getConnection()) {
@@ -77,8 +76,8 @@ public final class BatchDMLIT extends BatchIT {
     }
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+            for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
@@ -95,20 +94,16 @@ public final class BatchDMLIT extends BatchIT {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix replica_query
-        if ("replica_query".equals(getScenario())) {
-            return;
-        }
-        // TODO fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
-        // TODO fix encrypt
-        if ("encrypt".equals(getScenario())) {
-            return;
+        switch (getScenario()) {
+            case "replica_query":
+            case "shadow":
+            case "encrypt":
+                return;
+            default:
         }
         try (Connection connection = getTargetDataSource().getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-                for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+                for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
                     addBatch(preparedStatement, each);
                 }
                 preparedStatement.clearBatch();

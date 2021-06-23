@@ -75,7 +75,7 @@ demo:
 
 ```
 /**
- * databaseType type:String values: MySQL,Oracle，PostgreSQL，SQL92，SQLServer
+ * databaseType type:String values: MySQL,Oracle,PostgreSQL,SQL92,SQLServer
  * sql type:String SQL to be parsed
  * useCache type:boolean whether use cache
  * @return parse tree

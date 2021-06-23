@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -47,12 +48,20 @@ public final class ExecuteProcessEngine {
      *
      * @param context context
      * @param executionGroupContext execution group context
+     * @param props configuration properties
      */
-    public static void initialize(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext)) {
+    public static void initialize(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ConfigurationProperties props) {
+        if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext, props)) {
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
             HANDLERS.iterator().next().report(context, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
         }
+    }
+    
+    /**
+     * Clean.
+     */
+    public static void clean() {
+        ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
     }
     
     /**
@@ -64,6 +73,17 @@ public final class ExecuteProcessEngine {
     public static void finish(final String executionID, final SQLExecutionUnit executionUnit) {
         if (!HANDLERS.isEmpty()) {
             HANDLERS.iterator().next().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
+        }
+    }
+    
+    /**
+     * Finish.
+     *
+     * @param executionID execution ID
+     */
+    public static void finish(final String executionID) {
+        if (!HANDLERS.isEmpty() && ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            HANDLERS.iterator().next().report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
         }
     }
 }

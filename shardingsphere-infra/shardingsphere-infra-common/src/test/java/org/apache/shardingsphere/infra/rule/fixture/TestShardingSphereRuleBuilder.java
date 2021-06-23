@@ -18,18 +18,21 @@
 package org.apache.shardingsphere.infra.rule.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 
-public final class TestShardingSphereRuleBuilder implements ShardingSphereRuleBuilder {
+import javax.sql.DataSource;
+import java.util.Map;
+
+public final class TestShardingSphereRuleBuilder implements SchemaRuleBuilder<TestRuleConfiguration> {
     
     @Getter
-    private static ShardingSphereRule rule = new TestShardingSphereRule();
+    private static final SchemaRule RULE = new TestShardingSphereRule();
     
     @Override
-    public ShardingSphereRule build(final RuleConfiguration ruleConfig) {
-        return rule;
+    public SchemaRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final TestRuleConfiguration config) {
+        return RULE;
     }
     
     @Override
@@ -38,7 +41,7 @@ public final class TestShardingSphereRuleBuilder implements ShardingSphereRuleBu
     }
     
     @Override
-    public Class getTypeClass() {
+    public Class<TestRuleConfiguration> getTypeClass() {
         return TestRuleConfiguration.class;
     }
 }

@@ -46,7 +46,7 @@
     </delete>
     
     <select id="selectAll" resultMap="baseResultMap">
-        SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id;
+        SELECT * from t_order_item
     </select>
     
     <select id="selectRange" resultMap="baseResultMap">

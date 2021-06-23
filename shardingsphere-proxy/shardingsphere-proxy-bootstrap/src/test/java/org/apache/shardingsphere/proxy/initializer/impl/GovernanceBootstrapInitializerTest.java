@@ -20,19 +20,18 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
+import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.fixture.FixtureRegistryRepository;
+import org.apache.shardingsphere.proxy.fixture.FixtureRegistryCenterRepository;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -47,7 +46,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -58,6 +56,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
@@ -65,11 +64,9 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private static final String SHARDING_RULE_YAML = "conf/reg_center/sharding-rule.yaml";
     
-    private static final String AUTHENTICATION_YAML = "conf/reg_center/authentication.yaml";
-    
     private static final String PROPS_YAML = "conf/reg_center/props.yaml";
     
-    private final FixtureRegistryRepository registryRepository = new FixtureRegistryRepository();
+    private final FixtureRegistryCenterRepository registryCenterRepository = new FixtureRegistryCenterRepository();
     
     @Test
     public void assertGetProxyConfiguration() throws IOException {
@@ -80,12 +77,10 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     private void initConfigCenter() {
-        RegistryCenterNode node = new RegistryCenterNode();
-        registryRepository.persist(node.getAuthenticationPath(), readYAML(AUTHENTICATION_YAML));
-        registryRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
-        registryRepository.persist(node.getMetadataNodePath(), "db");
-        registryRepository.persist(node.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
-        registryRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
+        registryCenterRepository.persist(GlobalNode.getPropsPath(), readYAML(PROPS_YAML));
+        registryCenterRepository.persist(SchemaMetadataNode.getMetadataNodePath(), "db");
+        registryCenterRepository.persist(SchemaMetadataNode.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
+        registryCenterRepository.persist(SchemaMetadataNode.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})
@@ -94,7 +89,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     private void closeConfigCenter() {
-        registryRepository.close();
+        registryCenterRepository.close();
     }
     
     @Test
@@ -110,7 +105,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertNotNull(actual);
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        assertAuthentication(new DefaultAuthentication(actual.getUsers()));
         assertProps(actual.getProps());
     }
     
@@ -190,23 +184,14 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
     }
     
-    private void assertAuthentication(final DefaultAuthentication actual) {
-        Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
-        assertTrue(rootUser.isPresent());
-        assertThat(rootUser.get().getPassword(), is("root"));
-        Optional<ShardingSphereUser> shardingUser = actual.findUser(new Grantee("sharding", ""));
-        assertTrue(shardingUser.isPresent());
-        assertThat(shardingUser.get().getPassword(), is("sharding"));
-    }
-    
     @Test
     public void assertDecorateMetaDataContexts() {
         StandardMetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class);
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         MetaDataContexts actualMetaDataContexts = getInitializer().decorateMetaDataContexts(metaDataContexts);
         assertNotNull(actualMetaDataContexts);
         assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
         assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
-        assertThat(actualMetaDataContexts.getAuthentication(), is(metaDataContexts.getAuthentication()));
         assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));
     }
     

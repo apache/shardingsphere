@@ -38,7 +38,7 @@ import java.sql.SQLException;
 public final class YamlConfigurationExampleMain {
     
       private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.READ_WRITE_SPLITTING;
+//    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
 //    private static ShardingType shardingType = ShardingType.SHADOW;
     
@@ -63,8 +63,8 @@ public final class YamlConfigurationExampleMain {
             case SHARDING_DATABASES_AND_TABLES:
                 yamlFilePath = String.format("/META-INF/%s/%s/sharding-databases-tables.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
-            case READ_WRITE_SPLITTING:
-                yamlFilePath = String.format("/META-INF/%s/%s/read-write-splitting.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
+            case READWRITE_SPLITTING:
+                yamlFilePath = String.format("/META-INF/%s/%s/readwrite-splitting.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case ENCRYPT:
                 yamlFilePath = String.format("/META-INF/%s/%s/encrypt.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");

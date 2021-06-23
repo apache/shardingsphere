@@ -14,10 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-dataSources:
-   dataSource:
-     dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
-     url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-     maxTotal: 100
-     password: ''
-     username: sa
+dataSource:
+  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+  url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+  maxTotal: 100
+  password: ''
+  username: sa

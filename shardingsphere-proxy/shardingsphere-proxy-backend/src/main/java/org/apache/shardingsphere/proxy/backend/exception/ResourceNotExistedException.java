@@ -31,5 +31,7 @@ public final class ResourceNotExistedException extends BackendException {
 
     private static final long serialVersionUID = 1704331180489268L;
 
+    private final String schemaName;
+
     private final Collection<String> resourceNames;
 }

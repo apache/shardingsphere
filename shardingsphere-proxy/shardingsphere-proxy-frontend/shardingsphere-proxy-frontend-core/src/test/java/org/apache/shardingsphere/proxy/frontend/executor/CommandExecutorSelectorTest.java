@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.executor;
 
-import io.netty.channel.ChannelId;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
@@ -25,34 +24,33 @@ import java.util.concurrent.ExecutorService;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class CommandExecutorSelectorTest {
     
     @Test
     public void assertGetExecutorServiceWithLocal() {
-        ChannelId channelId = mock(ChannelId.class);
-        assertThat(CommandExecutorSelector.getExecutorService(false, false, TransactionType.LOCAL, channelId), instanceOf(ExecutorService.class));
+        int connectionId = 1;
+        assertThat(CommandExecutorSelector.getExecutorService(false, false, TransactionType.LOCAL, connectionId), instanceOf(ExecutorService.class));
     }
     
     @Test
     public void assertGetExecutorServiceWithOccupyThreadForPerConnection() {
-        ChannelId channelId = mock(ChannelId.class);
-        ChannelThreadExecutorGroup.getInstance().register(channelId);
-        assertThat(CommandExecutorSelector.getExecutorService(true, false, TransactionType.LOCAL, channelId), instanceOf(ExecutorService.class));
+        int connectionId = 2;
+        ConnectionThreadExecutorGroup.getInstance().register(connectionId);
+        assertThat(CommandExecutorSelector.getExecutorService(true, false, TransactionType.LOCAL, connectionId), instanceOf(ExecutorService.class));
     }
     
     @Test
     public void assertGetExecutorServiceWithXA() {
-        ChannelId channelId = mock(ChannelId.class);
-        ChannelThreadExecutorGroup.getInstance().register(channelId);
-        assertThat(CommandExecutorSelector.getExecutorService(false, false, TransactionType.XA, channelId), instanceOf(ExecutorService.class));
+        int connectionId = 3;
+        ConnectionThreadExecutorGroup.getInstance().register(connectionId);
+        assertThat(CommandExecutorSelector.getExecutorService(false, false, TransactionType.XA, connectionId), instanceOf(ExecutorService.class));
     }
     
     @Test
     public void assertGetExecutorServiceWithBASE() {
-        ChannelId channelId = mock(ChannelId.class);
-        ChannelThreadExecutorGroup.getInstance().register(channelId);
-        assertThat(CommandExecutorSelector.getExecutorService(false, false, TransactionType.BASE, channelId), instanceOf(ExecutorService.class));
+        int connectionId = 4;
+        ConnectionThreadExecutorGroup.getInstance().register(connectionId);
+        assertThat(CommandExecutorSelector.getExecutorService(false, false, TransactionType.BASE, connectionId), instanceOf(ExecutorService.class));
     }
 }

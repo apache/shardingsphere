@@ -8,6 +8,8 @@ weight = 3
 
 编辑`%SHARDINGSPHERE_SCALING_HOME%/conf/server.yaml`。详情请参见[使用手册](/cn/user-manual/shardingsphere-scaling/usage/)。
 
+> %SHARDINGSPHERE_PROXY_HOME% 为 Scaling 解压后的路径，例：/Users/ss/shardingsphere-scaling-bin/
+
 ## 2. 引入依赖
 
 如果后端连接 PostgreSQL 数据库，不需要引入额外依赖。

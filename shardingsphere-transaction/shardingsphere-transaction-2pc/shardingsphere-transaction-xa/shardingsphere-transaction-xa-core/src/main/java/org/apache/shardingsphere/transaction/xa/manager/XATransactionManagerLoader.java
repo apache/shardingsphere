@@ -17,23 +17,21 @@
 
 package org.apache.shardingsphere.transaction.xa.manager;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManager;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
+
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 /**
  * XA transaction manager loader.
  */
-@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XATransactionManagerLoader {
     
     private static final XATransactionManagerLoader INSTANCE = new XATransactionManagerLoader();
-    
-    private XATransactionManagerLoader() {
-    }
-    
     
     /**
      * Get instance of XA transaction manager SPI loader.

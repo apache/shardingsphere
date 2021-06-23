@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Optional;
 
 /**
@@ -85,7 +86,18 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     private long getGeneratedKey(final Statement statement) throws SQLException {
         ResultSet resultSet = statement.getGeneratedKeys();
-        return resultSet.next() ? resultSet.getLong(1) : 0L;
+        return resultSet.next() ? getGeneratedKeyIfInteger(resultSet) : 0L;
+    }
+    
+    private long getGeneratedKeyIfInteger(final ResultSet resultSet) throws SQLException {
+        switch (resultSet.getMetaData().getColumnType(1)) {
+            case Types.SMALLINT:
+            case Types.INTEGER:
+            case Types.BIGINT:
+                return resultSet.getLong(1);
+            default:
+                return 0L;
+        }
     }
     
     @Override

@@ -33,13 +33,13 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 
-authentication:
-  users:
-    root:
-      password: root
-    sharding:
-      password: sharding
-      authorizedSchemas: sharding_db
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+      - sharding@:sharding
+    provider:
+      type: NATIVE
 
 props:
   max-connections-size-per-query: 1
@@ -51,7 +51,6 @@ props:
   proxy-transaction-type: LOCAL
   proxy-opentracing-enabled: false
   proxy-hint-enabled: false
-  query-with-cipher-column: true
   sql-show: false
   check-table-metadata-enabled: false
 

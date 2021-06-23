@@ -20,4 +20,4 @@ chapter = true
  - For the issue with missing template information, the handler guides the submitter to provide the required information before processing;
  - Issues related to code, such as bug fix and feature enhancement, will be marked with correct label and project version of the issue completed;
  - The handler will regularly close the issue without feedback for a long time;
- - Issues without reference or retrieval value will be marked as Invalid and does not need attention.
+ - Issues without reference or retrieval value will be marked as status:invalid and does not need attention.

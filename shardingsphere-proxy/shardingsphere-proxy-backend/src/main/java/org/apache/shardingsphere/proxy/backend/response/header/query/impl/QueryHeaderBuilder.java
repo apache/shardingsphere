@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 
@@ -74,7 +75,7 @@ public final class QueryHeaderBuilder {
         if (null != actualTableName && dataNodeContainedRule.isPresent()) {
             tableName = dataNodeContainedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
             TableMetaData tableMetaData = metaData.getSchema().get(tableName);
-            primaryKey = null != tableMetaData && tableMetaData.getColumns().get(columnName.toLowerCase()).isPrimaryKey();
+            primaryKey = null != tableMetaData && Optional.ofNullable(tableMetaData.getColumns().get(columnName.toLowerCase())).map(ColumnMetaData::isPrimaryKey).orElse(false);
         } else {
             tableName = actualTableName;
             primaryKey = false;

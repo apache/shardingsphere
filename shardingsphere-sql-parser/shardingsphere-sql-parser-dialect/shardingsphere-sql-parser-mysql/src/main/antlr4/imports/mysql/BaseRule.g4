@@ -636,7 +636,11 @@ columnName
 indexName
     : identifier
     ;
-    
+
+constraintName
+    : identifier
+    ;
+
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?
     ;
@@ -885,7 +889,7 @@ overClause
     ;
     
 windowSpecification
-    : LP_ identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
+    : identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause?
     ;
     
 frameClause

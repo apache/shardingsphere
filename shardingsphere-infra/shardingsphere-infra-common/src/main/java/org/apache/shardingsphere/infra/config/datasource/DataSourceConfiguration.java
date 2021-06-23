@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -114,8 +115,9 @@ public final class DataSourceConfiguration {
             }
             try {
                 Optional<Method> setterMethod = findSetterMethod(methods, entry.getKey());
-                if (setterMethod.isPresent()) {
-                    setterMethod.get().invoke(result, entry.getValue());
+                if (setterMethod.isPresent() && null != entry.getValue()) {
+                    setterMethod.get().invoke(result, setterMethod.get().getParameterTypes()[0] == String.class
+                            ? String.valueOf(entry.getValue()) : entry.getValue());
                 }
             } catch (final IllegalArgumentException ex) {
                 throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource, because %s", entry.getKey(), ex.getMessage());
@@ -127,17 +129,14 @@ public final class DataSourceConfiguration {
     
     @SuppressWarnings("rawtypes")
     private Optional<JDBCParameterDecorator> findJDBCParameterDecorator(final DataSource dataSource) {
-        return ShardingSphereServiceLoader.newServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
         String setterMethodName = Joiner.on("").join(SETTER_PREFIX, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property));
-        for (Method each : methods) {
-            if (each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+        return Arrays.stream(methods)
+                .filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length)
+                .findFirst();
     }
     
     /**

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.factory;
 
-import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ReadWriteSplittingConfiguration;
+import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ReadwriteSplittingConfiguration;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingDatabasesAndTablesConfigurationRange;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingDatabasesConfigurationRange;
-import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingReadWriteSplittingConfigurationRange;
+import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingReadwriteSplittingConfigurationRange;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingTablesConfigurationRange;
 import org.apache.shardingsphere.example.type.ShardingType;
 
@@ -37,10 +37,10 @@ public final class RangeDataSourceFactory {
                 return new ShardingTablesConfigurationRange().getDataSource();
             case SHARDING_DATABASES_AND_TABLES:
                 return new ShardingDatabasesAndTablesConfigurationRange().getDataSource();
-            case READ_WRITE_SPLITTING:
-                return new ReadWriteSplittingConfiguration().getDataSource();
-            case SHARDING_READ_WRITE_SPLITTING:
-                return new ShardingReadWriteSplittingConfigurationRange().getDataSource();
+            case READWRITE_SPLITTING:
+                return new ReadwriteSplittingConfiguration().getDataSource();
+            case SHARDING_READWRITE_SPLITTING:
+                return new ShardingReadwriteSplittingConfigurationRange().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

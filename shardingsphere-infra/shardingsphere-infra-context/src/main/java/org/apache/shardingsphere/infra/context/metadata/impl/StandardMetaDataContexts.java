@@ -24,13 +24,12 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationEngine;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -44,26 +43,27 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
+    private final ShardingSphereRuleMetaData globalRuleMetaData;
+    
     private final ExecutorEngine executorEngine;
     
-    private final CalciteContextFactory calciteContextFactory;
-    
-    private final Authentication authentication;
+    private final OptimizeContextFactory optimizeContextFactory;
     
     private final ConfigurationProperties props;
     
     private final StateContext stateContext;
     
     public StandardMetaDataContexts() {
-        this(new LinkedHashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
+        this(new LinkedHashMap<>(), 
+                new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null, new ConfigurationProperties(new Properties()));
     }
     
-    public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
-                                    final ExecutorEngine executorEngine, final Authentication authentication, final ConfigurationProperties props) {
+    public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData, 
+                                    final ExecutorEngine executorEngine, final ConfigurationProperties props) {
         this.metaDataMap = new LinkedHashMap<>(metaDataMap);
+        this.globalRuleMetaData = globalRuleMetaData;
         this.executorEngine = executorEngine;
-        calciteContextFactory = new CalciteContextFactory(metaDataMap);
-        this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
+        optimizeContextFactory = new OptimizeContextFactory(metaDataMap);
         this.props = props;
         stateContext = new StateContext();
     }

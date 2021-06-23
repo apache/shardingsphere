@@ -45,5 +45,4 @@ rules:
         aes-key-value: 123456abc
 
 props:
-  query-with-cipher-column: true
   sql-show: true

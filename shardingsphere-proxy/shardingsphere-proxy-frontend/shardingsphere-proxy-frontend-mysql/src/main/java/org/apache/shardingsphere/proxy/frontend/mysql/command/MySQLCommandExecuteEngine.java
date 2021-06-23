@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
-import org.apache.shardingsphere.proxy.frontend.mysql.MySQLErrPacketFactory;
+import org.apache.shardingsphere.proxy.frontend.mysql.err.MySQLErrPacketFactory;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -61,20 +61,20 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public DatabasePacket<?> getErrorPacket(final Exception cause) {
+    public DatabasePacket<?> getErrorPacket(final Exception cause, final BackendConnection backendConnection) {
         return MySQLErrPacketFactory.newInstance(cause);
     }
     
     @Override
-    public Optional<DatabasePacket<?>> getOtherPacket() {
+    public Optional<DatabasePacket<?>> getOtherPacket(final BackendConnection backendConnection) {
         return Optional.empty();
     }
     
     @Override
-    public void writeQueryData(final ChannelHandlerContext context, 
-                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+    public boolean writeQueryData(final ChannelHandlerContext context,
+                                  final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (ResponseType.QUERY != queryCommandExecutor.getResponseType() || !context.channel().isActive()) {
-            return;
+            return true;
         }
         int count = 0;
         int flushThreshold = ProxyContext.getInstance().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
@@ -94,5 +94,6 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
             currentSequenceId++;
         }
         context.write(new MySQLEofPacket(++currentSequenceId + headerPackagesCount));
+        return true;
     }
 }

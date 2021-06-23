@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe;
 
-import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Command describe packet for PostgreSQL.
  */
-@Getter
 public final class PostgreSQLComDescribePacket extends PostgreSQLCommandPacket {
     
     public PostgreSQLComDescribePacket(final PostgreSQLPacketPayload payload) {
@@ -39,7 +38,7 @@ public final class PostgreSQLComDescribePacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public char getMessageType() {
-        return PostgreSQLCommandPacketType.DESCRIBE.getValue();
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLCommandPacketType.DESCRIBE_COMMAND;
     }
 }

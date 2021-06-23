@@ -17,20 +17,15 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeBuilder;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -46,9 +41,9 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -61,23 +56,24 @@ public final class MetaDataContextsBuilder {
     
     private final Map<String, Map<String, DataSource>> dataSources;
     
-    private final Map<String, Collection<RuleConfiguration>> ruleConfigs;
+    private final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs;
     
-    private final Collection<ShardingSphereUser> users;
+    private final Collection<RuleConfiguration> globalRuleConfigs;
     
     private final ConfigurationProperties props;
     
     private final ExecutorEngine executorEngine;
     
-    public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
-        this(dataSources, ruleConfigs, Collections.emptyList(), props);
+    public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Properties props) {
+        this(dataSources, schemaRuleConfigs, new LinkedList<>(), props);
     }
     
     public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
-                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Collection<ShardingSphereUser> users, final Properties props) {
+                                   final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, 
+                                   final Properties props) {
         this.dataSources = dataSources;
-        this.ruleConfigs = ruleConfigs;
-        this.users = users;
+        this.schemaRuleConfigs = schemaRuleConfigs;
+        this.globalRuleConfigs = globalRuleConfigs;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
     }
@@ -89,39 +85,24 @@ public final class MetaDataContextsBuilder {
      * @return meta data contexts
      */
     public StandardMetaDataContexts build() throws SQLException {
-        Map<String, ShardingSphereMetaData> mataDataMap = new HashMap<>(ruleConfigs.size(), 1);
-        for (String each : ruleConfigs.keySet()) {
+        Map<String, ShardingSphereMetaData> mataDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
+        for (String each : schemaRuleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
-        Authentication authentication = buildAuthentication(users, mataDataMap);
-        return new StandardMetaDataContexts(mataDataMap, executorEngine, authentication, props);
+        return new StandardMetaDataContexts(mataDataMap, buildGlobalSchemaMetaData(mataDataMap), executorEngine, props);
     }
     
     private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
         Map<String, DataSource> dataSourceMap = dataSources.get(schemaName);
-        Collection<RuleConfiguration> ruleConfigs = this.ruleConfigs.get(schemaName);
-        DatabaseType databaseType = getDatabaseType(dataSourceMap);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, databaseType, dataSourceMap, schemaName);
+        Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(schemaName);
+        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(schemaName, ruleConfigs, databaseType, dataSourceMap);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
         return new ShardingSphereMetaData(schemaName, buildResource(databaseType, dataSourceMap), ruleMetaData, buildSchema(databaseType, dataSourceMap, rules));
     }
-    
-    private DatabaseType getDatabaseType(final Map<String, DataSource> dataSourceMap) {
-        DatabaseType result = null;
-        for (DataSource each : dataSourceMap.values()) {
-            DatabaseType databaseType = getDatabaseType(each);
-            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
-            result = databaseType;
-        }
-        return null == result ? DatabaseTypeRegistry.getDefaultDatabaseType() : result;
-    }
-    
-    private DatabaseType getDatabaseType(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
-        } catch (final SQLException ex) {
-            return null;
-        }
+
+    private ShardingSphereRuleMetaData buildGlobalSchemaMetaData(final Map<String, ShardingSphereMetaData> mataDataMap) {
+        return new ShardingSphereRuleMetaData(globalRuleConfigs, ShardingSphereRulesBuilder.buildGlobalRules(globalRuleConfigs, mataDataMap));
     }
     
     private ShardingSphereResource buildResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -151,14 +132,7 @@ public final class MetaDataContextsBuilder {
         }
     }
     
-    private ShardingSphereSchema buildSchema(final DatabaseType databaseType,
-                                             final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
+    private ShardingSphereSchema buildSchema(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         return SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
-    }
-    
-    private Authentication buildAuthentication(final Collection<ShardingSphereUser> users, final Map<String, ShardingSphereMetaData> metaDataMap) {
-        DefaultAuthentication result = new DefaultAuthentication();
-        result.getAuthentication().putAll(PrivilegeBuilder.build(metaDataMap.values(), users, props));
-        return result;
     }
 }

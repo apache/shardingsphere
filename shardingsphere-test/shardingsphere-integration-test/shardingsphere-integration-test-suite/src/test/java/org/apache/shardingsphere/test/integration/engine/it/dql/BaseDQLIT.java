@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dql;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
+import org.junit.Before;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -45,23 +42,24 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseDQLIT extends SingleIT {
+public abstract class BaseDQLIT extends SingleITCase {
     
-    protected BaseDQLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedArray);
+    public BaseDQLIT(final AssertionParameterizedArray parameter) {
+        super(parameter);
     }
     
-    @BeforeClass
-    public static void fillData() throws IOException, JAXBException, SQLException, ParseException {
-        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
-            fillData(each);
-        }
-    }
-    
-    private static void fillData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
-        for (String each : IntegrationTestEnvironment.getInstance().getScenarios()) {
-            new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(each), ActualDataSourceBuilder.createActualDataSources(each, databaseType)).fillData();
-        }
+    @Before
+    public void setup() {
+        compose.executeOnStarted(compose -> {
+            try {
+                new DataSetEnvironmentManager(
+                        EnvironmentPath.getDataSetFile(getScenario()),
+                        getStorageContainer().getDataSourceMap()
+                ).fillData();
+            } catch (IOException | JAXBException | SQLException | ParseException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {

@@ -23,7 +23,9 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -45,7 +47,11 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     
     private GroupBySegment groupBy;
     
+    private HavingSegment having;
+    
     private OrderBySegment orderBy;
+    
+    private WithSegment withSegment;
     
     /**
      * Get where.
@@ -66,11 +72,29 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     }
     
     /**
+     * Get having segment.
+     *
+     * @return having segment
+     */
+    public Optional<HavingSegment> getHaving() {
+        return Optional.ofNullable(having);
+    }
+    
+    /**
      * Get order by segment.
      *
      * @return order by segment
      */
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
+    }
+    
+    /**
+     * Get with segment.
+     *
+     * @return with segment.
+     */
+    public Optional<WithSegment> getWithSegment() {
+        return Optional.ofNullable(withSegment);
     }
 }

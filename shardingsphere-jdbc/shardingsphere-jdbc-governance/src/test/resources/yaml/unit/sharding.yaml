@@ -18,7 +18,7 @@
 governance:
   name: test_name
   registryCenter:
-    type: REG_TEST
+    type: GOV_TEST
     serverLists: localhost:3181
   overwrite: true
 
@@ -94,7 +94,7 @@ rules:
       props:
           worker-id: 123
 
-- !READ_WRITE_SPLITTING
+- !READWRITE_SPLITTING
   dataSources:
     pr_ds:
       writeDataSourceName: write_ds

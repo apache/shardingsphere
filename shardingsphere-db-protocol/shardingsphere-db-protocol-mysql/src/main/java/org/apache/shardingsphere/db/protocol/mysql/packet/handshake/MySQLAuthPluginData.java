@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Auth plugin data for MySQL.
+ * Authentication plugin data for MySQL.
  * 
  * <p>
  *     The auth-plugin-data is the concatenation of strings auth-plugin-data-part-1 and auth-plugin-data-part-2.
@@ -42,11 +42,11 @@ public final class MySQLAuthPluginData {
     }
     
     /**
-     * Get auth plugin data.
+     * Get authentication plugin data.
      * 
-     * @return auth plugin data
+     * @return authentication plugin data
      */
-    public byte[] getAuthPluginData() {
+    public byte[] getAuthenticationPluginData() {
         return Bytes.concat(authPluginDataPart1, authPluginDataPart2);
     }
 }

@@ -48,7 +48,6 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(getEncryptTableRuleConfigurations(), getEncryptAlgorithmConfigurations());
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
-        props.setProperty(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN.getKey(), "true");
         ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("ds_0"));
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfig, encryptRuleConfig), props);
     }

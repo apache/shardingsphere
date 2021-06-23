@@ -26,12 +26,13 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.r
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.admin.initdb.MySQLComInitDbExecutor;
@@ -73,10 +74,18 @@ public final class MySQLCommandExecutorFactoryTest {
         when(backendConnection.getSchemaName()).thenReturn("logic_db");
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        ShardingSphereMetaData metaData = mockShardingSphereMetaData();
         Map<String, ShardingSphereMetaData> metaDataMap = Collections.singletonMap("logic_db", metaData);
-        field.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
+        MetaDataContexts metaDataContexts = new StandardMetaDataContexts(metaDataMap,
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()));
+        field.set(ProxyContext.getInstance(), metaDataContexts);
+    }
+    
+    private ShardingSphereMetaData mockShardingSphereMetaData() {
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        return result;
     }
     
     @Test
@@ -98,7 +107,9 @@ public final class MySQLCommandExecutorFactoryTest {
     
     @Test
     public void assertNewInstanceWithComQuery() throws SQLException {
-        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_QUERY, mock(MySQLComQueryPacket.class), backendConnection), instanceOf(MySQLComQueryPacketExecutor.class));
+        MySQLComQueryPacket packet = mock(MySQLComQueryPacket.class);
+        when(packet.getSql()).thenReturn("");
+        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_QUERY, packet, backendConnection), instanceOf(MySQLComQueryPacketExecutor.class));
     }
     
     @Test

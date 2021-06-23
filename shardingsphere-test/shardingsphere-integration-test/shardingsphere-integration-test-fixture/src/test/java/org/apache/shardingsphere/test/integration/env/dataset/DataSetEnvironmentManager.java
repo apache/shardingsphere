@@ -68,7 +68,7 @@ public final class DataSetEnvironmentManager {
     
     /**
      * Fill data.
-     * 
+     *
      * @throws SQLException SQL exception
      * @throws ParseException parse exception
      */
@@ -122,7 +122,7 @@ public final class DataSetEnvironmentManager {
     
     /**
      * Clear data.
-     * 
+     *
      */
     public void clearData() {
         List<Callable<Void>> deleteTasks = new LinkedList<>();

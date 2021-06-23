@@ -17,16 +17,24 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.event.DropTableEvent;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * ShardingSphere schema refresher for alter table statement.
@@ -37,12 +45,29 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
     public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, 
                         final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
+        if (sqlStatement.getRenameTable().isPresent()) {
+            putTableMetaData(schema, routeDataSourceNames, materials, sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue());
+            removeTableMetaData(schema, tableName);
+        } else {
+            putTableMetaData(schema, routeDataSourceNames, materials, tableName);
+        }
+    }
+    
+    private void removeTableMetaData(final ShardingSphereSchema schema, final String tableName) {
+        schema.remove(tableName);
+        ShardingSphereEventBus.getInstance().post(new DropTableEvent(tableName));
+    }
+    
+    private void putTableMetaData(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, 
+                                  final SchemaBuilderMaterials materials, final String tableName) throws SQLException {
+        TableMetaData tableMetaData;
         if (!containsInTableContainedRule(tableName, materials)) {
-            return;
+            tableMetaData = loadTableMetaData(tableName, routeDataSourceNames, materials);
+        } else {
+            tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElse(new TableMetaData());
         }
-        if (null != schema && schema.containsTable(tableName)) {
-            TableMetaDataBuilder.build(tableName, materials).ifPresent(tableMetaData -> schema.put(tableName, tableMetaData));
-        }
+        schema.put(tableName, tableMetaData);
+        ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), tableName, tableMetaData));
     }
     
     private boolean containsInTableContainedRule(final String tableName, final SchemaBuilderMaterials materials) {
@@ -52,5 +77,19 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
             }
         }
         return false;
+    }
+    
+    private TableMetaData loadTableMetaData(final String tableName, final Collection<String> routeDataSourceNames,
+                                            final SchemaBuilderMaterials materials) throws SQLException {
+        for (String routeDataSourceName : routeDataSourceNames) {
+            DataSource dataSource = materials.getDataSourceMap().get(routeDataSourceName);
+            Optional<TableMetaData> tableMetaDataOptional = Objects.isNull(dataSource) ? Optional.empty()
+                    : TableMetaDataLoader.load(dataSource, tableName, materials.getDatabaseType());
+            if (!tableMetaDataOptional.isPresent()) {
+                continue;
+            }
+            return tableMetaDataOptional.get();
+        }
+        return new TableMetaData();
     }
 }

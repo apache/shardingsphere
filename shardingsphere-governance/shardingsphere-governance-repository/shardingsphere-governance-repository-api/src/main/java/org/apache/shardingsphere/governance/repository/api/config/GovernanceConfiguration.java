@@ -29,7 +29,7 @@ public final class GovernanceConfiguration {
     
     private final String name;
     
-    private final GovernanceCenterConfiguration registryCenterConfiguration;
+    private final RegistryCenterConfiguration registryCenterConfiguration;
     
     private final boolean overwrite;
 }

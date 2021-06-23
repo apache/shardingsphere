@@ -23,14 +23,6 @@ showResources
     : SHOW RESOURCES (FROM schemaName)?
     ;
 
-showRule
-    : SHOW ruleType RULE (FROM schemaName)?
-    ;
-
-ruleType
-    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
-    ;
-
 schemaName
     : IDENTIFIER
     ;

@@ -16,7 +16,7 @@ dataSources: # 配置真实存在的数据源作为名称
     # ...省略具体配置
   read_ds_0:
     # ...省略具体配置
-  read_ds_0:
+  read_ds_1:
     # ...省略具体配置
 
 rules:
@@ -48,10 +48,9 @@ rules:
         props:
           aes-key-value: 123456abc
   
-  - !READ_WRITE_SPLITTING # 配置读写分离规则
+  - !READWRITE_SPLITTING # 配置读写分离规则
     dataSources:
-      ds:
-        name: ds # 读写分离的逻辑数据源名称 `ds` 用于在数据分片中使用
+      ds: # 读写分离的逻辑数据源名称 `ds` 用于在数据分片中使用
         writeDataSourceName: write_ds # 使用真实存在的数据源名称 `write_ds`
         readDataSourceNames:
           - read_ds_0 # 使用真实存在的数据源名称 `read_ds_0`
@@ -63,5 +62,4 @@ rules:
 
 props:
   sql-show: true
-  query-with-cipher-column: true
 ```

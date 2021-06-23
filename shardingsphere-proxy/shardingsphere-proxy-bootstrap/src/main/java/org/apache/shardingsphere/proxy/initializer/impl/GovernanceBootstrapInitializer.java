@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
+import org.apache.shardingsphere.governance.core.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.yaml.config.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -66,13 +66,13 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
             governanceFacade.onlineInstance();
         } else {
-            governanceFacade.onlineInstance(
-                    getDataSourceConfigurationMap(ruleConfigs), getRuleConfigurations(ruleConfigs), new UserRuleYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
+            governanceFacade.onlineInstance(getDataSourceConfigurationMap(ruleConfigs), 
+                    getRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps());
         }
     }
     
     private boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
-        return ruleConfigs.isEmpty() && null == serverConfig.getAuthentication() && serverConfig.getProps().isEmpty();
+        return ruleConfigs.isEmpty() && serverConfig.getRules().isEmpty() && serverConfig.getProps().isEmpty();
     }
     
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
@@ -90,23 +90,30 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
+    private Collection<RuleConfiguration> getGlobalRuleConfigurations(final Collection<YamlRuleConfiguration> globalRuleConfigs) {
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(globalRuleConfigs);
+    }
+    
     private ProxyConfiguration loadProxyConfiguration() {
-        Collection<String> schemaNames = governanceFacade.getRegistryCenter().getAllSchemaNames();
+        Collection<String> schemaNames = governanceFacade.getRegistryCenter().getSchemaService().loadAllNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
-        Properties props = governanceFacade.getRegistryCenter().loadProperties();
-        return new ProxyConfiguration(schemaDataSources, schemaRules, governanceFacade.getRegistryCenter().loadUserRule(), props);
+        Properties props = governanceFacade.getRegistryCenter().getPropsService().load();
+        // TODO load global rules from reg center
+        Collection<RuleConfiguration> globalRuleConfigs = governanceFacade.getRegistryCenter().getGlobalRuleService().load();
+        return new ProxyConfiguration(schemaDataSources, schemaRules, globalRuleConfigs, props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
         return schemaNames.stream()
-            .collect(Collectors.toMap(each -> each, each -> DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getRegistryCenter().loadDataSourceConfigurations(each)),
+            .collect(Collectors.toMap(each -> each, 
+                each -> DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getRegistryCenter().getDataSourceService().load(each)),
                 (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
-        return schemaNames.stream()
-             .collect(Collectors.toMap(each -> each, each -> governanceFacade.getRegistryCenter().loadRuleConfigurations(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return schemaNames.stream().collect(
+                Collectors.toMap(each -> each, each -> governanceFacade.getRegistryCenter().getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

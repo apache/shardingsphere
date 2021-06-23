@@ -92,6 +92,6 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
     
     @SuppressWarnings("rawtypes")
     private Optional<JDBCParameterDecorator> findJDBCParameterDecorator(final DataSource dataSource) {
-        return ShardingSphereServiceLoader.newServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -90,7 +91,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         boolean primaryKey = "PRI".equals(resultSet.getString("COLUMN_KEY"));
         boolean generated = "auto_increment".equals(resultSet.getString("EXTRA"));
         String collationName = resultSet.getString("COLLATION_NAME");
-        boolean caseSensitive = null != collationName && collationName.endsWith("_ci");
+        boolean caseSensitive = null != collationName && !collationName.endsWith("_ci");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
 
@@ -112,7 +113,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
-                    result.get(tableName).add(new IndexMetaData(indexName));
+                    result.get(tableName).add(new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(indexName, tableName)));
                 }
             }
         }

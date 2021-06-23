@@ -30,6 +30,10 @@ chapter = true
 | *Implementation Class*       | *Description*                             |
 | ---------------------------- | ----------------------------------------- |
 | MySQLTableMetaDataLoader     | Use MySQL dialect to load meta data       |
+| OracleTableMetaDataLoader    | Use Oracle dialect to load meta data      |
+| PostgreSQLTableMetaDataLoader| Use PostgreSQL dialect to load meta data  |
+| SQLServerTableMetaDataLoader | Use SQLServer dialect to load meta data   |
+| H2TableMetaDataLoader        | Use H2 dialect to load meta data          |
 
 ## SQLRouter
 
@@ -76,3 +80,15 @@ chapter = true
 | ---------------------------- | ----------------------------------------------------- |
 | ShardingResultMergerEngine   | Used by merge engine to process sharding result set   |
 | EncryptResultDecoratorEngine | Used by merge engine to process encryption result set |
+
+## StoragePrivilegeLoader
+
+| *SPI Name*                | *Description*                                       |
+| ------------------------- | ---------------------------------------------------- |
+| StoragePrivilegeLoader    | Use SQL dialect to load privilege metadata           |
+
+| *Implementation Class*    | *Description*                                        |
+| ------------------------- | ---------------------------------------------------- |
+| MySQLPrivilegeLoader      | Use MySQL dialect to load privilege metadata         |
+| OraclePrivilegeLoader     | Use Oracle dialect to load privilege metadata        |
+| PostgreSQLPrivilegeLoader | Use PostgreSQL dialect to load privilege metadata    |

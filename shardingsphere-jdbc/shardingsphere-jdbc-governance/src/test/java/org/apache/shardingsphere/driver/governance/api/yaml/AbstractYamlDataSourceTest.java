@@ -74,12 +74,12 @@ public abstract class AbstractYamlDataSourceTest {
     private static List<String> getSchemaFiles() {
         return Arrays.asList("yaml/schema/sharding/db0.sql", 
                 "yaml/schema/sharding/db1.sql",
-                "yaml/schema/read_write_splitting/write_ds.sql",
-                "yaml/schema/read_write_splitting/read_ds_0.sql",
-                "yaml/schema/read_write_splitting/read_ds_1.sql",
-                "yaml/schema/sharding_read_write_splitting/write_ds_0.sql",
-                "yaml/schema/sharding_read_write_splitting/write_ds_1.sql",
-                "yaml/schema/sharding_read_write_splitting/read_ds_0.sql",
-                "yaml/schema/sharding_read_write_splitting/read_ds_1.sql");
+                "yaml/schema/readwrite_splitting/write_ds.sql",
+                "yaml/schema/readwrite_splitting/read_ds_0.sql",
+                "yaml/schema/readwrite_splitting/read_ds_1.sql",
+                "yaml/schema/sharding_readwrite_splitting/write_ds_0.sql",
+                "yaml/schema/sharding_readwrite_splitting/write_ds_1.sql",
+                "yaml/schema/sharding_readwrite_splitting/read_ds_0.sql",
+                "yaml/schema/sharding_readwrite_splitting/read_ds_1.sql");
     }
 }

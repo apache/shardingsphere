@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -67,7 +67,8 @@ public final class DatabaseCommunicationEngineTest {
     
     @Before
     public void setUp() {
-        MetaDataContexts metaDataContexts = new StandardMetaDataContexts(mockMetaDataMap(), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new StandardMetaDataContexts(mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), 
+                new ConfigurationProperties(new Properties()));
         ProxyContext.getInstance().init(metaDataContexts, new StandardTransactionContexts());
     }
     
@@ -94,8 +95,8 @@ public final class DatabaseCommunicationEngineTest {
             private MemoryQueryResultRow memoryQueryResultRow;
             
             @Override
-            protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema, final SQLStatementContext sqlStatementContext,
-                                                      final List<QueryResult> queryResults) {
+            protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema, 
+                                                      final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
                 memoryQueryResultRow = mock(MemoryQueryResultRow.class);
                 return Collections.singletonList(memoryQueryResultRow);
             }

@@ -29,6 +29,15 @@
         <column name="status" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
+    <metadata data-nodes="encrypt.t_single_table">
+        <column name="single_id" type="numeric" />
+        <column name="id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <row data-node="encrypt.t_single_table" values="1, 10, init" />
+    <row data-node="encrypt.t_single_table" values="2, 11, init" />
+    <row data-node="encrypt.t_single_table" values="3, 12, init" />
+    <row data-node="encrypt.t_single_table" values="4, 13, init" />
     <row data-node="encrypt.t_user" values="10, 10000, null, yK+tn8E43EyCEgbqNOrJ4w==, init" />
     <row data-node="encrypt.t_user" values="11, 11000, null, CIbxTwI742pGwxb18lQLkQ==, init" />
     <row data-node="encrypt.t_user" values="12, 12000, null, VCHpNlwod9AiuS1V+7DSLw==, init" />

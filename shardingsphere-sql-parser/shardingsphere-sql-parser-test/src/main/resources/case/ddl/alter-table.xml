@@ -26,6 +26,15 @@
         </add-column>
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_oracle">
+        <table name="t_log" start-index="12" stop-index="16" />
+        <add-column>
+            <column-definition type="varchar" start-index="23" stop-index="38">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_if_exists_only">
         <table name="t_log" start-index="27" stop-index="31" />
         <add-column>
@@ -517,7 +526,7 @@
     
     <alter-table sql-case-id="alter_table_add_primary_key">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint start-index="24" stop-index="66">
+        <add-constraint constraint-name="pk_user_id" start-index="24" stop-index="66">
             <primary-key-column name="user_id" start-index="59" stop-index="65" />
         </add-constraint>
     </alter-table>
@@ -529,7 +538,7 @@
                 <column name="status" />
             </column-definition>
         </add-column>
-        <add-constraint start-index="39" stop-index="115">
+        <add-constraint constraint-name="pk_order_id_user_id_status" start-index="39" stop-index="115">
             <primary-key-column name="order_id" start-index="90" stop-index="97" />
             <primary-key-column name="user_id" start-index="100" stop-index="106" />
             <primary-key-column name="status" start-index="109" stop-index="114" />
@@ -538,14 +547,14 @@
     
     <alter-table sql-case-id="alter_table_add_unique_key">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint start-index="24" stop-index="63" >
+        <add-constraint constraint-name="uk_order_id" start-index="24" stop-index="63" >
             <index-column name="order_id" start-index="55" stop-index="62"/>
         </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_foreign_key">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <add-constraint start-index="29" stop-index="121">
+        <add-constraint constraint-name="fk_order_id" start-index="29" stop-index="121">
             <referenced-table name="t_order" stop-index="92" start-index="86"/>
         </add-constraint>
     </alter-table>
@@ -652,18 +661,38 @@
     
     <alter-table sql-case-id="alter_table_add_index">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint index-name="order_index" start-index="24" stop-index="51">
+            <index-column name="order_id" start-index="43" stop-index="50" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_fulltext_index">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint index-name="idx_column1" start-index="24" stop-index="59">
+            <index-column name="column1" start-index="52" stop-index="58" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_composite_index">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint index-name="order_index" start-index="24" stop-index="68">
+            <index-column name="order_id" start-index="43" stop-index="50" />
+            <index-column name="user_id" start-index="53" stop-index="59" />
+            <index-column name="status" start-index="62" stop-index="67" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_indexes">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint index-name="idx_column1" start-index="24" stop-index="50">
+            <index-column name="column1" start-index="43" stop-index="49" />
+        </add-constraint>
+        <add-constraint index-name="idx_column2" start-index="57" stop-index="83">
+            <index-column name="column2" start-index="76" stop-index="82" />
+        </add-constraint>
+        <add-constraint index-name="idx_column3" start-index="90" stop-index="116">
+            <index-column name="column3" start-index="109" stop-index="115" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_index">
@@ -709,23 +738,23 @@
     
     <alter-table sql-case-id="alter_table_add_check">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint index-name="chk_order_id" start-index="24" stop-index="67"/>
+        <add-constraint constraint-name="chk_order_id" start-index="24" stop-index="67"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_columns_oracle">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
-            <column-definition type="VARCHAR2" start-index="24" stop-index="43">
+            <column-definition type="VARCHAR2" start-index="25" stop-index="44">
                 <column name="column4" />
             </column-definition>
         </add-column>
         <add-column>
-            <column-definition type="VARCHAR2" start-index="49" stop-index="68">
+            <column-definition type="VARCHAR2" start-index="47" stop-index="66">
                 <column name="column5" />
             </column-definition>
         </add-column>
         <add-column>
-            <column-definition type="VARCHAR2" start-index="74" stop-index="93">
+            <column-definition type="VARCHAR2" start-index="69" stop-index="88">
                 <column name="column6" />
             </column-definition>
         </add-column>
@@ -758,14 +787,26 @@
     
     <alter-table sql-case-id="alter_table_add_primary_foreign_key">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <add-constraint>
-            <referenced-table name="t_order" start-index="125" stop-index="131"/>
+        <add-constraint start-index="29" stop-index="50">
             <primary-key-column name="order_id" start-index="42" stop-index="49"/>
         </add-constraint>
+        <add-constraint start-index="52" stop-index="68">
+            <index-column name="order_id" start-index="60" stop-index="67" />
+        </add-constraint>
+        <add-constraint start-index="70" stop-index="89"/>
+        <add-constraint start-index="91" stop-index="160">
+            <referenced-table name="t_order" start-index="125" stop-index="131"/>
+        </add-constraint>
+        <add-constraint start-index="162" stop-index="181"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_composite_primary_key_oracle">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint constraint-name="pk_order_id_user_id_status" start-index="24" stop-index="100">
+            <primary-key-column name="order_id" start-index="75" stop-index="82" />
+            <primary-key-column name="user_id" start-index="85" stop-index="91" />
+            <primary-key-column name="status" start-index="94" stop-index="99" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_unique_key">
@@ -813,7 +854,7 @@
     
     <alter-table sql-case-id="alter_table_add_foreign_key_with_cascade">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <add-constraint start-index="29" stop-index="139">
+        <add-constraint constraint-name="fk_order_id" start-index="29" stop-index="139">
             <referenced-table name="t_order" start-index="86" stop-index="92" />
         </add-constraint>
     </alter-table>
@@ -828,6 +869,12 @@
     
     <alter-table sql-case-id="alter_table_rename_table">
         <table name="t_order" start-index="12" stop-index="18" />
+        <rename-table name="t_order1" start-index="30" stop-index="37" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_multi_tables">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <rename-table name="t_order2" start-index="50" stop-index="57" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_rename_column">
@@ -919,7 +966,7 @@
     <alter-table sql-case-id="alter_table_with_optimize_memory_read">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="43" stop-index="58">
+            <column-definition type="VARCHAR" start-index="44" stop-index="59">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -928,7 +975,7 @@
     <alter-table sql-case-id="alter_table_with_no_optimize_memory_write">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="47" stop-index="62">
+            <column-definition type="VARCHAR" start-index="48" stop-index="63">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -937,7 +984,7 @@
     <alter-table sql-case-id="alter_table_with_enable_validate">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -946,7 +993,7 @@
     <alter-table sql-case-id="alter_table_with_primary_key">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -955,7 +1002,7 @@
     <alter-table sql-case-id="alter_table_with_index_clause">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -964,7 +1011,7 @@
     <alter-table sql-case-id="alter_table_with_exception_clause">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -973,7 +1020,7 @@
     <alter-table sql-case-id="alter_table_with_cascade">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -982,7 +1029,7 @@
     <alter-table sql-case-id="alter_table_with_keep_index">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -991,7 +1038,7 @@
     <alter-table sql-case-id="alter_table_with_enable_table_lock">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -1000,7 +1047,7 @@
     <alter-table sql-case-id="alter_table_with_enable_all_triggers">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -1009,7 +1056,7 @@
     <alter-table sql-case-id="alter_table_with_disable_container_map">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
@@ -1018,10 +1065,74 @@
     <alter-table sql-case-id="alter_table_with_disable_containers_default">
         <table name="t_log" start-index="12" stop-index="16"/>
         <add-column>
-            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+            <column-definition type="VARCHAR" start-index="23" stop-index="38">
                 <column name="name" />
             </column-definition>
         </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_range_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_list_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_update_global_index">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_update_all_index">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_update_all_index_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_update_all_index_subpartition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_update_global_index_parallel">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_update_all_index_noparallel">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_hash_partition1">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_hash_partition2">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_hash_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_list_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_range_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_move_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_coalesce_partition">
+        <table name="t_order" start-index="12" stop-index="18"/>
     </alter-table>
 
 </sql-parser-test-cases>

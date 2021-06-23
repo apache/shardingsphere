@@ -20,7 +20,7 @@
 # If you want to configure governance, authorization and proxy properties, please refer to this file.
 # 
 ######################################################################################################
-#
+
 #governance:
 #  name: governance_ds
 #  registryCenter:
@@ -33,17 +33,17 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 
-#authentication:
-#  users:
-#    root:
-#      password: root
-#      hostname: '%'
-#    sharding:
-#      password: sharding
-
 #scaling:
 #  blockQueueSize: 10000
 #  workerThread: 40
+
+#rules:
+#  - !AUTHORITY
+#    users:
+#      - root@%:root
+#      - sharding@:sharding
+#    provider:
+#      type: NATIVE
 
 #props:
 #  max-connections-size-per-query: 1
@@ -56,7 +56,6 @@
 #  xa-transaction-manager-type: Atomikos
 #  proxy-opentracing-enabled: false
 #  proxy-hint-enabled: false
-#  query-with-cipher-column: true
 #  sql-show: false
 #  check-table-metadata-enabled: false
 #  lock-wait-timeout-milliseconds: 50000 # The maximum time to wait for a lock

@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
 
 import java.util.List;
 
-@Slf4j
 public final class ComposeInstanceMethodAroundInterceptor extends InstanceMethodAroundInterceptor {
     
     public ComposeInstanceMethodAroundInterceptor(final List<InstanceMethodAroundAdvice> instanceMethodAroundAdvices) {
         super(new ComposeInstanceMethodAroundAdvice(instanceMethodAroundAdvices));
     }
-    
 }

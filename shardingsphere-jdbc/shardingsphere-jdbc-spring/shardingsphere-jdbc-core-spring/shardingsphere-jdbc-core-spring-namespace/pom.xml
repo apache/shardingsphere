@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-read-write-splitting-spring-namespace</artifactId>
+            <artifactId>shardingsphere-readwrite-splitting-spring-namespace</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

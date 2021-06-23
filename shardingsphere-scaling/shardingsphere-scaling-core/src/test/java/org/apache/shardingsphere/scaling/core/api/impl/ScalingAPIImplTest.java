@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.api.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
@@ -141,7 +141,7 @@ public final class ScalingAPIImplTest {
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), new Properties()), true));
+        result.setGovernanceConfig(new GovernanceConfiguration("test", new RegistryCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), new Properties()), true));
         return result;
     }
     

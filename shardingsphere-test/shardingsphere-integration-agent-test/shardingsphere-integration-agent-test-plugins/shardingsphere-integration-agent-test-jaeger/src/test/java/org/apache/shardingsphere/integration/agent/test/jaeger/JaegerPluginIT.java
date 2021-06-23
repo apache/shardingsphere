@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.agent.test.jaeger;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.agent.test.common.entity.OrderEntity;
 import org.apache.shardingsphere.integration.agent.test.common.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.agent.test.common.util.JDBCAgentTestUtils;
@@ -28,7 +27,6 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 public final class JaegerPluginIT {
     
     @Test

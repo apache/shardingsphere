@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeConstructorAdvice;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 
 import java.util.List;
 
-@Slf4j
 public final class ComposeConstructorInterceptor extends ConstructorInterceptor {
     
     public ComposeConstructorInterceptor(final List<ConstructorAdvice> constructorAdvices) {
         super(new ComposeConstructorAdvice(constructorAdvices));
     }
-    
 }

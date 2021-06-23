@@ -93,7 +93,7 @@ public final class MySQLTableMetaDataLoaderTest {
         when(result.getString("DATA_TYPE")).thenReturn("int", "varchar");
         when(result.getString("COLUMN_KEY")).thenReturn("PRI", "");
         when(result.getString("EXTRA")).thenReturn("auto_increment", "");
-        when(result.getString("COLLATION_NAME")).thenReturn("utf8_general_ci", "utf8");
+        when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci");
         return result;
     }
     
@@ -106,7 +106,7 @@ public final class MySQLTableMetaDataLoaderTest {
     }
     
     private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
+        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
             if ("MySQL".equals(each.getDatabaseType())) {
                 return each;
             }

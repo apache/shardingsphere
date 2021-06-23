@@ -423,6 +423,7 @@ unreservedWord
     | YEAR
     | YES
     | ZONE
+    | JSON
     ;
 
 typeFuncNameKeyword
@@ -487,6 +488,10 @@ indexName
     : identifier
     ;
 
+constraintName
+    : identifier
+    ;
+
 alias
     : identifier
     ;
@@ -503,6 +508,22 @@ comparisonOperator
     : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
+patternMatchingOperator
+    : LIKE
+    | TILDE_TILDE_
+    | NOT LIKE
+    | NOT_TILDE_TILDE_
+    | ILIKE
+    | ILIKE_
+    | NOT ILIKE
+    | NOT_ILIKE_
+    | SIMILAR TO
+    | NOT SIMILAR TO
+    | TILDE_
+    | NOT_ TILDE_
+    | TILDE_ ASTERISK_
+    | NOT_ TILDE_ ASTERISK_
+    ;
 
 cursorName
     : name
@@ -521,23 +542,13 @@ aExpr
     | aExpr SLASH_ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
-    | aExpr comparisonOperator aExpr
     | aExpr qualOp aExpr
     | qualOp aExpr
     | aExpr qualOp
+    | aExpr comparisonOperator aExpr
     | NOT aExpr
-    | aExpr LIKE aExpr
-    | aExpr LIKE aExpr ESCAPE aExpr
-    | aExpr NOT LIKE aExpr
-    | aExpr NOT LIKE aExpr ESCAPE aExpr
-    | aExpr ILIKE aExpr
-    | aExpr ILIKE aExpr ESCAPE aExpr
-    | aExpr NOT ILIKE aExpr
-    | aExpr NOT ILIKE aExpr ESCAPE aExpr
-    | aExpr SIMILAR TO aExpr
-    | aExpr SIMILAR TO aExpr ESCAPE aExpr
-    | aExpr NOT SIMILAR TO aExpr
-    | aExpr NOT SIMILAR TO aExpr ESCAPE aExpr
+    | aExpr patternMatchingOperator aExpr
+    | aExpr patternMatchingOperator aExpr ESCAPE aExpr
     | aExpr IS NULL
     | aExpr ISNULL
     | aExpr IS NOT NULL
@@ -656,9 +667,7 @@ columnref
     ;
 
 qualOp
-    : mathOperator
-    | TILDE_TILDE_
-    | NOT_TILDE_TILDE_
+    : jsonOperator
     | OPERATOR LP_ anyOperator RP_
     ;
 
@@ -667,8 +676,8 @@ subqueryOp
     | OPERATOR LP_ anyOperator RP_
     | LIKE
     | NOT LIKE
-    | ILIKE
-    | NOT ILIKE
+    | TILDE_
+    | NOT_ TILDE_
     ;
 
 allOp
@@ -735,6 +744,23 @@ mathOperator
     | LTE_
     | GTE_
     | NEQ_
+    ;
+
+jsonOperator
+    : JSON_EXTRACT_ # jsonExtract
+    | JSON_EXTRACT_TEXT_ # jsonExtractText
+    | JSON_PATH_EXTRACT_ # jsonPathExtract
+    | JSON_PATH_EXTRACT_TEXT_ # jsonPathExtractText
+    | JSONB_CONTAIN_RIGHT_ # jsonbContainRight
+    | JSONB_CONTAIN_LEFT_ # jsonbContainLeft
+    | QUESTION_ # jsonbContainTopKey
+    | QUESTION_ VERTICAL_BAR_ # jsonbContainAnyTopKey
+    | JSONB_CONTAIN_ALL_TOP_KEY_ # jsonbContainAllTopKey
+    | OR_ # jsonbConcat
+    | MINUS_ # jsonbDelete
+    | JSONB_PATH_DELETE_ # jsonbPathDelete
+    | JSONB_PATH_CONTAIN_ANY_VALUE_ # jsonbPathContainAnyValue
+    | JSONB_PATH_PREDICATE_CHECK_ # jsonbPathPredicateCheck
     ;
 
 qualAllOp
@@ -1809,4 +1835,11 @@ event
 typeNameList
     : typeName (COMMA_ typeName)*
     ;
-
+    
+notExistClause
+    : IF NOT EXISTS
+    ;
+    
+existClause
+    : IF EXISTS
+    ;

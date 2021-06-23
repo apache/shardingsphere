@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple.ExpectedLiteralExpression;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
@@ -41,4 +42,7 @@ public final class ExpectedAssignmentValue extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "common-expression")
     private ExpectedCommonExpression commonExpression;
+    
+    @XmlElement(name = "column")
+    private ExpectedColumn column;
 }

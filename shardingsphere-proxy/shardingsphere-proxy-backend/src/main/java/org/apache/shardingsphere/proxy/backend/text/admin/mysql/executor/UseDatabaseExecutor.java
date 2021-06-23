@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
@@ -26,7 +27,8 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdmin
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -39,16 +41,17 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     
     @Override
     public void execute(final BackendConnection backendConnection) {
-        String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (!ProxyContext.getInstance().schemaExists(schema) && isAuthorizedSchema(backendConnection, schema)) {
-            throw new UnknownDatabaseException(schema);
+        String schemaName = SQLUtil.getExactlyValue(useStatement.getSchema());
+        if (!ProxyContext.getInstance().schemaExists(schemaName) && SQLCheckEngine.check(schemaName, getRules(schemaName), backendConnection.getGrantee())) {
+            throw new UnknownDatabaseException(schemaName);
         }
-        backendConnection.setCurrentSchema(schema);
+        backendConnection.setCurrentSchema(schemaName);
     }
     
-    private boolean isAuthorizedSchema(final BackendConnection backendConnection, final String schema) {
-        Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
-        // TODO : Need to check whether PrivilegeType.USAGE is correct or enough?
-        return privilege.isPresent() && privilege.get().hasPrivileges(schema, Collections.emptyList());
+    private Collection<ShardingSphereRule> getRules(final String schemaName) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        Optional.ofNullable(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName)).ifPresent(each -> result.addAll(each.getRuleMetaData().getRules()));
+        result.addAll(ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        return result;
     }
 }

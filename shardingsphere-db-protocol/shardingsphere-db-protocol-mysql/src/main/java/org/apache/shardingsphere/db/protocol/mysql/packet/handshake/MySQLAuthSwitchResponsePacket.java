@@ -19,16 +19,17 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.handshake;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL auth switch request packet.
+ * MySQL authentication switch request packet.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::AuthSwitchResponse">AuthSwitchResponse</a>
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLAuthSwitchResponsePacket {
+public final class MySQLAuthSwitchResponsePacket implements MySQLPacket {
     
     @Getter
     private final int sequenceId;
@@ -38,5 +39,10 @@ public final class MySQLAuthSwitchResponsePacket {
     public MySQLAuthSwitchResponsePacket(final MySQLPacketPayload payload) {
         sequenceId = payload.readInt1();
         authPluginResponse = payload.readStringEOFByBytes();
+    }
+    
+    @Override
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeBytes(authPluginResponse);
     }
 }

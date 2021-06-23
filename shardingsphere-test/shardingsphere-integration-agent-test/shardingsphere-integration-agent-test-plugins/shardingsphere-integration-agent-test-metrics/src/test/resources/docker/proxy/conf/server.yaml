@@ -15,10 +15,12 @@
 # limitations under the License.
 #
 
-authentication:
-  users:
-    root:
-      password: root
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+    provider:
+      type: NATIVE
 
 props:
   max-connections-size-per-query: 1
@@ -27,5 +29,4 @@ props:
   proxy-transaction-type: LOCAL
   proxy-opentracing-enabled: false
   proxy-hint-enabled: false
-  query-with-cipher-column: true
   sql-show: true

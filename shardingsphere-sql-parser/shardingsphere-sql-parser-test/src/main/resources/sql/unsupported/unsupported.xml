@@ -43,4 +43,5 @@
     <!--<sql-case id="assertSelectWithMatchAgainstWithParameterMarker" value="SELECT * FROM TABLE_XXX WHERE MATCH(TABLE_XXX.COLUMN_XXX) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL" />-->
     <!--<sql-case id="assertSelectLikeConcatWithParameterMarker" value="SELECT * FROM TABLE_XXX WHERE COLUMN_XXX LIKE CONCAT('%%', ?, '%%')" />-->
     <!--<sql-case id="assertSelectGeographyWithParameterMarker" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL" />-->
+    <sql-case id="assertDistSQLShowRuleParseConflict" value="SHOW REPLICA_QUERY RULE FROM schema_name" />
 </sql-cases>

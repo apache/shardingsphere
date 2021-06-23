@@ -21,17 +21,21 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.groupby.GroupByClauseAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.having.HavingClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.lock.LockClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.where.WhereClauseAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 
 import java.util.Optional;
@@ -57,10 +61,32 @@ public final class SelectStatementAssert {
         assertProjection(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
         assertGroupByClause(assertContext, actual, expected);
+        assertHavingClause(assertContext, actual, expected);
+        assertWindowClause(assertContext, actual, expected);
         assertOrderByClause(assertContext, actual, expected);
         assertLimitClause(assertContext, actual, expected);
         assertTable(assertContext, actual, expected);
         assertLockClause(assertContext, actual, expected);
+        assertWithClause(assertContext, actual, expected);
+    }
+    
+    private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(actual);
+        if (null != expected.getWindowClause()) {
+            assertTrue(assertContext.getText("Actual window segment should exist."), windowSegment.isPresent());
+            SQLSegmentAssert.assertIs(assertContext, windowSegment.get(), expected.getWindowClause());
+        } else {
+            assertFalse(assertContext.getText("Actual window segment should not exist."), windowSegment.isPresent());
+        }
+    }
+    
+    private static void assertHavingClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (null != expected.getHavingClause()) {
+            assertTrue(assertContext.getText("Actual having segment should exist."), actual.getHaving().isPresent());
+            HavingClauseAssert.assertIs(assertContext, actual.getHaving().get(), expected.getHavingClause());
+        } else {
+            assertFalse(assertContext.getText("Actual having segment should not exist."), actual.getHaving().isPresent());
+        }
     }
     
     private static void assertProjection(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
@@ -124,6 +150,16 @@ public final class SelectStatementAssert {
             LockClauseAssert.assertIs(assertContext, actualLock.get(), expected.getLockClause());
         } else {
             assertFalse(assertContext.getText("Actual lock segment should not exist."), actualLock.isPresent());
+        }
+    }
+    
+    private static void assertWithClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        Optional<WithSegment> withSegment = SelectStatementHandler.getWithSegment(actual);
+        if (null != expected.getWithClause()) {
+            assertTrue(assertContext.getText("Actual with segment should exist."), withSegment.isPresent());
+            WithClauseAssert.assertIs(assertContext, withSegment.get(), expected.getWithClause());
+        } else {
+            assertFalse(assertContext.getText("Actual with segment should not exist."), withSegment.isPresent());
         }
     }
 }

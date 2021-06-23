@@ -186,20 +186,20 @@ public final class PostgreSQLArrayParameterDecoder {
             throw new IllegalArgumentException("value not start with '{' or not end with '}'");
         }
         String[] elements = value.substring(1, value.length() - 1).split(",");
-        return Arrays.stream(elements).map(e -> {
-            if ("NULL".equals(e)) {
+        return Arrays.stream(elements).map(each -> {
+            if ("NULL".equals(each)) {
                 return null;
             }
-            if ('"' == e.charAt(0) && '"' == e.charAt(e.length() - 1)) {
-                e = e.substring(1, e.length() - 1);
+            if ('"' == each.charAt(0) && '"' == each.charAt(each.length() - 1)) {
+                each = each.substring(1, each.length() - 1);
             }
-            while (e.contains("\\\"")) {
-                e = e.replace("\\\"", "\"");
+            while (each.contains("\\\"")) {
+                each = each.replace("\\\"", "\"");
             }
-            while (e.contains("\\\\")) {
-                e = e.replace("\\\\", "\\");
+            while (each.contains("\\\\")) {
+                each = each.replace("\\\\", "\\");
             }
-            return e;
+            return each;
         }).collect(Collectors.toCollection(ArrayList::new));
     }
 }

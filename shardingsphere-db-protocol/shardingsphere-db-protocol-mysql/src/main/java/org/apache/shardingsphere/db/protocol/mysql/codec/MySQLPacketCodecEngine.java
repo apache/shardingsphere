@@ -32,20 +32,24 @@ import java.util.List;
  */
 public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<MySQLPacket> {
     
+    private static final int PAYLOAD_LENGTH = 3;
+    
+    private static final int SEQUENCE_LENGTH = 1;
+    
     @Override
     public boolean isValidHeader(final int readableBytes) {
-        return readableBytes >= MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH;
+        return readableBytes >= PAYLOAD_LENGTH + SEQUENCE_LENGTH;
     }
     
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int readableBytes) {
         int payloadLength = in.markReaderIndex().readMediumLE();
-        int realPacketLength = payloadLength + MySQLPacket.PAYLOAD_LENGTH + MySQLPacket.SEQUENCE_LENGTH;
+        int realPacketLength = payloadLength + PAYLOAD_LENGTH + SEQUENCE_LENGTH;
         if (readableBytes < realPacketLength) {
             in.resetReaderIndex();
             return;
         }
-        out.add(in.readRetainedSlice(payloadLength + MySQLPacket.SEQUENCE_LENGTH));
+        out.add(in.readRetainedSlice(payloadLength + SEQUENCE_LENGTH));
     }
     
     @Override

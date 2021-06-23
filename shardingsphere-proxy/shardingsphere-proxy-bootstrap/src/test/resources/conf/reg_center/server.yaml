@@ -18,7 +18,7 @@
 governance:
   name: governance_ds
   registryCenter:
-    type: REG_FIXTURE
+    type: GOV_FIXTURE
     serverLists: localhost:2181
     props:
       retryIntervalMilliseconds: 500
@@ -26,3 +26,11 @@ governance:
       maxRetries: 3
       operationTimeoutMilliseconds: 500
   overwrite: false
+
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+      - sharding@:sharding
+    provider:
+      type: NATIVE

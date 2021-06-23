@@ -30,4 +30,6 @@
     <sql-case id="select_group_by_with_date_function" value="SELECT date_format(creation_date,  '%y-%m-%d') as creation_date, count(*) as c_number FROM `t_order_item` WHERE order_id in (?, ?) GROUP BY date_format(creation_date, '%y-%m-%d')" db-types="MySQL"/>
     <sql-case id="select_group_by_with_keyword_alias" value="SELECT SUM(order_id) AS orders_sum, user_id as `key` FROM t_order GROUP BY `key`" db-types="MySQL" />
     <sql-case id="select_group_by_with_count_without_column_name" value="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY 2 ORDER BY 2" db-types="MySQL,Oracle,SQLServer,PostgreSQL" />
+    <sql-case id="select_group_by_with_having" value="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id HAVING orders_count > 0" />
+    <sql-case id="select_group_by_with_having_and_window" value="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id HAVING orders_count > 0 WINDOW w AS (PARTITION BY user_id)" db-types="MySQL,PostgreSQL" />
 </sql-cases>

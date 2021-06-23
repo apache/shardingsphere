@@ -43,7 +43,7 @@ public final class PostgreSQLFloatBinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(byteBuf.readFloat()).thenReturn(1F);
-        assertThat(new PostgreSQLFloatBinaryProtocolValue().read(new PostgreSQLPacketPayload(byteBuf)), is(1.0F));
+        assertThat(new PostgreSQLFloatBinaryProtocolValue().read(new PostgreSQLPacketPayload(byteBuf), 4), is(1.0F));
     }
     
     @Test

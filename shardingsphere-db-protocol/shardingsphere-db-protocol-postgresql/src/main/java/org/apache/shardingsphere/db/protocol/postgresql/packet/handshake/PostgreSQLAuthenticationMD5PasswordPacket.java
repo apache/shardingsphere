@@ -17,30 +17,30 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
-import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * AuthenticationMD5Password (backend) packet for PostgreSQL.
  */
-public final class PostgreSQLAuthenticationMD5PasswordPacket implements PostgreSQLPacket {
+@RequiredArgsConstructor
+public final class PostgreSQLAuthenticationMD5PasswordPacket implements PostgreSQLIdentifierPacket {
     
     private static final int AUTH_REQ_MD5 = 5;
     
     private final byte[] md5Salt;
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.AUTHENTICATION_MD5_PASSWORD.getValue();
-    
-    public PostgreSQLAuthenticationMD5PasswordPacket(final byte[] md5Salt) {
-        this.md5Salt = md5Salt;
-    }
-    
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt4(AUTH_REQ_MD5);
         payload.writeBytes(md5Salt);
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST;
     }
 }

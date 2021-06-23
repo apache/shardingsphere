@@ -165,6 +165,10 @@ public final class InventoryTaskSplitter {
                     beginId = endId + 1;
                 }
             }
+            // fix empty table missing inventory task
+            if (0 == result.size()) {
+                result.add(new PrimaryKeyPosition(0, 0));
+            }
         } catch (final SQLException ex) {
             throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfig.getTableName(), dumperConfig.getPrimaryKey()), ex);
         }

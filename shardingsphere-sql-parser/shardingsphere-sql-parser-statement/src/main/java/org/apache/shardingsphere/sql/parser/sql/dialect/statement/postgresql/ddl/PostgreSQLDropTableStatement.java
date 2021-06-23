@@ -31,5 +31,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 @ToString
 public final class PostgreSQLDropTableStatement extends DropTableStatement implements PostgreSQLStatement {
     
-    private boolean containsIfExistClause;
+    private boolean containsExistClause;
 }

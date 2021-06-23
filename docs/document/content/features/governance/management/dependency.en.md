@@ -1,6 +1,6 @@
 +++
 title = "Third-party Components"
-weight = 4
+weight = 2
 +++
 
 Apache ShardingSphere uses SPI to load data to the config center and registry center and disable instances and databases. 

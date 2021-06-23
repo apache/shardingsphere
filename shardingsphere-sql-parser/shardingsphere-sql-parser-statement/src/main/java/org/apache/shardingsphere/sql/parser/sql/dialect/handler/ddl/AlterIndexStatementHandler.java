@@ -19,9 +19,12 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterIndexStatement;
 
@@ -42,6 +45,19 @@ public final class AlterIndexStatementHandler implements SQLStatementHandler {
     public static Optional<SimpleTableSegment> getSimpleTableSegment(final AlterIndexStatement alterIndexStatement) {
         if (alterIndexStatement instanceof SQLServerStatement) {
             return ((SQLServerAlterIndexStatement) alterIndexStatement).getTable();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get rename index segment.
+     *
+     * @param alterIndexStatement alter index statement
+     * @return rename index segment
+     */
+    public static Optional<IndexSegment> getRenameIndexSegment(final AlterIndexStatement alterIndexStatement) {
+        if (alterIndexStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLAlterIndexStatement) alterIndexStatement).getRenameIndex();
         }
         return Optional.empty();
     }

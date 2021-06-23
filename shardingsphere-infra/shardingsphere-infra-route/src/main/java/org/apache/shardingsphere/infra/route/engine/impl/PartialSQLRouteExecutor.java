@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Partial SQL route executor.
@@ -44,9 +43,6 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
         ShardingSphereServiceLoader.register(SQLRouter.class);
     }
     
-    @SuppressWarnings("rawtypes")
-    private static final Map<Collection<ShardingSphereRule>, Map<ShardingSphereRule, SQLRouter>> RULES_TO_ROUTERS_MAP = new ConcurrentHashMap<>(32, 1);
-    
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
@@ -54,7 +50,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     
     public PartialSQLRouteExecutor(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         this.props = props;
-        routers = RULES_TO_ROUTERS_MAP.computeIfAbsent(rules, key -> OrderedSPIRegistry.getRegisteredServices(key, SQLRouter.class));
+        routers = OrderedSPIRegistry.getRegisteredServices(rules, SQLRouter.class);
     }
     
     @Override

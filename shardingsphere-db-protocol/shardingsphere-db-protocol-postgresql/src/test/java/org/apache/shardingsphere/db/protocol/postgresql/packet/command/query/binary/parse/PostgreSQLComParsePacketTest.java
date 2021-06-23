@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse;
 
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +31,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,13 +46,12 @@ public final class PostgreSQLComParsePacketTest {
         when(payload.readStringNul()).thenReturn("sql");
         PostgreSQLComParsePacket actual = new PostgreSQLComParsePacket(payload);
         actual.write(payload);
-        assertThat(actual.getMessageType(), is('P'));
+        assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.PARSE_COMMAND));
         assertThat(actual.getSql(), is("sql"));
         assertThat(actual.getStatementId(), is("sql"));
-        List<PostgreSQLBinaryStatementParameterType> types = actual.getBinaryStatementParameterTypes();
+        List<PostgreSQLBinaryColumnType> types = actual.getBinaryStatementColumnTypes();
         assertNotNull(types);
         assertThat(types.size(), equalTo(1));
-        assertThat(types.get(0).getColumnType(), is(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
-        assertTrue(actual.toString().startsWith("PostgreSQLComParsePacket(statementId=sql, sql=sql, binaryStatementParameterTypes=["));
+        assertThat(types.get(0), is(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
     }
 }

@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.CodePointBuffer;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLLexer;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl.MySQLDMLFormatSQLVisitor;

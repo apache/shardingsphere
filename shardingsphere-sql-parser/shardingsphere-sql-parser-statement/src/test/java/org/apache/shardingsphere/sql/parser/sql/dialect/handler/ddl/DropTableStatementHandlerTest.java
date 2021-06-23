@@ -32,62 +32,62 @@ public final class DropTableStatementHandlerTest {
     @Test
     public void assertContainsIfExistClauseForMySQL() {
         MySQLDropTableStatement dropTableStatement = new MySQLDropTableStatement();
-        dropTableStatement.setContainsIfExistClause(true);
-        boolean containsIfExistClause = DropTableStatementHandler.containsIfExistClause(dropTableStatement);
+        dropTableStatement.setContainsExistClause(true);
+        boolean containsIfExistClause = DropTableStatementHandler.containsExistClause(dropTableStatement);
         assertTrue(containsIfExistClause);
     }
     
     @Test
     public void assertContainsIfExistClauseForPostgreSQL() {
         PostgreSQLDropTableStatement dropTableStatement = new PostgreSQLDropTableStatement();
-        dropTableStatement.setContainsIfExistClause(true);
-        boolean containsIfExistClause = DropTableStatementHandler.containsIfExistClause(dropTableStatement);
+        dropTableStatement.setContainsExistClause(true);
+        boolean containsIfExistClause = DropTableStatementHandler.containsExistClause(dropTableStatement);
         assertTrue(containsIfExistClause);
     }
     
     @Test
     public void assertContainsIfExistClauseForSQLServer() {
         SQLServerDropTableStatement dropTableStatement = new SQLServerDropTableStatement();
-        dropTableStatement.setContainsIfExistClause(true);
-        boolean containsIfExistClause = DropTableStatementHandler.containsIfExistClause(dropTableStatement);
+        dropTableStatement.setContainsExistClause(true);
+        boolean containsIfExistClause = DropTableStatementHandler.containsExistClause(dropTableStatement);
         assertTrue(containsIfExistClause);
     }
     
     @Test
     public void assertNotContainsIfExistClauseForMySQL() {
         MySQLDropTableStatement dropTableStatement = new MySQLDropTableStatement();
-        dropTableStatement.setContainsIfExistClause(false);
-        boolean containsIfExistClause = DropTableStatementHandler.containsIfExistClause(dropTableStatement);
+        dropTableStatement.setContainsExistClause(false);
+        boolean containsIfExistClause = DropTableStatementHandler.containsExistClause(dropTableStatement);
         assertFalse(containsIfExistClause);
     }
     
     @Test
     public void assertNotContainsIfExistClauseForOracle() {
         OracleDropTableStatement dropTableStatement = new OracleDropTableStatement();
-        boolean containsIfExistClause = DropTableStatementHandler.containsIfExistClause(dropTableStatement);
+        boolean containsIfExistClause = DropTableStatementHandler.containsExistClause(dropTableStatement);
         assertFalse(containsIfExistClause);
     }
     
     @Test
     public void assertNotContainsIfExistClauseForPostgreSQL() {
         PostgreSQLDropTableStatement dropTableStatement = new PostgreSQLDropTableStatement();
-        dropTableStatement.setContainsIfExistClause(false);
-        boolean containsIfExistClause = DropTableStatementHandler.containsIfExistClause(dropTableStatement);
+        dropTableStatement.setContainsExistClause(false);
+        boolean containsIfExistClause = DropTableStatementHandler.containsExistClause(dropTableStatement);
         assertFalse(containsIfExistClause);
     }
     
     @Test
     public void assertNotContainsIfExistClauseForSQL92() {
         SQL92DropTableStatement dropTableStatement = new SQL92DropTableStatement();
-        boolean containsIfExistClause = DropTableStatementHandler.containsIfExistClause(dropTableStatement);
+        boolean containsIfExistClause = DropTableStatementHandler.containsExistClause(dropTableStatement);
         assertFalse(containsIfExistClause);
     }
     
     @Test
     public void assertNotContainsIfExistClauseForSQLServer() {
         SQLServerDropTableStatement dropTableStatement = new SQLServerDropTableStatement();
-        dropTableStatement.setContainsIfExistClause(false);
-        boolean containsIfExistClause = DropTableStatementHandler.containsIfExistClause(dropTableStatement);
+        dropTableStatement.setContainsExistClause(false);
+        boolean containsIfExistClause = DropTableStatementHandler.containsExistClause(dropTableStatement);
         assertFalse(containsIfExistClause);
     }
 }

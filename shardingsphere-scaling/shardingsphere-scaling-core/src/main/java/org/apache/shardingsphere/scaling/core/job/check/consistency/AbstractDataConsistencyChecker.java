@@ -39,9 +39,9 @@ import java.util.stream.Collectors;
 /**
  * Abstract data consistency checker.
  */
-@Slf4j
-@Getter
 @RequiredArgsConstructor
+@Getter
+@Slf4j
 public abstract class AbstractDataConsistencyChecker implements DataConsistencyChecker {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();

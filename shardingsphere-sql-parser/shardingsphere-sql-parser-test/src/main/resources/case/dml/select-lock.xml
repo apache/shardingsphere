@@ -276,4 +276,29 @@
             <table name="t_user" start-index="202" stop-index="207"/>
         </lock>
     </select>
+
+    <select sql-case-id="select_lock_with_for_update_column">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14"/>
+        </projections>
+        <from start-index="21" stop-index="27">
+            <simple-table name="t_order" start-index="21" stop-index="27"/>
+        </from>
+        <lock start-index="29" stop-index="50" >
+            <column name="order_id" start-index="43" stop-index="50"/>
+        </lock>
+    </select>
+    
+    <select sql-case-id="select_lock_with_for_update_table_column">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="order_id" start-index="7" stop-index="14"/>
+        </projections>
+        <from start-index="21" stop-index="27">
+            <simple-table name="t_order" start-index="21" stop-index="27"/>
+        </from>
+        <lock start-index="29" stop-index="58" >
+            <table name="t_order" start-index="43" stop-index="49"/>
+            <column name="order_id" start-index="51" stop-index="58"/>
+        </lock>
+    </select>
 </sql-parser-test-cases>

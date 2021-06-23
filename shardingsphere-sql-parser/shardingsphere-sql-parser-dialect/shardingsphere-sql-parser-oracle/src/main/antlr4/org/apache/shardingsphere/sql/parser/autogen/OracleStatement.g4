@@ -46,5 +46,11 @@ execute
     | setRole
     | call
     | merge
+    | alterSynonym
+    | alterSession
+    | alterDatabase
+    | alterSystem
+    | setConstraints
+    | analyze
     ) SEMI_?
     ;

@@ -18,7 +18,7 @@
 governance:
   name: governance_ds
   registryCenter:
-    type: REG_FIXTURE
+    type: GOV_FIXTURE
     serverLists: localhost:2181
     props:
       retryIntervalMilliseconds: 500
@@ -27,12 +27,13 @@ governance:
       operationTimeoutMilliseconds: 500
   overwrite: false
 
-authentication:
-  users:
-    root:
-      password: root
-    sharding:
-      password: sharding
+rules:
+  - !AUTHORITY
+    users:
+      - root@:root
+      - sharding@:sharding
+    provider:
+      type: NATIVE
 
 props:
   alpha-1: alpha-A

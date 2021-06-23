@@ -5,14 +5,14 @@ weight = 1
 chapter = true
 +++
 
-## SQLParserFacade
+## DatabaseTypedSQLParserFacade
 
-| *SPI 名称*              | *详细说明*                             |
-| ---------------------- | -------------------------------------- |
-| SQLParserFacade        | 配置用于SQL解析的词法分析器和语法分析器入口 |
+| *SPI 名称*                    | *详细说明*                            |
+| ---------------------------- | ----------------------------------- |
+| DatabaseTypedSQLParserFacade | 配置用于SQL解析的词法分析器和语法分析器入口 |
 
-| *Implementation Class* | *Description*                          |
-| ---------------------- | -------------------------------------- |
+| *Implementation Class* | *Description*                         |
+| ---------------------- | ------------------------------------- |
 | MySQLParserFacade      | 基于 MySQL 的 SQL 解析器入口             |
 | PostgreSQLParserFacade | 基于 PostgreSQL 的SQL 解析器入口         |
 | SQLServerParserFacade  | 基于 SQLServer 的SQL 解析器入口          |
@@ -21,12 +21,12 @@ chapter = true
 
 ## SQLVisitorFacade
 
-| *SPI 名称*                          | *详细说明*                                   |
-| ----------------------------------- | ------------------------------------------- |
+| *SPI 名称*                           | *详细说明*                                  |
+| ----------------------------------- | ------------------------------------------ |
 | SQLVisitorFacade                    | SQL 语法树访问器入口                          |
 
-| *Implementation Class*              | *Description*                               |
-| ----------------------------------- | ------------------------------------------- |
+| *Implementation Class*              | *Description*                             |
+| ----------------------------------- | ----------------------------------------- |
 | MySQLStatementSQLVisitorFacade      | 基于 MySQL 的提取 SQL 语句的语法树访问器       |
 | PostgreSQLStatementSQLVisitorFacade | 基于 PostgreSQL 的提取 SQL 语句的语法树访问器  |
 | SQLServerStatementSQLVisitorFacade  | 基于 SQLServer 的提取 SQL 语句的语法树访问器   |

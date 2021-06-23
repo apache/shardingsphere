@@ -18,6 +18,8 @@
 
 <sql-cases>
     <sql-case id="select_constant_without_table" value="SELECT 1 as a" />
+    <sql-case id="select_with_operator_ilike" value="SELECT id from t_order where name !~ '^pg_toast'" db-types="PostgreSQL"/>
+    <sql-case id="select_with_binary_operation_of_aggregation_expr" value="SELECT (count(*)+1) as a" db-types="MySQL" />
     <sql-case id="select_with_schema_func" value="SELECT schema(), database()" db-types="MySQL" />
     <sql-case id="select_sqlmode_ansi_quotes" value='select "id" from "t_order" where "t_order"."id"=10' db-types="MySQL" />
     <sql-case id="select_with_union" value="SELECT * from table1 union select * from table2" db-types="PostgreSQL"/>
@@ -35,8 +37,8 @@
     <sql-case id="select_equal_with_same_sharding_column" value="SELECT * FROM t_order WHERE order_id = ? AND order_id = ?" />
     <sql-case id="select_in_with_same_sharding_column" value="SELECT * FROM t_order WHERE order_id IN (?, ?) AND order_id IN (?, ?) ORDER BY order_id" />
     <sql-case id="select_with_N_string_in_expression" value="SELECT * FROM t_order WHERE is_deleted = 'N'" />
-    <sql-case id="select_count_like_concat" value="SELECT count(0) as orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="MySQL, H2, PostgreSQL, SQL92" />
-    <sql-case id="select_count_like_concat_oracle_sqlserver" value="SELECT count(0) as orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="Oracle, SQLServer" />
+    <sql-case id="select_count_like" value="SELECT COUNT(*) FROM t_order WHERE (user_id = ? AND status LIKE ?)" />
+    <sql-case id="select_count_like_concat" value="SELECT count(0) as orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" />
     <sql-case id="select_like_with_single_quotes" value="select id from admin where fullname like 'a%'" db-types="MySQL"/>
     <sql-case id="select_count_tilde_concat" value="SELECT count(0) as orders_count FROM t_order o WHERE o.status ~~ CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="PostgreSQL" />
     <sql-case id="select_sharding_route_with_binding_tables" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? ORDER BY i.item_id" />
@@ -63,4 +65,18 @@
     <sql-case id="select_with_match_against" value="SELECT * FROM t_order_item WHERE MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE) AND user_id = ?" db-types="MySQL" />
     <sql-case id="select_with_json_separator" value="select content_json->>'$.nation' as nation,content_json->>'$.title' as title from tb_content_json b where b.content_id=1" db-types="MySQL" />
     <sql-case id="select_with_convert_function" value="SELECT CONVERT(SUBSTRING(content, 5) , SIGNED) AS signed_content FROM t_order WHERE order_id = 1" db-types="MySQL" />
+    <sql-case id="select_with_json_extract" value="SELECT content_json::json->'title', content_json::json->'nation' FROM tb_content_json WHERE content_id = 1" db-types="PostgreSQL" />
+    <sql-case id="select_with_json_extract_text" value="SELECT * FROM tb_content_json WHERE content_json::json->>'nation'='CHINA'" db-types="PostgreSQL" />
+    <sql-case id="select_with_json_path_extract" value="SELECT content_json::json#>'{keyword,1}' FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_json_path_extract_text" value="SELECT content_json::json#>>'{keyword,1}' FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_jsonb_contain_right" value="SELECT content_json::jsonb@>'{&amp;title&amp;:&amp;abc&amp;}'::jsonb FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_jsonb_contain_left" value="SELECT '{&amp;title&amp;:&amp;abc&amp;}'::jsonb&lt;@content_json::jsonb FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_jsonb_contain_top_key" value="SELECT content_json::jsonb?'title' FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_jsonb_contain_any_top_key" value="SELECT content_json::jsonb?|array['title','nation'] FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_jsonb_contain_all_top_key" value="SELECT content_json::jsonb?&amp;array['title','nation'] FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_jsonb_concat" value="SELECT content_json::jsonb||'{&quot;price&quot;:999}'::jsonb FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_jsonb_delete" value="SELECT content_json::jsonb-'title' FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_jsonb_path_delete" value="SELECT content_json::jsonb#-'{title}' FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_jsonb_path_contain_any_value" value="SELECT content_json::jsonb @?'$.keyword[*]?(@==&quot;ss&quot;)' FROM tb_content_json" db-types="PostgreSQL" />
+    <sql-case id="select_with_jsonb_path_predicate_check" value="SELECT content_json::jsonb@@'$.keyword[*]==&quot;ss&quot;' FROM tb_content_json" db-types="PostgreSQL" />
 </sql-cases>

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.aware;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 import java.util.Optional;
@@ -27,7 +26,6 @@ import java.util.Optional;
  * Data source name aware factory.
  */
 @Getter
-@Setter
 public final class DataSourceNameAwareFactory {
     
     private static volatile DataSourceNameAwareFactory instance;
@@ -35,7 +33,7 @@ public final class DataSourceNameAwareFactory {
     private final Optional<DataSourceNameAware> dataSourceNameAware;
     
     private DataSourceNameAwareFactory() {
-        dataSourceNameAware = newInstance();
+        dataSourceNameAware = TypedSPIRegistry.findRegisteredService(DataSourceNameAware.class);
     }
     
     /**
@@ -44,17 +42,13 @@ public final class DataSourceNameAwareFactory {
      * @return instance
      */
     public static DataSourceNameAwareFactory getInstance() {
-        if (instance == null) {
+        if (null == instance) {
             synchronized (DataSourceNameAwareFactory.class) {
-                if (instance == null) {
+                if (null == instance) {
                     instance = new DataSourceNameAwareFactory();
                 }
             }
         }
         return instance;
-    }
-    
-    private static Optional<DataSourceNameAware> newInstance() {
-        return TypedSPIRegistry.findRegisteredService(DataSourceNameAware.class);
     }
 }

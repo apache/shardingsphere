@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 
@@ -38,7 +37,7 @@ public final class ProxyConfiguration {
     
     private final Map<String, Collection<RuleConfiguration>> schemaRules;
     
-    private final Collection<ShardingSphereUser> users;
+    private final Collection<RuleConfiguration> globalRules;
     
     private final Properties props;
 }

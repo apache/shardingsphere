@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementParameterType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.ArrayList;
@@ -33,27 +32,26 @@ import java.util.List;
  * Command parse packet for PostgreSQL.
  */
 @Getter
-@ToString
 public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     
     private final String statementId;
     
     private final String sql;
     
-    private final List<PostgreSQLBinaryStatementParameterType> binaryStatementParameterTypes;
+    private final List<PostgreSQLBinaryColumnType> binaryStatementColumnTypes;
     
     public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
         statementId = payload.readStringNul();
         sql = alterSQLToJDBCStyle(payload.readStringNul());
-        binaryStatementParameterTypes = sql.isEmpty() ? Collections.emptyList() : getParameterTypes(payload);
+        binaryStatementColumnTypes = sql.isEmpty() ? Collections.emptyList() : getParameterTypes(payload);
     }
     
-    private List<PostgreSQLBinaryStatementParameterType> getParameterTypes(final PostgreSQLPacketPayload payload) {
+    private List<PostgreSQLBinaryColumnType> getParameterTypes(final PostgreSQLPacketPayload payload) {
         int parameterCount = payload.readInt2();
-        List<PostgreSQLBinaryStatementParameterType> result = new ArrayList<>(parameterCount); 
+        List<PostgreSQLBinaryColumnType> result = new ArrayList<>(parameterCount);
         for (int i = 0; i < parameterCount; i++) {
-            result.add(new PostgreSQLBinaryStatementParameterType(PostgreSQLBinaryColumnType.valueOf(payload.readInt4())));
+            result.add(PostgreSQLBinaryColumnType.valueOf(payload.readInt4()));
         }
         return result;
     }
@@ -67,7 +65,7 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public char getMessageType() {
-        return PostgreSQLCommandPacketType.PARSE.getValue();
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLCommandPacketType.PARSE_COMMAND;
     }
 }

@@ -25,7 +25,7 @@
                            ">
     <import resource="namespace/encrypt-data-source-namespace.xml" />
     
-    <governance:reg-center id="regCenter" type="TestRegistry" server-lists="localhost:3181">
+    <governance:reg-center id="regCenter" type="TestRegistry" server-lists="localhost:3182">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
@@ -35,7 +35,6 @@
     <governance:data-source id="encryptDataSourceGovernance" data-source-names="dbtbl_0" rule-refs="encryptRule" reg-center-ref="regCenter">
         <props>
             <prop key="sql-show">${sql_show}</prop>
-            <prop key="query-with-cipher-column">false</prop>
         </props>
     </governance:data-source>
 </beans>

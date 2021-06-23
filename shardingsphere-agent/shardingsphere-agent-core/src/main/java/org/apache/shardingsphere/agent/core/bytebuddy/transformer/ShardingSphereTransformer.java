@@ -45,6 +45,7 @@ import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeCl
 import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeConstructorInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeInstanceMethodAroundInterceptor;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -52,8 +53,8 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere transformer.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class ShardingSphereTransformer implements Transformer {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
@@ -112,7 +113,7 @@ public final class ShardingSphereTransformer implements Transformer {
     
     private Builder<?> interceptorClassStaticMethodPoint(final TypeDescription description, final List<ClassStaticMethodPoint> classStaticMethodAroundPoints, final Builder<?> builder) {
         List<ShardingSphereTransformationPoint<? extends ClassStaticMethodAroundInterceptor>> classStaticMethodAdvicePoints = description.getDeclaredMethods().stream()
-                .filter(md -> md.isStatic() && !(md.isAbstract() || md.isSynthetic()))
+                .filter(each -> each.isStatic() && !(each.isAbstract() || each.isSynthetic()))
                 .map(md -> {
                     List<ClassStaticMethodPoint> classStaticMethodPoints = classStaticMethodAroundPoints.stream().filter(point -> point.getMatcher().matches(md)).collect(Collectors.toList());
                     if (classStaticMethodPoints.isEmpty()) {
@@ -121,7 +122,7 @@ public final class ShardingSphereTransformer implements Transformer {
                     if (classStaticMethodPoints.size() == 1) {
                         return new ShardingSphereTransformationPoint<>(md, new ClassStaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(classStaticMethodPoints.get(0).getAdvice())));
                     } else {
-                        List<ClassStaticMethodAroundAdvice> classStaticMethodAroundAdvices = classStaticMethodPoints.stream()
+                        Collection<ClassStaticMethodAroundAdvice> classStaticMethodAroundAdvices = classStaticMethodPoints.stream()
                                 .map(ClassStaticMethodPoint::getAdvice)
                                 .map(advice -> (ClassStaticMethodAroundAdvice) pluginLoader.getOrCreateInstance(advice))
                                 .collect(Collectors.toList());
@@ -146,7 +147,7 @@ public final class ShardingSphereTransformer implements Transformer {
     
     private Builder<?> interceptorInstanceMethodPoint(final TypeDescription description, final List<InstanceMethodPoint> instanceMethodAroundPoints, final Builder<?> builder) {
         List<ShardingSphereTransformationPoint<? extends InstanceMethodAroundInterceptor>> instanceMethodAdviceComposePoints = description.getDeclaredMethods().stream()
-                .filter(md -> !(md.isAbstract() || md.isSynthetic()))
+                .filter(each -> !(each.isAbstract() || each.isSynthetic()))
                 .map(md -> {
                     List<InstanceMethodPoint> instanceMethodPoints = instanceMethodAroundPoints.stream().filter(point -> point.getMatcher().matches(md)).collect(Collectors.toList());
                     if (instanceMethodPoints.isEmpty()) {

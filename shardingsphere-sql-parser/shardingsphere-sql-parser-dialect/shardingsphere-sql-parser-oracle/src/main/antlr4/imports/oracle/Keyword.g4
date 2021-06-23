@@ -375,6 +375,10 @@ TIME
     : T I M E
     ;
 
+TIMEOUT
+    : T I M E O U T
+    ;
+
 TIMESTAMP
     : T I M E S T A M P
     ;
@@ -553,4 +557,8 @@ FLOAT
 
 TRIGGERS
     : T R I G G E R S
+    ;
+
+GLOBAL_NAME
+    : G L O B A L UL_ N A M E
     ;

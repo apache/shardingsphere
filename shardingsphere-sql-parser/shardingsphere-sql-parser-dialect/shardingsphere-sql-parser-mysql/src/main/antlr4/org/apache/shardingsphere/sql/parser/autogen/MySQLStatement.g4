@@ -116,6 +116,10 @@ execute
     | uninstall
     | unlock
     | xa
+    | createLoadableFunction
+    | createTablespace
+    | alterTablespace
+    | dropTablespace
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

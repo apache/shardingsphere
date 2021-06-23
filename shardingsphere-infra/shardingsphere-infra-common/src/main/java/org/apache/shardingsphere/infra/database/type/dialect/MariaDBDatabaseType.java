@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Database type of Mariadb.
+ * Database type of MariaDB.
  */
 public final class MariaDBDatabaseType implements BranchDatabaseType {
     

@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol;
 
 import io.netty.buffer.ByteBuf;
-import java.nio.charset.StandardCharsets;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -46,7 +47,7 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValueTest {
         byteBuf.writeCharSequence(timestampStr, StandardCharsets.ISO_8859_1);
         byteBuf.readInt();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
-        Object result = new PostgreSQLUnspecifiedBinaryProtocolValue().read(payload);
+        Object result = new PostgreSQLUnspecifiedBinaryProtocolValue().read(payload, timestampStr.length());
         assertNotNull(result);
         assertTrue(result instanceof PostgreSQLTypeUnspecifiedSQLParameter);
         assertThat(result.toString(), is(timestampStr));

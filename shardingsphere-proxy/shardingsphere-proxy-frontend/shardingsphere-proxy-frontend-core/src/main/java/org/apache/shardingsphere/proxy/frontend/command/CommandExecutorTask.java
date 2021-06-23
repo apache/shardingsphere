@@ -25,13 +25,13 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.readwrite.splitting.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.apache.shardingsphere.readwritesplitting.route.impl.PrimaryVisitedManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -96,19 +96,18 @@ public final class CommandExecutorTask implements Runnable {
         }
         responsePackets.forEach(context::write);
         if (commandExecutor instanceof QueryCommandExecutor) {
-            commandExecuteEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
-            return true;
+            return commandExecuteEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
         }
         return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
     }
     
     private void processException(final Exception cause) {
-        context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause));
-        Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
-        databasePacket.ifPresent(context::writeAndFlush);
         if (!ExpectedExceptions.isExpected(cause.getClass())) {
             log.error("Exception occur: ", cause);
         }
+        context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause, backendConnection));
+        Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket(backendConnection);
+        databasePacket.ifPresent(context::writeAndFlush);
     }
     
     private Collection<SQLException> closeExecutionResources() {
@@ -116,7 +115,7 @@ public final class CommandExecutorTask implements Runnable {
         PrimaryVisitedManager.clear();
         result.addAll(backendConnection.closeResultSets());
         result.addAll(backendConnection.closeStatements());
-        result.addAll(backendConnection.closeCalciteExecutor());
+        result.addAll(backendConnection.closeFederateExecutor());
         return result;
     }
     

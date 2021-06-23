@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-rules:
 - !SHARDING
   tables:
     t_order:

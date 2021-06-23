@@ -5,24 +5,28 @@ weight = 9
 chapter = true
 +++
 
-## ConfigurationRepository
+## RegistryCenterRepository
 
-| *SPI Name*                       | *Description*               |
-| -------------------------------- | --------------------------- |
-| ConfigurationRepository          | Config repository           |
+| *SPI Name*                       | *Description*                        |
+| -------------------------------- | ------------------------------------ |
+| RegistryCenterRepository         | Registry center repository           |
 
-| *Implementation Class*           | *Description*               |
-| -------------------------------- | --------------------------- |
-| CuratorZookeeperRepository       | ZooKeeper config repository |
-| EtcdRepository                   | etcd config repository      |
+| *Implementation Class*           | *Description*                        |
+| -------------------------------- | ------------------------------------ |
+| CuratorZookeeperRepository       | ZooKeeper registry center repository |
+| EtcdRepository                   | Etcd registry center repository      |
 
-## RegistryRepository
+## GovernanceWatcher
 
 | *SPI Name*                       | *Description*                 |
 | -------------------------------- | ----------------------------- |
-| RegistryRepository               | Registry repository           |
+| GovernanceWatcher                | Governance watcher            |
 
-| *Implementation Class*           | *Description*                 |
-| -------------------------------- | ----------------------------- |
-| CuratorZookeeperRepository       | ZooKeeper registry repository |
-| EtcdRepository                   | etcd registry repository      |
+| *Implementation Class*           | *Description*                     |
+| -------------------------------- | --------------------------------- |
+| TerminalStateChangedWatcher      | Terminal state changed watcher    |
+| DataSourceStateChangedWatcher    | Data source state changed watcher |
+| LockChangedWatcher               | Lock changed watcher              |
+| PropertiesChangedWatcher         | Properties changed watcher        |
+| PrivilegeNodeChangedWatcher      | Privilege changed watcher         |
+| GlobalRuleChangedWatcher         | Global rule changed watcher       |

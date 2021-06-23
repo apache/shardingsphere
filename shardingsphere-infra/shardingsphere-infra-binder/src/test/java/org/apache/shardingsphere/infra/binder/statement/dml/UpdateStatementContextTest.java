@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
@@ -32,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +68,7 @@ public final class UpdateStatementContextTest {
         UpdateStatement updateStatement = new MySQLUpdateStatement();
         updateStatement.setWhere(whereSegment);
         updateStatement.setTableSegment(joinTableSegment);
+        updateStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
         UpdateStatementContext actual = new UpdateStatementContext(updateStatement);
         assertThat(actual.getTablesContext().getTables().stream().map(a -> a.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("tbl_1", "tbl_2")));
         assertThat(actual.getWhere(), is(Optional.of(whereSegment)));

@@ -62,6 +62,7 @@ public class EncryptRuleSpringBootConfiguration {
     public RuleConfiguration encryptRuleConfiguration(final ObjectProvider<Map<String, EncryptAlgorithm>> encryptors) {
         AlgorithmProvidedEncryptRuleConfiguration result = swapper.swapToObject(yamlConfig.getEncrypt());
         result.setEncryptors(Optional.ofNullable(encryptors.getIfAvailable()).orElse(Collections.emptyMap()));
+        result.setQueryWithCipherColumn(yamlConfig.getEncrypt().isQueryWithCipherColumn());
         return result;
     }
     

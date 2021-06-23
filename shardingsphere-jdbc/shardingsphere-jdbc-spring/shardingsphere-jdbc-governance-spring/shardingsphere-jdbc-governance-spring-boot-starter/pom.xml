@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-read-write-splitting-spring-boot-starter</artifactId>
+            <artifactId>shardingsphere-readwrite-splitting-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

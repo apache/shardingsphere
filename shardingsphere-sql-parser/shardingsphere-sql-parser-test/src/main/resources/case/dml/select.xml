@@ -23,6 +23,38 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_with_operator_ilike" >
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8"/>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="15" stop-index="21" />
+        </from>
+        <where start-index="23" stop-index="47">
+            <expr>
+                <binary-operation-expression start-index="29" stop-index="47">
+                    <left>
+                        <column name="name" start-index="29" stop-index="32"/>
+                    </left>
+                    <right>
+                        <list-expression>
+                            <items>
+                                <literal-expression value="^pg_toast" start-index="37" stop-index="47"/>
+                            </items>
+                        </list-expression>
+                    </right>
+                    <operator>!~</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_binary_operation_of_aggregation_expr" >
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="count(*)+1" alias="a" start-index="8" stop-index="23" />
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_schema_func" >
         <projections start-index="7" stop-index="26">
             <expression-projection text="schema()" start-index="7" stop-index="14" />
@@ -659,6 +691,50 @@
         </where>
     </select>
 
+    <select sql-case-id="select_count_like" parameters="1, 'init'">
+        <from>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
+        </from>
+        <projections start-index="7" stop-index="14">
+            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+        </projections>
+        <where start-index="29" stop-index="65" literal-stop-index="70">
+            <expr>
+                <binary-operation-expression start-index="36" stop-index="64" literal-stop-index="69">
+                    <left>
+                        <binary-operation-expression start-index="36" stop-index="46">
+                            <left>
+                                <column name="user_id" start-index="36" stop-index="42" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="46" stop-index="46" />
+                                <parameter-marker-expression value="0" start-index="46" stop-index="46" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="52" stop-index="64" literal-stop-index="69">
+                            <left>
+                                <column name="status" start-index="52" stop-index="57" />
+                            </left>
+                            <operator>LIKE</operator>
+                            <right>
+                                <list-expression>
+                                    <items>
+                                        <literal-expression value="init" start-index="64" stop-index="69" />
+                                        <parameter-marker-expression value="1" start-index="64" stop-index="64" />
+                                    </items>
+                                </list-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
     <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <from>
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
@@ -672,7 +748,6 @@
                     <left>
                         <binary-operation-expression start-index="53" stop-index="111" literal-stop-index="116">
                             <left>
-                                <common-expression text="o.status LIKE CONCAT('%%', ?, '%%')" literal-text="o.status LIKE CONCAT('%%', 'init', '%%')" start-index="53" stop-index="87" literal-stop-index="92"/>
                                 <binary-operation-expression start-index="53" stop-index="87" literal-stop-index="92">
                                     <left>
                                         <column name="status" start-index="53" stop-index="60">
@@ -684,86 +759,6 @@
                                         <list-expression start-index="67" stop-index="87">
                                             <items>
                                                 <expression-projection text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="67" stop-index="87" literal-stop-index="92" />
-                                            </items>
-                                        </list-expression>
-                                    </right>
-                                </binary-operation-expression>
-                            </left>
-                            <operator>AND</operator>
-                            <right>
-                                <in-expression start-index="93" stop-index="111" literal-start-index="98" literal-stop-index="116">
-                                    <not>false</not>
-                                    <left>
-                                        <column name="user_id" start-index="93" stop-index="101" literal-start-index="98" literal-stop-index="106">
-                                            <owner name="o" start-index="93" stop-index="93" literal-start-index="98" literal-stop-index="98"/>
-                                        </column>
-                                    </left>
-                                    <right>
-                                        <list-expression start-index="107" stop-index="110" literal-stop-index="115">
-                                            <items>
-                                                <literal-expression value="1" start-index="112" stop-index="112" />
-                                                <parameter-marker-expression value="1" start-index="107" stop-index="107" />
-                                            </items>
-                                            <items>
-                                                <literal-expression value="2" start-index="115" stop-index="115" />
-                                                <parameter-marker-expression value="2" start-index="110" stop-index="110" />
-                                            </items>
-                                        </list-expression>
-                                    </right>
-                                </in-expression>
-                            </right>
-                        </binary-operation-expression>
-                    </left>
-                    <operator>AND</operator>
-                    <right>
-                        <between-expression start-index="117" stop-index="142" literal-start-index="122" literal-stop-index="148">
-                            <not>false</not>
-                            <left>
-                                <column name="order_id" start-index="117" stop-index="126" literal-start-index="122" literal-stop-index="131">
-                                    <owner name="o" start-index="117" stop-index="117" literal-start-index="122" literal-stop-index="122" />
-                                </column>
-                            </left>
-                            <between-expr>
-                                <literal-expression value="9" start-index="141" stop-index="141" />
-                                <parameter-marker-expression value="3" start-index="136" stop-index="136" />
-                            </between-expr>
-                            <and-expr>
-                                <literal-expression value="10" start-index="147" stop-index="148" />
-                                <parameter-marker-expression value="4" start-index="142" stop-index="142" />
-                            </and-expr>
-                        </between-expression>
-                    </right>
-                </binary-operation-expression>
-            </expr>
-        </where>
-    </select>
-
-    <select sql-case-id="select_count_like_concat_oracle_sqlserver" parameters="'init', 1, 2, 9, 10">
-        <from>
-            <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
-        </from>
-        <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
-        </projections>
-        <where start-index="47" stop-index="142" literal-stop-index="148">
-            <expr>
-                <binary-operation-expression start-index="53" stop-index="142" literal-stop-index="148">
-                    <left>
-                        <binary-operation-expression start-index="53" stop-index="111" literal-stop-index="116">
-                            <left>
-                                <common-expression text="o.status LIKE CONCAT('%%', ?, '%%')" literal-text="o.status LIKE CONCAT('%%', 'init', '%%')" start-index="53" stop-index="87" literal-stop-index="92"/>
-                                <binary-operation-expression start-index="53" stop-index="87" literal-stop-index="92">
-                                    <left>
-                                        <column name="status" start-index="53" stop-index="60">
-                                            <owner name="o" start-index="53" stop-index="53" />
-                                        </column>
-                                    </left>
-                                    <operator>LIKE</operator>
-                                    <right>
-                                        <list-expression start-index="67" stop-index="87">
-                                            <items>
-                                                <!-- 'text' is different from other database -->
-                                                <expression-projection text="CONCAT('%%',?,'%%')" literal-text="CONCAT('%%','init','%%')" start-index="67" stop-index="87" literal-stop-index="92" />
                                             </items>
                                         </list-expression>
                                     </right>
@@ -857,7 +852,21 @@
                     <left>
                         <binary-operation-expression start-index="53" stop-index="109" literal-stop-index="114">
                             <left>
-                                <common-expression text="o.status ~~ CONCAT('%%', ?, '%%')" literal-text="o.status ~~ CONCAT('%%', 'init', '%%')" start-index="53" stop-index="85" literal-stop-index="90"/>
+                                <binary-operation-expression start-index="53" stop-index="85" literal-stop-index="90">
+                                    <left>
+                                        <column name="status" start-index="53" stop-index="60">
+                                            <owner name="o" start-index="53" stop-index="53" />
+                                        </column>
+                                    </left>
+                                    <operator>~~</operator>
+                                    <right>
+                                        <list-expression>
+                                            <items>
+                                                <expression-projection text="CONCAT('%%', ?, '%%')" literal-text="CONCAT('%%', 'init', '%%')" start-index="65" stop-index="85" literal-stop-index="90"/>
+                                            </items>
+                                        </list-expression>
+                                    </right>
+                                </binary-operation-expression>
                             </left>
                             <operator>AND</operator>
                             <right>
@@ -1765,7 +1774,7 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
+                                                <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="60" stop-index="115" literal-start-index="78" literal-stop-index="137" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1846,7 +1855,7 @@
                                             </left>
                                             <operator>=</operator>
                                             <right>
-                                                <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
+                                                <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="73" stop-index="128" literal-start-index="109" literal-stop-index="168" />
                                             </right>
                                         </binary-operation-expression>
                                     </right>
@@ -1929,7 +1938,7 @@
                                     </left>
                                     <operator>=</operator>
                                     <right>
-                                        <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
+                                        <expression-projection text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="79" stop-index="134" literal-start-index="115" literal-stop-index="174" />
                                     </right>
                                 </binary-operation-expression>
                             </right>
@@ -2742,6 +2751,159 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_with_json_extract">
+        <from>
+            <simple-table name="tb_content_json" start-index="70" stop-index="84" />
+        </from>
+        <projections start-index="7" stop-index="63">
+            <expression-projection text="content_json::json->'title'" start-index="7" stop-index="33" />
+            <expression-projection text="content_json::json->'nation'" start-index="36" stop-index="63" />
+        </projections>
+        <where start-index="86" stop-index="105">
+            <expr>
+                <binary-operation-expression start-index="92" stop-index="105">
+                    <left>
+                        <column name="content_id" start-index="92" stop-index="101" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="105" stop-index="105" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_json_extract_text">
+        <from>
+            <simple-table name="tb_content_json" start-index="14" stop-index="28" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="30" stop-index="72">
+            <expr>
+                <binary-operation-expression start-index="36" stop-index="72">
+                    <left>
+                        <common-expression literal-text="content_json::json->>'nation'" start-index="36" stop-index="64" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="CHINA" start-index="66" stop-index="72" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_json_path_extract">
+        <from>
+            <simple-table name="tb_content_json" start-index="46" stop-index="60" />
+        </from>
+        <projections start-index="7" stop-index="39">
+            <expression-projection text="content_json::json#>'{keyword,1}'" start-index="7" stop-index="39" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_json_path_extract_text">
+        <from>
+            <simple-table name="tb_content_json" start-index="47" stop-index="61" />
+        </from>
+        <projections start-index="7" stop-index="40">
+            <expression-projection text="content_json::json#>>'{keyword,1}'" start-index="7" stop-index="40" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_contain_right">
+        <from>
+            <simple-table name="tb_content_json" start-index="58" stop-index="72" />
+        </from>
+        <projections start-index="7" stop-index="51">
+            <expression-projection text="content_json::jsonb@>'{&amp;title&amp;:&amp;abc&amp;}'::jsonb" start-index="7" stop-index="51" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_contain_left">
+        <from>
+            <simple-table name="tb_content_json" start-index="58" stop-index="72" />
+        </from>
+        <projections start-index="7" stop-index="51">
+            <expression-projection text="'{&amp;title&amp;:&amp;abc&amp;}'::jsonb&lt;@content_json::jsonb" start-index="7" stop-index="51" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_contain_top_key">
+        <from>
+            <simple-table name="tb_content_json" start-index="40" stop-index="54" />
+        </from>
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="content_json::jsonb?'title'" start-index="7" stop-index="33" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_contain_any_top_key">
+        <from>
+            <simple-table name="tb_content_json" start-index="57" stop-index="71" />
+        </from>
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="content_json::jsonb?|array['title','nation']" start-index="7" stop-index="50" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_contain_all_top_key">
+        <from>
+            <simple-table name="tb_content_json" start-index="57" stop-index="71" />
+        </from>
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="content_json::jsonb?&amp;array['title','nation']" start-index="7" stop-index="50" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_concat">
+        <from>
+            <simple-table name="tb_content_json" start-index="56" stop-index="70" />
+        </from>
+        <projections start-index="7" stop-index="49">
+            <expression-projection text="content_json::jsonb||'{&quot;price&quot;:999}'::jsonb" start-index="7" stop-index="49" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_delete">
+        <from>
+            <simple-table name="tb_content_json" start-index="40" stop-index="54" />
+        </from>
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="content_json::jsonb-'title'" start-index="7" stop-index="33" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_path_delete">
+        <from>
+            <simple-table name="tb_content_json" start-index="43" stop-index="57" />
+        </from>
+        <projections start-index="7" stop-index="36">
+            <expression-projection text="content_json::jsonb#-'{title}'" start-index="7" stop-index="36" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_path_contain_any_value">
+        <from>
+            <simple-table name="tb_content_json" start-index="59" stop-index="73" />
+        </from>
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="content_json::jsonb@?'$.keyword[*]?(@==&quot;ss&quot;)'" start-index="7" stop-index="52" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_jsonb_path_predicate_check">
+        <from>
+            <simple-table name="tb_content_json" start-index="54" stop-index="68" />
+        </from>
+        <projections start-index="7" stop-index="47">
+            <expression-projection text="content_json::jsonb@@'$.keyword[*]==&quot;ss&quot;'" start-index="7" stop-index="47" />
+        </projections>
     </select>
 </sql-parser-test-cases>
 

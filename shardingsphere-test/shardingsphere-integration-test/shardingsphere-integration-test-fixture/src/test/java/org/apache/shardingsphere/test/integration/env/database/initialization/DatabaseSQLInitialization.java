@@ -20,9 +20,11 @@ package org.apache.shardingsphere.test.integration.env.database.initialization;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Database SQL initialization.
@@ -34,10 +36,11 @@ public interface DatabaseSQLInitialization extends TypedSPI {
      *
      * @param scenario scenario
      * @param databaseType database type
+     * @param dataSourceMap datasource map
      *
      * @throws IOException IO exception
      * @throws SQLException SQL exception
      * @throws JAXBException JAXB exception
      */
-    void executeInitSQLs(String scenario, DatabaseType databaseType) throws IOException, SQLException, JAXBException;
+    void executeInitSQLs(String scenario, DatabaseType databaseType, Map<String, DataSource> dataSourceMap) throws IOException, SQLException, JAXBException;
 }

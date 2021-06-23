@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 163 家公司。
+共计 168 家公司。
 
 ### 金融行业
 <ul>
@@ -94,6 +94,7 @@ chapter = true
     <li><a href="https://4pyun.com/" rel="nofollow">P云+</a></li>
     <li><a href="https://www.supersoco.com/" rel="nofollow">速珂智能</a></li>
     <li><a href="http://www.jtkjbike.com/" rel="nofollow">金通科技</a></li>
+    <li><a href="http://ubinavi.com.cn/" rel="nofollow">普适导航</a></li>
 </ul>
 
 ### 物流
@@ -192,7 +193,14 @@ chapter = true
 <ul>
     <li><a href="https://www.hikvision.com/" rel="nofollow">海康威视</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">思创理德</a></li>
-    <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司</a></li>
+    <li><a href="http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司</a></li>
+    <li><a href="https://sunwuu.com/" rel="nofollow">商物云</a></li>
+</ul>
+
+### 制造业
+<ul>
+    <li><a href="https://www.lixiang.com" rel="nofollow">理想汽车</a></li>
+    <li><a href="https://www.gongniu.cn/" rel="nofollow">公牛智能产业中心</a></li>
 </ul>
 
 ### 软件开发及服务

@@ -521,10 +521,6 @@ copyDelimiter
     : (USING)? DELIMITERS STRING_
     ;
 
-deallocate
-    : DEALLOCATE PREPARE? (name | ALL)
-    ;
-
 fetch
     : FETCH fetchArgs
     ;

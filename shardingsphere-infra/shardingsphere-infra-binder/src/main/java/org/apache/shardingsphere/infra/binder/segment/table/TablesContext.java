@@ -19,18 +19,18 @@ package org.apache.shardingsphere.infra.binder.segment.table;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Tables context.
@@ -46,14 +46,9 @@ public final class TablesContext {
     }
     
     public TablesContext(final Collection<SimpleTableSegment> tableSegments) {
-        Map<String, SimpleTableSegment> tableMaps = new HashMap<>(1, 1);
-        Collection<SimpleTableSegment> actualTables = new LinkedList<>();
-        for (SimpleTableSegment each : tableSegments) {
-            if (!tableMaps.containsKey(each.getTableName().getIdentifier().getValue())) {
-                tableMaps.put(each.getTableName().getIdentifier().getValue(), each);
-                actualTables.add(each);
-            }
-        }
+        Collection<SimpleTableSegment> actualTables = new LinkedList<>(tableSegments);
+        Set<String> tableSets = new HashSet<>(actualTables.size(), 1);
+        actualTables.removeIf(each -> !tableSets.add(each.getTableName().getIdentifier().getValue()));
         tables = actualTables;
     }
     
@@ -63,11 +58,8 @@ public final class TablesContext {
      * @return table names
      */
     public Collection<String> getTableNames() {
-        Collection<String> result = new LinkedHashSet<>(tables.size(), 1);
-        for (SimpleTableSegment each : tables) {
-            result.add(each.getTableName().getIdentifier().getValue());
-        }
-        return result;
+        return tables.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(
+                Collectors.toSet());
     }
     
     /**
@@ -82,7 +74,7 @@ public final class TablesContext {
             return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
         }
         if (column.getOwner().isPresent()) {
-            return Optional.of(findTableNameFromSQL(column.getOwner().get().getIdentifier().getValue()));
+            return findTableNameFromSQL(column.getOwner().get().getIdentifier().getValue());
         }
         return findTableNameFromMetaData(column.getIdentifier().getValue(), schema);
     }
@@ -99,7 +91,7 @@ public final class TablesContext {
             return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
         }
         if (null != column.getOwner()) {
-            return Optional.of(findTableNameFromSQL(column.getOwner()));
+            return findTableNameFromSQL(column.getOwner());
         }
         return findTableNameFromMetaData(column.getName(), schema);
     }
@@ -109,13 +101,13 @@ public final class TablesContext {
      * @param tableNameOrAlias table name or alias
      * @return table name
      */
-    public String findTableNameFromSQL(final String tableNameOrAlias) {
+    public Optional<String> findTableNameFromSQL(final String tableNameOrAlias) {
         for (SimpleTableSegment each : tables) {
             if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
-                return each.getTableName().getIdentifier().getValue();
+                return Optional.of(each.getTableName().getIdentifier().getValue());
             }
         }
-        throw new IllegalStateException("Can not find owner from table.");
+        return Optional.empty();
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final ShardingSphereSchema schema) {

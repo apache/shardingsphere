@@ -30,6 +30,6 @@ public final class MySQLShortBinlogProtocolValue implements MySQLBinlogProtocolV
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        return payload.readInt2();
+        return payload.getByteBuf().readShortLE();
     }
 }

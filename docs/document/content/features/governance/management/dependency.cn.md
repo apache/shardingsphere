@@ -1,6 +1,6 @@
 +++
 title = "第三方组件依赖"
-weight = 4
+weight = 2
 +++
 
 Apache ShardingSphere 在数据库治理模块使用 SPI 方式载入数据到配置中心和注册中心，进行实例熔断和数据库禁用。

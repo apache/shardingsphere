@@ -158,6 +158,10 @@ showEngines
     : SHOW STORAGE? ENGINES
     ;
 
+showCharset
+    : SHOW CHARSET
+    ;
+    
 showErrors
     : SHOW (COUNT LP_ ASTERISK_ RP_)? ERRORS (LIMIT (NUMBER_ COMMA_)? NUMBER_)?
     ;
@@ -255,7 +259,7 @@ cloneAction
     | INSTANCE FROM cloneInstance IDENTIFIED BY string_ (DATA DIRECTORY EQ_? cloneDir)? (REQUIRE NO? SSL)?
     ;
 
-createUdf
+createLoadableFunction
     : CREATE AGGREGATE? FUNCTION functionName RETURNS (STRING | INTEGER | REAL | DECIMAL) SONAME shardLibraryName
     ;
 
@@ -425,6 +429,7 @@ show
     | showCreateView
     | showEngine
     | showEngines
+    | showCharset
     | showErrors
     | showEvents
     | showFunctionCode

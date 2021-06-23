@@ -38,7 +38,7 @@ public final class OKProxyState implements ProxyState {
         boolean supportHint = ProxyContext.getInstance().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED);
         boolean isOccupyThreadForPerConnection = databaseProtocolFrontendEngine.getFrontendContext().isOccupyThreadForPerConnection();
         ExecutorService executorService = CommandExecutorSelector.getExecutorService(
-                isOccupyThreadForPerConnection, supportHint, backendConnection.getTransactionStatus().getTransactionType(), context.channel().id());
+                isOccupyThreadForPerConnection, supportHint, backendConnection.getTransactionStatus().getTransactionType(), backendConnection.getConnectionId());
         executorService.execute(new CommandExecutorTask(databaseProtocolFrontendEngine, backendConnection, context, message));
     }
 }

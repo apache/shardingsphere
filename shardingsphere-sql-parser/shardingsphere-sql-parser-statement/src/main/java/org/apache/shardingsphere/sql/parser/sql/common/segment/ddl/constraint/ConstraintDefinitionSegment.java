@@ -46,13 +46,33 @@ public final class ConstraintDefinitionSegment implements CreateDefinitionSegmen
     
     private final Collection<ColumnSegment> indexColumns = new LinkedList<>();
     
+    private ConstraintSegment constraintName;
+    
     private IndexSegment indexName;
     
     private SimpleTableSegment referencedTable;
     
     /**
+     * Get constraint name.
+     *
+     * @return constraint name.
+     */
+    public Optional<ConstraintSegment> getConstraintName() {
+        return Optional.ofNullable(constraintName);
+    }
+    
+    /**
+     * Get index name.
+     *
+     * @return index name
+     */
+    public Optional<IndexSegment> getIndexName() {
+        return Optional.ofNullable(indexName);
+    }
+    
+    /**
      * Get referenced table.
-     * 
+     *
      * @return referenced table
      */
     public Optional<SimpleTableSegment> getReferencedTable() {

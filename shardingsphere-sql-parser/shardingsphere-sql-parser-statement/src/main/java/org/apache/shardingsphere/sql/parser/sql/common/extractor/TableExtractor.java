@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -190,7 +191,7 @@ public final class TableExtractor {
             }
         }
     }
-
+    
     private void extractTablesFromLock(final LockSegment lockSegment) {
         rewriteTables.addAll(lockSegment.getTables());
     }
@@ -233,6 +234,7 @@ public final class TableExtractor {
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
         extractTablesFromTableSegment(updateStatement.getTableSegment());
+        updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumn()));
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());
         }
@@ -301,10 +303,27 @@ public final class TableExtractor {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (ValidStatementSegment each : routineBody.getValidStatements()) {
             Optional<CreateTableStatement> createTable = each.getCreateTable();
-            if (createTable.isPresent() && !CreateTableStatementHandler.containsIfNotExistClause(createTable.get())) {
+            if (createTable.isPresent() && !CreateTableStatementHandler.containsNotExistClause(createTable.get())) {
                 result.add(createTable.get().getTable());
             }
         }
         return result;
+    }
+    
+    /**
+     * Extract table that should be rewrite from sql statement.
+     *
+     * @param sqlStatement sql statement
+     */
+    public void extractTablesFromSQLStatement(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            extractTablesFromSelect((SelectStatement) sqlStatement);
+        } else if (sqlStatement instanceof InsertStatement) {
+            extractTablesFromInsert((InsertStatement) sqlStatement);
+        } else if (sqlStatement instanceof UpdateStatement) {
+            extractTablesFromUpdate((UpdateStatement) sqlStatement);
+        } else if (sqlStatement instanceof DeleteStatement) {
+            extractTablesFromDelete((DeleteStatement) sqlStatement);
+        }
     }
 }

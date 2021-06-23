@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.spi.exception.ServiceLoaderInstantiationE
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,26 +35,37 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereServiceLoader {
     
-    private static final Map<Class<?>, Collection<Class<?>>> SERVICES = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Collection<Object>> SERVICES = new ConcurrentHashMap<>();
     
     /**
      * Register service.
      *
-     * @param service service class
-     * @param <T> type of service
+     * @param serviceInterface service interface
      */
-    public static <T> void register(final Class<T> service) {
-        if (SERVICES.containsKey(service)) {
-            return;
-        }
-        for (T each : ServiceLoader.load(service)) {
-            registerServiceClass(service, each);
+    public static void register(final Class<?> serviceInterface) {
+        if (!SERVICES.containsKey(serviceInterface)) {
+            SERVICES.put(serviceInterface, load(serviceInterface));
         }
     }
     
-    private static <T> void registerServiceClass(final Class<T> service, final T instance) {
-        Collection<Class<?>> serviceClasses = SERVICES.computeIfAbsent(service, unused -> new LinkedHashSet<>());
-        serviceClasses.add(instance.getClass());
+    private static <T> Collection<Object> load(final Class<T> serviceInterface) {
+        Collection<Object> result = new LinkedList<>();
+        for (T each : ServiceLoader.load(serviceInterface)) {
+            result.add(each);
+        }
+        return result;
+    }
+    
+    /**
+     * Get singleton service instances.
+     *
+     * @param service service class
+     * @param <T> type of service
+     * @return service instances
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Collection<T> getSingletonServiceInstances(final Class<T> service) {
+        return (Collection<T>) SERVICES.getOrDefault(service, Collections.emptyList());
     }
     
     /**
@@ -66,7 +77,7 @@ public final class ShardingSphereServiceLoader {
      */
     @SuppressWarnings("unchecked")
     public static <T> Collection<T> newServiceInstances(final Class<T> service) {
-        return SERVICES.containsKey(service) ? SERVICES.get(service).stream().map(each -> (T) newServiceInstance(each)).collect(Collectors.toList()) : Collections.emptyList();
+        return SERVICES.containsKey(service) ? SERVICES.get(service).stream().map(each -> (T) newServiceInstance(each.getClass())).collect(Collectors.toList()) : Collections.emptyList();
     }
     
     private static Object newServiceInstance(final Class<?> clazz) {

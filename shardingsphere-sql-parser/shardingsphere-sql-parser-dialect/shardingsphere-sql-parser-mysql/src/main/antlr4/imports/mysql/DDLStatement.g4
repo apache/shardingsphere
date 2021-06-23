@@ -26,8 +26,6 @@ alterStatement
     | alterFunction
     | alterEvent
     | alterView
-    | alterTablespaceInnodb
-    | alterTablespaceNdb
     | alterLogfileGroup
     | alterInstance
     | alterServer
@@ -100,8 +98,8 @@ alterListItem
     | ENABLE KEYS   # enableKeys
     | ALTER COLUMN? columnInternalRef=identifier (SET DEFAULT (LP_ expr RP_| signedLiteral)| DROP DEFAULT) # alterColumn
     | ALTER INDEX indexName visibility  # alterIndex
-    | ALTER CHECK identifier constraintEnforcement  # alterCheck
-    | ALTER CONSTRAINT identifier constraintEnforcement # alterConstraint
+    | ALTER CHECK constraintName constraintEnforcement  # alterCheck
+    | ALTER CONSTRAINT constraintName constraintEnforcement # alterConstraint
     | RENAME COLUMN columnInternalRef=identifier TO identifier  # renameColumn
     | RENAME (TO | AS)? tableName # alterRenameTable
     | RENAME keyOrIndex indexName TO indexName  # renameIndex
@@ -118,9 +116,9 @@ tableConstraintDef
     : keyOrIndex indexNameAndType? keyListWithExpression indexOption*
     | FULLTEXT keyOrIndex? indexName? keyListWithExpression fulltextIndexOption*
     | SPATIAL keyOrIndex? indexName? keyListWithExpression commonIndexOption*
-    | constraintName? (PRIMARY KEY | UNIQUE keyOrIndex?) indexNameAndType? keyListWithExpression indexOption*
-    | constraintName? FOREIGN KEY indexName? keyParts referenceDefinition
-    | constraintName? checkConstraint (constraintEnforcement)?
+    | constraintClause? (PRIMARY KEY | UNIQUE keyOrIndex?) indexNameAndType? keyListWithExpression indexOption*
+    | constraintClause? FOREIGN KEY indexName? keyParts referenceDefinition
+    | constraintClause? checkConstraint (constraintEnforcement)?
     ;
 
 alterCommandsModifierList
@@ -160,8 +158,8 @@ alterPartition
     | IMPORT PARTITION allOrPartitionNameList TABLESPACE
     ;
 
-constraintName
-    : CONSTRAINT identifier?
+constraintClause
+    : CONSTRAINT constraintName?
     ;
 
 tableElementList
@@ -341,6 +339,10 @@ dropView
     : DROP VIEW existClause? viewNames restrict?
     ;
 
+createTablespace
+    : createTablespaceInnodb | createTablespaceNdb
+    ;
+
 createTablespaceInnodb
     : CREATE (UNDO)? TABLESPACE identifier
       ADD DATAFILE string_
@@ -361,6 +363,10 @@ createTablespaceNdb
       WAIT?
       (COMMENT EQ_? string_)?
       (ENGINE EQ_? identifier)?
+    ;
+
+alterTablespace
+    : alterTablespaceInnodb | alterTablespaceNdb
     ;
 
 alterTablespaceNdb
@@ -444,7 +450,7 @@ columnAttribute
     | value = COLUMN_FORMAT columnFormat
     | value = STORAGE storageMedia
     | value = SRID NUMBER_
-    | constraintName? checkConstraint
+    | constraintClause? checkConstraint
     | constraintEnforcement
     ;
 

@@ -19,9 +19,12 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.te
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.sql.SQLException;
@@ -33,10 +36,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-@Slf4j
-public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
-    
-    private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
+public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket {
     
     private final Collection<Object> data;
     
@@ -44,20 +44,33 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt2(data.size());
         for (Object each : data) {
-            if (null == each) {
-                payload.writeInt4(0xFFFFFFFF);
+            if (each instanceof BinaryCell) {
+                writeBinaryValue(payload, (BinaryCell) each);
             } else {
-                if (each instanceof byte[]) {
-                    payload.writeInt4(((byte[]) each).length);
-                    payload.writeBytes((byte[]) each);
-                } else if (each instanceof SQLXML) {
-                    writeSQLXMLData(payload, each);
-                } else {
-                    String columnData = each.toString();
-                    payload.writeInt4(columnData.getBytes().length);
-                    payload.writeStringEOF(columnData);
-                }
+                writeTextValue(payload, each);
             }
+        }
+    }
+    
+    private void writeBinaryValue(final PostgreSQLPacketPayload payload, final BinaryCell each) {
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType());
+        Object value = each.getData();
+        payload.writeInt4(binaryProtocolValue.getColumnLength(value));
+        binaryProtocolValue.write(payload, value);
+    }
+    
+    private void writeTextValue(final PostgreSQLPacketPayload payload, final Object each) {
+        if (null == each) {
+            payload.writeInt4(0xFFFFFFFF);
+        } else if (each instanceof byte[]) {
+            payload.writeInt4(((byte[]) each).length);
+            payload.writeBytes((byte[]) each);
+        } else if (each instanceof SQLXML) {
+            writeSQLXMLData(payload, each);
+        } else {
+            String columnData = each.toString();
+            payload.writeInt4(columnData.getBytes().length);
+            payload.writeStringEOF(columnData);
         }
     }
     
@@ -66,7 +79,12 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
             payload.writeInt4(((SQLXML) data).getString().getBytes().length);
             payload.writeStringEOF(((SQLXML) data).getString());
         } catch (final SQLException ex) {
-            log.error("PostgreSQL DataRowPacket write SQLXML type exception", ex);
+            throw new RuntimeException(ex.getMessage());
         }
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.DATA_ROW;
     }
 }

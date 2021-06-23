@@ -23,12 +23,16 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Alter table statement.
@@ -40,11 +44,28 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     
     private SimpleTableSegment table;
     
+    private SimpleTableSegment renameTable;
+    
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
     private final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions = new LinkedList<>();
     
     private final Collection<DropColumnDefinitionSegment> dropColumnDefinitions = new LinkedList<>();
     
-    private final Collection<ConstraintDefinitionSegment> addConstraintDefinitions = new LinkedList<>();
+    private final Collection<AddConstraintDefinitionSegment> addConstraintDefinitions = new LinkedList<>();
+    
+    private final Collection<ValidateConstraintDefinitionSegment> validateConstraintDefinitions = new LinkedList<>();
+    
+    private final Collection<ModifyConstraintDefinitionSegment> modifyConstraintDefinitions = new LinkedList<>();
+    
+    private final Collection<DropConstraintDefinitionSegment> dropConstraintDefinitions = new LinkedList<>();
+    
+    /**
+     * Get rename table.
+     *
+     * @return rename table
+     */
+    public Optional<SimpleTableSegment> getRenameTable() {
+        return Optional.ofNullable(renameTable);
+    }
 }

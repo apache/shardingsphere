@@ -35,9 +35,7 @@ public final class DataSourcePropertyProviderLoader {
     private static final Map<String, DataSourcePropertyProvider> DATA_SOURCE_PROPERTY_PROVIDERS = new HashMap<>();
     
     static {
-        for (DataSourcePropertyProvider each : ServiceLoader.load(DataSourcePropertyProvider.class)) {
-            DATA_SOURCE_PROPERTY_PROVIDERS.put(each.getDataSourceClassName(), each);
-        }
+        ServiceLoader.load(DataSourcePropertyProvider.class).forEach(each -> DATA_SOURCE_PROPERTY_PROVIDERS.put(each.getDataSourceClassName(), each));
     }
     
     /**

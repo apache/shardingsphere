@@ -18,44 +18,53 @@
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.runners.Parameterized;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDMLIT extends BaseDMLIT {
+    @ClassRule
+    public static ComposeManager composeManager = new ComposeManager("GeneralDMLIT");
     
-    private final IntegrationTestCaseAssertion assertion;
-    
-    public GeneralDMLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
+    public GeneralDMLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
-        assertion = parameterizedArray.getAssertion();
     }
     
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DML);
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<AssertionParameterizedArray> getParameters() {
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML)
+                .stream()
+                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                .collect(Collectors.toList());
     }
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
+        switch (getScenario()) {
+            case "replica_query":
+            case "shadow":
+            case "encrypt":
+                return;
+            default:
+        }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
@@ -63,15 +72,15 @@ public final class GeneralDMLIT extends BaseDMLIT {
         assertDataSet(actualUpdateCount);
     }
     
-    private int executeUpdateForStatement(final Connection connection) throws SQLException {
+    private int executeUpdateForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(getSql());
+            return statement.executeUpdate(getSQL());
         }
     }
     
     private int executeUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (SQLValue each : assertion.getSQLValues()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+            for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             return preparedStatement.executeUpdate();
@@ -80,6 +89,13 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
+        switch (getScenario()) {
+            case "replica_query":
+            case "shadow":
+            case "encrypt":
+                return;
+            default:
+        }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeForStatement(connection) : executeForPreparedStatement(connection);
@@ -87,16 +103,16 @@ public final class GeneralDMLIT extends BaseDMLIT {
         assertDataSet(actualUpdateCount);
     }
     
-    private int executeForStatement(final Connection connection) throws SQLException {
+    private int executeForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DML statement.", statement.execute(getSql()));
+            assertFalse("Not a DML statement.", statement.execute(getSQL()));
             return statement.getUpdateCount();
         }
     }
     
     private int executeForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (SQLValue each : assertion.getSQLValues()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
+            for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             assertFalse("Not a DML statement.", preparedStatement.execute());

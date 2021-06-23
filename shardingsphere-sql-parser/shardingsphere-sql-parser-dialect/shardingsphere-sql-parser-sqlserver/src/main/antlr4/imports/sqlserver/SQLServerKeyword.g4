@@ -1054,3 +1054,19 @@ RECOMPILE
 ROBUST
     : R O B U S T
     ;
+
+OPTIMIZE_FOR_SEQUENTIAL_KEY
+    : O P T I M I Z E UL_ F O R UL_ S E Q U E N T I A L UL_ K E Y
+    ;
+
+DATA_DELETION
+    : D A T A UL_ D E L E T I O N
+    ;
+
+FILTER_COLUMN
+    : F I L T E R UL_ C O L U M N
+    ;
+
+RETENTION_PERIOD
+    : R E T E N T I O N UL_ P E R I O D
+    ;

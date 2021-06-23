@@ -135,6 +135,10 @@ indexName
     : identifier
     ;
 
+constraintName
+    : identifier
+    ;
+
 collationName
     : STRING_ | IDENTIFIER_
     ;
@@ -281,7 +285,7 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier RP_)?
+    : (ignoredIdentifier DOT_)? dataTypeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier RP_)?
     ;
 
 dataTypeName
@@ -376,6 +380,7 @@ eqKey
     | ALLOW_PAGE_LOCKS
     | COMPRESSION_DELAY
     | SORT_IN_TEMPDB
+    | OPTIMIZE_FOR_SEQUENTIAL_KEY
     ;
 
 eqOnOff

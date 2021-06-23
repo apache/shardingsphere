@@ -68,12 +68,7 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <shardingsphere:data-source id="encryptShadowDataSource" data-source-names="ds,shadow_ds" rule-refs="shadowRule,encryptRule">
-        <props>
-            <prop key="sql-show">true</prop>
-            <prop key="query-with-cipher-column">true</prop>
-        </props>
-    </shardingsphere:data-source>
+    <shardingsphere:data-source id="encryptShadowDataSource" data-source-names="ds,shadow_ds" rule-refs="shadowRule,encryptRule" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptShadowDataSource" />

@@ -1360,7 +1360,7 @@
                     <column name="order_id" start-index="10" stop-index="17"/>
                     <column name="user_id" start-index="20" stop-index="26"/>
                 </columns>
-                <subquery-expression>
+                <subquery-expression start-index="32" stop-index="70">
                     <select>
                         <from>
                             <simple-table name="t_order" start-index="63" stop-index="69" />
@@ -1392,7 +1392,7 @@
     <insert sql-case-id="insert_without_columns_with_with_clause">
         <with start-index="0" stop-index="50">
             <common-table-expression name="cte" start-index="5" stop-index="50">
-                <subquery-expression>
+                <subquery-expression start-index="12" stop-index="50">
                     <select>
                         <from>
                             <simple-table name="t_order" start-index="43" stop-index="49" />

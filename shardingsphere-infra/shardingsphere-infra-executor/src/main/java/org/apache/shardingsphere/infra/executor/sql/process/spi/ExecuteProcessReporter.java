@@ -42,4 +42,11 @@ public interface ExecuteProcessReporter {
      * @param constants constants
      */
     void report(String executionID, SQLExecutionUnit executionUnit, ExecuteProcessConstants constants);
+    
+    /**
+     * Report this task on completion.
+     * @param executionID execution ID
+     * @param constants constants
+     */
+    void report(String executionID, ExecuteProcessConstants constants);
 }

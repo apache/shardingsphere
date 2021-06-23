@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 163 companies.
+Total: 168 companies.
 
 ### Financial Industry
 <ul>
@@ -94,6 +94,7 @@ Total: 163 companies.
     <li><a href="https://4pyun.com/" rel="nofollow">4pyun</a></li>
     <li><a href="https://www.supersoco.com/" rel="nofollow">Super SOCO</a></li>
     <li><a href="http://www.jtkjbike.com/" rel="nofollow">JTKJBike</a></li>
+    <li><a href="http://ubinavi.com.cn/" rel="nofollow">UbiNavi</a></li>
 </ul>
 
 ### Logistics
@@ -192,9 +193,15 @@ Total: 163 companies.
 <ul>
     <li><a href="https://www.hikvision.com/" rel="nofollow">Hikvision</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">Century Lead</a></li>
-    <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">Shenzhou Shanglong Technology Co.,Ltd </a></li>
+    <li><a href="http://tcslwxwl.cn.b2b168.com/" rel="nofollow">Shenzhou Shanglong Technology Co.,Ltd </a></li>
+    <li><a href="https://sunwuu.com/" rel="nofollow">SUNWUU</a></li>
 </ul>
 
+### Manufacturing
+<ul>
+    <li><a href="https://www.lixiang.com" rel="nofollow">LiXiang</a></li>
+<li><a href="https://www.gongniu.cn/" rel="nofollow">Bull</a></li>
+</ul>
 
 ### Software Development Services
 <ul>
@@ -216,7 +223,6 @@ Total: 163 companies.
     <li><a href="https://www.raycloud.com/" rel="nofollow">RayCloud</a></li>
     <li><a href="https://innoways.com/" rel="nofollow">Innoways</a></li>
     <li><a href="http://www.itaojin.cn/" rel="nofollow">ITaoJin</a></li>
-    <li><a href="https://www.elelive.net/" rel="nofollow">Elelive</a></li>
     <li><a href="https://www.cloudm.com/" rel="nofollow">CloudM</a></li>
     <li><a href="http://tigosoft.com/" rel="nofollow">TIGO</a></li>
     <li><a href="https://www.can-dao.com/" rel="nofollow">can-dao</a></li>

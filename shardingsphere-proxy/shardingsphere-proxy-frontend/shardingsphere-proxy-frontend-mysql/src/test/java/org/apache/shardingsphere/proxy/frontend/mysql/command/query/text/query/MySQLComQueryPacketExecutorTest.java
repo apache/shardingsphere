@@ -24,6 +24,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -44,9 +45,17 @@ public final class MySQLComQueryPacketExecutorTest {
     @Mock
     private TextProtocolBackendHandler textProtocolBackendHandler;
     
+    @Mock
+    private MySQLComQueryPacket packet;
+    
+    @Before
+    public void setUp() {
+        when(packet.getSql()).thenReturn("");
+    }
+    
     @Test
     public void assertIsQueryResponse() throws SQLException, NoSuchFieldException {
-        MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(mock(MySQLComQueryPacket.class), null);
+        MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(packet, null);
         FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
         when(textProtocolBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComQueryPacketExecutor.execute();
@@ -55,7 +64,7 @@ public final class MySQLComQueryPacketExecutorTest {
     
     @Test
     public void assertIsUpdateResponse() throws SQLException, NoSuchFieldException {
-        MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(mock(MySQLComQueryPacket.class), null);
+        MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(packet, null);
         FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
         when(textProtocolBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
         mysqlComQueryPacketExecutor.execute();

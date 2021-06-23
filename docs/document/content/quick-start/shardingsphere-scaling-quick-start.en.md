@@ -8,6 +8,8 @@ weight = 3
 
 Edit `%SHARDINGSPHERE_SCALING_HOME%/conf/server.yaml`. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-scaling/usage/) for more details.
 
+> %SHARDINGSPHERE_PROXY_HOME% is the shardingsphere scaling extract path. for example: /Users/ss/shardingsphere-scaling-bin/
+
 ## 2. Import Dependencies
 
 If the backend database is PostgreSQL, there's no need for additional dependencies.

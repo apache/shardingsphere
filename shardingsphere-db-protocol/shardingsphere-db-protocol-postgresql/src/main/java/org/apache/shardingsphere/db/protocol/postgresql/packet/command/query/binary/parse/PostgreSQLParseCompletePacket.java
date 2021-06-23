@@ -17,20 +17,22 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse;
 
-import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Parse complete packet for PostgreSQL.
  */
-@Getter
-public final class PostgreSQLParseCompletePacket implements PostgreSQLPacket {
-    
-    private final char messageType = PostgreSQLCommandPacketType.PARSE_COMPLETE.getValue();
+public final class PostgreSQLParseCompletePacket implements PostgreSQLIdentifierPacket {
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
+    }
+    
+    @Override
+    public PostgreSQLIdentifierTag getIdentifier() {
+        return PostgreSQLMessagePacketType.PARSE_COMPLETE;
     }
 }

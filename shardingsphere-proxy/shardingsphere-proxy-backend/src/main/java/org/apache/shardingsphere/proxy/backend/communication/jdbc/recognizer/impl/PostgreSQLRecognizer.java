@@ -34,7 +34,7 @@ public final class PostgreSQLRecognizer implements JDBCDriverURLRecognizer {
     
     @Override
     public Collection<String> getURLPrefixes() {
-        return Collections.singletonList("jdbc:postgresql:");
+        return Collections.singleton("jdbc:postgresql:");
     }
     
     @Override

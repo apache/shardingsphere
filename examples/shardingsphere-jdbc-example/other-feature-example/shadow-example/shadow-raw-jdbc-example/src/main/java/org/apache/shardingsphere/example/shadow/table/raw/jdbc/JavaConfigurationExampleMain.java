@@ -34,7 +34,7 @@ import java.sql.SQLException;
 public final class JavaConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHADOW;
-//    private static ShardingType shardingType = ShardingType.READ_WRITE_SPLITTING_SHADOW;
+//    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING_SHADOW;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT_SHADOW;
 //    private static ShardingType shardingType = ShardingType.SHARDING_SHADOW_DATABASES;
     

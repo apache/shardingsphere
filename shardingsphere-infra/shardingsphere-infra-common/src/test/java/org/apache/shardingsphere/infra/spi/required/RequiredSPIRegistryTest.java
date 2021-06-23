@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.spi.required;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
-import org.apache.shardingsphere.infra.spi.fixture.NoImplRequiredSPIFixture;
-import org.apache.shardingsphere.infra.spi.fixture.RequiredSPIFixture;
-import org.apache.shardingsphere.infra.spi.fixture.RequiredSPIFixtureDefaultFalseImpl;
-import org.apache.shardingsphere.infra.spi.fixture.RequiredSPIImpl;
+import org.apache.shardingsphere.infra.spi.fixture.required.NoImplRequiredSPIFixture;
+import org.apache.shardingsphere.infra.spi.fixture.required.RequiredSPIFixture;
+import org.apache.shardingsphere.infra.spi.fixture.required.RequiredSPIFixtureDefaultFalseImpl;
+import org.apache.shardingsphere.infra.spi.fixture.required.RequiredSPIImpl;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;

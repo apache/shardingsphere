@@ -19,11 +19,15 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -51,12 +55,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
+    static {
+        ShardingSphereServiceLoader.register(MetaDataAwareEventSubscriber.class);
+    }
+    
     private final ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
     
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
         MetaDataContexts metaDataContexts = decorateMetaDataContexts(createMetaDataContexts(proxyConfig));
+        for (MetaDataAwareEventSubscriber each : ShardingSphereServiceLoader.getSingletonServiceInstances(MetaDataAwareEventSubscriber.class)) {
+            each.setMetaDataContexts(metaDataContexts);
+            ShardingSphereEventBus.getInstance().register(each);
+        }
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), xaTransactionMangerType);
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
@@ -67,7 +79,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getUsers(), proxyConfig.getProps());
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
+                dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps());
         return metaDataContextsBuilder.build();
     }
     
@@ -99,20 +112,24 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private void setDatabaseServerInfo() {
-        Optional<DataSource> dataSourceSampleForMySQL = findBackendMySQLDataSource();
-        if (dataSourceSampleForMySQL.isPresent()) {
-            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSampleForMySQL.get());
+        findBackendDataSource().ifPresent(dataSourceSample -> {
+            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample);
             log.info(databaseServerInfo.toString());
-            MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
-        }
+            switch (databaseServerInfo.getDatabaseName()) {
+                case "MySQL":
+                    MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
+                    break;
+                case "PostgreSQL":
+                    PostgreSQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
+                    break;
+                default:
+            }
+        });
     }
     
-    private Optional<DataSource> findBackendMySQLDataSource() {
+    private Optional<DataSource> findBackendDataSource() {
         for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-            ShardingSphereResource resource = ProxyContext.getInstance().getMetaData(each).getResource();
-            if ("MySQL".equals(resource.getDatabaseType().getName())) {
-                return resource.getDataSources().values().stream().findFirst();
-            }
+            return ProxyContext.getInstance().getMetaData(each).getResource().getDataSources().values().stream().findFirst();
         }
         return Optional.empty();
     }
