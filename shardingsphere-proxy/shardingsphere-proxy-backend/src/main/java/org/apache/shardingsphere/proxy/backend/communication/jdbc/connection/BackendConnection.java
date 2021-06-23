@@ -233,6 +233,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
                 result.add(ex);
             }
         }
+        cachedDatabaseCommunicationEngines.clear();
         return result;
     }
     

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -361,5 +362,35 @@ public final class BackendConnectionTest {
         field.setAccessible(true);
         Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) field.get(backendConnection);
         assertTrue(connectionPostProcessors.isEmpty());
+    }
+    
+    @Test
+    public void assertAddDatabaseCommunicationEngine() {
+        DatabaseCommunicationEngine expectedEngine = mock(DatabaseCommunicationEngine.class);
+        backendConnection.add(expectedEngine);
+        Collection<DatabaseCommunicationEngine> actual = getCachedDatabaseCommunicationEngines();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(expectedEngine));
+    }
+    
+    @Test
+    public void assertCloseDatabaseCommunicationEngines() throws SQLException {
+        DatabaseCommunicationEngine engine = mock(DatabaseCommunicationEngine.class);
+        SQLException expectedException = mock(SQLException.class);
+        doThrow(expectedException).when(engine).close();
+        Collection<DatabaseCommunicationEngine> cachedDatabaseCommunicationEngines = getCachedDatabaseCommunicationEngines();
+        cachedDatabaseCommunicationEngines.add(engine);
+        Collection<SQLException> actual = backendConnection.closeDatabaseCommunicationEngines();
+        verify(engine).close();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(expectedException));
+        assertTrue(cachedDatabaseCommunicationEngines.isEmpty());
+    }
+    
+    @SneakyThrows
+    private Collection<DatabaseCommunicationEngine> getCachedDatabaseCommunicationEngines() {
+        Field field = BackendConnection.class.getDeclaredField("cachedDatabaseCommunicationEngines");
+        field.setAccessible(true);
+        return (Collection<DatabaseCommunicationEngine>) field.get(backendConnection);
     }
 }
