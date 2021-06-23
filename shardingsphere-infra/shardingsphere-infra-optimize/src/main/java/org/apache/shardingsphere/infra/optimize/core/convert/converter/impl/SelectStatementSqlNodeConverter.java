@@ -23,6 +23,7 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Optional;
 
@@ -34,8 +35,10 @@ public final class SelectStatementSqlNodeConverter implements SqlNodeConverter<S
     @Override
     public Optional<SqlNode> convert(final SelectStatement selectStatement) {
         Optional<SqlNode> distinct = new DistinctSqlNodeConverter().convert(selectStatement.getProjections());
+        Optional<SqlNode> offset = new OffsetSqlNodeConverter().convert(SelectStatementHandler.getLimitSegment(selectStatement).orElse(null));
+        Optional<SqlNode> rowCount = new RowCountSqlNodeConverter().convert(SelectStatementHandler.getLimitSegment(selectStatement).orElse(null));
         // TODO : prepare other sqlNodes referring to `distinct`.
         return Optional.of(new SqlSelect(SqlParserPos.ZERO, (SqlNodeList) distinct.orElse(null), null, null, null, null, null,
-                null, null, null, null, null));
+                null, null, offset.orElse(null), rowCount.orElse(null), null));
     }
 }
