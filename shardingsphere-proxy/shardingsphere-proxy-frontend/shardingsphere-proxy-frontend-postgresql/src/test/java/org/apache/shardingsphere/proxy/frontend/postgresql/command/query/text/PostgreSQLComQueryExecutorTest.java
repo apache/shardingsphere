@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryH
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,6 +57,9 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLComQueryExecutorTest {
     
     @Mock
+    private PostgreSQLConnectionContext connectionContext;
+    
+    @Mock
     private TextProtocolBackendHandler textProtocolBackendHandler;
     
     private PostgreSQLComQueryExecutor queryExecutor;
@@ -65,7 +69,7 @@ public final class PostgreSQLComQueryExecutorTest {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(queryPacket.getSql()).thenReturn("");
-        queryExecutor = new PostgreSQLComQueryExecutor(queryPacket, backendConnection);
+        queryExecutor = new PostgreSQLComQueryExecutor(connectionContext, queryPacket, backendConnection);
         setMockFieldIntoExecutor(queryExecutor);
     }
     

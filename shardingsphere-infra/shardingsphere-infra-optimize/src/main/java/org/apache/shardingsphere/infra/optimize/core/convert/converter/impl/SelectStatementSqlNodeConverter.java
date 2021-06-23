@@ -46,7 +46,8 @@ public final class SelectStatementSqlNodeConverter implements SqlNodeConverter<S
         Optional<SqlNode> having = new HavingSqlNodeConverter().convert(selectStatement.getHaving().orElse(null));
         Optional<SqlNodeList> orderBy = new OrderBySqlNodeConverter().convert(selectStatement.getOrderBy().orElse(null));
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
-        Map.Entry<SqlNode, SqlNode> offsetRowCount = convertPagination(limit.orElse(null));
+        Optional<SqlNode> offset = new OffsetSqlNodeConverter().convert(limit.orElse(null));
+        Optional<SqlNode> rowCount = new RowCountSqlNodeConverter().convert(limit.orElse(null));
         return Optional.of(new SqlSelect(SqlParserPos.ZERO, 
                 distinct.orElse(null), 
                 projections.orElse(null), 
@@ -55,33 +56,9 @@ public final class SelectStatementSqlNodeConverter implements SqlNodeConverter<S
                 groupBy.orElse(null), 
                 having.orElse(null),
                 null, 
-                orderBy.orElse(null), 
-                offsetRowCount.getKey(), 
-                offsetRowCount.getValue(), 
+                orderBy.orElse(null),
+                offset.orElse(null),
+                rowCount.orElse(null), 
                 null));
     }
-
-    /**
-     * convert pagination.
-     * @param limitSegment pagination clause
-     * @return offset and fetch <code>SqlNode</code>.
-     */
-    public static Map.Entry<SqlNode, SqlNode> convertPagination(final LimitSegment limitSegment) {
-        if (limitSegment == null) {
-            return new AbstractMap.SimpleEntry<>(null, null);
-        }
-
-        Optional<SqlNode> offsetSqlNode = Optional.empty();
-        Optional<SqlNode> fetchSqlNode = Optional.empty();
-        Optional<PaginationValueSegment> offset = limitSegment.getOffset();
-        Optional<PaginationValueSegment> fetch = limitSegment.getRowCount();
-        if (offset.isPresent()) {
-            offsetSqlNode = new PaginationValueSqlConverter().convert(offset.get());
-        }
-        if (fetch.isPresent()) {
-            fetchSqlNode = new PaginationValueSqlConverter().convert(fetch.get());
-        }
-        return new AbstractMap.SimpleEntry<>(offsetSqlNode.orElse(null), fetchSqlNode.orElse(null));
-    }
-
 }

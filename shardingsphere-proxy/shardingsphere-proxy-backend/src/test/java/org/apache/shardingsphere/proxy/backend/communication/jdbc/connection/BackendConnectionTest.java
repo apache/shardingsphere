@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -44,7 +45,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -260,78 +260,6 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertAddStatementCorrectly() throws NoSuchFieldException, IllegalAccessException {
-        Statement statement = mock(Statement.class);
-        backendConnection.add(statement);
-        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
-        field.setAccessible(true);
-        assertTrue(((Collection<?>) field.get(backendConnection)).contains(statement));
-    }
-    
-    @Test
-    public void assertAddResultSetCorrectly() throws NoSuchFieldException, IllegalAccessException {
-        ResultSet resultSet = mock(ResultSet.class);
-        backendConnection.add(resultSet);
-        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
-        field.setAccessible(true);
-        assertTrue(((Collection<?>) field.get(backendConnection)).contains(resultSet));
-    }
-    
-    @Test
-    public void assertCloseResultSetsCorrectly() throws NoSuchFieldException, SQLException, IllegalAccessException {
-        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
-        field.setAccessible(true);
-        Collection<ResultSet> cachedResultSets = (Collection<ResultSet>) field.get(backendConnection);
-        ResultSet resultSet = mock(ResultSet.class);
-        cachedResultSets.add(resultSet);
-        backendConnection.closeResultSets();
-        verify(resultSet, times(1)).close();
-        assertTrue(cachedResultSets.isEmpty());
-    }
-    
-    @Test
-    public void assertCloseResultSetsWithExceptionThrown() throws NoSuchFieldException, SQLException, IllegalAccessException {
-        Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
-        field.setAccessible(true);
-        Collection<ResultSet> cachedResultSets = (Collection<ResultSet>) field.get(backendConnection);
-        ResultSet resultSet = mock(ResultSet.class);
-        SQLException sqlException = new SQLException("");
-        doThrow(sqlException).when(resultSet).close();
-        cachedResultSets.add(resultSet);
-        Collection<SQLException> result = backendConnection.closeResultSets();
-        verify(resultSet, times(1)).close();
-        assertTrue(cachedResultSets.isEmpty());
-        assertTrue(result.contains(sqlException));
-    }
-    
-    @Test
-    public void assertCloseStatementsCorrectly() throws NoSuchFieldException, SQLException, IllegalAccessException {
-        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
-        field.setAccessible(true);
-        Collection<Statement> cachedStatement = (Collection<Statement>) field.get(backendConnection);
-        Statement statement = mock(Statement.class);
-        cachedStatement.add(statement);
-        backendConnection.closeStatements();
-        verify(statement, times(1)).close();
-        assertTrue(cachedStatement.isEmpty());
-    }
-    
-    @Test
-    public void assertCloseStatementsWithExceptionThrown() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
-        field.setAccessible(true);
-        Collection<Statement> cachedStatement = (Collection<Statement>) field.get(backendConnection);
-        Statement statement = mock(Statement.class);
-        cachedStatement.add(statement);
-        SQLException sqlException = new SQLException("");
-        doThrow(sqlException).when(statement).close();
-        Collection<SQLException> result = backendConnection.closeStatements();
-        verify(statement, times(1)).close();
-        assertTrue(cachedStatement.isEmpty());
-        assertTrue(result.contains(sqlException));
-    }
-    
-    @Test
     public void assertCloseConnectionsCorrectlyWhenNotForceRollback() throws NoSuchFieldException, IllegalAccessException, SQLException {
         Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
         field.setAccessible(true);
@@ -434,5 +362,35 @@ public final class BackendConnectionTest {
         field.setAccessible(true);
         Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) field.get(backendConnection);
         assertTrue(connectionPostProcessors.isEmpty());
+    }
+    
+    @Test
+    public void assertAddDatabaseCommunicationEngine() {
+        DatabaseCommunicationEngine expectedEngine = mock(DatabaseCommunicationEngine.class);
+        backendConnection.add(expectedEngine);
+        Collection<DatabaseCommunicationEngine> actual = getCachedDatabaseCommunicationEngines();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(expectedEngine));
+    }
+    
+    @Test
+    public void assertCloseDatabaseCommunicationEngines() throws SQLException {
+        DatabaseCommunicationEngine engine = mock(DatabaseCommunicationEngine.class);
+        SQLException expectedException = mock(SQLException.class);
+        doThrow(expectedException).when(engine).close();
+        Collection<DatabaseCommunicationEngine> cachedDatabaseCommunicationEngines = getCachedDatabaseCommunicationEngines();
+        cachedDatabaseCommunicationEngines.add(engine);
+        Collection<SQLException> actual = backendConnection.closeDatabaseCommunicationEngines();
+        verify(engine).close();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(expectedException));
+        assertTrue(cachedDatabaseCommunicationEngines.isEmpty());
+    }
+    
+    @SneakyThrows
+    private Collection<DatabaseCommunicationEngine> getCachedDatabaseCommunicationEngines() {
+        Field field = BackendConnection.class.getDeclaredField("cachedDatabaseCommunicationEngines");
+        field.setAccessible(true);
+        return (Collection<DatabaseCommunicationEngine>) field.get(backendConnection);
     }
 }

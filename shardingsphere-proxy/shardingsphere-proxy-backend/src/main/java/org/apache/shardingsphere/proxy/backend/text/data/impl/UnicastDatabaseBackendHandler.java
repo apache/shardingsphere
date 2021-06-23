@@ -74,4 +74,9 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     public Collection<Object> getRowData() throws SQLException {
         return databaseCommunicationEngine.getQueryResponseRow().getData();
     }
+    
+    @Override
+    public void close() throws SQLException {
+        databaseCommunicationEngine.close();
+    }
 }

@@ -39,7 +39,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
     
     @Override
     public void before(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = getDatabaseDiscoveryRuleConfiguration(schemaName);
+        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
             throw new DatabaseDiscoveryRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
@@ -48,20 +48,20 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
     
     @Override
     public void doExecute(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName).get();
+        DatabaseDiscoveryRuleConfiguration ruleConfig = getRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         sqlStatement.getRuleNames().forEach(each -> {
-            DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration = databaseDiscoveryRuleConfiguration.getDataSources()
+            DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = ruleConfig.getDataSources()
                     .stream().filter(dataSource -> dataSource.getName().equals(each)).findAny().get();
-            databaseDiscoveryRuleConfiguration.getDataSources().remove(databaseDiscoveryDataSourceRuleConfiguration);
-            databaseDiscoveryRuleConfiguration.getDiscoveryTypes().remove(databaseDiscoveryDataSourceRuleConfiguration.getDiscoveryTypeName());
+            ruleConfig.getDataSources().remove(databaseDiscoveryDataSourceRuleConfig);
+            ruleConfig.getDiscoveryTypes().remove(databaseDiscoveryDataSourceRuleConfig.getDiscoveryTypeName());
         });
-        if (databaseDiscoveryRuleConfiguration.getDataSources().isEmpty()) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(databaseDiscoveryRuleConfiguration);
+        if (ruleConfig.getDataSources().isEmpty()) {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(ruleConfig);
         }
     }
     
-    private void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
-        Collection<String> existRuleNames = databaseDiscoveryRuleConfiguration.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+    private void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
+        Collection<String> existRuleNames = databaseDiscoveryRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
             throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistedRuleNames);

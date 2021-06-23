@@ -90,13 +90,17 @@ public final class CommandExecutorTask implements Runnable {
         CommandPacketType type = commandExecuteEngine.getCommandPacketType(payload);
         CommandPacket commandPacket = commandExecuteEngine.getCommandPacket(payload, type, backendConnection);
         CommandExecutor commandExecutor = commandExecuteEngine.getCommandExecutor(type, commandPacket, backendConnection);
-        Collection<DatabasePacket<?>> responsePackets = commandExecutor.execute();
-        if (responsePackets.isEmpty()) {
-            return false;
-        }
-        responsePackets.forEach(context::write);
-        if (commandExecutor instanceof QueryCommandExecutor) {
-            return commandExecuteEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
+        try {
+            Collection<DatabasePacket<?>> responsePackets = commandExecutor.execute();
+            if (responsePackets.isEmpty()) {
+                return false;
+            }
+            responsePackets.forEach(context::write);
+            if (commandExecutor instanceof QueryCommandExecutor) {
+                return commandExecuteEngine.writeQueryData(context, backendConnection, (QueryCommandExecutor) commandExecutor, responsePackets.size());
+            }
+        } finally {
+            commandExecutor.close();
         }
         return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
     }
@@ -113,8 +117,6 @@ public final class CommandExecutorTask implements Runnable {
     private Collection<SQLException> closeExecutionResources() {
         Collection<SQLException> result = new LinkedList<>();
         PrimaryVisitedManager.clear();
-        result.addAll(backendConnection.closeResultSets());
-        result.addAll(backendConnection.closeStatements());
         result.addAll(backendConnection.closeFederateExecutor());
         return result;
     }

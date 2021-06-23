@@ -35,14 +35,14 @@ public final class DropShardingBindingTableRulesBackendHandler extends RDLBacken
     
     @Override
     public void before(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
-        if (!shardingRuleConfiguration.isPresent() || shardingRuleConfiguration.get().getBindingTableGroups().isEmpty()) {
+        Optional<ShardingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+        if (!ruleConfig.isPresent() || ruleConfig.get().getBindingTableGroups().isEmpty()) {
             throw new ShardingBindingTableRulesNotExistsException(schemaName);
         }
     }
     
     @Override
     public void doExecute(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement) {
-        getShardingRuleConfiguration(schemaName).get().getBindingTableGroups().clear();
+        getRuleConfiguration(schemaName, ShardingRuleConfiguration.class).getBindingTableGroups().clear();
     }
 }
