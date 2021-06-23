@@ -51,7 +51,7 @@ public final class OpenGaussComBatchBindPacket extends PostgreSQLCommandPacket {
     private final List<List<Object>> parameters;
     
     private final List<PostgreSQLValueFormat> resultFormats;
-    
+
     public OpenGaussComBatchBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
         payload.readInt4();
         payload.readInt4();
