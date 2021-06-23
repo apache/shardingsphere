@@ -102,8 +102,8 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
         if (!reachedMaxRows()) {
             connectionContext.getPortal(packet.getPortal()).close();
         }
-        if (connectionContext.getSqlStatement().isPresent() &&
-                (connectionContext.getSqlStatement().get() instanceof CommitStatement || connectionContext.getSqlStatement().get() instanceof RollbackStatement)) {
+        if (connectionContext.getSqlStatement().isPresent()
+                && (connectionContext.getSqlStatement().get() instanceof CommitStatement || connectionContext.getSqlStatement().get() instanceof RollbackStatement)) {
             connectionContext.closeAllPortals();
         }
     }

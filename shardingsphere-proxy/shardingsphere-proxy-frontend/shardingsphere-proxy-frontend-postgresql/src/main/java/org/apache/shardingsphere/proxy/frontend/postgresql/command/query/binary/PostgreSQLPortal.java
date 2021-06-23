@@ -54,7 +54,8 @@ public final class PostgreSQLPortal {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    public PostgreSQLPortal(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats, final BackendConnection backendConnection) throws SQLException {
+    public PostgreSQLPortal(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
+                            final BackendConnection backendConnection) throws SQLException {
         this.resultFormats = resultFormats;
         if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement) {
             databaseCommunicationEngine = null;
@@ -117,6 +118,8 @@ public final class PostgreSQLPortal {
     
     /**
      * Close portal.
+     *
+     * @throws SQLException SQL exception
      */
     public void close() throws SQLException {
         if (null != databaseCommunicationEngine) {

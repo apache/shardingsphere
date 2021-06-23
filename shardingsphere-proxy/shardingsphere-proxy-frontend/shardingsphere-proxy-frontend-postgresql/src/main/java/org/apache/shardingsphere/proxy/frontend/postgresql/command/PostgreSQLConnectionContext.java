@@ -63,8 +63,10 @@ public final class PostgreSQLConnectionContext {
      * @param resultFormats result formats
      * @param backendConnection backend connection
      * @return a new portal
+     * @throws SQLException SQL exception
      */
-    public PostgreSQLPortal createPortal(final String portal, final String sql, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats, final BackendConnection backendConnection) throws SQLException {
+    public PostgreSQLPortal createPortal(final String portal, final String sql, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
+                                         final BackendConnection backendConnection) throws SQLException {
         if (!getSqlStatement().isPresent()) {
             SQLStatement result = parseSql(sql, backendConnection.getSchemaName());
             setSqlStatement(result);
@@ -97,6 +99,7 @@ public final class PostgreSQLConnectionContext {
      * Close portal.
      *
      * @param portal portal name
+     * @throws SQLException SQL exception
      */
     public void closePortal(final String portal) throws SQLException {
         PostgreSQLPortal result = portals.remove(portal);
