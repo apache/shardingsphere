@@ -51,6 +51,7 @@ public final class XAConnectionFactory {
             case "MariaDB":
                 return new MariaDBXAConnectionWrapper().wrap(xaDataSource, connection);
             case "PostgreSQL":
+            case "OpenGauss":
                 return new PostgreSQLXAConnectionWrapper().wrap(xaDataSource, connection);
             case "H2":
                 return new H2XAConnectionWrapper().wrap(xaDataSource, connection);

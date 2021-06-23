@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.OpenGaussComBatchBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
@@ -52,6 +53,8 @@ public final class PostgreSQLCommandPacketFactory {
                 return new PostgreSQLComParsePacket(payload);
             case BIND_COMMAND:
                 return new PostgreSQLComBindPacket(payload, connectionId);
+            case BATCH_BIND_COMMAND:
+                return new OpenGaussComBatchBindPacket(payload, connectionId);
             case DESCRIBE_COMMAND:
                 return new PostgreSQLComDescribePacket(payload);
             case EXECUTE_COMMAND:
