@@ -91,22 +91,22 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     
     @Override
     public void doExecute(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
-        ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
+        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).iterator().next();
-        Optional<ShardingRuleConfiguration> existShardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
-        if (existShardingRuleConfiguration.isPresent()) {
-            existShardingRuleConfiguration.get().getAutoTables().addAll(shardingRuleConfiguration.getAutoTables());
-            existShardingRuleConfiguration.get().getShardingAlgorithms().putAll(shardingRuleConfiguration.getShardingAlgorithms());
-            existShardingRuleConfiguration.get().getKeyGenerators().putAll(shardingRuleConfiguration.getKeyGenerators());
+        Optional<ShardingRuleConfiguration> existShardingRuleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+        if (existShardingRuleConfig.isPresent()) {
+            existShardingRuleConfig.get().getAutoTables().addAll(shardingRuleConfig.getAutoTables());
+            existShardingRuleConfig.get().getShardingAlgorithms().putAll(shardingRuleConfig.getShardingAlgorithms());
+            existShardingRuleConfig.get().getKeyGenerators().putAll(shardingRuleConfig.getKeyGenerators());
         } else {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(shardingRuleConfiguration);
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(shardingRuleConfig);
         }
     }
     
     private Collection<String> getAllTables(final String schemaName) {
         Collection<String> result = Sets.newHashSet(ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames());
-        if (getShardingRuleConfiguration(schemaName).isPresent()) {
-            result.addAll(getShardingTables(getShardingRuleConfiguration(schemaName).get()));
+        if (findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).isPresent()) {
+            result.addAll(getShardingTables(findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).get()));
         }
         return result;
     }

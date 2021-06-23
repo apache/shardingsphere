@@ -64,25 +64,24 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
     
     @Override
     public void doExecute(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        YamlReadwriteSplittingRuleConfiguration yamlReadwriteSplittingRuleConfiguration = ReadwriteSplittingRuleStatementConverter.convert(sqlStatement);
-        ReadwriteSplittingRuleConfiguration createdReadwriteSplittingRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singleton(yamlReadwriteSplittingRuleConfiguration))
+        YamlReadwriteSplittingRuleConfiguration yamlReadwriteSplittingRuleConfig = ReadwriteSplittingRuleStatementConverter.convert(sqlStatement);
+        ReadwriteSplittingRuleConfiguration createdReadwriteSplittingRuleConfig = new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(Collections.singleton(yamlReadwriteSplittingRuleConfig))
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).findAny().map(each -> (ReadwriteSplittingRuleConfiguration) each).get();
-        if (getReadwriteSplittingRuleConfiguration(schemaName).isPresent()) {
-            ReadwriteSplittingRuleConfiguration existReadwriteSplittingRuleConfiguration = getReadwriteSplittingRuleConfiguration(schemaName).get();
-            existReadwriteSplittingRuleConfiguration.getDataSources().addAll(createdReadwriteSplittingRuleConfiguration.getDataSources());
-            existReadwriteSplittingRuleConfiguration.getLoadBalancers().putAll(createdReadwriteSplittingRuleConfiguration.getLoadBalancers());
+        if (findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class).isPresent()) {
+            ReadwriteSplittingRuleConfiguration existReadwriteSplittingRuleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class).get();
+            existReadwriteSplittingRuleConfig.getDataSources().addAll(createdReadwriteSplittingRuleConfig.getDataSources());
+            existReadwriteSplittingRuleConfig.getLoadBalancers().putAll(createdReadwriteSplittingRuleConfig.getLoadBalancers());
         } else {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdReadwriteSplittingRuleConfiguration);
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdReadwriteSplittingRuleConfig);
         }
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> optional = getReadwriteSplittingRuleConfiguration(schemaName);
+        Optional<ReadwriteSplittingRuleConfiguration> optional = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         if (optional.isPresent()) {
             Collection<String> existRuleNames = getRuleNames(optional.get());
-            Collection<String> duplicateRuleNames = sqlStatement.getRules()
-                    .stream().map(ReadwriteSplittingRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toList());
+            Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toList());
             if (!duplicateRuleNames.isEmpty()) {
                 throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
             }

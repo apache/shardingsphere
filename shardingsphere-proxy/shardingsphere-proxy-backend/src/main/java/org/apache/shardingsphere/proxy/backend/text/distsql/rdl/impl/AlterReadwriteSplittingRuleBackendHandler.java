@@ -56,7 +56,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     
     @Override
     public void before(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = getReadwriteSplittingRuleConfiguration(schemaName);
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
             throw new ReadwriteSplittingRulesNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
         }
@@ -68,10 +68,10 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
         ReadwriteSplittingRuleConfiguration alterReadwriteSplittingRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(ReadwriteSplittingRuleStatementConverter.convert(sqlStatement))).stream()
                 .map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst().get();
-        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = getReadwriteSplittingRuleConfiguration(schemaName).get();
-        drop(sqlStatement, readwriteSplittingRuleConfiguration);
-        readwriteSplittingRuleConfiguration.getDataSources().addAll(alterReadwriteSplittingRuleConfig.getDataSources());
-        readwriteSplittingRuleConfiguration.getLoadBalancers().putAll(alterReadwriteSplittingRuleConfig.getLoadBalancers());
+        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class).get();
+        drop(sqlStatement, readwriteSplittingRuleConfig);
+        readwriteSplittingRuleConfig.getDataSources().addAll(alterReadwriteSplittingRuleConfig.getDataSources());
+        readwriteSplittingRuleConfig.getLoadBalancers().putAll(alterReadwriteSplittingRuleConfig.getLoadBalancers());
     }
     
     private void drop(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration ruleConfig) {

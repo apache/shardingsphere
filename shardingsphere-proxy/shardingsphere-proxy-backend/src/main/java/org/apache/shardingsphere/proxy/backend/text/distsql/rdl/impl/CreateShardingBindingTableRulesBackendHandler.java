@@ -46,7 +46,7 @@ public final class CreateShardingBindingTableRulesBackendHandler extends RDLBack
     
     @Override
     public void before(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = getShardingRuleConfiguration(schemaName);
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         if (!shardingRuleConfig.isPresent()) {
             throw new ShardingBindingTableRulesNotExistsException(schemaName);
         }
@@ -89,14 +89,14 @@ public final class CreateShardingBindingTableRulesBackendHandler extends RDLBack
     @Override
     public void doExecute(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
         YamlShardingRuleConfiguration yamlShardingRuleConfiguration = ShardingRuleStatementConverter.convert(sqlStatement);
-        getShardingRuleConfiguration(schemaName).get().getBindingTableGroups().addAll(yamlShardingRuleConfiguration.getBindingTables());
+        findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).get().getBindingTableGroups().addAll(yamlShardingRuleConfiguration.getBindingTables());
     }
     
     private Collection<String> getLogicTables(final String schemaName) {
-        ShardingRuleConfiguration shardingRuleConfiguration = getShardingRuleConfiguration(schemaName).get();
+        ShardingRuleConfiguration shardingRuleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).get();
         Collection<String> result = new HashSet<>();
-        result.addAll(shardingRuleConfiguration.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        result.addAll(shardingRuleConfiguration.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        result.addAll(shardingRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        result.addAll(shardingRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         return result;
     }
 }

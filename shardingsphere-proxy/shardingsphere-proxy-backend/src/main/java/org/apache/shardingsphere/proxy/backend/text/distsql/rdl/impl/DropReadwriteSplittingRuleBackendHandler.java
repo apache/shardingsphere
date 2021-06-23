@@ -39,7 +39,7 @@ public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHa
     
     @Override
     public void before(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> optional = getReadwriteSplittingRuleConfiguration(schemaName);
+        Optional<ReadwriteSplittingRuleConfiguration> optional = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         if (!optional.isPresent()) {
             throw new ReadwriteSplittingRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
@@ -52,15 +52,15 @@ public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHa
     
     @Override
     public void doExecute(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement) {
-        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = getReadwriteSplittingRuleConfiguration(schemaName).get();
+        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class).get();
         sqlStatement.getRuleNames().forEach(each -> {
-            ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration = readwriteSplittingRuleConfiguration
-                    .getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
-            readwriteSplittingRuleConfiguration.getDataSources().remove(readwriteSplittingDataSourceRuleConfiguration);
-            readwriteSplittingRuleConfiguration.getLoadBalancers().remove(readwriteSplittingDataSourceRuleConfiguration.getLoadBalancerName());
+            ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfig
+                    = readwriteSplittingRuleConfig.getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
+            readwriteSplittingRuleConfig.getDataSources().remove(readwriteSplittingDataSourceRuleConfig);
+            readwriteSplittingRuleConfig.getLoadBalancers().remove(readwriteSplittingDataSourceRuleConfig.getLoadBalancerName());
         });
-        if (readwriteSplittingRuleConfiguration.getDataSources().isEmpty()) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(readwriteSplittingRuleConfiguration);
+        if (readwriteSplittingRuleConfig.getDataSources().isEmpty()) {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(readwriteSplittingRuleConfig);
         }
     }
 }

@@ -35,7 +35,7 @@ public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBac
     
     @Override
     public void before(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = getShardingRuleConfiguration(schemaName);
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         if (!shardingRuleConfig.isPresent()) {
             throw new ShardingBroadcastTableRulesNotExistsException(schemaName);
         }
@@ -43,7 +43,7 @@ public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBac
     
     @Override
     public void doExecute(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement) {
-        getShardingRuleConfiguration(schemaName).get().getBroadcastTables().clear();
-        getShardingRuleConfiguration(schemaName).get().getBroadcastTables().addAll(sqlStatement.getTables());
+        findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).get().getBroadcastTables().clear();
+        findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).get().getBroadcastTables().addAll(sqlStatement.getTables());
     }
 }
