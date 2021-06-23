@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
+package org.apache.shardingsphere.sharding.distsql;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.distsql.RQLResultSet;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.junit.Test;
 
@@ -34,26 +35,18 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class ShardingTableRuleQueryResultSetTest extends BaseRuleQueryResultSet {
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    protected Collection<RuleConfiguration> buildRuleConfigurations() {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(), Collection.class));
-    }
-    
-    @SneakyThrows
-    private String readYAML() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/config-sharding.yaml").toURI()))
-                .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-    }
+public final class ShardingTableRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(createRuleConfiguration());
         RQLResultSet resultSet = new ShardingTableRuleQueryResultSet();
-        resultSet.init("test", mock(ShowShardingTableRulesStatement.class));
+        resultSet.init(metaData, mock(ShowShardingTableRulesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(14));
         assertThat(actual.get(0), is("t_order"));
@@ -70,5 +63,16 @@ public final class ShardingTableRuleQueryResultSetTest extends BaseRuleQueryResu
         assertThat(actual.get(11), is("order_id"));
         assertThat(actual.get(12), is("SNOWFLAKE"));
         assertThat(actual.get(13), is("worker-id=123"));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Collection<RuleConfiguration> createRuleConfiguration() {
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(), Collection.class));
+    }
+    
+    @SneakyThrows
+    private String readYAML() {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/distsql/sharding-rule-config.yaml").toURI()))
+                .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

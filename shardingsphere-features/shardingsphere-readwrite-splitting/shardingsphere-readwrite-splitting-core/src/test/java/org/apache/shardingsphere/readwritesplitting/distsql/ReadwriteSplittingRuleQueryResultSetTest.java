@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
+package org.apache.shardingsphere.readwritesplitting.distsql;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
@@ -34,26 +35,18 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class ReadwriteSplittingRuleQueryResultSetTest extends BaseRuleQueryResultSet {
-    
-    @Override
-    protected Collection<RuleConfiguration> buildRuleConfigurations() {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
-                new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "ms_group", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
-        Properties props = new Properties();
-        props.setProperty("read_weight", "2:1");
-        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", props);
-        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>();
-        loadBalancers.put("test", shardingSphereAlgorithmConfiguration);
-        return Collections.singleton(new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), loadBalancers));
-    }
+public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
-        resultSet.init("test", mock(ShowReadwriteSplittingRulesStatement.class));
+        resultSet.init(metaData, mock(ShowReadwriteSplittingRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(6));
         assertTrue(actual.contains("pr_ds"));
@@ -62,5 +55,16 @@ public final class ReadwriteSplittingRuleQueryResultSetTest extends BaseRuleQuer
         assertTrue(actual.contains("ds_slave_0,ds_slave_1"));
         assertTrue(actual.contains("random"));
         assertTrue(actual.contains("read_weight=2:1"));
+    }
+    
+    private RuleConfiguration createRuleConfiguration() {
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
+                new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "ms_group", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "test");
+        Properties props = new Properties();
+        props.setProperty("read_weight", "2:1");
+        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration = new ShardingSphereAlgorithmConfiguration("random", props);
+        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>();
+        loadBalancers.put("test", shardingSphereAlgorithmConfiguration);
+        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), loadBalancers);
     }
 }

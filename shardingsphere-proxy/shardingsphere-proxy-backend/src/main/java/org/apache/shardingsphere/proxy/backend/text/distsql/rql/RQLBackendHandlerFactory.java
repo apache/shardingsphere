@@ -19,29 +19,24 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
+import org.apache.shardingsphere.infra.distsql.RQLResultSet;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryResultSet;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DatabaseDiscoveryRuleQueryResultSet;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.EncryptRuleQueryResultSet;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRuleQueryResultSet;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBindingTableRuleQueryResultSet;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBroadcastTableRuleQueryResultSet;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingTableRuleQueryResultSet;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
+
+import java.util.Properties;
 
 /**
  * RQL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RQLBackendHandlerFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(RQLResultSet.class);
+    }
     
     /**
      * Create new instance of RDL backend handler.
@@ -51,31 +46,7 @@ public final class RQLBackendHandlerFactory {
      * @return RDL backend handler
      */
     public static TextProtocolBackendHandler newInstance(final RQLStatement sqlStatement, final BackendConnection backendConnection) {
-        return new RQLBackendHandler(sqlStatement, backendConnection, getRuleQueryResultSet(sqlStatement));
-    }
-    
-    private static RQLResultSet getRuleQueryResultSet(final RQLStatement sqlStatement) {
-        if (sqlStatement instanceof ShowResourcesStatement) {
-            return new DataSourcesQueryResultSet();
-        }
-        if (sqlStatement instanceof ShowShardingBindingTableRulesStatement) {
-            return new ShardingBindingTableRuleQueryResultSet();
-        }
-        if (sqlStatement instanceof ShowShardingBroadcastTableRulesStatement) {
-            return new ShardingBroadcastTableRuleQueryResultSet();
-        }
-        if (sqlStatement instanceof ShowReadwriteSplittingRulesStatement) {
-            return new ReadwriteSplittingRuleQueryResultSet();
-        }
-        if (sqlStatement instanceof ShowDatabaseDiscoveryRulesStatement) {
-            return new DatabaseDiscoveryRuleQueryResultSet();
-        }
-        if (sqlStatement instanceof ShowEncryptRulesStatement) {
-            return new EncryptRuleQueryResultSet();
-        }
-        if (sqlStatement instanceof ShowShardingTableRulesStatement) {
-            return new ShardingTableRuleQueryResultSet();
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support SQL statement %s", sqlStatement.getClass().getCanonicalName()));
+        RQLResultSet rqlResultSet = TypedSPIRegistry.getRegisteredService(RQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        return new RQLBackendHandler(sqlStatement, backendConnection, rqlResultSet);
     }
 }
