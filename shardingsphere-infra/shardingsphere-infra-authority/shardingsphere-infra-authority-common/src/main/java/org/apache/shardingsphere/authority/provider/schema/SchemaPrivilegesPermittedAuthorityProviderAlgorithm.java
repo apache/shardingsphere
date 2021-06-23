@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.custom;
+package org.apache.shardingsphere.authority.provider.schema;
 
 import java.util.Collection;
 import java.util.Map;
@@ -24,13 +24,13 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.custom.builder.CustomPrivilegeBuilder;
+import org.apache.shardingsphere.authority.provider.schema.builder.SchemaPrivilegeBuilder;
 import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
-public final class CustomPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
     
     public static final String PROP_USER_SCHEMA_MAPPINGS = "user-schema-mappings";
 
@@ -50,12 +50,12 @@ public final class CustomPrivilegesPermittedAuthorityProviderAlgorithm implement
 
     @Override
     public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        this.userPrivilegeMap.putAll(CustomPrivilegeBuilder.build(users, props));
+        this.userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
     }
 
     @Override
     public void refresh(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        this.userPrivilegeMap.putAll(CustomPrivilegeBuilder.build(users, props));
+        this.userPrivilegeMap.putAll(SchemaPrivilegeBuilder.build(users, props));
     }
 
     @Override
@@ -65,7 +65,7 @@ public final class CustomPrivilegesPermittedAuthorityProviderAlgorithm implement
 
     @Override
     public String getType() {
-        return "CUSTOM_PRIVILEGES_PERMITTED";
+        return "SCHEMA_PRIVILEGES_PERMITTED";
     }
 
 }

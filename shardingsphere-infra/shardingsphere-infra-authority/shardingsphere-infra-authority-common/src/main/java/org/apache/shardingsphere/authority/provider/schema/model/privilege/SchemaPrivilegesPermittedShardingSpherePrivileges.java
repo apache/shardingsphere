@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.custom.model.privilege;
+package org.apache.shardingsphere.authority.provider.schema.model.privilege;
 
 import java.util.Collection;
 import java.util.Set;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.authority.provider.natived.model.subject.Schema
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class CustomPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
+public class SchemaPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
 
     private Set<String> schemas;
 
