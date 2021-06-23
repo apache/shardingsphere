@@ -114,4 +114,16 @@ public final class PostgreSQLPortal {
     private BinaryCell createBinaryCell(final QueryResponseCell cell) {
         return new BinaryCell(PostgreSQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) cell).getJdbcType()), cell.getData());
     }
+    
+    /**
+     * Close portal.
+     */
+    public void close() throws SQLException {
+        if (null != databaseCommunicationEngine) {
+            databaseCommunicationEngine.close();
+        }
+        if (null != textProtocolBackendHandler) {
+            textProtocolBackendHandler.close();
+        }
+    }
 }

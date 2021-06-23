@@ -65,7 +65,7 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
         }
     }
     
-    private void closePortal() {
+    private void closePortal() throws SQLException {
         connectionContext.closePortal(packet.getName());
     }
 }

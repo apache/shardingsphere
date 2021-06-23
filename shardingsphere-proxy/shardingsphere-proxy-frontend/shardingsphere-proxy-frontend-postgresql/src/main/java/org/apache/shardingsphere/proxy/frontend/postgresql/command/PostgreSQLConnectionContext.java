@@ -98,8 +98,31 @@ public final class PostgreSQLConnectionContext {
      *
      * @param portal portal name
      */
-    public void closePortal(final String portal) {
-        portals.remove(portal);
+    public void closePortal(final String portal) throws SQLException {
+        PostgreSQLPortal result = portals.remove(portal);
+        if (null != result) {
+            result.close();
+        }
+    }
+    
+    /**
+     * Close all portals.
+     */
+    public void closeAllPortals() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (PostgreSQLPortal each : portals.values()) {
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                result.add(ex);
+            }
+        }
+        portals.clear();
+        if (result.isEmpty()) {
+            return;
+        }
+        SQLException ex = new SQLException("Close all portals failed.");
+        result.forEach(ex::setNextException);
     }
     
     /**

@@ -30,6 +30,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.Postgre
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -93,5 +95,16 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
     
     private boolean reachedMaxRows() {
         return packet.getMaxRows() > 0 && dataRows == packet.getMaxRows();
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        if (!reachedMaxRows()) {
+            connectionContext.getPortal(packet.getPortal()).close();
+        }
+        if (connectionContext.getSqlStatement().isPresent() &&
+                (connectionContext.getSqlStatement().get() instanceof CommitStatement || connectionContext.getSqlStatement().get() instanceof RollbackStatement)) {
+            connectionContext.closeAllPortals();
+        }
     }
 }
