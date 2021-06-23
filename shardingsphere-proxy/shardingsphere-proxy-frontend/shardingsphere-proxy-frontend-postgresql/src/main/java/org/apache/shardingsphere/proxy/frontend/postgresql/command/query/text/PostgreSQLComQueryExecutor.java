@@ -36,8 +36,12 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -49,12 +53,16 @@ import java.util.LinkedList;
  */
 public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
+    private final PostgreSQLConnectionContext connectionContext;
+    
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
     @Getter
     private volatile ResponseType responseType;
     
-    public PostgreSQLComQueryExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) throws SQLException {
+    public PostgreSQLComQueryExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComQueryPacket comQueryPacket,
+                                      final BackendConnection backendConnection) throws SQLException {
+        this.connectionContext = connectionContext;
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), comQueryPacket.getSql(), backendConnection);
     }
     
@@ -84,8 +92,12 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     }
     
     private PostgreSQLPacket createUpdatePacket(final UpdateResponseHeader updateResponseHeader) {
-        return updateResponseHeader.getSqlStatement() instanceof EmptyStatement ? new PostgreSQLEmptyQueryResponsePacket()
-                : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(updateResponseHeader.getSqlStatement().getClass()).map(Enum::name).orElse(""), updateResponseHeader.getUpdateCount());
+        SQLStatement sqlStatement = updateResponseHeader.getSqlStatement();
+        if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
+            connectionContext.closeAllPortals();
+        }
+        return sqlStatement instanceof EmptyStatement ? new PostgreSQLEmptyQueryResponsePacket()
+                : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(Enum::name).orElse(""), updateResponseHeader.getUpdateCount());
     }
     
     @Override

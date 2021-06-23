@@ -17,27 +17,15 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.execute;
 
-import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * Command execute packet for PostgreSQL.
+ * Portal suspended packet for PostgreSQL.
  */
-@Getter
-public final class PostgreSQLComExecutePacket extends PostgreSQLCommandPacket {
-    
-    private final String portal;
-    
-    private final int maxRows;
-    
-    public PostgreSQLComExecutePacket(final PostgreSQLPacketPayload payload) {
-        payload.readInt4();
-        portal = payload.readStringNul();
-        maxRows = payload.readInt4();
-    }
+public final class PostgreSQLPortalSuspendedPacket implements PostgreSQLIdentifierPacket {
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
@@ -45,6 +33,6 @@ public final class PostgreSQLComExecutePacket extends PostgreSQLCommandPacket {
     
     @Override
     public PostgreSQLIdentifierTag getIdentifier() {
-        return PostgreSQLCommandPacketType.EXECUTE_COMMAND;
+        return PostgreSQLMessagePacketType.PORTAL_SUSPENDED;
     }
 }
