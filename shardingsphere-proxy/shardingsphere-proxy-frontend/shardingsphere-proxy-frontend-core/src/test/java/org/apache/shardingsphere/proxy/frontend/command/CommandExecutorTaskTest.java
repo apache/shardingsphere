@@ -108,6 +108,7 @@ public final class CommandExecutorTaskTest {
         actual.run();
         verify(connectionStatus).waitUntilConnectionRelease();
         verify(connectionStatus).switchToUsing();
+        verify(queryCommandExecutor).close();
     }
     
     @Test
@@ -130,6 +131,7 @@ public final class CommandExecutorTaskTest {
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(executeEngine).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
+        verify(queryCommandExecutor).close();
     }
     
     @Test
@@ -152,6 +154,7 @@ public final class CommandExecutorTaskTest {
         verify(connectionStatus).switchToUsing();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
+        verify(commandExecutor).close();
     }
     
     @Test
