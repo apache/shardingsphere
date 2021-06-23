@@ -23,6 +23,6 @@ package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 public final class RowCountSqlNodeConverter extends AbstractLimitSqlNodeConverter {
     
     public RowCountSqlNodeConverter() {
-        super(limitSegment -> limitSegment.getRowCount().get());
+        super(limitSegment -> limitSegment.getRowCount());
     }
 }

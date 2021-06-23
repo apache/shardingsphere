@@ -23,6 +23,6 @@ package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 public final class OffsetSqlNodeConverter extends AbstractLimitSqlNodeConverter {
 
     public OffsetSqlNodeConverter() {
-        super(limitSegment -> limitSegment.getOffset().get());
+        super(limitSegment -> limitSegment.getOffset());
     }
 }

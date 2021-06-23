@@ -30,21 +30,21 @@ import java.util.function.Function;
  */
 public abstract class AbstractLimitSqlNodeConverter implements SqlNodeConverter<LimitSegment, SqlNode> {
 
-    private Function<LimitSegment, PaginationValueSegment> function;
+    private Function<LimitSegment, Optional<PaginationValueSegment>> function;
     
-    protected AbstractLimitSqlNodeConverter(Function<LimitSegment, PaginationValueSegment> function) {
+    protected AbstractLimitSqlNodeConverter(final Function<LimitSegment, Optional<PaginationValueSegment>> function) {
         this.function = function;
     }
     
     @Override
-    public Optional<SqlNode> convert(LimitSegment limit) {
+    public final Optional<SqlNode> convert(final LimitSegment limit) {
         if (null == limit) {
             return Optional.empty();
         }
-        PaginationValueSegment paginationValue = function.apply(limit);
-        if(paginationValue == null) {
+        Optional<PaginationValueSegment> paginationValue = function.apply(limit);
+        if (!paginationValue.isPresent()) {
             return Optional.empty();
         }
-        return new PaginationValueSqlConverter().convert(paginationValue);
+        return new PaginationValueSqlConverter().convert(paginationValue.get());
     }
 }

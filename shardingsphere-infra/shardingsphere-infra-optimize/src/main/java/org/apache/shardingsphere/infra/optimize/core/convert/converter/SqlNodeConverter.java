@@ -17,18 +17,9 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter;
 
-import com.google.common.collect.Lists;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.impl.ColumnOrderByItemSqlNodeConverter;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,30 +33,4 @@ public interface SqlNodeConverter<T extends ASTNode, R extends SqlNode> {
      * @return sqlNode optional
      */
     Optional<R> convert(T astNode);
-
-    /**
-     * Convert order by items.
-     * @param orderByItems order by item list.
-     * @return a collection of order by item <code>SqlNode</code>
-     */
-    default List<SqlNode> convertOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
-        List<SqlNode> sqlNodes = Lists.newArrayList();
-        for (OrderByItemSegment orderByItemSegment : orderByItems) {
-            Optional<SqlNode> optional = Optional.empty();
-            if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
-                optional = new ColumnOrderByItemSqlNodeConverter().convert((ColumnOrderByItemSegment) orderByItemSegment);
-            } else if (orderByItemSegment instanceof ExpressionOrderByItemSegment) {
-                throw new UnsupportedOperationException("unsupported ExpressionOrderByItemSegment");
-            } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
-                throw new UnsupportedOperationException("unsupported IndexOrderByItemSegment");
-            } else if (orderByItemSegment instanceof TextOrderByItemSegment) {
-                throw new UnsupportedOperationException("unsupported TextOrderByItemSegment");
-            }
-
-            if (optional.isPresent()) {
-                sqlNodes.add(optional.get());
-            }
-        }
-        return sqlNodes;
-    }
 }

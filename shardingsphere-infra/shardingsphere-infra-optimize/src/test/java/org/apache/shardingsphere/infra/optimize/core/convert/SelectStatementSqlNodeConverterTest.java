@@ -64,12 +64,42 @@ public final class SelectStatementSqlNodeConverterTest {
         SqlSelect sqlSelect = (SqlSelect) optional.get();
         assertEquals(2, sqlSelect.getSelectList().size());
         assertNull(sqlSelect.getWhere());
+        assertNull(sqlSelect.getOffset());
+        assertNull(sqlSelect.getFetch());
         /* 
          TODO compare ast from calcite parser and ast converted from ss ast if possible
         SqlParser parser = SqlParser.create(sql);
         SqlNode calciteSqlNode = parser.parseQuery();
         Assert.assertNotNull(calciteSqlNode);
         */
+    }
+
+    @Test
+    public void testConvertSimpleSelectLimit() {
+        String sql = "select order_id, user_id from t_order limit 1, 2";
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
+        Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
+        assertTrue(optional.isPresent());
+        Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
+        SqlSelect sqlSelect = (SqlSelect) optional.get();
+        assertEquals(2, sqlSelect.getSelectList().size());
+        assertNull(sqlSelect.getWhere());
+        assertNotNull(sqlSelect.getOffset());
+        assertNotNull(sqlSelect.getFetch());
+    }
+
+    @Test
+    public void testConvertSimpleSelectRowCount() {
+        String sql = "select order_id, user_id from t_order limit 2";
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
+        Optional<SqlNode> optional = SqlNodeConvertEngine.convert(sqlStatement);
+        assertTrue(optional.isPresent());
+        Assert.assertThat(optional.get(), instanceOf(SqlSelect.class));
+        SqlSelect sqlSelect = (SqlSelect) optional.get();
+        assertEquals(2, sqlSelect.getSelectList().size());
+        assertNull(sqlSelect.getWhere());
+        assertNull(sqlSelect.getOffset());
+        assertNotNull(sqlSelect.getFetch());
     }
 
     @Test
@@ -134,5 +164,4 @@ public final class SelectStatementSqlNodeConverterTest {
         assertTrue(optional.isPresent());
         // TODO outer join is not supported by parser of ShardingSphere 
     }
-
 }
