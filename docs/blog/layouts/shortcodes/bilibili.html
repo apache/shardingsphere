@@ -2,26 +2,10 @@
 <html>
 
 <head>
-    <style type="text/css">
-        .aspect-ratio {
-            position: relative;
-            width: 100%;
-            height: 0;
-            padding-bottom: 75%;
-        }
-
-        .aspect-ratio iframe {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            left: 0;
-            top: 0;
-        }
-    </style>
 </head>
 
 <body>
-    <div class="aspect-ratio">
+    <div class="aspect-ratio" style="position: relative; width: 100%; height: 0; padding-bottom: 75%">
         <iframe
             src="https://player.bilibili.com/player.html?bvid={{.Get 0 }}&page={{ if .Get 1 }}{{.Get 1}}{{ else }}1&high_quality=1&danmaku=0{{end}}"
             scrolling="no" 
@@ -30,6 +14,7 @@
             framespacing="0" 
             allowfullscreen="true"
             sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"
+            style="position: absolute; width: 100%; height: 100%; left: 0; top: 0;"
             >
         </iframe>
     </div>
