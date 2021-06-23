@@ -25,7 +25,7 @@ SHOW ENCRYPT TABLE RULE tableName [from schemaName]
 
 ## 示例
 
-*SHOW ENCRYPT RULES*
+*显示加密规则*
 ```sql
 mysql> show encrypt rules from encrypt_db;
 +-----------+-------------+--------------+-------------+---------------+-------------------------+
@@ -39,7 +39,7 @@ mysql> show encrypt rules from encrypt_db;
 4 rows in set (0.01 sec)
 ```
 
-*SHOW ENCRYPT TABLE RULE tableName*
+*显示加密表规则表名*
 ```sql
 mysql> show encrypt table rule t_encrypt;
 +-----------+-------------+--------------+-------------+---------------+-------------------------+
