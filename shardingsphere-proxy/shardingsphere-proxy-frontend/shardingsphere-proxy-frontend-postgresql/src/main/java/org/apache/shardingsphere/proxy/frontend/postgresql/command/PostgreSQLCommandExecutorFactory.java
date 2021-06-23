@@ -64,7 +64,7 @@ public final class PostgreSQLCommandExecutorFactory {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         switch (commandPacketType) {
             case SIMPLE_QUERY:
-                return new PostgreSQLComQueryExecutor((PostgreSQLComQueryPacket) commandPacket, backendConnection);
+                return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, backendConnection);
             case PARSE_COMMAND:
                 return new PostgreSQLComParseExecutor(connectionContext, (PostgreSQLComParsePacket) commandPacket, backendConnection);
             case BIND_COMMAND:
