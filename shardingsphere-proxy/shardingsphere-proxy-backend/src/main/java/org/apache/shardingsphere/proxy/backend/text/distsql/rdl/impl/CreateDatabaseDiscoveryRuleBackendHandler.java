@@ -68,17 +68,17 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
         DatabaseDiscoveryRuleConfiguration createdDatabaseDiscoveryRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlDatabaseDiscoveryRuleConfig))
                 .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).findAny().map(each -> (DatabaseDiscoveryRuleConfiguration) each).get();
-        if (getDatabaseDiscoveryRuleConfiguration(schemaName).isPresent()) {
-            DatabaseDiscoveryRuleConfiguration existDatabaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName).get();
-            existDatabaseDiscoveryRuleConfiguration.getDataSources().addAll(createdDatabaseDiscoveryRuleConfiguration.getDataSources());
-            existDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes().putAll(createdDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes());
+        if (findRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class).isPresent()) {
+            DatabaseDiscoveryRuleConfiguration existDatabaseDiscoveryRuleConfig = findRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class).get();
+            existDatabaseDiscoveryRuleConfig.getDataSources().addAll(createdDatabaseDiscoveryRuleConfiguration.getDataSources());
+            existDatabaseDiscoveryRuleConfig.getDiscoveryTypes().putAll(createdDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes());
         } else {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdDatabaseDiscoveryRuleConfiguration);
         }
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> optional = getDatabaseDiscoveryRuleConfiguration(schemaName);
+        Optional<DatabaseDiscoveryRuleConfiguration> optional = findRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         if (optional.isPresent()) {
             Collection<String> existRuleNames = getRuleNames(optional.get());
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream()

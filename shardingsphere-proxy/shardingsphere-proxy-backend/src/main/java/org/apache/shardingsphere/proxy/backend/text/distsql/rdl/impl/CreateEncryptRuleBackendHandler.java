@@ -66,17 +66,17 @@ public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<Cre
         EncryptRuleConfiguration createdEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlEncryptRuleConfiguration))
                 .stream().filter(each -> each instanceof EncryptRuleConfiguration).findAny().map(each -> (EncryptRuleConfiguration) each).get();
-        if (getEncryptRuleConfiguration(schemaName).isPresent()) {
-            EncryptRuleConfiguration existEncryptRuleConfiguration = getEncryptRuleConfiguration(schemaName).get();
-            existEncryptRuleConfiguration.getTables().addAll(createdEncryptRuleConfiguration.getTables());
-            existEncryptRuleConfiguration.getEncryptors().putAll(createdEncryptRuleConfiguration.getEncryptors());
+        if (findRuleConfiguration(schemaName, EncryptRuleConfiguration.class).isPresent()) {
+            EncryptRuleConfiguration existEncryptRuleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class).get();
+            existEncryptRuleConfig.getTables().addAll(createdEncryptRuleConfiguration.getTables());
+            existEncryptRuleConfig.getEncryptors().putAll(createdEncryptRuleConfiguration.getEncryptors());
         } else {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdEncryptRuleConfiguration);
         }
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> optional = getEncryptRuleConfiguration(schemaName);
+        Optional<EncryptRuleConfiguration> optional = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
         if (optional.isPresent()) {
             Collection<String> existRuleNames = getRuleNames(optional.get());
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream()

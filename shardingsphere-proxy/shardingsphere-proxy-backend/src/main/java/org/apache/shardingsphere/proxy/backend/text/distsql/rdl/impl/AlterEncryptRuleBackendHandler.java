@@ -53,7 +53,7 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     
     @Override
     public void before(final String schemaName, final AlterEncryptRuleStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> ruleConfig = getEncryptRuleConfiguration(schemaName);
+        Optional<EncryptRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
             throw new EncryptRulesNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
         }
@@ -62,13 +62,13 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     
     @Override
     public void doExecute(final String schemaName, final AlterEncryptRuleStatement sqlStatement) {
-        EncryptRuleConfiguration encryptRuleConfiguration = getEncryptRuleConfiguration(schemaName).get();
+        EncryptRuleConfiguration encryptRuleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class).get();
         EncryptRuleConfiguration alteredEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(EncryptRuleStatementConverter.convert(sqlStatement.getRules()))).stream()
                 .map(each -> (EncryptRuleConfiguration) each).findFirst().get();
-        drop(sqlStatement, encryptRuleConfiguration);
-        encryptRuleConfiguration.getTables().addAll(alteredEncryptRuleConfiguration.getTables());
-        encryptRuleConfiguration.getEncryptors().putAll(alteredEncryptRuleConfiguration.getEncryptors());
+        drop(sqlStatement, encryptRuleConfig);
+        encryptRuleConfig.getTables().addAll(alteredEncryptRuleConfiguration.getTables());
+        encryptRuleConfig.getEncryptors().putAll(alteredEncryptRuleConfiguration.getEncryptors());
     }
     
     private void drop(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration encryptRuleConfiguration) {

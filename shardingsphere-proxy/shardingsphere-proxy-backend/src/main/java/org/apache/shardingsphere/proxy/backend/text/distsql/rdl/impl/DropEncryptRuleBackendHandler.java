@@ -39,7 +39,7 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
     
     @Override
     public void before(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> ruleConfig = getEncryptRuleConfiguration(schemaName);
+        Optional<EncryptRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
             throw new EncryptRulesNotExistedException(schemaName, sqlStatement.getTables());
         }
@@ -48,15 +48,15 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
     
     @Override
     public void doExecute(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
-        EncryptRuleConfiguration encryptRuleConfiguration = getEncryptRuleConfiguration(schemaName).get();
+        EncryptRuleConfiguration encryptRuleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class).get();
         sqlStatement.getTables().forEach(each -> {
-            EncryptTableRuleConfiguration encryptTableRuleConfiguration = encryptRuleConfiguration.getTables()
+            EncryptTableRuleConfiguration encryptTableRuleConfiguration = encryptRuleConfig.getTables()
                     .stream().filter(tableRule -> tableRule.getName().equals(each)).findAny().get();
-            encryptRuleConfiguration.getTables().remove(encryptTableRuleConfiguration);
-            encryptTableRuleConfiguration.getColumns().forEach(column -> encryptRuleConfiguration.getEncryptors().remove(column.getEncryptorName()));
+            encryptRuleConfig.getTables().remove(encryptTableRuleConfiguration);
+            encryptTableRuleConfiguration.getColumns().forEach(column -> encryptRuleConfig.getEncryptors().remove(column.getEncryptorName()));
         });
-        if (encryptRuleConfiguration.getTables().isEmpty()) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(encryptRuleConfiguration);
+        if (encryptRuleConfig.getTables().isEmpty()) {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(encryptRuleConfig);
         }
     }
     

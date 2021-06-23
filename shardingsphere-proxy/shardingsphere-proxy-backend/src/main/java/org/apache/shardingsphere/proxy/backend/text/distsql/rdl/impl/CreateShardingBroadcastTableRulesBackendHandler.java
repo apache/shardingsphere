@@ -40,7 +40,7 @@ public final class CreateShardingBroadcastTableRulesBackendHandler extends RDLBa
     
     @Override
     public void doExecute(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = getShardingRuleConfiguration(schemaName);
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         if (!shardingRuleConfig.isPresent()) {
             ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
             shardingRuleConfiguration.setBroadcastTables(sqlStatement.getTables());
