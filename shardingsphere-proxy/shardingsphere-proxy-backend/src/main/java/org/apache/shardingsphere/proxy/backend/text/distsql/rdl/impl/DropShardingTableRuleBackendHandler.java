@@ -44,16 +44,16 @@ public final class DropShardingTableRuleBackendHandler extends RDLBackendHandler
     @Override
     public void before(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
         Collection<String> tableNames = sqlStatement.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
-        if (!shardingRuleConfig.isPresent()) {
+        Optional<ShardingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+        if (!ruleConfig.isPresent()) {
             throw new ShardingTableRuleNotExistedException(schemaName, tableNames);
         }
-        Collection<String> shardingTableNames = getShardingTables(shardingRuleConfig.get());
+        Collection<String> shardingTableNames = getShardingTables(ruleConfig.get());
         Collection<String> notExistedTableNames = tableNames.stream().filter(each -> !shardingTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistedTableNames.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(schemaName, notExistedTableNames);
         }
-        Collection<String> bindingTables = getBindingTables(shardingRuleConfig.get());
+        Collection<String> bindingTables = getBindingTables(ruleConfig.get());
         Collection<String> usedTableNames = tableNames.stream().filter(bindingTables::contains).collect(Collectors.toList());
         if (!usedTableNames.isEmpty()) {
             throw new ShardingTableRulesInUsedException(usedTableNames);
@@ -62,9 +62,9 @@ public final class DropShardingTableRuleBackendHandler extends RDLBackendHandler
     
     @Override
     public void doExecute(final String schemaName, final DropShardingTableRuleStatement sqlStatement) {
-        ShardingRuleConfiguration shardingRuleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).get();
+        ShardingRuleConfiguration ruleConfig = getRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         for (String each : getDroppedTables(sqlStatement)) {
-            dropShardingTable(shardingRuleConfig, each);
+            dropShardingTable(ruleConfig, each);
         }
     }
     

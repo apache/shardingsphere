@@ -93,9 +93,8 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     @Override
     public void doExecute(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration alteredShardingRuleConfig = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singletonList(ShardingRuleStatementConverter.convert(sqlStatement))).stream()
-                .map(each -> (ShardingRuleConfiguration) each).findFirst().get();
-        ShardingRuleConfiguration shardingRuleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).get();
+                .swapToRuleConfigurations(Collections.singletonList(ShardingRuleStatementConverter.convert(sqlStatement))).stream().map(each -> (ShardingRuleConfiguration) each).findFirst().get();
+        ShardingRuleConfiguration shardingRuleConfig = getRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         drop(shardingRuleConfig, sqlStatement);
         shardingRuleConfig.getAutoTables().addAll(alteredShardingRuleConfig.getAutoTables());
         shardingRuleConfig.getShardingAlgorithms().putAll(alteredShardingRuleConfig.getShardingAlgorithms());
@@ -103,7 +102,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     }
     
     private void drop(final ShardingRuleConfiguration shardingRuleConfig, final AlterShardingTableRuleStatement sqlStatement) {
-        getAlteredTables(sqlStatement).stream().forEach(each -> {
+        getAlteredTables(sqlStatement).forEach(each -> {
             ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig = shardingRuleConfig.getAutoTables().stream().filter(tableRule -> each.equals(tableRule.getLogicTable())).findAny().get();
             shardingRuleConfig.getAutoTables().remove(shardingAutoTableRuleConfig);
             shardingRuleConfig.getShardingAlgorithms().remove(shardingAutoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName());
@@ -126,10 +125,10 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
         return sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).collect(Collectors.toList());
     }
     
-    private Collection<String> getShardingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
+    private Collection<String> getShardingTables(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedList<>();
-        result.addAll(shardingRuleConfiguration.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
-        result.addAll(shardingRuleConfiguration.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        result.addAll(shardingRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        result.addAll(shardingRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
         return result;
     }
     
@@ -140,7 +139,6 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     }
     
     private Collection<String> getKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
-                .map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
+        return sqlStatement.getRules().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
     }
 }

@@ -48,15 +48,15 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
     
     @Override
     public void doExecute(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
-        DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = findRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class).get();
+        DatabaseDiscoveryRuleConfiguration ruleConfig = getRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         sqlStatement.getRuleNames().forEach(each -> {
-            DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration = databaseDiscoveryRuleConfig.getDataSources()
+            DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = ruleConfig.getDataSources()
                     .stream().filter(dataSource -> dataSource.getName().equals(each)).findAny().get();
-            databaseDiscoveryRuleConfig.getDataSources().remove(databaseDiscoveryDataSourceRuleConfiguration);
-            databaseDiscoveryRuleConfig.getDiscoveryTypes().remove(databaseDiscoveryDataSourceRuleConfiguration.getDiscoveryTypeName());
+            ruleConfig.getDataSources().remove(databaseDiscoveryDataSourceRuleConfig);
+            ruleConfig.getDiscoveryTypes().remove(databaseDiscoveryDataSourceRuleConfig.getDiscoveryTypeName());
         });
-        if (databaseDiscoveryRuleConfig.getDataSources().isEmpty()) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(databaseDiscoveryRuleConfig);
+        if (ruleConfig.getDataSources().isEmpty()) {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(ruleConfig);
         }
     }
     

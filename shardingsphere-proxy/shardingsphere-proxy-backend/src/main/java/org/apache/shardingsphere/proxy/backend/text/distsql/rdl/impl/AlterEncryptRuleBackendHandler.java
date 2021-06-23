@@ -62,55 +62,52 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     
     @Override
     public void doExecute(final String schemaName, final AlterEncryptRuleStatement sqlStatement) {
-        EncryptRuleConfiguration encryptRuleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class).get();
+        EncryptRuleConfiguration ruleConfig = getRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
         EncryptRuleConfiguration alteredEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(EncryptRuleStatementConverter.convert(sqlStatement.getRules()))).stream()
                 .map(each -> (EncryptRuleConfiguration) each).findFirst().get();
-        drop(sqlStatement, encryptRuleConfig);
-        encryptRuleConfig.getTables().addAll(alteredEncryptRuleConfiguration.getTables());
-        encryptRuleConfig.getEncryptors().putAll(alteredEncryptRuleConfiguration.getEncryptors());
+        drop(sqlStatement, ruleConfig);
+        ruleConfig.getTables().addAll(alteredEncryptRuleConfiguration.getTables());
+        ruleConfig.getEncryptors().putAll(alteredEncryptRuleConfiguration.getEncryptors());
     }
     
-    private void drop(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration encryptRuleConfiguration) {
+    private void drop(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration encryptRuleConfig) {
         getAlteredRuleNames(sqlStatement).forEach(each -> {
-            EncryptTableRuleConfiguration encryptTableRuleConfiguration = encryptRuleConfiguration.getTables()
-                    .stream().filter(tableRule -> tableRule.getName().equals(each)).findAny().get();
-            encryptRuleConfiguration.getTables().remove(encryptTableRuleConfiguration);
-            encryptTableRuleConfiguration.getColumns().forEach(column -> encryptRuleConfiguration.getEncryptors().remove(column.getEncryptorName()));
+            EncryptTableRuleConfiguration encryptTableRuleConfig = encryptRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(each)).findAny().get();
+            encryptRuleConfig.getTables().remove(encryptTableRuleConfig);
+            encryptTableRuleConfig.getColumns().forEach(column -> encryptRuleConfig.getEncryptors().remove(column.getEncryptorName()));
         });
     }
     
-    private void check(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration encryptRuleConfiguration) {
-        checkAlteredTables(schemaName, encryptRuleConfiguration, sqlStatement);
+    private void check(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration encryptRuleConfig) {
+        checkAlteredTables(schemaName, encryptRuleConfig, sqlStatement);
         checkEncryptors(sqlStatement);
     }
     
-    private void checkAlteredTables(final String schemaName, final EncryptRuleConfiguration encryptRuleConfiguration, final AlterEncryptRuleStatement sqlStatement) {
-        Collection<String> existTables = getExistTables(encryptRuleConfiguration);
-        Collection<String> notExistTables = getAlteredRuleNames(sqlStatement).stream()
-                .filter(each -> !existTables.contains(each)).collect(Collectors.toList());
+    private void checkAlteredTables(final String schemaName, final EncryptRuleConfiguration encryptRuleConfig, final AlterEncryptRuleStatement sqlStatement) {
+        Collection<String> existTables = getExistTables(encryptRuleConfig);
+        Collection<String> notExistTables = getAlteredRuleNames(sqlStatement).stream().filter(each -> !existTables.contains(each)).collect(Collectors.toList());
         if (!notExistTables.isEmpty()) {
             throw new EncryptRulesNotExistedException(schemaName, notExistTables);
         }
     }
     
-    private Collection<String> getExistTables(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        return encryptRuleConfiguration.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+    private Collection<String> getExistTables(final EncryptRuleConfiguration encryptRuleConfig) {
+        return encryptRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
     }
     
     private void checkEncryptors(final AlterEncryptRuleStatement sqlStatement) {
         Collection<String> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream()
                 .map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
-        Collection<String> invalidEncryptors = encryptors.stream().filter(each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent())
-                .collect(Collectors.toList());
+        Collection<String> invalidEncryptors = encryptors.stream().filter(
+            each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!invalidEncryptors.isEmpty()) {
             throw new InvalidEncryptorsException(invalidEncryptors);
         }
     }
     
     private Collection<String> getAlteredRuleNames(final AlterEncryptRuleStatement sqlStatement) {
-        return sqlStatement.getRules()
-                .stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toList());
+        return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toList());
     }
 }

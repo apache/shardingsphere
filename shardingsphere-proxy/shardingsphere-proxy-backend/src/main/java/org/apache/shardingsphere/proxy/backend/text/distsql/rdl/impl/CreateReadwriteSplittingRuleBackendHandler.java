@@ -68,8 +68,9 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
         ReadwriteSplittingRuleConfiguration createdReadwriteSplittingRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlReadwriteSplittingRuleConfig))
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).findAny().map(each -> (ReadwriteSplittingRuleConfiguration) each).get();
-        if (findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class).isPresent()) {
-            ReadwriteSplittingRuleConfiguration existReadwriteSplittingRuleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class).get();
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
+        if (ruleConfig.isPresent()) {
+            ReadwriteSplittingRuleConfiguration existReadwriteSplittingRuleConfig = ruleConfig.get();
             existReadwriteSplittingRuleConfig.getDataSources().addAll(createdReadwriteSplittingRuleConfig.getDataSources());
             existReadwriteSplittingRuleConfig.getLoadBalancers().putAll(createdReadwriteSplittingRuleConfig.getLoadBalancers());
         } else {
@@ -78,9 +79,9 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> optional = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
-        if (optional.isPresent()) {
-            Collection<String> existRuleNames = getRuleNames(optional.get());
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
+        if (ruleConfig.isPresent()) {
+            Collection<String> existRuleNames = getRuleNames(ruleConfig.get());
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toList());
             if (!duplicateRuleNames.isEmpty()) {
                 throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);

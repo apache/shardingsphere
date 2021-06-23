@@ -39,11 +39,11 @@ public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHa
     
     @Override
     public void before(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> optional = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
-        if (!optional.isPresent()) {
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
+        if (!ruleConfig.isPresent()) {
             throw new ReadwriteSplittingRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
-        Collection<String> existRuleNames = optional.get().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> existRuleNames = ruleConfig.get().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
             throw new ReadwriteSplittingRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
@@ -52,15 +52,15 @@ public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHa
     
     @Override
     public void doExecute(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement) {
-        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class).get();
+        ReadwriteSplittingRuleConfiguration ruleConfig = getRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         sqlStatement.getRuleNames().forEach(each -> {
             ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfig
-                    = readwriteSplittingRuleConfig.getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
-            readwriteSplittingRuleConfig.getDataSources().remove(readwriteSplittingDataSourceRuleConfig);
-            readwriteSplittingRuleConfig.getLoadBalancers().remove(readwriteSplittingDataSourceRuleConfig.getLoadBalancerName());
+                    = ruleConfig.getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
+            ruleConfig.getDataSources().remove(readwriteSplittingDataSourceRuleConfig);
+            ruleConfig.getLoadBalancers().remove(readwriteSplittingDataSourceRuleConfig.getLoadBalancerName());
         });
-        if (readwriteSplittingRuleConfig.getDataSources().isEmpty()) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(readwriteSplittingRuleConfig);
+        if (ruleConfig.getDataSources().isEmpty()) {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(ruleConfig);
         }
     }
 }
