@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -92,6 +93,11 @@ public final class CommandExecutorTaskTest {
     @Mock
     private FrontendContext frontendContext;
     
+    @Before
+    public void setup() {
+        when(backendConnection.closeDatabaseCommunicationEngines()).thenReturn(Collections.emptyList());
+    }
+    
     @Test
     public void assertRunNeedFlushByFalse() throws SQLException {
         when(queryCommandExecutor.execute()).thenReturn(Collections.emptyList());
@@ -109,6 +115,7 @@ public final class CommandExecutorTaskTest {
         verify(connectionStatus).waitUntilConnectionRelease();
         verify(connectionStatus).switchToUsing();
         verify(queryCommandExecutor).close();
+        verify(backendConnection).closeDatabaseCommunicationEngines();
     }
     
     @Test
@@ -132,6 +139,7 @@ public final class CommandExecutorTaskTest {
         verify(handlerContext).flush();
         verify(executeEngine).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
         verify(queryCommandExecutor).close();
+        verify(backendConnection).closeDatabaseCommunicationEngines();
     }
     
     @Test
@@ -155,6 +163,7 @@ public final class CommandExecutorTaskTest {
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(commandExecutor).close();
+        verify(backendConnection).closeDatabaseCommunicationEngines();
     }
     
     @Test
@@ -171,5 +180,6 @@ public final class CommandExecutorTaskTest {
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(handlerContext, atLeast(2)).writeAndFlush(databasePacket);
+        verify(backendConnection).closeDatabaseCommunicationEngines();
     }
 }
