@@ -64,7 +64,7 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
     
     private Collection<? extends DatabasePacket<?>> doExecute() throws SQLException {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
-        while (!reachedMaxRows()) {
+        while (!isPortalSuspended()) {
             Optional<DatabasePacket<?>> packet = getPacketFromPortal();
             if (!packet.isPresent()) {
                 break;
@@ -81,7 +81,7 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
     }
     
     private PostgreSQLIdentifierPacket createExecutionCompletedPacket() {
-        if (reachedMaxRows()) {
+        if (isPortalSuspended()) {
             return new PostgreSQLPortalSuspendedPacket();
         }
         if (connectionContext.getSqlStatement().map(EmptyStatement.class::isInstance).orElse(false)) {
@@ -93,18 +93,18 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
         return result;
     }
     
-    private boolean reachedMaxRows() {
-        return packet.getMaxRows() > 0 && dataRows == packet.getMaxRows();
-    }
-    
     @Override
     public void close() throws SQLException {
-        if (!reachedMaxRows()) {
+        if (!isPortalSuspended()) {
             connectionContext.getPortal(packet.getPortal()).close();
         }
         if (connectionContext.getSqlStatement().isPresent()
                 && (connectionContext.getSqlStatement().get() instanceof CommitStatement || connectionContext.getSqlStatement().get() instanceof RollbackStatement)) {
             connectionContext.closeAllPortals();
         }
+    }
+    
+    private boolean isPortalSuspended() {
+        return packet.getMaxRows() > 0 && dataRows == packet.getMaxRows();
     }
 }
