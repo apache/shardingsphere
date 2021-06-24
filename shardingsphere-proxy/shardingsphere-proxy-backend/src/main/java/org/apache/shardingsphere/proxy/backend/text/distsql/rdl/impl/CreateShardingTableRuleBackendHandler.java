@@ -64,7 +64,7 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     
     @Override
     public void check(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
-        Collection<String> notExistResources = getInvalidResources(schemaName, getResources(sqlStatement));
+        Collection<String> notExistResources = getNotExistedResources(schemaName, getResources(sqlStatement));
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
@@ -93,7 +93,7 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     public void doExecute(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
         ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).iterator().next();
-        Optional<ShardingRuleConfiguration> existShardingRuleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+        Optional<ShardingRuleConfiguration> existShardingRuleConfig = findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         if (existShardingRuleConfig.isPresent()) {
             existShardingRuleConfig.get().getAutoTables().addAll(shardingRuleConfig.getAutoTables());
             existShardingRuleConfig.get().getShardingAlgorithms().putAll(shardingRuleConfig.getShardingAlgorithms());
@@ -105,7 +105,7 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     
     private Collection<String> getAllTables(final String schemaName) {
         Collection<String> result = Sets.newHashSet(ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames());
-        findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).ifPresent(optional -> result.addAll(getShardingTables(optional)));
+        findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).ifPresent(optional -> result.addAll(getShardingTables(optional)));
         return result;
     }
     

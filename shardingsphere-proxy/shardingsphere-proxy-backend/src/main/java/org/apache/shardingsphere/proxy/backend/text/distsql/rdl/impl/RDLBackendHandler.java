@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,23 +62,23 @@ public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRe
     }
     
     @SuppressWarnings("unchecked")
-    protected final <R extends SchemaRuleConfiguration> Optional<R> findRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
+    protected final <R extends SchemaRuleConfiguration> Optional<R> findCurrentRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
         return ProxyContext.getInstance().getMetaData(schemaName)
                 .getRuleMetaData().getConfigurations().stream().filter(each -> configRuleClass.isAssignableFrom(each.getClass())).map(each -> (R) each).findFirst();
     }
     
-    protected final <R extends SchemaRuleConfiguration> R getRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
-        Optional<R> result = findRuleConfiguration(schemaName, configRuleClass);
+    protected final <R extends SchemaRuleConfiguration> R getCurrentRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
+        Optional<R> result = findCurrentRuleConfiguration(schemaName, configRuleClass);
         Preconditions.checkState(result.isPresent(), "Can not find rule type: `%s`.", configRuleClass);
         return result.get();
     }
     
-    protected final Collection<String> getInvalidResources(final String schemaName, final Collection<String> resources) {
-        return resources.stream().filter(each -> !isValidResource(schemaName, each)).collect(Collectors.toSet());
+    protected final Collection<String> getNotExistedResources(final String schemaName, final Collection<String> resourceNames) {
+        return resourceNames.stream().filter(each -> !isExistedResource(schemaName, each)).collect(Collectors.toSet());
     }
     
-    private boolean isValidResource(final String schemaName, final String resourceName) {
-        return Objects.nonNull(ProxyContext.getInstance().getMetaData(schemaName).getResource())
-                && ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(resourceName);
+    private boolean isExistedResource(final String schemaName, final String resourceName) {
+        ShardingSphereResource resource = ProxyContext.getInstance().getMetaData(schemaName).getResource();
+        return null != resource && resource.getDataSources().containsKey(resourceName);
     }
 }

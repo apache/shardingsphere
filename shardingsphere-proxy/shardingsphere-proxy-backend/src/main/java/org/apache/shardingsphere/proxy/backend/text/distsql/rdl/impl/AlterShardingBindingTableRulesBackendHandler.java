@@ -44,7 +44,7 @@ public final class AlterShardingBindingTableRulesBackendHandler extends RDLBacke
     
     @Override
     public void check(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement) {
-        if (!findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).isPresent()) {
+        if (!findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).isPresent()) {
             throw new ShardingBindingTableRulesNotExistsException(schemaName);
         }
         Collection<String> invalidBindingTables = new HashSet<>();
@@ -68,13 +68,13 @@ public final class AlterShardingBindingTableRulesBackendHandler extends RDLBacke
     
     @Override
     public void doExecute(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement) {
-        Collection<String> bindingTableGroups = getRuleConfiguration(schemaName, ShardingRuleConfiguration.class).getBindingTableGroups();
+        Collection<String> bindingTableGroups = getCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).getBindingTableGroups();
         bindingTableGroups.clear();
         bindingTableGroups.addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());
     }
     
     private Collection<String> getLogicTables(final String schemaName) {
-        ShardingRuleConfiguration shardingRuleConfig = getRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+        ShardingRuleConfiguration shardingRuleConfig = getCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         Collection<String> result = new HashSet<>();
         result.addAll(shardingRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         result.addAll(shardingRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));

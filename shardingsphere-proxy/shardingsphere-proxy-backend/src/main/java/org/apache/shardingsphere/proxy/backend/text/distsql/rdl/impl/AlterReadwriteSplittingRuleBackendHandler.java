@@ -56,7 +56,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     
     @Override
     public void check(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
             throw new ReadwriteSplittingRulesNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
         }
@@ -85,7 +85,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
             resources.add(each.getWriteDataSource());
             resources.addAll(each.getReadDataSources());
         });
-        Collection<String> notExistResources = getInvalidResources(schemaName, resources);
+        Collection<String> notExistResources = getNotExistedResources(schemaName, resources);
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
@@ -105,7 +105,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
         ReadwriteSplittingRuleConfiguration alterReadwriteSplittingRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(ReadwriteSplittingRuleStatementConverter.convert(sqlStatement))).stream()
                 .map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst().get();
-        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = getRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
+        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = getCurrentRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         drop(sqlStatement, readwriteSplittingRuleConfig);
         readwriteSplittingRuleConfig.getDataSources().addAll(alterReadwriteSplittingRuleConfig.getDataSources());
         readwriteSplittingRuleConfig.getLoadBalancers().putAll(alterReadwriteSplittingRuleConfig.getLoadBalancers());

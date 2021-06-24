@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.yaml.converter.DatabaseDiscoveryRuleStatementConverter;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.yaml.converter.DatabaseDiscoveryRuleStatementConverter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -36,7 +37,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -55,71 +55,81 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     
     @Override
     public void check(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        check(schemaName, sqlStatement, getRuleConfiguration(schemaName, sqlStatement));
+        checkToBeAlteredRules(schemaName, getRuleConfiguration(schemaName, sqlStatement), sqlStatement);
+        checkToBeAlteredResources(schemaName, sqlStatement);
+        checkToBeAlteredDiscoveryType(sqlStatement);
     }
     
-    private void check(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig) {
-        checkAlteredRules(schemaName, databaseDiscoveryRuleConfig, sqlStatement);
-        checkResources(schemaName, sqlStatement);
-        checkDiscoveryType(sqlStatement);
-    }
-    
-    private void checkAlteredRules(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig,
-                                   final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        Set<String> existRuleNames = databaseDiscoveryRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
-        Collection<String> notExistRuleNames = getAlteredRuleNames(sqlStatement).stream()
-                .filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
-        if (!notExistRuleNames.isEmpty()) {
-            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistRuleNames);
+    private void checkToBeAlteredRules(final String schemaName, final DatabaseDiscoveryRuleConfiguration ruleConfig, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+        Collection<String> currentRuleNames = ruleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
+        if (!notExistedRuleNames.isEmpty()) {
+            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistedRuleNames);
         }
     }
     
-    private void checkResources(final String schemaName, final AlterDatabaseDiscoveryRuleStatement statement) {
-        Collection<String> resources = new LinkedHashSet<>();
-        statement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
-        Collection<String> notExistResources = getInvalidResources(schemaName, resources);
-        if (!notExistResources.isEmpty()) {
-            throw new ResourceNotExistedException(schemaName, notExistResources);
+    private Collection<String> getToBeAlteredRuleNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+        return sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getName).collect(Collectors.toList());
+    }
+    
+    private void checkToBeAlteredResources(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+        Collection<String> notExistedResources = getNotExistedResources(schemaName, getToBeAlteredResourceNames(sqlStatement));
+        if (!notExistedResources.isEmpty()) {
+            throw new ResourceNotExistedException(schemaName, notExistedResources);
         }
     }
     
-    private void checkDiscoveryType(final AlterDatabaseDiscoveryRuleStatement statement) {
-        Collection<String> invalidDiscoveryTypes = statement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
+    private Collection<String> getToBeAlteredResourceNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+        Collection<String> result = new LinkedHashSet<>();
+        sqlStatement.getRules().forEach(each -> result.addAll(each.getDataSources()));
+        return result;
+    }
+    
+    private void checkToBeAlteredDiscoveryType(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+        Collection<String> notExistedDiscoveryTypes = getToBeAlteredDiscoveryTypeNames(sqlStatement).stream()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        if (!invalidDiscoveryTypes.isEmpty()) {
-            throw new InvalidDatabaseDiscoveryTypesException(invalidDiscoveryTypes);
+        if (!notExistedDiscoveryTypes.isEmpty()) {
+            throw new InvalidDatabaseDiscoveryTypesException(notExistedDiscoveryTypes);
         }
+    }
+    
+    private Collection<String> getToBeAlteredDiscoveryTypeNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+        return sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).collect(Collectors.toSet());
     }
     
     private DatabaseDiscoveryRuleConfiguration getRuleConfiguration(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> result = findRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
+        Optional<DatabaseDiscoveryRuleConfiguration> result = findCurrentRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         if (!result.isPresent()) {
-            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
+            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, getToBeAlteredRuleNames(sqlStatement));
         }
         return result.get();
     }
     
     @Override
     public void doExecute(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        DatabaseDiscoveryRuleConfiguration ruleConfig = getRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
-        DatabaseDiscoveryRuleConfiguration alteredDatabaseDiscoveryRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singletonList(DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules()))).stream()
-                .map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst().get();
-        drop(sqlStatement, ruleConfig);
-        ruleConfig.getDataSources().addAll(alteredDatabaseDiscoveryRuleConfiguration.getDataSources());
-        ruleConfig.getDiscoveryTypes().putAll(alteredDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes());
+        DatabaseDiscoveryRuleConfiguration currentRuleConfig = getCurrentRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
+        dropRuleConfiguration(currentRuleConfig, sqlStatement);
+        addRuleConfiguration(currentRuleConfig, sqlStatement);
     }
     
-    private void drop(final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig) {
-        getAlteredRuleNames(sqlStatement).forEach(each -> {
-            DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = databaseDiscoveryRuleConfig.getDataSources()
-                    .stream().filter(dataSource -> dataSource.getName().equals(each)).findAny().get();
-            databaseDiscoveryRuleConfig.getDataSources().remove(databaseDiscoveryDataSourceRuleConfig);
-            databaseDiscoveryRuleConfig.getDiscoveryTypes().remove(databaseDiscoveryDataSourceRuleConfig.getDiscoveryTypeName());
-        });
+    private void dropRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+        getToBeAlteredRuleNames(sqlStatement).forEach(each -> dropDataSourceRuleConfiguration(currentRuleConfig, each));
     }
     
-    private Collection<String> getAlteredRuleNames(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getName).collect(Collectors.toList());
+    private void dropDataSourceRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedRuleNames) {
+        Optional<DatabaseDiscoveryDataSourceRuleConfiguration> toBeDroppedDataSourceRuleConfig
+                = currentRuleConfig.getDataSources().stream().filter(each -> each.getName().equals(toBeDroppedRuleNames)).findAny();
+        Preconditions.checkState(toBeDroppedDataSourceRuleConfig.isPresent());
+        currentRuleConfig.getDataSources().remove(toBeDroppedDataSourceRuleConfig.get());
+        currentRuleConfig.getDiscoveryTypes().remove(toBeDroppedDataSourceRuleConfig.get().getDiscoveryTypeName());
+    }
+    
+    private void addRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+        Optional<DatabaseDiscoveryRuleConfiguration> toBeAlteredRuleConfig = new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(Collections.singleton(DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules()))).stream()
+                .map(each -> (DatabaseDiscoveryRuleConfiguration) each).findFirst();
+        Preconditions.checkState(toBeAlteredRuleConfig.isPresent());
+        currentRuleConfig.getDataSources().addAll(toBeAlteredRuleConfig.get().getDataSources());
+        currentRuleConfig.getDiscoveryTypes().putAll(toBeAlteredRuleConfig.get().getDiscoveryTypes());
     }
 }
