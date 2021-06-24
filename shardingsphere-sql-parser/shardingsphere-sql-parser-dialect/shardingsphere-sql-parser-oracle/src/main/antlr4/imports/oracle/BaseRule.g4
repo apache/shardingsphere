@@ -127,6 +127,30 @@ indexName
     : (owner DOT_)? name
     ;
 
+statisticsTypeName
+    : (owner DOT_)? name
+    ;
+
+function
+    : (owner DOT_)? name
+    ;
+
+packageName
+    : (owner DOT_)? name
+    ;
+
+typeName
+    : (owner DOT_)? name
+    ;
+
+indexTypeName
+    : (owner DOT_)? name
+    ;
+
+tableColumnName
+    : (owner DOT_)? name DOT_ name
+    ;
+
 constraintName
     : identifier
     ;
@@ -192,10 +216,6 @@ opaqueFormatSpec
     ;
 
 accessDriverType
-    : identifier
-    ;
-
-type
     : identifier
     ;
 
@@ -446,10 +466,6 @@ orderByItem
 
 attributeName
     : oracleId
-    ;
-
-indexTypeName
-    : IDENTIFIER_
     ;
 
 simpleExprs
@@ -730,4 +746,20 @@ unitName
 
 procedureName
     : identifier
+    ;
+
+cpuCost
+    : INTEGER_
+    ;
+
+ioCost
+    : INTEGER_
+    ;
+
+networkCost
+    : INTEGER_
+    ;
+
+defaultSelectivity
+    : INTEGER_
     ;
