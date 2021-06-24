@@ -20,7 +20,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnFormat;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
@@ -48,9 +48,9 @@ public final class OpenGaussComBatchBindPacket extends PostgreSQLCommandPacket {
     
     private final String sql;
     
-    private final List<Integer> resultFormatCodes;
-    
     private final List<List<Object>> parameters;
+    
+    private final List<PostgreSQLValueFormat> resultFormats;
     
     public OpenGaussComBatchBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
         payload.readInt4();
@@ -63,9 +63,9 @@ public final class OpenGaussComBatchBindPacket extends PostgreSQLCommandPacket {
             parameterFormats.add(payload.readInt2());
         }
         int resultFormatsLength = payload.readInt2();
-        resultFormatCodes = new ArrayList<>(resultFormatsLength);
+        resultFormats = new ArrayList<>(resultFormatsLength);
         for (int i = 0; i < resultFormatsLength; i++) {
-            resultFormatCodes.add(payload.readInt2());
+            resultFormats.add(PostgreSQLValueFormat.valueOf(payload.readInt2()));
         }
         PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
         sql = null == binaryStatement ? null : binaryStatement.getSql();
@@ -150,22 +150,6 @@ public final class OpenGaussComBatchBindPacket extends PostgreSQLCommandPacket {
     private Object getBinaryParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLBinaryColumnType columnType) {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
         return binaryProtocolValue.read(payload, parameterValueLength);
-    }
-    
-    /**
-     * Get result format by column index.
-     *
-     * @param columnIndex column index
-     * @return result format
-     */
-    public PostgreSQLColumnFormat getResultFormatByColumnIndex(final int columnIndex) {
-        if (resultFormatCodes.isEmpty()) {
-            return PostgreSQLColumnFormat.TEXT;
-        }
-        if (1 == resultFormatCodes.size()) {
-            return PostgreSQLColumnFormat.valueOf(resultFormatCodes.get(0));
-        }
-        return PostgreSQLColumnFormat.valueOf(resultFormatCodes.get(columnIndex));
     }
     
     @Override
