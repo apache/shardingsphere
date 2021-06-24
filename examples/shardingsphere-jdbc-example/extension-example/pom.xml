@@ -22,18 +22,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-example</artifactId>
+        <artifactId>shardingsphere-jdbc-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-jdbc-example</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>extension-example</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-example</module>
-        <module>governance-example</module>
-        <module>transaction-example</module>
-        <module>other-feature-example</module>
-        <module>extension-example</module>
+        <module>custom-sharding-algortihm-example</module>
     </modules>
 </project>
