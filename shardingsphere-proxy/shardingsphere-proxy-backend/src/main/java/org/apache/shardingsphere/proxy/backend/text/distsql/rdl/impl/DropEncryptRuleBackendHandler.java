@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleNotExistedException;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -41,7 +41,7 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
     public void check(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
         Optional<EncryptRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
-            throw new EncryptRulesNotExistedException(schemaName, sqlStatement.getTables());
+            throw new EncryptRuleNotExistedException(schemaName, sqlStatement.getTables());
         }
         check(schemaName, ruleConfig.get(), sqlStatement.getTables());
     }
@@ -50,7 +50,7 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
         Collection<String> encryptTables = ruleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTables = droppedTables.stream().filter(each -> !encryptTables.contains(each)).collect(Collectors.toList());
         if (!notExistedTables.isEmpty()) {
-            throw new EncryptRulesNotExistedException(schemaName, notExistedTables);
+            throw new EncryptRuleNotExistedException(schemaName, notExistedTables);
         }
     }
     

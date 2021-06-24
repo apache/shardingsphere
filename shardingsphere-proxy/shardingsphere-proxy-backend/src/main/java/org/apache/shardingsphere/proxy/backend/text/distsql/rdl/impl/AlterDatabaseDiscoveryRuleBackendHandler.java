@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 
@@ -64,7 +64,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
         Collection<String> currentRuleNames = ruleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
-            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistedRuleNames);
+            throw new DatabaseDiscoveryRuleNotExistedException(schemaName, notExistedRuleNames);
         }
     }
     
@@ -100,7 +100,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     private DatabaseDiscoveryRuleConfiguration getRuleConfiguration(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
         Optional<DatabaseDiscoveryRuleConfiguration> result = findCurrentRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         if (!result.isPresent()) {
-            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, getToBeAlteredRuleNames(sqlStatement));
+            throw new DatabaseDiscoveryRuleNotExistedException(schemaName, getToBeAlteredRuleNames(sqlStatement));
         }
         return result.get();
     }

@@ -17,10 +17,21 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+
 /**
- * Rule does not exist exception.
+ * Readwrite splitting rule not existed exception.
  */
-public final class RuleNotExistsException extends BackendException {
+@RequiredArgsConstructor
+@Getter
+public final class ReadwriteSplittingRuleNotExistedException extends BackendException {
     
-    private static final long serialVersionUID = -4150905802300104824L;
+    private static final long serialVersionUID = -5119217255419990719L;
+    
+    private final String schemaName;
+    
+    private final Collection<String> ruleNames;
 }

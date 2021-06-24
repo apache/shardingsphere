@@ -20,9 +20,12 @@ package org.apache.shardingsphere.proxy.backend.exception;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Sharding binding table rule existed exception.
+ */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingBroadcastTableRulesExistsException extends BackendException {
+public final class ShardingBroadcastTableRuleExistedException extends BackendException {
     
     private static final long serialVersionUID = 9019772512528350085L;
     

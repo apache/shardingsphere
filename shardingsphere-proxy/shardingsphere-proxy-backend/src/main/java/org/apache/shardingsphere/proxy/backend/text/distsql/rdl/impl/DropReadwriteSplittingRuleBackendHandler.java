@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
@@ -41,12 +41,12 @@ public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHa
     public void check(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement) {
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
-            throw new ReadwriteSplittingRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
+            throw new ReadwriteSplittingRuleNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
         Collection<String> existRuleNames = ruleConfig.get().getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
-            throw new ReadwriteSplittingRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
+            throw new ReadwriteSplittingRuleNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
     }
     

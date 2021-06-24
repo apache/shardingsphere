@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 
@@ -38,7 +38,7 @@ public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBac
     public void check(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         if (!shardingRuleConfig.isPresent()) {
-            throw new ShardingBroadcastTableRulesNotExistsException(schemaName);
+            throw new ShardingBroadcastTableRuleNotExistsException(schemaName);
         }
     }
     

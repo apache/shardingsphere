@@ -30,8 +30,8 @@ import java.util.Collection;
 public final class ShardingTableRuleNotExistedException extends BackendException {
     
     private static final long serialVersionUID = 8565541404478688849L;
-
+    
     private final String schemaName;
-
+    
     private final Collection<String> tableNames;
 }

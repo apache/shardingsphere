@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 import java.util.Optional;
@@ -37,7 +37,7 @@ public final class DropShardingBindingTableRulesBackendHandler extends RDLBacken
     public void check(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         if (!ruleConfig.isPresent() || ruleConfig.get().getBindingTableGroups().isEmpty()) {
-            throw new ShardingBindingTableRulesNotExistsException(schemaName);
+            throw new ShardingBindingTableRuleNotExistsException(schemaName);
         }
     }
     
