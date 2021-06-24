@@ -58,12 +58,27 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
                 new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null, new ConfigurationProperties(new Properties()));
     }
     
+    /**
+     * todo remove this deprecated constructor.
+     * @deprecated old
+     */
+    @Deprecated
     public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData, 
                                     final ExecutorEngine executorEngine, final ConfigurationProperties props) {
         this.metaDataMap = new LinkedHashMap<>(metaDataMap);
         this.globalRuleMetaData = globalRuleMetaData;
         this.executorEngine = executorEngine;
         optimizeContextFactory = new OptimizeContextFactory(metaDataMap);
+        this.props = props;
+        stateContext = new StateContext();
+    }
+    
+    public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
+                                    final ExecutorEngine executorEngine, final ConfigurationProperties props, final OptimizeContextFactory optimizeContextFactory) {
+        this.metaDataMap = new LinkedHashMap<>(metaDataMap);
+        this.globalRuleMetaData = globalRuleMetaData;
+        this.executorEngine = executorEngine;
+        this.optimizeContextFactory = optimizeContextFactory;
         this.props = props;
         stateContext = new StateContext();
     }

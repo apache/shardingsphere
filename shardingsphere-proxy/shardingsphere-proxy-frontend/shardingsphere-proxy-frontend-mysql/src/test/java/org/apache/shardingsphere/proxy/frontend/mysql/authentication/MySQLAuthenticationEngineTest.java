@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.junit.Before;
@@ -43,6 +44,7 @@ import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -157,8 +159,11 @@ public final class MySQLAuthenticationEngineTest {
     
     private ShardingSphereMetaData mockShardingSphereMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(result.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
+        when(result.getSchema()).thenReturn(schema);
+        when(schema.getTables()).thenReturn(new HashMap<>());
         return result;
     }
     
