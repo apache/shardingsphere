@@ -38,7 +38,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SchemaPrivilegeBuilder {
+public final class SchemaPrivilegeBuilder {
     /**
      * Build privileges.
      *
@@ -49,13 +49,10 @@ public class SchemaPrivilegeBuilder {
     public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users, final Properties props) {
         String mappingProp = props.getProperty(SchemaPrivilegesPermittedAuthorityProviderAlgorithm.PROP_USER_SCHEMA_MAPPINGS, "");
         Preconditions.checkArgument(!"".equals(mappingProp), "user-schema-mappings configuration `%s` can not be null", mappingProp);
-        
         String[] mappings = mappingProp.split(",");
         Arrays.asList(mappings).stream().forEach(each -> Preconditions.checkArgument(0 < each.indexOf("@") && 0 < each.indexOf("="), 
                 "user-schema-mappings configuration `%s` is invalid, the configuration format should be like `username@hostname=schema`", each));
-
         Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>();
-
         Map<ShardingSphereUser, Set<String>> userSchemaMappings = new HashMap<>();
         Arrays.asList(mappings).stream().map(SchemaPrivilegeBuilder::convertSchemas).forEach(each -> merge(each, userSchemaMappings));
         users.forEach(each -> result.put(each, new SchemaPrivilegesPermittedShardingSpherePrivileges(userSchemaMappings.getOrDefault(each, Collections.emptySet()))));

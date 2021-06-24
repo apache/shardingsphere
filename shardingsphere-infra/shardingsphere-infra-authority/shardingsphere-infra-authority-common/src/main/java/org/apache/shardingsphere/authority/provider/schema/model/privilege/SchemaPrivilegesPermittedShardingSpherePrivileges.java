@@ -52,7 +52,6 @@ public class SchemaPrivilegesPermittedShardingSpherePrivileges implements Shardi
         if (accessSubject instanceof SchemaAccessSubject) {
             return hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema());
         }
-        throw new UnsupportedOperationException(accessSubject.getClass().getCanonicalName());
+        return false;
     }
-
 }

@@ -67,5 +67,4 @@ public final class SchemaPrivilegesPermittedAuthorityProviderAlgorithm implement
     public String getType() {
         return "SCHEMA_PRIVILEGES_PERMITTED";
     }
-
 }
