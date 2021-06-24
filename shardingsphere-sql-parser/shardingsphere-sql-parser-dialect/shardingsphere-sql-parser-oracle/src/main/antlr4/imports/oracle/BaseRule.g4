@@ -147,10 +147,6 @@ indexTypeName
     : (owner DOT_)? name
     ;
 
-tableColumnName
-    : (owner DOT_)? name DOT_ name
-    ;
-
 constraintName
     : identifier
     ;
