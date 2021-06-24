@@ -32,7 +32,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 public final class AnalyzeStatementAssert {
     
     /**
-     * Assert truncate statement is correct with expected parser result.
+     * Assert analyze statement is correct with expected parser result.
      * 
      * @param assertContext assert context
      * @param actual actual analyze statement

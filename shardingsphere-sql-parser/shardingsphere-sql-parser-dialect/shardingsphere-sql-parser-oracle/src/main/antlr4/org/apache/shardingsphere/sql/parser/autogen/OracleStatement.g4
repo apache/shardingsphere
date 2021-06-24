@@ -52,5 +52,6 @@ execute
     | alterSystem
     | setConstraints
     | analyze
+    | associateStatistics
     ) SEMI_?
     ;
