@@ -54,26 +54,10 @@ public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<Cre
     }
     
     @Override
-    public void before(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
+    public void check(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
         checkDuplicateRuleNames(schemaName, sqlStatement);
         checkEncryptors(sqlStatement);
         // TODO check resource
-    }
-    
-    @Override
-    public void doExecute(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
-        YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration = EncryptRuleStatementConverter.convert(sqlStatement.getRules());
-        EncryptRuleConfiguration createdEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singleton(yamlEncryptRuleConfiguration))
-                .stream().filter(each -> each instanceof EncryptRuleConfiguration).findAny().map(each -> (EncryptRuleConfiguration) each).get();
-        Optional<EncryptRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
-        if (ruleConfig.isPresent()) {
-            EncryptRuleConfiguration existEncryptRuleConfig = ruleConfig.get();
-            existEncryptRuleConfig.getTables().addAll(createdEncryptRuleConfiguration.getTables());
-            existEncryptRuleConfig.getEncryptors().putAll(createdEncryptRuleConfiguration.getEncryptors());
-        } else {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdEncryptRuleConfiguration);
-        }
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
@@ -94,6 +78,22 @@ public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<Cre
             each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!invalidEncryptors.isEmpty()) {
             throw new InvalidEncryptorsException(invalidEncryptors);
+        }
+    }
+    
+    @Override
+    public void doExecute(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
+        YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration = EncryptRuleStatementConverter.convert(sqlStatement.getRules());
+        EncryptRuleConfiguration createdEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(Collections.singleton(yamlEncryptRuleConfiguration))
+                .stream().filter(each -> each instanceof EncryptRuleConfiguration).findAny().map(each -> (EncryptRuleConfiguration) each).get();
+        Optional<EncryptRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
+        if (ruleConfig.isPresent()) {
+            EncryptRuleConfiguration existEncryptRuleConfig = ruleConfig.get();
+            existEncryptRuleConfig.getTables().addAll(createdEncryptRuleConfiguration.getTables());
+            existEncryptRuleConfig.getEncryptors().putAll(createdEncryptRuleConfiguration.getEncryptors());
+        } else {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdEncryptRuleConfiguration);
         }
     }
     

@@ -60,7 +60,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     }
     
     @Override
-    public void before(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
+    public void check(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
         Collection<String> notExistResources = getInvalidResources(schemaName, getResources(sqlStatement));
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
