@@ -63,7 +63,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         if (ruleConfig.isPresent()) {
             Collection<String> existRuleNames = getRuleNames(ruleConfig.get());
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toList());
@@ -74,7 +74,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
     }
     
     private void checkResources(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        Collection<String> notExistResources = getInvalidResources(schemaName, getResources(sqlStatement));
+        Collection<String> notExistResources = getNotExistedResources(schemaName, getResources(sqlStatement));
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
@@ -108,7 +108,7 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
         ReadwriteSplittingRuleConfiguration createdReadwriteSplittingRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlReadwriteSplittingRuleConfig))
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).findAny().map(each -> (ReadwriteSplittingRuleConfiguration) each).get();
-        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
+        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         if (ruleConfig.isPresent()) {
             ReadwriteSplittingRuleConfiguration existReadwriteSplittingRuleConfig = ruleConfig.get();
             existReadwriteSplittingRuleConfig.getDataSources().addAll(createdReadwriteSplittingRuleConfig.getDataSources());

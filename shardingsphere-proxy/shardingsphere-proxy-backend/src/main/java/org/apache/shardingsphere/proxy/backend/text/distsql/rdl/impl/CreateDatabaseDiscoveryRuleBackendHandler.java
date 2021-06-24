@@ -63,7 +63,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
+        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         if (ruleConfig.isPresent()) {
             Collection<String> existRuleNames = getRuleNames(ruleConfig.get());
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toSet());
@@ -86,7 +86,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     private void checkResources(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         Collection<String> resources = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
-        Collection<String> notExistResources = getInvalidResources(schemaName, resources);
+        Collection<String> notExistResources = getNotExistedResources(schemaName, resources);
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
@@ -106,7 +106,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
         DatabaseDiscoveryRuleConfiguration createdDatabaseDiscoveryRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlDatabaseDiscoveryRuleConfig))
                 .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).findAny().map(each -> (DatabaseDiscoveryRuleConfiguration) each).get();
-        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
+        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         if (ruleConfig.isPresent()) {
             DatabaseDiscoveryRuleConfiguration existDatabaseDiscoveryRuleConfig = ruleConfig.get();
             existDatabaseDiscoveryRuleConfig.getDataSources().addAll(createdDatabaseDiscoveryRuleConfiguration.getDataSources());

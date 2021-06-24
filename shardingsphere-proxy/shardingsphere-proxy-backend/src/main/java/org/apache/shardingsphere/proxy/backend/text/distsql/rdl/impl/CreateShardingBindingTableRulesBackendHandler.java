@@ -46,7 +46,7 @@ public final class CreateShardingBindingTableRulesBackendHandler extends RDLBack
     
     @Override
     public void check(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+        Optional<ShardingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
             throw new ShardingBindingTableRulesNotExistsException(schemaName);
         }
@@ -71,7 +71,7 @@ public final class CreateShardingBindingTableRulesBackendHandler extends RDLBack
     }
     
     private Collection<String> getLogicTables(final String schemaName) {
-        ShardingRuleConfiguration ruleConfig = getRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+        ShardingRuleConfiguration ruleConfig = getCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         Collection<String> result = new HashSet<>();
         result.addAll(ruleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         result.addAll(ruleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
@@ -97,6 +97,6 @@ public final class CreateShardingBindingTableRulesBackendHandler extends RDLBack
     @Override
     public void doExecute(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
         YamlShardingRuleConfiguration yamlShardingRuleConfiguration = ShardingRuleStatementConverter.convert(sqlStatement);
-        getRuleConfiguration(schemaName, ShardingRuleConfiguration.class).getBindingTableGroups().addAll(yamlShardingRuleConfiguration.getBindingTables());
+        getCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).getBindingTableGroups().addAll(yamlShardingRuleConfiguration.getBindingTables());
     }
 }
