@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
 
 import java.util.Collection;
@@ -55,7 +55,7 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     public void check(final String schemaName, final AlterEncryptRuleStatement sqlStatement) {
         Optional<EncryptRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
-            throw new EncryptRulesNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
+            throw new EncryptRuleNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
         }
         check(schemaName, sqlStatement, ruleConfig.get());
     }
@@ -69,7 +69,7 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
         Collection<String> existTables = getExistTables(encryptRuleConfig);
         Collection<String> notExistTables = getAlteredRuleNames(sqlStatement).stream().filter(each -> !existTables.contains(each)).collect(Collectors.toList());
         if (!notExistTables.isEmpty()) {
-            throw new EncryptRulesNotExistedException(schemaName, notExistTables);
+            throw new EncryptRuleNotExistedException(schemaName, notExistTables);
         }
     }
     

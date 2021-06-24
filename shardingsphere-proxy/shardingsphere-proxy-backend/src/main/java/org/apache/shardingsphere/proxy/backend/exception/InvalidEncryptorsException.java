@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
  * Invalid encryptors exception.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public final class InvalidEncryptorsException extends BackendException {
-
+    
     private static final long serialVersionUID = 3175781664028568140L;
-
+    
     private final Collection<String> encryptors;
 }

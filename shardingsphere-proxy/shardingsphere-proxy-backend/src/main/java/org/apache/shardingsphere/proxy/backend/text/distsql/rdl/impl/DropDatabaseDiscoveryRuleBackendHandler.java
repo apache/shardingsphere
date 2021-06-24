@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleNotExistedException;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -41,7 +41,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
     public void check(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
-            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
+            throw new DatabaseDiscoveryRuleNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
         check(schemaName, ruleConfig.get(), sqlStatement);
     }
@@ -50,7 +50,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
         Collection<String> existRuleNames = databaseDiscoveryRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
-            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistedRuleNames);
+            throw new DatabaseDiscoveryRuleNotExistedException(schemaName, notExistedRuleNames);
         }
     }
     

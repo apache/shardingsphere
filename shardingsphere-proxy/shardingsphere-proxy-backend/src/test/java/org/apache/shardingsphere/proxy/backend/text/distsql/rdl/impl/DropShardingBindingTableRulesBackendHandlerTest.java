@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -77,12 +77,12 @@ public final class DropShardingBindingTableRulesBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
-    @Test(expected = ShardingBindingTableRulesNotExistsException.class)
+    @Test(expected = ShardingBindingTableRuleNotExistsException.class)
     public void assertExecuteWithoutShardingRule() {
         handler.execute("test", sqlStatement);
     }
     
-    @Test(expected = ShardingBindingTableRulesNotExistsException.class)
+    @Test(expected = ShardingBindingTableRuleNotExistsException.class)
     public void assertExecuteWithNotExistBindingTableRule() {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ShardingRuleConfiguration()));
         handler.execute("test", sqlStatement);

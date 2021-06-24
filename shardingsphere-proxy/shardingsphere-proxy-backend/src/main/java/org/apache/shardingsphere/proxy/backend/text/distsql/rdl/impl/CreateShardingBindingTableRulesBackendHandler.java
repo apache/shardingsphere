@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -48,7 +48,7 @@ public final class CreateShardingBindingTableRulesBackendHandler extends RDLBack
     public void check(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
         Optional<ShardingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
-            throw new ShardingBindingTableRulesNotExistsException(schemaName);
+            throw new ShardingBindingTableRuleNotExistsException(schemaName);
         }
         Collection<String> invalidBindingTables = new HashSet<>();
         Collection<String> existLogicTables = getLogicTables(schemaName);

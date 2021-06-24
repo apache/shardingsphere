@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -58,7 +58,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     public void check(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
-            throw new ReadwriteSplittingRulesNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
+            throw new ReadwriteSplittingRuleNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
         }
         check(schemaName, sqlStatement, ruleConfig.get(), getAlteredRuleNames(sqlStatement));
     }
@@ -75,7 +75,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
         Collection<String> notExistRuleNames = alteredRuleNames.stream()
                 .filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistRuleNames.isEmpty()) {
-            throw new ReadwriteSplittingRulesNotExistedException(schemaName, notExistRuleNames);
+            throw new ReadwriteSplittingRuleNotExistedException(schemaName, notExistRuleNames);
         }
     }
     

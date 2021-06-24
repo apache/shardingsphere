@@ -26,12 +26,12 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateRuleNamesException;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
-import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidKeyGeneratorsException;
@@ -39,13 +39,13 @@ import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersExc
 import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRulesNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
@@ -125,7 +125,7 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingSphereConfigurationException || cause instanceof SQLParsingException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_NOT_SUPPORTED_YET, cause.getMessage());
         }
-        if (cause instanceof RuleNotExistsException) {
+        if (cause instanceof RuleNotExistedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
         }
         if (cause instanceof TableLockWaitTimeoutException) {
@@ -154,18 +154,18 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof DuplicateTablesException) {
             return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_TABLE, ((DuplicateTablesException) cause).getTableNames());
         }
-        if (cause instanceof ShardingBroadcastTableRulesExistsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_EXIST, ((ShardingBroadcastTableRulesExistsException) cause).getSchemaName());
+        if (cause instanceof ShardingBroadcastTableRuleExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_EXIST, ((ShardingBroadcastTableRuleExistedException) cause).getSchemaName());
         }
-        if (cause instanceof ShardingBindingTableRulesNotExistsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BINDING_TABLE_RULES_NOT_EXIST, ((ShardingBindingTableRulesNotExistsException) cause).getSchemaName());
+        if (cause instanceof ShardingBindingTableRuleNotExistsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BINDING_TABLE_RULES_NOT_EXIST, ((ShardingBindingTableRuleNotExistsException) cause).getSchemaName());
         }
-        if (cause instanceof ShardingBroadcastTableRulesNotExistsException) {
-            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST, ((ShardingBroadcastTableRulesNotExistsException) cause).getSchemaName());
+        if (cause instanceof ShardingBroadcastTableRuleNotExistsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SHARDING_BROADCAST_TABLE_RULES_NOT_EXIST, ((ShardingBroadcastTableRuleNotExistsException) cause).getSchemaName());
         }
-        if (cause instanceof ReadwriteSplittingRulesNotExistedException) {
+        if (cause instanceof ReadwriteSplittingRuleNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.READWRITE_SPLITTING_RULES_NOT_EXIST,
-                    ((ReadwriteSplittingRulesNotExistedException) cause).getRuleNames(), ((ReadwriteSplittingRulesNotExistedException) cause).getSchemaName());
+                    ((ReadwriteSplittingRuleNotExistedException) cause).getRuleNames(), ((ReadwriteSplittingRuleNotExistedException) cause).getSchemaName());
         }
         if (cause instanceof ScalingJobNotFoundException) {
             return new MySQLErrPacket(1, CommonErrorCode.SCALING_JOB_NOT_EXIST, ((ScalingJobNotFoundException) cause).getJobId());
@@ -176,16 +176,16 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof InvalidDatabaseDiscoveryTypesException) {
             return new MySQLErrPacket(1, CommonErrorCode.INVALID_DATABASE_DISCOVERY_TYPES, ((InvalidDatabaseDiscoveryTypesException) cause).getDatabaseDiscoveryTypes());
         }
-        if (cause instanceof DatabaseDiscoveryRulesNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.DATABASE_DISCOVERY_RULES_NOT_EXIST, ((DatabaseDiscoveryRulesNotExistedException) cause).getRuleNames(),
-                    ((DatabaseDiscoveryRulesNotExistedException) cause).getSchemaName());
+        if (cause instanceof DatabaseDiscoveryRuleNotExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.DATABASE_DISCOVERY_RULES_NOT_EXIST, ((DatabaseDiscoveryRuleNotExistedException) cause).getRuleNames(),
+                    ((DatabaseDiscoveryRuleNotExistedException) cause).getSchemaName());
         }
         if (cause instanceof InvalidEncryptorsException) {
             return new MySQLErrPacket(1, CommonErrorCode.INVALID_ENCRYPTORS, ((InvalidEncryptorsException) cause).getEncryptors());
         }
-        if (cause instanceof EncryptRulesNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.ENCRYPT_RULES_NOT_EXIST, ((EncryptRulesNotExistedException) cause).getTables(),
-                    ((EncryptRulesNotExistedException) cause).getSchemaName());
+        if (cause instanceof EncryptRuleNotExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.ENCRYPT_RULES_NOT_EXIST, ((EncryptRuleNotExistedException) cause).getTables(),
+                    ((EncryptRuleNotExistedException) cause).getSchemaName());
         }
         if (cause instanceof DuplicateRuleNamesException) {
             return new MySQLErrPacket(1, CommonErrorCode.DUPLICATE_RULE_NAMES, ((DuplicateRuleNamesException) cause).getRuleNames(),

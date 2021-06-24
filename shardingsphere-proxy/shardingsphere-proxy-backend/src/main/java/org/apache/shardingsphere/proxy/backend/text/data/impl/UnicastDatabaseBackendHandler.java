@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -51,7 +51,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     public ResponseHeader execute() throws SQLException {
         String schemaName = null == backendConnection.getSchemaName() ? getFirstSchemaName() : backendConnection.getSchemaName();
         if (!ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
-            throw new RuleNotExistsException();
+            throw new RuleNotExistedException();
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         return databaseCommunicationEngine.execute();

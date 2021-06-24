@@ -17,17 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
- * Sharding binding table rules not exists exception.
+ * Rule does not exist exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingBindingTableRulesNotExistsException extends BackendException {
-
-    private static final long serialVersionUID = -1930065143932541970L;
-
-    private final String schemaName;
+public final class RuleNotExistedException extends BackendException {
+    
+    private static final long serialVersionUID = -4150905802300104824L;
 }

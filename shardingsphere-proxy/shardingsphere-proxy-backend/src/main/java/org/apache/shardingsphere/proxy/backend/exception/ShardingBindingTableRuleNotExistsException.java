@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Sharding broadcast table rules not exists exception.
+ * Sharding binding table rule not exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingBroadcastTableRulesNotExistsException extends BackendException {
-
-    private static final long serialVersionUID = 2816401356514609173L;
-
+public final class ShardingBindingTableRuleNotExistsException extends BackendException {
+    
+    private static final long serialVersionUID = -1930065143932541970L;
+    
     private final String schemaName;
 }

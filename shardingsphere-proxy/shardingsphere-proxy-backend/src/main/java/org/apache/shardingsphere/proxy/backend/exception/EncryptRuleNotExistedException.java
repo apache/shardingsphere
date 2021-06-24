@@ -23,15 +23,15 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * Database discovery rules not existed exception.
+ * Encrypt rule not existed exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryRulesNotExistedException extends BackendException {
-
-    private static final long serialVersionUID = 1293361372683913161L;
-
+public final class EncryptRuleNotExistedException extends BackendException {
+    
+    private static final long serialVersionUID = -3070306238552517428L;
+    
     private final String schemaName;
-
-    private final Collection<String> ruleNames;
+    
+    private final Collection<String> tables;
 }
