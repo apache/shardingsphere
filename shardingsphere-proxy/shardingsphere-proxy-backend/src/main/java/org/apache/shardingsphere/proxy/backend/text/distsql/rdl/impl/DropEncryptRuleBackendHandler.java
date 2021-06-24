@@ -38,12 +38,20 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
     }
     
     @Override
-    public void before(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
+    public void check(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
         Optional<EncryptRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
             throw new EncryptRulesNotExistedException(schemaName, sqlStatement.getTables());
         }
         check(schemaName, ruleConfig.get(), sqlStatement.getTables());
+    }
+    
+    private void check(final String schemaName, final EncryptRuleConfiguration ruleConfig, final Collection<String> droppedTables) {
+        Collection<String> encryptTables = ruleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> notExistedTables = droppedTables.stream().filter(each -> !encryptTables.contains(each)).collect(Collectors.toList());
+        if (!notExistedTables.isEmpty()) {
+            throw new EncryptRulesNotExistedException(schemaName, notExistedTables);
+        }
     }
     
     @Override
@@ -57,14 +65,6 @@ public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropE
         });
         if (ruleConfig.getTables().isEmpty()) {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(ruleConfig);
-        }
-    }
-    
-    private void check(final String schemaName, final EncryptRuleConfiguration ruleConfig, final Collection<String> droppedTables) {
-        Collection<String> encryptTables = ruleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
-        Collection<String> notExistedTables = droppedTables.stream().filter(each -> !encryptTables.contains(each)).collect(Collectors.toList());
-        if (!notExistedTables.isEmpty()) {
-            throw new EncryptRulesNotExistedException(schemaName, notExistedTables);
         }
     }
 }

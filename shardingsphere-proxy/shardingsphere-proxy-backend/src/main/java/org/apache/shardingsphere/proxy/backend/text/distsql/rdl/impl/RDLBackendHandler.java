@@ -46,19 +46,19 @@ public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRe
     
     @Override
     protected final ResponseHeader execute(final String schemaName, final T sqlStatement) {
-        before(schemaName, sqlStatement);
+        check(schemaName, sqlStatement);
         doExecute(schemaName, sqlStatement);
-        after(schemaName);
+        postChange(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    protected abstract void before(String schemaName, T sqlStatement);
+    protected abstract void check(String schemaName, T sqlStatement);
     
     protected abstract void doExecute(String schemaName, T sqlStatement);
     
-    private void after(final String schemaName) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredSQLNotificationEvent(schemaName,
-                ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
+    private void postChange(final String schemaName) {
+        ShardingSphereEventBus.getInstance().post(
+                new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
     }
     
     @SuppressWarnings("unchecked")

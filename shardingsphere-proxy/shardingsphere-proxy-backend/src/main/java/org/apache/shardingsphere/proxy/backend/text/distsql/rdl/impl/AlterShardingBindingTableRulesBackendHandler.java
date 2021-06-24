@@ -43,7 +43,7 @@ public final class AlterShardingBindingTableRulesBackendHandler extends RDLBacke
     }
     
     @Override
-    public void before(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement) {
+    public void check(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement) {
         if (!findRuleConfiguration(schemaName, ShardingRuleConfiguration.class).isPresent()) {
             throw new ShardingBindingTableRulesNotExistsException(schemaName);
         }

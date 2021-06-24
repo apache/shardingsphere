@@ -38,7 +38,7 @@ public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHa
     }
     
     @Override
-    public void before(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement) {
+    public void check(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement) {
         Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
             throw new ReadwriteSplittingRulesNotExistedException(schemaName, sqlStatement.getRuleNames());

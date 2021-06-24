@@ -38,12 +38,20 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
     }
     
     @Override
-    public void before(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
+    public void check(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         if (!ruleConfig.isPresent()) {
             throw new DatabaseDiscoveryRulesNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
         check(schemaName, ruleConfig.get(), sqlStatement);
+    }
+    
+    private void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
+        Collection<String> existRuleNames = databaseDiscoveryRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
+        if (!notExistedRuleNames.isEmpty()) {
+            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistedRuleNames);
+        }
     }
     
     @Override
@@ -57,14 +65,6 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
         });
         if (ruleConfig.getDataSources().isEmpty()) {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(ruleConfig);
-        }
-    }
-    
-    private void check(final String schemaName, final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
-        Collection<String> existRuleNames = databaseDiscoveryRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
-        Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
-        if (!notExistedRuleNames.isEmpty()) {
-            throw new DatabaseDiscoveryRulesNotExistedException(schemaName, notExistedRuleNames);
         }
     }
 }

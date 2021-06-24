@@ -35,7 +35,7 @@ public final class CreateShardingBroadcastTableRulesBackendHandler extends RDLBa
     }
     
     @Override
-    public void before(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement) {
+    public void check(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement) {
     }
     
     @Override
