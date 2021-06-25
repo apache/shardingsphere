@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingBindingTableRule;
 
@@ -33,21 +33,21 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingBindingTableRuleAssert {
-
+    
     /**
      * Assert sharding binding table rule is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual sharding binding table rule
-     * @param expected      expected sharding binding table rule test case
+     * @param actual actual sharding binding table rule
+     * @param expected expected sharding binding table rule test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShardingBindingTableRuleSegment actual, final ExpectedShardingBindingTableRule expected) {
-        if (null != expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final BindingTableRuleSegment actual, final ExpectedShardingBindingTableRule expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s sharding binding table rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getTables(), is(expected.getTables()));
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
 }

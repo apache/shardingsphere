@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class DropResourceStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "data-source")
     private final List<String> dataSources = new LinkedList<>();
 }

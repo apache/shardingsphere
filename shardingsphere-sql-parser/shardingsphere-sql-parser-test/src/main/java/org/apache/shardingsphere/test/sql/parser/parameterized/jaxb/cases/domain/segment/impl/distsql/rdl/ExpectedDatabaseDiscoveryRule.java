@@ -25,19 +25,22 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
-@Setter
+/**
+ * Expected database discovery rule.
+ */
 @Getter
+@Setter
 public final class ExpectedDatabaseDiscoveryRule extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement
     private String name;
-
+    
     @XmlElement(name = "data-source")
     private List<String> dataSources;
-
+    
     @XmlElement(name = "discovery-type")
     private String discoveryTypeName;
-
+    
     @XmlElement(name = "properties")
     private ExpectedProperties props;
 }

@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class AlterShardingBroadcastTableRulesStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "table")
     private final List<String> tables = new LinkedList<>();
 }

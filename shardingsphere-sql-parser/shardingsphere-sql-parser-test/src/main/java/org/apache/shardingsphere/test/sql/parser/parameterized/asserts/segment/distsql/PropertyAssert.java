@@ -29,13 +29,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-
 /**
  * Property assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PropertyAssert {
-
+    
     /**
      * Assert property is correct with expected parser result.
      *
@@ -44,11 +43,11 @@ public final class PropertyAssert {
      * @param expected expected property test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedProperty expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText("properties assertion error: "), actual.getProperty(expected.getKey()), CoreMatchers.is(expected.getValue()));
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
 }

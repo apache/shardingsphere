@@ -46,13 +46,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropRuleStatementAssert {
-
+    
     /**
      * Assert drop RDL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual drop RDL statement
-     * @param expected      expected drop RDL statement test case
+     * @param actual actual drop RDL statement
+     * @param expected expected drop RDL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropRuleStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof DropDatabaseDiscoveryRuleStatement) {

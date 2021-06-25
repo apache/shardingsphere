@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.AlgorithmAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedEncryptColumn;
@@ -33,24 +33,24 @@ import static org.junit.Assert.assertThat;
  * Encrypt column assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EncryptColumnAssert {
-
+public final class EncryptColumnAssert {
+    
     /**
      * Assert encrypt rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual encrypt column
-     * @param expected      expected encrypt column test case
+     * @param actual actual encrypt column
+     * @param expected expected encrypt column test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final EncryptColumnSegment actual, final ExpectedEncryptColumn expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getPlainColumn(), is(expected.getPlainColumn()));
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getCipherColumn(), is(expected.getCipherColumn()));
             AlgorithmAssert.assertIs(assertContext, actual.getEncryptor(), expected.getEncryptor());
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
 }

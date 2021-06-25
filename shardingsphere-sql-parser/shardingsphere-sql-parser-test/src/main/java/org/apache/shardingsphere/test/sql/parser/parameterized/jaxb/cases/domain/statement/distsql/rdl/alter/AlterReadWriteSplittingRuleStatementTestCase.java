@@ -32,7 +32,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class AlterReadWriteSplittingRuleStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "read-write-splitting")
     private List<ExceptedReadwriteSplittingRule> readwriteSplittingRules = new LinkedList<>();
 }

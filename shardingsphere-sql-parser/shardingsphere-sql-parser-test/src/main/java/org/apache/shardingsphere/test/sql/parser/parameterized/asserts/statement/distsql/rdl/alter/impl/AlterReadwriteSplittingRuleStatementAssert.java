@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.rdl.ReadwriteSplittingRuleAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterReadwriteSplittingRuleStatementAssert {
-
+    
     /**
      * Assert alter readwrite splitting rule statement is correct with expected parser result.
      *
@@ -48,17 +48,19 @@ public final class AlterReadwriteSplittingRuleStatementAssert {
      * @param expected expected alter readwrite splitting rule statement result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterReadwriteSplittingRuleStatement actual, final AlterReadWriteSplittingRuleStatementTestCase expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertReadwriteSplittingRule(assertContext, actual.getRules(), expected.getReadwriteSplittingRules());
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
-
+    
     private static void assertReadwriteSplittingRule(final SQLCaseAssertContext assertContext, final Collection<ReadwriteSplittingRuleSegment> actual,
                                                      final List<ExceptedReadwriteSplittingRule> expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText(String.format("Actual readwrite splitting size should be %s , but it was %s", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
@@ -67,8 +69,6 @@ public final class AlterReadwriteSplittingRuleStatementAssert {
                 ReadwriteSplittingRuleAssert.assertIs(assertContext, readwriteSplittingRuleSegment, exceptedReadwriteSplittingRule);
                 count++;
             }
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
 }

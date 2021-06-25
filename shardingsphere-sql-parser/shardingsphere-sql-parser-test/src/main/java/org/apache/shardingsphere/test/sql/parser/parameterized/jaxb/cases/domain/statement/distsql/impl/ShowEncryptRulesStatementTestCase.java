@@ -25,15 +25,15 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- *  * Show encrypt rules statement test case.
+ * Show encrypt rules statement test case.
  */
 @Getter
 @Setter
 public final class ShowEncryptRulesStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "table")
     private String tableName;
-
+    
     @XmlElement
     private ExpectedSchema schema;
 }

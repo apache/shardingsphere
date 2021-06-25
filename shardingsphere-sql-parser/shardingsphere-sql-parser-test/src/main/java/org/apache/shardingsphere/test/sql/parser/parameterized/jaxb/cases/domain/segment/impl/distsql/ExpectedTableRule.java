@@ -33,19 +33,19 @@ public final class ExpectedTableRule extends SQLParserTestCase {
     
     @XmlElement(name = "table")
     private String logicTable;
-
+    
     @XmlElement(name = "data-source")
     private List<String> dataSources;
-
+    
     @XmlElement(name = "table-strategy-column")
     private String tableStrategyColumn;
-
+    
     @XmlElement(name = "key-generate-strategy-column")
     private String keyGenerateStrategyColumn;
-
+    
     @XmlElement(name = "table-strategy")
-    private ExpectedFunction tableStrategy;
-
+    private ExpectedAlgorithm tableStrategy;
+    
     @XmlElement(name = "key-generate-strategy")
-    private ExpectedFunction keyGenerateStrategy;
+    private ExpectedAlgorithm keyGenerateStrategy;
 }

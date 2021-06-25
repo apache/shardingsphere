@@ -25,11 +25,11 @@
     </parent>
     <artifactId>shardingsphere-sql-parser-test</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -41,12 +41,6 @@
             <artifactId>shardingsphere-sql-parser-statement</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-distsql-parser-statement</artifactId>
@@ -55,27 +49,33 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-distsql-parser-engine</artifactId>
-<version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-discovery-distsql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-readwrite-splitting-distsql</artifactId>
+            <artifactId>shardingsphere-sharding-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sharding-distsql</artifactId>
+            <artifactId>shardingsphere-readwrite-splitting-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-encrypt-distsql</artifactId>
+            <artifactId>shardingsphere-db-discovery-distsql-parser</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-encrypt-distsql-parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

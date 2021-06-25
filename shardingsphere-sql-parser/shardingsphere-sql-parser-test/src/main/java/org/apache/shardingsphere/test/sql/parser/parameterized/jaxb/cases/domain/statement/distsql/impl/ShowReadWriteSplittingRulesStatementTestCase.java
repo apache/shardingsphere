@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ShowReadWriteSplittingRulesStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement
     private ExpectedSchema schema;
 }

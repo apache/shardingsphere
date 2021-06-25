@@ -32,19 +32,19 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropResourceStatementAssert {
-
+    
     /**
      * Assert drop resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual drop resource statement
-     * @param expected      expected drop resource statement test case
+     * @param actual actual drop resource statement
+     * @param expected expected drop resource statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropResourceStatement actual, final DropResourceStatementTestCase expected) {
-        if (null != expected.getDataSources()) {
-            assertThat(assertContext.getText("resource assertion error: "), actual.getNames(), is(expected.getDataSources()));
-        } else {
+        if (null == expected.getDataSources()) {
             assertNull(assertContext.getText("Actual resource should not exist."), actual);
+        } else {
+            assertThat(assertContext.getText("resource assertion error: "), actual.getNames(), is(expected.getDataSources()));
         }
     }
 }

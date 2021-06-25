@@ -58,13 +58,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RDLStatementAssert {
-
+    
     /**
      * Assert SQL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual RDL statement
-     * @param expected      expected parser result
+     * @param actual actual RDL statement
+     * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RDLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof AlterDatabaseDiscoveryRuleStatement) {

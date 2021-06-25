@@ -33,16 +33,18 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceAssert {
-
+    
     /**
      * Assert RQL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual RQL statement
-     * @param expected      expected RQL statement test case
+     * @param actual actual RQL statement
+     * @param expected expected RQL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DataSourceSegment actual, final ExpectedDataSource expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual dataSource should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual dataSource should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getName(), CoreMatchers.is(expected.getName()));
@@ -56,8 +58,6 @@ public final class DataSourceAssert {
                     actual.getClass().getSimpleName())), actual.getUser(), CoreMatchers.is(expected.getUser()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getPassword(), CoreMatchers.is(expected.getPassword()));
-        } else {
-            assertNull(assertContext.getText("Actual dataSource should not exist."), actual);
         }
     }
 }

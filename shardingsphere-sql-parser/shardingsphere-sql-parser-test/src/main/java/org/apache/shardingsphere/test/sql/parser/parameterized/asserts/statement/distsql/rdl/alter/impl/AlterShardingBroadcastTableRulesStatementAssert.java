@@ -33,20 +33,20 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterShardingBroadcastTableRulesStatementAssert {
-
+    
     /**
      * Assert alter sharding broadcast table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual alter sharding broadcast table rule statement
-     * @param expected      expected alter sharding broadcast table rule statement test case
+     * @param actual actual alter sharding broadcast table rule statement
+     * @param expected expected alter sharding broadcast table rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterShardingBroadcastTableRulesStatement actual, final AlterShardingBroadcastTableRulesStatementTestCase expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText("sharding broadcast table rule assertion error : "), actual.getTables(), is(expected.getTables()));
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
 }

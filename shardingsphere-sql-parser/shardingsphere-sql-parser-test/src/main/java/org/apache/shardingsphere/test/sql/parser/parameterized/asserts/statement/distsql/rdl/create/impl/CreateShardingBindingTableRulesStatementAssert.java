@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.ShardingBindingTableRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.rdl.ShardingBindingTableRuleAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingBindingTableRule;
@@ -39,37 +39,37 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateShardingBindingTableRulesStatementAssert {
-
+    
     /**
      * Assert create sharding binding table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual create sharding binding table rule statement
-     * @param expected      expected create sharding binding table rule statement test case
+     * @param actual actual create sharding binding table rule statement
+     * @param expected expected create sharding binding table rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateShardingBindingTableRulesStatement actual, final CreateShardingBindingTableRulesStatementTestCase expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertShardingBindingTableRules(assertContext, actual.getRules(), expected.getRules());
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
-
-    private static void assertShardingBindingTableRules(final SQLCaseAssertContext assertContext, final Collection<ShardingBindingTableRuleSegment> actual,
+    
+    private static void assertShardingBindingTableRules(final SQLCaseAssertContext assertContext, final Collection<BindingTableRuleSegment> actual,
                                                         final List<ExpectedShardingBindingTableRule> expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText(String.format("Actual sharding binding table rule size should be %s , but it was %s",
                     expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
-            for (ShardingBindingTableRuleSegment shardingBindingTableRuleSegment : actual) {
+            for (BindingTableRuleSegment shardingBindingTableRuleSegment : actual) {
                 ExpectedShardingBindingTableRule expectedShardingBindingTableRule = expected.get(count);
                 ShardingBindingTableRuleAssert.assertIs(assertContext, shardingBindingTableRuleSegment, expectedShardingBindingTableRule);
                 count++;
             }
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
 }

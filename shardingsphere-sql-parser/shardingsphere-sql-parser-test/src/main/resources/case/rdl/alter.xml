@@ -44,7 +44,7 @@
             </key-generate-strategy>
         </tables>
     </alter-sharding-table-rule>
-
+    
     <alter-sharding-binding-table-rules sql-case-id="alter-sharding-binding-table-rules">
         <rules>
             <tables>t_order,t_order_item</tables>
@@ -53,12 +53,12 @@
             <tables>t_1,t_2</tables>
         </rules>
     </alter-sharding-binding-table-rules>
-
+    
     <alter-sharding-broadcast-table-rules sql-case-id="alter-sharding-broadcast-table-rules">
         <table>t_1</table>
         <table>t_2</table>
     </alter-sharding-broadcast-table-rules>
-
+    
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
         <read-write-splitting>
             <name>ms_group_0</name>
@@ -77,10 +77,10 @@
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
             <load-balancer>random</load-balancer>
-            <properties></properties>
+            <properties />
         </read-write-splitting>
     </alter-readwrite-splitting-rule>
-
+    
     <alter-database-discovery-rule sql-case-id="alter-database-discovery-rule">
         <database-discovery>
             <name>ha_group_0</name>
@@ -90,7 +90,7 @@
             <properties>
                 <property>
                     <key>keepAliveCron</key>
-                    <value></value>
+                    <value />
                 </property>
                 <property>
                     <key>groupName</key>
@@ -106,7 +106,7 @@
             <properties>
                 <property>
                     <key>keepAliveCron</key>
-                    <value></value>
+                    <value />
                 </property>
                 <property>
                     <key>groupName</key>
@@ -115,7 +115,7 @@
             </properties>
         </database-discovery>
     </alter-database-discovery-rule>
-
+    
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
         <encrypt-rule>
             <table>t_encrypt</table>

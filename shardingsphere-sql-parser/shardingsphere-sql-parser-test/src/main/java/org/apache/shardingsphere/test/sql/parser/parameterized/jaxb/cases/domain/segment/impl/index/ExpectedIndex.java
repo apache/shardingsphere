@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
  * Expected index.
  */
-@Getter
-@Setter
 public final class ExpectedIndex extends AbstractExpectedIdentifierSQLSegment {
 }
