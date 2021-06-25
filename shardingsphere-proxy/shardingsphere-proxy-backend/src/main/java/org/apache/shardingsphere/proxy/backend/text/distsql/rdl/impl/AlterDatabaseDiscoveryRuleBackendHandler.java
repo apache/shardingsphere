@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Alter database discovery rule backend handler.
  */
-public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<AlterDatabaseDiscoveryRuleStatement> {
+public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<AlterDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
     
     static {
         // TODO consider about register once only
@@ -54,10 +54,17 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
     }
     
     @Override
-    public void check(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        checkToBeAlteredRules(schemaName, getRuleConfiguration(schemaName, sqlStatement), sqlStatement);
+    public void check(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkToBeAlteredRules(schemaName, currentRuleConfig, sqlStatement);
         checkToBeAlteredResources(schemaName, sqlStatement);
         checkToBeAlteredDiscoveryType(sqlStatement);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig) {
+            throw new DatabaseDiscoveryRuleNotExistedException(schemaName, getToBeAlteredRuleNames(sqlStatement));
+        }
     }
     
     private void checkToBeAlteredRules(final String schemaName, final DatabaseDiscoveryRuleConfiguration ruleConfig, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
@@ -97,17 +104,8 @@ public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHa
         return sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).collect(Collectors.toSet());
     }
     
-    private DatabaseDiscoveryRuleConfiguration getRuleConfiguration(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> result = findCurrentRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
-        if (!result.isPresent()) {
-            throw new DatabaseDiscoveryRuleNotExistedException(schemaName, getToBeAlteredRuleNames(sqlStatement));
-        }
-        return result.get();
-    }
-    
     @Override
-    public void doExecute(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
-        DatabaseDiscoveryRuleConfiguration currentRuleConfig = getCurrentRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
+    public void doExecute(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(currentRuleConfig, sqlStatement);
         addRuleConfiguration(currentRuleConfig, sqlStatement);
     }

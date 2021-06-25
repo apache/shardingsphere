@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -30,21 +28,22 @@ import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersExc
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.converter.ReadwriteSplittingRuleStatementConverter;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
  * Create readwrite splitting rule backend handler.
  */
-public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<CreateReadwriteSplittingRuleStatement> {
+public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     static {
         // TODO consider about register once only
@@ -56,16 +55,15 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
     }
     
     @Override
-    public void check(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        checkDuplicateRuleNames(schemaName, sqlStatement);
+    public void check(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
         checkResources(schemaName, sqlStatement);
         checkLoadBalancers(sqlStatement);
     }
     
-    private void checkDuplicateRuleNames(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
-        if (ruleConfig.isPresent()) {
-            Collection<String> existRuleNames = getRuleNames(ruleConfig.get());
+    private void checkDuplicateRuleNames(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        if (null != currentRuleConfig) {
+            Collection<String> existRuleNames = getRuleNames(currentRuleConfig);
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toList());
             if (!duplicateRuleNames.isEmpty()) {
                 throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
@@ -98,23 +96,21 @@ public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackend
         return result;
     }
     
-    private Collection<String> getRuleNames(final ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration) {
-        return readwriteSplittingRuleConfiguration.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+    private Collection<String> getRuleNames(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        return currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
     }
     
     @Override
-    public void doExecute(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         YamlReadwriteSplittingRuleConfiguration yamlReadwriteSplittingRuleConfig = ReadwriteSplittingRuleStatementConverter.convert(sqlStatement);
         ReadwriteSplittingRuleConfiguration createdReadwriteSplittingRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlReadwriteSplittingRuleConfig))
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).findAny().map(each -> (ReadwriteSplittingRuleConfiguration) each).get();
-        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ReadwriteSplittingRuleConfiguration.class);
-        if (ruleConfig.isPresent()) {
-            ReadwriteSplittingRuleConfiguration existReadwriteSplittingRuleConfig = ruleConfig.get();
-            existReadwriteSplittingRuleConfig.getDataSources().addAll(createdReadwriteSplittingRuleConfig.getDataSources());
-            existReadwriteSplittingRuleConfig.getLoadBalancers().putAll(createdReadwriteSplittingRuleConfig.getLoadBalancers());
-        } else {
+        if (null == currentRuleConfig) {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdReadwriteSplittingRuleConfig);
+        } else {
+            currentRuleConfig.getDataSources().addAll(createdReadwriteSplittingRuleConfig.getDataSources());
+            currentRuleConfig.getLoadBalancers().putAll(createdReadwriteSplittingRuleConfig.getLoadBalancers());
         }
     }
 }

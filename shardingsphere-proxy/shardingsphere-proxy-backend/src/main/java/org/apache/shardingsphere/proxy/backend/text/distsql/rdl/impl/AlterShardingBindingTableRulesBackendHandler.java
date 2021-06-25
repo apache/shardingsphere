@@ -36,19 +36,19 @@ import java.util.stream.Collectors;
 /**
  * Alter sharding binding table rule backend handler.
  */
-public final class AlterShardingBindingTableRulesBackendHandler extends RDLBackendHandler<AlterShardingBindingTableRulesStatement> {
+public final class AlterShardingBindingTableRulesBackendHandler extends RDLBackendHandler<AlterShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     public AlterShardingBindingTableRulesBackendHandler(final AlterShardingBindingTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public void check(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement) {
-        if (!findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).isPresent()) {
+    public void check(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig) {
             throw new ShardingBindingTableRuleNotExistsException(schemaName);
         }
         Collection<String> invalidBindingTables = new HashSet<>();
-        Collection<String> existLogicTables = getLogicTables(schemaName);
+        Collection<String> existLogicTables = getLogicTables(currentRuleConfig);
         Collection<String> bindingTables = ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables();
         for (String bindingTable : bindingTables) {
             for (String logicTable : Splitter.on(",").splitToList(bindingTable)) {
@@ -67,17 +67,16 @@ public final class AlterShardingBindingTableRulesBackendHandler extends RDLBacke
     }
     
     @Override
-    public void doExecute(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement) {
-        Collection<String> bindingTableGroups = getCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).getBindingTableGroups();
+    public void doExecute(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> bindingTableGroups = currentRuleConfig.getBindingTableGroups();
         bindingTableGroups.clear();
         bindingTableGroups.addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());
     }
     
-    private Collection<String> getLogicTables(final String schemaName) {
-        ShardingRuleConfiguration shardingRuleConfig = getCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+    private Collection<String> getLogicTables(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> result = new HashSet<>();
-        result.addAll(shardingRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        result.addAll(shardingRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        result.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        result.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         return result;
     }
     
@@ -88,8 +87,7 @@ public final class AlterShardingBindingTableRulesBackendHandler extends RDLBacke
     
     private boolean notEquals(final String table, final Collection<String> tables) {
         for (String each : tables) {
-            if (table.equals(each) || (table.length() == each.length() && Splitter.on(",").splitToList(each)
-                    .containsAll(Splitter.on(",").splitToList(table)))) {
+            if (table.equals(each) || (table.length() == each.length() && Splitter.on(",").splitToList(each).containsAll(Splitter.on(",").splitToList(table)))) {
                 return true;
             }
         }

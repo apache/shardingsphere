@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -38,11 +37,11 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * Create sharding table rule backend handler.
  */
-public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandler<CreateShardingTableRuleStatement> {
+public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandler<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     static {
         // TODO consider about register once only
@@ -63,12 +62,12 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     }
     
     @Override
-    public void check(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
+    public void check(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> notExistResources = getNotExistedResources(schemaName, getResources(sqlStatement));
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
-        Collection<String> existLogicTables = getAllTables(schemaName);
+        Collection<String> existLogicTables = getAllTables(schemaName, currentRuleConfig);
         Set<String> duplicateTableNames = sqlStatement.getRules().stream().collect(Collectors.toMap(TableRuleSegment::getLogicTable, each -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         duplicateTableNames.addAll(sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).filter(existLogicTables::contains).collect(Collectors.toSet()));
@@ -90,22 +89,23 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     }
     
     @Override
-    public void doExecute(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).iterator().next();
-        Optional<ShardingRuleConfiguration> existShardingRuleConfig = findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
-        if (existShardingRuleConfig.isPresent()) {
-            existShardingRuleConfig.get().getAutoTables().addAll(shardingRuleConfig.getAutoTables());
-            existShardingRuleConfig.get().getShardingAlgorithms().putAll(shardingRuleConfig.getShardingAlgorithms());
-            existShardingRuleConfig.get().getKeyGenerators().putAll(shardingRuleConfig.getKeyGenerators());
-        } else {
+        if (null == currentRuleConfig) {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(shardingRuleConfig);
+        } else {
+            currentRuleConfig.getAutoTables().addAll(shardingRuleConfig.getAutoTables());
+            currentRuleConfig.getShardingAlgorithms().putAll(shardingRuleConfig.getShardingAlgorithms());
+            currentRuleConfig.getKeyGenerators().putAll(shardingRuleConfig.getKeyGenerators());
         }
     }
     
-    private Collection<String> getAllTables(final String schemaName) {
-        Collection<String> result = Sets.newHashSet(ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames());
-        findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).ifPresent(optional -> result.addAll(getShardingTables(optional)));
+    private Collection<String> getAllTables(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> result = new HashSet<>(ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames());
+        if (null != currentRuleConfig) {
+            result.addAll(getShardingTables(currentRuleConfig));
+        }
         return result;
     }
     
@@ -123,7 +123,6 @@ public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandl
     }
     
     private Collection<String> getKeyGenerators(final CreateShardingTableRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
-                .map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
+        return sqlStatement.getRules().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
     }
 }

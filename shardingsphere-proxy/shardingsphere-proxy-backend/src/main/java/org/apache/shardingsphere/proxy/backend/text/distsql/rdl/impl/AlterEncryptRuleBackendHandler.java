@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -33,14 +33,13 @@ import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsExcept
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
  * Alter encrypt rule backend handler.
  */
-public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<AlterEncryptRuleStatement> {
+public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<AlterEncryptRuleStatement, EncryptRuleConfiguration> {
     
     static {
         // TODO consider about register once only
@@ -52,21 +51,16 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     }
     
     @Override
-    public void check(final String schemaName, final AlterEncryptRuleStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
-        if (!ruleConfig.isPresent()) {
+    public void check(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig) {
             throw new EncryptRuleNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
         }
-        check(schemaName, sqlStatement, ruleConfig.get());
-    }
-    
-    private void check(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration encryptRuleConfig) {
-        checkAlteredTables(schemaName, encryptRuleConfig, sqlStatement);
+        checkAlteredTables(schemaName, sqlStatement, currentRuleConfig);
         checkEncryptors(sqlStatement);
     }
     
-    private void checkAlteredTables(final String schemaName, final EncryptRuleConfiguration encryptRuleConfig, final AlterEncryptRuleStatement sqlStatement) {
-        Collection<String> existTables = getExistTables(encryptRuleConfig);
+    private void checkAlteredTables(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+        Collection<String> existTables = getExistTables(currentRuleConfig);
         Collection<String> notExistTables = getAlteredRuleNames(sqlStatement).stream().filter(each -> !existTables.contains(each)).collect(Collectors.toList());
         if (!notExistTables.isEmpty()) {
             throw new EncryptRuleNotExistedException(schemaName, notExistTables);
@@ -89,14 +83,13 @@ public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<Alte
     }
     
     @Override
-    public void doExecute(final String schemaName, final AlterEncryptRuleStatement sqlStatement) {
-        EncryptRuleConfiguration ruleConfig = getCurrentRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
+    public void doExecute(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         EncryptRuleConfiguration alteredEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(EncryptRuleStatementConverter.convert(sqlStatement.getRules()))).stream()
                 .map(each -> (EncryptRuleConfiguration) each).findFirst().get();
-        drop(sqlStatement, ruleConfig);
-        ruleConfig.getTables().addAll(alteredEncryptRuleConfiguration.getTables());
-        ruleConfig.getEncryptors().putAll(alteredEncryptRuleConfiguration.getEncryptors());
+        drop(sqlStatement, currentRuleConfig);
+        currentRuleConfig.getTables().addAll(alteredEncryptRuleConfiguration.getTables());
+        currentRuleConfig.getEncryptors().putAll(alteredEncryptRuleConfiguration.getEncryptors());
     }
     
     private void drop(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration encryptRuleConfig) {

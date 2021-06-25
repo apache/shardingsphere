@@ -23,28 +23,26 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Alter sharding broadcast table rule backend handler.
  */
-public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBackendHandler<AlterShardingBroadcastTableRulesStatement> {
+public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBackendHandler<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     public AlterShardingBroadcastTableRulesBackendHandler(final AlterShardingBroadcastTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public void check(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
-        if (!shardingRuleConfig.isPresent()) {
+    public void check(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig) {
             throw new ShardingBroadcastTableRuleNotExistsException(schemaName);
         }
     }
     
     @Override
-    public void doExecute(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement) {
-        Collection<String> broadcastTables = getCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).getBroadcastTables();
+    public void doExecute(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> broadcastTables = currentRuleConfig.getBroadcastTables();
         broadcastTables.clear();
         broadcastTables.addAll(sqlStatement.getTables());
     }

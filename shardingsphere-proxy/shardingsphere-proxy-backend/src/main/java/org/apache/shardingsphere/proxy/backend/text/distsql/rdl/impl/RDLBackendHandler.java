@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,24 +38,28 @@ import java.util.stream.Collectors;
  * RDL backend handler.
  *
  * @param <T> type of SQL statement
+ * @param <R> type of rule configuration
  */
-public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
+public abstract class RDLBackendHandler<T extends SQLStatement, R extends SchemaRuleConfiguration> extends SchemaRequiredBackendHandler<T> {
     
     public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     protected final ResponseHeader execute(final String schemaName, final T sqlStatement) {
-        check(schemaName, sqlStatement);
-        doExecute(schemaName, sqlStatement);
+        Class<R> configRuleClass = (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+        R currentRuleConfig = findCurrentRuleConfiguration(schemaName, configRuleClass).orElse(null);
+        check(schemaName, sqlStatement, currentRuleConfig);
+        doExecute(schemaName, sqlStatement, currentRuleConfig);
         postChange(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    protected abstract void check(String schemaName, T sqlStatement);
+    protected abstract void check(String schemaName, T sqlStatement, R currentRuleConfig);
     
-    protected abstract void doExecute(String schemaName, T sqlStatement);
+    protected abstract void doExecute(String schemaName, T sqlStatement, R currentRuleConfig);
     
     private void postChange(final String schemaName) {
         ShardingSphereEventBus.getInstance().post(
@@ -62,15 +67,13 @@ public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRe
     }
     
     @SuppressWarnings("unchecked")
-    protected final <R extends SchemaRuleConfiguration> Optional<R> findCurrentRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
-        return ProxyContext.getInstance().getMetaData(schemaName)
-                .getRuleMetaData().getConfigurations().stream().filter(each -> configRuleClass.isAssignableFrom(each.getClass())).map(each -> (R) each).findFirst();
-    }
-    
-    protected final <R extends SchemaRuleConfiguration> R getCurrentRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
-        Optional<R> result = findCurrentRuleConfiguration(schemaName, configRuleClass);
-        Preconditions.checkState(result.isPresent(), "Can not find rule type: `%s`.", configRuleClass);
-        return result.get();
+    private Optional<R> findCurrentRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
+        for (RuleConfiguration each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()) {
+            if (configRuleClass.isAssignableFrom(each.getClass())) {
+                return Optional.of((R) each);
+            }
+        }
+        return Optional.empty();
     }
     
     protected final Collection<String> getNotExistedResources(final String schemaName, final Collection<String> resourceNames) {
