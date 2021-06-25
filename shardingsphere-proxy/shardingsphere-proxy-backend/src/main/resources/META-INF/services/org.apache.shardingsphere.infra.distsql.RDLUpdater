@@ -25,3 +25,4 @@ org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.AlterDatab
 
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.CreateEncryptRuleStatementUpdater
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.AlterEncryptRuleStatementUpdater
+org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.DropEncryptRuleStatementUpdater
