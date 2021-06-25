@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
-import org.apache.shardingsphere.infra.distsql.RDLStatementUpdater;
+import org.apache.shardingsphere.infra.distsql.RDLUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -28,7 +28,7 @@ import java.util.Collection;
 /**
  * Alter sharding broadcast table rule statement updater.
  */
-public final class AlterShardingBroadcastTableRuleStatementUpdater implements RDLStatementUpdater<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
+public final class AlterShardingBroadcastTableRuleStatementUpdater implements RDLUpdater<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, 

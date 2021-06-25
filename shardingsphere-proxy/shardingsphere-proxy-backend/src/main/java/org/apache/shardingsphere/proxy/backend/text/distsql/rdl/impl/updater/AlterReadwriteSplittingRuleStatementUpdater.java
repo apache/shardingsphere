@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.distsql.RDLStatementUpdater;
+import org.apache.shardingsphere.infra.distsql.RDLUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Alter readwrite-splitting rule statement updater.
  */
-public final class AlterReadwriteSplittingRuleStatementUpdater implements RDLStatementUpdater<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
+public final class AlterReadwriteSplittingRuleStatementUpdater implements RDLUpdater<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     static {
         // TODO consider about register once only

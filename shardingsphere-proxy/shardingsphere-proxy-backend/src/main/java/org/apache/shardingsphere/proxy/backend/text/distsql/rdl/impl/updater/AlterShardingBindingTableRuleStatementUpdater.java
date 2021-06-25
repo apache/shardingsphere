@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.distsql.RDLStatementUpdater;
+import org.apache.shardingsphere.infra.distsql.RDLUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Alter sharding binding table rule statement updater.
  */
-public final class AlterShardingBindingTableRuleStatementUpdater implements RDLStatementUpdater<AlterShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
+public final class AlterShardingBindingTableRuleStatementUpdater implements RDLUpdater<AlterShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, 

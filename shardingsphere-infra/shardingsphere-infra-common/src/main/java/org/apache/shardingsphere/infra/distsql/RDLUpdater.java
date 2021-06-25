@@ -23,12 +23,12 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * RDL statement updater.
+ * RDL updater.
  * 
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-public interface RDLStatementUpdater<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface RDLUpdater<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**
      * Check SQL statement.
