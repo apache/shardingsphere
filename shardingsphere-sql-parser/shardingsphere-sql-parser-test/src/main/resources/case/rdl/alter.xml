@@ -27,19 +27,13 @@
             <table-strategy>
                 <algorithm-name>hash_mod</algorithm-name>
                 <properties>
-                    <property>
-                        <key>sharding-count</key>
-                        <value>4</value>
-                    </property>
+                    <property key="sharding-count" value="4" />
                 </properties>
             </table-strategy>
             <key-generate-strategy>
                 <algorithm-name>snowflake</algorithm-name>
                 <properties>
-                    <property>
-                        <key>worker-id</key>
-                        <value>123</value>
-                    </property>
+                    <property key="worker-id" value="123" />
                 </properties>
             </key-generate-strategy>
         </tables>
@@ -65,10 +59,7 @@
             <auto-aware-resource>group_0</auto-aware-resource>
             <load-balancer>random</load-balancer>
             <properties>
-                <property>
-                    <key>read_weight</key>
-                    <value>'2:1'</value>
-                </property>
+                <property key="read_weight" value="'2:1'" />
             </properties>
         </read-write-splitting>
         <read-write-splitting>
@@ -88,14 +79,8 @@
             <data-source>resource1</data-source>
             <discovery-type>mgr</discovery-type>
             <properties>
-                <property>
-                    <key>keepAliveCron</key>
-                    <value />
-                </property>
-                <property>
-                    <key>groupName</key>
-                    <value>92504d5b-6dec</value>
-                </property>
+                <property key="keepAliveCron" value="" />
+                <property key="groupName" value="92504d5b-6dec" />
             </properties>
         </database-discovery>
         <database-discovery>
@@ -104,14 +89,8 @@
             <data-source>resource3</data-source>
             <discovery-type>mgr2</discovery-type>
             <properties>
-                <property>
-                    <key>keepAliveCron</key>
-                    <value />
-                </property>
-                <property>
-                    <key>groupName</key>
-                    <value>92504d5b-6dec-2</value>
-                </property>
+                <property key="keepAliveCron" value="" />
+                <property key="groupName" value="92504d5b-6dec-2" />
             </properties>
         </database-discovery>
     </alter-database-discovery-rule>
@@ -126,10 +105,7 @@
                 <encryptor>
                     <algorithm-name>AES</algorithm-name>
                     <properties>
-                        <property>
-                            <key>aes-key-value</key>
-                            <value>123456abc</value>
-                        </property>
+                        <property key="aes-key-value" value="123456abc" />
                     </properties>
                 </encryptor>
             </column>

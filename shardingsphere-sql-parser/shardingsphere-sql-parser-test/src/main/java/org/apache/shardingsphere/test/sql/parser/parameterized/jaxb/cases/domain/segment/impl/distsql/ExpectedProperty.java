@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Expected property.
@@ -30,9 +30,9 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedProperty extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement
+    @XmlAttribute
     private String key;
     
-    @XmlElement
+    @XmlAttribute
     private String value;
 }
