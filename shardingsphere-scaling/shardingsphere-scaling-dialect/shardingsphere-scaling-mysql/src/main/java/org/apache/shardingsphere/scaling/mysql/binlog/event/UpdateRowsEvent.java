@@ -26,8 +26,8 @@ import java.util.List;
 /**
  * Update rows event.
  */
-@Setter
 @Getter
+@Setter
 public final class UpdateRowsEvent extends AbstractRowsEvent {
     
     private List<Serializable[]> beforeRows;

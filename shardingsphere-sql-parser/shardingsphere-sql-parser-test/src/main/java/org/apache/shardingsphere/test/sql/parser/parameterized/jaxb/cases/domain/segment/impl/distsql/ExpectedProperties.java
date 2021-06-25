@@ -24,10 +24,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
+/**
+ * Expected properties.
+ */
 @Getter
 @Setter
 public final class ExpectedProperties extends AbstractExpectedIdentifierSQLSegment {
-
-    @XmlElement
-    private List<ExpectedProperty> property;
+    
+    @XmlElement(name = "property")
+    private List<ExpectedProperty> properties;
 }

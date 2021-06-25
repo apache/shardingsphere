@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.rdl.EncryptRuleAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedEncryptRule;
@@ -39,25 +39,27 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateEncryptRuleStatementAssert {
-
+    
     /**
      * Assert create encrypt rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual create encrypt rule statement
-     * @param expected      expected create encrypt rule statement test case
+     * @param actual actual create encrypt rule statement
+     * @param expected expected create encrypt rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateEncryptRuleStatement actual, final CreateEncryptRuleStatementTestCase expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);   
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertEncryptRules(assertContext, actual.getRules(), expected.getEncryptRules());
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
-
+    
     private static void assertEncryptRules(final SQLCaseAssertContext assertContext, final Collection<EncryptRuleSegment> actual, final List<ExpectedEncryptRule> expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText(String.format("Actual encrypt rule size should be %s , but it was %s",
                     expected.size(), actual.size())), actual.size(), is(expected.size()));
@@ -68,8 +70,6 @@ public final class CreateEncryptRuleStatementAssert {
                 EncryptRuleAssert.assertIs(assertContext, encryptRuleSegment, expectedEncryptRule);
                 count++;
             }
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
 }

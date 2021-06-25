@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedFunction;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
 import org.hamcrest.CoreMatchers;
 
 import static org.junit.Assert.assertNotNull;
@@ -29,26 +29,26 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNull;
 
 /**
- * Function assert.
+ * Algorithm assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlgorithmAssert {
-
+    
     /**
      * Assert function is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual function
-     * @param expected      expected function test case
+     * @param actual actual function
+     * @param expected expected function test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final ExpectedFunction expected) {
-        if (null != expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final ExpectedAlgorithm expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual dataSource should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual dataSource should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s function segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getName(), CoreMatchers.is(expected.getAlgorithmName()));
             PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getAlgorithmProps());
-        } else {
-            assertNull(assertContext.getText("Actual dataSource should not exist."), actual);
         }
     }
 }

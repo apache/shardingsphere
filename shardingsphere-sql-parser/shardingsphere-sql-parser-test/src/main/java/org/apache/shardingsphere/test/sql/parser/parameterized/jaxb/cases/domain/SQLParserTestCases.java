@@ -133,163 +133,163 @@ import java.util.Map;
 @XmlRootElement(name = "sql-parser-test-cases")
 @Getter
 public final class SQLParserTestCases {
-
+    
     @XmlElement(name = "select")
     private final List<SelectStatementTestCase> selectTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "update")
     private final List<UpdateStatementTestCase> updateTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "delete")
     private final List<DeleteStatementTestCase> deleteTestCases = new LinkedList<>();
     
     @XmlElement(name = "insert")
     private final List<InsertStatementTestCase> insertTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-table")
     private final List<CreateTableStatementTestCase> createTableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-table")
     private final List<AlterTableStatementTestCase> alterTableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "truncate")
     private final List<TruncateStatementTestCase> truncateTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-index")
     private final List<CreateIndexStatementTestCase> createIndexTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-index")
     private final List<AlterIndexStatementTestCase> alterIndexTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-index")
     private final List<DropIndexStatementTestCase> dropIndexTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "set-constraints")
     private final List<SetConstraintsStatementTestCase> setConstraintsTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "set-transaction")
     private final List<SetTransactionStatementTestCase> setTransactionTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "begin-transaction")
     private final List<BeginTransactionStatementTestCase> beginTransactionTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "set-auto-commit")
     private final List<SetAutoCommitStatementTestCase> setAutoCommitTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "commit")
     private final List<CommitStatementTestCase> commitTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "rollback")
     private final List<RollbackStatementTestCase> rollbackTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "savepoint")
     private final List<SavepointStatementTestCase> savepointTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "grant")
     private final List<GrantStatementTestCase> grantTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "revoke")
     private final List<RevokeStatementTestCase> revokeTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-user")
     private final List<CreateUserStatementTestCase> createUserTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-user")
     private final List<AlterUserStatementTestCase> alterUserTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-user")
     private final List<DropUserStatementTestCase> dropUserTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "rename-user")
     private final List<RenameUserStatementTestCase> renameUserTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "deny-user")
     private final List<DenyUserStatementTestCase> denyUserTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-login")
     private final List<CreateLoginStatementTestCase> createLoginTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-login")
     private final List<AlterLoginStatementTestCase> alterLoginTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-login")
     private final List<DropLoginStatementTestCase> dropLoginTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-role")
     private final List<CreateRoleStatementTestCase> createRoleTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-role")
     private final List<AlterRoleStatementTestCase> alterRoleTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-role")
     private final List<DropRoleStatementTestCase> dropRoleTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "set-default-role")
     private final List<SetDefaultRoleStatementTestCase> setDefaultRoleTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "set-role")
     private final List<SetRoleStatementTestCase> setRoleTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "set-password")
     private final List<SetPasswordStatementTestCase> setPasswordTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "use")
     private final List<UseStatementTestCase> useTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "describe")
     private final List<ExplainStatementTestCase> describeTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-databases")
     private final List<ShowDatabasesStatementTestCase> showDatabasesTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-tables")
     private final List<ShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-columns")
     private final List<ShowColumnsStatementTestCase> showColumnsTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-create-table")
     private final List<ShowCreateTableStatementTestCase> showCreateTableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-table-status")
     private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-index")
     private final List<ShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show")
     private final List<ShowStatementTestCase> showTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "set-variable")
     private final List<SetVariableStatementTestCase> setVariableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-function")
     private final List<AlterFunctionStatementTestCase> alterFunctionTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-database")
     private final List<AlterDatabaseStatementTestCase> alterDatabaseTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-procedure")
     private final List<AlterProcedureStatementTestCase> alterProcedureTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-server")
     private final List<AlterServerStatementTestCase> alterServerTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-session")
     private final List<AlterSessionStatementTestCase> alterSessionTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-synonym")
     private final List<AlterSynonymStatementTestCase> alterSynonymTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-system")
     private final List<AlterSystemStatementTestCase> alterSystemTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "create-database")
     private final List<CreateDatabaseStatementTestCase> createDatabaseTestCase = new LinkedList<>();
     
@@ -310,124 +310,124 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-database")
     private final List<DropDatabaseStatementTestCase> dropDatabaseTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-function")
     private final List<DropFunctionStatementTestCase> dropFunctionTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-procedure")
     private final List<DropProcedureStatementTestCase> dropProcedureTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-server")
     private final List<DropServerStatementTestCase> dropServerTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-trigger")
     private final List<DropTriggerStatementTestCase> dropTriggerTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-view")
     private final List<DropViewStatementTestCase> dropViewTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "call")
     private final List<CallStatementTestCase> callProcedureTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "xa")
     private final List<XATestCase> xaTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "merge")
     private final List<MergeStatementTestCase> mergeTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "create-sequence")
     private final List<CreateSequenceStatementTestCase> createSequenceTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-sequence")
     private final List<AlterSequenceStatementTestCase> alterSequenceTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-sequence")
     private final List<DropSequenceStatementTestCase> dropSequenceTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "analyze")
     private final List<AnalyzeStatementTestCase> analyzeTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "add-resource")
     private final List<AddResourceStatementTestCase> addResourceTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-database-discovery-rule")
     private final List<AlterDataBaseDiscoveryRuleStatementTestCase> alterDataBaseDiscoveryRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-encrypt-rule")
     private final List<AlterEncryptRuleStatementTestCase> alterEncryptRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-readwrite-splitting-rule")
     private final List<AlterReadWriteSplittingRuleStatementTestCase> alterReadWriteSplittingRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-sharding-binding-table-rules")
     private final List<AlterShardingBindingTableRulesStatementTestCase> alterShardingBindingTableRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-sharding-broadcast-table-rules")
     private final List<AlterShardingBroadcastTableRulesStatementTestCase> alterShardingBroadcastTableRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-sharding-table-rule")
     private final List<AlterShardingTableRuleStatementTestCase> alterShardingTableRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "create-database-discovery-rule")
     private final List<CreateDataBaseDiscoveryRuleStatementTestCase> createDataBaseDiscoveryRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "create-encrypt-rule")
     private final List<CreateEncryptRuleStatementTestCase> createEncryptRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "create-readwrite-splitting-rule")
     private final List<CreateReadWriteSplittingRuleStatementTestCase> createReadWriteSplittingRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "create-sharding-binding-table-rule")
     private final List<CreateShardingBindingTableRulesStatementTestCase> createShardingBindingTableRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "create-sharding-broadcast-table-rule")
     private final List<CreateShardingBroadcastTableRulesStatementTestCase> createShardingBroadcastTableRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "create-sharding-table-rule")
     private final List<CreateShardingTableRuleStatementTestCase> createShardingTableRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-database-discovery-rule")
     private final List<DropDataBaseDiscoveryRuleStatementTestCase> dropDataBaseDiscoveryRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-encrypt-rule")
     private final List<DropEncryptRuleStatementTestCase> dropEncryptRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-readwrite-splitting-rule")
     private final List<DropReadWriteSplittingRuleStatementTestCase> dropReadWriteSplittingRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-resource")
     private final List<DropResourceStatementTestCase> dropResourceTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-sharding-binding-table-rules")
     private final List<DropShardingBindingTableRulesStatementTestCase> dropShardingBindingTableRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-sharding-broadcast-table-rules")
     private final List<DropShardingBroadcastTableRulesStatementTestCase> dropShardingBroadcastTableRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "drop-sharding-table-rule")
     private final List<DropShardingTableRuleStatementTestCase> dropShardingTableRuleTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "show-db-discovery-rules")
     private final List<ShowDataBaseDiscoveryRulesStatementTestCase> showDataBaseDiscoveryRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "show-encrypt-rules")
     private final List<ShowEncryptRulesStatementTestCase> showEncryptRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "show-readwrite-splitting-rules")
     private final List<ShowReadWriteSplittingRulesStatementTestCase> showReadWriteSplittingRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "show-sharding-binding-table-rules")
     private final List<ShowShardingBindingTableRulesStatementTestCase> showShardingBindingTableRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "show-sharding-broadcast-table-rules")
     private final List<ShowShardingBroadcastTableRulesStatementTestCase> showShardingBroadcastTableRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "show-sharding-table-rules")
     private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRulesTestCase = new LinkedList<>();
-
+    
     @XmlElement(name = "show-sharding-table-rule")
     private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRuleTestCase = new LinkedList<>();
-
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -535,7 +535,7 @@ public final class SQLParserTestCases {
         putAll(showShardingTableRuleTestCase, result);
         return result;
     }
-
+    
     private void putAll(final List<? extends SQLParserTestCase> sqlParserTestCases, final Map<String, SQLParserTestCase> target) {
         Map<String, SQLParserTestCase> sqlParserTestCaseMap = getSQLParserTestCases(sqlParserTestCases);
         Collection<String> sqlParserTestCaseIds = new HashSet<>(sqlParserTestCaseMap.keySet());
@@ -543,7 +543,7 @@ public final class SQLParserTestCases {
         Preconditions.checkState(sqlParserTestCaseIds.isEmpty(), "Find duplicated SQL Case IDs: %s", sqlParserTestCaseIds);
         target.putAll(sqlParserTestCaseMap);
     }
-
+    
     private Map<String, SQLParserTestCase> getSQLParserTestCases(final List<? extends SQLParserTestCase> sqlParserTestCases) {
         Map<String, SQLParserTestCase> result = new HashMap<>(sqlParserTestCases.size(), 1);
         for (SQLParserTestCase each : sqlParserTestCases) {

@@ -33,20 +33,20 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropReadwriteSplittingRuleStatementAssert {
-
+    
     /**
      * Assert drop readwrite splitting rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual drop readwrite splitting rule statement
-     * @param expected      expected drop readwrite splitting rule statement test case
+     * @param actual actual drop readwrite splitting rule statement
+     * @param expected expected drop readwrite splitting rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropReadwriteSplittingRuleStatement actual, final DropReadWriteSplittingRuleStatementTestCase expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText("read-write splitting assertion error: "), actual.getRuleNames(), is(expected.getReadwriteSplittingRules()));
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
 }

@@ -32,7 +32,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class CreateShardingBindingTableRulesStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "rules")
     private final List<ExpectedShardingBindingTableRule> rules = new LinkedList<>();
 }

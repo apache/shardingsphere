@@ -30,10 +30,10 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ShowShardingTableRulesStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "table")
     private String tableName;
-
+    
     @XmlElement
     private ExpectedSchema schema;
 }

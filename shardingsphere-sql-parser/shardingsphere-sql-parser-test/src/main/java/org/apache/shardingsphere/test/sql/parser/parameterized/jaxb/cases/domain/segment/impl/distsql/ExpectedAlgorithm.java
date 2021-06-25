@@ -23,15 +23,16 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlElement;
 
-@Setter
+/**
+ * Expected algorithm.
+ */
 @Getter
-public final class ExpectedFunction extends AbstractExpectedIdentifierSQLSegment {
+@Setter
+public final class ExpectedAlgorithm extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement
     private String algorithmName;
     
     @XmlElement(name = "properties")
     private ExpectedProperties algorithmProps;
-    
-    
 }

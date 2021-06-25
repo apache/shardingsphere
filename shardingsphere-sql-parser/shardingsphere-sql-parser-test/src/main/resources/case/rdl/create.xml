@@ -24,10 +24,10 @@
             <port>3306</port>
             <db>test0</db>
             <user>ROOT</user>
-            <password></password>
+            <password />
         </dataSource>
     </add-resource>
-
+    
     <add-resource sql-case-id="add-resource-single-with-password">
         <dataSource>
             <name>ds_0</name>
@@ -38,7 +38,7 @@
             <password>123456</password>
         </dataSource>
     </add-resource>
-
+    
     <add-resource sql-case-id="add-resource-multiple">
         <dataSource>
             <name>ds_0</name>
@@ -85,7 +85,7 @@
             </key-generate-strategy>
         </tables>
     </create-sharding-table-rule>
-
+    
     <create-sharding-binding-table-rule sql-case-id="create-sharding-binding-table-rule">
         <rules>
             <tables>t_order,t_order_item</tables>
@@ -94,12 +94,12 @@
             <tables>t_1,t_2</tables>
         </rules>
     </create-sharding-binding-table-rule>
-
+    
     <create-sharding-broadcast-table-rule sql-case-id="create-sharding-broadcast-table-rule">
         <table>t_1</table>
         <table>t_2</table>
     </create-sharding-broadcast-table-rule>
-
+    
     <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule">
         <read-write-splitting>
             <name>ms_group_0</name>
@@ -107,10 +107,10 @@
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
             <load-balancer>random</load-balancer>
-            <properties></properties>
+            <properties />
         </read-write-splitting>
     </create-readwrite-splitting-rule>
-
+    
     <create-readwrite-splitting-rule sql-case-id="create-dynamic-readwrite-splitting-rule">
         <read-write-splitting>
             <name>ms_group_1</name>
@@ -124,7 +124,7 @@
             </properties>
         </read-write-splitting>
     </create-readwrite-splitting-rule>
-
+    
     <create-database-discovery-rule sql-case-id="create-database-discovery-rule">
         <database-discovery>
             <name>ha_group_0</name>
@@ -134,7 +134,7 @@
             <properties>
                 <property>
                     <key>keepAliveCron</key>
-                    <value></value>
+                    <value />
                 </property>
                 <property>
                     <key>groupName</key>
@@ -150,7 +150,7 @@
             <properties>
                 <property>
                     <key>keepAliveCron</key>
-                    <value></value>
+                    <value />
                 </property>
                 <property>
                     <key>groupName</key>
@@ -159,7 +159,7 @@
             </properties>
         </database-discovery>
     </create-database-discovery-rule>
-
+    
     <create-encrypt-rule sql-case-id="create-encrypt-rule">
         <encrypt-rule>
             <table>t_encrypt</table>

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedTableRule;
 import org.hamcrest.CoreMatchers;
@@ -33,16 +33,18 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableRuleAssert {
-
+    
     /**
      * Assert table rule is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual table rule
-     * @param expected      expected table rule test case
+     * @param actual actual table rule
+     * @param expected expected table rule test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableRuleSegment actual, final ExpectedTableRule expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getLogicTable(), CoreMatchers.is(expected.getLogicTable()));
@@ -54,8 +56,6 @@ public final class TableRuleAssert {
                     actual.getKeyGenerateStrategyColumn(), CoreMatchers.is(expected.getKeyGenerateStrategyColumn()));
             AlgorithmAssert.assertIs(assertContext, actual.getTableStrategy(), expected.getTableStrategy());
             AlgorithmAssert.assertIs(assertContext, actual.getKeyGenerateStrategy(), expected.getKeyGenerateStrategy());
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
 }

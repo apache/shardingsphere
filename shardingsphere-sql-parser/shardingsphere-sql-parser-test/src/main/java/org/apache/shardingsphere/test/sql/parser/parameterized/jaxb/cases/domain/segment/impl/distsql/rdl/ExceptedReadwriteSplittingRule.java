@@ -25,25 +25,28 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
+/**
+ * Excepted readwrite splitting rule.
+ */
 @Getter
 @Setter
 public final class ExceptedReadwriteSplittingRule extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement
     private String name;
-
+    
     @XmlElement(name = "auto-aware-resource")
     private String autoAwareResource;
-
+    
     @XmlElement(name = "write-data-source")
     private String writeDataSource;
-
+    
     @XmlElement(name = "read-data-source")
     private List<String> readDataSources;
-
+    
     @XmlElement(name = "load-balancer")
     private String loadBalancer;
-
+    
     @XmlElement(name = "properties")
     private ExpectedProperties props;
 }

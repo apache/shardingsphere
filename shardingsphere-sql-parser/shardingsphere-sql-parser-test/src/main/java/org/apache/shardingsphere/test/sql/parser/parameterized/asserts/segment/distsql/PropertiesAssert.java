@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PropertiesAssert {
-
+    
     /**
      * Assert properties is correct with expected parser result.
      *
@@ -43,9 +43,9 @@ public final class PropertiesAssert {
      * @param expected expected properties test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedProperties expected) {
-        if (null != expected && null != expected.getProperty()) {
+        if (null != expected && null != expected.getProperties()) {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
-            for (ExpectedProperty expectedProperty : expected.getProperty()) {
+            for (ExpectedProperty expectedProperty : expected.getProperties()) {
                 PropertyAssert.assertIs(assertContext, actual, expectedProperty);
             }
         } else {

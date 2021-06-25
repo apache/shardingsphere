@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.segment.DatabaseDiscoveryRuleSegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.PropertiesAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedProperties;
@@ -28,8 +28,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -37,23 +37,23 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseDiscoveryRuleAssert {
-
+    
     /**
      * Assert database discovery rule is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual database discovery rule
-     * @param expected      expected database discovery rule test case
+     * @param actual actual database discovery rule
+     * @param expected expected database discovery rule test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseDiscoveryRuleSegment actual, final ExpectedDatabaseDiscoveryRule expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist"), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist"), actual);
             assertDatabaseDiscoveryRule(assertContext, actual, expected);
-        } else {
-            assertNull(assertContext.getText("Actual should not exist"), actual);
         }
     }
-
+    
     private static void assertDatabaseDiscoveryRule(final SQLCaseAssertContext assertContext, final DatabaseDiscoveryRuleSegment actual, final ExpectedDatabaseDiscoveryRule expected) {
         assertThat(assertContext.getText(String.format("`%s`'s discovery rule segment assertion error: ", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
         assertThat(assertContext.getText(String.format("`%s`'s discovery rule segment assertion error: ",
@@ -61,13 +61,13 @@ public final class DatabaseDiscoveryRuleAssert {
         assertThat(assertContext.getText(String.format("`%s`'s discovery rule segment assertion error: ", actual.getClass().getSimpleName())), actual.getDataSources(), is(expected.getDataSources()));
         assertProps(assertContext, actual.getProps(), expected.getProps());
     }
-
+    
     private static void assertProps(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedProperties expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist"), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist"), actual);
             PropertiesAssert.assertIs(assertContext, actual, expected);
-        } else {
-            assertNull(assertContext.getText("Actual should not exist"), actual);
         }
     }
 }

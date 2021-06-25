@@ -29,13 +29,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaAssert {
-
+    
     /**
      * Assert schema is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual schema
-     * @param expected      expected schema test case
+     * @param actual actual schema
+     * @param expected expected schema test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SchemaSegment actual, final ExpectedSchema expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "schema");

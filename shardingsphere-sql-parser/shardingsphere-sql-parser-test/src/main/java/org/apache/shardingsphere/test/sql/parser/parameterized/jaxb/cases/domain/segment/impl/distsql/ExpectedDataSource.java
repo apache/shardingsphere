@@ -29,22 +29,22 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExpectedDataSource extends SQLParserTestCase {
-
+    
     @XmlElement
     private String name;
-
+    
     @XmlElement
     private String hostName;
-
+    
     @XmlElement
     private String port;
-
+    
     @XmlElement
     private String db;
-
+    
     @XmlElement
     private String user;
-
+    
     @XmlElement
     private String password;
 }

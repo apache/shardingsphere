@@ -32,7 +32,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class AddResourceStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "dataSource")
     private final List<ExpectedDataSource> dataSources = new LinkedList<>();
 }

@@ -24,14 +24,16 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
+/**
+ * Expected encrypt rule.
+ */
 @Getter
 @Setter
 public final class ExpectedEncryptRule extends AbstractExpectedIdentifierSQLSegment {
-
+    
     @XmlElement(name = "table")
     private String tableName;
-
+    
     @XmlElement(name = "column")
     private List<ExpectedEncryptColumn> columns;
-
 }

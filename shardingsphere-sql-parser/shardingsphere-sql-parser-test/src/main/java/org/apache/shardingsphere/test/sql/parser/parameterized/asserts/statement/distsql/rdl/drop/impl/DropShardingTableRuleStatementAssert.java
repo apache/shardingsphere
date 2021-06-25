@@ -28,13 +28,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropShardingTableRuleStatementAssert {
-
+    
     /**
      * Assert drop sharding table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual drop sharding table rule statement
-     * @param expected      expected drop sharding table rule statement test case
+     * @param actual actual drop sharding table rule statement
+     * @param expected expected drop sharding table rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingTableRuleStatement actual, final DropShardingTableRuleStatementTestCase expected) {
     }

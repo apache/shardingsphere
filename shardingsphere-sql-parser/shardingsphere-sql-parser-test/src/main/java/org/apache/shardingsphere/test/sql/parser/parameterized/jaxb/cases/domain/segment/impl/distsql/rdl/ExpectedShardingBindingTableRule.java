@@ -23,10 +23,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlElement;
 
-@Setter
+/**
+ * Expected sharding binding table rule.
+ */
 @Getter
+@Setter
 public final class ExpectedShardingBindingTableRule extends AbstractExpectedIdentifierSQLSegment {
-
+    
     @XmlElement
     private String tables;
 }

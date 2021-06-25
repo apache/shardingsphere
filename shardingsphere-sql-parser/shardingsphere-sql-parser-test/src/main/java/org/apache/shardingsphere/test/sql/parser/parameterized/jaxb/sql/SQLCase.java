@@ -40,7 +40,7 @@ public final class SQLCase {
     
     @XmlAttribute(name = "db-types")
     private String databaseTypes;
-
+    
     @XmlAttribute(name = "rule-type")
     private String ruleType;
 }

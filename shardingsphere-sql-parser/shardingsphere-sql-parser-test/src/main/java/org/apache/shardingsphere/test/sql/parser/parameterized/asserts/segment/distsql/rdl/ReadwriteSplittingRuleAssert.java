@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.PropertiesAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
@@ -34,16 +34,18 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingRuleAssert {
-
+    
     /**
      * Assert read-write splitting rule is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual read-write splitting rule
-     * @param expected      expected read-write splitting rule test case
+     * @param actual actual read-write splitting rule
+     * @param expected expected read-write splitting rule test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ReadwriteSplittingRuleSegment actual, final ExceptedReadwriteSplittingRule expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exit."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exit."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s read-write splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
@@ -56,8 +58,6 @@ public final class ReadwriteSplittingRuleAssert {
             assertThat(assertContext.getText(String.format("`%s`'s read-write splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getLoadBalancer(), is(expected.getLoadBalancer()));
             PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
-        } else {
-            assertNull(assertContext.getText("Actual should not exit."), actual);
         }
     }
 }

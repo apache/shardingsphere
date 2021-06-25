@@ -32,7 +32,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class CreateEncryptRuleStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "encrypt-rule")
     private final List<ExpectedEncryptRule> encryptRules = new LinkedList<>();
 }

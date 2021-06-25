@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class DropDataBaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "rule-name")
     private final List<String> databaseDiscoveryRules = new LinkedList<>();
 }

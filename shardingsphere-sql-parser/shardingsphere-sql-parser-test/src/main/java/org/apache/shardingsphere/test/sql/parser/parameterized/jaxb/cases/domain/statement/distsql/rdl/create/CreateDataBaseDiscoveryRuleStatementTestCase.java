@@ -32,7 +32,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class CreateDataBaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement(name = "database-discovery")
     private final List<ExpectedDatabaseDiscoveryRule> databaseDiscoveryRules = new LinkedList<>();
 }

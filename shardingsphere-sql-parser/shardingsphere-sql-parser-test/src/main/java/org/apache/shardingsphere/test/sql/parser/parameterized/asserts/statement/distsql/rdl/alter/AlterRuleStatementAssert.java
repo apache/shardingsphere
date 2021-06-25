@@ -43,13 +43,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  * Alter rule statement assert.
  */
 public final class AlterRuleStatementAssert {
-
+    
     /**
      * Assert alter sharding table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual alter sharding table rule statement
-     * @param expected      expected alter sharding table rule statement test case
+     * @param actual actual alter sharding table rule statement
+     * @param expected expected alter sharding table rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterRuleStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof AlterDatabaseDiscoveryRuleStatement) {

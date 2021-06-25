@@ -39,25 +39,27 @@ import static org.junit.Assert.assertThat;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AddResourceStatementAssert {
-
+    
     /**
      * Assert add resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual add resource statement
-     * @param expected      expected add resource statement test case
+     * @param actual actual add resource statement
+     * @param expected expected add resource statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AddResourceStatement actual, final AddResourceStatementTestCase expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertDataSources(assertContext, actual.getDataSources(), expected.getDataSources());
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
-
+    
     private static void assertDataSources(final SQLCaseAssertContext assertContext, final Collection<DataSourceSegment> actual, final List<ExpectedDataSource> expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual should not exist."), actual);
+        } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText(String.format("Actual datasource size should be %s , but it was %s", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
@@ -65,8 +67,6 @@ public final class AddResourceStatementAssert {
                 DataSourceAssert.assertIs(assertContext, actualDataSource, expected.get(count));
                 count++;
             }
-        } else {
-            assertNull(assertContext.getText("Actual should not exist."), actual);
         }
     }
 }

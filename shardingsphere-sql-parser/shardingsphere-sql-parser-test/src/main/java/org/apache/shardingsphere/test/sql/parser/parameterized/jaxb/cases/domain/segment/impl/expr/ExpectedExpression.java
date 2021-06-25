@@ -29,43 +29,46 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected expression.
+ */
 @Getter
 @Setter
-public class ExpectedExpression extends AbstractExpectedSQLSegment {
-
+public final class ExpectedExpression extends AbstractExpectedSQLSegment {
+    
     @XmlElement(name = "between-expression")
     private ExpectedBetweenExpression betweenExpression;
-
+    
     @XmlElement(name = "binary-operation-expression")
     private ExpectedBinaryOperationExpression binaryOperationExpression;
-
+    
     @XmlElement(name = "column")
     private ExpectedColumn column;
-
+    
     @XmlElement(name = "common-expression")
     private ExpectedCommonExpression commonExpression;
-
+    
     @XmlElement(name = "exists-subquery")
     private ExpectedExistsSubquery existsSubquery;
-
+    
     @XmlElement(name = "expression-projection")
     private ExpectedExpressionProjection expressionProjection;
-
+    
     @XmlElement(name = "in-expression")
     private ExpectedInExpression inExpression;
-
+    
     @XmlElement(name = "list-expression")
     private ExpectedListExpression listExpression;
-
+    
     @XmlElement(name = "literal-expression")
     private ExpectedLiteralExpression literalExpression;
-
+    
     @XmlElement(name = "not-expression")
     private ExpectedNotExpression notExpression;
-
+    
     @XmlElement(name = "parameter-marker-expression")
     private ExpectedParameterMarkerExpression parameterMarkerExpression;
-
+    
     @XmlElement(name = "subquery")
     private ExpectedSubquery subquery;
 }
