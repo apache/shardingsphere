@@ -25,7 +25,7 @@
             <table-strategy-column>order_id</table-strategy-column>
             <key-generate-strategy-column>another_id</key-generate-strategy-column>
             <table-strategy>
-                <algorithmName>hash_mod</algorithmName>
+                <algorithm-name>hash_mod</algorithm-name>
                 <properties>
                     <property>
                         <key>sharding-count</key>
@@ -34,7 +34,7 @@
                 </properties>
             </table-strategy>
             <key-generate-strategy>
-                <algorithmName>snowflake</algorithmName>
+                <algorithm-name>snowflake</algorithm-name>
                 <properties>
                     <property>
                         <key>worker-id</key>
@@ -124,7 +124,7 @@
                 <plain-column>user_plain</plain-column>
                 <cipher-column>user_cipher</cipher-column>
                 <encryptor>
-                    <algorithmName>AES</algorithmName>
+                    <algorithm-name>AES</algorithm-name>
                     <properties>
                         <property>
                             <key>aes-key-value</key>
@@ -137,7 +137,7 @@
                 <name>order_id</name>
                 <cipher-column>order_cipher</cipher-column>
                 <encryptor>
-                    <algorithmName>MD5</algorithmName>
+                    <algorithm-name>MD5</algorithm-name>
                 </encryptor>
             </column>
         </encrypt-rule>
