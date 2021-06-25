@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -36,6 +34,8 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,19 +43,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -90,6 +87,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
     }
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
@@ -102,10 +100,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Collections.singleton("ds_0"), "order_id", new AlgorithmSegment("hash_mod", new Properties()), null, null);
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
-        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        Map<String, DataSource> dataSourceMap = mock(Map.class);
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
-        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
+        when(shardingSphereResource.getNotExistedResources(any())).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
