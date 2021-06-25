@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.distsql.RDLUpdater;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -59,14 +58,9 @@ public abstract class RDLBackendHandler<T extends SQLStatement, R extends Schema
     @Override
     protected final ResponseHeader execute(final String schemaName, final T sqlStatement) {
         R currentRuleConfig = findCurrentRuleConfiguration(schemaName).orElse(null);
-        try {
-            RDLUpdater updater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
-            updater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
-            updater.updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
-        } catch (final ServiceProviderNotFoundException ignored) {
-            checkSQLStatement(schemaName, sqlStatement, currentRuleConfig);
-            updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
-        }
+        RDLUpdater rdlUpdater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        rdlUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
+        rdlUpdater.updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
         postRuleConfigurationChange(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
