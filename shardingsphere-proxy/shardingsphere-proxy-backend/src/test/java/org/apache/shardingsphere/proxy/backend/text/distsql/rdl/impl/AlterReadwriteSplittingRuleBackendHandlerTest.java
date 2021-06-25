@@ -42,19 +42,15 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -103,9 +99,6 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
                 Collections.singleton(new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(readwriteSplittingDataSourceRuleConfiguration)), new LinkedHashMap<>())));
         when(readwriteSplittingDataSourceRuleConfiguration.getName()).thenReturn("pr_ds");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        Map<String, DataSource> dataSourceMap = mock(Map.class);
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
-        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
@@ -144,9 +137,6 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
                 Collections.singleton(new ReadwriteSplittingRuleConfiguration(Collections.singleton(readwriteSplittingDataSourceRuleConfiguration), Collections.emptyMap())));
         when(readwriteSplittingDataSourceRuleConfiguration.getName()).thenReturn("pr_ds");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        Map<String, DataSource> dataSourceMap = mock(Map.class);
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
-        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
         handler.execute("test", sqlStatement);
     }
 }

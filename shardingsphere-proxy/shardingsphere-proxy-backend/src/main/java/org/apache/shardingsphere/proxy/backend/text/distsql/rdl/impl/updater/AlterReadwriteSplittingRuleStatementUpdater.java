@@ -120,6 +120,6 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RDLSta
     
     @Override
     public String getType() {
-        return ReadwriteSplittingRuleConfiguration.class.getCanonicalName();
+        return AlterReadwriteSplittingRuleStatement.class.getCanonicalName();
     }
 }
