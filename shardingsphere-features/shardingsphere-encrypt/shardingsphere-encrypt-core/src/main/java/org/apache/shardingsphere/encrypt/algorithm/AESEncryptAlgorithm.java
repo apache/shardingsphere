@@ -39,23 +39,18 @@ import javax.xml.bind.DatatypeConverter;
 @Getter
 @Setter
 public final class AESEncryptAlgorithm implements EncryptAlgorithm {
-
     private static final String AES_KEY = "aes-key-value";
-
     private Properties props = new Properties();
-
     private byte[] secretKey;
 
     @Override
     public void init() {
         secretKey = createSecretKey();
     }
-
     private byte[] createSecretKey() {
         Preconditions.checkArgument(props.containsKey(AES_KEY), String.format("%s can not be null.", AES_KEY));
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
-
     @SneakyThrows
     @Override
     public String encrypt(final Object plaintext) {
@@ -66,7 +61,6 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plaintext).getBytes("UTF-8"));
         return DatatypeConverter.printBase64Binary(result);
     }
-
     @SneakyThrows(GeneralSecurityException.class)
     @Override
     public Object decrypt(final String ciphertext) {
@@ -76,13 +70,11 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(DatatypeConverter.parseBase64Binary(ciphertext));
         return new String(result, StandardCharsets.UTF_8);
     }
-
     private Cipher getCipher(final int decryptMode) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(secretKey, getType()));
         return result;
     }
-
     @Override
     public String getType() {
         return "AES";
