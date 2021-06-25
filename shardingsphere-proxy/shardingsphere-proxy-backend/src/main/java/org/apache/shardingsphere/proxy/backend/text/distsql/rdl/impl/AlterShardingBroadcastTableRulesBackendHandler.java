@@ -18,11 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
-
-import java.util.Collection;
 
 /**
  * Alter sharding broadcast table rule backend handler.
@@ -34,16 +31,10 @@ public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBac
     }
     
     @Override
-    public void check(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (null == currentRuleConfig) {
-            throw new ShardingBroadcastTableRuleNotExistsException(schemaName);
-        }
+    public void checkSQLStatement(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
     }
     
     @Override
-    public void doExecute(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> broadcastTables = currentRuleConfig.getBroadcastTables();
-        broadcastTables.clear();
-        broadcastTables.addAll(sqlStatement.getTables());
+    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
     }
 }

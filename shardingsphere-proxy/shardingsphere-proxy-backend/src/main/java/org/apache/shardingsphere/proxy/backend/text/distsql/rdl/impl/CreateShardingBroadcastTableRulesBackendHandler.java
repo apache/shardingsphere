@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleExistedException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
 
@@ -33,20 +31,10 @@ public final class CreateShardingBroadcastTableRulesBackendHandler extends RDLBa
     }
     
     @Override
-    public void check(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
     }
     
     @Override
-    public void doExecute(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (null == currentRuleConfig) {
-            ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-            shardingRuleConfiguration.setBroadcastTables(sqlStatement.getTables());
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(shardingRuleConfiguration);
-        } else {
-            if (!currentRuleConfig.getBroadcastTables().isEmpty()) {
-                throw new ShardingBroadcastTableRuleExistedException(schemaName);
-            }
-            currentRuleConfig.getBroadcastTables().addAll(sqlStatement.getTables());
-        }
+    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
     }
 }
