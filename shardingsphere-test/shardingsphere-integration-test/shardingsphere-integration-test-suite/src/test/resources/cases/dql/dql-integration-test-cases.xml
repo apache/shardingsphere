@@ -531,4 +531,8 @@
 <!--    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user o ON s.id = o.user_id" db-types="MySQL,Oracle,SQLServer" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
 <!--        <assertion expected-data-file="select_from_single_join_order.xml"/>-->
 <!--    </test-case>-->
+
+    <test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion parameters="1000:int, 100000:int" expected-data-file="select_across_single_tables_with_federate.xml" />
+    </test-case>
 </integration-test-cases>

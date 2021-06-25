@@ -18,24 +18,23 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.converter.ReadwriteSplittingRuleStatementConverter;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.yaml.converter.ReadwriteSplittingRuleStatementConverter;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Alter readwrite-splitting rule backend handler.
  */
-public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<AlterReadwriteSplittingRuleStatement> {
+public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     static {
         // TODO consider about register once only
@@ -55,47 +54,26 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     }
     
     @Override
-    public void before(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
-        Optional<ReadwriteSplittingRuleConfiguration> ruleConfig = getReadwriteSplittingRuleConfiguration(schemaName);
-        if (!ruleConfig.isPresent()) {
-            throw new ReadwriteSplittingRulesNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
+    public void check(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig) {
+            throw new ReadwriteSplittingRuleNotExistedException(schemaName, getAlteredRuleNames(sqlStatement));
         }
-        check(schemaName, sqlStatement, ruleConfig.get(), getAlteredRuleNames(sqlStatement));
-    }
-    
-    @Override
-    public void doExecute(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement) {
-        ReadwriteSplittingRuleConfiguration alterReadwriteSplittingRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singletonList(ReadwriteSplittingRuleStatementConverter.convert(sqlStatement))).stream()
-                .map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst().get();
-        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = getReadwriteSplittingRuleConfiguration(schemaName).get();
-        drop(sqlStatement, readwriteSplittingRuleConfiguration);
-        readwriteSplittingRuleConfiguration.getDataSources().addAll(alterReadwriteSplittingRuleConfiguration.getDataSources());
-        readwriteSplittingRuleConfiguration.getLoadBalancers().putAll(alterReadwriteSplittingRuleConfiguration.getLoadBalancers());
-    }
-    
-    private void drop(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration) {
-        getAlteredRuleNames(sqlStatement).forEach(each -> {
-            ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration = readwriteSplittingRuleConfiguration
-                    .getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
-            readwriteSplittingRuleConfiguration.getDataSources().remove(readwriteSplittingDataSourceRuleConfiguration);
-            readwriteSplittingRuleConfiguration.getLoadBalancers().remove(readwriteSplittingDataSourceRuleConfiguration.getLoadBalancerName());
-        });
+        check(schemaName, sqlStatement, getAlteredRuleNames(sqlStatement), currentRuleConfig);
     }
     
     private void check(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement,
-                       final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<String> alteredRuleNames) {
-        checkAlteredRules(schemaName, ruleConfig, alteredRuleNames);
+                       final Collection<String> alteredRuleNames, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        checkAlteredRules(schemaName, alteredRuleNames, currentRuleConfig);
         checkResources(sqlStatement, schemaName);
         checkLoadBalancer(sqlStatement);
     }
     
-    private void checkAlteredRules(final String schemaName, final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<String> alteredRuleNames) {
-        Set<String> existRuleNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+    private void checkAlteredRules(final String schemaName, final Collection<String> alteredRuleNames, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        Set<String> existRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistRuleNames = alteredRuleNames.stream()
                 .filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistRuleNames.isEmpty()) {
-            throw new ReadwriteSplittingRulesNotExistedException(schemaName, notExistRuleNames);
+            throw new ReadwriteSplittingRuleNotExistedException(schemaName, notExistRuleNames);
         }
     }
     
@@ -105,7 +83,7 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
             resources.add(each.getWriteDataSource());
             resources.addAll(each.getReadDataSources());
         });
-        Collection<String> notExistResources = getInvalidResources(schemaName, resources);
+        Collection<String> notExistResources = getNotExistedResources(schemaName, resources);
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
@@ -113,11 +91,28 @@ public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendH
     
     private void checkLoadBalancer(final AlterReadwriteSplittingRuleStatement sqlStatement) {
         Collection<String> invalidLoadBalances = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent())
-                .collect(Collectors.toList());
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!invalidLoadBalances.isEmpty()) {
             throw new InvalidLoadBalancersException(invalidLoadBalances);
         }
+    }
+    
+    @Override
+    public void doExecute(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        ReadwriteSplittingRuleConfiguration alterReadwriteSplittingRuleConfig = new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(Collections.singletonList(ReadwriteSplittingRuleStatementConverter.convert(sqlStatement))).stream()
+                .map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst().get();
+        drop(sqlStatement, currentRuleConfig);
+        currentRuleConfig.getDataSources().addAll(alterReadwriteSplittingRuleConfig.getDataSources());
+        currentRuleConfig.getLoadBalancers().putAll(alterReadwriteSplittingRuleConfig.getLoadBalancers());
+    }
+    
+    private void drop(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration ruleConfig) {
+        getAlteredRuleNames(sqlStatement).forEach(each -> {
+            ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = ruleConfig.getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
+            ruleConfig.getDataSources().remove(dataSourceRuleConfig);
+            ruleConfig.getLoadBalancers().remove(dataSourceRuleConfig.getLoadBalancerName());
+        });
     }
     
     private Collection<String> getAlteredRuleNames(final AlterReadwriteSplittingRuleStatement sqlStatement) {

@@ -23,18 +23,22 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlElement;
 
-@Setter
+/**
+ * Expected between expression.
+ */
 @Getter
-public class ExpectedBetweenExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+@Setter
+public final class ExpectedBetweenExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+    
     @XmlElement(name = "not")
     private boolean not;
-
+    
     @XmlElement(name = "left")
     private ExpectedExpression left;
-
+    
     @XmlElement(name = "between-expr")
     private ExpectedExpression betweenExpr;
-
+    
     @XmlElement(name = "and-expr")
     private ExpectedExpression andExpr;
 }

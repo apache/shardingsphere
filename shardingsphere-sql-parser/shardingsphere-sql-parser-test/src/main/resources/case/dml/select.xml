@@ -2905,5 +2905,15 @@
             <expression-projection text="content_json::jsonb@@'$.keyword[*]==&quot;ss&quot;'" start-index="7" stop-index="47" />
         </projections>
     </select>
+
+    <select sql-case-id="select_with_assignment_operator">
+        <projections start-index="7" stop-index="31">
+            <expression-projection text="@rn := 1" start-index="7" stop-index="14" />
+            <expression-projection text="@now_code := ''" start-index="17" stop-index="31" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="38" stop-index="44" />
+        </from>
+    </select>
 </sql-parser-test-cases>
 

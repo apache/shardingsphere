@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
+        <tables>
+            <table>t_order</table>
+            <data-source>ms_group_0</data-source>
+            <data-source>ms_group_1</data-source>
+            <table-strategy-column>order_id</table-strategy-column>
+            <key-generate-strategy-column>another_id</key-generate-strategy-column>
+            <table-strategy>
+                <algorithm-name>hash_mod</algorithm-name>
+                <properties>
+                    <property key="sharding-count" value="4" />
+                </properties>
+            </table-strategy>
+            <key-generate-strategy>
+                <algorithm-name>snowflake</algorithm-name>
+                <properties>
+                    <property key="worker-id" value="123" />
+                </properties>
+            </key-generate-strategy>
+        </tables>
+    </alter-sharding-table-rule>
+    
+    <alter-sharding-binding-table-rules sql-case-id="alter-sharding-binding-table-rules">
+        <rules>
+            <tables>t_order,t_order_item</tables>
+        </rules>
+        <rules>
+            <tables>t_1,t_2</tables>
+        </rules>
+    </alter-sharding-binding-table-rules>
+    
+    <alter-sharding-broadcast-table-rules sql-case-id="alter-sharding-broadcast-table-rules">
+        <table>t_1</table>
+        <table>t_2</table>
+    </alter-sharding-broadcast-table-rules>
+    
+    <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
+        <read-write-splitting>
+            <name>ms_group_0</name>
+            <auto-aware-resource>group_0</auto-aware-resource>
+            <load-balancer>random</load-balancer>
+            <properties>
+                <property key="read_weight" value="'2:1'" />
+            </properties>
+        </read-write-splitting>
+        <read-write-splitting>
+            <name>ms_group_1</name>
+            <write-data-source>primary_ds</write-data-source>
+            <read-data-source>replica_ds_0</read-data-source>
+            <read-data-source>replica_ds_1</read-data-source>
+            <load-balancer>random</load-balancer>
+            <properties />
+        </read-write-splitting>
+    </alter-readwrite-splitting-rule>
+    
+    <alter-database-discovery-rule sql-case-id="alter-database-discovery-rule">
+        <database-discovery>
+            <name>ha_group_0</name>
+            <data-source>resource0</data-source>
+            <data-source>resource1</data-source>
+            <discovery-type>mgr</discovery-type>
+            <properties>
+                <property key="keepAliveCron" value="" />
+                <property key="groupName" value="92504d5b-6dec" />
+            </properties>
+        </database-discovery>
+        <database-discovery>
+            <name>ha_group_1</name>
+            <data-source>resource2</data-source>
+            <data-source>resource3</data-source>
+            <discovery-type>mgr2</discovery-type>
+            <properties>
+                <property key="keepAliveCron" value="" />
+                <property key="groupName" value="92504d5b-6dec-2" />
+            </properties>
+        </database-discovery>
+    </alter-database-discovery-rule>
+    
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
+        <encrypt-rule>
+            <table>t_encrypt</table>
+            <column>
+                <name>user_id</name>
+                <plain-column>user_plain</plain-column>
+                <cipher-column>user_cipher</cipher-column>
+                <encryptor>
+                    <algorithm-name>AES</algorithm-name>
+                    <properties>
+                        <property key="aes-key-value" value="123456abc" />
+                    </properties>
+                </encryptor>
+            </column>
+            <column>
+                <name>order_id</name>
+                <cipher-column>order_cipher</cipher-column>
+                <encryptor>
+                    <algorithm-name>MD5</algorithm-name>
+                </encryptor>
+            </column>
+        </encrypt-rule>
+    </alter-encrypt-rule>
+</sql-parser-test-cases>

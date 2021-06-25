@@ -24,9 +24,13 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -59,8 +63,12 @@ public final class StandardMetaDataContextsTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
         ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType());
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        Map<String, TableMetaData> tables = new HashMap<>();
         when(metaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(metaData.getResource()).thenReturn(resource);
+        when(metaData.getSchema()).thenReturn(schema);
+        when(schema.getTables()).thenReturn(tables);
         return metaData;
     }
 }

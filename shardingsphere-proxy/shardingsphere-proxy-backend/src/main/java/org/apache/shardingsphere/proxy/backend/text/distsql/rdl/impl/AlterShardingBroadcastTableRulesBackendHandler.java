@@ -17,33 +17,33 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
  * Alter sharding broadcast table rule backend handler.
  */
-public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBackendHandler<AlterShardingBroadcastTableRulesStatement> {
+public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBackendHandler<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     public AlterShardingBroadcastTableRulesBackendHandler(final AlterShardingBroadcastTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public void before(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = getShardingRuleConfiguration(schemaName);
-        if (!shardingRuleConfig.isPresent()) {
-            throw new ShardingBroadcastTableRulesNotExistsException(schemaName);
+    public void check(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig) {
+            throw new ShardingBroadcastTableRuleNotExistsException(schemaName);
         }
     }
     
     @Override
-    public void doExecute(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement) {
-        getShardingRuleConfiguration(schemaName).get().getBroadcastTables().clear();
-        getShardingRuleConfiguration(schemaName).get().getBroadcastTables().addAll(sqlStatement.getTables());
+    public void doExecute(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> broadcastTables = currentRuleConfig.getBroadcastTables();
+        broadcastTables.clear();
+        broadcastTables.addAll(sqlStatement.getTables());
     }
 }

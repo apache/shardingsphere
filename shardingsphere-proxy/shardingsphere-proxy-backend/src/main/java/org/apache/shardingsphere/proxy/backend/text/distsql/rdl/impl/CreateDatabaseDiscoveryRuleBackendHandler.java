@@ -19,11 +19,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.yaml.converter.DatabaseDiscoveryRuleStatementConverter;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.yaml.converter.DatabaseDiscoveryRuleStatementConverter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -37,14 +37,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
+
 
 /**
  * Create database discovery rule backend handler.
  */
-public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<CreateDatabaseDiscoveryRuleStatement> {
+public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<CreateDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
     
     static {
         // TODO consider about register once only
@@ -56,33 +56,16 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     }
     
     @Override
-    public void before(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        checkDuplicateRuleNames(schemaName, sqlStatement);
+    public void check(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
         checkResources(schemaName, sqlStatement);
         checkDiscoverTypes(sqlStatement);
     }
     
-    @Override
-    public void doExecute(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfig = DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules());
-        DatabaseDiscoveryRuleConfiguration createdDatabaseDiscoveryRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singleton(yamlDatabaseDiscoveryRuleConfig))
-                .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).findAny().map(each -> (DatabaseDiscoveryRuleConfiguration) each).get();
-        if (getDatabaseDiscoveryRuleConfiguration(schemaName).isPresent()) {
-            DatabaseDiscoveryRuleConfiguration existDatabaseDiscoveryRuleConfiguration = getDatabaseDiscoveryRuleConfiguration(schemaName).get();
-            existDatabaseDiscoveryRuleConfiguration.getDataSources().addAll(createdDatabaseDiscoveryRuleConfiguration.getDataSources());
-            existDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes().putAll(createdDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes());
-        } else {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdDatabaseDiscoveryRuleConfiguration);
-        }
-    }
-    
-    private void checkDuplicateRuleNames(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> optional = getDatabaseDiscoveryRuleConfiguration(schemaName);
-        if (optional.isPresent()) {
-            Collection<String> existRuleNames = getRuleNames(optional.get());
-            Collection<String> duplicateRuleNames = sqlStatement.getRules().stream()
-                    .map(DatabaseDiscoveryRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toSet());
+    private void checkDuplicateRuleNames(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        if (null != currentRuleConfig) {
+            Collection<String> existRuleNames = getRuleNames(currentRuleConfig);
+            Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toSet());
             duplicateRuleNames.addAll(getDuplicateRuleNames(sqlStatement));
             if (!duplicateRuleNames.isEmpty()) {
                 throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
@@ -102,7 +85,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     private void checkResources(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         Collection<String> resources = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
-        Collection<String> notExistResources = getInvalidResources(schemaName, resources);
+        Collection<String> notExistResources = getNotExistedResources(schemaName, resources);
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
@@ -110,10 +93,23 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     
     private void checkDiscoverTypes(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         Collection<String> invalidDiscoveryTypes = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent())
-                .collect(Collectors.toList());
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!invalidDiscoveryTypes.isEmpty()) {
             throw new InvalidDatabaseDiscoveryTypesException(invalidDiscoveryTypes);
+        }
+    }
+    
+    @Override
+    public void doExecute(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfig = DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules());
+        DatabaseDiscoveryRuleConfiguration createdDatabaseDiscoveryRuleConfig = new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(Collections.singleton(yamlDatabaseDiscoveryRuleConfig))
+                .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).findAny().map(each -> (DatabaseDiscoveryRuleConfiguration) each).get();
+        if (null == currentRuleConfig) {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdDatabaseDiscoveryRuleConfig);
+        } else {
+            currentRuleConfig.getDataSources().addAll(createdDatabaseDiscoveryRuleConfig.getDataSources());
+            currentRuleConfig.getDiscoveryTypes().putAll(createdDatabaseDiscoveryRuleConfig.getDiscoveryTypes());
         }
     }
     

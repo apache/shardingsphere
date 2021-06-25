@@ -14,7 +14,7 @@ rules:
     <data-source-name> (+): # 读写分离逻辑数据源名称
       writeDataSourceName: # 写库数据源名称
       readDataSourceNames: 
-        - <read-data_source-name> (+) # 写库数据源名称
+        - <read-data_source-name> (+) # 读库数据源名称
       loadBalancerName: # 负载均衡算法名称
   
   # 负载均衡算法配置

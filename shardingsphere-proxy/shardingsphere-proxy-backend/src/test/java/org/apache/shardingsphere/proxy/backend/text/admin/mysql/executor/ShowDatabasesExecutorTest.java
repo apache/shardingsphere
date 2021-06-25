@@ -65,8 +65,8 @@ public final class ShowDatabasesExecutorTest {
         for (int i = 0; i < 10; i++) {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-            result.put(String.format(SCHEMA_PATTERN, i), metaData);
+            when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+            result.put(String.format(SCHEMA_PATTERN, String.valueOf(i)), metaData);
         }
         return result;
     }

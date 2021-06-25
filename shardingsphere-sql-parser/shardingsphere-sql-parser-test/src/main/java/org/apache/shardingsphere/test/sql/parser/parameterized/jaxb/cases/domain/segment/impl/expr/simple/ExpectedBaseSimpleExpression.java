@@ -19,5 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
-public class ExpectedBaseSimpleExpression extends AbstractExpectedSQLSegment implements ExpectedSimpleExpressionSegment {
+/**
+ * Expected base simple expression.
+ */
+public abstract class ExpectedBaseSimpleExpression extends AbstractExpectedSQLSegment implements ExpectedSimpleExpressionSegment {
 }

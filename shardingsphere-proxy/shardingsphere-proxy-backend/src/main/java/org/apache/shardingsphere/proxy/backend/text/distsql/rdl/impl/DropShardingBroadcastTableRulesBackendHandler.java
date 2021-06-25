@@ -17,32 +17,29 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
 
 /**
  * Drop sharding broadcast table rules backend handler.
  */
-public final class DropShardingBroadcastTableRulesBackendHandler extends RDLBackendHandler<DropShardingBroadcastTableRulesStatement> {
+public final class DropShardingBroadcastTableRulesBackendHandler extends RDLBackendHandler<DropShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     public DropShardingBroadcastTableRulesBackendHandler(final DropShardingBroadcastTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public void before(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfiguration = getShardingRuleConfiguration(schemaName);
-        if (!shardingRuleConfiguration.isPresent() || shardingRuleConfiguration.get().getBroadcastTables().isEmpty()) {
-            throw new ShardingBroadcastTableRulesNotExistsException(schemaName);
+    public void check(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig || currentRuleConfig.getBroadcastTables().isEmpty()) {
+            throw new ShardingBroadcastTableRuleNotExistsException(schemaName);
         }
     }
     
     @Override
-    public void doExecute(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement) {
-        getShardingRuleConfiguration(schemaName).get().getBroadcastTables().clear();
+    public void doExecute(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getBroadcastTables().clear();
     }
 }
