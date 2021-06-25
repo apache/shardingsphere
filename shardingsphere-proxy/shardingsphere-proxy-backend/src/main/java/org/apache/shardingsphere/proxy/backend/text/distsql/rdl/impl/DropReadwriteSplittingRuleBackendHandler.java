@@ -18,14 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Drop readwrite splitting rule backend handler.
@@ -38,25 +32,9 @@ public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHa
     
     @Override
     public void checkSQLStatement(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        if (null == currentRuleConfig) {
-            throw new ReadwriteSplittingRuleNotExistedException(schemaName, sqlStatement.getRuleNames());
-        }
-        Collection<String> existRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
-        Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
-        if (!notExistedRuleNames.isEmpty()) {
-            throw new ReadwriteSplittingRuleNotExistedException(schemaName, sqlStatement.getRuleNames());
-        }
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        sqlStatement.getRuleNames().forEach(each -> {
-            ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
-            currentRuleConfig.getDataSources().remove(dataSourceRuleConfig);
-            currentRuleConfig.getLoadBalancers().remove(dataSourceRuleConfig.getLoadBalancerName());
-        });
-        if (currentRuleConfig.getDataSources().isEmpty()) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(currentRuleConfig);
-        }
     }
 }
