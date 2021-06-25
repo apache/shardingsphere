@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -32,6 +30,8 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConverter;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
@@ -41,7 +41,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -61,7 +60,7 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     }
     
     @Override
-    public void check(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
+    public void check(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> notExistResources = getNotExistedResources(schemaName, getResources(sqlStatement));
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
@@ -71,11 +70,10 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
             throw new DuplicateTablesException(duplicateTables);
         }
         Collection<String> alteredTables = getAlteredTables(sqlStatement);
-        Optional<ShardingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
-        if (!ruleConfig.isPresent()) {
+        if (null == currentRuleConfig) {
             throw new ShardingTableRuleNotExistedException(schemaName, alteredTables);
         }
-        Collection<String> existTables = getShardingTables(ruleConfig.get());
+        Collection<String> existTables = getShardingTables(currentRuleConfig);
         Collection<String> notExistTables = alteredTables.stream().filter(each -> !existTables.contains(each)).collect(Collectors.toList());
         if (!notExistTables.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(schemaName, notExistTables);
@@ -93,23 +91,22 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
     }
     
     @Override
-    public void doExecute(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) {
+    public void doExecute(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration alteredShardingRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singletonList(ShardingRuleStatementConverter.convert(sqlStatement))).stream().map(each -> (ShardingRuleConfiguration) each).findFirst().get();
-        ShardingRuleConfiguration shardingRuleConfig = getCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
-        drop(shardingRuleConfig, sqlStatement);
-        shardingRuleConfig.getAutoTables().addAll(alteredShardingRuleConfig.getAutoTables());
-        shardingRuleConfig.getShardingAlgorithms().putAll(alteredShardingRuleConfig.getShardingAlgorithms());
-        shardingRuleConfig.getKeyGenerators().putAll(alteredShardingRuleConfig.getKeyGenerators());
+        drop(sqlStatement, currentRuleConfig);
+        currentRuleConfig.getAutoTables().addAll(alteredShardingRuleConfig.getAutoTables());
+        currentRuleConfig.getShardingAlgorithms().putAll(alteredShardingRuleConfig.getShardingAlgorithms());
+        currentRuleConfig.getKeyGenerators().putAll(alteredShardingRuleConfig.getKeyGenerators());
     }
     
-    private void drop(final ShardingRuleConfiguration shardingRuleConfig, final AlterShardingTableRuleStatement sqlStatement) {
+    private void drop(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         getAlteredTables(sqlStatement).forEach(each -> {
-            ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig = shardingRuleConfig.getAutoTables().stream().filter(tableRule -> each.equals(tableRule.getLogicTable())).findAny().get();
-            shardingRuleConfig.getAutoTables().remove(shardingAutoTableRuleConfig);
-            shardingRuleConfig.getShardingAlgorithms().remove(shardingAutoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName());
+            ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig = currentRuleConfig.getAutoTables().stream().filter(tableRule -> each.equals(tableRule.getLogicTable())).findAny().get();
+            currentRuleConfig.getAutoTables().remove(shardingAutoTableRuleConfig);
+            currentRuleConfig.getShardingAlgorithms().remove(shardingAutoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName());
             if (Objects.nonNull(shardingAutoTableRuleConfig.getKeyGenerateStrategy())) {
-                shardingRuleConfig.getKeyGenerators().remove(shardingAutoTableRuleConfig.getKeyGenerateStrategy().getKeyGeneratorName());
+                currentRuleConfig.getKeyGenerators().remove(shardingAutoTableRuleConfig.getKeyGenerateStrategy().getKeyGeneratorName());
             }
         });
     }

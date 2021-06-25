@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 
 /**
  * Drop sharding binding table rules backend handler.
@@ -34,15 +32,14 @@ public final class DropShardingBindingTableRulesBackendHandler extends RDLBacken
     }
     
     @Override
-    public void check(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
-        if (!ruleConfig.isPresent() || ruleConfig.get().getBindingTableGroups().isEmpty()) {
+    public void check(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig || currentRuleConfig.getBindingTableGroups().isEmpty()) {
             throw new ShardingBindingTableRuleNotExistsException(schemaName);
         }
     }
     
     @Override
-    public void doExecute(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement) {
-        getCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).getBindingTableGroups().clear();
+    public void doExecute(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getBindingTableGroups().clear();
     }
 }
