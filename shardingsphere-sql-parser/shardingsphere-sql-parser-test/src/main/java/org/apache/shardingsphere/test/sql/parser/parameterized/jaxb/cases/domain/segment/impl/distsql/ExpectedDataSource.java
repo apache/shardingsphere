@@ -15,32 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * SQL test case for xml tag.
+ * Expected lock clause.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class SQLCase {
-    
-    @XmlAttribute
-    private String id;
-    
-    @XmlAttribute
-    private String value;
-    
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
+public final class ExpectedDataSource extends SQLParserTestCase {
 
-    @XmlAttribute(name = "rule-type")
-    private String ruleType;
+    @XmlElement
+    private String name;
+
+    @XmlElement
+    private String hostName;
+
+    @XmlElement
+    private String port;
+
+    @XmlElement
+    private String db;
+
+    @XmlElement
+    private String user;
+
+    @XmlElement
+    private String password;
 }

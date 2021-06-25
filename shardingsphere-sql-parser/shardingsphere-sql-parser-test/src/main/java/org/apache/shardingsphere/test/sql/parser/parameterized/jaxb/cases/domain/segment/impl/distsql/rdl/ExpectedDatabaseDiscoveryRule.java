@@ -15,32 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedProperties;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
-/**
- * SQL test case for xml tag.
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
 @Setter
-public final class SQLCase {
+@Getter
+public final class ExpectedDatabaseDiscoveryRule extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlAttribute
-    private String id;
-    
-    @XmlAttribute
-    private String value;
-    
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
+    @XmlElement
+    private String name;
 
-    @XmlAttribute(name = "rule-type")
-    private String ruleType;
+    @XmlElement(name = "data-source")
+    private List<String> dataSources;
+
+    @XmlElement(name = "discovery-type")
+    private String discoveryTypeName;
+
+    @XmlElement(name = "properties")
+    private ExpectedProperties props;
 }

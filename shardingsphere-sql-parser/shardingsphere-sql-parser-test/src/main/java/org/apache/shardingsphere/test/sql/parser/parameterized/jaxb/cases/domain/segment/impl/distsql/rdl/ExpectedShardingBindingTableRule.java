@@ -15,32 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-/**
- * SQL test case for xml tag.
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
 @Setter
-public final class SQLCase {
-    
-    @XmlAttribute
-    private String id;
-    
-    @XmlAttribute
-    private String value;
-    
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
+@Getter
+public final class ExpectedShardingBindingTableRule extends AbstractExpectedIdentifierSQLSegment {
 
-    @XmlAttribute(name = "rule-type")
-    private String ruleType;
+    @XmlElement
+    private String tables;
 }

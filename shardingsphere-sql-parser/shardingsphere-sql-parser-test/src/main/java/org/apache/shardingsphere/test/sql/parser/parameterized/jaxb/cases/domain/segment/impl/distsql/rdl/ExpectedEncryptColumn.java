@@ -15,32 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedFunction;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-/**
- * SQL test case for xml tag.
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
 @Setter
-public final class SQLCase {
-    
-    @XmlAttribute
-    private String id;
-    
-    @XmlAttribute
-    private String value;
-    
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
+@Getter
+public final class ExpectedEncryptColumn extends AbstractExpectedIdentifierSQLSegment {
 
-    @XmlAttribute(name = "rule-type")
-    private String ruleType;
+    @XmlElement
+    private String name;
+
+    @XmlElement(name = "plain-column")
+    private String plainColumn;
+
+    @XmlElement(name = "cipher-column")
+    private String cipherColumn;
+
+    @XmlElement
+    private ExpectedFunction encryptor;
 }

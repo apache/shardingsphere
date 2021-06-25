@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * SQL test case for xml tag.
+ * Create sharding broadcast table rules statement test case.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class SQLCase {
-    
-    @XmlAttribute
-    private String id;
-    
-    @XmlAttribute
-    private String value;
-    
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
+public final class CreateShardingBroadcastTableRulesStatementTestCase extends SQLParserTestCase {
 
-    @XmlAttribute(name = "rule-type")
-    private String ruleType;
+    @XmlElement(name = "table")
+    private final List<String> tables = new LinkedList<>();
 }

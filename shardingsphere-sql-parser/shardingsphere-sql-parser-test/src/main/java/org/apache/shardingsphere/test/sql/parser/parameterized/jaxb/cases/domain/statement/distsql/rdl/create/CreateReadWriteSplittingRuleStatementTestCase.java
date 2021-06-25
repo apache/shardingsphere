@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * SQL test case for xml tag.
+ * Create read-write splitting rule statement test case.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class SQLCase {
+public final class CreateReadWriteSplittingRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute
-    private String id;
-    
-    @XmlAttribute
-    private String value;
-    
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
-
-    @XmlAttribute(name = "rule-type")
-    private String ruleType;
+    @XmlElement(name = "read-write-splitting")
+    private List<ExceptedReadwriteSplittingRule> readwriteSplittingRules = new LinkedList<>();
 }

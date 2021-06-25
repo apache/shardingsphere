@@ -15,32 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * SQL test case for xml tag.
+ * Drop sharding binding table rules statement test case.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class SQLCase {
-    
-    @XmlAttribute
-    private String id;
-    
-    @XmlAttribute
-    private String value;
-    
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
-
-    @XmlAttribute(name = "rule-type")
-    private String ruleType;
+public final class DropShardingBindingTableRulesStatementTestCase extends SQLParserTestCase {
 }
