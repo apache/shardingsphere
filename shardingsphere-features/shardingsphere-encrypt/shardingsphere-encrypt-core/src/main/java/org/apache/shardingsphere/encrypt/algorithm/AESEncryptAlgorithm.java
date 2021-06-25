@@ -39,10 +39,12 @@ import javax.xml.bind.DatatypeConverter;
 @Getter
 @Setter
 public final class AESEncryptAlgorithm implements EncryptAlgorithm {
+    
     private static final String AES_KEY = "aes-key-value";
+    
     private Properties props = new Properties();
+    
     private byte[] secretKey;
-
     @Override
     public void init() {
         secretKey = createSecretKey();
