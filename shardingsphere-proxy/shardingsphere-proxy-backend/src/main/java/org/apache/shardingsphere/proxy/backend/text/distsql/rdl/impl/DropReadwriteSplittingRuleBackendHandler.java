@@ -37,7 +37,7 @@ public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHa
     }
     
     @Override
-    public void check(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig) {
             throw new ReadwriteSplittingRuleNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
@@ -49,7 +49,7 @@ public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHa
     }
     
     @Override
-    public void doExecute(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         sqlStatement.getRuleNames().forEach(each -> {
             ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
             currentRuleConfig.getDataSources().remove(dataSourceRuleConfig);

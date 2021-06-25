@@ -37,7 +37,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
     }
     
     @Override
-    public void check(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
         checkRuleNames(schemaName, sqlStatement, currentRuleConfig);
     }
@@ -57,7 +57,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHan
     }
     
     @Override
-    public void doExecute(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         sqlStatement.getRuleNames().forEach(each -> {
             DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfig = currentRuleConfig.getDataSources()
                     .stream().filter(dataSource -> dataSource.getName().equals(each)).findAny().get();

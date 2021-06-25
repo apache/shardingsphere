@@ -43,7 +43,7 @@ public final class AlterShardingBindingTableRulesBackendHandler extends RDLBacke
     }
     
     @Override
-    public void check(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig) {
             throw new ShardingBindingTableRuleNotExistsException(schemaName);
         }
@@ -67,7 +67,7 @@ public final class AlterShardingBindingTableRulesBackendHandler extends RDLBacke
     }
     
     @Override
-    public void doExecute(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> bindingTableGroups = currentRuleConfig.getBindingTableGroups();
         bindingTableGroups.clear();
         bindingTableGroups.addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());

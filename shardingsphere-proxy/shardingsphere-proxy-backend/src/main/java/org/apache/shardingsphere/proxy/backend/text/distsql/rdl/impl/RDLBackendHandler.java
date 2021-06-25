@@ -46,34 +46,33 @@ public abstract class RDLBackendHandler<T extends SQLStatement, R extends Schema
         super(sqlStatement, backendConnection);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     protected final ResponseHeader execute(final String schemaName, final T sqlStatement) {
-        Class<R> configRuleClass = (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
-        R currentRuleConfig = findCurrentRuleConfiguration(schemaName, configRuleClass).orElse(null);
-        check(schemaName, sqlStatement, currentRuleConfig);
-        doExecute(schemaName, sqlStatement, currentRuleConfig);
-        postChange(schemaName);
+        R currentRuleConfig = findCurrentRuleConfiguration(schemaName).orElse(null);
+        checkSQLStatement(schemaName, sqlStatement, currentRuleConfig);
+        updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        postRuleConfigurationChange(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    protected abstract void check(String schemaName, T sqlStatement, R currentRuleConfig);
-    
-    protected abstract void doExecute(String schemaName, T sqlStatement, R currentRuleConfig);
-    
-    private void postChange(final String schemaName) {
-        ShardingSphereEventBus.getInstance().post(
-                new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
-    }
-    
     @SuppressWarnings("unchecked")
-    private Optional<R> findCurrentRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
+    private Optional<R> findCurrentRuleConfiguration(final String schemaName) {
+        Class<R> ruleConfigClass = (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
         for (RuleConfiguration each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()) {
-            if (configRuleClass.isAssignableFrom(each.getClass())) {
+            if (ruleConfigClass.isAssignableFrom(each.getClass())) {
                 return Optional.of((R) each);
             }
         }
         return Optional.empty();
+    }
+    
+    protected abstract void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig);
+    
+    protected abstract void updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig);
+    
+    private void postRuleConfigurationChange(final String schemaName) {
+        ShardingSphereEventBus.getInstance().post(
+                new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
     }
     
     protected final Collection<String> getNotExistedResources(final String schemaName, final Collection<String> resourceNames) {
