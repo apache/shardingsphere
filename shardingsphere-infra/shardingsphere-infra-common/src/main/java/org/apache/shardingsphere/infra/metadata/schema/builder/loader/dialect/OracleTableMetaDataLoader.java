@@ -107,7 +107,8 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     }
 
     private String getTableMetaDataSQL(final Collection<String> existedTables, final DatabaseMetaData metaData) throws SQLException {
-        String collation = metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION ? metaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION ? ", IDENTITY_COLUMN, COLLATION" : metaData.getDatabaseMinorVersion() >= IDENTITY_COLUMN_START_MINOR_VERSION ? ", IDENTITY_COLUMN" : "" : "";
+        String collation = metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION ? metaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION ? ", IDENTITY_COLUMN, COLLATION"
+                : metaData.getDatabaseMinorVersion() >= IDENTITY_COLUMN_START_MINOR_VERSION ? ", IDENTITY_COLUMN" : "" : "";
         return existedTables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
                 : String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, collation, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
