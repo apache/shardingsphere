@@ -45,6 +45,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     private Properties props = new Properties();
     
     private byte[] secretKey;
+    
     @Override
     public void init() {
         secretKey = createSecretKey();
