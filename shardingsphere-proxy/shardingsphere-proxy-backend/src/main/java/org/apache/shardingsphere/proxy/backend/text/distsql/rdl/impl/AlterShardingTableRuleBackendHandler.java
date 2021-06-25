@@ -41,6 +41,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -70,10 +71,11 @@ public final class AlterShardingTableRuleBackendHandler extends RDLBackendHandle
             throw new DuplicateTablesException(duplicateTables);
         }
         Collection<String> alteredTables = getAlteredTables(sqlStatement);
-        if (!findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).isPresent()) {
+        Optional<ShardingRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class);
+        if (!ruleConfig.isPresent()) {
             throw new ShardingTableRuleNotExistedException(schemaName, alteredTables);
         }
-        Collection<String> existTables = getShardingTables(findCurrentRuleConfiguration(schemaName, ShardingRuleConfiguration.class).get());
+        Collection<String> existTables = getShardingTables(ruleConfig.get());
         Collection<String> notExistTables = alteredTables.stream().filter(each -> !existTables.contains(each)).collect(Collectors.toList());
         if (!notExistTables.isEmpty()) {
             throw new ShardingTableRuleNotExistedException(schemaName, notExistTables);

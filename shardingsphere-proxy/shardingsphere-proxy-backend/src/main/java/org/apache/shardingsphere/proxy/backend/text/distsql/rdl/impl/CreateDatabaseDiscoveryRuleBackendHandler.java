@@ -103,16 +103,16 @@ public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendH
     @Override
     public void doExecute(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfig = DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules());
-        DatabaseDiscoveryRuleConfiguration createdDatabaseDiscoveryRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
+        DatabaseDiscoveryRuleConfiguration createdDatabaseDiscoveryRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlDatabaseDiscoveryRuleConfig))
                 .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).findAny().map(each -> (DatabaseDiscoveryRuleConfiguration) each).get();
         Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = findCurrentRuleConfiguration(schemaName, DatabaseDiscoveryRuleConfiguration.class);
         if (ruleConfig.isPresent()) {
             DatabaseDiscoveryRuleConfiguration existDatabaseDiscoveryRuleConfig = ruleConfig.get();
-            existDatabaseDiscoveryRuleConfig.getDataSources().addAll(createdDatabaseDiscoveryRuleConfiguration.getDataSources());
-            existDatabaseDiscoveryRuleConfig.getDiscoveryTypes().putAll(createdDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes());
+            existDatabaseDiscoveryRuleConfig.getDataSources().addAll(createdDatabaseDiscoveryRuleConfig.getDataSources());
+            existDatabaseDiscoveryRuleConfig.getDiscoveryTypes().putAll(createdDatabaseDiscoveryRuleConfig.getDiscoveryTypes());
         } else {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdDatabaseDiscoveryRuleConfiguration);
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(createdDatabaseDiscoveryRuleConfig);
         }
     }
     
