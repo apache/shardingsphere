@@ -39,6 +39,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaPrivilegeBuilder {
+    
     /**
      * Build privileges.
      *
@@ -60,7 +61,7 @@ public final class SchemaPrivilegeBuilder {
     }
     
     /**
-     * convert schemas.
+     * Convert schemas.
      * @param userSchemaMapping user shcema mapping
      * @return schemas
      */
@@ -77,7 +78,7 @@ public final class SchemaPrivilegeBuilder {
     }
     
     /**
-     * merge user schema to result.
+     * Merge user schema to result.
      * @param userSchema user schema
      * @param result result
      */

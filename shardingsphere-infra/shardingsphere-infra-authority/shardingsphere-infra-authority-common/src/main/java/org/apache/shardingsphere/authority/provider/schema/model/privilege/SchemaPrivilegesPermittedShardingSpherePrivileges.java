@@ -30,7 +30,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SchemaPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
 
-    private Set<String> schemas;
+    private final Set<String> schemas;
 
     @Override
     public void setSuperPrivilege() {
