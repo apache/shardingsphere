@@ -57,7 +57,7 @@ public final class JoinTableSqlNodeConverter implements SqlNodeConverter<JoinTab
         return Optional.of(sqlNode);
     }
     
-    private SqlLiteral convertJoinType(String joinType) {
+    private SqlLiteral convertJoinType(final String joinType) {
         if (joinType == null) {
             return JoinType.COMMA.symbol(SqlParserPos.ZERO);
         } else if (JOIN_TYPE_INNER.equals(joinType)) {
