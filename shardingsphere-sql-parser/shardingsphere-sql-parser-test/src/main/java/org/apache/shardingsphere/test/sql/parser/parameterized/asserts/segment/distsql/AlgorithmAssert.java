@@ -47,8 +47,8 @@ public final class AlgorithmAssert {
         } else {
             assertNotNull(assertContext.getText("Actual dataSource should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s function segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getName(), CoreMatchers.is(expected.getAlgorithmName()));
-            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getAlgorithmProps());
+                    actual.getName(), CoreMatchers.is(expected.getName()));
+            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
         }
     }
 }
