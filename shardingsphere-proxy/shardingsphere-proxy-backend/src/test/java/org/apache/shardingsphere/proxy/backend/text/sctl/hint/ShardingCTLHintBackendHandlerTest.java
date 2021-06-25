@@ -202,7 +202,6 @@ public final class ShardingCTLHintBackendHandlerTest {
         when(metaData.getSchema()).thenReturn(new ShardingSphereSchema(ImmutableMap.of("user", mock(TableMetaData.class))));
         when(metaData.isComplete()).thenReturn(true);
         when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-        when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
         return Collections.singletonMap("schema", metaData);
     }
     

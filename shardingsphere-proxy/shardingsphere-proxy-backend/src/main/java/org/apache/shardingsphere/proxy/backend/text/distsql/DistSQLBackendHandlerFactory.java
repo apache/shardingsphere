@@ -49,7 +49,7 @@ public final class DistSQLBackendHandlerFactory {
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
         if (sqlStatement instanceof RQLStatement) {
-            return RQLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
+            return Optional.of(RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof RDLStatement) {
             return RDLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);

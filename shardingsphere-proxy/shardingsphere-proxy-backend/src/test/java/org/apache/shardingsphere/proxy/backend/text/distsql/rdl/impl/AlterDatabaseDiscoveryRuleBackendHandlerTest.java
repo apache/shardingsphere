@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -110,13 +110,13 @@ public final class AlterDatabaseDiscoveryRuleBackendHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    @Test(expected = DatabaseDiscoveryRulesNotExistedException.class)
+    @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
     public void assertExecuteWithNotExistDatabaseDiscoveryRule() {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
     }
     
-    @Test(expected = DatabaseDiscoveryRulesNotExistedException.class)
+    @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
     public void assertExecuteWithNoAlteredDatabaseDiscoveryRule() {
         DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("ha_group", Arrays.asList("ds_0", "ds_1"), "TEST", new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));

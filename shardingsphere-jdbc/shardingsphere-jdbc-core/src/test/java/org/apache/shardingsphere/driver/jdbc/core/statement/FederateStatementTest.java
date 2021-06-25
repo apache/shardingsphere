@@ -32,10 +32,6 @@ import static org.junit.Assert.assertTrue;
 
 public final class FederateStatementTest extends AbstractShardingSphereDataSourceForFederateTest {
 
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES =
-            "select o.*, i.* from t_order_federate o, t_order_item_federate i "
-            + "where o.order_id = 1000 and i.item_id = 100000";
-
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES =
             "select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, "
                     + "t_order_item_federate_sharding where t_order_federate.order_id = "
@@ -75,31 +71,6 @@ public final class FederateStatementTest extends AbstractShardingSphereDataSourc
     
     private static final String SELECT_PARTIAL_DISTINCT_AGGREGATION_SQL_FOR_SHARDING_TABLE =
             "SELECT SUM(DISTINCT user_id), SUM(order_id_sharding) FROM t_order_federate_sharding WHERE order_id_sharding > 1000";
-    
-    @Test
-    public void assertQueryWithFederateInSingleTablesByExecuteQuery() throws SQLException {
-        assertQueryWithFederateInSingleTables(true);
-    }
-    
-    @Test
-    public void assertQueryWithFederateInSingleTablesByExecute() throws SQLException {
-        assertQueryWithFederateInSingleTables(false);
-    }
-    
-    private void assertQueryWithFederateInSingleTables(final boolean executeQuery) throws SQLException {
-        ShardingSphereStatement statement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
-        ResultSet resultSet = getResultSet(statement, SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES, executeQuery);
-        assertNotNull(resultSet);
-        assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(1000));
-        assertThat(resultSet.getInt(2), is(10));
-        assertThat(resultSet.getString(3), is("init"));
-        assertThat(resultSet.getInt(4), is(100000));
-        assertThat(resultSet.getInt(5), is(1000));
-        assertThat(resultSet.getInt(6), is(10));
-        assertThat(resultSet.getString(7), is("init"));
-        assertFalse(resultSet.next());
-    }
     
     @Test
     public void assertQueryWithFederateInSingleAndShardingTableByExecuteQuery() throws SQLException {

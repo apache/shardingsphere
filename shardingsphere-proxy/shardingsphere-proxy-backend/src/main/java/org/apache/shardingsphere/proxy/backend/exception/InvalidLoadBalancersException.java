@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
  * Invalid load balancers exception.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public final class InvalidLoadBalancersException extends BackendException {
-
+    
     private static final long serialVersionUID = -8028595443792872970L;
-
+    
     private final Collection<String> loadBalancers;
 }

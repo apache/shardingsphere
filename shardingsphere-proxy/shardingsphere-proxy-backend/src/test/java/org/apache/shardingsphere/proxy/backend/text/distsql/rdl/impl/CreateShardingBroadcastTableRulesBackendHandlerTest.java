@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRulesExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -78,7 +78,7 @@ public final class CreateShardingBroadcastTableRulesBackendHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    @Test(expected = ShardingBroadcastTableRulesExistsException.class)
+    @Test(expected = ShardingBroadcastTableRuleExistedException.class)
     public void assertExecuteWithExistShardingBroadcastTableRules() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.getBroadcastTables().add("t_1");
