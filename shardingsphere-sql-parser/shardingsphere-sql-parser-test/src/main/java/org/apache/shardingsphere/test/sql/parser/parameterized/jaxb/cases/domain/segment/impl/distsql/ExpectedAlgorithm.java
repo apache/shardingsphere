@@ -31,8 +31,8 @@ import javax.xml.bind.annotation.XmlElement;
 public final class ExpectedAlgorithm extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement(name = "algorithm-name")
-    private String algorithmName;
+    private String name;
     
     @XmlElement(name = "properties")
-    private ExpectedProperties algorithmProps;
+    private ExpectedProperties props;
 }
