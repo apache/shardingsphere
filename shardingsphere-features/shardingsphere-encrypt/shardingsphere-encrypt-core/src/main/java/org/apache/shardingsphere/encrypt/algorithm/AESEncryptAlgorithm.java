@@ -33,8 +33,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Properties;
 import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
-
 /**
  * AES encrypt algorithm.
  */
@@ -58,18 +56,14 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
 
-    @SneakyThrows(GeneralSecurityException.class)
+    @SneakyThrows
     @Override
     public String encrypt(final Object plaintext) {
         if (null == plaintext) {
             return null;
         }
         byte[] result = new byte[0];
-        try {
-            result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plaintext).getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plaintext).getBytes("UTF-8"));
         return DatatypeConverter.printBase64Binary(result);
     }
 
