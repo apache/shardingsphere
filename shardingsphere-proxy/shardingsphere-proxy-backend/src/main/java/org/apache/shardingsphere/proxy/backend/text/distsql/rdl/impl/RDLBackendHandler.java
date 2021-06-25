@@ -20,8 +20,12 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.distsql.RDLStatementUpdater;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -32,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -42,15 +47,26 @@ import java.util.stream.Collectors;
  */
 public abstract class RDLBackendHandler<T extends SQLStatement, R extends SchemaRuleConfiguration> extends SchemaRequiredBackendHandler<T> {
     
+    static {
+        ShardingSphereServiceLoader.register(RDLStatementUpdater.class);
+    }
+    
     public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected final ResponseHeader execute(final String schemaName, final T sqlStatement) {
         R currentRuleConfig = findCurrentRuleConfiguration(schemaName).orElse(null);
-        checkSQLStatement(schemaName, sqlStatement, currentRuleConfig);
-        updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        try {
+            RDLStatementUpdater updater = TypedSPIRegistry.getRegisteredService(RDLStatementUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+            updater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
+            updater.updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        } catch (final ServiceProviderNotFoundException ignored) {
+            checkSQLStatement(schemaName, sqlStatement, currentRuleConfig);
+            updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        }
         postRuleConfigurationChange(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -81,6 +97,6 @@ public abstract class RDLBackendHandler<T extends SQLStatement, R extends Schema
     
     private boolean isExistedResource(final String schemaName, final String resourceName) {
         ShardingSphereResource resource = ProxyContext.getInstance().getMetaData(schemaName).getResource();
-        return null != resource && resource.getDataSources().containsKey(resourceName);
+        return resource.getDataSources().containsKey(resourceName);
     }
 }

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -39,6 +39,7 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -70,7 +71,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
     @Mock
     private TransactionContexts transactionContexts;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
