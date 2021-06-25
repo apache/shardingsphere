@@ -64,6 +64,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -282,6 +283,7 @@ public final class DistSQLBackendHandlerFactoryTest {
             when(mockedMetaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(metaData.getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
             when(mockedMetaDataContexts.getMetaData("schema")).thenReturn(metaData);
             metaDataContexts.set(ProxyContext.getInstance(), mockedMetaDataContexts);
         } else {
