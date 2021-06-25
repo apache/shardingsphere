@@ -42,20 +42,16 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -98,9 +94,6 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment("pr_ds", "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "TEST", new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(readwriteSplittingRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        Map<String, DataSource> dataSourceMap = mock(Map.class);
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
-        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
@@ -128,9 +121,6 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment("pr_ds", "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "TEST", new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(readwriteSplittingRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        Map<String, DataSource> dataSourceMap = mock(Map.class);
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
-        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
@@ -149,9 +139,6 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
                 "pr_ds", "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "notExistLoadBalancer", new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(readwriteSplittingRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        Map<String, DataSource> dataSourceMap = mock(Map.class);
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
-        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
         handler.execute("test", sqlStatement);
     }
 }
