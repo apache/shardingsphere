@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Create sharding binding table rule backend handler.
  */
-public final class CreateShardingBindingTableRulesBackendHandler extends RDLBackendHandler<CreateShardingBindingTableRulesStatement> {
+public final class CreateShardingBindingTableRulesBackendHandler extends RDLBackendHandler<CreateShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     public CreateShardingBindingTableRulesBackendHandler(final CreateShardingBindingTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);

@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding table rule backend handler.
  */
-public final class DropShardingTableRuleBackendHandler extends RDLBackendHandler<DropShardingTableRuleStatement> {
+public final class DropShardingTableRuleBackendHandler extends RDLBackendHandler<DropShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     public DropShardingTableRuleBackendHandler(final DropShardingTableRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);

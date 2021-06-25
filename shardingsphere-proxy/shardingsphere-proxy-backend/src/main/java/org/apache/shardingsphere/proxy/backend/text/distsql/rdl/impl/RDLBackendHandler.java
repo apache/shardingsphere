@@ -37,8 +37,9 @@ import java.util.stream.Collectors;
  * RDL backend handler.
  *
  * @param <T> type of SQL statement
+ * @param <R> type of rule configuration
  */
-public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
+public abstract class RDLBackendHandler<T extends SQLStatement, R extends SchemaRuleConfiguration> extends SchemaRequiredBackendHandler<T> {
     
     public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
@@ -62,12 +63,12 @@ public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRe
     }
     
     @SuppressWarnings("unchecked")
-    protected final <R extends SchemaRuleConfiguration> Optional<R> findCurrentRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
+    protected final Optional<R> findCurrentRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
         return ProxyContext.getInstance().getMetaData(schemaName)
                 .getRuleMetaData().getConfigurations().stream().filter(each -> configRuleClass.isAssignableFrom(each.getClass())).map(each -> (R) each).findFirst();
     }
     
-    protected final <R extends SchemaRuleConfiguration> R getCurrentRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
+    protected final R getCurrentRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
         Optional<R> result = findCurrentRuleConfiguration(schemaName, configRuleClass);
         Preconditions.checkState(result.isPresent(), "Can not find rule type: `%s`.", configRuleClass);
         return result.get();

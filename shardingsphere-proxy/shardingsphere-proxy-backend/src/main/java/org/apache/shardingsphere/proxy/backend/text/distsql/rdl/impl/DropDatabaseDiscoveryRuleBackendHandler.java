@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Drop database discovery rule backend handler.
  */
-public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<DropDatabaseDiscoveryRuleStatement> {
+public final class DropDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<DropDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
     
     public DropDatabaseDiscoveryRuleBackendHandler(final DropDatabaseDiscoveryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);

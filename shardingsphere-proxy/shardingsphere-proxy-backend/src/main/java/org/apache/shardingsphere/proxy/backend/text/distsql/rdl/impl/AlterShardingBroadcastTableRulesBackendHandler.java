@@ -28,7 +28,7 @@ import java.util.Optional;
 /**
  * Alter sharding broadcast table rule backend handler.
  */
-public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBackendHandler<AlterShardingBroadcastTableRulesStatement> {
+public final class AlterShardingBroadcastTableRulesBackendHandler extends RDLBackendHandler<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     public AlterShardingBroadcastTableRulesBackendHandler(final AlterShardingBroadcastTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);

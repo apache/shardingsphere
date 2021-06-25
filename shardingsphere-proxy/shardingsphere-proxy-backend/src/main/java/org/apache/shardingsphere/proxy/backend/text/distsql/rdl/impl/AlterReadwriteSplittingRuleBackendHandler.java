@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Alter readwrite-splitting rule backend handler.
  */
-public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<AlterReadwriteSplittingRuleStatement> {
+public final class AlterReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<AlterReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     static {
         // TODO consider about register once only

@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Alter encrypt rule backend handler.
  */
-public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<AlterEncryptRuleStatement> {
+public final class AlterEncryptRuleBackendHandler extends RDLBackendHandler<AlterEncryptRuleStatement, EncryptRuleConfiguration> {
     
     static {
         // TODO consider about register once only

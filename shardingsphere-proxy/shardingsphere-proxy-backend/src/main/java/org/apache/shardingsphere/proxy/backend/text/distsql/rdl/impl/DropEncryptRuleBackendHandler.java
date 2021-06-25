@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Drop encrypt rule backend handler.
  */
-public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropEncryptRuleStatement> {
+public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropEncryptRuleStatement, EncryptRuleConfiguration> {
     
     public DropEncryptRuleBackendHandler(final DropEncryptRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);

@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * Drop sharding broadcast table rules backend handler.
  */
-public final class DropShardingBroadcastTableRulesBackendHandler extends RDLBackendHandler<DropShardingBroadcastTableRulesStatement> {
+public final class DropShardingBroadcastTableRulesBackendHandler extends RDLBackendHandler<DropShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     public DropShardingBroadcastTableRulesBackendHandler(final DropShardingBroadcastTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);

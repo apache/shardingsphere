@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * Create readwrite splitting rule backend handler.
  */
-public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<CreateReadwriteSplittingRuleStatement> {
+public final class CreateReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     static {
         // TODO consider about register once only

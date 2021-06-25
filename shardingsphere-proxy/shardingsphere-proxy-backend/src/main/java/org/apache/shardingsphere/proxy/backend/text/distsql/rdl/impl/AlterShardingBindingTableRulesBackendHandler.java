@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Alter sharding binding table rule backend handler.
  */
-public final class AlterShardingBindingTableRulesBackendHandler extends RDLBackendHandler<AlterShardingBindingTableRulesStatement> {
+public final class AlterShardingBindingTableRulesBackendHandler extends RDLBackendHandler<AlterShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     public AlterShardingBindingTableRulesBackendHandler(final AlterShardingBindingTableRulesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);

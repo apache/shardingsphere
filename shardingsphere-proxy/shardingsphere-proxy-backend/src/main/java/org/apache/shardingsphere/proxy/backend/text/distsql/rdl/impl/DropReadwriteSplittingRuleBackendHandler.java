@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Drop readwrite splitting rule backend handler.
  */
-public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<DropReadwriteSplittingRuleStatement> {
+public final class DropReadwriteSplittingRuleBackendHandler extends RDLBackendHandler<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     public DropReadwriteSplittingRuleBackendHandler(final DropReadwriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);

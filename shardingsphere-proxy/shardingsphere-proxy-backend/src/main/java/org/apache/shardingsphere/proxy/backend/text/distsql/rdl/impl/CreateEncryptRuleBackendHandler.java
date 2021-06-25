@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Create encrypt rule backend handler.
  */
-public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<CreateEncryptRuleStatement> {
+public final class CreateEncryptRuleBackendHandler extends RDLBackendHandler<CreateEncryptRuleStatement, EncryptRuleConfiguration> {
     
     static {
         // TODO consider about register once only

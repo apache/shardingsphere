@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Alter database discovery rule backend handler.
  */
-public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<AlterDatabaseDiscoveryRuleStatement> {
+public final class AlterDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<AlterDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
     
     static {
         // TODO consider about register once only

@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 /**
  * Create sharding table rule backend handler.
  */
-public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandler<CreateShardingTableRuleStatement> {
+public final class CreateShardingTableRuleBackendHandler extends RDLBackendHandler<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     static {
         // TODO consider about register once only

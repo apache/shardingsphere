@@ -41,10 +41,11 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+
 /**
  * Create database discovery rule backend handler.
  */
-public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<CreateDatabaseDiscoveryRuleStatement> {
+public final class CreateDatabaseDiscoveryRuleBackendHandler extends RDLBackendHandler<CreateDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
     
     static {
         // TODO consider about register once only
