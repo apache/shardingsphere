@@ -16,7 +16,11 @@
 #
 
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.AlterShardingTableRuleStatementUpdater
+
+org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.CreateShardingBindingTableRuleStatementUpdater
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.AlterShardingBindingTableRuleStatementUpdater
+
+
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.AlterShardingBroadcastTableRuleStatementUpdater
 
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.CreateReadwriteSplittingRuleStatementUpdater
