@@ -49,7 +49,7 @@ public final class OracleTableMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN  FROM ALL_TAB_COLUMNS WHERE OWNER = ?").executeQuery()).thenReturn(resultSet);
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE , IDENTITY_COLUMN FROM ALL_TAB_COLUMNS WHERE OWNER = ?").executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
@@ -67,7 +67,7 @@ public final class OracleTableMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN , COLLATION FROM ALL_TAB_COLUMNS WHERE OWNER = ?").executeQuery()).thenReturn(resultSet);
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE , IDENTITY_COLUMN, COLLATION FROM ALL_TAB_COLUMNS WHERE OWNER = ?").executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
@@ -85,7 +85,7 @@ public final class OracleTableMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN  FROM ALL_TAB_COLUMNS WHERE OWNER = ? AND TABLE_NAME NOT IN ('existed_tbl')")
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE , IDENTITY_COLUMN FROM ALL_TAB_COLUMNS WHERE OWNER = ? AND TABLE_NAME NOT IN ('existed_tbl')")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
@@ -106,7 +106,7 @@ public final class OracleTableMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN , COLLATION FROM ALL_TAB_COLUMNS WHERE OWNER = ? AND TABLE_NAME NOT IN ('existed_tbl')")
+                "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE , IDENTITY_COLUMN, COLLATION FROM ALL_TAB_COLUMNS WHERE OWNER = ? AND TABLE_NAME NOT IN ('existed_tbl')")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
