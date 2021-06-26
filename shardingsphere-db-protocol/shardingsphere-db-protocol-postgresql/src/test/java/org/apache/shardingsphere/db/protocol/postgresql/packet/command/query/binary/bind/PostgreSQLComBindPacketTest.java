@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnFormat;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -61,9 +61,8 @@ public final class PostgreSQLComBindPacketTest {
         bindPacket.write(payload);
         assertThat(bindPacket.getSql(), is(sql));
         assertThat(bindPacket.getParameters().size(), is(1));
-        assertThat(bindPacket.getResultFormatCodes().size(), is(1));
-        assertThat(bindPacket.getResultFormatCodes().get(0), is(1));
-        assertThat(bindPacket.getResultFormatByColumnIndex(0), is(PostgreSQLColumnFormat.BINARY));
+        assertThat(bindPacket.getResultFormats().size(), is(1));
+        assertThat(bindPacket.getResultFormats().get(0), is(PostgreSQLValueFormat.BINARY));
     }
     
     @Test

@@ -18,20 +18,18 @@ chapter = true
 
 [![Contributor over time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere)
 
-Apache ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 3 independent products, JDBC, Proxy & Sidecar (Planning). 
-They all provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native.
+Apache ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 3 independent products, JDBC, Proxy & Sidecar (Planning).
+They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud-native.
 
-Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database.
-As the cornerstone of enterprises, relational database still takes a huge market share.
+Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in a distributed system, rather than a new database.
+As the cornerstone of enterprises, the relational database still takes a huge market share.
 Therefore, we prefer to focus on its increment instead of a total overturn.
 
 Apache ShardingSphere begin to focus on pluggable architecture from version 5.x, features can be embedded into project flexibility.
-Currently, the features such as data sharding, replica query, data encrypt, shadow database,
-and SQL dialects / database protocols such as MySQL, PostgreSQL, SQLServer, Oracle supported are all weaved by plugins.
-Developers can customize their own ShardingSphere just like building lego blocks.
-There are lots of SPI extensions for Apache ShardingSphere now and increase continuously.
+Currently, the features such as data sharding, replica query, data encrypt, shadow test, and SQL dialects/database protocols such as MySQL, PostgreSQL, SQLServer, Oracle supported are all weaved by plugins.
+Developers can customize their ShardingSphere systems just like building LEGO blocks. There are lots of SPI extensions for Apache ShardingSphere now and they are increasing continuously.
 
-ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top Level Project on April 16, 2020.
+ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
 
 Welcome communicate with community via [mail list](mailto:dev@shardingsphere.apache.org).
 
@@ -54,8 +52,8 @@ Welcome communicate with community via [mail list](mailto:dev@shardingsphere.apa
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/shardingsphere-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
-ShardingSphere-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
-With the client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
+ShardingSphere-JDBC defines itself as a lightweight Java framework that provides extra services at the Java JDBC layer.
+With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.  
 It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
 
 * Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
@@ -72,19 +70,19 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 ShardingSphere-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
 Friendlier to DBA, the MySQL version provided now can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible of MySQL protocol to operate data.
 
-* Totally transparent to applications, it can be used directly as MySQL.
+* Transparent to applications, it can be used directly as MySQL and PostgreSQL servers.
 * Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
 
 ![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img//shardingsphere-proxy-brief.png)
 
 ### ShardingSphere-Sidecar(TODO)
 
-ShardingSphere-Sidecar (TODO) defines itself as a cloud native database agent of the Kubernetes environment, in charge of all the access to the database in the form of sidecar. 
-It provides a mesh layer interacting with the database, we call this as `Database Mesh`.
+ShardingSphere-Sidecar (TODO) defines itself as a cloud-native database agent of the Kubernetes environment, in charge of all the access to the database in the form of a sidecar.
+It provides a mesh layer interacting with the database, we call this `Database Mesh`.
 
-Database Mesh emphasizes on how to connect distributed database access application with the database. 
-Focusing on interaction, it effectively organizes the interaction between messy applications and the database. 
-The application and database that use Database Mesh to visit database will form a large grid system, where they just need to be put into the right position accordingly. 
+Database Mesh emphasizes how to connect distributed data-access applications with the databases.
+Focusing on interaction, it effectively organizes the interaction between messy applications and databases.
+The applications and databases that use Database Mesh to visit databases will form a large grid system, where they just need to be put into the right positions accordingly. 
 They are all governed by the mesh layer.
 
 ![ShardingSphere-Sidecar Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-sidecar-brief.png)
@@ -127,6 +125,6 @@ Architects can adjust the system architecture to the most applicable one to curr
 ### Database Governance
 
 * Distributed Governance
-* Data migration & Scale out
+* Data migration & Scale-out
 * Tracing & Observability Supported
 * Data Encryption

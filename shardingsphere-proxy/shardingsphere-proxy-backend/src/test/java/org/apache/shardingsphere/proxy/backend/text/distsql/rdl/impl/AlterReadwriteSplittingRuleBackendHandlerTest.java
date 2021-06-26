@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidLoadBalancersException;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -38,22 +38,19 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -71,7 +68,7 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
     @Mock
     private TransactionContexts transactionContexts;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
@@ -102,21 +99,18 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
                 Collections.singleton(new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(readwriteSplittingDataSourceRuleConfiguration)), new LinkedHashMap<>())));
         when(readwriteSplittingDataSourceRuleConfiguration.getName()).thenReturn("pr_ds");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        Map<String, DataSource> dataSourceMap = mock(Map.class);
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
-        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
+    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
     public void assertExecuteWithNotExistReadwriteSplittingRule() {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
     }
 
-    @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
+    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
     public void assertExecuteWithNoAlteredReadwriteSplittingRules() {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment("pr_ds", "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "TEST", new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(readwriteSplittingRuleSegment));
@@ -143,9 +137,6 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
                 Collections.singleton(new ReadwriteSplittingRuleConfiguration(Collections.singleton(readwriteSplittingDataSourceRuleConfiguration), Collections.emptyMap())));
         when(readwriteSplittingDataSourceRuleConfiguration.getName()).thenReturn("pr_ds");
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        Map<String, DataSource> dataSourceMap = mock(Map.class);
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
-        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
         handler.execute("test", sqlStatement);
     }
 }

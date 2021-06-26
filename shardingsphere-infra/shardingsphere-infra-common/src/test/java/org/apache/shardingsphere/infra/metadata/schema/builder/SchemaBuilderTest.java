@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.metadata.schema.builder;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -79,16 +80,19 @@ public final class SchemaBuilderTest {
     
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
-        ShardingSphereSchema actual = SchemaBuilder.build(schemaBuilderMaterials);
-        assertThat(actual.getAllTableNames().size(), is(2));
-        assertSchemaOfShardingTables(actual);
+        Map<Map<String, TableMetaData>, Map<String, TableMetaData>> actual = SchemaBuilder.build(schemaBuilderMaterials);
+        Map<String, TableMetaData> actualTables = actual.keySet().iterator().next();
+        Map<String, TableMetaData> logicTables = actual.values().iterator().next();
+        assertThat(actualTables.size(), is(2));
+        assertThat(logicTables.size(), is(2));
+        assertSchemaOfShardingTables(actualTables);
     }
     
-    private void assertSchemaOfShardingTables(final ShardingSphereSchema actual) {
-        assertTrue(actual.containsTable("data_node_routed_table1"));
-        assertTrue(actual.get("data_node_routed_table1").getColumns().containsKey("id"));
-        assertTrue(actual.containsTable("data_node_routed_table2"));
-        assertTrue(actual.get("data_node_routed_table2").getColumns().containsKey("id"));
+    private void assertSchemaOfShardingTables(final Map<String, TableMetaData> actual) {
+        assertTrue(actual.containsKey("data_node_routed_table1"));
+        assertThat(actual.get("data_node_routed_table1").getColumns().size(), is(0));
+        assertTrue(actual.containsKey("data_node_routed_table2"));
+        assertThat(actual.get("data_node_routed_table2").getColumns().size(), is(0));
     }
     
     @Test
@@ -106,16 +110,16 @@ public final class SchemaBuilderTest {
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         String[] mockReturnTables = {singleTableNames[1], "data_node_routed_table1_0", "data_node_routed_table1_1", "data_node_routed_table2_0", "data_node_routed_table2_1"};
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], mockReturnTables);
-        ShardingSphereSchema actual = SchemaBuilder.build(schemaBuilderMaterials);
-        assertThat(actual.getAllTableNames().size(), is(4));
-        assertSchemaOfShardingTablesAndSingleTables(actual);
+        Map<Map<String, TableMetaData>, Map<String, TableMetaData>> actual = SchemaBuilder.build(schemaBuilderMaterials);
+        Map<String, TableMetaData> actualTables = actual.keySet().iterator().next();
+        assertThat(actualTables.size(), is(4));
+        assertActualOfShardingTablesAndSingleTables(actualTables);
     }
     
-    private void assertSchemaOfShardingTablesAndSingleTables(final ShardingSphereSchema actual) {
-        assertSchemaOfShardingTables(actual);
-        assertTrue(actual.containsTable(singleTableNames[0]));
+    private void assertActualOfShardingTablesAndSingleTables(final Map<String, TableMetaData> actual) {
+        assertTrue(actual.containsKey(singleTableNames[0]));
         assertThat(actual.get(singleTableNames[0]).getColumns().size(), is(0));
-        assertTrue(actual.containsTable(singleTableNames[1]));
+        assertTrue(actual.containsKey(singleTableNames[1]));
         assertThat(actual.get(singleTableNames[1]).getColumns().size(), is(0));
     }
 }

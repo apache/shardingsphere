@@ -25,10 +25,13 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
-@Setter
+/**
+ * Expected list expression.
+ */
 @Getter
-public class ExpectedListExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
-
+@Setter
+public final class ExpectedListExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+    
     @XmlElement(name = "items")
     private List<ExpectedExpression> items = new LinkedList<>();
 }

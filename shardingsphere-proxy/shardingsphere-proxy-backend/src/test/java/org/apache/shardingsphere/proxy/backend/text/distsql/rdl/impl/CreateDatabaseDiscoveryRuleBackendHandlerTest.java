@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -39,20 +39,17 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,7 +67,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
     @Mock
     private TransactionContexts transactionContexts;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
     @Mock
@@ -95,9 +92,6 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
         DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("pr_ds", Arrays.asList("ds_read_0", "ds_read_1"), "TEST", new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        Map<String, DataSource> dataSourceMap = mock(Map.class);
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
-        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
@@ -126,9 +120,6 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
         DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("pr_ds", Arrays.asList("ds_read_0", "ds_read_1"), "notExistDiscoveryType", new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        Map<String, DataSource> dataSourceMap = mock(Map.class);
-        when(shardingSphereResource.getDataSources()).thenReturn(dataSourceMap);
-        when(dataSourceMap.containsKey(anyString())).thenReturn(true);
         handler.execute("test", sqlStatement);
     }
 }

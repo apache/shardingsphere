@@ -5,4 +5,4 @@ weight = 2
 chapter = true
 +++
 
-## TODO
+This chapter will explain the syntax of RQL in detail,List the meaning of all query columns,And show all the query information through examples.
