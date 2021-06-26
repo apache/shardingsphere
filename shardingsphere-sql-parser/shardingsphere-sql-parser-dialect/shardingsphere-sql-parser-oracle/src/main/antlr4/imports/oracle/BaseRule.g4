@@ -731,3 +731,15 @@ unitName
 procedureName
     : identifier
     ;
+
+dataItem
+    : variableName
+    ;
+
+variableName
+    : identifier | stringLiterals
+    ;
+
+materializedViewName
+    : (owner DOT_)? name
+    ;

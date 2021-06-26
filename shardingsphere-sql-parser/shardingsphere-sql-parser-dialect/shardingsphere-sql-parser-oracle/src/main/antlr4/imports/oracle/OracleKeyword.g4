@@ -2202,3 +2202,12 @@ FAST
 COMPLETE
     : C O M P L E T E
     ;
+
+RETURNING
+    : R E T U R N I N G
+    ;
+
+OPTION
+    : O P T I O N
+    ;
+
