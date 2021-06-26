@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.loader.adapter.Me
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaDatas;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
@@ -72,12 +73,10 @@ public final class SchemaBuilder {
      * @return actual and logic table meta data
      * @throws SQLException SQL exception
      */
-    public static Map<Map<String, TableMetaData>, Map<String, TableMetaData>> build(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<Map<String, TableMetaData>, Map<String, TableMetaData>> result = new HashMap<>();
+    public static TableMetaDatas build(final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> actualTableMetaMap = appendRemainTables(materials);
         Map<String, TableMetaData> logicTableMetaMap = addRuleConfiguredTables(materials, actualTableMetaMap);
-        result.put(actualTableMetaMap, logicTableMetaMap);
-        return result;
+        return new TableMetaDatas(actualTableMetaMap, logicTableMetaMap);
     }
     
     private static Map<String, TableMetaData> appendRemainTables(final SchemaBuilderMaterials materials) throws SQLException {

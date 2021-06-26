@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
@@ -75,7 +76,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), 
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties())));
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
     }
     
     @Test

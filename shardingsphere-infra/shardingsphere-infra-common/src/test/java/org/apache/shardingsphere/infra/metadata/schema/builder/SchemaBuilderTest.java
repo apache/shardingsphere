@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaDatas;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,12 +81,10 @@ public final class SchemaBuilderTest {
     
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
-        Map<Map<String, TableMetaData>, Map<String, TableMetaData>> actual = SchemaBuilder.build(schemaBuilderMaterials);
-        Map<String, TableMetaData> actualTables = actual.keySet().iterator().next();
-        Map<String, TableMetaData> logicTables = actual.values().iterator().next();
-        assertThat(actualTables.size(), is(2));
-        assertThat(logicTables.size(), is(2));
-        assertSchemaOfShardingTables(actualTables);
+        TableMetaDatas actual = SchemaBuilder.build(schemaBuilderMaterials);
+        assertThat(actual.getActualTableMeta().size(), is(2));
+        assertThat(actual.getLogicTableMete().size(), is(2));
+        assertSchemaOfShardingTables(actual.getActualTableMeta());
     }
     
     private void assertSchemaOfShardingTables(final Map<String, TableMetaData> actual) {
@@ -110,10 +109,9 @@ public final class SchemaBuilderTest {
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         String[] mockReturnTables = {singleTableNames[1], "data_node_routed_table1_0", "data_node_routed_table1_1", "data_node_routed_table2_0", "data_node_routed_table2_1"};
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], mockReturnTables);
-        Map<Map<String, TableMetaData>, Map<String, TableMetaData>> actual = SchemaBuilder.build(schemaBuilderMaterials);
-        Map<String, TableMetaData> actualTables = actual.keySet().iterator().next();
-        assertThat(actualTables.size(), is(4));
-        assertActualOfShardingTablesAndSingleTables(actualTables);
+        TableMetaDatas tableMetaDatas = SchemaBuilder.build(schemaBuilderMaterials);
+        assertThat(tableMetaDatas.getActualTableMeta().size(), is(4));
+        assertActualOfShardingTablesAndSingleTables(tableMetaDatas.getActualTableMeta());
     }
     
     private void assertActualOfShardingTablesAndSingleTables(final Map<String, TableMetaData> actual) {

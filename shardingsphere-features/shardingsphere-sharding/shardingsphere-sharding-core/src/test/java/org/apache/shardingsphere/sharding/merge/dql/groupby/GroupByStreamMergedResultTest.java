@@ -182,7 +182,7 @@ public final class GroupByStreamMergedResultTest {
         ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", 0, false, false, false);
         ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", 0, false, false, false);
         ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", 0, false, false, false);
-        TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData("tbl", Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList());
         return new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData));
     }
     
