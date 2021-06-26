@@ -28,8 +28,8 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class ResourceInUsedException extends BackendException {
-
+    
     private static final long serialVersionUID = -3427324685070457375L;
-
+    
     private final Collection<String> resourceNames;
 }

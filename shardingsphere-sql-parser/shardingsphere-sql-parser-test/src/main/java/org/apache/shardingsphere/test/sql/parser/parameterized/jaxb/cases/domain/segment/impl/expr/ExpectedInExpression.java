@@ -23,15 +23,19 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlElement;
 
-@Setter
+/**
+ * Expected in expression.
+ */
 @Getter
-public class ExpectedInExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+@Setter
+public final class ExpectedInExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+    
     @XmlElement(name = "not")
     private boolean not;
-
+    
     @XmlElement(name = "left")
     private ExpectedExpression left;
-
+    
     @XmlElement(name = "right")
     private ExpectedExpression right;
 }
