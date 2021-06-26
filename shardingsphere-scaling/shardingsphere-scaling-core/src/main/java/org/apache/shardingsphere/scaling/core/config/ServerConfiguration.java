@@ -24,8 +24,8 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
 /**
  * Global server configuration.
  */
-@Setter
 @Getter
+@Setter
 public final class ServerConfiguration {
     
     private int port = 8080;
