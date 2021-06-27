@@ -41,9 +41,10 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements RD
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
+        return false;
     }
     
     private void dropRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {

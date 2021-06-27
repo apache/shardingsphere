@@ -57,10 +57,11 @@ public final class DropShardingTableRuleStatementUpdater implements RDLUpdater<D
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         for (String each : getDroppedTables(sqlStatement)) {
             dropShardingTable(currentRuleConfig, each);
         }
+        return false;
     }
     
     private Collection<String> getDroppedTables(final DropShardingTableRuleStatement sqlStatement) {

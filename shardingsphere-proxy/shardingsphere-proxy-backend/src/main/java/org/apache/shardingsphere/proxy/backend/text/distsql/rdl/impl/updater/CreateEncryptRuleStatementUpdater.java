@@ -77,7 +77,7 @@ public final class CreateEncryptRuleStatementUpdater implements RDLUpdater<Creat
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration = EncryptRuleStatementConverter.convert(sqlStatement.getRules());
         EncryptRuleConfiguration createdEncryptRuleConfiguration = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlEncryptRuleConfiguration))
@@ -88,6 +88,7 @@ public final class CreateEncryptRuleStatementUpdater implements RDLUpdater<Creat
             currentRuleConfig.getTables().addAll(createdEncryptRuleConfiguration.getTables());
             currentRuleConfig.getEncryptors().putAll(createdEncryptRuleConfiguration.getEncryptors());
         }
+        return false;
     }
     
     private Collection<String> getRuleNames(final EncryptRuleConfiguration encryptRuleConfig) {

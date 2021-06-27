@@ -37,8 +37,9 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RDLUp
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBindingTableGroups().clear();
+        return false;
     }
     
     @Override

@@ -87,7 +87,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLUpdater
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).iterator().next();
         if (null == currentRuleConfig) {
@@ -97,6 +97,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLUpdater
             currentRuleConfig.getShardingAlgorithms().putAll(shardingRuleConfig.getShardingAlgorithms());
             currentRuleConfig.getKeyGenerators().putAll(shardingRuleConfig.getKeyGenerators());
         }
+        return false;
     }
     
     private Collection<String> getAllTables(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
