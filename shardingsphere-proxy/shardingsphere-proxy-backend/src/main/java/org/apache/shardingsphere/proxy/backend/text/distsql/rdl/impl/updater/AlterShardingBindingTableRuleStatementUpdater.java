@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConverter;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 
 import java.util.Collection;
@@ -42,40 +43,35 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLU
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+        checkToBeAlertedBindingTables(schemaName, sqlStatement, currentRuleConfig);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig) {
             throw new ShardingBindingTableRuleNotExistsException(schemaName);
         }
-        Collection<String> invalidBindingTables = new HashSet<>();
-        Collection<String> existLogicTables = getLogicTables(currentRuleConfig);
-        Collection<String> bindingTables = ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables();
-        for (String bindingTable : bindingTables) {
-            for (String logicTable : Splitter.on(",").splitToList(bindingTable)) {
-                if (!existLogicTables.contains(logicTable.trim())) {
-                    invalidBindingTables.add(logicTable);
+    }
+    
+    private void checkToBeAlertedBindingTables(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> toBeAlertedBindingTableGroups = sqlStatement.getRules().stream().map(BindingTableRuleSegment::getTables).collect(Collectors.toList());
+        Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
+        Collection<String> notExistedBindingTables = new HashSet<>();
+        for (String bindingTableGroup : toBeAlertedBindingTableGroups) {
+            for (String bindingTable : bindingTableGroup.split(",")) {
+                if (!currentLogicTables.contains(bindingTable.trim())) {
+                    notExistedBindingTables.add(bindingTable);
                 }
             }
         }
-        if (!invalidBindingTables.isEmpty()) {
-            throw new ShardingTableRuleNotExistedException(schemaName, invalidBindingTables);
+        if (!notExistedBindingTables.isEmpty()) {
+            throw new ShardingTableRuleNotExistedException(schemaName, notExistedBindingTables);
         }
-        Collection<String> duplicateBindingTables = bindingTables.stream().filter(distinct()).collect(Collectors.toList());
+        // TODO need to clearify what is duplicateBindingTables
+        Collection<String> duplicateBindingTables = toBeAlertedBindingTableGroups.stream().filter(distinct()).collect(Collectors.toList());
         if (!duplicateBindingTables.isEmpty()) {
             throw new DuplicateBindingTablesException(duplicateBindingTables);
         }
-    }
-    
-    @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> bindingTableGroups = currentRuleConfig.getBindingTableGroups();
-        bindingTableGroups.clear();
-        bindingTableGroups.addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());
-    }
-    
-    private Collection<String> getLogicTables(final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> result = new HashSet<>();
-        result.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        result.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        return result;
     }
     
     private Predicate<String> distinct() {
@@ -83,6 +79,7 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLU
         return table -> notEquals(table, tables);
     }
     
+    // TODO need to clearify the business logic
     private boolean notEquals(final String table, final Collection<String> tables) {
         for (String each : tables) {
             if (table.equals(each) || (table.length() == each.length() && Splitter.on(",").splitToList(each).containsAll(Splitter.on(",").splitToList(table)))) {
@@ -91,6 +88,27 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLU
         }
         tables.add(table);
         return false;
+    }
+    
+    private Collection<String> getCurrentLogicTables(final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> result = new HashSet<>();
+        result.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        result.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        return result;
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        dropRuleConfiguration(currentRuleConfig);
+        addRuleConfiguration(sqlStatement, currentRuleConfig);
+    }
+    
+    private void dropRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getBindingTableGroups().clear();
+    }
+    
+    private void addRuleConfiguration(final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getBindingTableGroups().addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());
     }
     
     @Override
