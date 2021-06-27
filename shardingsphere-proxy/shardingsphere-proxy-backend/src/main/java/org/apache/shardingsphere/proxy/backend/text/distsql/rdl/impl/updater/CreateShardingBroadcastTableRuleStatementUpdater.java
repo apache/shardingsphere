@@ -37,9 +37,9 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     @Override
     public boolean updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig) {
-            ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-            shardingRuleConfiguration.setBroadcastTables(sqlStatement.getTables());
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(shardingRuleConfiguration);
+            ShardingRuleConfiguration toBeCreatedRuleConfig = new ShardingRuleConfiguration();
+            toBeCreatedRuleConfig.setBroadcastTables(sqlStatement.getTables());
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(toBeCreatedRuleConfig);
         } else {
             if (!currentRuleConfig.getBroadcastTables().isEmpty()) {
                 throw new ShardingBroadcastTableRuleExistedException(schemaName);
