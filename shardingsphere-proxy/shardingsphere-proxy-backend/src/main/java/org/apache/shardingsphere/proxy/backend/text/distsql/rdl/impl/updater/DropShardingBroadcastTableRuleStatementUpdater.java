@@ -31,6 +31,10 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements RDL
     @Override
     public void checkSQLStatement(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig || currentRuleConfig.getBroadcastTables().isEmpty()) {
             throw new ShardingBroadcastTableRuleNotExistsException(schemaName);
         }
