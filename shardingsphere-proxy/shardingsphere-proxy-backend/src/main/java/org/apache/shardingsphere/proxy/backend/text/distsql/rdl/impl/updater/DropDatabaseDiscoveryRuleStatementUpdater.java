@@ -61,6 +61,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RDLUpdat
             Optional<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(dataSource -> dataSource.getName().equals(each)).findAny();
             Preconditions.checkState(dataSourceRuleConfig.isPresent());
             currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
+            // TODO Do we need to check DiscoveryType not in use before drop it? 
             currentRuleConfig.getDiscoveryTypes().remove(dataSourceRuleConfig.get().getDiscoveryTypeName());
         }
         return currentRuleConfig.getDataSources().isEmpty();
