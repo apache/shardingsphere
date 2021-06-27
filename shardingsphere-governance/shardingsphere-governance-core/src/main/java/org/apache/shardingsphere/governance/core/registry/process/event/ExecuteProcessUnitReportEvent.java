@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.process.event;
 
+import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
@@ -31,4 +32,6 @@ public final class ExecuteProcessUnitReportEvent {
     private final String executionID;
     
     private final ExecuteProcessUnit executeProcessUnit;
+    
+    private final Map<String, Object> dataMap;
 }

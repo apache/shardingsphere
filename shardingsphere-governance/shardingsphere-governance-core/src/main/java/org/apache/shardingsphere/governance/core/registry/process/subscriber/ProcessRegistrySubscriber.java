@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.process.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import java.util.Map;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessUnitReportEvent;
@@ -69,7 +70,14 @@ public final class ProcessRegistrySubscriber {
     @Subscribe
     public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
         ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
-        repository.persist(ProcessNode.getExecutionPath(executeProcessContext.getExecutionID()), YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
+        String executionID = executeProcessContext.getExecutionID();
+        synchronized (executionID) {
+            Map<String, Object> dataMap = event.getDataMap();
+            if (!dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+                return;
+            }
+            repository.persist(ProcessNode.getExecutionPath(executionID), YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
+        }
     }
     
     /**
@@ -79,16 +87,22 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
-        // TODO lock on the same jvm
-        String executionPath = ProcessNode.getExecutionPath(event.getExecutionID());
-        YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
-        ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
-        for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
-            if (unit.getUnitID().equals(executeProcessUnit.getUnitID())) {
-                unit.setStatus(executeProcessUnit.getStatus());
+        String executionID = event.getExecutionID();
+        synchronized (executionID) {
+            Map<String, Object> dataMap = event.getDataMap();
+            if (!dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+                return;
             }
+            String executionPath = ProcessNode.getExecutionPath(executionID);
+            YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
+            ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
+            for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
+                if (unit.getUnitID().equals(executeProcessUnit.getUnitID())) {
+                    unit.setStatus(executeProcessUnit.getStatus());
+                }
+            }
+            repository.persist(executionPath, YamlEngine.marshal(yamlExecuteProcessContext));
         }
-        repository.persist(executionPath, YamlEngine.marshal(yamlExecuteProcessContext));
     }
     
     /**
@@ -98,13 +112,20 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void reportExecuteProcess(final ExecuteProcessReportEvent event) {
-        String executionPath = ProcessNode.getExecutionPath(event.getExecutionID());
-        YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
-        for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
-            if (unit.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
+        String executionID = event.getExecutionID();
+        synchronized (executionID) {
+            Map<String, Object> dataMap = event.getDataMap();
+            if (!dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
                 return;
             }
+            String executionPath = ProcessNode.getExecutionPath(executionID);
+            YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
+            for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
+                if (unit.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
+                    return;
+                }
+            }
+            repository.delete(executionPath);
         }
-        repository.delete(executionPath);
     }
 }

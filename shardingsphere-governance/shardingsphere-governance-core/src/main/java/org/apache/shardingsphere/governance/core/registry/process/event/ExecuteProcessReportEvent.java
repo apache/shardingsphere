@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.process.event;
 
+import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,4 +29,6 @@ import lombok.RequiredArgsConstructor;
 public final class ExecuteProcessReportEvent {
     
     private final String executionID;
+    
+    private final Map<String, Object> dataMap;
 }

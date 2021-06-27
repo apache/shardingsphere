@@ -23,6 +23,7 @@ import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteP
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
@@ -37,17 +38,17 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     @Override
     public void report(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(logicSQL.getSql(), executionGroupContext, constants);
-        ShardingSphereEventBus.getInstance().post(new ExecuteProcessSummaryReportEvent(executeProcessContext));
+        ShardingSphereEventBus.getInstance().post(new ExecuteProcessSummaryReportEvent(executeProcessContext, ExecutorDataMap.getValue()));
     }
     
     @Override
     public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
-        ShardingSphereEventBus.getInstance().post(new ExecuteProcessUnitReportEvent(executionID, executeProcessUnit));
+        ShardingSphereEventBus.getInstance().post(new ExecuteProcessUnitReportEvent(executionID, executeProcessUnit, ExecutorDataMap.getValue()));
     }
     
     @Override
     public void report(final String executionID, final ExecuteProcessConstants constants) {
-        ShardingSphereEventBus.getInstance().post(new ExecuteProcessReportEvent(executionID));
+        ShardingSphereEventBus.getInstance().post(new ExecuteProcessReportEvent(executionID, ExecutorDataMap.getValue()));
     }
 }
