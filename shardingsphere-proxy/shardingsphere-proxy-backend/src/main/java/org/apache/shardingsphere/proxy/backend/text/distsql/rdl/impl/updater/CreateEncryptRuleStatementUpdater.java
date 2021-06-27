@@ -59,7 +59,7 @@ public final class CreateEncryptRuleStatementUpdater implements RDLUpdater<Creat
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         if (null != currentRuleConfig) {
-            Collection<String> currentRuleNames = getCurrentRuleNames(currentRuleConfig);
+            Collection<String> currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> toBeCreatedDuplicateRuleNames = sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
             if (!toBeCreatedDuplicateRuleNames.isEmpty()) {
                 throw new DuplicateRuleNamesException(schemaName, toBeCreatedDuplicateRuleNames);
@@ -67,17 +67,13 @@ public final class CreateEncryptRuleStatementUpdater implements RDLUpdater<Creat
         }
     }
     
-    private Collection<String> getCurrentRuleNames(final EncryptRuleConfiguration currentRuleConfig) {
-        return currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
-    }
-    
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {
         Collection<String> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
-        Collection<String> invalidEncryptors = encryptors.stream().filter(
+        Collection<String> notExistedEncryptors = encryptors.stream().filter(
             each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        if (!invalidEncryptors.isEmpty()) {
-            throw new InvalidEncryptorsException(invalidEncryptors);
+        if (!notExistedEncryptors.isEmpty()) {
+            throw new InvalidEncryptorsException(notExistedEncryptors);
         }
     }
     

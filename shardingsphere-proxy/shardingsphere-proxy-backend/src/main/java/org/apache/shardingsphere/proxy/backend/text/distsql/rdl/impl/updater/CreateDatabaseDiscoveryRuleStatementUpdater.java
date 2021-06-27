@@ -62,17 +62,13 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLUpd
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         if (null != currentRuleConfig) {
-            Collection<String> existRuleNames = getCurrentRuleNames(currentRuleConfig);
+            Collection<String> existRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toSet());
             duplicateRuleNames.addAll(getToBeCreatedDuplicateRuleNames(sqlStatement));
             if (!duplicateRuleNames.isEmpty()) {
                 throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
             }
         }
-    }
-    
-    private Collection<String> getCurrentRuleNames(final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        return currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
     }
     
     private Collection<String> getToBeCreatedDuplicateRuleNames(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
@@ -94,10 +90,10 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLUpd
     }
     
     private void checkToBeCreatedDiscoverTypes(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
-        Collection<String> invalidDiscoveryTypes = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
+        Collection<String> notExistedDiscoveryTypes = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        if (!invalidDiscoveryTypes.isEmpty()) {
-            throw new InvalidDatabaseDiscoveryTypesException(invalidDiscoveryTypes);
+        if (!notExistedDiscoveryTypes.isEmpty()) {
+            throw new InvalidDatabaseDiscoveryTypesException(notExistedDiscoveryTypes);
         }
     }
     
