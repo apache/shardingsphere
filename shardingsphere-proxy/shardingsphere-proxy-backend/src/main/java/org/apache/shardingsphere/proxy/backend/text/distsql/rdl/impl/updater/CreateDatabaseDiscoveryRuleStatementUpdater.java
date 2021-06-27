@@ -56,15 +56,15 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLUpd
     public void checkSQLStatement(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, 
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
         checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
-        checkResources(schemaName, sqlStatement, resource);
-        checkDiscoverTypes(sqlStatement);
+        checkToBeCreatedResources(schemaName, sqlStatement, resource);
+        checkToBeCreatedDiscoverTypes(sqlStatement);
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         if (null != currentRuleConfig) {
             Collection<String> existRuleNames = getCurrentRuleNames(currentRuleConfig);
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toSet());
-            duplicateRuleNames.addAll(getDuplicateRuleNames(sqlStatement));
+            duplicateRuleNames.addAll(getToBeCreatedDuplicateRuleNames(sqlStatement));
             if (!duplicateRuleNames.isEmpty()) {
                 throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
             }
@@ -75,7 +75,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLUpd
         return currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
     }
     
-    private Collection<String> getDuplicateRuleNames(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+    private Collection<String> getToBeCreatedDuplicateRuleNames(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         return sqlStatement.getRules().stream()
                 .collect(Collectors.toMap(DatabaseDiscoveryRuleSegment::getName, e -> 1, Integer::sum))
                 .entrySet().stream()
@@ -84,7 +84,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLUpd
                 .collect(Collectors.toSet());
     }
     
-    private void checkResources(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) {
+    private void checkToBeCreatedResources(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) {
         Collection<String> resources = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
         Collection<String> notExistResources = resource.getNotExistedResources(resources);
@@ -93,7 +93,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLUpd
         }
     }
     
-    private void checkDiscoverTypes(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+    private void checkToBeCreatedDiscoverTypes(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         Collection<String> invalidDiscoveryTypes = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!invalidDiscoveryTypes.isEmpty()) {
