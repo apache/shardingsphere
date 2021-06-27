@@ -143,9 +143,10 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLUpdater<
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(sqlStatement, currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
+        return false;
     }
     
     private void dropRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {

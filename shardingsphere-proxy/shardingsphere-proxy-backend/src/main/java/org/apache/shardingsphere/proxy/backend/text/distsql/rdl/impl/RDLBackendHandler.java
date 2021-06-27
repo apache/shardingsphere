@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.RDLUpdater;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -33,10 +32,8 @@ import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * RDL backend handler.
@@ -60,7 +57,9 @@ public abstract class RDLBackendHandler<T extends SQLStatement, R extends Schema
         R currentRuleConfig = findCurrentRuleConfiguration(schemaName).orElse(null);
         RDLUpdater rdlUpdater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         rdlUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
-        rdlUpdater.updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        if (rdlUpdater.updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig)) {
+            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(currentRuleConfig);
+        }
         postRuleConfigurationChange(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -83,14 +82,5 @@ public abstract class RDLBackendHandler<T extends SQLStatement, R extends Schema
     private void postRuleConfigurationChange(final String schemaName) {
         ShardingSphereEventBus.getInstance().post(
                 new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
-    }
-    
-    protected final Collection<String> getNotExistedResources(final String schemaName, final Collection<String> resourceNames) {
-        return resourceNames.stream().filter(each -> !isExistedResource(schemaName, each)).collect(Collectors.toSet());
-    }
-    
-    private boolean isExistedResource(final String schemaName, final String resourceName) {
-        ShardingSphereResource resource = ProxyContext.getInstance().getMetaData(schemaName).getResource();
-        return resource.getDataSources().containsKey(resourceName);
     }
 }

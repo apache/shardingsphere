@@ -99,9 +99,10 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RDLUpd
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(sqlStatement, currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
+        return false;
     }
     
     private void dropRuleConfiguration(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {

@@ -97,7 +97,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLUpd
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfig = DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules());
         DatabaseDiscoveryRuleConfiguration createdDatabaseDiscoveryRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlDatabaseDiscoveryRuleConfig))
@@ -108,6 +108,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLUpd
             currentRuleConfig.getDataSources().addAll(createdDatabaseDiscoveryRuleConfig.getDataSources());
             currentRuleConfig.getDiscoveryTypes().putAll(createdDatabaseDiscoveryRuleConfig.getDiscoveryTypes());
         }
+        return false;
     }
     
     private Collection<String> getRuleNames(final DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfiguration) {

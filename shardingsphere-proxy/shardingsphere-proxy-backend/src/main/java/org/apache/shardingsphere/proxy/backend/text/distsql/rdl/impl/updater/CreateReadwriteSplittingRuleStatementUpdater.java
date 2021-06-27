@@ -98,7 +98,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RDLUp
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         YamlReadwriteSplittingRuleConfiguration yamlReadwriteSplittingRuleConfig = ReadwriteSplittingRuleStatementConverter.convert(sqlStatement);
         ReadwriteSplittingRuleConfiguration createdReadwriteSplittingRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(yamlReadwriteSplittingRuleConfig))
@@ -109,6 +109,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RDLUp
             currentRuleConfig.getDataSources().addAll(createdReadwriteSplittingRuleConfig.getDataSources());
             currentRuleConfig.getLoadBalancers().putAll(createdReadwriteSplittingRuleConfig.getLoadBalancers());
         }
+        return false;
     }
     
     @Override

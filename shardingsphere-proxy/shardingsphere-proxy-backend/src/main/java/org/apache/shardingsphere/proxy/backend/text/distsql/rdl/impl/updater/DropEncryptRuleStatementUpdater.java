@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.distsql.RDLUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleNotExistedException;
 
 import java.util.Collection;
@@ -50,15 +49,13 @@ public final class DropEncryptRuleStatementUpdater implements RDLUpdater<DropEnc
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         sqlStatement.getTables().forEach(each -> {
             EncryptTableRuleConfiguration encryptTableRuleConfiguration = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(each)).findAny().get();
             currentRuleConfig.getTables().remove(encryptTableRuleConfiguration);
             encryptTableRuleConfiguration.getColumns().forEach(column -> currentRuleConfig.getEncryptors().remove(column.getEncryptorName()));
         });
-        if (currentRuleConfig.getTables().isEmpty()) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(currentRuleConfig);
-        }
+        return currentRuleConfig.getTables().isEmpty();
     }
     
     @Override

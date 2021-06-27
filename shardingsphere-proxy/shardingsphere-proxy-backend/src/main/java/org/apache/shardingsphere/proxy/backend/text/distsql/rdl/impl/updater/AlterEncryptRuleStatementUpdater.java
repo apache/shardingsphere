@@ -87,9 +87,10 @@ public final class AlterEncryptRuleStatementUpdater implements RDLUpdater<AlterE
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(sqlStatement, currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
+        return false;
     }
     
     private void dropRuleConfiguration(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {

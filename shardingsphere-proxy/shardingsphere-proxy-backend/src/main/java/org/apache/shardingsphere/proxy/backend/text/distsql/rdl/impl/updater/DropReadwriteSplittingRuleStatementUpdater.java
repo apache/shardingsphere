@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
 import org.apache.shardingsphere.infra.distsql.RDLUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -47,15 +46,13 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RDLUpda
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         sqlStatement.getRuleNames().forEach(each -> {
             ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
             currentRuleConfig.getDataSources().remove(dataSourceRuleConfig);
             currentRuleConfig.getLoadBalancers().remove(dataSourceRuleConfig.getLoadBalancerName());
         });
-        if (currentRuleConfig.getDataSources().isEmpty()) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(currentRuleConfig);
-        }
+        return currentRuleConfig.getDataSources().isEmpty();
     }
     
     @Override
