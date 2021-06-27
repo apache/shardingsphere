@@ -23,8 +23,6 @@ import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableR
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 
-import java.util.Collection;
-
 /**
  * Alter sharding broadcast table rule statement updater.
  */
@@ -33,6 +31,10 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements RD
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig) {
             throw new ShardingBroadcastTableRuleNotExistsException(schemaName);
         }
@@ -40,9 +42,16 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements RD
     
     @Override
     public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> broadcastTables = currentRuleConfig.getBroadcastTables();
-        broadcastTables.clear();
-        broadcastTables.addAll(sqlStatement.getTables());
+        dropRuleConfiguration(currentRuleConfig);
+        addRuleConfiguration(sqlStatement, currentRuleConfig);
+    }
+    
+    private void dropRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getBroadcastTables().clear();
+    }
+    
+    private void addRuleConfiguration(final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getBroadcastTables().addAll(sqlStatement.getTables());
     }
     
     @Override
