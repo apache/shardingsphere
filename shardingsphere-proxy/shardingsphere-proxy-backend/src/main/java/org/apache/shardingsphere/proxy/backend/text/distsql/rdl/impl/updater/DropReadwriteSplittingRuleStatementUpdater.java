@@ -58,13 +58,17 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RDLUpda
     @Override
     public boolean updateCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         for (String each : sqlStatement.getRuleNames()) {
-            Optional<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceRuleConfig
-                    = currentRuleConfig.getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny();
-            Preconditions.checkState(dataSourceRuleConfig.isPresent());
-            currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
-            currentRuleConfig.getLoadBalancers().remove(dataSourceRuleConfig.get().getLoadBalancerName());
+            dropRule(currentRuleConfig, each);
         }
         return currentRuleConfig.getDataSources().isEmpty();
+    }
+    
+    private void dropRule(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String ruleName) {
+        Optional<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceRuleConfig
+                = currentRuleConfig.getDataSources().stream().filter(dataSource -> ruleName.equals(dataSource.getName())).findAny();
+        Preconditions.checkState(dataSourceRuleConfig.isPresent());
+        currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
+        currentRuleConfig.getLoadBalancers().remove(dataSourceRuleConfig.get().getLoadBalancerName());
     }
     
     @Override

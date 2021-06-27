@@ -57,12 +57,16 @@ public final class DropEncryptRuleStatementUpdater implements RDLUpdater<DropEnc
     @Override
     public boolean updateCurrentRuleConfiguration(final String schemaName, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         for (String each : sqlStatement.getTables()) {
-            Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(each)).findAny();
-            Preconditions.checkState(encryptTableRuleConfig.isPresent());
-            currentRuleConfig.getTables().remove(encryptTableRuleConfig.get());
-            encryptTableRuleConfig.get().getColumns().forEach(column -> currentRuleConfig.getEncryptors().remove(column.getEncryptorName()));
+            dropRule(currentRuleConfig, each);
         }
         return currentRuleConfig.getTables().isEmpty();
+    }
+    
+    private void dropRule(final EncryptRuleConfiguration currentRuleConfig, final String ruleName) {
+        Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(ruleName)).findAny();
+        Preconditions.checkState(encryptTableRuleConfig.isPresent());
+        currentRuleConfig.getTables().remove(encryptTableRuleConfig.get());
+        encryptTableRuleConfig.get().getColumns().forEach(column -> currentRuleConfig.getEncryptors().remove(column.getEncryptorName()));
     }
     
     @Override
