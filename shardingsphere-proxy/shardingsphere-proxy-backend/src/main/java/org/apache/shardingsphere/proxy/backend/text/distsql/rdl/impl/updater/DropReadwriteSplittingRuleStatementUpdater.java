@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.distsql.RDLUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -35,11 +37,19 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RDLUpda
     @Override
     public void checkSQLStatement(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkToBeDroppedRuleNames(schemaName, sqlStatement, currentRuleConfig);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig) {
             throw new ReadwriteSplittingRuleNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
-        Collection<String> existRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
-        Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !existRuleNames.contains(each)).collect(Collectors.toList());
+    }
+    
+    private void checkToBeDroppedRuleNames(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+        Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+        Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
             throw new ReadwriteSplittingRuleNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
@@ -47,12 +57,18 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RDLUpda
     
     @Override
     public boolean updateCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        sqlStatement.getRuleNames().forEach(each -> {
-            ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(dataSource -> each.equals(dataSource.getName())).findAny().get();
-            currentRuleConfig.getDataSources().remove(dataSourceRuleConfig);
-            currentRuleConfig.getLoadBalancers().remove(dataSourceRuleConfig.getLoadBalancerName());
-        });
+        for (String each : sqlStatement.getRuleNames()) {
+            dropRule(currentRuleConfig, each);
+        }
         return currentRuleConfig.getDataSources().isEmpty();
+    }
+    
+    private void dropRule(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String ruleName) {
+        Optional<ReadwriteSplittingDataSourceRuleConfiguration> dataSourceRuleConfig
+                = currentRuleConfig.getDataSources().stream().filter(dataSource -> ruleName.equals(dataSource.getName())).findAny();
+        Preconditions.checkState(dataSourceRuleConfig.isPresent());
+        currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
+        currentRuleConfig.getLoadBalancers().remove(dataSourceRuleConfig.get().getLoadBalancerName());
     }
     
     @Override

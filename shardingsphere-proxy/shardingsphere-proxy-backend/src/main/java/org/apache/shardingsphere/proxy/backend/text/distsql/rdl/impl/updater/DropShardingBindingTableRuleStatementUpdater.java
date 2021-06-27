@@ -31,6 +31,10 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RDLUp
     @Override
     public void checkSQLStatement(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig || currentRuleConfig.getBindingTableGroups().isEmpty()) {
             throw new ShardingBindingTableRuleNotExistsException(schemaName);
         }
