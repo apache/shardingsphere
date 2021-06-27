@@ -65,7 +65,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLUpdater<
         checkToBeAlteredShardingTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredShardingAlgorithm(sqlStatement);
         checkToBeAlteredKeyGenerators(sqlStatement);
-        checkToBeAlteredDuplicateTables(sqlStatement);
+        checkToBeAlteredDuplicateShardingTables(sqlStatement);
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
@@ -126,7 +126,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLUpdater<
         return sqlStatement.getRules().stream().filter(each -> null != each.getKeyGenerateStrategy()).map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
     }
     
-    private void checkToBeAlteredDuplicateTables(final AlterShardingTableRuleStatement sqlStatement) {
+    private void checkToBeAlteredDuplicateShardingTables(final AlterShardingTableRuleStatement sqlStatement) {
         Collection<String> duplicateTables = getDuplicateTables(sqlStatement);
         if (!duplicateTables.isEmpty()) {
             throw new DuplicateTablesException(duplicateTables);
