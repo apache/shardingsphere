@@ -58,12 +58,12 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RDLUpdat
     @Override
     public boolean updateCurrentRuleConfiguration(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         for (String each : sqlStatement.getRuleNames()) {
-            dropRuleName(currentRuleConfig, each);
+            dropRule(currentRuleConfig, each);
         }
         return currentRuleConfig.getDataSources().isEmpty();
     }
     
-    private void dropRuleName(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String ruleName) {
+    private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String ruleName) {
         Optional<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(dataSource -> dataSource.getName().equals(ruleName)).findAny();
         Preconditions.checkState(dataSourceRuleConfig.isPresent());
         currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
