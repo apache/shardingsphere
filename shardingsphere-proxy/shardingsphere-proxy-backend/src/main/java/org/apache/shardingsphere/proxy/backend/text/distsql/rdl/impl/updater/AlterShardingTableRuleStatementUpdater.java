@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.distsql.RDLUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -41,7 +42,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -59,84 +60,113 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLUpdater<
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
-        Collection<String> notExistResources = resource.getNotExistedResources(getResources(sqlStatement));
+        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkToBeAlteredResources(schemaName, sqlStatement, resource);
+        checkToBeAlteredShardingTables(schemaName, sqlStatement, currentRuleConfig);
+        checkToBeAlteredShardingAlgorithm(sqlStatement);
+        checkToBeAlteredKeyGenerators(sqlStatement);
+        checkToBeAlteredDuplicateShardingTables(sqlStatement);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        if (null == currentRuleConfig) {
+            throw new ShardingTableRuleNotExistedException(schemaName, getToBeAlteredTableNames(sqlStatement));
+        }
+    }
+    
+    private Collection<String> getToBeAlteredTableNames(final AlterShardingTableRuleStatement sqlStatement) {
+        return sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).collect(Collectors.toList());
+    }
+    
+    private void checkToBeAlteredResources(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource) {
+        Collection<String> notExistResources = resource.getNotExistedResources(getToBeAlteredResources(sqlStatement));
         if (!notExistResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistResources);
         }
+    }
+    
+    private Collection<String> getToBeAlteredResources(final AlterShardingTableRuleStatement sqlStatement) {
+        Collection<String> result = new LinkedHashSet<>();
+        sqlStatement.getRules().forEach(each -> result.addAll(each.getDataSources()));
+        return result;
+    }
+    
+    private void checkToBeAlteredShardingTables(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> currentShardingTables = getCurrentShardingTables(currentRuleConfig);
+        Collection<String> notExistedShardingTables = getToBeAlteredTableNames(sqlStatement).stream().filter(each -> !currentShardingTables.contains(each)).collect(Collectors.toList());
+        if (!notExistedShardingTables.isEmpty()) {
+            throw new ShardingTableRuleNotExistedException(schemaName, notExistedShardingTables);
+        }
+    }
+    
+    private Collection<String> getCurrentShardingTables(final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> result = new LinkedList<>();
+        result.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        result.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        return result;
+    }
+    
+    private void checkToBeAlteredShardingAlgorithm(final AlterShardingTableRuleStatement sqlStatement) {
+        Collection<String> notExistedShardingAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getName()).distinct()
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+        if (!notExistedShardingAlgorithms.isEmpty()) {
+            throw new InvalidShardingAlgorithmsException(notExistedShardingAlgorithms);
+        }
+    }
+    
+    private void checkToBeAlteredKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) {
+        Collection<String> notExistedKeyGenerators = getToBeAlteredKeyGenerators(sqlStatement).stream().distinct()
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
+        if (!notExistedKeyGenerators.isEmpty()) {
+            throw new InvalidKeyGeneratorsException(notExistedKeyGenerators);
+        }
+    }
+    
+    private Collection<String> getToBeAlteredKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) {
+        return sqlStatement.getRules().stream().filter(each -> null != each.getKeyGenerateStrategy()).map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
+    }
+    
+    private void checkToBeAlteredDuplicateShardingTables(final AlterShardingTableRuleStatement sqlStatement) {
         Collection<String> duplicateTables = getDuplicateTables(sqlStatement);
         if (!duplicateTables.isEmpty()) {
             throw new DuplicateTablesException(duplicateTables);
         }
-        Collection<String> alteredTables = getAlteredTables(sqlStatement);
-        if (null == currentRuleConfig) {
-            throw new ShardingTableRuleNotExistedException(schemaName, alteredTables);
-        }
-        Collection<String> existTables = getShardingTables(currentRuleConfig);
-        Collection<String> notExistTables = alteredTables.stream().filter(each -> !existTables.contains(each)).collect(Collectors.toList());
-        if (!notExistTables.isEmpty()) {
-            throw new ShardingTableRuleNotExistedException(schemaName, notExistTables);
-        }
-        Collection<String> invalidTableAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getName()).distinct()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        if (!invalidTableAlgorithms.isEmpty()) {
-            throw new InvalidShardingAlgorithmsException(invalidTableAlgorithms);
-        }
-        Collection<String> invalidKeyGenerators = getKeyGenerators(sqlStatement).stream()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        if (!invalidKeyGenerators.isEmpty()) {
-            throw new InvalidKeyGeneratorsException(invalidKeyGenerators);
-        }
-    }
-    
-    @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingRuleConfiguration alteredShardingRuleConfig = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singletonList(ShardingRuleStatementConverter.convert(sqlStatement))).stream().map(each -> (ShardingRuleConfiguration) each).findFirst().get();
-        drop(sqlStatement, currentRuleConfig);
-        currentRuleConfig.getAutoTables().addAll(alteredShardingRuleConfig.getAutoTables());
-        currentRuleConfig.getShardingAlgorithms().putAll(alteredShardingRuleConfig.getShardingAlgorithms());
-        currentRuleConfig.getKeyGenerators().putAll(alteredShardingRuleConfig.getKeyGenerators());
-    }
-    
-    private void drop(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        getAlteredTables(sqlStatement).forEach(each -> {
-            ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig = currentRuleConfig.getAutoTables().stream().filter(tableRule -> each.equals(tableRule.getLogicTable())).findAny().get();
-            currentRuleConfig.getAutoTables().remove(shardingAutoTableRuleConfig);
-            currentRuleConfig.getShardingAlgorithms().remove(shardingAutoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName());
-            if (Objects.nonNull(shardingAutoTableRuleConfig.getKeyGenerateStrategy())) {
-                currentRuleConfig.getKeyGenerators().remove(shardingAutoTableRuleConfig.getKeyGenerateStrategy().getKeyGeneratorName());
-            }
-        });
     }
     
     private Collection<String> getDuplicateTables(final AlterShardingTableRuleStatement sqlStatement) {
         return sqlStatement.getRules().stream()
-                .collect(Collectors.toMap(TableRuleSegment::getLogicTable, e -> 1, Integer::sum))
+                .collect(Collectors.toMap(TableRuleSegment::getLogicTable, entry -> 1, Integer::sum))
                 .entrySet().stream()
                 .filter(entry -> entry.getValue() > 1)
                 .map(Entry::getKey)
                 .collect(Collectors.toList());
     }
     
-    private Collection<String> getAlteredTables(final AlterShardingTableRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).collect(Collectors.toList());
+    @Override
+    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        dropRuleConfiguration(sqlStatement, currentRuleConfig);
+        addRuleConfiguration(sqlStatement, currentRuleConfig);
     }
     
-    private Collection<String> getShardingTables(final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<String> result = new LinkedList<>();
-        result.addAll(shardingRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
-        result.addAll(shardingRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
-        return result;
+    private void dropRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        for (String each : getToBeAlteredTableNames(sqlStatement)) {
+            Optional<ShardingAutoTableRuleConfiguration> shardingAutoTableRuleConfig = currentRuleConfig.getAutoTables().stream().filter(tableRule -> each.equals(tableRule.getLogicTable())).findAny();
+            Preconditions.checkState(shardingAutoTableRuleConfig.isPresent());
+            currentRuleConfig.getAutoTables().remove(shardingAutoTableRuleConfig.get());
+            currentRuleConfig.getShardingAlgorithms().remove(shardingAutoTableRuleConfig.get().getShardingStrategy().getShardingAlgorithmName());
+            if (null != shardingAutoTableRuleConfig.get().getKeyGenerateStrategy()) {
+                currentRuleConfig.getKeyGenerators().remove(shardingAutoTableRuleConfig.get().getKeyGenerateStrategy().getKeyGeneratorName());
+            }
+        }
     }
     
-    private Collection<String> getResources(final AlterShardingTableRuleStatement sqlStatement) {
-        Collection<String> result = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> result.addAll(each.getDataSources()));
-        return result;
-    }
-    
-    private Collection<String> getKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) {
-        return sqlStatement.getRules().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
+    private void addRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Optional<ShardingRuleConfiguration> toBeAlteredRuleConfig = new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).stream().map(each -> (ShardingRuleConfiguration) each).findFirst();
+        Preconditions.checkState(toBeAlteredRuleConfig.isPresent());
+        currentRuleConfig.getAutoTables().addAll(toBeAlteredRuleConfig.get().getAutoTables());
+        currentRuleConfig.getShardingAlgorithms().putAll(toBeAlteredRuleConfig.get().getShardingAlgorithms());
+        currentRuleConfig.getKeyGenerators().putAll(toBeAlteredRuleConfig.get().getKeyGenerators());
     }
     
     @Override
