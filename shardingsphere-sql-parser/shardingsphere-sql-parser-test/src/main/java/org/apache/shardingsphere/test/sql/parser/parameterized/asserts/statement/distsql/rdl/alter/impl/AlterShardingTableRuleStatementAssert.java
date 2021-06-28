@@ -50,7 +50,7 @@ public final class AlterShardingTableRuleStatementAssert {
             assertNull(assertContext.getText("Actual should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
-            assertShardingTableRules(assertContext, actual.getRules(), expected.getTableRules());
+            assertShardingTableRules(assertContext, actual.getRules(), expected.getRules());
         }
     }
     

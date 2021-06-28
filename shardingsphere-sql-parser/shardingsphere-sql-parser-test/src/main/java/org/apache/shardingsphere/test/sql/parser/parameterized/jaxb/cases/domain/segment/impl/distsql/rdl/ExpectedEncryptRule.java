@@ -31,9 +31,6 @@ import java.util.List;
 @Setter
 public final class ExpectedEncryptRule extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement(name = "table")
-    private String tableName;
-    
     @XmlElement(name = "column")
     private List<ExpectedEncryptColumn> columns;
 }

@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedProperties;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
@@ -32,19 +33,16 @@ import java.util.List;
 @Setter
 public final class ExceptedReadwriteSplittingRule extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement
-    private String name;
-    
-    @XmlElement(name = "auto-aware-resource")
+    @XmlAttribute(name = "auto-aware-resource")
     private String autoAwareResource;
     
-    @XmlElement(name = "write-data-source")
+    @XmlAttribute(name = "write-data-source")
     private String writeDataSource;
     
     @XmlElement(name = "read-data-source")
     private List<String> readDataSources;
     
-    @XmlElement(name = "load-balancer")
+    @XmlAttribute(name = "load-balancer")
     private String loadBalancer;
     
     @XmlElement(name = "properties")

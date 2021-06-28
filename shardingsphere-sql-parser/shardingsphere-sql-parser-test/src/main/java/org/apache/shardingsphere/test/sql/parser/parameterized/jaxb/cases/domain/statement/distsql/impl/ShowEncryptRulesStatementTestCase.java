@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -31,8 +32,8 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ShowEncryptRulesStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "table")
-    private String tableName;
+    @XmlAttribute
+    private String name;
     
     @XmlElement
     private ExpectedSchema schema;

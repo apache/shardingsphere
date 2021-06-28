@@ -52,7 +52,7 @@ public final class CreateEncryptRuleStatementAssert {
             assertNull(assertContext.getText("Actual should not exist."), actual);   
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
-            assertEncryptRules(assertContext, actual.getRules(), expected.getEncryptRules());
+            assertEncryptRules(assertContext, actual.getRules(), expected.getRules());
         }
     }
     
@@ -66,7 +66,7 @@ public final class CreateEncryptRuleStatementAssert {
             int count = 0;
             for (EncryptRuleSegment encryptRuleSegment : actual) {
                 ExpectedEncryptRule expectedEncryptRule = expected.get(count);
-                assertThat(assertContext.getText("encrypt rule assertion error: "), encryptRuleSegment.getTableName(), is(expectedEncryptRule.getTableName()));
+                assertThat(assertContext.getText("encrypt rule assertion error: "), encryptRuleSegment.getTableName(), is(expectedEncryptRule.getName()));
                 EncryptRuleAssert.assertIs(assertContext, encryptRuleSegment, expectedEncryptRule);
                 count++;
             }

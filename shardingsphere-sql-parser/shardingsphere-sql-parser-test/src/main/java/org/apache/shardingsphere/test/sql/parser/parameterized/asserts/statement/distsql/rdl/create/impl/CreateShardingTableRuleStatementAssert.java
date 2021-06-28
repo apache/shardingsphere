@@ -50,7 +50,7 @@ public final class CreateShardingTableRuleStatementAssert {
             assertNull(assertContext.getText("Actual should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
-            assertShardingTableRules(assertContext, actual.getRules(), expected.getTableRules());
+            assertShardingTableRules(assertContext, actual.getRules(), expected.getRules());
         }
     }
 
@@ -63,6 +63,7 @@ public final class CreateShardingTableRuleStatementAssert {
             for (TableRuleSegment tableRuleSegment : actual) {
                 ExpectedTableRule expectedTableRule = expected.get(count);
                 TableRuleAssert.assertIs(assertContext, tableRuleSegment, expectedTableRule);
+                count++;
             }
         }
     }

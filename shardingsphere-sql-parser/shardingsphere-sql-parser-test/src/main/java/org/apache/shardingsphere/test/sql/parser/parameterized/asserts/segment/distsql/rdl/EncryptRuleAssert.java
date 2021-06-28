@@ -51,7 +51,7 @@ public final class EncryptRuleAssert {
             assertNull(assertContext.getText("Actual should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
-            assertThat(assertContext.getText("encrypt rule assertion error: "), actual.getTableName(), is(expected.getTableName()));
+            assertThat(assertContext.getText("encrypt rule assertion error: "), actual.getTableName(), is(expected.getName()));
             assertEncryptColumns(assertContext, actual.getColumns(), expected.getColumns());
         }
     }

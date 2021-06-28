@@ -19,32 +19,29 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Expected lock clause.
+ * Expected data source.
  */
 @Getter
 @Setter
-public final class ExpectedDataSource extends SQLParserTestCase {
+public final class ExpectedDataSource extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement
-    private String name;
-    
-    @XmlElement
+    @XmlAttribute(name = "host-name")
     private String hostName;
     
-    @XmlElement
+    @XmlAttribute
     private String port;
     
-    @XmlElement
+    @XmlAttribute
     private String db;
     
-    @XmlElement
+    @XmlAttribute
     private String user;
     
-    @XmlElement
+    @XmlAttribute
     private String password;
 }
