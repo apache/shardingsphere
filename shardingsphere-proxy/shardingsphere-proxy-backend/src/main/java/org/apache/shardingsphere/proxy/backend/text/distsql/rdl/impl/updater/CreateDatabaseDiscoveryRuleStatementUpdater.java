@@ -97,17 +97,21 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLCre
     }
     
     @Override
-    public DatabaseDiscoveryRuleConfiguration updateCurrentRuleConfiguration(final String schemaName, 
-                                                                             final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        Optional<DatabaseDiscoveryRuleConfiguration> toBeCreatedRuleConfig = new YamlRuleConfigurationSwapperEngine()
+    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+        Optional<DatabaseDiscoveryRuleConfiguration> result = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules())))
                 .stream().filter(each -> each instanceof DatabaseDiscoveryRuleConfiguration).findAny().map(each -> (DatabaseDiscoveryRuleConfiguration) each);
-        Preconditions.checkState(toBeCreatedRuleConfig.isPresent());
+        Preconditions.checkState(result.isPresent());
+        return result.get();
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, 
+                                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
-            currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.get().getDataSources());
-            currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.get().getDiscoveryTypes());
+            currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
+            currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.getDiscoveryTypes());
         }
-        return toBeCreatedRuleConfig.get();
     }
     
     @Override

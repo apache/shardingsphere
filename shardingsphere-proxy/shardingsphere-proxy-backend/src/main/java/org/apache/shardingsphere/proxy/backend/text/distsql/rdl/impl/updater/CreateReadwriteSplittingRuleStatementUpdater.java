@@ -94,17 +94,21 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RDLCr
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration updateCurrentRuleConfiguration(final String schemaName, 
-                                                                              final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        Optional<ReadwriteSplittingRuleConfiguration> toBeCreatedRuleConfig = new YamlRuleConfigurationSwapperEngine()
+    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
+        Optional<ReadwriteSplittingRuleConfiguration> result = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ReadwriteSplittingRuleStatementConverter.convert(sqlStatement)))
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).findAny().map(each -> (ReadwriteSplittingRuleConfiguration) each);
-        Preconditions.checkState(toBeCreatedRuleConfig.isPresent());
+        Preconditions.checkState(result.isPresent());
+        return result.get();
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, 
+                                               final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
-            currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.get().getDataSources());
-            currentRuleConfig.getLoadBalancers().putAll(toBeCreatedRuleConfig.get().getLoadBalancers());
+            currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
+            currentRuleConfig.getLoadBalancers().putAll(toBeCreatedRuleConfig.getLoadBalancers());
         }
-        return toBeCreatedRuleConfig.get();
     }
     
     @Override

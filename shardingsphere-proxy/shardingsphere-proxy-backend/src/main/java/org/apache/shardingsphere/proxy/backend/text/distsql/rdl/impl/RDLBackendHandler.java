@@ -61,8 +61,9 @@ public abstract class RDLBackendHandler<T extends SQLStatement, R extends Schema
         RDLUpdater rdlUpdater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         rdlUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
         if (rdlUpdater instanceof RDLCreateUpdater) {
-            RuleConfiguration toBeCreatedRuleConfig = ((RDLCreateUpdater) rdlUpdater).updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
-            if (null == currentRuleConfig) {
+            RuleConfiguration toBeCreatedRuleConfig = ((RDLCreateUpdater) rdlUpdater).buildToBeCreatedRuleConfiguration(schemaName, sqlStatement);
+            ((RDLCreateUpdater) rdlUpdater).updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig, toBeCreatedRuleConfig);
+            if (null == currentRuleConfig && null != toBeCreatedRuleConfig) {
                 ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(toBeCreatedRuleConfig);
             }
         } else if (rdlUpdater instanceof RDLAlterUpdater) {
