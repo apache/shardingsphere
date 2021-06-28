@@ -17,25 +17,28 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import org.apache.calcite.sql.SqlNodeList;
-import org.apache.calcite.sql.SqlSelectKeyword;
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.infra.optimize.core.operator.BinarySqlOperator;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 
-import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Distinct sql node converter.
+ * Binary operation expression converter.
  */
-public final class DistinctSqlNodeConverter implements SqlNodeConverter<ProjectionsSegment, SqlNodeList> {
+public final class BinaryOperationExpressionSqlNodeConverter implements SqlNodeConverter<BinaryOperationExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
-        if (projectionsSegment.isDistinctRow()) {
-            return Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO));
-        }
-        return Optional.empty();
+    public Optional<SqlNode> convert(final BinaryOperationExpression binaryOperationExpression) {
+        SqlNode left = new ExpressionSqlNodeConverter().convert(binaryOperationExpression.getLeft()).get();
+        SqlNode right = new ExpressionSqlNodeConverter().convert(binaryOperationExpression.getRight()).get();
+        String operator = binaryOperationExpression.getOperator();
+        BinarySqlOperator binarySqlOperator = BinarySqlOperator.value(operator);
+        SqlNode sqlNode = new SqlBasicCall(binarySqlOperator.getSqlBinaryOperator(), new SqlNode[] {left, right},
+                SqlParserPos.ZERO);
+        return Optional.of(sqlNode);
     }
 }

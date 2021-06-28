@@ -17,25 +17,27 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
-import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverterUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
- * Distinct sql node converter.
+ * Order by converter. 
  */
-public final class DistinctSqlNodeConverter implements SqlNodeConverter<ProjectionsSegment, SqlNodeList> {
+public final class OrderBySqlNodeConverter implements SqlNodeConverter<OrderBySegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
-        if (projectionsSegment.isDistinctRow()) {
-            return Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO));
+    public Optional<SqlNodeList> convert(final OrderBySegment orderBy) {
+        if (orderBy == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        List<SqlNode> orderBySqlNodes = SqlNodeConverterUtil.convertOrderByItems(orderBy.getOrderByItems());
+        return Optional.of(new SqlNodeList(orderBySqlNodes, SqlParserPos.ZERO));
     }
 }

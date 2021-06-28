@@ -17,12 +17,21 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
+import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+
+import java.util.Optional;
+
 /**
- * Row count sql node converter.
+ * Column projection converter. 
  */
-public final class RowCountSqlNodeConverter extends AbstractLimitSqlNodeConverter {
+public final class ColumnProjectionSqlNodeConverter implements SqlNodeConverter<ColumnProjectionSegment, SqlNode> {
     
-    public RowCountSqlNodeConverter() {
-        super(limitSegment -> limitSegment.getRowCount());
+    @Override
+    public Optional<SqlNode> convert(final ColumnProjectionSegment columnProjection) {
+        ColumnSegment column = columnProjection.getColumn();
+        return new ColumnSqlNodeConverter().convert(column);
     }
 }

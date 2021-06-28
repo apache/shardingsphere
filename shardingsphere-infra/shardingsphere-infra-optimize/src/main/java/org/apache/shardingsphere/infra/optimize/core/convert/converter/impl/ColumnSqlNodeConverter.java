@@ -17,25 +17,28 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import org.apache.calcite.sql.SqlNodeList;
-import org.apache.calcite.sql.SqlSelectKeyword;
+import com.google.common.collect.ImmutableList;
+import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
-import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Distinct sql node converter.
+ * Column converter.
  */
-public final class DistinctSqlNodeConverter implements SqlNodeConverter<ProjectionsSegment, SqlNodeList> {
+public final class ColumnSqlNodeConverter implements SqlNodeConverter<ColumnSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
-        if (projectionsSegment.isDistinctRow()) {
-            return Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO));
+    public Optional<SqlNode> convert(final ColumnSegment columnSegment) {
+        Optional<OwnerSegment> owner = columnSegment.getOwner();
+        String columnName = columnSegment.getIdentifier().getValue();
+        if (owner.isPresent()) {
+            return Optional.of(new SqlIdentifier(ImmutableList.of(owner.get().getIdentifier().getValue(), columnName), SqlParserPos.ZERO));
         }
-        return Optional.empty();
+        return Optional.of(new SqlIdentifier(columnName, SqlParserPos.ZERO));
     }
 }

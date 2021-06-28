@@ -17,12 +17,22 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
+import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
+
+import java.util.Optional;
+
 /**
- * Row count sql node converter.
+ * Having converter.
  */
-public final class RowCountSqlNodeConverter extends AbstractLimitSqlNodeConverter {
+public final class HavingSqlNodeConverter implements SqlNodeConverter<HavingSegment, SqlNode> {
     
-    public RowCountSqlNodeConverter() {
-        super(limitSegment -> limitSegment.getRowCount());
+    @Override
+    public Optional<SqlNode> convert(final HavingSegment having) {
+        if (having == null) {
+            return Optional.empty();
+        }
+        return new ExpressionSqlNodeConverter().convert(having.getExpr());
     }
 }

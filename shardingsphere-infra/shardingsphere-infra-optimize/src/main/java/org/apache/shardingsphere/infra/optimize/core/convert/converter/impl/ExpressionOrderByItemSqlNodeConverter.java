@@ -17,12 +17,17 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-/**
- * Row count sql node converter.
- */
-public final class RowCountSqlNodeConverter extends AbstractLimitSqlNodeConverter {
+import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
+
+import java.util.Optional;
+
+public final class ExpressionOrderByItemSqlNodeConverter implements SqlNodeConverter<ExpressionOrderByItemSegment, SqlNode> {
     
-    public RowCountSqlNodeConverter() {
-        super(limitSegment -> limitSegment.getRowCount());
+    @Override
+    public Optional<SqlNode> convert(final ExpressionOrderByItemSegment astNode) {
+        // TODO 
+        return Optional.empty();
     }
 }

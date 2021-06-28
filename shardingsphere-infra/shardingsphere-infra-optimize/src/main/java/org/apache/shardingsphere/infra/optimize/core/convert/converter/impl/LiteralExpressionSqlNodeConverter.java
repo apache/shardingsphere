@@ -17,30 +17,24 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.NumberLiteralPaginationValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 
 import java.util.Optional;
 
-/**
- * Pagination value converter.
- */
-public final class PaginationValueSqlConverter implements SqlNodeConverter<PaginationValueSegment, SqlNode> {
+public final class LiteralExpressionSqlNodeConverter implements SqlNodeConverter<LiteralExpressionSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final PaginationValueSegment paginationValue) {
-        if (paginationValue instanceof NumberLiteralPaginationValueSegment) {
-            NumberLiteralPaginationValueSegment offsetValue = (NumberLiteralPaginationValueSegment) paginationValue;
-            return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(offsetValue.getValue()), SqlParserPos.ZERO));
-        } else {
-            ParameterMarkerLimitValueSegment offsetParam = (ParameterMarkerLimitValueSegment) paginationValue;
-            return Optional.of(new SqlDynamicParam(offsetParam.getParameterIndex(), SqlParserPos.ZERO));
+    public Optional<SqlNode> convert(final LiteralExpressionSegment literalExpression) {
+        Object literals = literalExpression.getLiterals();
+        if (literals.getClass() == Integer.class) {
+            return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(literalExpression.getLiterals()), SqlParserPos.ZERO));
+        } else if (literals.getClass() == String.class) {
+            return Optional.of(SqlLiteral.createCharString((String) literalExpression.getLiterals(), SqlParserPos.ZERO));
         }
+        return Optional.empty();
     }
 }

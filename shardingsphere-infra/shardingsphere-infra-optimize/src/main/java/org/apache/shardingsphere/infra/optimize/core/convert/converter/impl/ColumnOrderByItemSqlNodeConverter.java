@@ -17,25 +17,28 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import org.apache.calcite.sql.SqlNodeList;
-import org.apache.calcite.sql.SqlSelectKeyword;
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 
-import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Distinct sql node converter.
+ *  Column of order by converter. 
  */
-public final class DistinctSqlNodeConverter implements SqlNodeConverter<ProjectionsSegment, SqlNodeList> {
+public final class ColumnOrderByItemSqlNodeConverter implements SqlNodeConverter<ColumnOrderByItemSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
-        if (projectionsSegment.isDistinctRow()) {
-            return Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO));
+    public Optional<SqlNode> convert(final ColumnOrderByItemSegment columnOrderBy) {
+        Optional<SqlNode> optional = new ColumnSqlNodeConverter().convert(columnOrderBy.getColumn());
+        if (optional.isPresent() && Objects.equals(OrderDirection.DESC, columnOrderBy.getOrderDirection())) {
+            optional = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {optional.get()}, SqlParserPos.ZERO));
         }
-        return Optional.empty();
+        return optional;
     }
 }

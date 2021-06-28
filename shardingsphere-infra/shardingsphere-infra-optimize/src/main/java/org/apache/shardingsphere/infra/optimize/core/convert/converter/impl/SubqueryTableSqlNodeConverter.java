@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
+import org.apache.calcite.sql.SqlNode;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+
+import java.util.Optional;
+
 /**
- * Row count sql node converter.
+ * Subquery converter.
  */
-public final class RowCountSqlNodeConverter extends AbstractLimitSqlNodeConverter {
+public final class SubqueryTableSqlNodeConverter implements SqlNodeConverter<SubqueryTableSegment, SqlNode> {
     
-    public RowCountSqlNodeConverter() {
-        super(limitSegment -> limitSegment.getRowCount());
+    @Override
+    public Optional<SqlNode> convert(final SubqueryTableSegment astNode) {
+        // TODO 
+        return Optional.empty();
     }
 }

@@ -17,25 +17,30 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
-import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverterUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
- * Distinct sql node converter.
+ * Group by converter.
  */
-public final class DistinctSqlNodeConverter implements SqlNodeConverter<ProjectionsSegment, SqlNodeList> {
+public final class GroupBySqlNodeConverter implements SqlNodeConverter<GroupBySegment, SqlNodeList> {
     
     @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment projectionsSegment) {
-        if (projectionsSegment.isDistinctRow()) {
-            return Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO));
+    public Optional<SqlNodeList> convert(final GroupBySegment groupBy) {
+        if (groupBy == null || groupBy.getGroupByItems() == null || groupBy.getGroupByItems().isEmpty()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        Collection<OrderByItemSegment> groupByItems = groupBy.getGroupByItems();
+        List<SqlNode> groupBySqlNodes = SqlNodeConverterUtil.convertOrderByItems(groupByItems);
+        return Optional.of(new SqlNodeList(groupBySqlNodes, SqlParserPos.ZERO));
     }
 }

@@ -17,30 +17,34 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import org.apache.calcite.sql.SqlDynamicParam;
-import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
- * Pagination value converter.
+ * Abstract limit sql node converter.
  */
-public final class PaginationValueSqlConverter implements SqlNodeConverter<PaginationValueSegment, SqlNode> {
+public abstract class AbstractLimitSqlNodeConverter implements SqlNodeConverter<LimitSegment, SqlNode> {
+
+    private Function<LimitSegment, Optional<PaginationValueSegment>> function;
+    
+    protected AbstractLimitSqlNodeConverter(final Function<LimitSegment, Optional<PaginationValueSegment>> function) {
+        this.function = function;
+    }
     
     @Override
-    public Optional<SqlNode> convert(final PaginationValueSegment paginationValue) {
-        if (paginationValue instanceof NumberLiteralPaginationValueSegment) {
-            NumberLiteralPaginationValueSegment offsetValue = (NumberLiteralPaginationValueSegment) paginationValue;
-            return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(offsetValue.getValue()), SqlParserPos.ZERO));
-        } else {
-            ParameterMarkerLimitValueSegment offsetParam = (ParameterMarkerLimitValueSegment) paginationValue;
-            return Optional.of(new SqlDynamicParam(offsetParam.getParameterIndex(), SqlParserPos.ZERO));
+    public final Optional<SqlNode> convert(final LimitSegment limit) {
+        if (null == limit) {
+            return Optional.empty();
         }
+        Optional<PaginationValueSegment> paginationValue = function.apply(limit);
+        if (!paginationValue.isPresent()) {
+            return Optional.empty();
+        }
+        return new PaginationValueSqlConverter().convert(paginationValue.get());
     }
 }
