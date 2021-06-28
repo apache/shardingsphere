@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.infra.distsql.RQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;

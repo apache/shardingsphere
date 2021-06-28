@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -26,19 +26,24 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingB
 /**
  * Drop sharding broadcast table rule statement updater.
  */
-public final class DropShardingBroadcastTableRuleStatementUpdater implements RDLUpdater<DropShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
+public final class DropShardingBroadcastTableRuleStatementUpdater implements RDLDropUpdater<DropShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig || currentRuleConfig.getBroadcastTables().isEmpty()) {
             throw new ShardingBroadcastTableRuleNotExistsException(schemaName);
         }
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBroadcastTables().clear();
+        return false;
     }
     
     @Override

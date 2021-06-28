@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
-import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
@@ -28,71 +27,73 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
  * Create sharding binding table rule statement updater.
  */
-public final class CreateShardingBindingTableRuleStatementUpdater implements RDLUpdater<CreateShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
+public final class CreateShardingBindingTableRuleStatementUpdater implements RDLCreateUpdater<CreateShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+        checkToBeCreatedBindingTables(schemaName, sqlStatement, currentRuleConfig);
+        checkToBeCreatedDuplicateBindingTables(sqlStatement, currentRuleConfig);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
         if (null == currentRuleConfig) {
             throw new ShardingBindingTableRuleNotExistsException(schemaName);
         }
-        Collection<String> invalidBindingTables = new HashSet<>();
-        Collection<String> existLogicTables = getLogicTables(currentRuleConfig);
-        Collection<String> bindingTables = ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables();
-        for (String bindingTable : bindingTables) {
-            for (String logicTable : Splitter.on(",").splitToList(bindingTable)) {
-                if (!existLogicTables.contains(logicTable.trim())) {
-                    invalidBindingTables.add(logicTable);
-                }
+    }
+    
+    private void checkToBeCreatedBindingTables(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> notExistedBindingTables = new HashSet<>();
+        Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
+        for (String each : sqlStatement.getBindingTables()) {
+            if (!currentLogicTables.contains(each)) {
+                notExistedBindingTables.add(each);
             }
         }
-        if (!invalidBindingTables.isEmpty()) {
-            throw new ShardingTableRuleNotExistedException(schemaName, invalidBindingTables);
-        }
-        bindingTables.addAll(currentRuleConfig.getBindingTableGroups());
-        Collection<String> duplicateBindingTables = bindingTables.stream().filter(distinct()).collect(Collectors.toList());
-        if (!duplicateBindingTables.isEmpty()) {
-            throw new DuplicateBindingTablesException(duplicateBindingTables);
+        if (!notExistedBindingTables.isEmpty()) {
+            throw new ShardingTableRuleNotExistedException(schemaName, notExistedBindingTables);
         }
     }
     
-    private Collection<String> getLogicTables(final ShardingRuleConfiguration currentRuleConfig) {
+    private Collection<String> getCurrentLogicTables(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> result = new HashSet<>();
         result.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         result.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         return result;
     }
     
-    private Predicate<String> distinct() {
-        Collection<String> tables = new HashSet<>();
-        return table -> notEquals(table, tables);
+    private void checkToBeCreatedDuplicateBindingTables(final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> toBeCreatedBindingTables = new HashSet<>();
+        Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeCreatedBindingTables.add(each)).collect(Collectors.toSet());
+        duplicateBindingTables.addAll(getCurrentBindingTables(currentRuleConfig).stream().filter(each -> !toBeCreatedBindingTables.add(each)).collect(Collectors.toSet()));
+        if (!duplicateBindingTables.isEmpty()) {
+            throw new DuplicateBindingTablesException(duplicateBindingTables);
+        }
     }
     
-    private boolean notEquals(final String table, final Collection<String> tables) {
-        for (String each : tables) {
-            if (table.equals(each) || (table.length() == each.length() && Splitter.on(",").splitToList(each)
-                    .containsAll(Splitter.on(",").splitToList(table)))) {
-                return true;
-            }
-        }
-        tables.add(table);
-        return false;
+    private Collection<String> getCurrentBindingTables(final ShardingRuleConfiguration currentRuleConfig) {
+        return currentRuleConfig.getBindingTableGroups().stream().flatMap(each -> Arrays.stream(each.split(","))).map(String::trim).collect(Collectors.toList());
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        YamlShardingRuleConfiguration yamlShardingRuleConfiguration = ShardingRuleStatementConverter.convert(sqlStatement);
-        currentRuleConfig.getBindingTableGroups().addAll(yamlShardingRuleConfiguration.getBindingTables());
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
+        return null;
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, 
+                                               final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+        currentRuleConfig.getBindingTableGroups().addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());
     }
     
     @Override

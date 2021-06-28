@@ -15,45 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql;
+package org.apache.shardingsphere.infra.distsql.update;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Collection;
-
 /**
- * RQL result set.
+ * Alter rule RDL updater.
+ * 
+ * @param <T> type of SQL statement
+ * @param <R> type of rule configuration
  */
-public interface RQLResultSet extends TypedSPI {
+public interface RDLAlterUpdater<T extends SQLStatement, R extends RuleConfiguration> extends RDLUpdater<T, R> {
     
     /**
-     * Initialize data.
+     * Update current rule configuration.
      * 
-     * @param metaData meta data for ShardingSphere
+     * @param schemaName schema name
      * @param sqlStatement SQL statement
+     * @param currentRuleConfig current rule configuration to be updated
      */
-    void init(ShardingSphereMetaData metaData, SQLStatement sqlStatement);
-    
-    /**
-     * Get result set column names.
-     * 
-     * @return result set column names
-     */
-    Collection<String> getColumnNames();
-    
-    /**
-     * Go to next data.
-     * 
-     * @return true if next data exist
-     */
-    boolean next();
-    
-    /**
-     * Get row data.
-     * 
-     * @return row data
-     */
-    Collection<Object> getRowData();
+    void updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig);
 }

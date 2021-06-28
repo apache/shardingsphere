@@ -23,9 +23,11 @@ import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.parser.SqlParseException;
-import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
+import org.apache.shardingsphere.infra.optimize.core.convert.SqlNodeConvertEngine;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 @RequiredArgsConstructor
@@ -41,14 +43,16 @@ public final class ShardingSphereOptimizer {
      * @throws SQLParsingException sql parsing exception
      */
     public RelNode optimize(final String sql) throws SQLParsingException {
-        // TODO The below will be replaced by SqlNodeConverter.
         try {
-            SqlNode sqlNode = SqlParser.create(sql, context.getParserConfig()).parseQuery();
+            // TODO : Remove the following statement after SqlNodeConvertEngine becomes available.
+            // SqlNode sqlNode = SqlParser.create(sql, context.getParserConfig()).parseQuery();
+            ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(context.getDatabaseType()));
+            SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlParserEngine.parse(sql, true));
             SqlNode validNode = context.getValidator().validate(sqlNode);
             RelNode logicPlan = context.getRelConverter().convertQuery(validNode, false, true).rel;
             return optimize(logicPlan);
-        } catch (final SqlParseException ex) {
-            throw new SQLParsingException(ex.getMessage());
+        } catch (final UnsupportedOperationException ex) {
+            throw new ShardingSphereException(ex);
         }
     }
     
