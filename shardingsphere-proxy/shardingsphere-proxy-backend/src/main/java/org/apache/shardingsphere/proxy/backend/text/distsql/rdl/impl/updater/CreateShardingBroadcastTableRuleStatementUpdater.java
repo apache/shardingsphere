@@ -35,7 +35,7 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement) {
-        return null;
+        return new ShardingRuleConfiguration();
     }
     
     @Override
