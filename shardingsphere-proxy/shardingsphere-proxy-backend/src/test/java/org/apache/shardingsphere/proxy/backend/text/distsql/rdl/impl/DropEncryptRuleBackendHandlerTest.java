@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -98,13 +98,13 @@ public final class DropEncryptRuleBackendHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    @Test(expected = EncryptRulesNotExistedException.class)
+    @Test(expected = EncryptRuleNotExistedException.class)
     public void assertExecuteWithNotExistEncryptRule() {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
     }
     
-    @Test(expected = EncryptRulesNotExistedException.class)
+    @Test(expected = EncryptRuleNotExistedException.class)
     public void assertExecuteWithNoDroppedEncryptRule() {
         when(sqlStatement.getTables()).thenReturn(Collections.singletonList("t_encrypt"));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));

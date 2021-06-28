@@ -17,22 +17,12 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-
-import java.util.Optional;
-
 /**
  * Offset sql node converter.
  */
-public final class OffsetSqlNodeConverter implements SqlNodeConverter<LimitSegment> {
-    
-    @Override
-    public Optional<SqlNode> convert(final LimitSegment limitSegment) {
-        if (null == limitSegment || !limitSegment.getOffset().isPresent()) {
-            return Optional.empty();
-        }
-        return new PaginationValueSqlConverter().convert(limitSegment.getOffset().get());
+public final class OffsetSqlNodeConverter extends AbstractLimitSqlNodeConverter {
+
+    public OffsetSqlNodeConverter() {
+        super(limitSegment -> limitSegment.getOffset());
     }
 }

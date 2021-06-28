@@ -19,17 +19,9 @@ package org.apache.shardingsphere.infra.optimize.core.metadata;
 
 import lombok.Getter;
 import lombok.Synchronized;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 
-import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -45,59 +37,11 @@ public final class FederateSchemaMetadata {
     
     private final Map<String, FederateTableMetadata> tables = new LinkedHashMap<>();
     
-    /**
-     * Please fix me.
-     * @deprecated Remove this constructor.
-     */
-    @Deprecated
-    public FederateSchemaMetadata(final String name, final ShardingSphereMetaData metaData) throws SQLException {
-        this.name = name;
-        initTables(metaData);
-    }
-    
     public FederateSchemaMetadata(final String name, final Map<String, TableMetaData> metaData) {
         this.name = name;
         for (Entry<String, TableMetaData> entry : metaData.entrySet()) {
             tables.put(entry.getKey(), new FederateTableMetadata(entry.getKey(), entry.getValue()));
         }
-    }
-    
-    private void initTables(final ShardingSphereMetaData metaData) throws SQLException {
-        Collection<DataNodeContainedRule> dataNodeRules = getDataNodeContainedRules(metaData);
-        Map<String, Collection<DataNode>> tableDataNodes = getTableDataNodes(dataNodeRules);
-        Map<String, Collection<String>> dataSourceRules = getDataSourceRules(metaData);
-        for (Entry<String, Collection<DataNode>> entry : tableDataNodes.entrySet()) {
-            tables.put(entry.getKey(),
-                    new FederateTableMetadata(entry.getKey(), metaData.getResource().getDataSources(), dataSourceRules, entry.getValue(), metaData.getResource().getDatabaseType()));
-        }
-    }
-    
-    private Collection<DataNodeContainedRule> getDataNodeContainedRules(final ShardingSphereMetaData metaData) {
-        Collection<DataNodeContainedRule> result = new LinkedList<>();
-        for (ShardingSphereRule each : metaData.getRuleMetaData().getRules()) {
-            if (each instanceof DataNodeContainedRule) {
-                result.add((DataNodeContainedRule) each);
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, Collection<String>> getDataSourceRules(final ShardingSphereMetaData metaData) {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (ShardingSphereRule each : metaData.getRuleMetaData().getRules()) {
-            if (each instanceof DataSourceContainedRule) {
-                result.putAll(((DataSourceContainedRule) each).getDataSourceMapper());
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, Collection<DataNode>> getTableDataNodes(final Collection<DataNodeContainedRule> dataNodeRules) {
-        Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
-        for (DataNodeContainedRule each : dataNodeRules) {
-            result.putAll(each.getAllDataNodes());
-        }
-        return result;
     }
     
     /**

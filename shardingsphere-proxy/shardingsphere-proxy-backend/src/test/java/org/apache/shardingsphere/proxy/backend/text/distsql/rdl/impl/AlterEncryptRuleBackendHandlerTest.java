@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -98,13 +98,13 @@ public final class AlterEncryptRuleBackendHandlerTest {
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    @Test(expected = EncryptRulesNotExistedException.class)
+    @Test(expected = EncryptRuleNotExistedException.class)
     public void assertExecuteWithNotExistEncryptRule() {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         handler.execute("test", sqlStatement);
     }
     
-    @Test(expected = EncryptRulesNotExistedException.class)
+    @Test(expected = EncryptRuleNotExistedException.class)
     public void assertExecuteWithNoAlteredEncryptRules() {
         EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildEncryptColumnSegments("MD5"));
         when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));

@@ -18,8 +18,15 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLUpdater;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -27,51 +34,67 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Collection;
-import java.util.Objects;
+import java.lang.reflect.ParameterizedType;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Properties;
 
 /**
  * RDL backend handler.
  *
  * @param <T> type of SQL statement
+ * @param <R> type of rule configuration
  */
-public abstract class RDLBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
+public abstract class RDLBackendHandler<T extends SQLStatement, R extends SchemaRuleConfiguration> extends SchemaRequiredBackendHandler<T> {
+    
+    static {
+        ShardingSphereServiceLoader.register(RDLUpdater.class);
+    }
     
     public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected final ResponseHeader execute(final String schemaName, final T sqlStatement) {
-        before(schemaName, sqlStatement);
-        doExecute(schemaName, sqlStatement);
-        after(schemaName);
+        R currentRuleConfig = findCurrentRuleConfiguration(schemaName).orElse(null);
+        RDLUpdater rdlUpdater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        rdlUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
+        if (rdlUpdater instanceof RDLCreateUpdater) {
+            RuleConfiguration toBeCreatedRuleConfig = ((RDLCreateUpdater) rdlUpdater).updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+            if (null == currentRuleConfig) {
+                ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(toBeCreatedRuleConfig);
+            }
+        } else if (rdlUpdater instanceof RDLAlterUpdater) {
+            ((RDLAlterUpdater) rdlUpdater).updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        } else if (rdlUpdater instanceof RDLDropUpdater) {
+            if (((RDLDropUpdater) rdlUpdater).updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig)) {
+                ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(currentRuleConfig);
+            }
+        } else {
+            throw new UnsupportedOperationException(String.format("Cannot support RDLUpdater type `%s`", rdlUpdater.getClass().getCanonicalName()));
+        }
+        postRuleConfigurationChange(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    protected abstract void before(String schemaName, T sqlStatement);
-    
-    protected abstract void doExecute(String schemaName, T sqlStatement);
-    
-    private void after(final String schemaName) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredSQLNotificationEvent(schemaName,
-                ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
-    }
-    
     @SuppressWarnings("unchecked")
-    protected final <R extends SchemaRuleConfiguration> Optional<R> findRuleConfiguration(final String schemaName, final Class<R> configRuleClass) {
-        return ProxyContext.getInstance().getMetaData(schemaName)
-                .getRuleMetaData().getConfigurations().stream().filter(each -> configRuleClass.isAssignableFrom(each.getClass())).map(each -> (R) each).findFirst();
+    private Optional<R> findCurrentRuleConfiguration(final String schemaName) {
+        Class<R> ruleConfigClass = (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+        for (RuleConfiguration each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()) {
+            if (ruleConfigClass.isAssignableFrom(each.getClass())) {
+                return Optional.of((R) each);
+            }
+        }
+        return Optional.empty();
     }
     
-    protected final Collection<String> getInvalidResources(final String schemaName, final Collection<String> resources) {
-        return resources.stream().filter(each -> !isValidResource(schemaName, each)).collect(Collectors.toSet());
-    }
+    protected abstract void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig);
     
-    private boolean isValidResource(final String schemaName, final String resourceName) {
-        return Objects.nonNull(ProxyContext.getInstance().getMetaData(schemaName).getResource())
-                && ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().containsKey(resourceName);
+    protected abstract void updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig);
+    
+    private void postRuleConfigurationChange(final String schemaName) {
+        ShardingSphereEventBus.getInstance().post(
+                new RuleConfigurationsAlteredSQLNotificationEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
     }
 }

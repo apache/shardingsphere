@@ -17,54 +17,24 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.EncryptRulesNotExistedException;
-
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Drop encrypt rule backend handler.
  */
-public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropEncryptRuleStatement> {
+public final class DropEncryptRuleBackendHandler extends RDLBackendHandler<DropEncryptRuleStatement, EncryptRuleConfiguration> {
     
     public DropEncryptRuleBackendHandler(final DropEncryptRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @Override
-    public void before(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> ruleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class);
-        if (!ruleConfig.isPresent()) {
-            throw new EncryptRulesNotExistedException(schemaName, sqlStatement.getTables());
-        }
-        check(schemaName, ruleConfig.get(), sqlStatement.getTables());
+    public void checkSQLStatement(final String schemaName, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
     }
     
     @Override
-    public void doExecute(final String schemaName, final DropEncryptRuleStatement sqlStatement) {
-        EncryptRuleConfiguration encryptRuleConfig = findRuleConfiguration(schemaName, EncryptRuleConfiguration.class).get();
-        sqlStatement.getTables().forEach(each -> {
-            EncryptTableRuleConfiguration encryptTableRuleConfiguration = encryptRuleConfig.getTables()
-                    .stream().filter(tableRule -> tableRule.getName().equals(each)).findAny().get();
-            encryptRuleConfig.getTables().remove(encryptTableRuleConfiguration);
-            encryptTableRuleConfiguration.getColumns().forEach(column -> encryptRuleConfig.getEncryptors().remove(column.getEncryptorName()));
-        });
-        if (encryptRuleConfig.getTables().isEmpty()) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(encryptRuleConfig);
-        }
-    }
-    
-    private void check(final String schemaName, final EncryptRuleConfiguration ruleConfig, final Collection<String> droppedTables) {
-        Collection<String> encryptTables = ruleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
-        Collection<String> notExistedTables = droppedTables.stream().filter(each -> !encryptTables.contains(each)).collect(Collectors.toList());
-        if (!notExistedTables.isEmpty()) {
-            throw new EncryptRulesNotExistedException(schemaName, notExistedTables);
-        }
+    public void updateCurrentRuleConfiguration(final String schemaName, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
     }
 }

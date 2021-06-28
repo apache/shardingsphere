@@ -22,6 +22,9 @@ import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * Expected parameter marker expression.
+ */
 @Getter
 @Setter
 public final class ExpectedParameterMarkerExpression extends ExpectedBaseSimpleExpression {
