@@ -105,10 +105,18 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         boolean caseSensitive = null != collationName && collationName.endsWith("_CS");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
-
+    
     private String getTableMetaDataSQL(final Collection<String> existedTables, final DatabaseMetaData metaData) throws SQLException {
-        String collation = metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION ? metaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION ? ", IDENTITY_COLUMN, COLLATION"
-                : metaData.getDatabaseMinorVersion() >= IDENTITY_COLUMN_START_MINOR_VERSION ? ", IDENTITY_COLUMN" : "" : "";
+        StringBuilder stringBuilder = new StringBuilder(28);
+        int majorVersion = metaData.getDatabaseMajorVersion();
+        int minorVersion = metaData.getDatabaseMinorVersion();
+        if (majorVersion >= COLLATION_START_MAJOR_VERSION && minorVersion >= IDENTITY_COLUMN_START_MINOR_VERSION) {
+            stringBuilder.append(", IDENTITY_COLUMN");
+        }
+        if (majorVersion >= COLLATION_START_MAJOR_VERSION && minorVersion >= COLLATION_START_MINOR_VERSION) {
+            stringBuilder.append(", COLLATION");
+        }
+        String collation = stringBuilder.toString();
         return existedTables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
                 : String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, collation, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
@@ -134,7 +142,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-
+    
     private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(tableNames))) {
@@ -149,12 +157,12 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         }
         return result;
     }
-
+    
     private String getPrimaryKeyMetaDataSQL(final Collection<String> existedTables) {
         return existedTables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
                 : String.format(PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "Oracle";
