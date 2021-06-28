@@ -86,10 +86,14 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
     }
     
     @Override
-    public ShardingRuleConfiguration updateCurrentRuleConfiguration(final String schemaName, 
-                                                                    final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getBindingTableGroups().addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
         return null;
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, 
+                                               final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+        currentRuleConfig.getBindingTableGroups().addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());
     }
     
     @Override

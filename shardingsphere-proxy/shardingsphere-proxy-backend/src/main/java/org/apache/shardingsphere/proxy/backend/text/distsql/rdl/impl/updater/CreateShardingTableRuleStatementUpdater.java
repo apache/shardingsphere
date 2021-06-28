@@ -128,15 +128,19 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     }
     
     @Override
-    public ShardingRuleConfiguration updateCurrentRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingRuleConfiguration toBeCreatedRuleConfig = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
+        return (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).iterator().next();
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
+                                               final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
             currentRuleConfig.getAutoTables().addAll(toBeCreatedRuleConfig.getAutoTables());
             currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
             currentRuleConfig.getKeyGenerators().putAll(toBeCreatedRuleConfig.getKeyGenerators());
         }
-        return toBeCreatedRuleConfig;
     }
     
     @Override

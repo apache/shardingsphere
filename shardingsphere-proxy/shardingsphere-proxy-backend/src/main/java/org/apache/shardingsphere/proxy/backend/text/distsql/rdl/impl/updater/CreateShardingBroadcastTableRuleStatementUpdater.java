@@ -34,18 +34,21 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     }
     
     @Override
-    public ShardingRuleConfiguration updateCurrentRuleConfiguration(final String schemaName, 
-                                                                    final CreateShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (null == currentRuleConfig) {
-            ShardingRuleConfiguration toBeCreatedRuleConfig = new ShardingRuleConfiguration();
-            toBeCreatedRuleConfig.setBroadcastTables(sqlStatement.getTables());
-            return toBeCreatedRuleConfig;
-        }
-        if (!currentRuleConfig.getBroadcastTables().isEmpty()) {
-            throw new ShardingBroadcastTableRuleExistedException(schemaName);
-        }
-        currentRuleConfig.getBroadcastTables().addAll(sqlStatement.getTables());
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement) {
         return null;
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, 
+                                               final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+        if (null == currentRuleConfig) {
+            toBeCreatedRuleConfig.setBroadcastTables(sqlStatement.getTables());
+        } else {
+            if (!currentRuleConfig.getBroadcastTables().isEmpty()) {
+                throw new ShardingBroadcastTableRuleExistedException(schemaName);
+            }
+            currentRuleConfig.getBroadcastTables().addAll(sqlStatement.getTables());
+        }
     }
     
     @Override

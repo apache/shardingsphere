@@ -77,16 +77,21 @@ public final class CreateEncryptRuleStatementUpdater implements RDLCreateUpdater
     }
     
     @Override
-    public EncryptRuleConfiguration updateCurrentRuleConfiguration(final String schemaName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        Optional<EncryptRuleConfiguration> toBeCreatedRuleConfig = new YamlRuleConfigurationSwapperEngine()
+    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
+        Optional<EncryptRuleConfiguration> result = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(EncryptRuleStatementConverter.convert(sqlStatement.getRules())))
                 .stream().filter(each -> each instanceof EncryptRuleConfiguration).findAny().map(each -> (EncryptRuleConfiguration) each);
-        Preconditions.checkState(toBeCreatedRuleConfig.isPresent());
+        Preconditions.checkState(result.isPresent());
+        return result.get();
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final String schemaName, final CreateEncryptRuleStatement sqlStatement, 
+                                               final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
-            currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.get().getTables());
-            currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.get().getEncryptors());
+            currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
+            currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.getEncryptors());
         }
-        return toBeCreatedRuleConfig.get();
     }
     
     @Override
