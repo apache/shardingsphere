@@ -35,8 +35,8 @@
     </alter-sharding-table-rule>
 
     <alter-sharding-binding-table-rules sql-case-id="alter-sharding-binding-table-rules">
-        <rule tables="t_order,t_order_item"/>
-        <rule tables="t_1,t_2"/>
+        <rule table-groups="t_order,t_order_item"/>
+        <rule table-groups="t_1,t_2"/>
     </alter-sharding-binding-table-rules>
 
     <alter-sharding-broadcast-table-rules sql-case-id="alter-sharding-broadcast-table-rules">

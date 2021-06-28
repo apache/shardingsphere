@@ -48,8 +48,8 @@
     </create-sharding-table-rule>
     
     <create-sharding-binding-table-rule sql-case-id="create-sharding-binding-table-rule">
-        <rule tables="t_order,t_order_item"/>
-        <rule tables="t_1,t_2"/>
+        <rule table-groups="t_order,t_order_item"/>
+        <rule table-groups="t_1,t_2"/>
     </create-sharding-binding-table-rule>
     
     <create-sharding-broadcast-table-rule sql-case-id="create-sharding-broadcast-table-rule">

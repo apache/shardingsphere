@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ExpectedShardingBindingTableRule extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlAttribute
-    private String tables;
+    @XmlAttribute(name = "table-groups")
+    private String tableGroups;
 }
