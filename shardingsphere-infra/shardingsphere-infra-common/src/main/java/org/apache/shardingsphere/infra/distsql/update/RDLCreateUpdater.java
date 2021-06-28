@@ -18,25 +18,23 @@
 package org.apache.shardingsphere.infra.distsql.update;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * RDL updater.
+ * Create rule RDL updater.
  * 
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-public interface RDLUpdater<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface RDLCreateUpdater<T extends SQLStatement, R extends RuleConfiguration> extends RDLUpdater<T, R> {
     
     /**
-     * Check SQL statement.
-     *
+     * Update current rule configuration.
+     * 
      * @param schemaName schema name
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration
-     * @param resource ShardingSphere resource
+     * @param currentRuleConfig current rule configuration to be updated
+     * @return to be created rule configuration 
      */
-    void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig, ShardingSphereResource resource);
+    RuleConfiguration updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig);
 }
