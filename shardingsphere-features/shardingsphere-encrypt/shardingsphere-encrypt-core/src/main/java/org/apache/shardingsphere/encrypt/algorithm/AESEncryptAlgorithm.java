@@ -56,7 +56,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
     
-    @SneakyThrows
+    @SneakyThrows({GeneralSecurityException.class, UnsupportedEncodingException.class})
     @Override
     public String encrypt(final Object plaintext) {
         if (null == plaintext) {
