@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingB
 /**
  * Drop sharding binding table rule statement updater.
  */
-public final class DropShardingBindingTableRuleStatementUpdater implements RDLUpdater<DropShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
+public final class DropShardingBindingTableRuleStatementUpdater implements RDLDropUpdater<DropShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final DropShardingBindingTableRulesStatement sqlStatement, 

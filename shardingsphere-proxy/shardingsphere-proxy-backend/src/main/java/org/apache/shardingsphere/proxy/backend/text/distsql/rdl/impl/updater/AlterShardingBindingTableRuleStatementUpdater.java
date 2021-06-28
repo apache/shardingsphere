@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Alter sharding binding table rule statement updater.
  */
-public final class AlterShardingBindingTableRuleStatementUpdater implements RDLUpdater<AlterShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
+public final class AlterShardingBindingTableRuleStatementUpdater implements RDLAlterUpdater<AlterShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, 
@@ -75,10 +75,9 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLU
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
-        return false;
     }
     
     private void dropRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {

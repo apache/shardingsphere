@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 /**
  * Create sharding table rule statement updater.
  */
-public final class CreateShardingTableRuleStatementUpdater implements RDLUpdater<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
+public final class CreateShardingTableRuleStatementUpdater implements RDLCreateUpdater<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     static {
         // TODO consider about register once only
@@ -128,17 +128,15 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLUpdater
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration updateCurrentRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration toBeCreatedRuleConfig = (ShardingRuleConfiguration) new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ShardingRuleStatementConverter.convert(sqlStatement))).iterator().next();
-        if (null == currentRuleConfig) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(toBeCreatedRuleConfig);
-        } else {
+        if (null != currentRuleConfig) {
             currentRuleConfig.getAutoTables().addAll(toBeCreatedRuleConfig.getAutoTables());
             currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
             currentRuleConfig.getKeyGenerators().putAll(toBeCreatedRuleConfig.getKeyGenerators());
         }
-        return false;
+        return toBeCreatedRuleConfig;
     }
     
     @Override

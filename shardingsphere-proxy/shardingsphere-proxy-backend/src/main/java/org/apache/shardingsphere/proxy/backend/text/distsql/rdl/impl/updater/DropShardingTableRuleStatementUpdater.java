@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Drop sharding table rule statement updater.
  */
-public final class DropShardingTableRuleStatementUpdater implements RDLUpdater<DropShardingTableRuleStatement, ShardingRuleConfiguration> {
+public final class DropShardingTableRuleStatementUpdater implements RDLDropUpdater<DropShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final DropShardingTableRuleStatement sqlStatement, 

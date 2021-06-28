@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Drop readwrite-splitting rule statement updater.
  */
-public final class DropReadwriteSplittingRuleStatementUpdater implements RDLUpdater<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
+public final class DropReadwriteSplittingRuleStatementUpdater implements RDLDropUpdater<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 

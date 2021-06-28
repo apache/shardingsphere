@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * Alter sharding table rule statement updater.
  */
-public final class AlterShardingTableRuleStatementUpdater implements RDLUpdater<AlterShardingTableRuleStatement, ShardingRuleConfiguration> {
+public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpdater<AlterShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     static {
         // TODO consider about register once only
@@ -143,10 +143,9 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLUpdater<
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(sqlStatement, currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
-        return false;
     }
     
     private void dropRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {

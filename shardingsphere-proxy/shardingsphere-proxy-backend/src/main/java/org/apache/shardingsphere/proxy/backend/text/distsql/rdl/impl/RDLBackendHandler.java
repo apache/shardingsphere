@@ -20,7 +20,10 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLUpdater;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -57,8 +60,19 @@ public abstract class RDLBackendHandler<T extends SQLStatement, R extends Schema
         R currentRuleConfig = findCurrentRuleConfiguration(schemaName).orElse(null);
         RDLUpdater rdlUpdater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         rdlUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
-        if (rdlUpdater.updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig)) {
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(currentRuleConfig);
+        if (rdlUpdater instanceof RDLCreateUpdater) {
+            RuleConfiguration toBeCreatedRuleConfig = ((RDLCreateUpdater) rdlUpdater).updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+            if (null == currentRuleConfig) {
+                ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(toBeCreatedRuleConfig);
+            }
+        } else if (rdlUpdater instanceof RDLAlterUpdater) {
+            ((RDLAlterUpdater) rdlUpdater).updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        } else if (rdlUpdater instanceof RDLDropUpdater) {
+            if (((RDLDropUpdater) rdlUpdater).updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig)) {
+                ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(currentRuleConfig);
+            }
+        } else {
+            throw new UnsupportedOperationException(String.format("Cannot support RDLUpdater type `%s`", rdlUpdater.getClass().getCanonicalName()));
         }
         postRuleConfigurationChange(schemaName);
         return new UpdateResponseHeader(sqlStatement);

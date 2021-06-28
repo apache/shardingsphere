@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegme
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleStatementConverter;
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Alter encrypt rule statement updater.
  */
-public final class AlterEncryptRuleStatementUpdater implements RDLUpdater<AlterEncryptRuleStatement, EncryptRuleConfiguration> {
+public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<AlterEncryptRuleStatement, EncryptRuleConfiguration> {
     
     static {
         // TODO consider about register once only
@@ -87,10 +87,9 @@ public final class AlterEncryptRuleStatementUpdater implements RDLUpdater<AlterE
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(sqlStatement, currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
-        return false;
     }
     
     private void dropRuleConfiguration(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {

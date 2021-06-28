@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 /**
  * Alter sharding broadcast table rule statement updater.
  */
-public final class AlterShardingBroadcastTableRuleStatementUpdater implements RDLUpdater<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
+public final class AlterShardingBroadcastTableRuleStatementUpdater implements RDLAlterUpdater<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, 
@@ -41,10 +41,9 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements RD
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
-        return false;
     }
     
     private void dropRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {

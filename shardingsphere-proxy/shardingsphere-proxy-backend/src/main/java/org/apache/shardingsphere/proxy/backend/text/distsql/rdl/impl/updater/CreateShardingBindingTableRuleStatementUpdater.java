@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Create sharding binding table rule statement updater.
  */
-public final class CreateShardingBindingTableRuleStatementUpdater implements RDLUpdater<CreateShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
+public final class CreateShardingBindingTableRuleStatementUpdater implements RDLCreateUpdater<CreateShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, 
@@ -86,9 +86,10 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration updateCurrentRuleConfiguration(final String schemaName, 
+                                                                    final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBindingTableGroups().addAll(ShardingRuleStatementConverter.convert(sqlStatement).getBindingTables());
-        return false;
+        return null;
     }
     
     @Override
