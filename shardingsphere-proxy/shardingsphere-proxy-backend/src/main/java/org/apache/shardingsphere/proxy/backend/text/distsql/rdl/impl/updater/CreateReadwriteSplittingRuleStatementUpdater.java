@@ -94,7 +94,8 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RDLCr
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration updateCurrentRuleConfiguration(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public ReadwriteSplittingRuleConfiguration updateCurrentRuleConfiguration(final String schemaName, 
+                                                                              final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         Optional<ReadwriteSplittingRuleConfiguration> toBeCreatedRuleConfig = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Collections.singleton(ReadwriteSplittingRuleStatementConverter.convert(sqlStatement)))
                 .stream().filter(each -> each instanceof ReadwriteSplittingRuleConfiguration).findAny().map(each -> (ReadwriteSplittingRuleConfiguration) each);
