@@ -42,13 +42,13 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     private final AlterDatabaseDiscoveryRuleStatementUpdater updater = new AlterDatabaseDiscoveryRuleStatementUpdater();
     
     @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutExistedRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() {
         updater.checkSQLStatement("foo", new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutAlteredDatabaseDiscoveryRule() {
-        updater.checkSQLStatement("foo", createAlterDatabaseDiscoveryRuleStatement("TEST"), 
+    public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() {
+        updater.checkSQLStatement("foo", createSQLStatement("TEST"), 
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }
     
@@ -56,29 +56,27 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     public void assertCheckSQLStatementWithoutExistedResources() {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
-        updater.checkSQLStatement("foo", createAlterDatabaseDiscoveryRuleStatement("TEST"),
-                new DatabaseDiscoveryRuleConfiguration(Collections.singleton(createCurrentRuleConfiguration()), Collections.emptyMap()), resource);
+        updater.checkSQLStatement("foo", createSQLStatement("TEST"), createCurrentRuleConfiguration(), resource);
     }
     
     @Test(expected = InvalidDatabaseDiscoveryTypesException.class)
-    public void assertCheckSQLStatementWithoutExistedDiscoveryTypes() {
-        updater.checkSQLStatement("foo", createAlterDatabaseDiscoveryRuleStatement("INVALID_TYPE"),
-                new DatabaseDiscoveryRuleConfiguration(Collections.singleton(createCurrentRuleConfiguration()), Collections.emptyMap()), mock(ShardingSphereResource.class));
+    public void assertCheckSQLStatementWithoutToBeAlteredDiscoveryTypes() {
+        updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createAlterDatabaseDiscoveryRuleStatement("TEST"), 
-                new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(createCurrentRuleConfiguration())), new HashMap<>()));
+        updater.updateCurrentRuleConfiguration("foo", createSQLStatement("TEST"), createCurrentRuleConfiguration());
         // TODO assert Current rule configuration
     }
     
-    private AlterDatabaseDiscoveryRuleStatement createAlterDatabaseDiscoveryRuleStatement(final String discoveryTypeName) {
+    private AlterDatabaseDiscoveryRuleStatement createSQLStatement(final String discoveryTypeName) {
         DatabaseDiscoveryRuleSegment ruleSegment = new DatabaseDiscoveryRuleSegment("ha_group", Arrays.asList("ds_0", "ds_1"), discoveryTypeName, new Properties());
         return new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(ruleSegment));
     }
     
-    private DatabaseDiscoveryDataSourceRuleConfiguration createCurrentRuleConfiguration() {
-        return new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "TEST");
+    private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "TEST");
+        return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), new HashMap<>());
     }
 }
