@@ -260,7 +260,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test(expected = ClassCastException.class)
+    @Test(expected = UnsupportedOperationException.class)
     public void assertExecuteShowResourceContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");

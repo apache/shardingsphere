@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -76,7 +76,7 @@ public final class AlterEncryptRuleBackendHandlerTest {
     @Mock
     private EncryptTableRuleConfiguration encryptTableRuleConfig;
     
-    private final AlterEncryptRuleBackendHandler handler = new AlterEncryptRuleBackendHandler(sqlStatement, backendConnection);
+    private final RDLBackendHandler<AlterEncryptRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, EncryptRuleConfiguration.class);
     
     @Before
     public void setUp() {

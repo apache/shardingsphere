@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
@@ -75,7 +75,7 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
     @Mock
     private ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration;
     
-    private final DropReadwriteSplittingRuleBackendHandler handler = new DropReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
+    private final RDLBackendHandler<DropReadwriteSplittingRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ReadwriteSplittingRuleConfiguration.class);
     
     @Before
     public void setUp() {

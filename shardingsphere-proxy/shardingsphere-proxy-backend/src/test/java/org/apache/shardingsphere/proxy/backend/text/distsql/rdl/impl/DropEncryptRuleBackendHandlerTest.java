@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -74,7 +74,7 @@ public final class DropEncryptRuleBackendHandlerTest {
     @Mock
     private ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration;
     
-    private final DropEncryptRuleBackendHandler handler = new DropEncryptRuleBackendHandler(sqlStatement, backendConnection);
+    private final RDLBackendHandler<DropEncryptRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, EncryptRuleConfiguration.class);
     
     @Before
     public void setUp() {

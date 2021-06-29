@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -30,6 +28,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,9 +74,9 @@ public final class AlterShardingBindingTableRulesBackendHandlerTest {
     @Test
     public void assertExecute() {
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singletonList(buildShardingRuleConfiguration()));
-        AlterShardingBindingTableRulesStatement statement = buildShardingTableRuleStatement();
-        AlterShardingBindingTableRulesBackendHandler handler = new AlterShardingBindingTableRulesBackendHandler(statement, backendConnection);
-        ResponseHeader responseHeader = handler.execute("test", statement);
+        AlterShardingBindingTableRulesStatement sqlStatement = buildShardingTableRuleStatement();
+        RDLBackendHandler<AlterShardingBindingTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
+        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
@@ -84,9 +84,9 @@ public final class AlterShardingBindingTableRulesBackendHandlerTest {
     @Test(expected = ShardingTableRuleNotExistedException.class)
     public void assertExecuteWithNotExistTableRule() {
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new ShardingRuleConfiguration()));
-        AlterShardingBindingTableRulesStatement statement = buildShardingTableRuleStatement();
-        AlterShardingBindingTableRulesBackendHandler handler = new AlterShardingBindingTableRulesBackendHandler(statement, backendConnection);
-        ResponseHeader responseHeader = handler.execute("test", statement);
+        AlterShardingBindingTableRulesStatement sqlStatement = buildShardingTableRuleStatement();
+        RDLBackendHandler<AlterShardingBindingTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
+        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
@@ -94,9 +94,9 @@ public final class AlterShardingBindingTableRulesBackendHandlerTest {
     @Test(expected = DuplicateBindingTablesException.class)
     public void assertExecuteWithDuplicateTables() {
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singletonList(buildShardingRuleConfiguration()));
-        AlterShardingBindingTableRulesStatement statement = buildDuplicateShardingTableRuleStatement();
-        AlterShardingBindingTableRulesBackendHandler handler = new AlterShardingBindingTableRulesBackendHandler(statement, backendConnection);
-        handler.execute("test", statement);
+        AlterShardingBindingTableRulesStatement sqlStatement = buildDuplicateShardingTableRuleStatement();
+        RDLBackendHandler<AlterShardingBindingTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
+        handler.execute("test", sqlStatement);
     }
     
     private ShardingRuleConfiguration buildShardingRuleConfiguration() {

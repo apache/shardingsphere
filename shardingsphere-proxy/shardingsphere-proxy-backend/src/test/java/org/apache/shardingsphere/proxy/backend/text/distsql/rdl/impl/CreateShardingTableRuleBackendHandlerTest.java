@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesExceptio
 import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -72,7 +73,7 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     @Mock
     private ShardingSphereSchema shardingSphereSchema;
     
-    private final CreateShardingTableRuleBackendHandler handler = new CreateShardingTableRuleBackendHandler(sqlStatement, backendConnection);
+    private final RDLBackendHandler<CreateShardingTableRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
     
     @Before
     public void setUp() {

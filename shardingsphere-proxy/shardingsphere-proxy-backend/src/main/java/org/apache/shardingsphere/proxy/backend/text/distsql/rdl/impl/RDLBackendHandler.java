@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -42,22 +40,24 @@ import java.util.Properties;
  * RDL backend handler.
  *
  * @param <T> type of SQL statement
- * @param <R> type of rule configuration
  */
-public abstract class RDLBackendHandler<T extends SQLStatement, R extends SchemaRuleConfiguration> extends SchemaRequiredBackendHandler<T> {
+public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
+    
+    private final Class<? extends RuleConfiguration> ruleConfigClass;
     
     static {
         ShardingSphereServiceLoader.register(RDLUpdater.class);
     }
     
-    public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
+    public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection, final Class<? extends RuleConfiguration> ruleConfigClass) {
         super(sqlStatement, backendConnection);
+        this.ruleConfigClass = ruleConfigClass;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    protected final ResponseHeader execute(final String schemaName, final T sqlStatement) {
-        R currentRuleConfig = findCurrentRuleConfiguration(schemaName).orElse(null);
+    protected ResponseHeader execute(final String schemaName, final T sqlStatement) {
+        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(schemaName).orElse(null);
         RDLUpdater rdlUpdater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         rdlUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
         if (rdlUpdater instanceof RDLCreateUpdater) {
@@ -79,20 +79,14 @@ public abstract class RDLBackendHandler<T extends SQLStatement, R extends Schema
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    @SuppressWarnings("unchecked")
-    private Optional<R> findCurrentRuleConfiguration(final String schemaName) {
-        Class<R> ruleConfigClass = (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+    private Optional<RuleConfiguration> findCurrentRuleConfiguration(final String schemaName) {
         for (RuleConfiguration each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()) {
             if (ruleConfigClass.isAssignableFrom(each.getClass())) {
-                return Optional.of((R) each);
+                return Optional.of(each);
             }
         }
         return Optional.empty();
     }
-    
-    protected abstract void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig);
-    
-    protected abstract void updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig);
     
     private void postRuleConfigurationChange(final String schemaName) {
         ShardingSphereEventBus.getInstance().post(

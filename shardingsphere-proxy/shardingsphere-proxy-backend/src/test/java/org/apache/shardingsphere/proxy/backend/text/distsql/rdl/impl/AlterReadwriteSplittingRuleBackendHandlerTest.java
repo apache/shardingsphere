@@ -80,7 +80,7 @@ public final class AlterReadwriteSplittingRuleBackendHandlerTest {
     @Mock
     private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration;
     
-    private final AlterReadwriteSplittingRuleBackendHandler handler = new AlterReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
+    private final RDLBackendHandler<AlterReadwriteSplittingRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ReadwriteSplittingRuleConfiguration.class);
     
     @Before
     public void setUp() {
