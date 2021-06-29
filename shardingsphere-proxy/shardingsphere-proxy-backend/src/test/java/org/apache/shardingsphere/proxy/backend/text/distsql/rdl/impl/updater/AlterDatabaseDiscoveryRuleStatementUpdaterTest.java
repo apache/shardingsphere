@@ -43,12 +43,12 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
     public void assertCheckSQLStatementWithoutExistedRule() {
-        updater.checkSQLStatement("test", new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
     public void assertCheckSQLStatementWithoutAlteredDatabaseDiscoveryRule() {
-        updater.checkSQLStatement("test", createAlterDatabaseDiscoveryRuleStatement("TEST"), 
+        updater.checkSQLStatement("foo", createAlterDatabaseDiscoveryRuleStatement("TEST"), 
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }
     
@@ -56,19 +56,19 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     public void assertCheckSQLStatementWithoutExistedResources() {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
-        updater.checkSQLStatement("test", createAlterDatabaseDiscoveryRuleStatement("TEST"),
+        updater.checkSQLStatement("foo", createAlterDatabaseDiscoveryRuleStatement("TEST"),
                 new DatabaseDiscoveryRuleConfiguration(Collections.singleton(createCurrentRuleConfiguration()), Collections.emptyMap()), resource);
     }
     
     @Test(expected = InvalidDatabaseDiscoveryTypesException.class)
     public void assertCheckSQLStatementWithoutExistedDiscoveryTypes() {
-        updater.checkSQLStatement("test", createAlterDatabaseDiscoveryRuleStatement("INVALID_TYPE"),
+        updater.checkSQLStatement("foo", createAlterDatabaseDiscoveryRuleStatement("INVALID_TYPE"),
                 new DatabaseDiscoveryRuleConfiguration(Collections.singleton(createCurrentRuleConfiguration()), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("test", createAlterDatabaseDiscoveryRuleStatement("TEST"), 
+        updater.updateCurrentRuleConfiguration("foo", createAlterDatabaseDiscoveryRuleStatement("TEST"), 
                 new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(createCurrentRuleConfiguration())), new HashMap<>()));
         // TODO assert Current rule configuration
     }
