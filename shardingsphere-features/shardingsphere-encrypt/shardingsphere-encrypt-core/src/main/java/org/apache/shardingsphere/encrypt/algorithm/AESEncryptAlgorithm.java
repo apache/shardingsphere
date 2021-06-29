@@ -21,11 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
@@ -35,7 +32,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Properties;
-
+import javax.xml.bind.DatatypeConverter;
 /**
  * AES encrypt algorithm.
  */
@@ -59,14 +56,15 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
     
-    @SneakyThrows(GeneralSecurityException.class)
+    @SneakyThrows({GeneralSecurityException.class, UnsupportedEncodingException.class})
     @Override
     public String encrypt(final Object plaintext) {
         if (null == plaintext) {
             return null;
         }
-        byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(StringUtils.getBytesUtf8(String.valueOf(plaintext)));
-        return Base64.encodeBase64String(result);
+        byte[] result = new byte[0];
+        result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plaintext).getBytes("UTF-8"));
+        return DatatypeConverter.printBase64Binary(result);
     }
     
     @SneakyThrows(GeneralSecurityException.class)
@@ -75,7 +73,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         if (null == ciphertext) {
             return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.decodeBase64(ciphertext));
+        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(DatatypeConverter.parseBase64Binary(ciphertext));
         return new String(result, StandardCharsets.UTF_8);
     }
     
