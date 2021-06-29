@@ -75,13 +75,14 @@ public final class SchemaBuilder {
     public static Map<TableMetaData, TableMetaData> build(final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> actualTableMetaMap = appendRemainTables(materials);
         Map<String, TableMetaData> logicTableMetaMap = addRuleConfiguredTables(materials, actualTableMetaMap);
-        return buildTableMetaDataMap(logicTableMetaMap, actualTableMetaMap);
+        return buildTableMetaDataMap(actualTableMetaMap, logicTableMetaMap);
     }
 
-    private static Map<TableMetaData, TableMetaData> buildTableMetaDataMap(final Map<String, TableMetaData> logicTableMetaMap, final Map<String, TableMetaData> actualTableMetaMap) {
-        Map<TableMetaData, TableMetaData> result = new HashMap<>(logicTableMetaMap.size(), 1);
-        for (Entry entry : logicTableMetaMap.entrySet()) {
-            result.put((TableMetaData) entry.getValue(), actualTableMetaMap.getOrDefault(entry.getValue(), new TableMetaData()));
+    private static Map<TableMetaData, TableMetaData> buildTableMetaDataMap(final Map<String, TableMetaData> actual,
+                                                                           final Map<String, TableMetaData> logic) {
+        Map<TableMetaData, TableMetaData> result = new HashMap<>(actual.size(), 1);
+        for (Entry entry : actual.entrySet()) {
+            result.put((TableMetaData) entry.getValue(), logic.get(entry.getKey()));
         }
         return result;
     }
@@ -164,7 +165,7 @@ public final class SchemaBuilder {
     }
     
     private static TableMetaData loadTableMetaData(final String tableName, final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
-        TableMetaData result = new TableMetaData();
+        TableMetaData result = new TableMetaData(tableName);
         try (Connection connection = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             result.getColumns().putAll(loadColumnMetaDataMap(tableName, databaseType, connection));
         }

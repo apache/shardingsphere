@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaDatas;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,12 +36,12 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -81,17 +80,14 @@ public final class SchemaBuilderTest {
     
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
-        TableMetaDatas actual = SchemaBuilder.build(schemaBuilderMaterials);
-        assertThat(actual.getActualTableMeta().size(), is(2));
-        assertThat(actual.getLogicTableMete().size(), is(2));
-        assertSchemaOfShardingTables(actual.getActualTableMeta());
+        Map<TableMetaData, TableMetaData> actual = SchemaBuilder.build(schemaBuilderMaterials);
+        assertThat(actual.values().size(), is(2));
+        assertThat(actual.keySet().size(), is(2));
+        assertSchemaOfShardingTables(actual.values());
     }
     
-    private void assertSchemaOfShardingTables(final Map<String, TableMetaData> actual) {
-        assertTrue(actual.containsKey("data_node_routed_table1"));
-        assertThat(actual.get("data_node_routed_table1").getColumns().size(), is(0));
-        assertTrue(actual.containsKey("data_node_routed_table2"));
-        assertThat(actual.get("data_node_routed_table2").getColumns().size(), is(0));
+    private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {
+        
     }
     
     @Test
@@ -109,15 +105,11 @@ public final class SchemaBuilderTest {
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         String[] mockReturnTables = {singleTableNames[1], "data_node_routed_table1_0", "data_node_routed_table1_1", "data_node_routed_table2_0", "data_node_routed_table2_1"};
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], mockReturnTables);
-        TableMetaDatas tableMetaDatas = SchemaBuilder.build(schemaBuilderMaterials);
-        assertThat(tableMetaDatas.getActualTableMeta().size(), is(4));
-        assertActualOfShardingTablesAndSingleTables(tableMetaDatas.getActualTableMeta());
+        Map<TableMetaData, TableMetaData> tableMetaDatas = SchemaBuilder.build(schemaBuilderMaterials);
+        assertThat(tableMetaDatas.keySet().size(), is(4));
+        assertActualOfShardingTablesAndSingleTables(tableMetaDatas.values());
     }
     
-    private void assertActualOfShardingTablesAndSingleTables(final Map<String, TableMetaData> actual) {
-        assertTrue(actual.containsKey(singleTableNames[0]));
-        assertThat(actual.get(singleTableNames[0]).getColumns().size(), is(0));
-        assertTrue(actual.containsKey(singleTableNames[1]));
-        assertThat(actual.get(singleTableNames[1]).getColumns().size(), is(0));
+    private void assertActualOfShardingTablesAndSingleTables(final Collection<TableMetaData> actual) {
     }
 }
