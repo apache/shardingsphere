@@ -44,7 +44,7 @@ import java.util.Properties;
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-public abstract class RDLBackendHandler<T extends SQLStatement, R extends SchemaRuleConfiguration> extends SchemaRequiredBackendHandler<T> {
+public class RDLBackendHandler<T extends SQLStatement, R extends SchemaRuleConfiguration> extends SchemaRequiredBackendHandler<T> {
     
     static {
         ShardingSphereServiceLoader.register(RDLUpdater.class);
@@ -90,9 +90,13 @@ public abstract class RDLBackendHandler<T extends SQLStatement, R extends Schema
         return Optional.empty();
     }
     
-    protected abstract void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig);
+    protected void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig) {
+        
+    }
     
-    protected abstract void updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig);
+    protected void updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig) {
+        
+    }
     
     private void postRuleConfigurationChange(final String schemaName) {
         ShardingSphereEventBus.getInstance().post(
