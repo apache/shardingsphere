@@ -28,7 +28,6 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -59,7 +58,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
     
-    @SneakyThrows({GeneralSecurityException.class, UnsupportedEncodingException.class})
+    @SneakyThrows(GeneralSecurityException.class)
     @Override
     public String encrypt(final Object plaintext) {
         if (null == plaintext) {
