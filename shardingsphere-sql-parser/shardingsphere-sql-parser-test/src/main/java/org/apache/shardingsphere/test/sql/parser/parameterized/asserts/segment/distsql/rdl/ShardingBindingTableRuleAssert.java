@@ -47,7 +47,7 @@ public final class ShardingBindingTableRuleAssert {
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s sharding binding table rule segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getTableGroups(), is(expected.getTables()));
+                    actual.getClass().getSimpleName())), actual.getTableGroups(), is(expected.getTableGroups()));
         }
     }
 }

@@ -18,104 +18,75 @@
 
 <sql-parser-test-cases>
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
-        <tables>
-            <table>t_order</table>
+        <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_0</data-source>
             <data-source>ms_group_1</data-source>
-            <table-strategy-column>order_id</table-strategy-column>
-            <key-generate-strategy-column>another_id</key-generate-strategy-column>
-            <table-strategy>
-                <algorithm-name>hash_mod</algorithm-name>
+            <table-strategy algorithm-name="hash_mod">
                 <properties>
-                    <property key="sharding-count" value="4" />
+                    <property key="sharding-count" value="4"/>
                 </properties>
             </table-strategy>
-            <key-generate-strategy>
-                <algorithm-name>snowflake</algorithm-name>
+            <key-generate-strategy algorithm-name="snowflake">
                 <properties>
-                    <property key="worker-id" value="123" />
+                    <property key="worker-id" value="123"/>
                 </properties>
             </key-generate-strategy>
-        </tables>
+        </rule>
     </alter-sharding-table-rule>
-    
+
     <alter-sharding-binding-table-rules sql-case-id="alter-sharding-binding-table-rules">
-        <rules>
-            <tables>t_order,t_order_item</tables>
-        </rules>
-        <rules>
-            <tables>t_1,t_2</tables>
-        </rules>
+        <rule table-groups="t_order,t_order_item"/>
+        <rule table-groups="t_1,t_2"/>
     </alter-sharding-binding-table-rules>
-    
+
     <alter-sharding-broadcast-table-rules sql-case-id="alter-sharding-broadcast-table-rules">
         <table>t_1</table>
         <table>t_2</table>
     </alter-sharding-broadcast-table-rules>
-    
+
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
-        <read-write-splitting>
-            <name>ms_group_0</name>
-            <auto-aware-resource>group_0</auto-aware-resource>
-            <load-balancer>random</load-balancer>
+        <rule name="ms_group_0" auto-aware-resource="group_0" load-balancer="random">
             <properties>
-                <property key="read_weight" value="'2:1'" />
+                <property key="read_weight" value="'2:1'"/>
             </properties>
-        </read-write-splitting>
-        <read-write-splitting>
-            <name>ms_group_1</name>
-            <write-data-source>primary_ds</write-data-source>
+        </rule>
+        <rule name="ms_group_1" write-data-source="primary_ds" load-balancer="random">
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
-            <load-balancer>random</load-balancer>
-            <properties />
-        </read-write-splitting>
+        </rule>
     </alter-readwrite-splitting-rule>
-    
+
     <alter-database-discovery-rule sql-case-id="alter-database-discovery-rule">
-        <database-discovery>
-            <name>ha_group_0</name>
+        <rule name="ha_group_0" type="mgr">
             <data-source>resource0</data-source>
             <data-source>resource1</data-source>
-            <discovery-type>mgr</discovery-type>
             <properties>
-                <property key="keepAliveCron" value="" />
-                <property key="groupName" value="92504d5b-6dec" />
+                <property key="keepAliveCron" value=""/>
+                <property key="groupName" value="92504d5b-6dec"/>
             </properties>
-        </database-discovery>
-        <database-discovery>
-            <name>ha_group_1</name>
+        </rule>
+        <rule name="ha_group_1" type="mgr2">
             <data-source>resource2</data-source>
             <data-source>resource3</data-source>
-            <discovery-type>mgr2</discovery-type>
             <properties>
-                <property key="keepAliveCron" value="" />
-                <property key="groupName" value="92504d5b-6dec-2" />
+                <property key="keepAliveCron" value=""/>
+                <property key="groupName" value="92504d5b-6dec-2"/>
             </properties>
-        </database-discovery>
+        </rule>
     </alter-database-discovery-rule>
-    
+
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
-        <encrypt-rule>
-            <table>t_encrypt</table>
-            <column>
-                <name>user_id</name>
-                <plain-column>user_plain</plain-column>
-                <cipher-column>user_cipher</cipher-column>
-                <encryptor>
-                    <algorithm-name>AES</algorithm-name>
+        <rule name="t_encrypt">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+                <encryptor algorithm-name="AES">
                     <properties>
-                        <property key="aes-key-value" value="123456abc" />
+                        <property key="aes-key-value" value="123456abc"/>
                     </properties>
                 </encryptor>
             </column>
-            <column>
-                <name>order_id</name>
-                <cipher-column>order_cipher</cipher-column>
-                <encryptor>
-                    <algorithm-name>MD5</algorithm-name>
-                </encryptor>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5"/>
             </column>
-        </encrypt-rule>
+        </rule>
     </alter-encrypt-rule>
 </sql-parser-test-cases>

@@ -46,7 +46,7 @@ public final class DropDatabaseDiscoveryRuleStatementAssert {
             assertNull(assertContext.getText("Actual should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
-            assertThat(assertContext.getText("database discovery rule assertion error: "), actual.getRuleNames(), is(expected.getDatabaseDiscoveryRules()));
+            assertThat(assertContext.getText("database discovery rule assertion error: "), actual.getRuleNames(), is(expected.getRules()));
         }
     }
 }

@@ -52,7 +52,7 @@ public final class CreateReadwriteSplittingRuleStatementAssert {
             assertNull(assertContext.getText("Actual should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
-            assertReadwriteSplittingRule(assertContext, actual.getRules(), expected.getReadwriteSplittingRules());
+            assertReadwriteSplittingRule(assertContext, actual.getRules(), expected.getRules());
         }
     }
     

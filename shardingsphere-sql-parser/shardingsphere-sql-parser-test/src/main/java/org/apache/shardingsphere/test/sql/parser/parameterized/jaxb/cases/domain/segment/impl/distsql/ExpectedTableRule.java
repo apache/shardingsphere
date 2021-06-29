@@ -19,8 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
@@ -29,18 +30,15 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class ExpectedTableRule extends SQLParserTestCase {
-    
-    @XmlElement(name = "table")
-    private String logicTable;
+public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlElement(name = "data-source")
     private List<String> dataSources;
     
-    @XmlElement(name = "table-strategy-column")
+    @XmlAttribute(name = "table-strategy-column")
     private String tableStrategyColumn;
     
-    @XmlElement(name = "key-generate-strategy-column")
+    @XmlAttribute(name = "key-generate-strategy-column")
     private String keyGenerateStrategyColumn;
     
     @XmlElement(name = "table-strategy")

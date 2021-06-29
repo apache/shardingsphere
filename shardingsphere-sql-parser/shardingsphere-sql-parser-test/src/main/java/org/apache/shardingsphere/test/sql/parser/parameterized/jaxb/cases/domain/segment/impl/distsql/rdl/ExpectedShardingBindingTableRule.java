@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Expected sharding binding table rule.
@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedShardingBindingTableRule extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement
-    private String tables;
+    @XmlAttribute(name = "table-groups")
+    private String tableGroups;
 }

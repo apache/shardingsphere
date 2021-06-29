@@ -33,6 +33,6 @@ import java.util.List;
 @Setter
 public final class CreateDataBaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "database-discovery")
-    private final List<ExpectedDatabaseDiscoveryRule> databaseDiscoveryRules = new LinkedList<>();
+    @XmlElement(name = "rule")
+    private final List<ExpectedDatabaseDiscoveryRule> rules = new LinkedList<>();
 }

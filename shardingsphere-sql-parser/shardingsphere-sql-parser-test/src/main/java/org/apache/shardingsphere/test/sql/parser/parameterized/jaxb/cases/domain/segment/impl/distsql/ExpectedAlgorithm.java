@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -29,8 +30,8 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExpectedAlgorithm extends AbstractExpectedIdentifierSQLSegment {
-    
-    @XmlElement(name = "algorithm-name")
+
+    @XmlAttribute(name = "algorithm-name")
     private String name;
     
     @XmlElement(name = "properties")

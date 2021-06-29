@@ -46,7 +46,7 @@ public final class DropReadwriteSplittingRuleStatementAssert {
             assertNull(assertContext.getText("Actual should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
-            assertThat(assertContext.getText("read-write splitting assertion error: "), actual.getRuleNames(), is(expected.getReadwriteSplittingRules()));
+            assertThat(assertContext.getText("read-write splitting assertion error: "), actual.getRuleNames(), is(expected.getRules()));
         }
     }
 }
