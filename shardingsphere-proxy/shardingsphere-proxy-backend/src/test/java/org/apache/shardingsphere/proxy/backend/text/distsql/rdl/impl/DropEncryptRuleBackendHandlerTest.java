@@ -74,7 +74,7 @@ public final class DropEncryptRuleBackendHandlerTest {
     @Mock
     private ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration;
     
-    private final RDLBackendHandler<DropEncryptRuleStatement, EncryptRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, EncryptRuleConfiguration.class);
+    private final RDLBackendHandler<DropEncryptRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, EncryptRuleConfiguration.class);
     
     @Before
     public void setUp() {

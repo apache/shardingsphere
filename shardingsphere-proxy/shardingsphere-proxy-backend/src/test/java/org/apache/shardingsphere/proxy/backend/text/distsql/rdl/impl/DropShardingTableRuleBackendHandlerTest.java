@@ -75,7 +75,7 @@ public final class DropShardingTableRuleBackendHandlerTest {
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
     
-    private final RDLBackendHandler<DropShardingTableRuleStatement, ShardingRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
+    private final RDLBackendHandler<DropShardingTableRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
     
     @Before
     public void setUp() {

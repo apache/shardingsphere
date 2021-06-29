@@ -79,7 +79,7 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     @Mock
     private ShardingSphereResource shardingSphereResource;
     
-    private final RDLBackendHandler<AlterShardingTableRuleStatement, ShardingRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
+    private final RDLBackendHandler<AlterShardingTableRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
     
     @Before
     public void setUp() {

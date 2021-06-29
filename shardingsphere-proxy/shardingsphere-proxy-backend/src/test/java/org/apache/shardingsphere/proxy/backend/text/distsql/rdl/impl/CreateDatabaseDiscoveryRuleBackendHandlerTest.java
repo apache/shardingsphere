@@ -76,7 +76,7 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
     @Mock
     private ShardingSphereResource shardingSphereResource;
     
-    private final RDLBackendHandler<CreateDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, DatabaseDiscoveryRuleConfiguration.class);
+    private final RDLBackendHandler<CreateDatabaseDiscoveryRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, DatabaseDiscoveryRuleConfiguration.class);
     
     @Before
     public void setUp() {

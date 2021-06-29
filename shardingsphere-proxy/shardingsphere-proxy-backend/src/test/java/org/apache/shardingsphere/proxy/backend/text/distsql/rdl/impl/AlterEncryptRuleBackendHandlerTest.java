@@ -76,7 +76,7 @@ public final class AlterEncryptRuleBackendHandlerTest {
     @Mock
     private EncryptTableRuleConfiguration encryptTableRuleConfig;
     
-    private final RDLBackendHandler<AlterEncryptRuleStatement, EncryptRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, EncryptRuleConfiguration.class);
+    private final RDLBackendHandler<AlterEncryptRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, EncryptRuleConfiguration.class);
     
     @Before
     public void setUp() {

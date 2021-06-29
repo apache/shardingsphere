@@ -78,7 +78,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
     @Mock
     private ShardingSphereResource shardingSphereResource;
     
-    private final RDLBackendHandler<CreateReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ReadwriteSplittingRuleConfiguration.class);
+    private final RDLBackendHandler<CreateReadwriteSplittingRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ReadwriteSplittingRuleConfiguration.class);
     
     @Before
     public void setUp() {

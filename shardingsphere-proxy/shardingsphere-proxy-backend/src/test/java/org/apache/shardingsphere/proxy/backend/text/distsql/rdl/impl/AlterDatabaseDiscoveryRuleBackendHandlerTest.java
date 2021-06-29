@@ -79,7 +79,7 @@ public final class AlterDatabaseDiscoveryRuleBackendHandlerTest {
     @Mock
     private DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration;
     
-    private final RDLBackendHandler<AlterDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, DatabaseDiscoveryRuleConfiguration.class);
+    private final RDLBackendHandler<AlterDatabaseDiscoveryRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, DatabaseDiscoveryRuleConfiguration.class);
     
     @Before
     public void setUp() {

@@ -72,7 +72,7 @@ public final class CreateEncryptRuleBackendHandlerTest {
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
     
-    private final RDLBackendHandler<CreateEncryptRuleStatement, EncryptRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, EncryptRuleConfiguration.class);
+    private final RDLBackendHandler<CreateEncryptRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, EncryptRuleConfiguration.class);
     
     @Before
     public void setUp() {

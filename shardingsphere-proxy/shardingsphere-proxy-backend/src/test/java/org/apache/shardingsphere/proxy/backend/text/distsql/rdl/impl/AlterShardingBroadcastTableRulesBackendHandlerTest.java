@@ -72,7 +72,7 @@ public final class AlterShardingBroadcastTableRulesBackendHandlerTest {
     public void assertExecuteWithoutShardingRuleConfiguration() {
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(new ArrayList<>());
         AlterShardingBroadcastTableRulesStatement sqlStatement = new AlterShardingBroadcastTableRulesStatement(Collections.singleton("t_1"));
-        RDLBackendHandler<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
+        RDLBackendHandler<AlterShardingBroadcastTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
         handler.execute("test", sqlStatement);
     }
     
@@ -82,7 +82,7 @@ public final class AlterShardingBroadcastTableRulesBackendHandlerTest {
         shardingRuleConfiguration.getBroadcastTables().add("t_1");
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(shardingRuleConfiguration));
         AlterShardingBroadcastTableRulesStatement sqlStatement = new AlterShardingBroadcastTableRulesStatement(Collections.singleton("t_2"));
-        RDLBackendHandler<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
+        RDLBackendHandler<AlterShardingBroadcastTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);

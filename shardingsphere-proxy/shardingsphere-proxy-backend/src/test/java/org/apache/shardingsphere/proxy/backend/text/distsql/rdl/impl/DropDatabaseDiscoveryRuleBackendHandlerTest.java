@@ -74,7 +74,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandlerTest {
     @Mock
     private ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration;
     
-    private final RDLBackendHandler<DropDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, DatabaseDiscoveryRuleConfiguration.class);
+    private final RDLBackendHandler<DropDatabaseDiscoveryRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, DatabaseDiscoveryRuleConfiguration.class);
     
     @Before
     public void setUp() {
