@@ -84,8 +84,21 @@ public final class DropEncryptRuleBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
+    @Test(expected = EncryptRuleNotExistedException.class)
+    public void assertCheckSQLStatementWithoutCurrentRule() {
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
+        handler.execute("test", sqlStatement);
+    }
+    
+    @Test(expected = EncryptRuleNotExistedException.class)
+    public void assertCheckSQLStatementWithoutToBeDroppedRule() {
+        when(sqlStatement.getTables()).thenReturn(Collections.singletonList("t_encrypt"));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+        handler.execute("test", sqlStatement);
+    }
+    
     @Test
-    public void assertExecute() {
+    public void assertUpdateCurrentRuleConfiguration() {
         when(sqlStatement.getTables()).thenReturn(Collections.singletonList("t_encrypt"));
         Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>(1, 1);
         encryptors.put("t_encrypt_user_id_MD5", shardingSphereAlgorithmConfiguration);
@@ -96,19 +109,6 @@ public final class DropEncryptRuleBackendHandlerTest {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
-    @Test(expected = EncryptRuleNotExistedException.class)
-    public void assertExecuteWithNotExistEncryptRule() {
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
-        handler.execute("test", sqlStatement);
-    }
-    
-    @Test(expected = EncryptRuleNotExistedException.class)
-    public void assertExecuteWithNoDroppedEncryptRule() {
-        when(sqlStatement.getTables()).thenReturn(Collections.singletonList("t_encrypt"));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
-        handler.execute("test", sqlStatement);
     }
     
     private Collection<EncryptColumnRuleConfiguration> buildColumnRuleConfigurations() {

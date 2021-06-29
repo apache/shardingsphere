@@ -88,13 +88,6 @@ public final class CreateShardingTableRuleBackendHandlerTest {
         when(shardingSphereSchema.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
     }
     
-    @Test
-    public void assertExecute() {
-        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
     @Test(expected = DuplicateTablesException.class)
     public void assertExecuteWithDuplicateTablesInRDL() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, null, null, null);
@@ -110,9 +103,16 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     }
     
     @Test(expected = InvalidShardingAlgorithmsException.class)
-    public void assertExecuteWithInvalidAlgorithms() {
+    public void assertCheckSQLStatementWithoutToBeCreatedShardingAlgorithms() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_item", Collections.emptyList(), null, new AlgorithmSegment("algorithm-not-exist", new Properties()), null, null);
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfiguration() {
+        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
+        assertNotNull(responseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
 }

@@ -78,18 +78,18 @@ public final class DropShardingBroadcastTableRulesBackendHandlerTest {
     }
     
     @Test(expected = ShardingBroadcastTableRuleNotExistsException.class)
-    public void assertExecuteWithoutShardingRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() {
         handler.execute("test", sqlStatement);
     }
     
     @Test(expected = ShardingBroadcastTableRuleNotExistsException.class)
-    public void assertExecuteWithNotExistBroadcastTableRule() {
+    public void assertCheckSQLStatementWithoutExistBroadcastTableRule() {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ShardingRuleConfiguration()));
         handler.execute("test", sqlStatement);
     }
     
     @Test
-    public void assertExecute() {
+    public void assertUpdateCurrentRuleConfiguration() {
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);

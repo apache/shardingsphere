@@ -87,18 +87,8 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
-    @Test
-    public void assertExecute() {
-        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("pr_ds", Arrays.asList("ds_read_0", "ds_read_1"), "TEST", new Properties());
-        when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));
-        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
     @Test(expected = DuplicateRuleNamesException.class)
-    public void assertExecuteWithDuplicateRuleNames() {
+    public void assertCheckSQLStatementWithDuplicateRuleNames() {
         DatabaseDiscoveryDataSourceRuleConfiguration databaseDiscoveryDataSourceRuleConfiguration
                 = new DatabaseDiscoveryDataSourceRuleConfiguration("pr_ds", Collections.emptyList(), "test");
         when(ruleMetaData.getConfigurations()).thenReturn(
@@ -109,17 +99,27 @@ public final class CreateDatabaseDiscoveryRuleBackendHandlerTest {
     }
     
     @Test(expected = ResourceNotExistedException.class)
-    public void assertExecuteWithNotExistResources() {
+    public void assertCheckSQLStatementWithoutExistedResources() {
         DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("pr_ds", Arrays.asList("ds_read_0", "ds_read_1"), null, new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
     @Test(expected = InvalidDatabaseDiscoveryTypesException.class)
-    public void assertExecuteWithDatabaseDiscoveryType() {
+    public void assertCheckSQLStatementWithDatabaseDiscoveryType() {
         DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("pr_ds", Arrays.asList("ds_read_0", "ds_read_1"), "notExistDiscoveryType", new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         handler.execute("test", sqlStatement);
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfiguration() {
+        DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment = new DatabaseDiscoveryRuleSegment("pr_ds", Arrays.asList("ds_read_0", "ds_read_1"), "TEST", new Properties());
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(databaseDiscoveryRuleSegment));
+        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
+        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
+        assertNotNull(responseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
 }
