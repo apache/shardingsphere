@@ -59,12 +59,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
 import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * RDL backend handler factory.
  */
-@SuppressWarnings("unchecked")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RDLBackendHandlerFactory {
     
@@ -77,11 +75,9 @@ public final class RDLBackendHandlerFactory {
      * @return RDL backend handler
      * @throws SQLException SQL exception
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        Optional<TextProtocolBackendHandler> result = createRDLBackendHandler(databaseType, sqlStatement, backendConnection);
-        if (result.isPresent()) {
-            checkRegistryCenterExisted(sqlStatement);
-        }
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+        TextProtocolBackendHandler result = createRDLBackendHandler(databaseType, sqlStatement, backendConnection);
+        checkRegistryCenterExisted(sqlStatement);
         return result;
     }
     
@@ -91,20 +87,20 @@ public final class RDLBackendHandlerFactory {
         }
     }
     
-    private static Optional<TextProtocolBackendHandler> createRDLBackendHandler(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    private static TextProtocolBackendHandler createRDLBackendHandler(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof AddResourceStatement) {
-            return Optional.of(new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection));
+            return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof DropResourceStatement) {
-            return Optional.of(new DropResourceBackendHandler((DropResourceStatement) sqlStatement, backendConnection));
+            return new DropResourceBackendHandler((DropResourceStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof CreateDatabaseStatement) {
-            return Optional.of(new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement));
+            return new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
-            return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, backendConnection));
+            return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, backendConnection);
         }
-        return Optional.of(new RDLBackendHandler<>(sqlStatement, backendConnection, getRuleConfigurationClass(sqlStatement)));
+        return new RDLBackendHandler<>(sqlStatement, backendConnection, getRuleConfigurationClass(sqlStatement));
     }
     
     private static Class<? extends RuleConfiguration> getRuleConfigurationClass(final SQLStatement sqlStatement) {
