@@ -39,9 +39,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -83,11 +85,15 @@ public final class SchemaBuilderTest {
         Map<TableMetaData, TableMetaData> actual = SchemaBuilder.build(schemaBuilderMaterials);
         assertThat(actual.values().size(), is(2));
         assertThat(actual.keySet().size(), is(2));
-        assertSchemaOfShardingTables(actual.values());
+        assertSchemaOfShardingTables(actual.keySet());
     }
     
     private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {
-        
+        Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
+        assertTrue(tableMetaDataMap.containsKey("data_node_routed_table1"));
+        assertThat(tableMetaDataMap.get("data_node_routed_table1").getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.containsKey("data_node_routed_table2"));
+        assertThat(tableMetaDataMap.get("data_node_routed_table2").getColumns().size(), is(0));
     }
     
     @Test
@@ -107,9 +113,14 @@ public final class SchemaBuilderTest {
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], mockReturnTables);
         Map<TableMetaData, TableMetaData> tableMetaDatas = SchemaBuilder.build(schemaBuilderMaterials);
         assertThat(tableMetaDatas.keySet().size(), is(4));
-        assertActualOfShardingTablesAndSingleTables(tableMetaDatas.values());
+        assertActualOfShardingTablesAndSingleTables(tableMetaDatas.keySet());
     }
     
     private void assertActualOfShardingTablesAndSingleTables(final Collection<TableMetaData> actual) {
+        Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
+        assertTrue(tableMetaDataMap.containsKey(singleTableNames[0]));
+        assertThat(tableMetaDataMap.get(singleTableNames[0]).getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.containsKey(singleTableNames[1]));
+        assertThat(tableMetaDataMap.get(singleTableNames[1]).getColumns().size(), is(0));
     }
 }

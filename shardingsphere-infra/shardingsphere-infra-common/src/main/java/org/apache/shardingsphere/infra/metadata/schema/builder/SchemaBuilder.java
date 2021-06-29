@@ -78,17 +78,17 @@ public final class SchemaBuilder {
         return buildTableMetaDataMap(actualTableMetaMap, logicTableMetaMap);
     }
 
-    private static Map<TableMetaData, TableMetaData> buildTableMetaDataMap(final Map<String, TableMetaData> actual,
-                                                                           final Map<String, TableMetaData> logic) {
-        Map<TableMetaData, TableMetaData> result = new HashMap<>(actual.size(), 1);
-        for (Entry entry : actual.entrySet()) {
-            result.put((TableMetaData) entry.getValue(), logic.get(entry.getKey()));
+    private static Map<TableMetaData, TableMetaData> buildTableMetaDataMap(final Map<String, TableMetaData> actualMap,
+                                                                           final Map<String, TableMetaData> logicMap) {
+        Map<TableMetaData, TableMetaData> result = new HashMap<>(actualMap.size(), 1);
+        for (Entry entry : actualMap.entrySet()) {
+            result.put((TableMetaData) entry.getValue(), logicMap.get(entry.getKey()));
         }
         return result;
     }
 
     private static Map<String, TableMetaData> appendRemainTables(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>();
+        Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
         appendRemainTables(materials, result);
         for (ShardingSphereRule rule : materials.getRules()) {
             if (rule instanceof TableContainedRule) {

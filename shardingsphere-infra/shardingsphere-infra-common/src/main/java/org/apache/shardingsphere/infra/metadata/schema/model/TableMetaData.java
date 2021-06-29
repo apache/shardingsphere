@@ -36,7 +36,7 @@ import java.util.Map;
 @EqualsAndHashCode
 @ToString
 public final class TableMetaData {
-
+    
     private final String name;
     
     private final Map<String, ColumnMetaData> columns;
