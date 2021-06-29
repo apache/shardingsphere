@@ -23,16 +23,19 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Properties;
-import javax.xml.bind.DatatypeConverter;
+
 /**
  * AES encrypt algorithm.
  */
@@ -62,8 +65,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
         if (null == plaintext) {
             return null;
         }
-        byte[] result = new byte[0];
-        result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plaintext).getBytes("UTF-8"));
+        byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(String.valueOf(plaintext).getBytes(StandardCharsets.UTF_8));
         return DatatypeConverter.printBase64Binary(result);
     }
     
