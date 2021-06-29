@@ -43,13 +43,13 @@ import java.util.Properties;
  */
 public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
     
-    private final Class<? extends RuleConfiguration> ruleConfigClass;
+    private final Class<RuleConfiguration> ruleConfigClass;
     
     static {
         ShardingSphereServiceLoader.register(RDLUpdater.class);
     }
     
-    public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection, final Class<? extends RuleConfiguration> ruleConfigClass) {
+    public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection, final Class<RuleConfiguration> ruleConfigClass) {
         super(sqlStatement, backendConnection);
         this.ruleConfigClass = ruleConfigClass;
     }

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -41,6 +42,7 @@ import java.util.Optional;
 /**
  * RDL backend handler factory.
  */
+@SuppressWarnings("unchecked")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RDLBackendHandlerFactory {
     
@@ -80,6 +82,6 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, backendConnection));
         }
-        return Optional.of(new RDLBackendHandler(sqlStatement, backendConnection, sqlStatement.getClass()));
+        return Optional.of(new RDLBackendHandler<>(sqlStatement, backendConnection, (Class<RuleConfiguration>) sqlStatement.getClass()));
     }
 }
