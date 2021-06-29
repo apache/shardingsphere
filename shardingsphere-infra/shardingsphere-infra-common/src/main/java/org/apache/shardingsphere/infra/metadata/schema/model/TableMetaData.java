@@ -49,7 +49,7 @@ public final class TableMetaData {
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
     public TableMetaData() {
-        this(null, Collections.emptyList(), Collections.emptyList());
+        this("", Collections.emptyList(), Collections.emptyList());
     }
 
     public TableMetaData(final String name) {

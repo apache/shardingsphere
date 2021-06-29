@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.loader.adapter.Me
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaDatas;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
@@ -73,12 +72,20 @@ public final class SchemaBuilder {
      * @return actual and logic table meta data
      * @throws SQLException SQL exception
      */
-    public static TableMetaDatas build(final SchemaBuilderMaterials materials) throws SQLException {
+    public static Map<TableMetaData, TableMetaData> build(final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> actualTableMetaMap = appendRemainTables(materials);
         Map<String, TableMetaData> logicTableMetaMap = addRuleConfiguredTables(materials, actualTableMetaMap);
-        return new TableMetaDatas(actualTableMetaMap, logicTableMetaMap);
+        return buildTableMetaDataMap(logicTableMetaMap, actualTableMetaMap);
     }
-    
+
+    private static Map<TableMetaData, TableMetaData> buildTableMetaDataMap(final Map<String, TableMetaData> logicTableMetaMap, final Map<String, TableMetaData> actualTableMetaMap) {
+        Map<TableMetaData, TableMetaData> result = new HashMap<>(logicTableMetaMap.size(), 1);
+        for (Entry entry : logicTableMetaMap.entrySet()) {
+            result.put((TableMetaData) entry.getValue(), actualTableMetaMap.getOrDefault(entry.getValue(), new TableMetaData()));
+        }
+        return result;
+    }
+
     private static Map<String, TableMetaData> appendRemainTables(final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>();
         appendRemainTables(materials, result);

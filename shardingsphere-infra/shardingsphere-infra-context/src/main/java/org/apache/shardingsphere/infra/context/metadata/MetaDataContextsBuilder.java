@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaDatas;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -43,14 +42,8 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Meta data contexts builder.
@@ -95,10 +88,10 @@ public final class MetaDataContextsBuilder {
             Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
             Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(each, ruleConfigs, databaseType, dataSourceMap);
-            TableMetaDatas tableMetaDatas = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
+            Map<TableMetaData, TableMetaData> tableMetaDatas = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
             ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);
-            ShardingSphereSchema actualSchema = new ShardingSphereSchema(tableMetaDatas.getActualTableMeta());
+            ShardingSphereSchema actualSchema = new ShardingSphereSchema(tableMetaDatas.values());
             actualMetaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, actualSchema));
             metaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, buildSchema(tableMetaDatas)));
         }
@@ -106,10 +99,10 @@ public final class MetaDataContextsBuilder {
         return new StandardMetaDataContexts(metaDataMap, buildGlobalSchemaMetaData(metaDataMap), executorEngine, props, optimizeContextFactory);
     }
 
-    private ShardingSphereSchema buildSchema(final TableMetaDatas tableMetaDatas) {
-        Map<String, TableMetaData> tables = new HashMap<>(tableMetaDatas.getActualTableMeta().size() + tableMetaDatas.getLogicTableMete().size(), 1);
-        tables.putAll(tableMetaDatas.getActualTableMeta());
-        tables.putAll(tableMetaDatas.getLogicTableMete());
+    private ShardingSphereSchema buildSchema(final Map<TableMetaData, TableMetaData> tableMetaDatas) {
+        Set<TableMetaData> tables = new HashSet<>(tableMetaDatas.size());
+        tables.addAll(tableMetaDatas.keySet());
+        tables.addAll(tableMetaDatas.values());
         return new ShardingSphereSchema(tables);
     }
 
