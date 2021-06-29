@@ -80,6 +80,6 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, backendConnection));
         }
-        return Optional.of(new RDLBackendHandler<>(sqlStatement, backendConnection));
+        return Optional.of(new RDLBackendHandler(sqlStatement, backendConnection, sqlStatement.getClass()));
     }
 }
