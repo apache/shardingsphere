@@ -109,7 +109,8 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     
     @Test(expected = DuplicateTablesException.class)
     public void assertExecuteWithDuplicateTablesInRDL() {
-        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, null, null, null);
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, new AlgorithmSegment("hash_mod", new Properties()), null, null);
+        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
         handler.execute("test", sqlStatement);
     }

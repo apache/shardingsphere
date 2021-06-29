@@ -52,7 +52,7 @@ public final class AlterDatabaseDiscoveryRuleStatementAssert {
             assertNull(assertContext.getText("Actual should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
-            assertDatabaseDiscoveryRules(assertContext, actual.getRules(), expected.getDatabaseDiscoveryRules());
+            assertDatabaseDiscoveryRules(assertContext, actual.getRules(), expected.getRules());
             
         }
     }

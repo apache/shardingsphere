@@ -33,6 +33,6 @@ import java.util.List;
 @Setter
 public final class AddResourceStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "dataSource")
+    @XmlElement(name = "data-source")
     private final List<ExpectedDataSource> dataSources = new LinkedList<>();
 }

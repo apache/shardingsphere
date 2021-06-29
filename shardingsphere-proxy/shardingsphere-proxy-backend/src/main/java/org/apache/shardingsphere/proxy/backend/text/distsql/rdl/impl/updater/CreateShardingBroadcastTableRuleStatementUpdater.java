@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
-import org.apache.shardingsphere.infra.distsql.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingBroadcastTableRuleExistedException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 /**
  * Create sharding broadcast table rule statement updater.
  */
-public final class CreateShardingBroadcastTableRuleStatementUpdater implements RDLUpdater<CreateShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
+public final class CreateShardingBroadcastTableRuleStatementUpdater implements RDLCreateUpdater<CreateShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, 
@@ -35,11 +34,15 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement) {
+        return new ShardingRuleConfiguration();
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, 
+                                               final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
         if (null == currentRuleConfig) {
-            ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-            shardingRuleConfiguration.setBroadcastTables(sqlStatement.getTables());
-            ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(shardingRuleConfiguration);
+            toBeCreatedRuleConfig.setBroadcastTables(sqlStatement.getTables());
         } else {
             if (!currentRuleConfig.getBroadcastTables().isEmpty()) {
                 throw new ShardingBroadcastTableRuleExistedException(schemaName);

@@ -30,11 +30,11 @@
     </show-sharding-table-rules>
     
     <show-sharding-table-rules sql-case-id="show-sharding-table-rule">
-        <table>t_order</table>
+        <table name="t_order" />
     </show-sharding-table-rules>
     
     <show-sharding-table-rules sql-case-id="show-sharding-table-rule-from">
-        <table>t_order</table>
+        <table name="t_order" />
         <schema name="schemaName" start-index="38" stop-index="47"/>
     </show-sharding-table-rules>
     

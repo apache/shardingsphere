@@ -33,6 +33,6 @@ import java.util.List;
 @Setter
 public final class AlterEncryptRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "encrypt-rule")
-    private final List<ExpectedEncryptRule> encryptRules = new LinkedList<>();
+    @XmlElement(name = "rule")
+    private final List<ExpectedEncryptRule> rules = new LinkedList<>();
 }

@@ -33,6 +33,6 @@ import java.util.List;
 @Setter
 public final class AlterShardingTableRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "tables")
-    private final List<ExpectedTableRule> tableRules = new LinkedList<>();
+    @XmlElement(name = "rule")
+    private final List<ExpectedTableRule> rules = new LinkedList<>();
 }

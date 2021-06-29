@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedProperties;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
@@ -32,13 +33,10 @@ import java.util.List;
 @Setter
 public final class ExpectedDatabaseDiscoveryRule extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement
-    private String name;
-    
     @XmlElement(name = "data-source")
     private List<String> dataSources;
     
-    @XmlElement(name = "discovery-type")
+    @XmlAttribute(name = "type")
     private String discoveryTypeName;
     
     @XmlElement(name = "properties")

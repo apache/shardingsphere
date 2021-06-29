@@ -47,7 +47,7 @@ public final class TableRuleAssert {
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getLogicTable(), CoreMatchers.is(expected.getLogicTable()));
+                    actual.getLogicTable(), CoreMatchers.is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getDataSources(), CoreMatchers.is(expected.getDataSources()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
