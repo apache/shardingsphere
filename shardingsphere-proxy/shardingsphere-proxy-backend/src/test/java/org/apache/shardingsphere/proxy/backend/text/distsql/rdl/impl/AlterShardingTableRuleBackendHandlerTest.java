@@ -91,12 +91,36 @@ public final class AlterShardingTableRuleBackendHandlerTest {
     }
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertExecuteWithoutShardingRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() {
+        handler.execute("test", sqlStatement);
+    }
+    
+    @Test(expected = DuplicateTablesException.class)
+    public void assertCheckSQLStatementWithDuplicateTables() {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, new AlgorithmSegment("hash_mod", new Properties()), null, null);
+        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
+        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
+        handler.execute("test", sqlStatement);
+    }
+    
+    @Test(expected = ShardingTableRuleNotExistedException.class)
+    public void assertCheckSQLStatementWithoutExistTable() {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_1", Collections.emptyList(), null, null, null, null);
+        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
+        handler.execute("test", sqlStatement);
+    }
+    
+    @Test(expected = InvalidShardingAlgorithmsException.class)
+    public void assertCheckSQLStatementWithoutToBeAlteredShardingAlgorithms() {
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_item", Collections.emptyList(), null, new AlgorithmSegment("algorithm-not-exist", new Properties()), null, null);
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
+        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         handler.execute("test", sqlStatement);
     }
     
     @Test
-    public void assertExecute() {
+    public void assertUpdateCurrentRuleConfiguration() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Collections.singleton("ds_0"), "order_id", new AlgorithmSegment("hash_mod", new Properties()), null, null);
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
@@ -105,30 +129,6 @@ public final class AlterShardingTableRuleBackendHandlerTest {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
-    @Test(expected = DuplicateTablesException.class)
-    public void assertExecuteWithDuplicateTablesInRDL() {
-        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, new AlgorithmSegment("hash_mod", new Properties()), null, null);
-        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        when(sqlStatement.getRules()).thenReturn(Arrays.asList(tableRuleSegment, tableRuleSegment));
-        handler.execute("test", sqlStatement);
-    }
-    
-    @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertExecuteWithoutExistTable() {
-        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_1", Collections.emptyList(), null, null, null, null);
-        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
-        handler.execute("test", sqlStatement);
-    }
-    
-    @Test(expected = InvalidShardingAlgorithmsException.class)
-    public void assertExecuteWithInvalidAlgorithms() {
-        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_item", Collections.emptyList(), null, new AlgorithmSegment("algorithm-not-exist", new Properties()), null, null);
-        when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
-        when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
-        handler.execute("test", sqlStatement);
     }
     
     private Collection<RuleConfiguration> buildShardingConfigurations() {

@@ -79,7 +79,7 @@ public final class CreateShardingBroadcastTableRulesBackendHandlerTest {
     }
     
     @Test(expected = ShardingBroadcastTableRuleExistedException.class)
-    public void assertExecuteWithExistShardingBroadcastTableRules() {
+    public void assertCheckSQLStatementWithExistedShardingBroadcastTableRules() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.getBroadcastTables().add("t_1");
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(shardingRuleConfiguration));

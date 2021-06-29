@@ -72,7 +72,7 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     }
     
     @Test
-    public void assertExecute() {
+    public void assertUpdateCurrentRuleConfiguration() {
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildShardingRuleConfiguration()));
         CreateShardingBindingTableRulesStatement sqlStatement = buildShardingTableRuleStatement();
         RDLBackendHandler<CreateShardingBindingTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
@@ -82,7 +82,7 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     }
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertExecuteWithNotExistTableRule() {
+    public void assertCheckSQLStatementWithoutCurrentTableRule() {
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ShardingRuleConfiguration()));
         CreateShardingBindingTableRulesStatement sqlStatement = buildShardingTableRuleStatement();
         RDLBackendHandler<CreateShardingBindingTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
@@ -92,7 +92,7 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     }
     
     @Test(expected = DuplicateBindingTablesException.class)
-    public void assertExecuteWithDuplicateTablesInSQL() {
+    public void assertCheckSQLStatementWithDuplicateTablesInSQL() {
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildShardingRuleConfiguration()));
         CreateShardingBindingTableRulesStatement sqlStatement = buildDuplicateShardingTableRuleStatement();
         RDLBackendHandler<CreateShardingBindingTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
@@ -100,7 +100,7 @@ public final class CreateShardingBindingTableRulesBackendHandlerTest {
     }
     
     @Test(expected = DuplicateBindingTablesException.class)
-    public void assertExecuteWithDuplicateTablesInShardingRule() {
+    public void assertCheckSQLStatementWithDuplicateTablesInShardingRule() {
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(buildShardingBindingTableRuleConfiguration()));
         CreateShardingBindingTableRulesStatement sqlStatement = buildShardingTableRuleStatement();
         RDLBackendHandler<CreateShardingBindingTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);

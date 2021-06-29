@@ -69,7 +69,7 @@ public final class AlterShardingBroadcastTableRulesBackendHandlerTest {
     }
     
     @Test(expected = ShardingBroadcastTableRuleNotExistsException.class)
-    public void assertExecuteWithoutShardingRuleConfiguration() {
+    public void assertCheckSQLStatementWithoutCurrentRule() {
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(new ArrayList<>());
         AlterShardingBroadcastTableRulesStatement sqlStatement = new AlterShardingBroadcastTableRulesStatement(Collections.singleton("t_1"));
         RDLBackendHandler<AlterShardingBroadcastTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
@@ -77,7 +77,7 @@ public final class AlterShardingBroadcastTableRulesBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithExistShardingBroadcastTableRules() {
+    public void assertUpdateCurrentRuleConfiguration() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.getBroadcastTables().add("t_1");
         when(shardingSphereRuleMetaData.getConfigurations()).thenReturn(Collections.singleton(shardingRuleConfiguration));

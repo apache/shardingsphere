@@ -86,8 +86,21 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
+    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
+    public void assertCheckSQLStatementWithoutCurrentRule() {
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
+        handler.execute("test", sqlStatement);
+    }
+    
+    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
+    public void assertCheckSQLStatementWithoutToBeDroppedRule() {
+        when(sqlStatement.getRuleNames()).thenReturn(Collections.singleton("pr_ds"));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+        handler.execute("test", sqlStatement);
+    }
+    
     @Test
-    public void assertExecute() {
+    public void assertUpdateCurrentRuleConfiguration() {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("pr_ds"));
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>(1, 1);
         loadBalancers.put("pr_ds", shardingSphereAlgorithmConfiguration);
@@ -98,18 +111,5 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
-    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
-    public void assertExecuteWithNotExistReadwriteSplittingRule() {
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
-        handler.execute("test", sqlStatement);
-    }
-    
-    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
-    public void assertExecuteWithNoDroppedReadwriteSplittingRules() {
-        when(sqlStatement.getRuleNames()).thenReturn(Collections.singleton("pr_ds"));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
-        handler.execute("test", sqlStatement);
     }
 }

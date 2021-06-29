@@ -83,17 +83,8 @@ public final class CreateEncryptRuleBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
-    @Test
-    public void assertExecute() {
-        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildEncryptColumnSegments("MD5"));
-        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
-        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
     @Test(expected = DuplicateRuleNamesException.class)
-    public void assertExecuteWithDuplicateEncryptRule() {
+    public void assertCheckSQLStatementWithDuplicateEncryptRule() {
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList());
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new EncryptRuleConfiguration(Collections
                 .singleton(encryptTableRuleConfiguration), Maps.newHashMap())));
@@ -103,10 +94,19 @@ public final class CreateEncryptRuleBackendHandlerTest {
     }
     
     @Test(expected = InvalidEncryptorsException.class)
-    public void assertExecuteWithInvalidEncryptors() {
+    public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
         EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildEncryptColumnSegments("notExistEncryptor"));
         when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
         handler.execute("test", sqlStatement);
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfiguration() {
+        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_encrypt", buildEncryptColumnSegments("MD5"));
+        when(sqlStatement.getRules()).thenReturn(Collections.singletonList(encryptRuleSegment));
+        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
+        assertNotNull(responseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     private Collection<EncryptColumnSegment> buildEncryptColumnSegments(final String encryptorName) {

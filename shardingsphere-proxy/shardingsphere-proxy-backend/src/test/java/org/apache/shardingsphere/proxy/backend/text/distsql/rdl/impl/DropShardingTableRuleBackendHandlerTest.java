@@ -86,12 +86,12 @@ public final class DropShardingTableRuleBackendHandlerTest {
     }
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertExecuteWithoutShardingRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() {
         handler.execute("test", sqlStatement);
     }
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertExecuteWithNotExistTableRule() {
+    public void assertCheckSQLStatementWithoutExistedTableRule() {
         TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ShardingRuleConfiguration()));
         when(sqlStatement.getTableNames()).thenReturn(Collections.singleton(tableRuleSegment));
@@ -99,7 +99,7 @@ public final class DropShardingTableRuleBackendHandlerTest {
     }
     
     @Test(expected = ShardingTableRulesInUsedException.class)
-    public void assertExecuteWithBindingTableRule() {
+    public void assertCheckSQLStatementWithBindingTableRule() {
         TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order_item"));
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getTableNames()).thenReturn(Collections.singleton(tableRuleSegment));
@@ -107,7 +107,7 @@ public final class DropShardingTableRuleBackendHandlerTest {
     }
     
     @Test
-    public void assertExecute() {
+    public void assertUpdateCurrentRuleConfiguration() {
         TableNameSegment tableRuleSegment = new TableNameSegment(0, 3, new IdentifierValue("t_order"));
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         when(sqlStatement.getTableNames()).thenReturn(Collections.singleton(tableRuleSegment));

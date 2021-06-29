@@ -89,18 +89,8 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
-    @Test
-    public void assertExecute() {
-        ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment("pr_ds", "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "TEST", new Properties());
-        when(sqlStatement.getRules()).thenReturn(Collections.singleton(readwriteSplittingRuleSegment));
-        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
     @Test(expected = DuplicateRuleNamesException.class)
-    public void assertExecuteWithDuplicateRuleNames() {
+    public void assertCheckSQLStatementWithDuplicateRuleNames() {
         ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration
                 = new ReadwriteSplittingDataSourceRuleConfiguration("pr_ds", "",
                 "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "test");
@@ -112,7 +102,7 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithExistReadwriteConfiguration() {
+    public void assertCheckSQLStatementWithCurrentConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
                 "pr_ds_1", "", "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "test");
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
@@ -127,18 +117,28 @@ public final class CreateReadwriteSplittingRuleBackendHandlerTest {
     }
     
     @Test(expected = ResourceNotExistedException.class)
-    public void assertExecuteWithNotExistResources() {
+    public void assertCheckSQLStatementWithoutExistedResources() {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment("pr_ds", "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), null, new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(readwriteSplittingRuleSegment));
         handler.execute("test", sqlStatement);
     }
     
     @Test(expected = InvalidLoadBalancersException.class)
-    public void assertExecuteWithInvalidLoadBalancer() {
+    public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() {
         ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment(
                 "pr_ds", "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "notExistLoadBalancer", new Properties());
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(readwriteSplittingRuleSegment));
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         handler.execute("test", sqlStatement);
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfiguration() {
+        ReadwriteSplittingRuleSegment readwriteSplittingRuleSegment = new ReadwriteSplittingRuleSegment("pr_ds", "ds_write", Arrays.asList("ds_read_0", "ds_read_1"), "TEST", new Properties());
+        when(sqlStatement.getRules()).thenReturn(Collections.singleton(readwriteSplittingRuleSegment));
+        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
+        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
+        assertNotNull(responseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
 }

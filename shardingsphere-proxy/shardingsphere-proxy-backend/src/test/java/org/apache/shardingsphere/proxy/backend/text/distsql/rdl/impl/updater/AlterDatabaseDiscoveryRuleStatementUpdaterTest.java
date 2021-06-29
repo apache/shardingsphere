@@ -67,7 +67,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
         updater.updateCurrentRuleConfiguration("foo", createSQLStatement("TEST"), createCurrentRuleConfiguration());
-        // TODO assert Current rule configuration
+        // TODO assert current rule configuration
     }
     
     private AlterDatabaseDiscoveryRuleStatement createSQLStatement(final String discoveryTypeName) {
