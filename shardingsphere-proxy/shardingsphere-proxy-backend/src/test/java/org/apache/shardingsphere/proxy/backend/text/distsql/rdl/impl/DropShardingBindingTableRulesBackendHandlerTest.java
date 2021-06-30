@@ -67,7 +67,7 @@ public final class DropShardingBindingTableRulesBackendHandlerTest {
     @Mock
     private ShardingSphereRuleMetaData ruleMetaData;
     
-    private final DropShardingBindingTableRulesBackendHandler handler = new DropShardingBindingTableRulesBackendHandler(sqlStatement, backendConnection);
+    private final RDLBackendHandler<DropShardingBindingTableRulesStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
     
     @Before
     public void setUp() {
@@ -78,18 +78,18 @@ public final class DropShardingBindingTableRulesBackendHandlerTest {
     }
     
     @Test(expected = ShardingBindingTableRuleNotExistsException.class)
-    public void assertExecuteWithoutShardingRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() {
         handler.execute("test", sqlStatement);
     }
     
     @Test(expected = ShardingBindingTableRuleNotExistsException.class)
-    public void assertExecuteWithNotExistBindingTableRule() {
+    public void assertCheckSQLStatementWithoutExistedBindingTableRule() {
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ShardingRuleConfiguration()));
         handler.execute("test", sqlStatement);
     }
     
     @Test
-    public void assertExecute() {
+    public void assertUpdateCurrentRuleConfiguration() {
         when(ruleMetaData.getConfigurations()).thenReturn(buildShardingConfigurations());
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
