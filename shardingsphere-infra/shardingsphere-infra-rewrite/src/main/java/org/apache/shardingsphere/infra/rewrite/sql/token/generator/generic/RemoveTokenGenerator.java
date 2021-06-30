@@ -45,6 +45,14 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (sqlStatementContext.getSqlStatement() instanceof MySQLShowColumnsStatement) {
             return ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
         }
+//        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowColumnsStatement) {
+//            return ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent() 
+//                    || ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getTable().getOwner().isPresent();
+//        }
+//        if (sqlStatementContext.getSqlStatement() instanceof SelectStatement) {
+//            TableSegment table = ((SelectStatement) sqlStatementContext.getSqlStatement()).getFrom();
+//            return table instanceof SimpleTableSegment && ((SimpleTableSegment) table).getOwner().isPresent();
+//        }
         return false;
     }
     
@@ -65,6 +73,25 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
             RemoveAvailable removeAvailable = ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
             return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
         }
+//        if (sqlStatementContext.getSqlStatement() instanceof MySQLShowColumnsStatement) {
+//            Collection<RemoveToken> result = new LinkedList<>();
+//            if (((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent()) {
+//                RemoveAvailable removeAvailable = ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
+//                result.add(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));   
+//            }
+//            SimpleTableSegment table = ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getTable();
+//            if (table.getOwner().isPresent()) {
+//                RemoveAvailable removeAvailable = table.getOwner().get();
+//                result.add(new RemoveToken(removeAvailable.getStartIndex(), table.getTableName().getStartIndex() - 1));
+//            }
+//            return result;
+//        }
+//        if (sqlStatementContext.getSqlStatement() instanceof SelectStatement) {
+//            TableSegment table = ((SelectStatement) sqlStatementContext.getSqlStatement()).getFrom();
+//            Preconditions.checkState(table instanceof SimpleTableSegment && ((SimpleTableSegment) table).getOwner().isPresent());
+//            RemoveAvailable removeAvailable = ((SimpleTableSegment) table).getOwner().get();
+//            return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), ((SimpleTableSegment) table).getTableName().getStartIndex() - 1));
+//        }
         return Collections.emptyList();
     }
 }

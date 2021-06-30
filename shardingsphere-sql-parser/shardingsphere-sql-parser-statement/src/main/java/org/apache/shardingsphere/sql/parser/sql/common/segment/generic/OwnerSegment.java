@@ -20,14 +20,13 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
  * Owner segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class OwnerSegment implements SQLSegment {
+public final class OwnerSegment implements RemoveAvailable {
     
     private final int startIndex;
     

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,8 +52,9 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     private Collection<TableToken> generateSQLTokens(final TableAvailable sqlStatementContext) {
         Collection<TableToken> result = new LinkedList<>();
         for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
-            if (shardingRule.findTableRule(each.getTableName().getIdentifier().getValue()).isPresent()) {
-                result.add(new TableToken(each.getStartIndex(), each.getTableName().getStopIndex(), each, (SQLStatementContext) sqlStatementContext, shardingRule));
+            TableNameSegment tableName = each.getTableName();
+            if (shardingRule.findTableRule(tableName.getIdentifier().getValue()).isPresent() || each.getOwner().isPresent()) {
+                result.add(new TableToken(tableName.getStartIndex(), tableName.getStopIndex(), each, (SQLStatementContext) sqlStatementContext, shardingRule));
             }
         }
         return result;
