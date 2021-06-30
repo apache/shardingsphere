@@ -37,14 +37,13 @@ public final class SqlNodeConvertEngine {
      * @param statement statement
      * @return sqlNode optional
      */
-    public static Optional<SqlNode> convert(final SQLStatement statement) {
-        try {
-            if (statement instanceof SelectStatement) {
-                return new SelectStatementSqlNodeConverter().convert((SelectStatement) statement);
+    public static SqlNode convert(final SQLStatement statement) {
+        if (statement instanceof SelectStatement) {
+            Optional<SqlNode> selectSqlNode = new SelectStatementSqlNodeConverter().convert((SelectStatement) statement);
+            if (selectSqlNode.isPresent()) {
+                return selectSqlNode.get();
             }
-            return Optional.empty();
-        } catch (final UnsupportedOperationException ex) {
-            return Optional.empty();
         }
+        throw new UnsupportedOperationException("Unsupported sqlNode conversion.");
     }
 }

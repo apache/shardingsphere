@@ -150,11 +150,6 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-governance-repository-nacos</artifactId>
-                <version>${shardingsphere.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-governance-repository-etcd</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>

@@ -23,9 +23,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * Expected base complex expression.
+ */
 @Getter
 @Setter
-public class ExpectedBaseComplexExpression extends AbstractExpectedSQLSegment implements ExpectedComplexExpressionSegment {
+public abstract class ExpectedBaseComplexExpression extends AbstractExpectedSQLSegment implements ExpectedComplexExpressionSegment {
     
     @XmlAttribute
     private String text;

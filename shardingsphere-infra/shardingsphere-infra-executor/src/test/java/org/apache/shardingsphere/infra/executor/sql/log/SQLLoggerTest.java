@@ -68,7 +68,7 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogNormalSQLWithoutParameter() {
-        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
@@ -81,7 +81,7 @@ public final class SQLLoggerTest {
     public void assertLogNormalSQLWithParameters() {
         List<Object> parameters = executionUnits.iterator().next().getSqlUnit().getParameters();
         parameters.add("parameter");
-        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(logicSQL, false, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
@@ -92,7 +92,7 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogSimpleSQL() {
-        SQLLogger.logSQL(logicSQL, true, new ExecutionContext(null, executionUnits, mock(RouteContext.class)));
+        SQLLogger.logSQL(logicSQL, true, new ExecutionContext(logicSQL, executionUnits, mock(RouteContext.class)));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});

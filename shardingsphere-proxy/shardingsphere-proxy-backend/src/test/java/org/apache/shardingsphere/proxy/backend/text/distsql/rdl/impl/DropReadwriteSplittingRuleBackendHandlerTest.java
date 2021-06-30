@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -25,11 +24,12 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
@@ -75,7 +75,7 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
     @Mock
     private ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration;
     
-    private final DropReadwriteSplittingRuleBackendHandler handler = new DropReadwriteSplittingRuleBackendHandler(sqlStatement, backendConnection);
+    private final RDLBackendHandler<DropReadwriteSplittingRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ReadwriteSplittingRuleConfiguration.class);
     
     @Before
     public void setUp() {
@@ -86,8 +86,21 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
+    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
+    public void assertCheckSQLStatementWithoutCurrentRule() {
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
+        handler.execute("test", sqlStatement);
+    }
+    
+    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
+    public void assertCheckSQLStatementWithoutToBeDroppedRule() {
+        when(sqlStatement.getRuleNames()).thenReturn(Collections.singleton("pr_ds"));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
+        handler.execute("test", sqlStatement);
+    }
+    
     @Test
-    public void assertExecute() {
+    public void assertUpdateCurrentRuleConfiguration() {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("pr_ds"));
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>(1, 1);
         loadBalancers.put("pr_ds", shardingSphereAlgorithmConfiguration);
@@ -98,18 +111,5 @@ public final class DropReadwriteSplittingRuleBackendHandlerTest {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
-    @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
-    public void assertExecuteWithNotExistReadwriteSplittingRule() {
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
-        handler.execute("test", sqlStatement);
-    }
-    
-    @Test(expected = ReadwriteSplittingRulesNotExistedException.class)
-    public void assertExecuteWithNoDroppedReadwriteSplittingRules() {
-        when(sqlStatement.getRuleNames()).thenReturn(Collections.singleton("pr_ds"));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
-        handler.execute("test", sqlStatement);
     }
 }

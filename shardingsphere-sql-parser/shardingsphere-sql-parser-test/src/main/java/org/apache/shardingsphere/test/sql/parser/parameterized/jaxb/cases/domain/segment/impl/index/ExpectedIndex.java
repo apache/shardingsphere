@@ -20,6 +20,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedOwner;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Expected index.
@@ -27,4 +30,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 @Getter
 @Setter
 public final class ExpectedIndex extends AbstractExpectedIdentifierSQLSegment {
+
+    @XmlElement
+    private ExpectedOwner owner;
 }

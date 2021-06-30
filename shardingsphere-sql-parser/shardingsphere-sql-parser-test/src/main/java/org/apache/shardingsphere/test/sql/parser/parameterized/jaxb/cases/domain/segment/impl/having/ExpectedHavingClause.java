@@ -29,11 +29,11 @@ import javax.xml.bind.annotation.XmlElement;
 /**
  * Expected having clause.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedHavingClause extends AbstractExpectedSQLSegment {
-
+    
     @XmlElement(name = "expr")
     private ExpectedExpression expr;
 }

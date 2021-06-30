@@ -52,7 +52,7 @@ public final class DistSQLBackendHandlerFactory {
             return Optional.of(RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof RDLStatement) {
-            return RDLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
+            return Optional.of(RDLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection));
         }
         return RALBackendHandlerFactory.newInstance(sqlStatement);
     }

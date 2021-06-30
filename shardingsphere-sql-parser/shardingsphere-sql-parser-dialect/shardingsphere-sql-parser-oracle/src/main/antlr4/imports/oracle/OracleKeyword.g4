@@ -535,6 +535,10 @@ INDEXTYPE
     : I N D E X T Y P E
     ;
 
+INDEXTYPES
+    : I N D E X T Y P E S
+    ;
+
 EXTERNAL
     : E X T E R N A L
     ;
@@ -2023,6 +2027,10 @@ PACKAGE
     : P A C K A G E
     ;
 
+PACKAGES
+    : P A C K A G E S
+    ;
+
 USING_NLS_COMP
     : U S I N G UL_ N L S UL_ C O M P
     ;
@@ -2203,6 +2211,22 @@ COMPLETE
     : C O M P L E T E
     ;
 
+ASSOCIATE
+    : A S S O C I A T E
+    ;
+
+FUNCTIONS
+    : F U N C T I O N S
+    ;
+
+TYPES
+    : T Y P E S
+    ;
+
+SELECTIVITY
+    : S E L E C T I V I T Y
+    ;
+
 RETURNING
     : R E T U R N I N G
     ;
@@ -2210,4 +2234,3 @@ RETURNING
 OPTION
     : O P T I O N
     ;
-

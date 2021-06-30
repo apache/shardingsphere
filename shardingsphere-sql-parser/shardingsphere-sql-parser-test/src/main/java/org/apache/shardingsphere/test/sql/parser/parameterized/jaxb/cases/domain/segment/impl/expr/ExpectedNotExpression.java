@@ -23,10 +23,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlElement;
 
-@Setter
+/**
+ * Expected not expression.
+ */
 @Getter
+@Setter
 public class ExpectedNotExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
-
+    
     @XmlElement(name = "expr")
     private ExpectedExpression expr;
 }

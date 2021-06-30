@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
  * Invalid key Generators exception.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public final class InvalidKeyGeneratorsException extends BackendException {
     
