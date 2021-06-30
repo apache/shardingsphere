@@ -91,7 +91,7 @@ public final class NativeAuthorityProviderAlgorithmTest {
         assertPrivilege(privileges2);
     }
 
-    private void assertPrivilege(Optional<ShardingSpherePrivileges> privileges) {
+    private void assertPrivilege(final Optional<ShardingSpherePrivileges> privileges) {
         assertThat(privileges.isPresent(), is(true));
         Collection<PrivilegeType> expected = new LinkedList<>();
         expected.add(PrivilegeType.SUPER);
