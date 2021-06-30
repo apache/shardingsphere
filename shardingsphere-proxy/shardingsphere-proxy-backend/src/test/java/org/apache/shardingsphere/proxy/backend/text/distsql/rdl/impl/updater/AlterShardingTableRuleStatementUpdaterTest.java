@@ -64,7 +64,6 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     public void assertUpdateCurrentRuleConfiguration() {
         updater.updateCurrentRuleConfiguration("foo", createSQLStatement("t_order", "HASH_MOD"), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
-        
     }
     
     private AlterShardingTableRuleStatement createSQLStatement(final String tableName, final String shardingAlgorithmName) {
