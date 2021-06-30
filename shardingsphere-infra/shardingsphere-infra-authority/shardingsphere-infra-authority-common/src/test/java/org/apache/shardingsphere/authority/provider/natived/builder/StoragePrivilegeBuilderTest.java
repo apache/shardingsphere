@@ -39,7 +39,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class StoragePrivilegeBuilderTest {
+public final class StoragePrivilegeBuilderTest {
 
     @Test
     public void testBuildInCache() {
