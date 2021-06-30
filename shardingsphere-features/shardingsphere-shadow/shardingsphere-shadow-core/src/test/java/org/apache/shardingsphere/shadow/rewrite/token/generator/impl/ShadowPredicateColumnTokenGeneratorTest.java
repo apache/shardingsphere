@@ -19,10 +19,10 @@ package org.apache.shardingsphere.shadow.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
 public class ShadowPredicateColumnTokenGeneratorTest {
@@ -39,7 +39,7 @@ public class ShadowPredicateColumnTokenGeneratorTest {
 
     @Test
     public void assertIsGenerateSQLTokenForShadow() {
-        Assert.assertFalse(shadowPredicateColumnTokenGenerator.isGenerateSQLTokenForShadow(sqlStatementContext));
+        assertFalse(shadowPredicateColumnTokenGenerator.isGenerateSQLTokenForShadow(sqlStatementContext));
     }
 
     @Test(expected = ClassCastException.class)

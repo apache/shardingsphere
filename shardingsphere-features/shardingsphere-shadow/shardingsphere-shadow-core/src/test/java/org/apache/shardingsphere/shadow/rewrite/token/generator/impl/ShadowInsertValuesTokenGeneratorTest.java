@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementConte
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,6 +28,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -80,11 +81,11 @@ public class ShadowInsertValuesTokenGeneratorTest {
 
     @Test
     public void assertIsGenerateSQLTokenForShadow() {
-        Assert.assertTrue(shadowInsertValuesTokenGenerator.isGenerateSQLTokenForShadow(insertStatementContext));
+        assertTrue(shadowInsertValuesTokenGenerator.isGenerateSQLTokenForShadow(insertStatementContext));
     }
 
     @Test
     public void assertGenerateSQLToken() {
-        Assert.assertNotNull(shadowInsertValuesTokenGenerator.generateSQLToken(insertStatementContext));
+        assertNotNull(shadowInsertValuesTokenGenerator.generateSQLToken(insertStatementContext));
     }
 }
