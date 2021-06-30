@@ -26,10 +26,15 @@ public final class JdbcMethodInvocationTest {
         JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getMethod("length"), new Object[] {});
         actual.invoke("");
     }
-    
+
+    @Test(expected = NoSuchMethodException.class)
+    public void assertInstanceCreateFailure() throws NoSuchMethodException {
+        new JdbcMethodInvocation(String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class), new Object[] {1, 1});
+    }
+
     @Test(expected = IllegalAccessException.class)
     public void assertInvokeFailure() throws NoSuchMethodException {
-        JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class), new Object[] {1, 1});
+        JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("isSingleEscapeLiteral", String.class), new Object[] {"|"});
         actual.invoke("");
     }
 }
