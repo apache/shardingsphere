@@ -55,4 +55,12 @@ public interface TextProtocolBackendHandler {
     default Collection<Object> getRowData() throws SQLException {
         return Collections.emptyList();
     }
+    
+    /**
+     * Close handler.
+     *
+     * @throws SQLException SQL exception
+     */
+    default void close() throws SQLException {
+    }
 }

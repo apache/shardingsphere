@@ -28,10 +28,10 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class DuplicateRuleNamesException extends BackendException {
-
+    
     private static final long serialVersionUID = -1738699538105858939L;
-
+    
     private final String schemaName;
-
+    
     private final Collection<String> ruleNames;
 }

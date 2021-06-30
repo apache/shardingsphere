@@ -25,8 +25,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-@Setter
+/**
+ * Delete multi table segment.
+ */
 @Getter
+@Setter
 public final class DeleteMultiTableSegment implements TableSegment {
     
     private int startIndex;
@@ -44,6 +47,5 @@ public final class DeleteMultiTableSegment implements TableSegment {
     
     @Override
     public void setAlias(final AliasSegment alias) {
-    
     }
 }

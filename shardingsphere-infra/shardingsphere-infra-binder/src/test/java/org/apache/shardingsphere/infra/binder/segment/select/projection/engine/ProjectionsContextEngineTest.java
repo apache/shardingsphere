@@ -391,4 +391,49 @@ public final class ProjectionsContextEngineTest {
                 .createProjectionsContext(selectStatementContext.getFromSimpleTableSegments(), projectionsSegment, groupByContext, new OrderByContext(Collections.emptyList(), false));
         assertNotNull(actual);
     }
+    
+    @Test
+    public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForMySQL() {
+        assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new MySQLSelectStatement(), new MySQLSelectStatement());
+    }
+    
+    @Test
+    public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForOracle() {
+        assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new OracleSelectStatement(), new OracleSelectStatement());
+    }
+    
+    @Test
+    public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForPostgreSQL() {
+        assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new PostgreSQLSelectStatement(), new PostgreSQLSelectStatement());
+    }
+    
+    @Test
+    public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForSQL92() {
+        assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new SQL92SelectStatement(), new SQL92SelectStatement());
+    }
+    
+    @Test
+    public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForSQLServer() {
+        assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new SQLServerSelectStatement(), new SQLServerSelectStatement());
+    }
+    
+    private void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(final SelectStatement selectStatement, final SelectStatement subquerySelectStatement) {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
+        projectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("table")));
+        projectionsSegment.getProjections().addAll(Collections.singletonList(projectionSegment));
+        selectStatement.setProjections(projectionsSegment);
+        subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, subquerySelectStatement));
+        subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("TABLE")));
+        selectStatement.setFrom(subqueryTableSegment);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("TAble")));
+        OrderByItem groupByItem = new OrderByItem(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC));
+        GroupByContext groupByContext = new GroupByContext(Collections.singleton(groupByItem));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        ProjectionsContext actual = new ProjectionsContextEngine(schema)
+                .createProjectionsContext(selectStatementContext.getFromSimpleTableSegments(), projectionsSegment, groupByContext, new OrderByContext(Collections.emptyList(), false));
+        assertNotNull(actual);
+    }
 }

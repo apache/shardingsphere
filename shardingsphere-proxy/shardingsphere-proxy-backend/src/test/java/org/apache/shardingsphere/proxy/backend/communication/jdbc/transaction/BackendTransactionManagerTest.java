@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
-import java.lang.reflect.Field;
-import java.sql.SQLException;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -31,6 +29,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.lang.reflect.Field;
+import java.sql.SQLException;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -83,6 +84,7 @@ public final class BackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
         verify(transactionStatus).setInTransaction(true);
+        verify(backendConnection).closeDatabaseCommunicationEngines();
         verify(backendConnection).closeConnections(false);
         verify(localTransactionManager).begin();
     }

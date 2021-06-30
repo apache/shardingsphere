@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -35,6 +36,7 @@ import java.util.Optional;
  * @param <T> type of SQL statement
  */
 @RequiredArgsConstructor
+@Getter
 public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> implements TextProtocolBackendHandler {
     
     private final T sqlStatement;

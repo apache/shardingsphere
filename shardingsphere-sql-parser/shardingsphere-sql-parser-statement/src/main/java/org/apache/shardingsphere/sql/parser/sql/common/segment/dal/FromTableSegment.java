@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 /**
  * From table segment.
  */
-@Setter
 @Getter
+@Setter
 public final class FromTableSegment implements SQLSegment {
     
     private int startIndex;

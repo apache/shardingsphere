@@ -23,6 +23,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected subquery.
+ */
 @Getter
 @Setter
 public final class ExpectedSubquery extends ExpectedBaseSimpleExpression {

@@ -75,7 +75,7 @@ public final class FederateRowExecutor {
     private Collection<QueryResult> execute(final ExecutionContext context) {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
-            ExecuteProcessEngine.initialize(context.getSqlStatementContext(), executionGroupContext, props);
+            ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, props);
             Collection<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return result;

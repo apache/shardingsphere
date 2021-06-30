@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRulesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.DatabaseDiscoveryRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -74,7 +74,7 @@ public final class DropDatabaseDiscoveryRuleBackendHandlerTest {
     @Mock
     private ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration;
     
-    private final DropDatabaseDiscoveryRuleBackendHandler handler = new DropDatabaseDiscoveryRuleBackendHandler(sqlStatement, backendConnection);
+    private final RDLBackendHandler<DropDatabaseDiscoveryRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, DatabaseDiscoveryRuleConfiguration.class);
     
     @Before
     public void setUp() {
@@ -84,8 +84,21 @@ public final class DropDatabaseDiscoveryRuleBackendHandlerTest {
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
+    @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
+    public void assertCheckSQLStatementWithoutCurrentRule() {
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
+        handler.execute("test", sqlStatement);
+    }
+    
+    @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
+    public void assertCheckSQLStatementWithoutToBeDroppedRules() {
+        when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("ha_group"));
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
+        handler.execute("test", sqlStatement);
+    }
+    
     @Test
-    public void assertExecute() {
+    public void assertUpdateCurrentRuleConfiguration() {
         when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("ha_group"));
         Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(1, 1);
         discoveryTypes.put("pr_ds_MGR", shardingSphereAlgorithmConfiguration);
@@ -96,18 +109,5 @@ public final class DropDatabaseDiscoveryRuleBackendHandlerTest {
         ResponseHeader responseHeader = handler.execute("test", sqlStatement);
         assertNotNull(responseHeader);
         assertTrue(responseHeader instanceof UpdateResponseHeader);
-    }
-    
-    @Test(expected = DatabaseDiscoveryRulesNotExistedException.class)
-    public void assertExecuteWithNotExistDatabaseDiscoveryRule() {
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
-        handler.execute("test", sqlStatement);
-    }
-    
-    @Test(expected = DatabaseDiscoveryRulesNotExistedException.class)
-    public void assertExecuteWithNoDroppedDatabaseDiscoveryRules() {
-        when(sqlStatement.getRuleNames()).thenReturn(Collections.singletonList("ha_group"));
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singletonList(new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Maps.newHashMap())));
-        handler.execute("test", sqlStatement);
     }
 }
