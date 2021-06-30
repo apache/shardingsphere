@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnFormat;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
@@ -43,17 +43,19 @@ import java.util.List;
 @Getter
 public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
+    private final String portal;
+    
     private final String statementId;
     
     private final String sql;
     
     private final List<Object> parameters;
     
-    private final List<Integer> resultFormatCodes;
+    private final List<PostgreSQLValueFormat> resultFormats;
     
     public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
         payload.readInt4();
-        payload.readStringNul();
+        portal = payload.readStringNul();
         statementId = payload.readStringNul();
         int parameterFormatCount = payload.readInt2();
         List<Integer> parameterFormats = new ArrayList<>(parameterFormatCount);
@@ -64,9 +66,9 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         sql = null == binaryStatement ? null : binaryStatement.getSql();
         parameters = null == sql ? Collections.emptyList() : getParameters(payload, parameterFormats, binaryStatement.getColumnTypes());
         int resultFormatsLength = payload.readInt2();
-        resultFormatCodes = new ArrayList<>(resultFormatsLength);
+        resultFormats = new ArrayList<>(resultFormatsLength);
         for (int i = 0; i < resultFormatsLength; i++) {
-            resultFormatCodes.add(payload.readInt2());
+            resultFormats.add(PostgreSQLValueFormat.valueOf(payload.readInt2()));
         }
     }
     
@@ -142,22 +144,6 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     private Object getBinaryParameters(final PostgreSQLPacketPayload payload, final int parameterValueLength, final PostgreSQLBinaryColumnType columnType) {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
         return binaryProtocolValue.read(payload, parameterValueLength);
-    }
-    
-    /**
-     * Get result format by column index.
-     *
-     * @param columnIndex column index
-     * @return result format
-     */
-    public PostgreSQLColumnFormat getResultFormatByColumnIndex(final int columnIndex) {
-        if (resultFormatCodes.isEmpty()) {
-            return PostgreSQLColumnFormat.TEXT;
-        }
-        if (1 == resultFormatCodes.size()) {
-            return PostgreSQLColumnFormat.valueOf(resultFormatCodes.get(0));
-        }
-        return PostgreSQLColumnFormat.valueOf(resultFormatCodes.get(columnIndex));
     }
     
     @Override

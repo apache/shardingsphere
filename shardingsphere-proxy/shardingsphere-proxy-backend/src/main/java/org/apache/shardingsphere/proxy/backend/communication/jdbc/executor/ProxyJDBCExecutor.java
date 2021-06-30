@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -44,28 +46,31 @@ public final class ProxyJDBCExecutor {
     
     private final BackendConnection backendConnection;
     
+    private final DatabaseCommunicationEngine databaseCommunicationEngine;
+    
     @Getter
     private final JDBCExecutor jdbcExecutor;
     
     /**
      * Execute.
      * 
-     * @param context SQL statement context
+     * @param logicSQL logic SQL
      * @param executionGroupContext execution group context
      * @param isReturnGeneratedKeys is return generated keys
      * @param isExceptionThrown is exception thrown
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public Collection<ExecuteResult> execute(final SQLStatementContext<?> context, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
+    public Collection<ExecuteResult> execute(final LogicSQL logicSQL, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                              final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         try {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
             DatabaseType databaseType = metaDataContexts.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
-            ExecuteProcessEngine.initialize(context, executionGroupContext, metaDataContexts.getProps());
+            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getProps());
+            SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
             Collection<ExecuteResult> result = jdbcExecutor.execute(executionGroupContext,
-                    ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true),
-                    ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, false));
+                    ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, true),
+                    ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, false));
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
             return result;
         } finally {

@@ -44,13 +44,24 @@ public final class H2Container extends ShardingSphereStorageContainer {
     @SneakyThrows
     protected void execute() {
         super.execute();
-        // TODO initialize SQL script
         File file = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario()));
         for (Map.Entry<String, DataSource> each : getDataSourceMap().entrySet()) {
-            try (Connection connection = each.getValue().getConnection();
-                 FileReader reader = new FileReader(file)) {
+            String databaseFileName = "init-" + each.getKey() + ".sql";
+            boolean sqlFileExist = EnvironmentPath.checkSQLFileExist(getDatabaseType(), getParameterizedArray().getScenario(), databaseFileName);
+            try (Connection connection = each.getValue().getConnection(); FileReader reader = new FileReader(file)) {
                 RunScript.execute(connection, reader);
+                if (sqlFileExist) {
+                    executeDatabaseFile(connection, databaseFileName);
+                }
             }
+        }
+    }
+    
+    @SneakyThrows
+    private void executeDatabaseFile(final Connection connection, final String databaseFileName) {
+        File databaseFile = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario(), databaseFileName));
+        try (FileReader databaseFileReader = new FileReader(databaseFile)) {
+            RunScript.execute(connection, databaseFileReader);
         }
     }
     

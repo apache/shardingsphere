@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -65,7 +64,6 @@ public final class UseDatabaseExecutorTest {
         for (int i = 0; i < 10; i++) {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-            when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
         return result;

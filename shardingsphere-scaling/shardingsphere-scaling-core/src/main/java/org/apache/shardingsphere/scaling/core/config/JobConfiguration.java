@@ -23,8 +23,8 @@ import lombok.Setter;
 /**
  * Scaling job configuration.
  */
-@Setter
 @Getter
+@Setter
 public final class JobConfiguration {
     
     private RuleConfiguration ruleConfig;

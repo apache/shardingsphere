@@ -20,19 +20,19 @@ grammar DMLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule, Comments, DDLStatement;
 
 insert
-    : INSERT (insertSingleTable | insertMultiTable)
+    : INSERT hint? (insertSingleTable | insertMultiTable)
     ;
 
 insertSingleTable
-    : insertIntoClause (insertValuesClause | select)
+    : insertIntoClause (insertValuesClause returningClause? | selectSubquery) errorLoggingClause?
     ;
 
 insertMultiTable
-    : (ALL multiTableElement+ | conditionalInsertClause) select
+    : (ALL multiTableElement+ | conditionalInsertClause) selectSubquery
     ;
 
 multiTableElement
-    : insertIntoClause insertValuesClause
+    : insertIntoClause insertValuesClause? errorLoggingClause?
     ;
 
 conditionalInsertClause
@@ -48,11 +48,45 @@ conditionalInsertElsePart
     ;
 
 insertIntoClause
-    : INTO tableName (AS? alias)?
+    : INTO dmlTableExprClause alias? columnNames?
     ;
 
 insertValuesClause
-    : columnNames? VALUES assignmentValues (COMMA_ assignmentValues)*
+    : VALUES assignmentValues
+    ;
+
+returningClause
+    : (RETURN | RETURNING) exprs INTO dataItem (COMMA_ dataItem)*
+    ;
+
+dmlTableExprClause
+    : dmlTableClause | dmlSubqueryClause | tableCollectionExpr
+    ;
+
+dmlTableClause
+    : tableName (partitionExtClause | AT_ dbLink)?
+    | (viewName | materializedViewName) (AT_ dbLink)?
+    ;
+
+partitionExtClause
+    : PARTITION (LP_ partitionName RP_ | FOR LP_ partitionKeyValue (COMMA_ partitionKeyValue) RP_)
+    | SUBPARTITION (LP_ subpartitionName RP_ | FOR LP_ subpartitionKeyValue (COMMA_ subpartitionKeyValue) RP_)
+    ;
+
+dmlSubqueryClause
+    : LP_ selectSubquery subqueryRestrictionClause? RP_
+    ;
+
+subqueryRestrictionClause
+    : WITH (READ ONLY | CHECK OPTION) (CONSTRAINT constraintName)?
+    ;
+
+tableCollectionExpr
+    : TABLE LP_ collectionExpr RP_ (LP_ PLUS_ RP_)?
+    ;
+
+collectionExpr
+    : selectSubquery | columnName | functionCall | expr
     ;
 
 update
@@ -73,7 +107,6 @@ setAssignmentsClause
 
 assignmentValues
     : LP_ assignmentValue (COMMA_ assignmentValue)* RP_
-    | LP_ RP_
     ;
 
 assignmentValue
@@ -461,7 +494,7 @@ queryTableExpr
     : queryTableExprSampleClause
     | queryName
     | lateralClause
-    | tableCollectionExpression
+    | tableCollectionExpr
     ;
 
 lateralClause
@@ -477,7 +510,7 @@ queryTableExprSampleClause
     ;
 
 queryTableExprTableClause
-    : tableName (mofifiedExternalTable | partitionExtensionClause | AT_ dbLink)?
+    : tableName (mofifiedExternalTable | partitionExtClause | AT_ dbLink)?
     ;
 
 queryTableExprViewClause
@@ -537,26 +570,6 @@ sampleClause
     : SAMPLE BLOCK? LP_ samplePercent RP_ (SEED LP_ seedValue RP_)?
     ;
 
-partitionExtensionClause
-    : PARTITION (LP_ partitionName RP_ | FOR LP_ partitionKeyValue (COMMA_ partitionKeyValue)* RP_)
-    | SUBPARTITION (LP_ subpartitionName RP_ | FOR LP_ subpartitionKeyValue (COMMA_ subpartitionKeyValue)* RP_)
-    ;
-
-subqueryRestrictionClause
-    : WITH (READ ONLY | CHECK OPTION) (CONSTRAINT constraintName)?
-    ;
-
-tableCollectionExpression
-    : TABLE LP_ collectionExpression RP_ (LP_ PLUS_ RP_)?
-    ;
-
-collectionExpression
-    : selectSubquery
-    | columnName
-    | functionCall
-    | expr
-    ;
-
 containersClause
     : CONTAINERS LP_ (tableName | viewName) RP_
     ;
@@ -598,7 +611,7 @@ outerJoinType
     ;
 
 crossOuterApplyClause
-    : (CROSS | OUTER) APPLY (selectTableReference | collectionExpression)
+    : (CROSS | OUTER) APPLY (selectTableReference | collectionExpr)
     ;
 
 inlineAnalyticView
@@ -686,7 +699,7 @@ mergeColumnValue
     ;
 
 errorLoggingClause
-    : LOG ERRORS (INTO tableName)? (LP_ simpleExpr RP_)? (REJECT LIMIT (numberLiterals | UNLIMITED))?
+    : LOG ERRORS (INTO tableName)? (LP_ simpleExpr RP_)? (REJECT LIMIT (INTEGER_ | UNLIMITED))?
     ;
 
 rowPatternClause

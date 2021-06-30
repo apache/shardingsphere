@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
  * Invalid database discovery types exception.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public final class InvalidDatabaseDiscoveryTypesException extends BackendException {
-
+    
     private static final long serialVersionUID = -6919328513016324005L;
-
+    
     private final Collection<String> databaseDiscoveryTypes;
 }

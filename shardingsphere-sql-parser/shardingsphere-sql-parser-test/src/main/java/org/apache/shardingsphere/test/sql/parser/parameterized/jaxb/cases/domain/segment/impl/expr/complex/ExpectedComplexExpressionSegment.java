@@ -19,6 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpressionSegment;
 
+/**
+ * Expected complex expression segment.
+ */
 public interface ExpectedComplexExpressionSegment extends ExpectedExpressionSegment {
     
     /**

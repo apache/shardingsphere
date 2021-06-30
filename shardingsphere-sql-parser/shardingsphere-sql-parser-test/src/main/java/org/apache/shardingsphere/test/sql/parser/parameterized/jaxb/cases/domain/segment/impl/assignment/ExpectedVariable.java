@@ -23,8 +23,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlAttribute;
 
-@Setter
+/**
+ * Expected variable.
+ */
 @Getter
+@Setter
 public final class ExpectedVariable extends AbstractExpectedSQLSegment {
     
     @XmlAttribute

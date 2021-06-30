@@ -807,7 +807,12 @@ booleanPrimary
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
+    | booleanPrimary assignmentOperator predicate
     | predicate
+    ;
+    
+assignmentOperator
+    : EQ_ | ASSIGNMENT_
     ;
     
 comparisonOperator

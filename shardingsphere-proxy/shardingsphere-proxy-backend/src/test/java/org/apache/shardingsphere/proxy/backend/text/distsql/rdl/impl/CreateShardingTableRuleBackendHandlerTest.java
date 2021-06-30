@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -30,6 +29,9 @@ import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesExceptio
 import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +45,8 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,24 +73,19 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     @Mock
     private ShardingSphereSchema shardingSphereSchema;
     
-    private final CreateShardingTableRuleBackendHandler handler = new CreateShardingTableRuleBackendHandler(sqlStatement, backendConnection);
+    private final RDLBackendHandler<CreateShardingTableRuleStatement> handler = new RDLBackendHandler<>(sqlStatement, backendConnection, ShardingRuleConfiguration.class);
     
     @Before
     public void setUp() {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
-        when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
+        when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
+        ShardingSphereResource shardingSphereResource = mock(ShardingSphereResource.class);
+        when(shardingSphereResource.getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         when(shardingSphereMetaData.getRuleMetaData()).thenReturn(ruleMetaData);
         when(shardingSphereMetaData.getSchema()).thenReturn(shardingSphereSchema);
         when(shardingSphereSchema.getAllTableNames()).thenReturn(Collections.singleton("t_order"));
-    }
-    
-    @Test
-    public void assertExecute() {
-        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_item", Collections.emptyList(), null, new AlgorithmSegment("hash_mod", new Properties()), null, null);
-        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
-        assertNotNull(responseHeader);
-        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
     @Test(expected = DuplicateTablesException.class)
@@ -105,9 +103,16 @@ public final class CreateShardingTableRuleBackendHandlerTest {
     }
     
     @Test(expected = InvalidShardingAlgorithmsException.class)
-    public void assertExecuteWithInvalidAlgorithms() {
+    public void assertCheckSQLStatementWithoutToBeCreatedShardingAlgorithms() {
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_item", Collections.emptyList(), null, new AlgorithmSegment("algorithm-not-exist", new Properties()), null, null);
         when(sqlStatement.getRules()).thenReturn(Collections.singleton(tableRuleSegment));
         handler.execute("test", sqlStatement);
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfiguration() {
+        ResponseHeader responseHeader = handler.execute("test", sqlStatement);
+        assertNotNull(responseHeader);
+        assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
 }

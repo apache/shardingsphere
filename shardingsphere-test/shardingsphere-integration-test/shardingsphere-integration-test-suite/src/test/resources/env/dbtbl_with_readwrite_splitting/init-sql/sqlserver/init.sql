@@ -82,6 +82,7 @@ CREATE TABLE write_ds_0.t_order_9 (order_id INT NOT NULL, user_id INT NOT NULL, 
 CREATE TABLE write_ds_0.t_order_item_9 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE write_ds_0.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE TABLE write_ds_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE TABLE write_ds_0.t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order_0 ON write_ds_0.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_0.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_0.t_order_2 (order_id);
@@ -114,6 +115,7 @@ CREATE TABLE write_ds_1.t_order_item_8 (item_id INT NOT NULL, order_id INT NOT N
 CREATE TABLE write_ds_1.t_order_9 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE write_ds_1.t_order_item_9 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE write_ds_1.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE TABLE write_ds_1.t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE INDEX order_index_t_order_0 ON write_ds_1.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_1.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_1.t_order_2 (order_id);
@@ -403,6 +405,7 @@ CREATE TABLE read_ds_0.t_order_9 (order_id INT NOT NULL, user_id INT NOT NULL, s
 CREATE TABLE read_ds_0.t_order_item_9 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE read_ds_0.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE TABLE read_ds_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE TABLE read_ds_0.t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order_0 ON read_ds_0.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_0.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_0.t_order_2 (order_id);
@@ -435,6 +438,7 @@ CREATE TABLE read_ds_1.t_order_item_8 (item_id INT NOT NULL, order_id INT NOT NU
 CREATE TABLE read_ds_1.t_order_9 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE read_ds_1.t_order_item_9 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE read_ds_1.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE TABLE read_ds_1.t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE INDEX order_index_t_order_0 ON read_ds_1.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_1.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_1.t_order_2 (order_id);

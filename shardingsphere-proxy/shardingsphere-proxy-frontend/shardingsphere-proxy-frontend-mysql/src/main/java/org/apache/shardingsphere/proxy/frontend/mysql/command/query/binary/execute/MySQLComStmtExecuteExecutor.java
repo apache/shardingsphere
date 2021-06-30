@@ -25,8 +25,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
@@ -110,5 +110,10 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     private BinaryRow createBinaryRow(final QueryResponseRow queryResponseRow) {
         return new BinaryRow(queryResponseRow.getCells().stream().map(
             each -> new BinaryCell(MySQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) each).getJdbcType()), each.getData())).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        databaseCommunicationEngine.close();
     }
 }

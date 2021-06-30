@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -63,7 +64,7 @@ public final class PostgreSQLCommandExecutorFactory {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         switch (commandPacketType) {
             case SIMPLE_QUERY:
-                return new PostgreSQLComQueryExecutor((PostgreSQLComQueryPacket) commandPacket, backendConnection);
+                return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, backendConnection);
             case PARSE_COMMAND:
                 return new PostgreSQLComParseExecutor(connectionContext, (PostgreSQLComParsePacket) commandPacket, backendConnection);
             case BIND_COMMAND:
@@ -73,11 +74,11 @@ public final class PostgreSQLCommandExecutorFactory {
                 connectionContext.getPendingExecutors().add(new PostgreSQLComDescribeExecutor(connectionContext));
                 break;
             case EXECUTE_COMMAND:
-                return new PostgreSQLComExecuteExecutor(connectionContext);
+                return new PostgreSQLComExecuteExecutor(connectionContext, (PostgreSQLComExecutePacket) commandPacket);
             case SYNC_COMMAND:
                 return new PostgreSQLComSyncExecutor(connectionContext, backendConnection);
             case CLOSE_COMMAND:
-                connectionContext.getPendingExecutors().add(new PostgreSQLComCloseExecutor((PostgreSQLComClosePacket) commandPacket, backendConnection));
+                connectionContext.getPendingExecutors().add(new PostgreSQLComCloseExecutor(connectionContext, (PostgreSQLComClosePacket) commandPacket, backendConnection));
                 break;
             case TERMINATE:
                 return new PostgreSQLComTerminationExecutor();

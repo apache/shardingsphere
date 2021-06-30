@@ -131,6 +131,26 @@ indexName
     : (owner DOT_)? name
     ;
 
+statisticsTypeName
+    : (owner DOT_)? name
+    ;
+
+function
+    : (owner DOT_)? name
+    ;
+
+packageName
+    : (owner DOT_)? name
+    ;
+
+typeName
+    : (owner DOT_)? name
+    ;
+
+indexTypeName
+    : (owner DOT_)? name
+    ;
+
 constraintName
     : identifier
     ;
@@ -196,10 +216,6 @@ opaqueFormatSpec
     ;
 
 accessDriverType
-    : identifier
-    ;
-
-type
     : identifier
     ;
 
@@ -450,10 +466,6 @@ orderByItem
 
 attributeName
     : oracleId
-    ;
-
-indexTypeName
-    : IDENTIFIER_
     ;
 
 simpleExprs
@@ -736,6 +748,30 @@ procedureName
     : identifier
     ;
 
+cpuCost
+    : INTEGER_
+    ;
+
+ioCost
+    : INTEGER_
+    ;
+
+networkCost
+    : INTEGER_
+    ;
+
+defaultSelectivity
+    : INTEGER_
+    ;
+
+dataItem
+    : variableName
+    ;
+
+variableName
+    : identifier | stringLiterals
+    ;
+
 validTimeColumn
     : columnName
     ;
@@ -758,8 +794,4 @@ samplePercent
 
 seedValue
     : numberLiterals
-    ;
-
-variableName
-    : identifier | STRING_
     ;

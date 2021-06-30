@@ -130,6 +130,8 @@ public enum SQLVisitorRule {
     
     DROP_TABLESPACE("DropTablespace", SQLStatementType.DDL),
 
+    ASSOCIATE_STATISTICS("AssociateStatistics", SQLStatementType.DDL),
+
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),

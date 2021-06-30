@@ -23,15 +23,19 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 
 import javax.xml.bind.annotation.XmlElement;
 
-@Setter
+/**
+ * Expected binary operation expression.
+ */
 @Getter
-public class ExpectedBinaryOperationExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+@Setter
+public final class ExpectedBinaryOperationExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+    
     @XmlElement(name = "left")
     private ExpectedExpression left;
-
+    
     @XmlElement(name = "operator")
     private String operator;
-
+    
     @XmlElement(name = "right")
     private ExpectedExpression right;
 }

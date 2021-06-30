@@ -67,11 +67,18 @@ public final class OptimizeContextFactory {
     
     private static final String CONFORMANCE_CAMEL_NAME = CalciteConnectionProperty.CONFORMANCE.camelName();
     
+    private final DatabaseType databaseType;
+    
     @Getter
     private final Properties properties = new Properties();
     
     private final CalciteConnectionConfig connectionConfig;
     
+    /**
+     * Remove calcite's parser.
+     * @deprecated Use ShardingSphere parser instead.
+     */
+    @Deprecated
     private final Config parserConfig;
     
     private final RelDataTypeFactory typeFactory;
@@ -82,7 +89,7 @@ public final class OptimizeContextFactory {
     private final RelOptCluster cluster;
     
     public OptimizeContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
-        DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
+        this.databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         initProperties(databaseType);
         typeFactory = new JavaTypeFactoryImpl();
         cluster = newCluster();
@@ -156,7 +163,7 @@ public final class OptimizeContextFactory {
         CalciteCatalogReader catalogReader = createCalciteCatalogReader(schemaName, connectionConfig, typeFactory, logicSchema);
         SqlValidator validator = createSqlValidator(connectionConfig, typeFactory, catalogReader);
         SqlToRelConverter relConverter = createSqlToRelConverter(cluster, validator, catalogReader);
-        return new OptimizeContext(properties, schemaName, logicSchema, parserConfig, validator, relConverter);
+        return new OptimizeContext(databaseType, properties, schemaName, logicSchema, parserConfig, validator, relConverter);
     }
     
     private CalciteCatalogReader createCalciteCatalogReader(final String schemaName, final CalciteConnectionConfig config,

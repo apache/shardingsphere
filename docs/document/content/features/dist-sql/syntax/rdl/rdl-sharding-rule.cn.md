@@ -40,7 +40,7 @@ algorithmProperty:
 ```
 - `RESOURCES` 需使用 RDL 管理的数据源资源
 - `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding/)
-- `keyGenerateStrategyType` 指定分布式主键生成策，请参考 [分布式主键](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen/)
+- `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen/)
 - 重复的 `tableName` 将无法被创建
 
 ### Sharding Binding Table Rule
