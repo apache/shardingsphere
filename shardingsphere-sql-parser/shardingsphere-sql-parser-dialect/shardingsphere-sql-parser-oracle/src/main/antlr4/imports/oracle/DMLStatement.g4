@@ -121,7 +121,7 @@ unionClause
     ;
 
 queryBlock
-    : withClause? SELECT hint? duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause?
+    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause? whereClause? groupByClause? havingClause?
     ;
 
 withClause
@@ -189,7 +189,8 @@ subqueryFactoringClause
     ;
 
 searchClause
-    : SEARCH (DEPTH | BREADTH) FIRST BY (alias (ASC | DESC)? (NULLS FIRST | NULLS LAST)?) (COMMA_ (alias (ASC | DESC)? (NULLS FIRST | NULLS LAST)?))* SET orderingColumn
+    : SEARCH (DEPTH | BREADTH) FIRST BY (alias (ASC | DESC)? (NULLS FIRST | NULLS LAST)?) (COMMA_ (alias (ASC | DESC)? (NULLS FIRST | NULLS LAST)?))*
+    SET orderingColumn
     ;
 
 cycleClause
@@ -254,7 +255,8 @@ leadLagFunctionName
     ;
 
 leadLagClause
-    : HIERARCHY hierarchyRef OFFSET offsetExpr ((WITHIN (LEVEL | PARENT)) | (ACROSS ANCESTOR AT LEVEL levelRef (POSITION FROM (BEGINNING | END))?))?
+    : HIERARCHY hierarchyRef OFFSET offsetExpr
+    ((WITHIN (LEVEL | PARENT)) | (ACROSS ANCESTOR AT LEVEL levelRef (POSITION FROM (BEGINNING | END))?))?
     ;
 
 hierarchyRef
@@ -266,7 +268,8 @@ windowExpression
     ;
 
 windowClause
-    : HIERARCHY hierarchyRef BETWEEN (precedingBoundary | followingBoundary) (WITHIN (LEVEL | PARENT | ANCESTOR AT LEVEL levelRef))?
+    : HIERARCHY hierarchyRef BETWEEN (precedingBoundary | followingBoundary)
+    (WITHIN (LEVEL | PARENT | ANCESTOR AT LEVEL levelRef))?
     ;
 
 precedingBoundary
@@ -282,11 +285,15 @@ rankExpression
     ;
 
 rankFunctionName
-    : RANK | DENSE_RANK | AVERAGE_RANK | ROW_NUMBER
+    : RANK
+    | DENSE_RANK
+    | AVERAGE_RANK
+    | ROW_NUMBER
     ;
 
 rankClause
-    : HIERARCHY hierarchyRef ORDER BY calcMeasOrderByClause (COMMA_ calcMeasOrderByClause)* (WITHIN (LEVEL | PARENT | ANCESTOR AT LEVEL levelRef))?
+    : HIERARCHY hierarchyRef ORDER BY calcMeasOrderByClause (COMMA_ calcMeasOrderByClause)*
+    (WITHIN (LEVEL | PARENT | ANCESTOR AT LEVEL levelRef))?
     ;
 
 calcMeasOrderByClause
@@ -338,7 +345,8 @@ hierLeadLagExpression
     ;
 
 hierLeadLagClause
-    : memberExpression OFFSET offsetExpr (WITHIN ((LEVEL | PARENT) | (ACROSS ANCESTOR AT LEVEL levelRef (POSITION FROM (BEGINNING | END))?)))?
+    : memberExpression OFFSET offsetExpr
+    (WITHIN ((LEVEL | PARENT) | (ACROSS ANCESTOR AT LEVEL levelRef (POSITION FROM (BEGINNING | END))?)))?
     ;
 
 qdrExpression
@@ -383,7 +391,8 @@ qualifiedShorthand
     ;
 
 selectList
-    : unqualifiedShorthand | selectProjection (COMMA_ selectProjection)*
+    : unqualifiedShorthand
+    | selectProjection (COMMA_ selectProjection)*
     ;
 
 selectProjection
@@ -429,27 +438,18 @@ fromClauseList
     ;
 
 fromClauseOption
-    : joinClause | LP_ joinClause RP_ | selectTableReference | inlineAnalyticView
+    : joinClause
+    | LP_ joinClause RP_
+    | selectTableReference
+    | inlineAnalyticView
     ;
 
 selectTableReference
-    : (queryTableExpressionClause | containersClause | shardsClause) alias?
+    : (queryTableExprClause | containersClause | shardsClause) alias?
     ;
 
-containersClause
-    : CONTAINERS LP_ (tableName | viewName) RP_
-    ;
-
-shardsClause
-    : SHARDS LP_ (tableName | viewName) RP_
-    ;
-
-queryTableExpressionClause
-    : (ONLY LP_ queryTableExpression RP_ | queryTableExpression) flashbackQueryClause? (pivotClause | unpivotClause | rowPatternClause)?
-    ;
-
-queryTableExpression
-    : queryTableExpressionSampleClause | queryName | tableCollectionExpression | lateralClause
+queryTableExprClause
+    : (ONLY LP_ queryTableExpr RP_ | queryTableExpr) flashbackQueryClause? (pivotClause | unpivotClause | rowPatternClause)?
     ;
 
 flashbackQueryClause
@@ -457,28 +457,35 @@ flashbackQueryClause
     | AS OF ((SCN | TIMESTAMP) expr | PERIOD FOR validTimeColumn expr)
     ;
 
-queryTableExpressionSampleClause
-    : (queryTableExpressionTableClause
-    | queryTableExpressionViewClause
-    | hierarchyName
-    | queryTableExpressionAnalyticClause
-    | (owner DOT_)? inlineExternalTable) sampleClause?
-    ;
-
-queryTableExpressionTableClause
-    : tableName (mofifiedExternalTable | partitionExtensionClause | AT_ dbLink)?
-    ;
-
-queryTableExpressionViewClause
-    : (viewName | materializedViewName) (AT_ dbLink)?
-    ;
-
-queryTableExpressionAnalyticClause
-    : analyticViewName (HIERARCHIES LP_ ((attrDim DOT_)? hierarchyName (COMMA_ (attrDim DOT_)? hierarchyName)*)? RP_)?
+queryTableExpr
+    : queryTableExprSampleClause
+    | queryName
+    | lateralClause
+    | tableCollectionExpression
     ;
 
 lateralClause
     : LATERAL? LP_ selectSubquery subqueryRestrictionClause? RP_
+    ;
+
+queryTableExprSampleClause
+    : (queryTableExprTableClause
+    | queryTableExprViewClause
+    | hierarchyName
+    | queryTableExprAnalyticClause
+    | (owner DOT_)? inlineExternalTable) sampleClause?
+    ;
+
+queryTableExprTableClause
+    : tableName (mofifiedExternalTable | partitionExtensionClause | AT_ dbLink)?
+    ;
+
+queryTableExprViewClause
+    : (viewName | materializedViewName) (AT_ dbLink)?
+    ;
+
+queryTableExprAnalyticClause
+    : analyticViewName (HIERARCHIES LP_ ((attrDim DOT_)? hierarchyName (COMMA_ (attrDim DOT_)? hierarchyName)*)? RP_)?
     ;
 
 inlineExternalTable
@@ -494,18 +501,40 @@ externalTableDataProperties
     (LOCATION LP_ (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+ RP_)?
     ;
 
-subqueryRestrictionClause
-    : WITH (READ ONLY | CHECK OPTION) (CONSTRAINT constraintName)?
-    ;
-
 mofifiedExternalTable
     : EXTERNAL MODIFY modifyExternalTableProperties
     ;
 
 modifyExternalTableProperties
-    : (DEFAULT DIRECTORY directoryName)?
-    (LOCATION LP_ (directoryName COLON_)? SQ_ locationSpecifier SQ_ (COMMA_ (directoryName COLON_)? SQ_ locationSpecifier SQ_)* RP_)? 
+    : (DEFAULT DIRECTORY directoryName)? (LOCATION LP_ (directoryName COLON_)? SQ_ locationSpecifier SQ_ (COMMA_ (directoryName COLON_)? SQ_ locationSpecifier SQ_)* RP_)? 
     (ACCESS PARAMETERS (BADFILE fileName | LOGFILE fileName | DISCARDFILE fileName))? (REJECT LIMIT (INTEGER_ | UNLIMITED))?
+    ;
+
+pivotClause
+    : PIVOT XML?
+    LP_ aggregationFunctionName LP_ expr RP_ (AS? alias)? (COMMA_ aggregationFunctionName LP_ expr RP_ (AS? alias)?)* pivotForClause pivotInClause RP_
+    ;
+
+pivotForClause
+    : FOR (columnName | columnNames)
+    ;
+
+pivotInClause
+    : IN LP_ ((expr | exprList) (AS? alias)? (COMMA_ (expr | exprList) (AS? alias)?)*
+    | selectSubquery
+    | ANY (COMMA_ ANY)*) RP_
+    ;
+
+unpivotClause
+    : UNPIVOT ((INCLUDE | EXCLUDE) NULLS)? LP_ (columnName | columnNames) pivotForClause unpivotInClause RP_
+    ;
+
+unpivotInClause
+    : IN LP_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))? (COMMA_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))?)* RP_
+    ;
+
+sampleClause
+    : SAMPLE BLOCK? LP_ samplePercent RP_ (SEED LP_ seedValue RP_)?
     ;
 
 partitionExtensionClause
@@ -513,40 +542,51 @@ partitionExtensionClause
     | SUBPARTITION (LP_ subpartitionName RP_ | FOR LP_ subpartitionKeyValue (COMMA_ subpartitionKeyValue)* RP_)
     ;
 
-sampleClause
-    : SAMPLE BLOCK? LP_ samplePercent RP_ (SEED LP_ seedValue RP_)?
+subqueryRestrictionClause
+    : WITH (READ ONLY | CHECK OPTION) (CONSTRAINT constraintName)?
+    ;
+
+tableCollectionExpression
+    : TABLE LP_ collectionExpression RP_ (LP_ PLUS_ RP_)?
+    ;
+
+collectionExpression
+    : selectSubquery
+    | columnName
+    | functionCall
+    | expr
+    ;
+
+containersClause
+    : CONTAINERS LP_ (tableName | viewName) RP_
+    ;
+
+shardsClause
+    : SHARDS LP_ (tableName | viewName) RP_
     ;
 
 joinClause
-    : selectTableReference selectJoin+
-    ;
-
-selectJoin
-    : selectJoinOption
+    : selectTableReference selectJoinOption+
     ;
 
 selectJoinOption
-    : innerCrossJoinClause | outerJoinClause | crossOuterApplyClause
+    : innerCrossJoinClause
+    | outerJoinClause
+    | crossOuterApplyClause
     ;
 
 innerCrossJoinClause
-    : innerJoinClause | crossJoinClause
-    ;
-
-innerJoinClause
     : INNER? JOIN selectTableReference selectJoinSpecification
-    ;
-
-crossJoinClause
-    : (CROSS | NATURAL INNER?) JOIN selectTableReference
+    | (CROSS | NATURAL INNER?) JOIN selectTableReference
     ;
 
 selectJoinSpecification
-    : ON condition | USING columnNames
+    : ON expr | USING columnNames
     ;
 
 outerJoinClause
-    : queryPartitionClause? NATURAL? outerJoinType JOIN selectTableReference queryPartitionClause? selectJoinSpecification?
+    : queryPartitionClause? NATURAL? outerJoinType JOIN
+    selectTableReference queryPartitionClause? selectJoinSpecification?
     ;
 
 queryPartitionClause
@@ -559,14 +599,6 @@ outerJoinType
 
 crossOuterApplyClause
     : (CROSS | OUTER) APPLY (selectTableReference | collectionExpression)
-    ;
-
-tableCollectionExpression
-    : TABLE LP_ collectionExpression RP_ (LP_ PLUS_ RP_)?
-    ;
-
-collectionExpression
-    : selectSubquery | columnName | functionCall | expr
     ;
 
 inlineAnalyticView
@@ -657,36 +689,10 @@ errorLoggingClause
     : LOG ERRORS (INTO tableName)? (LP_ simpleExpr RP_)? (REJECT LIMIT (numberLiterals | UNLIMITED))?
     ;
 
-pivotClause
-    : PIVOT XML? LP_ aggregationFunction LP_ expr RP_ (AS? alias)? (COMMA_ aggregationFunction LP_ expr RP_ (AS? alias)?)* pivotForClause pivotInClause RP_
-    ;
-
-pivotForClause
-    : FOR (columnName | columnNames)
-    ;
-
-pivotInClause
-    : IN LP_ ((expr | exprList) (AS? alias)? (COMMA_ (expr | exprList) (AS? alias)?)* | selectSubquery | ANY (COMMA_ ANY)*) RP_
-    ;
-
-unpivotClause
-    : UNPIVOT ((INCLUDE | EXCLUDE) NULLS)? LP_ (columnName | columnNames) pivotForClause unpivotInClause RP_
-    ;
-
-unpivotInClause
-    : IN LP_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))? (COMMA_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))?)* RP_
-    ;
-
 rowPatternClause
-    : MATCH_RECOGNIZE LP_
-    rowPatternPartitionBy?
-    rowPatternOrderBy?
-    rowPatternMeasures?
-    rowPatternRowsPerMatch?
-    rowPatternSkipTo?
-    PATTERN LP_ rowPattern RP_
-    rowPatternSubsetClause?
-    DEFINE rowPatternDefinitionList RP_
+    : MATCH_RECOGNIZE LP_ rowPatternPartitionBy? rowPatternOrderBy? rowPatternMeasures?
+    rowPatternRowsPerMatch? rowPatternSkipTo? PATTERN LP_ rowPattern RP_
+    rowPatternSubsetClause? DEFINE rowPatternDefinitionList RP_
     ;
 
 rowPatternPartitionBy
@@ -710,7 +716,8 @@ rowPatternRowsPerMatch
     ;
 
 rowPatternSkipTo
-    : AFTER MATCH SKIP_SYMBOL (((TO NEXT | PAST LAST) ROW) | (TO (FIRST | LAST)? variableName))
+    : AFTER MATCH SKIP_SYMBOL ((TO NEXT | PAST LAST) ROW 
+    | TO (FIRST | LAST)? variableName)
     ;
 
 rowPattern
@@ -759,17 +766,21 @@ rowPatternDefinitionList
     ;
 
 rowPatternDefinition
-    : variableName AS condition
+    : variableName AS expr
+    ;
+
+rowPatternRecFunc
+    : rowPatternClassifierFunc
+    | rowPatternMatchNumFunc
+    | rowPatternNavigationFunc
+    | rowPatternAggregateFunc
     ;
 
 patternMeasExpression
     : stringLiterals 
     | numberLiterals 
     | columnName 
-    | rowPatternClassifierFunc 
-    | rowPatternMatchNumFunc 
-    | rowPatternNavigationFunc 
-    | rowPatternAggregateFunc
+    | rowPatternRecFunc
     ;
 
 rowPatternClassifierFunc
@@ -781,7 +792,9 @@ rowPatternMatchNumFunc
     ;
 
 rowPatternNavigationFunc
-    : rowPatternNavLogical | rowPatternNavPhysical | rowPatternNavCompound
+    : rowPatternNavLogical
+    | rowPatternNavPhysical
+    | rowPatternNavCompound
     ;
 
 rowPatternNavLogical

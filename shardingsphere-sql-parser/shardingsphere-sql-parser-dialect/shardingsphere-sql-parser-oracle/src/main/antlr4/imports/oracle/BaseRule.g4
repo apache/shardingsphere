@@ -760,10 +760,6 @@ seedValue
     : numberLiterals
     ;
 
-condition
-    : expr
-    ;
-
 variableName
     : identifier | STRING_
     ;
