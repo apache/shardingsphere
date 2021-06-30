@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
  */
 @RequiredArgsConstructor
 @Getter
-public final class OwnerSegment implements RemoveAvailable {
+public final class OwnerSegment implements SQLSegment {
     
     private final int startIndex;
     
