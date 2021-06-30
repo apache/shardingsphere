@@ -77,6 +77,8 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     @Override
     public void close() throws SQLException {
-        databaseCommunicationEngine.close();
+        if (null != databaseCommunicationEngine) {
+            databaseCommunicationEngine.close();
+        }
     }
 }
