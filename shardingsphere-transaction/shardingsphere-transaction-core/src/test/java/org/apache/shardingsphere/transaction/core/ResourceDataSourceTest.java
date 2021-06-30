@@ -23,7 +23,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ResourceDataSourceTest {
+public final class ResourceDataSourceTest {
 
     @Test
     public void assertNewInstance() {
