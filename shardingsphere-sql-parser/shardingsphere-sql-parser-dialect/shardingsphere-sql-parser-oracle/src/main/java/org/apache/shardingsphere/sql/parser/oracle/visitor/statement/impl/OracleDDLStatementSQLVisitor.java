@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterS
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyzeContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnOrVirtualDefinitionContext;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropCo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropConstraintClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColPropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColumnSpecificationContext;
@@ -50,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Operat
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfLineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfLineRefConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RelationalPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
@@ -74,6 +77,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAnalyzeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
@@ -386,6 +390,25 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         }
         if (null != ctx.indexName()) {
             result.setIndex((IndexSegment) visit(ctx.indexName()));
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitAssociateStatistics(final AssociateStatisticsContext ctx) {
+        OracleAssociateStatisticsStatement result = new OracleAssociateStatisticsStatement();
+        if (null != ctx.columnAssociation()) {
+            for (TableNameContext each: ctx.columnAssociation().tableName()) {
+                result.getTables().add((SimpleTableSegment) visit(each));
+            }
+            for (ColumnNameContext each: ctx.columnAssociation().columnName()) {
+                result.getColumns().add((ColumnSegment) visit(each));
+            }
+        }
+        if (null != ctx.functionAssociation()) {
+            for (IndexNameContext each: ctx.functionAssociation().indexName()) {
+                result.getIndexes().add((IndexSegment) visit(each));
+            }
         }
         return result;
     }

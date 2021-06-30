@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateSta
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSessionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAnalyzeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAssociateStatisticsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.AlterIndexStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.AlterSessionStatementAssert;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.AlterSystemStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.AlterTableStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.AnalyzeStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.AssociateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.CreateIndexStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.CreateTableStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl.DropIndexStatementAssert;
@@ -50,6 +52,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
@@ -92,6 +95,8 @@ public final class DDLStatementAssert {
             AlterSystemStatementAssert.assertIs(assertContext, (AlterSystemStatement) actual, (AlterSystemStatementTestCase) expected);
         } else if (actual instanceof OracleAnalyzeStatement) {
             AnalyzeStatementAssert.assertIs(assertContext, (OracleAnalyzeStatement) actual, (AnalyzeStatementTestCase) expected);
+        } else if (actual instanceof OracleAssociateStatisticsStatement) {
+            AssociateStatisticsStatementAssert.assertIs(assertContext, (OracleAssociateStatisticsStatement) actual, (AssociateStatisticsStatementTestCase) expected);
         }
     }
 }
