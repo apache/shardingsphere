@@ -2226,3 +2226,11 @@ TYPES
 SELECTIVITY
     : S E L E C T I V I T Y
     ;
+
+RETURNING
+    : R E T U R N I N G
+    ;
+
+OPTION
+    : O P T I O N
+    ;

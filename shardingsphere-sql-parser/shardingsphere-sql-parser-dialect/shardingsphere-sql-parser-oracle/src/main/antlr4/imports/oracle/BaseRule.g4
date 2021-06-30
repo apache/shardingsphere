@@ -759,3 +759,15 @@ networkCost
 defaultSelectivity
     : INTEGER_
     ;
+
+dataItem
+    : variableName
+    ;
+
+variableName
+    : identifier | stringLiterals
+    ;
+
+materializedViewName
+    : (owner DOT_)? name
+    ;
