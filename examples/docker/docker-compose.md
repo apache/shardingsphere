@@ -4,7 +4,7 @@ before we use docker compose, please install docker and docker-compose first : h
 
 #### ShardingSphere-JDBC
 
-1. access the docker folder (cd docker/shardingsphere-jdbc/sharding)
+1. access the docker folder (cd docker/sharding-jdbc/sharding)
 2. launch the environment by docker compose (docker-compose up -d)
 3. access mysql / etcd / zookeeper as you want
 4. if there is conflict on port, just modify the corresponding port defined in docker-compose.yml and then launch docker compose again(docker-compose up -d)
@@ -12,7 +12,7 @@ before we use docker compose, please install docker and docker-compose first : h
 
 #### ShardingSphere-Proxy
 
-1. access the docker folder (cd docker/shardingsphere-proxy/sharding)
+1. access the docker folder (cd docker/sharding-proxy/sharding)
 2. launch the environment by docker compose (docker-compose up -d)
 3. access proxy by `mysql -h127.0.0.1 -P13308 -proot -uroot`
 4. if there is conflict on port, just modify the corresponding port defined in docker-compose.yml and then launch docker compose again(docker-compose up -d)
