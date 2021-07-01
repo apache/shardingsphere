@@ -24,8 +24,6 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +33,6 @@ import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     private final DropReadwriteSplittingRuleStatementUpdater updater = new DropReadwriteSplittingRuleStatementUpdater();
