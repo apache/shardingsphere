@@ -81,8 +81,8 @@ public final class SchemaBuilder {
     private static Map<TableMetaData, TableMetaData> buildTableMetaDataMap(final Map<String, TableMetaData> actualMap,
                                                                            final Map<String, TableMetaData> logicMap) {
         Map<TableMetaData, TableMetaData> result = new HashMap<>(actualMap.size(), 1);
-        for (Entry entry : actualMap.entrySet()) {
-            result.put((TableMetaData) entry.getValue(), logicMap.get(entry.getKey()));
+        for (Entry<String, TableMetaData> entry : actualMap.entrySet()) {
+            result.put(entry.getValue(), logicMap.getOrDefault(entry.getKey(), entry.getValue()));
         }
         return result;
     }

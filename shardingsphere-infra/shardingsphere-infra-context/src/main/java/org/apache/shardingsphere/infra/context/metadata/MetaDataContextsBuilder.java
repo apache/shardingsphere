@@ -109,8 +109,8 @@ public final class MetaDataContextsBuilder {
     
     private ShardingSphereSchema buildSchema(final Map<TableMetaData, TableMetaData> tableMetaDatas) {
         Map<String, TableMetaData> tables = new HashMap<>(tableMetaDatas.size(), 1);
-        tables.putAll(tableMetaDatas.keySet().stream().filter(Objects::nonNull).collect(Collectors.toMap(TableMetaData::getName, v -> v)));
-        tables.putAll(tableMetaDatas.values().stream().filter(Objects::nonNull).collect(Collectors.toMap(TableMetaData::getName, v -> v)));
+        tables.putAll(tableMetaDatas.keySet().stream().collect(Collectors.toMap(TableMetaData::getName, v -> v)));
+        tables.putAll(tableMetaDatas.values().stream().collect(Collectors.toMap(TableMetaData::getName, v -> v)));
         return new ShardingSphereSchema(tables);
     }
 
