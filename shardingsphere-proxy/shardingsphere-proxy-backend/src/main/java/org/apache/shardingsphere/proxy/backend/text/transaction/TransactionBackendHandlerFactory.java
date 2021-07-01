@@ -48,7 +48,7 @@ public final class TransactionBackendHandlerFactory {
      * @param backendConnection backend connection
      * @return backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final SQLStatementContext<TCLStatement> sqlStatementContext, final String sql, final BackendConnection backendConnection) {
+    public static TextProtocolBackendHandler newInstance(final SQLStatementContext<? extends TCLStatement> sqlStatementContext, final String sql, final BackendConnection backendConnection) {
         TCLStatement tclStatement = sqlStatementContext.getSqlStatement();
         if (tclStatement instanceof BeginTransactionStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, backendConnection);
