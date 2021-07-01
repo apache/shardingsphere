@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessReportContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -54,7 +55,9 @@ public final class ExecuteProcessEngine {
     public static void initialize(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ConfigurationProperties props) {
         SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
         if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext, props)) {
-            ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
+            long noReportThresholdMillis = 100;
+            ExecuteProcessReportContext reportContext = new ExecuteProcessReportContext(executionGroupContext.getExecutionID(), noReportThresholdMillis);
+            ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), reportContext);
             HANDLERS.iterator().next().report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
         }
     }
