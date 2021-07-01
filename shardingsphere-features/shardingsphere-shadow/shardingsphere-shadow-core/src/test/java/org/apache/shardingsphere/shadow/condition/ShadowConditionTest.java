@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rewrite.token.pojo;
+package org.apache.shardingsphere.shadow.condition;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import com.google.common.collect.Lists;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.junit.Test;
 
-import java.util.StringJoiner;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Insert values token for shadow.
- */
-public final class ShadowInsertValuesToken extends InsertValuesToken {
-    
-    public ShadowInsertValuesToken(final int startIndex, final int stopIndex) {
-        super(startIndex, stopIndex);
-    }
-    
-    @Override
-    public String toString() {
-        String delimiter = ", ";
-        StringJoiner stringJoiner = new StringJoiner(delimiter);
-        for (InsertValue each : getInsertValues()) {
-            stringJoiner.add(each.toString());
-        }
-        return stringJoiner.toString();
+public final class ShadowConditionTest {
+
+    @Test
+    public void assertGetValues() {
+        ShadowCondition shadowCondition = new ShadowCondition("a", 0, 10, new LiteralExpressionSegment(0, 10, "result"));
+        assertThat(shadowCondition.getValues(Lists.newArrayList(0, 1, 2)), is(Lists.newArrayList("result")));
     }
 }

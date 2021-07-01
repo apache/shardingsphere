@@ -17,27 +17,23 @@
 
 package org.apache.shardingsphere.shadow.rewrite.token.pojo;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.StringJoiner;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Insert values token for shadow.
- */
-public final class ShadowInsertValuesToken extends InsertValuesToken {
-    
-    public ShadowInsertValuesToken(final int startIndex, final int stopIndex) {
-        super(startIndex, stopIndex);
+public final class ShadowInsertValuesTokenTest {
+
+    private ShadowInsertValuesToken shadowInsertValuesToken;
+
+    @Before
+    public void init() {
+        shadowInsertValuesToken = new ShadowInsertValuesToken(0, 10);
     }
-    
-    @Override
-    public String toString() {
-        String delimiter = ", ";
-        StringJoiner stringJoiner = new StringJoiner(delimiter);
-        for (InsertValue each : getInsertValues()) {
-            stringJoiner.add(each.toString());
-        }
-        return stringJoiner.toString();
+
+    @Test
+    public void assertToString() {
+        assertThat(shadowInsertValuesToken.toString(), is(""));
     }
 }

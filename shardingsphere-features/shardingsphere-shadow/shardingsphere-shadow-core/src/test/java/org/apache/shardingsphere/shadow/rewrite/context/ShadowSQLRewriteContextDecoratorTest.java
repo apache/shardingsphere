@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rewrite.token.pojo;
+package org.apache.shardingsphere.shadow.rewrite.context;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.StringJoiner;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
-/**
- * Insert values token for shadow.
- */
-public final class ShadowInsertValuesToken extends InsertValuesToken {
-    
-    public ShadowInsertValuesToken(final int startIndex, final int stopIndex) {
-        super(startIndex, stopIndex);
+public final class ShadowSQLRewriteContextDecoratorTest {
+
+    private ShadowSQLRewriteContextDecorator shadowSQLRewriteContextDecorator;
+
+    @Before
+    public void init() {
+        shadowSQLRewriteContextDecorator = new ShadowSQLRewriteContextDecorator();
     }
-    
-    @Override
-    public String toString() {
-        String delimiter = ", ";
-        StringJoiner stringJoiner = new StringJoiner(delimiter);
-        for (InsertValue each : getInsertValues()) {
-            stringJoiner.add(each.toString());
-        }
-        return stringJoiner.toString();
+
+    @Test
+    public void assertGetOrder() {
+        assertThat(shadowSQLRewriteContextDecorator.getOrder(), is(60));
+    }
+
+    @Test
+    public void assertGetTypeClass() {
+        assertNotNull(shadowSQLRewriteContextDecorator.getTypeClass());
     }
 }
