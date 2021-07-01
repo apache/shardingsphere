@@ -84,12 +84,24 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     @Test
     public void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL)) {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
             statement.execute();
             ResultSet resultSet = statement.getGeneratedKeys();
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(6));
             assertFalse(resultSet.next());
+        }
+        assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
+    }
+    
+    @Test
+    public void assertInsertWithBatchExecuteWithGeneratedKeys() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setObject(1, 'b');
+            statement.addBatch();
+            statement.setObject(1, 'c');
+            statement.addBatch();
+            statement.executeBatch();
         }
         assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
     }
