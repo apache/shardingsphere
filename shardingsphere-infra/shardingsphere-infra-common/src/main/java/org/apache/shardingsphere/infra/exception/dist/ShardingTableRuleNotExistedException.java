@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,13 +24,11 @@ import java.util.Collection;
 /**
  * Sharding table rule not existed exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ShardingTableRuleNotExistedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 8565541404478688849L;
     
-    private final String schemaName;
-    
-    private final Collection<String> tableNames;
+    public ShardingTableRuleNotExistedException(final String schemaName, final Collection<String> tableNames) {
+        super(1106, "C1106", String.format("Sharding table rules %s do not exist in schema %s.", tableNames, schemaName));
+    }
 }

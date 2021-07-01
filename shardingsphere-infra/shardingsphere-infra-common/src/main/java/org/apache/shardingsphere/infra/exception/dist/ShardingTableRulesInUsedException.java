@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,11 +24,11 @@ import java.util.Collection;
 /**
  * Sharding table rules in used exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ShardingTableRulesInUsedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -6958306664517015097L;
     
-    private final Collection<String> tableNames;
+    public ShardingTableRulesInUsedException(final Collection<String> tableNames) {
+        super(1107, "C1107", String.format("Sharding table rules %s are still used by binding table rule.", tableNames));
+    }
 }

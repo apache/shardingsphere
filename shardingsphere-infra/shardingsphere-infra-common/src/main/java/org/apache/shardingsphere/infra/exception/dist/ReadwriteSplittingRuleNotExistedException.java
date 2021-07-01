@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,13 +24,11 @@ import java.util.Collection;
 /**
  * Readwrite splitting rule not existed exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ReadwriteSplittingRuleNotExistedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -5119217255419990719L;
     
-    private final String schemaName;
-    
-    private final Collection<String> ruleNames;
+    public ReadwriteSplittingRuleNotExistedException(final String schemaName, final Collection<String> ruleNames) {
+        super(1113, "C113", String.format("Readwrite splitting rules %s do not exist in schema %s.", ruleNames, schemaName));
+    }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,11 +24,11 @@ import java.util.Collection;
 /**
  * Invalid resource exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class InvalidResourceException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 7029641448948791509L;
     
-    private final Collection<String> resourceNames;
+    public InvalidResourceException(final Collection<String> resourceNames) {
+        super(1103, "C1103", String.format("Can not add invalid resources %s.", resourceNames));
+    }
 }

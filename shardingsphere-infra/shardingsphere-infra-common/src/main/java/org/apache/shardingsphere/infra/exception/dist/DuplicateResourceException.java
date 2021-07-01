@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
 
-@RequiredArgsConstructor
-@Getter
+/**
+ * Duplicate resource exception.
+ */
 public final class DuplicateResourceException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 2103793827572264148L;
     
-    private final Collection<String> resourceNames;
+    public DuplicateResourceException(final Collection<String> resourceNames) {
+        super(1104, "C1104", String.format("Duplicate resource names %s.", resourceNames));
+    }
 }

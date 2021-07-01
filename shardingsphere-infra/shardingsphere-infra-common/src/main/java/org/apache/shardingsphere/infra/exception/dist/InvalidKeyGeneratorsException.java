@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,11 +24,11 @@ import java.util.Collection;
 /**
  * Invalid key Generators exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class InvalidKeyGeneratorsException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -1671459113165055997L;
     
-    private final Collection<String> keyGenerators;
+    public InvalidKeyGeneratorsException(final Collection<String> keyGenerators) {
+        super(1120, "C1120", String.format("Invalid key generators %s.", keyGenerators));
+    }
 }

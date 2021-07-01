@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,13 +24,11 @@ import java.util.Collection;
 /**
  * Encrypt rule not existed exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class EncryptRuleNotExistedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -3070306238552517428L;
     
-    private final String schemaName;
-    
-    private final Collection<String> tables;
+    public EncryptRuleNotExistedException(final String schemaName, final Collection<String> tables) {
+        super(1118, "C1118", "Encrypt rules %s do not exist in schema %s.");
+    }
 }

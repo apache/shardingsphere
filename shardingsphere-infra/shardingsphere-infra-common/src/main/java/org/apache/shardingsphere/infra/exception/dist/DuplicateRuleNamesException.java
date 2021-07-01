@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,13 +24,11 @@ import java.util.Collection;
 /**
  * Duplicate rule names exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class DuplicateRuleNamesException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -1738699538105858939L;
     
-    private final String schemaName;
-    
-    private final Collection<String> ruleNames;
+    public DuplicateRuleNamesException(final String schemaName, final Collection<String> ruleNames) {
+        super(1105, "C1105", String.format("Duplicate rule names %s in schema %s", ruleNames, schemaName));
+    }
 }

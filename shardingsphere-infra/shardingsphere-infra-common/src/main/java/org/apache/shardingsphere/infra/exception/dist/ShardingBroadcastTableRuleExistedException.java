@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 /**
  * Sharding binding table rule existed exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ShardingBroadcastTableRuleExistedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 9019772512528350085L;
     
-    private final String schemaName;
+    public ShardingBroadcastTableRuleExistedException(final String schemaName) {
+        super(1110, "C1110", String.format("Sharding broadcast table rules already exists in schema %s.", schemaName));
+    }
 }

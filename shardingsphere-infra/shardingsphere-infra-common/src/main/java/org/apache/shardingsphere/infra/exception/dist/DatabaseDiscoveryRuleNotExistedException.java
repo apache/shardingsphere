@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,13 +24,11 @@ import java.util.Collection;
 /**
  * Database discovery rule not existed exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class DatabaseDiscoveryRuleNotExistedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 1293361372683913161L;
     
-    private final String schemaName;
-    
-    private final Collection<String> ruleNames;
+    public DatabaseDiscoveryRuleNotExistedException(final String schemaName, final Collection<String> ruleNames) {
+        super(1116, "C1116", String.format("Database discovery rules %s do not exist in schema %s.", ruleNames, schemaName));
+    }
 }

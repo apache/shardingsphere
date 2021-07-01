@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,11 +24,11 @@ import java.util.Collection;
 /**
  * Invalid sharding algorithms exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class InvalidShardingAlgorithmsException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 4257890788163115250L;
     
-    private final Collection<String> algorithms;
+    public InvalidShardingAlgorithmsException(final Collection<String> algorithms) {
+        super(1119, "C1119", String.format("Invalid sharding algorithms %s", algorithms));
+    }
 }

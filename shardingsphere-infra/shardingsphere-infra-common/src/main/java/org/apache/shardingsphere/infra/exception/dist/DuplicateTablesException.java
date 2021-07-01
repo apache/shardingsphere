@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,11 +24,11 @@ import java.util.Collection;
 /**
  * Duplicate tables exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class DuplicateTablesException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 3539438597135687601L;
     
-    private final Collection<String> tableNames;
+    public DuplicateTablesException(final Collection<String> tableNames) {
+        super(1108, "C1108", String.format("Duplicate table names %s.", tableNames));
+    }
 }

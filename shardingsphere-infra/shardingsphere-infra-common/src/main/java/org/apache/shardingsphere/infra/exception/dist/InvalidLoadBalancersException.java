@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,11 +24,11 @@ import java.util.Collection;
 /**
  * Invalid load balancers exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class InvalidLoadBalancersException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -8028595443792872970L;
     
-    private final Collection<String> loadBalancers;
+    public InvalidLoadBalancersException(final Collection<String> loadBalancers) {
+        super(1114, "C1114", String.format("Invalid load balancers %s.", loadBalancers));
+    }
 }

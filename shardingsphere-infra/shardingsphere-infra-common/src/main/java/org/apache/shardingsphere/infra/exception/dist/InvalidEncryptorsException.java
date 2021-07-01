@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,11 +24,11 @@ import java.util.Collection;
 /**
  * Invalid encryptors exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class InvalidEncryptorsException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 3175781664028568140L;
     
-    private final Collection<String> encryptors;
+    public InvalidEncryptorsException(final Collection<String> encryptors) {
+        super(1117, "C1117", String.format("Invalid encryptors %s.", encryptors));
+    }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,11 +24,11 @@ import java.util.Collection;
 /**
  * Invalid database discovery types exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class InvalidDatabaseDiscoveryTypesException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -6919328513016324005L;
     
-    private final Collection<String> databaseDiscoveryTypes;
+    public InvalidDatabaseDiscoveryTypesException(final Collection<String> databaseDiscoveryTypes) {
+        super(1115, "C1115", String.format("Invalid database discovery types %s.", databaseDiscoveryTypes));
+    }
 }

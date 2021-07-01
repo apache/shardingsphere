@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,13 +24,11 @@ import java.util.Collection;
 /**
  * Resource not existed exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ResourceNotExistedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 1704331180489268L;
     
-    private final String schemaName;
-    
-    private final Collection<String> resourceNames;
+    public ResourceNotExistedException(final String schemaName, final Collection<String> resourceNames) {
+        super(1102, "C1102", String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
+    }
 }

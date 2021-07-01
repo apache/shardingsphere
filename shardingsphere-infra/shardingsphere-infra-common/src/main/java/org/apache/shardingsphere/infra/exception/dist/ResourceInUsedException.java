@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.exception.dist;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
 
 import java.util.Collection;
@@ -26,11 +24,11 @@ import java.util.Collection;
 /**
  * Resource in used exception.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ResourceInUsedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -3427324685070457375L;
     
-    private final Collection<String> resourceNames;
+    public ResourceInUsedException(final Collection<String> resourceNames) {
+        super(1101, "C1101", String.format("Resources %s in the rule are still in used.", resourceNames));
+    }
 }

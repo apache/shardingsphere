@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dist;
+package org.apache.shardingsphere.db.protocol.error;
 
-import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Duplicate binding tables exception.
+ * Customized error code.
  */
-public final class DuplicateBindingTablesException extends RuleDefinitionViolationException {
+@RequiredArgsConstructor
+@Getter
+public final class CustomizedErrorCode implements SQLErrorCode {
     
-    private static final long serialVersionUID = -8295737924657889408L;
+    private final int errorCode;
     
-    public DuplicateBindingTablesException(final Collection<String> tableNames) {
-        super(1121, "C1121", String.format("Duplicate sharding binding tables %s.", tableNames));
-    }
+    private final String sqlState;
+    
+    private final String errorMessage;
 }
