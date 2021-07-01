@@ -81,7 +81,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     public void assertExecuteMySQLCreateDatabaseContext() throws SQLException {
         assertExecuteCreateDatabaseContext(new MySQLCreateDatabaseStatement());
     }
-
+    
     @Test
     public void assertExecutePostgreSQLCreateDatabaseContext() throws SQLException {
         assertExecuteCreateDatabaseContext(new PostgreSQLCreateDatabaseStatement());
