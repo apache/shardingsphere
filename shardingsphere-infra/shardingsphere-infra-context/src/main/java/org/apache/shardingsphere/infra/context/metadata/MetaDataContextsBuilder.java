@@ -48,8 +48,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Meta data contexts builder.
@@ -94,21 +96,21 @@ public final class MetaDataContextsBuilder {
             Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(each);
             DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(dataSourceMap.values());
             Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(each, ruleConfigs, databaseType, dataSourceMap);
-            Map<Map<String, TableMetaData>, Map<String, TableMetaData>> tableMetaDataMap = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
+            Map<TableMetaData, TableMetaData> tableMetaDatas = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
             ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
             ShardingSphereResource resource = buildResource(databaseType, dataSourceMap);
-            ShardingSphereSchema actualSchema = new ShardingSphereSchema(tableMetaDataMap.keySet().iterator().next());
+            ShardingSphereSchema actualSchema = new ShardingSphereSchema(tableMetaDatas.keySet().stream().filter(Objects::nonNull).collect(Collectors.toMap(TableMetaData::getName, v -> v)));
             actualMetaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, actualSchema));
-            metaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, buildSchema(tableMetaDataMap)));
+            metaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, buildSchema(tableMetaDatas)));
         }
         OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(actualMetaDataMap);
         return new StandardMetaDataContexts(metaDataMap, buildGlobalSchemaMetaData(metaDataMap), executorEngine, props, optimizeContextFactory);
     }
-
-    private ShardingSphereSchema buildSchema(final Map<Map<String, TableMetaData>, Map<String, TableMetaData>> tableMetaDataMap) {
-        Map<String, TableMetaData> tables = new HashMap<>(tableMetaDataMap.size(), 1);
-        tables.putAll(tableMetaDataMap.keySet().iterator().next());
-        tables.putAll(tableMetaDataMap.values().iterator().next());
+    
+    private ShardingSphereSchema buildSchema(final Map<TableMetaData, TableMetaData> tableMetaDatas) {
+        Map<String, TableMetaData> tables = new HashMap<>(tableMetaDatas.size(), 1);
+        tables.putAll(tableMetaDatas.keySet().stream().filter(Objects::nonNull).collect(Collectors.toMap(TableMetaData::getName, v -> v)));
+        tables.putAll(tableMetaDatas.values().stream().filter(Objects::nonNull).collect(Collectors.toMap(TableMetaData::getName, v -> v)));
         return new ShardingSphereSchema(tables);
     }
 

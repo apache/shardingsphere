@@ -35,6 +35,8 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadatas;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -58,6 +60,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -89,7 +92,7 @@ public final class DatabaseCommunicationEngineTest {
     public void setUp() {
         when(backendConnection.getSchemaName()).thenReturn("schema");
         MetaDataContexts metaDataContexts = new StandardMetaDataContexts(mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
-                new ConfigurationProperties(new Properties()));
+                new ConfigurationProperties(new Properties()), mockOptimizeContextFactory());
         ProxyContext.getInstance().init(metaDataContexts, new StandardTransactionContexts());
     }
     
@@ -98,6 +101,12 @@ public final class DatabaseCommunicationEngineTest {
         when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", result);
+    }
+
+    private OptimizeContextFactory mockOptimizeContextFactory() {
+        OptimizeContextFactory optimizeContextFactory = mock(OptimizeContextFactory.class, RETURNS_DEEP_STUBS);
+        when(optimizeContextFactory.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(new HashMap<>()));
+        return optimizeContextFactory;
     }
     
     @Test
@@ -134,7 +143,7 @@ public final class DatabaseCommunicationEngineTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, true, false, false);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
+        when(schema.get("t_logic_order")).thenReturn(new TableMetaData("t_logic_order", Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
         DataSourcesMetaData dataSourcesMetaData = mock(DataSourcesMetaData.class);
         when(result.getResource().getDataSourcesMetaData()).thenReturn(dataSourcesMetaData);
         when(result.getSchema()).thenReturn(schema);

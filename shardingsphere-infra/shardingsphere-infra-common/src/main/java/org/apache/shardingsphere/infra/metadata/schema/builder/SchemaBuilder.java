@@ -72,16 +72,23 @@ public final class SchemaBuilder {
      * @return actual and logic table meta data
      * @throws SQLException SQL exception
      */
-    public static Map<Map<String, TableMetaData>, Map<String, TableMetaData>> build(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<Map<String, TableMetaData>, Map<String, TableMetaData>> result = new HashMap<>();
+    public static Map<TableMetaData, TableMetaData> build(final SchemaBuilderMaterials materials) throws SQLException {
         Map<String, TableMetaData> actualTableMetaMap = appendRemainTables(materials);
         Map<String, TableMetaData> logicTableMetaMap = addRuleConfiguredTables(materials, actualTableMetaMap);
-        result.put(actualTableMetaMap, logicTableMetaMap);
+        return buildTableMetaDataMap(actualTableMetaMap, logicTableMetaMap);
+    }
+
+    private static Map<TableMetaData, TableMetaData> buildTableMetaDataMap(final Map<String, TableMetaData> actualMap,
+                                                                           final Map<String, TableMetaData> logicMap) {
+        Map<TableMetaData, TableMetaData> result = new HashMap<>(actualMap.size(), 1);
+        for (Entry entry : actualMap.entrySet()) {
+            result.put((TableMetaData) entry.getValue(), logicMap.get(entry.getKey()));
+        }
         return result;
     }
-    
+
     private static Map<String, TableMetaData> appendRemainTables(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>();
+        Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
         appendRemainTables(materials, result);
         for (ShardingSphereRule rule : materials.getRules()) {
             if (rule instanceof TableContainedRule) {
@@ -158,7 +165,7 @@ public final class SchemaBuilder {
     }
     
     private static TableMetaData loadTableMetaData(final String tableName, final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
-        TableMetaData result = new TableMetaData();
+        TableMetaData result = new TableMetaData(tableName);
         try (Connection connection = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             result.getColumns().putAll(loadColumnMetaDataMap(tableName, databaseType, connection));
         }
