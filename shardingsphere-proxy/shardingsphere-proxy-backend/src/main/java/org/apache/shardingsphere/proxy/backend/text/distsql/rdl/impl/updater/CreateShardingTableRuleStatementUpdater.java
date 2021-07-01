@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidKeyGeneratorsException;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
@@ -38,7 +37,6 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
@@ -62,7 +60,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     public void checkSQLStatement(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
         checkToBeCreatedResource(schemaName, sqlStatement, resource);
-        checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
+        checkDuplicateTables(sqlStatement, currentRuleConfig);
         checkToBeCreatedShardingAlgorithms(sqlStatement);
         checkToBeCreatedKeyGenerators(sqlStatement);
     }
@@ -80,28 +78,20 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
         return result;
     }
     
-    private void checkDuplicateTables(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> allCurrentTableNames = getAllCurrentTableNames(schemaName, currentRuleConfig);
+    private void checkDuplicateTables(final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> shardingTableNames = null == currentRuleConfig ? Collections.emptyList() : getShardingTables(currentRuleConfig);
         Set<String> duplicateTableNames = sqlStatement.getRules().stream().collect(Collectors.toMap(TableRuleSegment::getLogicTable, each -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
-        duplicateTableNames.addAll(sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).filter(allCurrentTableNames::contains).collect(Collectors.toSet()));
+        duplicateTableNames.addAll(sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).filter(shardingTableNames::contains).collect(Collectors.toSet()));
         if (!duplicateTableNames.isEmpty()) {
             throw new DuplicateTablesException(duplicateTableNames);
         }
     }
     
-    private Collection<String> getAllCurrentTableNames(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> result = new HashSet<>(ProxyContext.getInstance().getMetaData(schemaName).getSchema().getAllTableNames());
-        if (null != currentRuleConfig) {
-            result.addAll(getShardingTables(currentRuleConfig));
-        }
-        return result;
-    }
-    
-    private Collection<String> getShardingTables(final ShardingRuleConfiguration shardingRuleConfiguration) {
+    private Collection<String> getShardingTables(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> result = new LinkedList<>();
-        result.addAll(shardingRuleConfiguration.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
-        result.addAll(shardingRuleConfiguration.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        result.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        result.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         return result;
     }
     
