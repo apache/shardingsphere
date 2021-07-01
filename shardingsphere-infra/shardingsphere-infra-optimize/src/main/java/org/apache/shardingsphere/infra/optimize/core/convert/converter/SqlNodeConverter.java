@@ -25,12 +25,12 @@ import java.util.Optional;
 /**
  * SqlNode converter.
  */
-public interface SqlNodeConverter<T extends ASTNode> {
+public interface SqlNodeConverter<T extends ASTNode, R extends SqlNode> {
     
     /**
      *  Convert.
      * @param astNode ast node
      * @return sqlNode optional
      */
-    Optional<SqlNode> convert(T astNode);
+    Optional<R> convert(T astNode);
 }

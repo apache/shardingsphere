@@ -59,10 +59,6 @@ tablespaceClause
     : TABLESPACE ignoredIdentifier
     ;
 
-domainIndexClause
-    : indexTypeName
-    ;
-
 createSharingClause
     : (SHARING EQ_ (METADATA | DATA | EXTENDED DATA | NONE))?
     ;
@@ -1812,4 +1808,37 @@ validationClauses
 
 intoClause
     : INTO tableName
+    ;
+
+associateStatistics
+    : ASSOCIATE STATISTICS WITH (columnAssociation | functionAssociation) storageTableClause?
+    ;
+
+columnAssociation
+    : COLUMNS tableName DOT_ columnName (COMMA_ tableName DOT_ columnName)* usingStatisticsType
+    ;
+
+functionAssociation
+    : (FUNCTIONS function (COMMA_ function)*
+    | PACKAGES packageName (COMMA_ packageName)*
+    | TYPES typeName (COMMA_ typeName)*
+    | INDEXES indexName (COMMA_ indexName)*
+    | INDEXTYPES indexTypeName (COMMA_ indexTypeName)*) 
+    (usingStatisticsType | defaultCostClause (COMMA_ defaultSelectivityClause)? | defaultSelectivityClause (COMMA_ defaultCostClause)?)
+    ;
+
+storageTableClause
+    : WITH (SYSTEM | USER) MANAGED STORAGE TABLES
+    ;
+
+usingStatisticsType
+    : USING (statisticsTypeName | NULL)
+    ;
+
+defaultCostClause
+    : DEFAULT COST LP_ cpuCost COMMA_ ioCost COMMA_ networkCost RP_
+    ;
+
+defaultSelectivityClause
+    : DEFAULT SELECTIVITY defaultSelectivity
     ;

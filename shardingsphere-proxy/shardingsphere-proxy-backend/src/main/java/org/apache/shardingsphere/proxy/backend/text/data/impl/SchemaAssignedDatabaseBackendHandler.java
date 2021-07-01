@@ -67,6 +67,8 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     
     @Override
     public void close() throws SQLException {
-        databaseCommunicationEngine.close();
+        if (null != databaseCommunicationEngine) {
+            databaseCommunicationEngine.close();
+        }
     }
 }

@@ -36,12 +36,15 @@ public final class YamlExecuteProcessContext {
     
     private String executionID;
     
+    private String sql;
+    
     private Collection<YamlExecuteProcessUnit> unitStatuses;
     
     private Long startTimeMillis;
     
     public YamlExecuteProcessContext(final ExecuteProcessContext executeProcessContext) {
         executionID = executeProcessContext.getExecutionID();
+        sql = executeProcessContext.getSql();
         unitStatuses = executeProcessContext.getUnitStatuses().stream().map(YamlExecuteProcessUnit::new).collect(Collectors.toList());
         startTimeMillis = executeProcessContext.getStartTimeMillis();
     }

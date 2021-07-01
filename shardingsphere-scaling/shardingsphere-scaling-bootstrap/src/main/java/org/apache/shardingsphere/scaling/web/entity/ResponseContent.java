@@ -23,8 +23,8 @@ import lombok.Setter;
 /**
  * Http response content.
  */
-@Setter
 @Getter
+@Setter
 public final class ResponseContent<T> {
     
     private boolean success = true;

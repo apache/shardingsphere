@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  */
 public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoader {
     
-    private static final String TABLE_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
+    private static final String TABLE_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE %s FROM ALL_TAB_COLUMNS WHERE OWNER = ?";
     
     private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = TABLE_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
     
@@ -58,6 +58,8 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private static final int COLLATION_START_MAJOR_VERSION = 12;
     
     private static final int COLLATION_START_MINOR_VERSION = 2;
+    
+    private static final int IDENTITY_COLUMN_START_MINOR_VERSION = 1;
     
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
@@ -103,9 +105,18 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         boolean caseSensitive = null != collationName && collationName.endsWith("_CS");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
-
+    
     private String getTableMetaDataSQL(final Collection<String> existedTables, final DatabaseMetaData metaData) throws SQLException {
-        String collation = metaData.getDatabaseMajorVersion() >= COLLATION_START_MAJOR_VERSION && metaData.getDatabaseMinorVersion() >= COLLATION_START_MINOR_VERSION ? ", COLLATION" : "";
+        StringBuilder stringBuilder = new StringBuilder(28);
+        int majorVersion = metaData.getDatabaseMajorVersion();
+        int minorVersion = metaData.getDatabaseMinorVersion();
+        if (majorVersion >= COLLATION_START_MAJOR_VERSION && minorVersion >= IDENTITY_COLUMN_START_MINOR_VERSION) {
+            stringBuilder.append(", IDENTITY_COLUMN");
+        }
+        if (majorVersion >= COLLATION_START_MAJOR_VERSION && minorVersion >= COLLATION_START_MINOR_VERSION) {
+            stringBuilder.append(", COLLATION");
+        }
+        String collation = stringBuilder.toString();
         return existedTables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
                 : String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, collation, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
@@ -131,7 +142,7 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-
+    
     private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(tableNames))) {
@@ -146,12 +157,12 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         }
         return result;
     }
-
+    
     private String getPrimaryKeyMetaDataSQL(final Collection<String> existedTables) {
         return existedTables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
                 : String.format(PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "Oracle";

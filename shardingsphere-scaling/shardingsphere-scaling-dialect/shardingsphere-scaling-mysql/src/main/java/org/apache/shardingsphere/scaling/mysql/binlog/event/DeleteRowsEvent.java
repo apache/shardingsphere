@@ -26,8 +26,8 @@ import java.util.List;
 /**
  * Delete rows event.
  */
-@Setter
 @Getter
+@Setter
 public final class DeleteRowsEvent extends AbstractRowsEvent {
     
     private List<Serializable[]> beforeRows;

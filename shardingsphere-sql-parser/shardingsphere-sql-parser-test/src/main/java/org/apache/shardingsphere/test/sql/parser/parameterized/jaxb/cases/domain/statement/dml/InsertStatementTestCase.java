@@ -20,12 +20,13 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.insert.ExpectedInsertColumnsClause;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.insert.ExpectedInsertMultiTableElement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.insert.ExpectedInsertValuesClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.insert.ExpectedOnDuplicateKeyColumns;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.output.ExpectedOutputClause;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.with.ExpectedWithClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.with.ExpectedWithClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -60,4 +61,10 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "output")
     private ExpectedOutputClause outputClause;
+    
+    @XmlElement(name = "multi-table-element")
+    private ExpectedInsertMultiTableElement insertTableElement;
+    
+    @XmlElement(name = "select-subquery")
+    private SelectStatementTestCase selectSubquery;
 }
