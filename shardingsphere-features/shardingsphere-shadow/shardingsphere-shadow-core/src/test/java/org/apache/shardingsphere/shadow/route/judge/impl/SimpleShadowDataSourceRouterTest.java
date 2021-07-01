@@ -100,13 +100,15 @@ public final class SimpleShadowDataSourceRouterTest {
         insertStatement.setInsertColumns(insertColumnsSegment);
         insertStatement.getValues().addAll(Collections.singletonList(new InsertValuesSegment(
                 0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, true)))));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(schema, Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(Collections.emptyList(), insertStatement);
+        insertStatementContext.initSchemaBasedContext(schema);
         SimpleShadowDataSourceJudgeEngine simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, insertStatementContext);
         assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadow());
         insertStatement.getValues().clear();
         insertStatement.getValues().addAll(Collections.singletonList(
                 new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, false)))));
-        insertStatementContext = new InsertStatementContext(schema, Collections.emptyList(), insertStatement);
+        insertStatementContext = new InsertStatementContext(Collections.emptyList(), insertStatement);
+        insertStatementContext.initSchemaBasedContext(schema);
         simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, insertStatementContext);
         assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadow());
     }
@@ -146,7 +148,8 @@ public final class SimpleShadowDataSourceRouterTest {
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.emptyList(), selectStatement);
+        selectStatementContext.initSchemaBasedContext(schema);
         SimpleShadowDataSourceJudgeEngine simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, selectStatementContext);
         assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadow());
         expression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new LiteralExpressionSegment(0, 0, false), "=", null);

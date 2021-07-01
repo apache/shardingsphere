@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.shadow.route.judge.impl;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -53,14 +53,15 @@ public final class PreparedShadowDataSourceRouterTest {
     public void isShadowSQL() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
-        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
-        ShadowRule shadowRule = new ShadowRule(shadowRuleConfig);
         InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0,
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
-        InsertStatementContext insertStatementContext = new InsertStatementContext(schema, Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
+        insertStatementContext.initSchemaBasedContext(schema);
+        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
+        ShadowRule shadowRule = new ShadowRule(shadowRuleConfig);
         PreparedShadowDataSourceJudgeEngine preparedShadowDataSourceRouter = new PreparedShadowDataSourceJudgeEngine(shadowRule, insertStatementContext, Arrays.asList(1, "Tom", true));
         assertTrue("should be shadow", preparedShadowDataSourceRouter.isShadow());
     }

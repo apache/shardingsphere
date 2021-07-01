@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -236,7 +237,8 @@ public final class SelectStatementContextTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(null, Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.emptyList(), selectStatement);
+        selectStatementContext.initSchemaBasedContext(mock(ShardingSphereSchema.class));
         assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     
@@ -267,7 +269,7 @@ public final class SelectStatementContextTest {
     
     private void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(null, Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.emptyList(), selectStatement);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     
@@ -300,7 +302,8 @@ public final class SelectStatementContextTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(null, Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.emptyList(), selectStatement);
+        selectStatementContext.initSchemaBasedContext(mock(ShardingSphereSchema.class));
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     

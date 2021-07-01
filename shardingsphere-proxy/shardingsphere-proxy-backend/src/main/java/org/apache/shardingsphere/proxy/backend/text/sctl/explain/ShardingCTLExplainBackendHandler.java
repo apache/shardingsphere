@@ -84,7 +84,8 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType()));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(explainStatement.getSql(), false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema(), Collections.emptyList(), sqlStatement);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(Collections.emptyList(), sqlStatement);
+        sqlStatementContext.initSchemaBasedContext(metaData.getSchema());
         return new LogicSQL(sqlStatementContext, explainStatement.getSql(), Collections.emptyList());
     }
     

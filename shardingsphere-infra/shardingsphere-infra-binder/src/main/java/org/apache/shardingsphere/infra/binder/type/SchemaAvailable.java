@@ -15,38 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement;
+package org.apache.shardingsphere.infra.binder.type;
 
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+
+import java.util.Collection;
 
 /**
- * SQL statement context.
- * 
- * @param <T> type of SQL statement
+ * Schema available.
  */
-public interface SQLStatementContext<T extends SQLStatement> {
+public interface SchemaAvailable {
     
     /**
-     * Get SQL statement.
+     * Get schema segments.
      * 
-     * @return SQL statement
+     * @return schema segments
      */
-    T getSqlStatement();
-    
-    /**
-     * Get tables context.
-     *
-     * @return tables context
-     */
-    TablesContext getTablesContext();
-    
-    /**
-     * Init schema based context.
-     * 
-     * @param schema schema
-     */
-    default void initSchemaBasedContext(final ShardingSphereSchema schema) {
-    }
+    Collection<SchemaSegment> getSchemas();
 }

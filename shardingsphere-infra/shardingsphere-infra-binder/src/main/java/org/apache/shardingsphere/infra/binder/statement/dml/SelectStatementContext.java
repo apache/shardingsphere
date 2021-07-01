@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.engine.P
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Ex
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -53,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -63,23 +66,25 @@ import java.util.stream.Collectors;
  * Select SQL statement context.
  */
 @Getter
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable {
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, SchemaAvailable {
     
     private final TablesContext tablesContext;
     
-    private final ProjectionsContext projectionsContext;
-    
     private final GroupByContext groupByContext;
-    
-    private final OrderByContext orderByContext;
-    
-    private final PaginationContext paginationContext;
     
     private final boolean containsSubquery;
     
     private final int generateOrderByStartIndex;
     
     private final boolean containsSubqueyAggregation;
+    
+    private final List<Object> parameters;
+    
+    private ProjectionsContext projectionsContext;
+    
+    private OrderByContext orderByContext;
+    
+    private PaginationContext paginationContext;
 
     // TODO to be remove, for test case only
     public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
@@ -93,18 +98,25 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         containsSubquery = containsSubquery();
         generateOrderByStartIndex = generateOrderByStartIndex();
         containsSubqueyAggregation = containsSubqueyAggregation();
+        parameters = Collections.emptyList();
     }
     
-    public SelectStatementContext(final ShardingSphereSchema schema, final List<Object> parameters, final SelectStatement sqlStatement) {
+    public SelectStatementContext(final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
-        orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
-        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
         generateOrderByStartIndex = generateOrderByStartIndex();
         containsSubqueyAggregation = containsSubqueyAggregation();
+        this.parameters = parameters;
+    }
+    
+    @Override
+    public void initSchemaBasedContext(final ShardingSphereSchema schema) {
+        SelectStatement sqlStatement = getSqlStatement();
+        orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
+        projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), sqlStatement.getProjections(), groupByContext, orderByContext);
+        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
     }
     
     private boolean containsSubquery() {
@@ -274,5 +286,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private Collection<SimpleTableSegment> getTemporarySimpleTableSegments(final Collection<TableSegment> tableSegments) {
         return tableSegments.stream().filter(each -> each instanceof SubqueryTableSegment).map(each
             -> new SimpleTableSegment(each.getStartIndex(), each.getStopIndex(), new IdentifierValue(each.getAlias().orElse("")))).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Collection<SchemaSegment> getSchemas() {
+        return getAllTables().stream().filter(each -> each.getOwner().isPresent()).map(each -> each.getOwner().get())
+                .map(each -> new SchemaSegment(each.getStartIndex(), each.getStopIndex(), each.getIdentifier())).collect(Collectors.toList());
     }
 }

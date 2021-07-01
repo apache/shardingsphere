@@ -367,7 +367,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private LogicSQL createLogicSQL() {
         List<Object> parameters = new ArrayList<>(getParameters());
         ShardingSphereSchema schema = metaDataContexts.getDefaultMetaData().getSchema();
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schema, parameters, sqlStatement);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(parameters, sqlStatement);
+        sqlStatementContext.initSchemaBasedContext(schema);
         return new LogicSQL(sqlStatementContext, sql, parameters);
     }
     

@@ -57,7 +57,8 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingSphereSchema schema = buildSchema();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL");
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schema, parameters, sqlStatementParserEngine.parse(sql, false));
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(parameters, sqlStatementParserEngine.parse(sql, false));
+        sqlStatementContext.initSchemaBasedContext(schema);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(shardingRule));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, schema);
