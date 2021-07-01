@@ -29,10 +29,6 @@ org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.CreateRead
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.AlterReadwriteSplittingRuleStatementUpdater
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.DropReadwriteSplittingRuleStatementUpdater
 
-org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.CreateDatabaseDiscoveryRuleStatementUpdater
-org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.AlterDatabaseDiscoveryRuleStatementUpdater
-org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.DropDatabaseDiscoveryRuleStatementUpdater
-
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.CreateEncryptRuleStatementUpdater
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.AlterEncryptRuleStatementUpdater
 org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater.DropEncryptRuleStatementUpdater

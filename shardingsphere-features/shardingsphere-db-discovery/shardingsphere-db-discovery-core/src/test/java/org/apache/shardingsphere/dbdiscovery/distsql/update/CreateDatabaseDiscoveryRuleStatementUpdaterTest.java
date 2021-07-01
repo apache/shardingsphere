@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
+package org.apache.shardingsphere.dbdiscovery.distsql.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.distsql.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.exception.dist.DuplicateRuleNamesException;
-import org.apache.shardingsphere.infra.exception.dist.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.infra.exception.dist.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.junit.Test;
 
 import java.util.Arrays;
