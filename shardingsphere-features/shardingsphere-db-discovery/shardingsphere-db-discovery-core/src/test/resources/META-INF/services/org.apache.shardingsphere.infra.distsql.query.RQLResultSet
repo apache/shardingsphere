@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbdiscovery.distsql.DatabaseDiscoveryRuleQueryResultSet
+org.apache.shardingsphere.dbdiscovery.distsql.query.DatabaseDiscoveryRuleQueryResultSet
