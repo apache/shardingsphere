@@ -4,7 +4,7 @@
 
 #### ShardingSphere-JDBC
 
-1. 运行 'cd docker/sharding-jdbc/sharding'，进入 docker 文件夹
+1. 运行 'cd docker/shardingsphere-jdbc/sharding'，进入 docker 文件夹
 2. 运行 'docker-compose up -d'，启动 docker compose 环境
 3. 根据需要，开启 mysql/etcd/zookeeper
 4. 如果有端口冲突，在 docker-compose.yml 中修改相应的端口，然后再次使用 'docker-compose up -d' 启动 docker compose
@@ -12,7 +12,7 @@
 
 #### ShardingSphere-Proxy
 
-1. 运行 'cd docker/sharding-proxy/sharding'，进入 docker 文件夹
+1. 运行 'cd docker/shardingsphere-proxy/sharding'，进入 docker 文件夹
 2. 运行 'docker-compose up -d'，启动 docker compose 环境
 3. 运行 `mysql -h127.0.0.1 -P13308 -proot -uroot` 登录代理
 4. 如果有端口冲突，在docker-compose.yml中修改相应的端口，然后再次使用 'docker-compose up -d'启动docker compose
