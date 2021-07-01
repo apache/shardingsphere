@@ -56,13 +56,13 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final TablesContext tablesContext;
     
+    private final List<InsertValueContext> insertValueContexts;
+    
+    private final InsertSelectContext insertSelectContext;
+    
+    private final OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext;
+    
     private List<String> columnNames;
-    
-    private List<InsertValueContext> insertValueContexts;
-    
-    private InsertSelectContext insertSelectContext;
-    
-    private OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext;
     
     private GeneratedKeyContext generatedKeyContext;
     
