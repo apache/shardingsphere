@@ -77,6 +77,7 @@ public final class TextProtocolBackendHandlerFactory {
             return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
         }
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(getBackendDatabaseType(databaseType, backendConnection).getName()).parse(sql, false);
+        // TODO optimize SQLStatementSchemaHolder
         SQLStatementSchemaHolder.set(SQLUtil.getSchemaFromSQLStatement(sqlStatement));
         Optional<ExtraTextProtocolBackendHandler> extraHandler = findExtraTextProtocolBackendHandler(sqlStatement);
         if (extraHandler.isPresent()) {

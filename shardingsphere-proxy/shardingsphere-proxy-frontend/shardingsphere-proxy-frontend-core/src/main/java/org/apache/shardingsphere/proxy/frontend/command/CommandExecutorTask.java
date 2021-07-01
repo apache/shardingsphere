@@ -103,6 +103,7 @@ public final class CommandExecutorTask implements Runnable {
             }
         } finally {
             commandExecutor.close();
+            // TODO optimize SQLStatementSchemaHolder  
             SQLStatementSchemaHolder.remove();
         }
         return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();

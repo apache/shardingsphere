@@ -68,6 +68,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
                 ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
+        // TODO optimize SQLStatementSchemaHolder
         SQLStatementSchemaHolder.set(SQLUtil.getSchemaFromSQLStatement(sqlStatement));
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(), 
                 getRules(schemaName), schemaName, ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap(), backendConnection.getGrantee());
