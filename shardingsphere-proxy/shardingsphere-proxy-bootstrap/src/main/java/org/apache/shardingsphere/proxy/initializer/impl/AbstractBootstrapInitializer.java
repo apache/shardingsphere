@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
@@ -65,10 +64,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     public final void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
         MetaDataContexts metaDataContexts = decorateMetaDataContexts(createMetaDataContexts(proxyConfig));
-        for (MetaDataAwareEventSubscriber each : ShardingSphereServiceLoader.getSingletonServiceInstances(MetaDataAwareEventSubscriber.class)) {
-            each.setMetaDataContexts(metaDataContexts);
-            ShardingSphereEventBus.getInstance().register(each);
-        }
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), xaTransactionMangerType);
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
