@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dist;
-
-import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
+package org.apache.shardingsphere.infra.exception.rule;
 
 import java.util.Collection;
 
 /**
- * Resource not existed exception.
+ * Duplicate rule names exception.
  */
-public final class ResourceNotExistedException extends RuleDefinitionViolationException {
+public final class DuplicateRuleNamesException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = 1704331180489268L;
+    private static final long serialVersionUID = -1738699538105858939L;
     
-    public ResourceNotExistedException(final String schemaName, final Collection<String> resourceNames) {
-        super(1102, "C1102", String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
+    public DuplicateRuleNamesException(final String schemaName, final Collection<String> ruleNames) {
+        super(1105, "C1105", String.format("Duplicate rule names %s in schema %s", ruleNames, schemaName));
     }
 }

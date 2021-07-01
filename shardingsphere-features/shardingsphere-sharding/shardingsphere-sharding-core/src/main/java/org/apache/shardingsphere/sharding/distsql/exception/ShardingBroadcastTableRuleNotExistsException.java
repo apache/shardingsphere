@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.exception;
 
-import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 
 /**
  * Sharding broadcast table rule not exists exception.

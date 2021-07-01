@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.exception.rule;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.Collection;
 
 /**
- * Rule definition violation exception.
+ * Resource not existed exception.
  */
-@RequiredArgsConstructor
-@Getter
-public abstract class RuleDefinitionViolationException extends RuntimeException {
+public final class ResourceNotExistedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = 1090914641996552474L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    private final int errorCode;
-    
-    private final String sqlState;
-    
-    private final String errorMessage;
+    public ResourceNotExistedException(final String schemaName, final Collection<String> resourceNames) {
+        super(1102, "C1102", String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
+    }
 }

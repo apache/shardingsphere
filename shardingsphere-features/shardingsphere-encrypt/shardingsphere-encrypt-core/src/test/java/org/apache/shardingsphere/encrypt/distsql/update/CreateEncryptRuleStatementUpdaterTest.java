@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.distsql.exception.InvalidEncryptorsExce
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
-import org.apache.shardingsphere.infra.exception.dist.DuplicateRuleNamesException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.junit.Test;
 

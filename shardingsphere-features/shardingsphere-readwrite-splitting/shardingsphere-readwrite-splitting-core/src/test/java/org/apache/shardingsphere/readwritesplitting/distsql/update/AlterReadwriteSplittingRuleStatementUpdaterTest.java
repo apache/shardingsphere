@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.update;
 
 import org.apache.shardingsphere.readwritesplitting.distsql.exception.InvalidLoadBalancersException;
 import org.apache.shardingsphere.readwritesplitting.distsql.exception.ReadwriteSplittingRuleNotExistedException;
-import org.apache.shardingsphere.infra.exception.dist.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;

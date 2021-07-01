@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.exception;
 
-import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 
 import java.util.Collection;
 

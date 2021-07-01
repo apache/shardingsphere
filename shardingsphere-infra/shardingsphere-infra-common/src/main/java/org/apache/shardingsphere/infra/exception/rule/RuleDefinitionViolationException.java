@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.dist;
+package org.apache.shardingsphere.infra.exception.rule;
 
-import org.apache.shardingsphere.infra.exception.RuleDefinitionViolationException;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Duplicate rule names exception.
+ * Rule definition violation exception.
  */
-public final class DuplicateRuleNamesException extends RuleDefinitionViolationException {
+@RequiredArgsConstructor
+@Getter
+public abstract class RuleDefinitionViolationException extends RuntimeException {
     
-    private static final long serialVersionUID = -1738699538105858939L;
+    private static final long serialVersionUID = 1090914641996552474L;
     
-    public DuplicateRuleNamesException(final String schemaName, final Collection<String> ruleNames) {
-        super(1105, "C1105", String.format("Duplicate rule names %s in schema %s", ruleNames, schemaName));
-    }
+    private final int errorCode;
+    
+    private final String sqlState;
+    
+    private final String errorMessage;
 }
