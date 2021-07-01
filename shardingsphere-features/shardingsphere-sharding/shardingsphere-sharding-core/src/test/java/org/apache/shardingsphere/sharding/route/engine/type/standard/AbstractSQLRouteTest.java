@@ -68,16 +68,16 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     private ShardingSphereSchema buildSchema() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
+        tableMetaDataMap.put("t_order", new TableMetaData("t_order", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("status", Types.INTEGER, false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", Types.INTEGER, true, false, false),
+        tableMetaDataMap.put("t_order_item", new TableMetaData("t_order_item", Arrays.asList(new ColumnMetaData("item_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("order_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("status", Types.VARCHAR, false, false, false),
                 new ColumnMetaData("c_date", Types.TIMESTAMP, false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_category", new TableMetaData());
+        tableMetaDataMap.put("t_other", new TableMetaData("t_other", Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_category", new TableMetaData("t_category"));
         return new ShardingSphereSchema(tableMetaDataMap);
     }
 }
