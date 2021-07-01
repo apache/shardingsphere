@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleNotExistedException;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,10 +52,6 @@ public final class DropEncryptRuleStatementUpdaterTest {
     public void assertUpdateCurrentRuleConfiguration() {
         updater.updateCurrentRuleConfiguration("foo", createSQLStatement(), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
-    }
-    
-    private Collection<EncryptColumnRuleConfiguration> buildColumnRuleConfigurations() {
-        return Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "user_plain", "t_encrypt_user_id_MD5"));
     }
     
     private DropEncryptRuleStatement createSQLStatement() {
