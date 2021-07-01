@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.backend.exception.DuplicateRuleNamesException;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidEncryptorsException;
+import org.apache.shardingsphere.infra.exception.dist.DuplicateRuleNamesException;
+import org.apache.shardingsphere.infra.exception.dist.InvalidEncryptorsException;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.exception.DuplicateBindingTablesException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingBindingTableRuleNotExistsException;
+import org.apache.shardingsphere.infra.exception.dist.DuplicateBindingTablesException;
+import org.apache.shardingsphere.infra.exception.dist.ShardingBindingTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;

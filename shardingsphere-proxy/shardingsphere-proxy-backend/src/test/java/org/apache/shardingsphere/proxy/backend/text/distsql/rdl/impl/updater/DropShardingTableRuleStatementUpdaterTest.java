@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRulesInUsedException;
+import org.apache.shardingsphere.infra.exception.dist.ShardingTableRuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.dist.ShardingTableRulesInUsedException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;

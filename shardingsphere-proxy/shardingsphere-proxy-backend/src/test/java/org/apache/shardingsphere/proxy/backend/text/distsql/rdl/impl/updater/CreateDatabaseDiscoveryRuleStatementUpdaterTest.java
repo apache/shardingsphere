@@ -22,9 +22,9 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.exception.DuplicateRuleNamesException;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidDatabaseDiscoveryTypesException;
-import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.exception.dist.DuplicateRuleNamesException;
+import org.apache.shardingsphere.infra.exception.dist.InvalidDatabaseDiscoveryTypesException;
+import org.apache.shardingsphere.infra.exception.dist.ResourceNotExistedException;
 import org.junit.Test;
 
 import java.util.Arrays;

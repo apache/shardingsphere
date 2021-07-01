@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.exception.EncryptRuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.dist.EncryptRuleNotExistedException;
 import org.junit.Test;
 
 import java.util.Collections;

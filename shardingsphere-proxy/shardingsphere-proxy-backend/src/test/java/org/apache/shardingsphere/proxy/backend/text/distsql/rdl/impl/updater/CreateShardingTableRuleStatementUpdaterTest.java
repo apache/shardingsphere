@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.updater;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.exception.DuplicateTablesException;
-import org.apache.shardingsphere.proxy.backend.exception.InvalidShardingAlgorithmsException;
+import org.apache.shardingsphere.infra.exception.dist.DuplicateTablesException;
+import org.apache.shardingsphere.infra.exception.dist.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.junit.Test;
