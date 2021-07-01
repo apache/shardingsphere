@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -100,6 +101,15 @@ public final class BackendConnection implements ExecutorJDBCManager {
         this.schemaName = schemaName;
     }
     
+    /**
+     * Get schema name.
+     * 
+     * @return schema name
+     */
+    public String getSchemaName() {
+        return null == SQLStatementSchemaHolder.get() ? schemaName : SQLStatementSchemaHolder.get();
+    }
+    
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         return transactionStatus.isInTransaction()
@@ -132,8 +142,8 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schemaName, "Current schema is null.");
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
+        Preconditions.checkNotNull(getSchemaName(), "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(getSchemaName(), dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
         }
@@ -141,8 +151,8 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schemaName, "Current schema is null.");
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
+        Preconditions.checkNotNull(getSchemaName(), "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(getSchemaName(), dataSourceName, connectionSize, connectionMode);
         synchronized (cachedConnections) {
             cachedConnections.putAll(dataSourceName, result);
         }
@@ -184,7 +194,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(getSchemaName()).getResource().getDatabaseType();
         Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPIRegistry.findRegisteredService(
                 StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getName(), new Properties());
         if (fetchSizeSetter.isPresent()) {

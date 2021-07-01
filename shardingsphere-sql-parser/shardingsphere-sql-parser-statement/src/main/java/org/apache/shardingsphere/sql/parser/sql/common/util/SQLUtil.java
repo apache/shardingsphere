@@ -26,10 +26,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.Paren;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -59,6 +61,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * SQL utility class.
@@ -255,5 +258,16 @@ public final class SQLUtil {
      */
     public static String trimSemicolon(final String sql) {
         return sql.endsWith(SQL_END) ? sql.substring(0, sql.length() - 1) : sql;
+    }
+    
+    /**
+     * Get schema from SQL statement.
+     * 
+     * @param sqlStatement SQL statement
+     * @return schema
+     */
+    public static String getSchemaFromSQLStatement(final SQLStatement sqlStatement) {
+        Optional<SchemaSegment> schema = sqlStatement instanceof FromSchemaAvailable ? ((FromSchemaAvailable) sqlStatement).getSchema() : Optional.empty();
+        return schema.map(each -> each.getIdentifier().getValue()).orElse(null);
     }
 }
