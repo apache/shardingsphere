@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.distsql.ShardingTableRuleQueryResultSet
-org.apache.shardingsphere.sharding.distsql.ShardingBindingTableRuleQueryResultSet
-org.apache.shardingsphere.sharding.distsql.ShardingBroadcastTableRuleQueryResultSet
+org.apache.shardingsphere.sharding.distsql.query.ShardingTableRuleQueryResultSet
+org.apache.shardingsphere.sharding.distsql.query.ShardingBindingTableRuleQueryResultSet
+org.apache.shardingsphere.sharding.distsql.query.ShardingBroadcastTableRuleQueryResultSet

@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
+import java.util.Properties;
+
 /**
  * Data source segment.
  */
@@ -39,4 +41,6 @@ public final class DataSourceSegment implements ASTNode {
     private final String user;
     
     private final String password;
+    
+    private final Properties properties;
 }

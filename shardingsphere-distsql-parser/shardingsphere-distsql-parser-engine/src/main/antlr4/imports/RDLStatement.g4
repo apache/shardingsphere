@@ -28,7 +28,7 @@ dropResource
     ;
 
 dataSource
-    : dataSourceName LP HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName COMMA USER EQ user (COMMA PASSWORD EQ password)? RP
+    : dataSourceName LP HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA PROPERTIES LP connectionProperties? RP)? RP
     ;
 
 dataSourceName
@@ -57,4 +57,12 @@ user
 
 password
     : IDENTIFIER | INT | STRING
+    ;
+
+connectionProperties
+    : connectionProperty (COMMA connectionProperty)*
+    ;
+
+connectionProperty
+    : key=IDENTIFIER EQ value=IDENTIFIER
     ;

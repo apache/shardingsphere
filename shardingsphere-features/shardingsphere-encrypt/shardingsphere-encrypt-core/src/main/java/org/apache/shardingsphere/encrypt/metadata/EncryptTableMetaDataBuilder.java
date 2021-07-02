@@ -49,7 +49,8 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     @Override
     public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        return encryptTable.map(optional -> new TableMetaData(getEncryptColumnMetaDataList(optional, tableMetaData.getColumns().values()), tableMetaData.getIndexes().values())).orElse(tableMetaData);
+        return encryptTable.map(optional ->
+                new TableMetaData(tableName, getEncryptColumnMetaDataList(optional, tableMetaData.getColumns().values()), tableMetaData.getIndexes().values())).orElse(tableMetaData);
     }
     
     private Collection<ColumnMetaData> getEncryptColumnMetaDataList(final EncryptTable encryptTable, final Collection<ColumnMetaData> originalColumnMetaDataList) {

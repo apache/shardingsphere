@@ -72,7 +72,8 @@ public final class TableMetaDataBuilder {
                 RuleBasedTableMetaDataBuilder loader = entry.getValue();
                 Optional<TableMetaData> result = loader.load(tableName, materials.getDatabaseType(), materials.getDataSourceMap(), dataNodes, rule, materials.getProps());
                 if (result.isPresent()) {
-                    return result;
+                    TableMetaData tableMetaData = new TableMetaData(tableName, result.get().getColumns().values(), result.get().getIndexes().values());
+                    return Optional.of(tableMetaData);
                 }
             }
         }

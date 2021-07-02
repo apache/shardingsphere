@@ -37,7 +37,7 @@
     
     <bean id="demo_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>

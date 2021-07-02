@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -92,6 +93,6 @@ public final class AddResourceBackendHandlerTest {
     }
     
     private AddResourceStatement buildAddResourceStatement() {
-        return new AddResourceStatement(Collections.singleton(new DataSourceSegment("ds_0", "127.0.0.1", "test0", "3306", "root", "")));
+        return new AddResourceStatement(Collections.singleton(new DataSourceSegment("ds_0", "127.0.0.1", "test0", "3306", "root", "", new Properties())));
     }
 }

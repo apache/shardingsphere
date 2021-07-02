@@ -27,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
+import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
@@ -102,6 +103,8 @@ public final class CommandExecutorTask implements Runnable {
             }
         } finally {
             commandExecutor.close();
+            // TODO optimize SQLStatementSchemaHolder  
+            SQLStatementSchemaHolder.remove();
         }
         return databaseProtocolFrontendEngine.getFrontendContext().isFlushForPerCommandPacket();
     }

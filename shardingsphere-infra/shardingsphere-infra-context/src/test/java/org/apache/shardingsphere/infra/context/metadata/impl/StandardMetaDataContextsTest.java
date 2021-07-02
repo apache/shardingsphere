@@ -26,7 +26,9 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,12 +42,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class StandardMetaDataContextsTest {
+
+    @Mock
+    private OptimizeContextFactory optimizeContextFactory;
     
     @Test
     public void assertGetDefaultMetaData() {
         ShardingSphereMetaData metaData = getShardingSphereMetaData();
         StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
-                mock(ShardingSphereRuleMetaData.class), null, new ConfigurationProperties(new Properties()));
+                mock(ShardingSphereRuleMetaData.class), null, new ConfigurationProperties(new Properties()), optimizeContextFactory);
         assertThat(standardMetaDataContexts.getDefaultMetaData(), is(metaData));
     }
     
@@ -54,7 +59,7 @@ public final class StandardMetaDataContextsTest {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ShardingSphereMetaData metaData = getShardingSphereMetaData();
         StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(Collections.singletonMap("logic_db", metaData), 
-                mock(ShardingSphereRuleMetaData.class), executorEngine, new ConfigurationProperties(new Properties()));
+                mock(ShardingSphereRuleMetaData.class), executorEngine, new ConfigurationProperties(new Properties()), optimizeContextFactory);
         standardMetaDataContexts.close();
         verify(executorEngine).close();
     }

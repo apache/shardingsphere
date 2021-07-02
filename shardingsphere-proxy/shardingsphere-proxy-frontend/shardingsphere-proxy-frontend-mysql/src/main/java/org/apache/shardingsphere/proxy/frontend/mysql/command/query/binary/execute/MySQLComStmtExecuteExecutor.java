@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExe
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -66,6 +68,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
                 ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
+        // TODO optimize SQLStatementSchemaHolder
+        SQLStatementSchemaHolder.set(SQLUtil.getSchemaFromSQLStatement(sqlStatement));
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(), 
                 getRules(schemaName), schemaName, ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap(), backendConnection.getGrantee());
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement, packet.getSql(), packet.getParameters(), backendConnection);
