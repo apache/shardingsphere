@@ -191,7 +191,7 @@ public final class ProjectionsContextEngine {
     
     private SimpleTableSegment find(final String tableNameOrAlias, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
-            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
+            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equalsIgnoreCase(each.getAlias().orElse(null))) {
                 return each;
             }
         }

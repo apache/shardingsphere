@@ -37,6 +37,8 @@ import java.util.Map;
 @ToString
 public final class TableMetaData {
     
+    private final String name;
+    
     private final Map<String, ColumnMetaData> columns;
     
     private final Map<String, IndexMetaData> indexes;
@@ -47,10 +49,15 @@ public final class TableMetaData {
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
     public TableMetaData() {
-        this(Collections.emptyList(), Collections.emptyList());
+        this("", Collections.emptyList(), Collections.emptyList());
     }
-    
-    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<IndexMetaData> indexMetaDataList) {
+
+    public TableMetaData(final String name) {
+        this(name, Collections.emptyList(), Collections.emptyList());
+    }
+
+    public TableMetaData(final String name, final Collection<ColumnMetaData> columnMetaDataList, final Collection<IndexMetaData> indexMetaDataList) {
+        this.name = name;
         columns = getColumns(columnMetaDataList);
         indexes = getIndexes(indexMetaDataList);
     }

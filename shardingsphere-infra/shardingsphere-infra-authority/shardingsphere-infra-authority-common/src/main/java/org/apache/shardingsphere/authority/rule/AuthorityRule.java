@@ -69,8 +69,6 @@ public final class AuthorityRule implements KernelRule, GlobalRule {
      */
     public void refresh(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
         provider.refresh(mataDataMap, users);
-        this.users.clear();
-        this.users.addAll(users);
     }
 
     /**

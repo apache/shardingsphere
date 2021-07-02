@@ -101,7 +101,6 @@ public final class SQLCheckEngine {
         return true;
     }
 
-
     /**
      * Check authentication.
      * @param user user

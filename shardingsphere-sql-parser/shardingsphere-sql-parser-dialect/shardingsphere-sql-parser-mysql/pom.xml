@@ -35,7 +35,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-test</artifactId>
+            <artifactId>shardingsphere-parser-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

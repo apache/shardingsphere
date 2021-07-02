@@ -21,8 +21,8 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLCloseCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,12 +36,16 @@ import java.util.Random;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLComCloseExecutorTest {
     
     private static final int CONNECTION_ID = new Random().nextInt() & Integer.MAX_VALUE;
+    
+    @Mock
+    private PostgreSQLConnectionContext connectionContext;
     
     @Mock
     private PostgreSQLComClosePacket packet;
@@ -59,7 +63,7 @@ public final class PostgreSQLComCloseExecutorTest {
     public void assertExecuteClosePreparedStatement() throws SQLException {
         when(packet.getType()).thenReturn(PostgreSQLComClosePacket.Type.PREPARED_STATEMENT);
         when(packet.getName()).thenReturn("S_1");
-        PostgreSQLComCloseExecutor closeExecutor = new PostgreSQLComCloseExecutor(packet, backendConnection);
+        PostgreSQLComCloseExecutor closeExecutor = new PostgreSQLComCloseExecutor(connectionContext, packet, backendConnection);
         Collection<DatabasePacket<?>> actual = closeExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLCloseCompletePacket.class)));
@@ -68,9 +72,12 @@ public final class PostgreSQLComCloseExecutorTest {
     @Test
     public void assertExecuteClosePortal() throws SQLException {
         when(packet.getType()).thenReturn(PostgreSQLComClosePacket.Type.PORTAL);
-        PostgreSQLComCloseExecutor closeExecutor = new PostgreSQLComCloseExecutor(packet, backendConnection);
+        String portalName = "C_1";
+        when(packet.getName()).thenReturn(portalName);
+        PostgreSQLComCloseExecutor closeExecutor = new PostgreSQLComCloseExecutor(connectionContext, packet, backendConnection);
         Collection<DatabasePacket<?>> actual = closeExecutor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLErrorResponsePacket.class)));
+        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLCloseCompletePacket.class)));
+        verify(connectionContext).closePortal(portalName);
     }
 }

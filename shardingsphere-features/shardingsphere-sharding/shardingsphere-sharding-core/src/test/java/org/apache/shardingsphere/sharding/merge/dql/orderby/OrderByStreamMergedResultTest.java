@@ -195,7 +195,7 @@ public final class OrderByStreamMergedResultTest {
     private ShardingSphereSchema buildSchema() {
         ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", 0, false, false, true);
         ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", 0, false, false, false);
-        TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData("tbl", Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList());
         return new ShardingSphereSchema(ImmutableMap.of("tbl", tableMetaData));
     }
 }

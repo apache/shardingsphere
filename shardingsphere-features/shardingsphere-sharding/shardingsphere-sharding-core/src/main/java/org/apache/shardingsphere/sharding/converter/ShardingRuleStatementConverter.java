@@ -73,7 +73,7 @@ public final class ShardingRuleStatementConverter {
     public static YamlShardingRuleConfiguration convert(final CreateShardingBindingTableRulesStatement sqlStatement) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         for (BindingTableRuleSegment each : sqlStatement.getRules()) {
-            result.getBindingTables().add(each.getTables());
+            result.getBindingTables().add(each.getTableGroups());
         }
         return result;
     }
@@ -87,7 +87,7 @@ public final class ShardingRuleStatementConverter {
     public static YamlShardingRuleConfiguration convert(final AlterShardingBindingTableRulesStatement sqlStatement) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
         for (BindingTableRuleSegment each : sqlStatement.getRules()) {
-            result.getBindingTables().add(each.getTables());
+            result.getBindingTables().add(each.getTableGroups());
         }
         return result;
     }

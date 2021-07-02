@@ -19,15 +19,13 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLCloseCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -39,6 +37,8 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class PostgreSQLComCloseExecutor implements CommandExecutor {
     
+    private final PostgreSQLConnectionContext connectionContext;
+    
     private final PostgreSQLComClosePacket packet;
     
     private final BackendConnection backendConnection;
@@ -47,25 +47,25 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         switch (packet.getType()) {
             case PREPARED_STATEMENT:
-                return closePreparedStatement();
+                closePreparedStatement();
+                break;
             case PORTAL:
-                return closePortal();
+                closePortal();
+                break;
             default:
                 throw new UnsupportedOperationException(packet.getType().name());
-        }
-    }
-    
-    private Collection<DatabasePacket<?>> closePreparedStatement() {
-        ConnectionScopeBinaryStatementRegistry binaryStatementRegistry = PostgreSQLBinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
-        if (null != binaryStatementRegistry) {
-            binaryStatementRegistry.closeStatement(packet.getName());
         }
         return Collections.singletonList(new PostgreSQLCloseCompletePacket());
     }
     
-    private Collection<DatabasePacket<?>> closePortal() {
-        PostgreSQLErrorResponsePacket packet = PostgreSQLErrorResponsePacket.newBuilder(
-                PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.FEATURE_NOT_SUPPORTED, "Not implemented: Close portal").build();
-        return Collections.singleton(packet);
+    private void closePreparedStatement() {
+        ConnectionScopeBinaryStatementRegistry binaryStatementRegistry = PostgreSQLBinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
+        if (null != binaryStatementRegistry) {
+            binaryStatementRegistry.closeStatement(packet.getName());
+        }
+    }
+    
+    private void closePortal() throws SQLException {
+        connectionContext.closePortal(packet.getName());
     }
 }

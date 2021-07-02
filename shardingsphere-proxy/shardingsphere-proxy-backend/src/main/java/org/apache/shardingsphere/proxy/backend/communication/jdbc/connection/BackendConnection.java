@@ -32,6 +32,8 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -39,17 +41,17 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Backend connection.
@@ -74,9 +76,9 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
+    private final Collection<DatabaseCommunicationEngine> databaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
+    private final Collection<DatabaseCommunicationEngine> inUseDatabaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
@@ -100,6 +102,15 @@ public final class BackendConnection implements ExecutorJDBCManager {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
         this.schemaName = schemaName;
+    }
+    
+    /**
+     * Get schema name.
+     * 
+     * @return schema name
+     */
+    public String getSchemaName() {
+        return null == SQLStatementSchemaHolder.get() ? schemaName : SQLStatementSchemaHolder.get();
     }
     
     @Override
@@ -134,8 +145,8 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schemaName, "Current schema is null.");
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
+        Preconditions.checkNotNull(getSchemaName(), "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(getSchemaName(), dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
         }
@@ -143,8 +154,8 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schemaName, "Current schema is null.");
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(schemaName, dataSourceName, connectionSize, connectionMode);
+        Preconditions.checkNotNull(getSchemaName(), "Current schema is null.");
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(getSchemaName(), dataSourceName, connectionSize, connectionMode);
         synchronized (cachedConnections) {
             cachedConnections.putAll(dataSourceName, result);
         }
@@ -186,7 +197,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
+        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(getSchemaName()).getResource().getDatabaseType();
         Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPIRegistry.findRegisteredService(
                 StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getName(), new Properties());
         if (fetchSizeSetter.isPresent()) {
@@ -213,56 +224,54 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     /**
-     * Add statement.
+     * Add database communication engine.
      *
-     * @param statement statement to be added
+     * @param databaseCommunicationEngine database communication engine to be added
      */
-    public void add(final Statement statement) {
-        cachedStatements.add(statement);
+    public void add(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+        databaseCommunicationEngines.add(databaseCommunicationEngine);
     }
     
     /**
-     * Add result set.
+     * Mark a database communication engine as in use.
      *
-     * @param resultSet result set to be added
+     * @param databaseCommunicationEngine database communication engine to be added
      */
-    public void add(final ResultSet resultSet) {
-        cachedResultSets.add(resultSet);
+    public void markResourceInUse(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+        inUseDatabaseCommunicationEngines.add(databaseCommunicationEngine);
     }
     
     /**
-     * Close result sets.
+     * Unmark an in use database communication engine.
      *
-     * @return SQL exception when result sets close
+     * @param databaseCommunicationEngine database communication engine to be added
      */
-    public synchronized Collection<SQLException> closeResultSets() {
+    public void unmarkResourceInUse(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+        inUseDatabaseCommunicationEngines.remove(databaseCommunicationEngine);
+    }
+    
+    /**
+     * Close database communication engines.
+     *
+     * @param includeInUse include engines in use
+     * @return SQL exception when engine close
+     */
+    public synchronized Collection<SQLException> closeDatabaseCommunicationEngines(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
-        for (ResultSet each : cachedResultSets) {
+        for (DatabaseCommunicationEngine each : databaseCommunicationEngines) {
+            if (!includeInUse && inUseDatabaseCommunicationEngines.contains(each)) {
+                continue;
+            }
             try {
                 each.close();
             } catch (final SQLException ex) {
                 result.add(ex);
             }
         }
-        cachedResultSets.clear();
-        return result;
-    }
-    
-    /**
-     * Close statements.
-     *
-     * @return SQL exception when statements close
-     */
-    public synchronized Collection<SQLException> closeStatements() {
-        Collection<SQLException> result = new LinkedList<>();
-        for (Statement each : cachedStatements) {
-            try {
-                each.close();
-            } catch (final SQLException ex) {
-                result.add(ex);
-            }
+        if (includeInUse) {
+            inUseDatabaseCommunicationEngines.clear();
         }
-        cachedStatements.clear();
+        databaseCommunicationEngines.retainAll(inUseDatabaseCommunicationEngines);
         return result;
     }
     
