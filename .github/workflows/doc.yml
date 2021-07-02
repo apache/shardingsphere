@@ -33,7 +33,6 @@ jobs:
       - name: Setup Workflow Dispatch
         uses: mvasigh/dispatch-action@main
         with:
-          workflow: Update Document
           token: ${{ secrets.PERSONAL_TOKEN }}
           repo: shardingsphere-doc
           owner: qiliangfan
