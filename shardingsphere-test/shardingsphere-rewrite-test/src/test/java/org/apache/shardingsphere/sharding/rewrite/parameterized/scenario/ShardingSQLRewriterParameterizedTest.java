@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -88,12 +89,14 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
         ShardingSphereSchema schema = mockSchema();
         ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                getTestParameters().getInputParameters(), sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false));
-        sqlStatementContext.initSchemaBasedContext(schema);
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
+        metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
+        metaDataMap.put("sharding_db", metaData);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, getTestParameters().getInputParameters(), 
+                sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false), DefaultSchema.LOGIC_NAME);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         mockShardingSphereRuleSingleTable();
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
         RouteContext routeContext = new SQLRouteEngine(rules, props).route(logicSQL, metaData);
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
                 schema, props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
