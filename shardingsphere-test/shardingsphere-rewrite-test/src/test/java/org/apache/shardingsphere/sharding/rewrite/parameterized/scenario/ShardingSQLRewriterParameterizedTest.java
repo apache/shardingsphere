@@ -88,7 +88,6 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlRootRuleConfigs.getDataSources()));
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
         ShardingSphereSchema schema = mockSchema();
-        ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
         metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
@@ -97,6 +96,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
                 sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false), DefaultSchema.LOGIC_NAME);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         mockShardingSphereRuleSingleTable();
+        ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
         RouteContext routeContext = new SQLRouteEngine(rules, props).route(logicSQL, metaData);
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
                 schema, props, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
