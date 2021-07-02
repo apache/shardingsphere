@@ -11,7 +11,7 @@ cd public/en
 sed -i -e 's/cn/en/g' index.html
 cd ../..
 cd ..
-mv document/public/* target/document/current
+mv document/public/* target/document/preview
 
 mkdir target/community
 cd community
