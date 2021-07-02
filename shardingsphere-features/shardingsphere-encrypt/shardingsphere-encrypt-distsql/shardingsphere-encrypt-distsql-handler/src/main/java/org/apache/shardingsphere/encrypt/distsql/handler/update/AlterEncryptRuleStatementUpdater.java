@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.update;
+package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.distsql.exception.EncryptRuleNotExistedException;
-import org.apache.shardingsphere.encrypt.distsql.exception.InvalidEncryptorsException;
+import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
+import org.apache.shardingsphere.encrypt.distsql.handler.exception.EncryptRuleNotExistedException;
+import org.apache.shardingsphere.encrypt.distsql.handler.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.yaml.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Properties;
@@ -102,11 +100,9 @@ public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<A
     }
     
     private void addRuleConfiguration(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        Optional<EncryptRuleConfiguration> toBeAlteredRuleConfig = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singleton(EncryptRuleStatementConverter.convert(sqlStatement.getRules()))).stream().map(each -> (EncryptRuleConfiguration) each).findFirst();
-        Preconditions.checkState(toBeAlteredRuleConfig.isPresent());
-        currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.get().getTables());
-        currentRuleConfig.getEncryptors().putAll(toBeAlteredRuleConfig.get().getEncryptors());
+        EncryptRuleConfiguration toBeAlteredRuleConfig = EncryptRuleStatementConverter.convert(sqlStatement.getRules());
+        currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
+        currentRuleConfig.getEncryptors().putAll(toBeAlteredRuleConfig.getEncryptors());
     }
     
     @Override

@@ -32,5 +32,6 @@
     <modules>
         <module>shardingsphere-encrypt-distsql-statement</module>
         <module>shardingsphere-encrypt-distsql-parser</module>
+        <module>shardingsphere-encrypt-distsql-handler</module>
     </modules>
 </project>
