@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.e
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.util.SQLStatementContextUtil;
+import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
@@ -70,9 +70,12 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
                 ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()));
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(packet.getSql(), true);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(packet.getParameters(), sqlStatement);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
+                ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap(), packet.getParameters(), sqlStatement, backendConnection.getDefaultSchemaName());
         // TODO optimize SQLStatementSchemaHolder
-        SQLStatementSchemaHolder.set(SQLStatementContextUtil.getSchemaName(sqlStatementContext));
+        if (sqlStatementContext instanceof SchemaAvailable) {
+            ((SchemaAvailable) sqlStatementContext).getSchemaName().ifPresent(SQLStatementSchemaHolder::set);
+        }
         SQLCheckEngine.check(sqlStatement, Collections.emptyList(), 
                 getRules(schemaName), schemaName, ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap(), backendConnection.getGrantee());
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, packet.getSql(), packet.getParameters(), backendConnection);

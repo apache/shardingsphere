@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,7 +56,7 @@ public final class DatabaseCommunicationEngineFactory {
      */
     public DatabaseCommunicationEngine newTextProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final BackendConnection backendConnection) {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-        LogicSQL logicSQL = createLogicSQL(sqlStatementContext, sql, Collections.emptyList(), metaData);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
         DatabaseCommunicationEngine result = new DatabaseCommunicationEngine(JDBCDriverType.STATEMENT, metaData, logicSQL, backendConnection);
         backendConnection.add(result);
         return result;
@@ -75,14 +74,9 @@ public final class DatabaseCommunicationEngineFactory {
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, 
                                                                  final List<Object> parameters, final BackendConnection backendConnection) {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-        LogicSQL logicSQL = createLogicSQL(sqlStatementContext, sql, new ArrayList<>(parameters), metaData);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
         DatabaseCommunicationEngine result = new DatabaseCommunicationEngine(JDBCDriverType.PREPARED_STATEMENT, metaData, logicSQL, backendConnection);
         backendConnection.add(result);
         return result;
-    }
-    
-    private LogicSQL createLogicSQL(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters, final ShardingSphereMetaData metaData) {
-        sqlStatementContext.initSchemaBasedContext(metaData.getSchema());
-        return new LogicSQL(sqlStatementContext, sql, parameters);
     }
 }

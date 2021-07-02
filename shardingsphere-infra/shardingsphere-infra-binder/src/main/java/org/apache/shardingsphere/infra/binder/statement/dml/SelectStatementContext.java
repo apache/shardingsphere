@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -55,7 +56,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,21 +70,19 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final TablesContext tablesContext;
     
+    private final ProjectionsContext projectionsContext;
+    
     private final GroupByContext groupByContext;
+    
+    private final OrderByContext orderByContext;
+    
+    private final PaginationContext paginationContext;
     
     private final boolean containsSubquery;
     
     private final int generateOrderByStartIndex;
     
     private final boolean containsSubqueyAggregation;
-    
-    private final List<Object> parameters;
-    
-    private ProjectionsContext projectionsContext;
-    
-    private OrderByContext orderByContext;
-    
-    private PaginationContext paginationContext;
 
     // TODO to be remove, for test case only
     public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
@@ -98,25 +96,26 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         containsSubquery = containsSubquery();
         generateOrderByStartIndex = generateOrderByStartIndex();
         containsSubqueyAggregation = containsSubqueyAggregation();
-        parameters = Collections.emptyList();
     }
     
-    public SelectStatementContext(final List<Object> parameters, final SelectStatement sqlStatement) {
+    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
+        ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
+        orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
+        projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
+        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
         generateOrderByStartIndex = generateOrderByStartIndex();
         containsSubqueyAggregation = containsSubqueyAggregation();
-        this.parameters = parameters;
     }
     
-    @Override
-    public void initSchemaBasedContext(final ShardingSphereSchema schema) {
-        SelectStatement sqlStatement = getSqlStatement();
-        orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), sqlStatement.getProjections(), groupByContext, orderByContext);
-        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
+    private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
+        String schemaName = getSchemaName().orElse(defaultSchemaName);
+        ShardingSphereMetaData metaData = metaDataMap.get(schemaName);
+        Preconditions.checkState(null != metaData, String.format("Can not get metaData by schemaName [%s].", schemaName));
+        return metaData.getSchema();
     }
     
     private boolean containsSubquery() {
@@ -292,5 +291,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     public Collection<SchemaSegment> getSchemas() {
         return getAllTables().stream().filter(each -> each.getOwner().isPresent()).map(each -> each.getOwner().get())
                 .map(each -> new SchemaSegment(each.getStartIndex(), each.getStopIndex(), each.getIdentifier())).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Optional<String> getSchemaName() {
+        return getSchemas().stream().findFirst().map(each -> each.getIdentifier().getValue());
     }
 }
