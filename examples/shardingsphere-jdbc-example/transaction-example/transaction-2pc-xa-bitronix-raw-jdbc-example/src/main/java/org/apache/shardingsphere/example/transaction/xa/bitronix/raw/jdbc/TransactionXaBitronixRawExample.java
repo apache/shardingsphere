@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public final class ExampleMain {
+public final class TransactionXaBitronixRawExample {
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml"));
@@ -35,7 +35,7 @@ public final class ExampleMain {
     }
     
     private static File getFile(final String fileName) {
-        return new File(ExampleMain.class.getResource(fileName).getFile());
+        return new File(TransactionXaBitronixRawExample.class.getResource(fileName).getFile());
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
