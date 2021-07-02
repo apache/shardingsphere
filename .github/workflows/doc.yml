@@ -35,5 +35,5 @@ jobs:
         with:
           token: ${{ secrets.PERSONAL_TOKEN }}
           repo: shardingsphere-doc
-          owner: qiliangfan
+          owner: apache
           event_type: update
