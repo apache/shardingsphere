@@ -34,11 +34,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * SQL parser engine test.
- *
- * @author zzq
- */
 public class SQLParserEngineTest {
     
     private static final String SQL = "SELECT COUNT(*) FROM user";
@@ -47,36 +42,27 @@ public class SQLParserEngineTest {
     public void assertParse() throws NoSuchFieldException, IllegalAccessException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
         when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseTree.class));
-        
         LoadingCache<String, ParseTree> parseTreeCache = CacheBuilder.newBuilder().softValues().initialCapacity(128)
                 .maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseTree>() {
-                    
                     @ParametersAreNonnullByDefault
                     @Override
                     public ParseTree load(final String sql) {
                         return sqlParserExecutor.parse(sql);
                     }
                 });
-        
         SQLParserEngine sqlParserEngine = new SQLParserEngine("H2");
-        
         Field sqlParserExecutorFiled = sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor");
         Field parseTreeCacheField = sqlParserEngine.getClass().getDeclaredField("parseTreeCache");
-        
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
         modifiersField.setInt(sqlParserExecutorFiled, sqlParserExecutorFiled.getModifiers() & ~Modifier.FINAL);
-        
         Field modifiersField2 = Field.class.getDeclaredField("modifiers");
         modifiersField2.setAccessible(true);
         modifiersField2.setInt(parseTreeCacheField, sqlParserExecutorFiled.getModifiers() & ~Modifier.FINAL);
-        
         sqlParserExecutorFiled.setAccessible(true);
         parseTreeCacheField.setAccessible(true);
-        
         sqlParserExecutorFiled.set(sqlParserEngine, sqlParserExecutor);
         parseTreeCacheField.set(sqlParserEngine, parseTreeCache);
-        
         sqlParserEngine.parse(SQL, true);
         verify(sqlParserExecutor, times(1)).parse(SQL);
         sqlParserEngine.parse(SQL, true);
