@@ -15,35 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.yaml.converter;
+package org.apache.shardingsphere.encrypt.distsql.handler.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 
 public final class EncryptRuleStatementConverterTest {
     
     @Test
     public void assertCovert() {
-        YamlEncryptRuleConfiguration encryptRuleConfiguration = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", buildColumns())));
+        EncryptRuleConfiguration encryptRuleConfiguration = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", buildColumns())));
         assertNotNull(encryptRuleConfiguration);
-        assertThat(encryptRuleConfiguration.getTables().keySet(), is(Collections.singleton("t_encrypt")));
-        assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getName(), is("t_encrypt"));
-        assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().keySet(), is(Collections.singleton("user_id")));
-        assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getLogicColumn(), is("user_id"));
-        assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getCipherColumn(), is("user_cipher"));
-        assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getPlainColumn(), is("user_plain"));
-        assertThat(encryptRuleConfiguration.getTables().get("t_encrypt").getColumns().get("user_id").getEncryptorName(), is("t_encrypt_user_id"));
+        assertThat(encryptRuleConfiguration.getTables().iterator().next().getName(), is("t_encrypt"));
+        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));
+        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("user_cipher"));
+        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getPlainColumn(), is("user_plain"));
+        assertThat(encryptRuleConfiguration.getTables().iterator().next().getColumns().iterator().next().getEncryptorName(), is("t_encrypt_user_id"));
     }
     
     private Collection<EncryptColumnSegment> buildColumns() {

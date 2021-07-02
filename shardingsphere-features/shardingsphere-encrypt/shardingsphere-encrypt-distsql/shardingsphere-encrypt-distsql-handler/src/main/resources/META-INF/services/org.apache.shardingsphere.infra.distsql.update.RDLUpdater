@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.distsql.update.CreateEncryptRuleStatementUpdater
-org.apache.shardingsphere.encrypt.distsql.update.AlterEncryptRuleStatementUpdater
-org.apache.shardingsphere.encrypt.distsql.update.DropEncryptRuleStatementUpdater
+org.apache.shardingsphere.encrypt.distsql.handler.update.CreateEncryptRuleStatementUpdater
+org.apache.shardingsphere.encrypt.distsql.handler.update.AlterEncryptRuleStatementUpdater
+org.apache.shardingsphere.encrypt.distsql.handler.update.DropEncryptRuleStatementUpdater
