@@ -25,13 +25,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
 import java.util.Optional;
 
@@ -41,7 +37,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @ToString
-public abstract class SelectStatement extends AbstractSQLStatement implements DMLStatement, FromSchemaAvailable {
+public abstract class SelectStatement extends AbstractSQLStatement implements DMLStatement {
     
     private ProjectionsSegment projections;
     
@@ -100,11 +96,5 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
      */
     public Optional<WithSegment> getWithSegment() {
         return Optional.ofNullable(withSegment);
-    }
-    
-    @Override
-    public Optional<SchemaSegment> getSchema() {
-        Optional<OwnerSegment> owner = from instanceof SimpleTableSegment ? ((SimpleTableSegment) getFrom()).getOwner() : Optional.empty();
-        return owner.map(each -> new SchemaSegment(each.getStartIndex(), each.getStopIndex(), each.getIdentifier()));
     }
 }

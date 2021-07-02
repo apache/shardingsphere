@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.shadow.route.judge.impl;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
@@ -49,6 +51,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -100,17 +104,25 @@ public final class SimpleShadowDataSourceRouterTest {
         insertStatement.setInsertColumns(insertColumnsSegment);
         insertStatement.getValues().addAll(Collections.singletonList(new InsertValuesSegment(
                 0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, true)))));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(schema, Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = createInsertStatementContext(insertStatement);
         SimpleShadowDataSourceJudgeEngine simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, insertStatementContext);
         assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadow());
         insertStatement.getValues().clear();
         insertStatement.getValues().addAll(Collections.singletonList(
                 new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, false)))));
-        insertStatementContext = new InsertStatementContext(schema, Collections.emptyList(), insertStatement);
+        insertStatementContext = createInsertStatementContext(insertStatement);
         simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, insertStatementContext);
         assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadow());
     }
-
+    
+    private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(schema);
+        metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
+        return new InsertStatementContext(metaDataMap, Collections.emptyList(), insertStatement, DefaultSchema.LOGIC_NAME);
+    }
+    
     @Test
     public void judgeForWhereSegmentForMySQL() {
         judgeForWhereSegment(new MySQLSelectStatement());
@@ -146,7 +158,7 @@ public final class SimpleShadowDataSourceRouterTest {
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         SimpleShadowDataSourceJudgeEngine simpleShadowDataSourceRouter = new SimpleShadowDataSourceJudgeEngine(shadowRule, selectStatementContext);
         assertTrue("should be shadow", simpleShadowDataSourceRouter.isShadow());
         expression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("shadow")), new LiteralExpressionSegment(0, 0, false), "=", null);
@@ -155,5 +167,13 @@ public final class SimpleShadowDataSourceRouterTest {
         projectionsSegment.getProjections().clear();
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "false")));
         assertFalse("should not be shadow", simpleShadowDataSourceRouter.isShadow());
+    }
+    
+    private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(schema);
+        metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
+        return new SelectStatementContext(metaDataMap, Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
     }
 }

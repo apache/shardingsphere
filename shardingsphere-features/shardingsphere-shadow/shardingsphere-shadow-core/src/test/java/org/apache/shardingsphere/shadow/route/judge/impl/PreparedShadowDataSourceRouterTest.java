@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.shadow.route.judge.impl;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -42,6 +44,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -53,16 +58,24 @@ public final class PreparedShadowDataSourceRouterTest {
     public void isShadowSQL() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
-        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
-        ShadowRule shadowRule = new ShadowRule(shadowRuleConfig);
         InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0,
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
-        InsertStatementContext insertStatementContext = new InsertStatementContext(schema, Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
+        InsertStatementContext insertStatementContext = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement, schema);
+        ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfiguration("shadow", Collections.singletonList("ds"), Collections.singletonList("shadow_ds"));
+        ShadowRule shadowRule = new ShadowRule(shadowRuleConfig);
         PreparedShadowDataSourceJudgeEngine preparedShadowDataSourceRouter = new PreparedShadowDataSourceJudgeEngine(shadowRule, insertStatementContext, Arrays.asList(1, "Tom", true));
         assertTrue("should be shadow", preparedShadowDataSourceRouter.isShadow());
+    }
+    
+    private InsertStatementContext createInsertStatementContext(final List<Object> parameters, final InsertStatement insertStatement, final ShardingSphereSchema schema) {
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(schema);
+        metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
+        return new InsertStatementContext(metaDataMap, parameters, insertStatement, DefaultSchema.LOGIC_NAME);
     }
     
     @Test

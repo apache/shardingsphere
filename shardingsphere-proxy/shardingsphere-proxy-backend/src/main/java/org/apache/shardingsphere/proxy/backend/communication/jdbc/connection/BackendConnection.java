@@ -113,6 +113,15 @@ public final class BackendConnection implements ExecutorJDBCManager {
         return null == SQLStatementSchemaHolder.get() ? schemaName : SQLStatementSchemaHolder.get();
     }
     
+    /**
+     * Get default schema name.
+     *
+     * @return default schema name
+     */
+    public String getDefaultSchemaName() {
+        return schemaName;
+    }
+    
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         return transactionStatus.isInTransaction()
