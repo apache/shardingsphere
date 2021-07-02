@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.yaml.converter;
+package org.apache.shardingsphere.dbdiscovery.distsql.handler.converter;
 
-import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.junit.Test;
 
@@ -26,25 +26,24 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 
 public final class DatabaseDiscoveryRuleStatementConverterTest {
     
     @Test
     public void assertConvert() {
-        YamlDatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration = DatabaseDiscoveryRuleStatementConverter.convert(buildDatabaseDiscoveryRuleSegments());
+        DatabaseDiscoveryRuleConfiguration yamlDatabaseDiscoveryRuleConfiguration = DatabaseDiscoveryRuleStatementConverter.convert(createDatabaseDiscoveryRuleSegments());
         assertNotNull(yamlDatabaseDiscoveryRuleConfiguration);
-        assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDataSources().keySet(), is(Collections.singleton("pr_ds")));
-        assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDataSources().get("pr_ds").getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
-        assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDataSources().get("pr_ds").getDiscoveryTypeName(), is("pr_ds_MGR"));
+        assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDataSources().iterator().next().getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
+        assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDataSources().iterator().next().getDiscoveryTypeName(), is("pr_ds_MGR"));
         assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes().keySet(), is(Collections.singleton("pr_ds_MGR")));
         assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes().get("pr_ds_MGR").getType(), is("MGR"));
         assertThat(yamlDatabaseDiscoveryRuleConfiguration.getDiscoveryTypes().get("pr_ds_MGR").getProps().get("test"), is("value"));
     }
     
-    private Collection<DatabaseDiscoveryRuleSegment> buildDatabaseDiscoveryRuleSegments() {
+    private Collection<DatabaseDiscoveryRuleSegment> createDatabaseDiscoveryRuleSegments() {
         Properties props = new Properties();
         props.setProperty("test", "value");
         return Collections.singleton(new DatabaseDiscoveryRuleSegment("pr_ds", Arrays.asList("resource0", "resource1"), "MGR", props));
