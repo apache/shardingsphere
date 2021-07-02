@@ -17,13 +17,40 @@
 
 package org.apache.shardingsphere.sql.parser.fixture;
 
+import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.atn.ATN;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-public final class ParserFixture implements SQLParser {
+public final class ParserFixture extends Parser implements SQLParser {
+    
+    public ParserFixture(final TokenStream input) {
+        super(input);
+    }
     
     @Override
     public ASTNode parse() {
+        return null;
+    }
+    
+    @Override
+    public String[] getTokenNames() {
+        return new String[0];
+    }
+    
+    @Override
+    public String[] getRuleNames() {
+        return new String[0];
+    }
+    
+    @Override
+    public String getGrammarFileName() {
+        return null;
+    }
+    
+    @Override
+    public ATN getATN() {
         return null;
     }
 }
