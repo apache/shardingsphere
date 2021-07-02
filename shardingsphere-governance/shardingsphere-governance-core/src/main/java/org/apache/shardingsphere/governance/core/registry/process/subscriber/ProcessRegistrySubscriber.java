@@ -28,7 +28,7 @@ import org.apache.shardingsphere.governance.core.registry.process.node.ProcessNo
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessReportContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
@@ -69,14 +69,19 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
-        ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
-        String executionID = executeProcessContext.getExecutionID();
+        String executionID = event.getExecutionID();
         synchronized (executionID) {
             Map<String, Object> dataMap = event.getDataMap();
-            if (!dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            ExecuteProcessReportContext reportContext = (ExecuteProcessReportContext) dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name());
+            if (null == reportContext) {
                 return;
             }
-            repository.persist(ProcessNode.getExecutionPath(executionID), YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
+            YamlExecuteProcessContext yamlExecuteProcessContext = reportContext.getYamlExecuteProcessContext();
+            if (System.currentTimeMillis() - yamlExecuteProcessContext.getStartTimeMillis() <= reportContext.getShowProcessListNoReportThresholdMillis()) {
+                return;
+            }
+            repository.persist(ProcessNode.getExecutionPath(executionID), YamlEngine.marshal(yamlExecuteProcessContext));
+            reportContext.setReportToGovernanceDonePartially(true);
         }
     }
     
@@ -90,18 +95,24 @@ public final class ProcessRegistrySubscriber {
         String executionID = event.getExecutionID();
         synchronized (executionID) {
             Map<String, Object> dataMap = event.getDataMap();
-            if (!dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
+            ExecuteProcessReportContext reportContext = (ExecuteProcessReportContext) dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name());
+            if (null == reportContext) {
                 return;
             }
-            String executionPath = ProcessNode.getExecutionPath(executionID);
-            YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
+            YamlExecuteProcessContext yamlExecuteProcessContext = reportContext.getYamlExecuteProcessContext();
             ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
             for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
                 if (unit.getUnitID().equals(executeProcessUnit.getUnitID())) {
                     unit.setStatus(executeProcessUnit.getStatus());
                 }
             }
+            if (System.currentTimeMillis() - yamlExecuteProcessContext.getStartTimeMillis() <= reportContext.getShowProcessListNoReportThresholdMillis()
+                    && !reportContext.isReportToGovernanceDonePartially()) {
+                return;
+            }
+            String executionPath = ProcessNode.getExecutionPath(executionID);
             repository.persist(executionPath, YamlEngine.marshal(yamlExecuteProcessContext));
+            reportContext.setReportToGovernanceDonePartially(true);
         }
     }
     
@@ -115,16 +126,17 @@ public final class ProcessRegistrySubscriber {
         String executionID = event.getExecutionID();
         synchronized (executionID) {
             Map<String, Object> dataMap = event.getDataMap();
-            if (!dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-                return;
-            }
-            String executionPath = ProcessNode.getExecutionPath(executionID);
-            YamlExecuteProcessContext yamlExecuteProcessContext = YamlEngine.unmarshal(repository.get(executionPath), YamlExecuteProcessContext.class);
+            ExecuteProcessReportContext reportContext = (ExecuteProcessReportContext) dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name());
+            YamlExecuteProcessContext yamlExecuteProcessContext = reportContext.getYamlExecuteProcessContext();
             for (YamlExecuteProcessUnit unit : yamlExecuteProcessContext.getUnitStatuses()) {
                 if (unit.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
                     return;
                 }
             }
+            if (!reportContext.isReportToGovernanceDonePartially()) {
+                return;
+            }
+            String executionPath = ProcessNode.getExecutionPath(executionID);
             repository.delete(executionPath);
         }
     }

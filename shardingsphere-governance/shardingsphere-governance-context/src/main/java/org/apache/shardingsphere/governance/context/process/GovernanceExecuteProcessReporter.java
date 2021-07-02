@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.governance.context.process;
 
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessUnitReportEvent;
@@ -27,18 +29,28 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessReportContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 
 /**
  * Governance execute process reporter.
  */
+@Slf4j
 public final class GovernanceExecuteProcessReporter implements ExecuteProcessReporter {
     
     @Override
     public void report(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
+        Map<String, Object> dataMap = ExecutorDataMap.getValue();
+        ExecuteProcessReportContext reportContext = (ExecuteProcessReportContext) dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name());
+        if (null == reportContext) {
+            log.warn("reportContext is null on report execution process summary");
+            return;
+        }
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(logicSQL.getSql(), executionGroupContext, constants);
-        ShardingSphereEventBus.getInstance().post(new ExecuteProcessSummaryReportEvent(executeProcessContext, ExecutorDataMap.getValue()));
+        reportContext.setYamlExecuteProcessContext(new YamlExecuteProcessContext(executeProcessContext));
+        ShardingSphereEventBus.getInstance().post(new ExecuteProcessSummaryReportEvent(executionGroupContext.getExecutionID(), dataMap));
     }
     
     @Override

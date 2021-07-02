@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.process.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 
 /**
  * Execute process report context.
@@ -33,7 +34,7 @@ public final class ExecuteProcessReportContext {
     
     private final long showProcessListNoReportThresholdMillis;
     
-    private volatile ExecuteProcessContext executeProcessContext;
+    private volatile YamlExecuteProcessContext yamlExecuteProcessContext;
     
     private volatile boolean reportToGovernanceDonePartially;
     
