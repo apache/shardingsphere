@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.encrypt.table.raw.jdbc;
+package org.apache.shardingsphere.example.shadow.table.raw.jdbc;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.apache.shardingsphere.example.core.jdbc.repository.UserRepositoryImpl;
-import org.apache.shardingsphere.example.core.jdbc.service.UserServiceImpl;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.example.core.jdbc.repository.ShadowUserRepositoryImpl;
+import org.apache.shardingsphere.example.core.jdbc.service.ShadowUserServiceImpl;
+import org.apache.shardingsphere.example.shadow.table.raw.jdbc.factory.YamlDataSourceFactory;
+import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public final class YamlConfigurationExampleMain {
+public final class ShadowRawYamlConfigurationExample {
+    
+    private static ShardingType shardingType = ShardingType.SHADOW;
+//    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING_SHADOW;
+//    private static ShardingType shardingType = ShardingType.ENCRYPT_SHADOW;
+//    private static ShardingType shardingType = ShardingType.SHARDING_SHADOW_DATABASES;
     
     public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile());
+        DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
         ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
-    private static File getFile() {
-        return new File(YamlConfigurationExampleMain.class.getResource("/META-INF/encrypt-databases.yaml").getFile());
-    }
-    
     private static ExampleService getExampleService(final DataSource dataSource) {
-        return new UserServiceImpl(new UserRepositoryImpl(dataSource));
+        return new ShadowUserServiceImpl(new ShadowUserRepositoryImpl(dataSource));
     }
 }

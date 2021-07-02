@@ -30,7 +30,7 @@ import org.apache.shardingsphere.example.encrypt.table.raw.jdbc.config.EncryptDa
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public final class JavaConfigurationExampleMain {
+public final class EncryptRawJavaConfigurationExample {
     
     public static void main(final String[] args) throws SQLException {
         DataSource dataSource = new EncryptDatabasesConfiguration().getDataSource();

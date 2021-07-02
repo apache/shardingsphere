@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.shadow.table.spring.namespace;
+package org.apache.shardingsphere.example.encrypt.table.spring.namespace;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
@@ -24,16 +24,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public final class ExampleMain {
+public final class EncryptSpringNamespaceExample {
     
-    private static final String CONFIG_FILE = "META-INF/application-shadow-databases.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-sharding-shadow-databases.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-readwrite-splitting-shadow-databases.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-encrypt-shadow-databases.xml";
+    private static final String CONFIG_FILE = "META-INF/application-encrypt-databases.xml";
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            ExampleExecuteTemplate.run(applicationContext.getBean("shadow", ExampleService.class));
+            ExampleExecuteTemplate.run(applicationContext.getBean("encrypt", ExampleService.class));
         }
     }
 }

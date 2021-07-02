@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.encrypt.table.spring.namespace;
+package org.apache.shardingsphere.example.shadow.table.spring.boot;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-public final class ExampleMain {
-    
-    private static final String CONFIG_FILE = "META-INF/application-encrypt-databases.xml";
+@ComponentScan("org.apache.shardingsphere.example.core.jpa")
+@EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
+@SpringBootApplication(exclude = JtaAutoConfiguration.class)
+public class ShadowSpringBootExample {
     
     public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
-            ExampleExecuteTemplate.run(applicationContext.getBean("encrypt", ExampleService.class));
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ShadowSpringBootExample.class, args)) {
+            ExampleExecuteTemplate.run(applicationContext.getBean("shadowExample", ExampleService.class));
         }
     }
 }
