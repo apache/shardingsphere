@@ -38,7 +38,7 @@ public final class HikariJDBCParameterDecoratorTest {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName("org.apache.shardingsphere.test.mock.MockedDriver");
         dataSource.setJdbcUrl("mock:jdbc");
-        HikariDataSource actual = new HikariJDBCParameterDecorator().decorate(dataSource);
+        HikariDataSource actual = new HikariJDBCParameterDecorator().decorate(dataSource, new Properties());
         Properties props = actual.getDataSourceProperties();
         assertThat(props.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
         assertThat(props.getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));

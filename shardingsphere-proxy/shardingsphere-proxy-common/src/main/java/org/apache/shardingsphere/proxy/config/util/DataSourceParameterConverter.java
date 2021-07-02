@@ -85,6 +85,9 @@ public final class DataSourceParameterConverter {
         result.setPassword(yamlDataSourceParameter.getPassword());
         result.setReadOnly(yamlDataSourceParameter.isReadOnly());
         result.setUrl(yamlDataSourceParameter.getUrl());
+        if (null != yamlDataSourceParameter.getAdditionalProps()) {
+            result.setAdditionalProps(yamlDataSourceParameter.getAdditionalProps());
+        }
         return result;
     }
     
@@ -119,6 +122,9 @@ public final class DataSourceParameterConverter {
         result.getProps().put("minPoolSize", dataSourceParameter.getMinPoolSize());
         result.getProps().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
+        if (null != dataSourceParameter.getAdditionalProps()) {
+            result.getAdditionalProps().putAll(dataSourceParameter.getAdditionalProps());
+        }
         return result;
     }
 }

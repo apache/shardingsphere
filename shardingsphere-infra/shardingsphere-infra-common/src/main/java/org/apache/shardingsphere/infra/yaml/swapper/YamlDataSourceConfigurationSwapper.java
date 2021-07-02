@@ -34,6 +34,8 @@ public final class YamlDataSourceConfigurationSwapper {
     
     private static final String DATA_SOURCE_CLASS_NAME_KEY = "dataSourceClassName";
     
+    private static final String ADDITIONAL_PROPERTIES_KEY = "properties";
+    
     /**
      * Swap to data sources from YAML data sources.
      *
@@ -55,6 +57,10 @@ public final class YamlDataSourceConfigurationSwapper {
         Map<String, Object> newDataSourceMap = new HashMap<>(yamlConfig);
         newDataSourceMap.remove(DATA_SOURCE_CLASS_NAME_KEY);
         DataSourceConfiguration result = new DataSourceConfiguration(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString());
+        if (yamlConfig.containsKey(ADDITIONAL_PROPERTIES_KEY)) {
+            result.getAdditionalProps().putAll((Map<String, Object>) yamlConfig.get(ADDITIONAL_PROPERTIES_KEY));
+            newDataSourceMap.remove(ADDITIONAL_PROPERTIES_KEY);
+        }
         result.getProps().putAll(newDataSourceMap);
         return result;
     }
@@ -68,6 +74,9 @@ public final class YamlDataSourceConfigurationSwapper {
     public Map<String, Object> swapToMap(final DataSourceConfiguration dataSourceConfig) {
         Map<String, Object> result = new HashMap<>(dataSourceConfig.getProps());
         result.put(DATA_SOURCE_CLASS_NAME_KEY, dataSourceConfig.getDataSourceClassName());
+        if (null != dataSourceConfig.getAdditionalProps() && !dataSourceConfig.getAdditionalProps().isEmpty()) {
+            result.put(ADDITIONAL_PROPERTIES_KEY, new HashMap(dataSourceConfig.getAdditionalProps()));
+        }
         return result;
     }
 }

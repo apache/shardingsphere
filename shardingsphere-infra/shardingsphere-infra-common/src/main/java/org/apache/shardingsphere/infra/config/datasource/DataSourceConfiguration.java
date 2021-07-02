@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Data source configuration.
@@ -62,6 +63,8 @@ public final class DataSourceConfiguration {
     private final String dataSourceClassName;
     
     private final Map<String, Object> props = new LinkedHashMap<>();
+    
+    private final Properties additionalProps = new Properties();
     
     /**
      * Get data source configuration.
@@ -124,7 +127,7 @@ public final class DataSourceConfiguration {
             }
         }
         Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
-        return decorator.isPresent() ? decorator.get().decorate(result) : result;
+        return decorator.isPresent() ? decorator.get().decorate(result, additionalProps) : result;
     }
     
     @SuppressWarnings("rawtypes")
