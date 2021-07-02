@@ -78,6 +78,7 @@ public final class ShowProcessListExecutorTest {
         Field childrenValuesField = showProcessListExecutor.getClass().getDeclaredField("processListData");
         childrenValuesField.setAccessible(true);
         String executionNodeValue = "executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
+            + "sql: alter table t_order add column a varchar(64) after order_id\n"
             + "startTimeMillis: 1617939785160\n"
             + "unitStatuses:\n"
             + "- status: EXECUTE_STATUS_START\n"
@@ -98,6 +99,7 @@ public final class ShowProcessListExecutorTest {
             assertThat(mergedResult.getValue(3, String.class), is("localhost:30000"));
             assertThat(mergedResult.getValue(4, String.class), is(SCHEMA_NAME));
             assertThat(mergedResult.getValue(7, String.class), is("Executing 1/2"));
+            assertThat(mergedResult.getValue(8, String.class), is("alter table t_order add column a varchar(64) after order_id"));
         }
     }
     

@@ -101,6 +101,9 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
             String statePrefix = "Executing ";
             rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
             String sql = processContext.getSql();
+            if (null != sql && sql.length() > 100) {
+                sql = sql.substring(0, 100);
+            }
             rowValues.add(sql != null ? sql : "");
             return new MemoryQueryResultDataRow(rowValues);
         }).collect(Collectors.toList());
