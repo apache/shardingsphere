@@ -32,4 +32,5 @@ jobs:
         with:
           workflow: Update Document
           repo: qiliangfan/shardingsphere-doc
+          token: ${{ secrets.PERSONAL_TOKEN }}
           inputs: '{"source": "Release Created!"}'
