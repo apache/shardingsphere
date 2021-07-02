@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -31,11 +33,13 @@ import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessRe
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 /**
  * Execute process engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class ExecuteProcessEngine {
     
     private static final Collection<ExecuteProcessReporter> HANDLERS;
@@ -55,6 +59,7 @@ public final class ExecuteProcessEngine {
     public static void initialize(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ConfigurationProperties props) {
         SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
         if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext, props)) {
+            //TODO put in server.yaml
             long noReportThresholdMillis = 100;
             ExecuteProcessReportContext reportContext = new ExecuteProcessReportContext(executionGroupContext.getExecutionID(), noReportThresholdMillis);
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), reportContext);
@@ -66,7 +71,10 @@ public final class ExecuteProcessEngine {
      * Clean.
      */
     public static void clean() {
-        ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
+        Object reportContext = ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
+        if (log.isDebugEnabled()) {
+            log.debug("clean, reportContext={}", YamlEngine.marshal(reportContext));
+        }
     }
     
     /**
@@ -74,10 +82,11 @@ public final class ExecuteProcessEngine {
      *
      * @param executionID execution ID
      * @param executionUnit execution unit
+     * @param dataMap data map
      */
-    public static void finish(final String executionID, final SQLExecutionUnit executionUnit) {
+    public static void finish(final String executionID, final SQLExecutionUnit executionUnit, final Map<String, Object> dataMap) {
         if (!HANDLERS.isEmpty()) {
-            HANDLERS.iterator().next().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
+            HANDLERS.iterator().next().report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE, dataMap);
         }
     }
     

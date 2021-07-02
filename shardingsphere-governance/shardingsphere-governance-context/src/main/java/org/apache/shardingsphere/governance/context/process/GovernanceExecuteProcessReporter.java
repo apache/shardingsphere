@@ -54,9 +54,9 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     }
     
     @Override
-    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants) {
+    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants, final Map<String, Object> dataMap) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
-        ShardingSphereEventBus.getInstance().post(new ExecuteProcessUnitReportEvent(executionID, executeProcessUnit, ExecutorDataMap.getValue()));
+        ShardingSphereEventBus.getInstance().post(new ExecuteProcessUnitReportEvent(executionID, executeProcessUnit, dataMap));
     }
     
     @Override

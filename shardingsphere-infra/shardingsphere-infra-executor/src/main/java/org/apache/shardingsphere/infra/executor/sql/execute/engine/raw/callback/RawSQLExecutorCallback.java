@@ -53,7 +53,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
         if (dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
             String executionID = dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString();
             for (RawSQLExecutionUnit each : inputs) {
-                ExecuteProcessEngine.finish(executionID, each);
+                ExecuteProcessEngine.finish(executionID, each, dataMap);
             }
         }
         return result;
