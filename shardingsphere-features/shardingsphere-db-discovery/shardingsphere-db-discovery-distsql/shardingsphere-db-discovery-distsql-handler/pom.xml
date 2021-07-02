@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-discovery-distsql-parser</artifactId>
+            <artifactId>shardingsphere-db-discovery-distsql-statement</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
