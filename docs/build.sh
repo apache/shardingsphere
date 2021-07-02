@@ -6,7 +6,7 @@ rm -rf target
 mkdir -p target/document/preview
 cd document
 hugo --cleanDestinationDir
-find ../document/public/ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/document/current|g' {} \;
+find ../document/public/ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/document/preview|g' {} \;
 cd public/en
 sed -i -e 's/cn/en/g' index.html
 cd ../..
