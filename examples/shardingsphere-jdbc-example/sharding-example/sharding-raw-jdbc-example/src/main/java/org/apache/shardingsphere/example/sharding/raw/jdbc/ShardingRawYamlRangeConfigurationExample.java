@@ -20,25 +20,26 @@ package org.apache.shardingsphere.example.sharding.raw.jdbc;
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.DataSourceFactory;
+import org.apache.shardingsphere.example.sharding.raw.jdbc.factory.YamlRangeDataSourceFactory;
 import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.SQLException;
 
 /*
  * Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  */
-public final class JavaConfigurationExampleMain {
-
+public final class ShardingRawYamlRangeConfigurationExample {
+    
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING;
 //    private static ShardingType shardingType = ShardingType.SHARDING_READWRITE_SPLITTING;
     
-    public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = DataSourceFactory.newInstance(shardingType);
+    public static void main(final String[] args) throws SQLException, IOException {
+        DataSource dataSource = YamlRangeDataSourceFactory.newInstance(shardingType);
         ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     

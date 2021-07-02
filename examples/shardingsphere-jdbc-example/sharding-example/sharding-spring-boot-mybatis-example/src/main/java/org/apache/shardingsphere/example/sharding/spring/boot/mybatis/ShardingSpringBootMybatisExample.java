@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.namespace.jpa;
+package org.apache.shardingsphere.example.sharding.spring.boot.mybatis;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-public final class ExampleMain {
-    
-    private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-sharding-tables.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-sharding-databases-tables.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-readwrite-splitting.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-sharding-readwrite-splitting.xml";
+@ComponentScan("org.apache.shardingsphere.example.core.mybatis")
+@MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
+@SpringBootApplication(exclude = JtaAutoConfiguration.class)
+public class ShardingSpringBootMybatisExample {
     
     public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ShardingSpringBootMybatisExample.class, args)) {
             ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));
         }
     }

@@ -30,7 +30,7 @@ import java.sql.SQLException;
 /*
  * Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  */
-public final class YamlConfigurationExampleMain {
+public final class ShardingRawYamlConfigurationExample {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
