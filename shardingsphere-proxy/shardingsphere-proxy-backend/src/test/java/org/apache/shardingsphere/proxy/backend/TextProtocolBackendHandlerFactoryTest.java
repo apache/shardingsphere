@@ -74,6 +74,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         mockGlobalRuleMetaData(metaDataContexts);
         ShardingSphereMetaData shardingSphereMetaData = mockShardingSphereMetaData();
+        when(metaDataContexts.getAllSchemaNames().contains("schema")).thenReturn(true);
         when(metaDataContexts.getMetaData("schema")).thenReturn(shardingSphereMetaData);
         when(metaDataContexts.getMetaData("schema").getResource()).thenReturn(mock(ShardingSphereResource.class));
         when(metaDataContexts.getMetaData("schema").getResource().getDatabaseType()).thenReturn(databaseType);
