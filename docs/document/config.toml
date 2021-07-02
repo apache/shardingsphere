@@ -27,6 +27,7 @@ themeVariant = "black"
 disableSearch = true
 editURL = "https://github.com/apache/shardingsphere/tree/master/docs/document/content/"
 
+test
 [markup]
 [markup.tableOfContents]
 endLevel = 3
