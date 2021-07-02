@@ -37,10 +37,10 @@ import java.sql.SQLException;
 @ComponentScan("org.apache.shardingsphere.example")
 @MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
 @SpringBootApplication
-public class SpringBootStarterExample {
+public class ProxySpringBootStarterExample {
     
     public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(SpringBootStarterExample.class, args)) {
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ProxySpringBootStarterExample.class, args)) {
             process(applicationContext);
         }
     }

@@ -23,12 +23,11 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 
 import java.util.Properties;
 
-public class SQLFormatExampleMain {
+public class SQLParserParameterizedExample {
 
     public static void main(String[] args) {
         String sql = "select age as b, name n from table1 join table2 where id=1 and name='lu';";
         Properties props = new Properties();
-        props.setProperty("parameterized", "false");
         SQLParserEngine parserEngine = new SQLParserEngine("MySQL");
         ParseTree tree = parserEngine.parse(sql, false);
         SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
