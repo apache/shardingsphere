@@ -64,7 +64,7 @@ public final class OpenGaussTableMetaDataLoader implements DialectTableMetaDataL
             if (null == indexMetaDataList) {
                 indexMetaDataList = Collections.emptyList();
             }
-            result.put(entry.getKey(), new TableMetaData(entry.getValue(), indexMetaDataList));
+            result.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList));
         }
         return result;
     }
