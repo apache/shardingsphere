@@ -405,11 +405,11 @@ public final class BackendConnectionTest {
         databaseCommunicationEngines.add(inUseEngine);
         inUseDatabaseCommunicationEngines.add(inUseEngine);
         Collection<SQLException> actual = backendConnection.closeDatabaseCommunicationEngines(false);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(expectedException));
         assertThat(inUseDatabaseCommunicationEngines.size(), is(1));
         assertThat(databaseCommunicationEngines.size(), is(1));
         verify(engine).close();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(expectedException));
         backendConnection.closeDatabaseCommunicationEngines(true);
         verify(inUseEngine).close();
         assertTrue(databaseCommunicationEngines.isEmpty());
