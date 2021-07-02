@@ -381,7 +381,7 @@ public final class BackendConnectionTest {
         doThrow(expectedException).when(engine).close();
         Collection<DatabaseCommunicationEngine> cachedDatabaseCommunicationEngines = getCachedDatabaseCommunicationEngines();
         cachedDatabaseCommunicationEngines.add(engine);
-        Collection<SQLException> actual = backendConnection.closeDatabaseCommunicationEngines();
+        Collection<SQLException> actual = backendConnection.closeDatabaseCommunicationEngines(true);
         verify(engine).close();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedException));

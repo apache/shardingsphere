@@ -54,9 +54,12 @@ public final class PostgreSQLPortal {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
+    private final BackendConnection backendConnection;
+    
     public PostgreSQLPortal(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
                             final BackendConnection backendConnection) throws SQLException {
         this.resultFormats = resultFormats;
+        this.backendConnection = backendConnection;
         if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement) {
             databaseCommunicationEngine = null;
             textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), sql, backendConnection);
@@ -117,13 +120,20 @@ public final class PostgreSQLPortal {
     }
     
     /**
+     * Suspend the portal.
+     */
+    public void suspend() {
+        backendConnection.markResourceInUse(databaseCommunicationEngine);
+    }
+    
+    /**
      * Close portal.
      *
      * @throws SQLException SQL exception
      */
     public void close() throws SQLException {
         if (null != databaseCommunicationEngine) {
-            databaseCommunicationEngine.close();
+            backendConnection.unmarkResourceInUse(databaseCommunicationEngine);
         }
         if (null != textProtocolBackendHandler) {
             textProtocolBackendHandler.close();

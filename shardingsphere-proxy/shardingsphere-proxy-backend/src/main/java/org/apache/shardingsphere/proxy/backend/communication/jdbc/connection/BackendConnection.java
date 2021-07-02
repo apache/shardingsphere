@@ -46,11 +46,12 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Backend connection.
@@ -75,7 +76,9 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<DatabaseCommunicationEngine> cachedDatabaseCommunicationEngines = new CopyOnWriteArrayList<>();
+    private final Collection<DatabaseCommunicationEngine> databaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    
+    private final Collection<DatabaseCommunicationEngine> inUseDatabaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
@@ -226,24 +229,49 @@ public final class BackendConnection implements ExecutorJDBCManager {
      * @param databaseCommunicationEngine database communication engine to be added
      */
     public void add(final DatabaseCommunicationEngine databaseCommunicationEngine) {
-        cachedDatabaseCommunicationEngines.add(databaseCommunicationEngine);
+        databaseCommunicationEngines.add(databaseCommunicationEngine);
+    }
+    
+    /**
+     * Mark a database communication engine as in use.
+     *
+     * @param databaseCommunicationEngine database communication engine to be added
+     */
+    public void markResourceInUse(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+        inUseDatabaseCommunicationEngines.add(databaseCommunicationEngine);
+    }
+    
+    /**
+     * Unmark an in use database communication engine.
+     *
+     * @param databaseCommunicationEngine database communication engine to be added
+     */
+    public void unmarkResourceInUse(final DatabaseCommunicationEngine databaseCommunicationEngine) {
+        inUseDatabaseCommunicationEngines.remove(databaseCommunicationEngine);
     }
     
     /**
      * Close database communication engines.
      *
+     * @param includeInUse include engines in use
      * @return SQL exception when engine close
      */
-    public synchronized Collection<SQLException> closeDatabaseCommunicationEngines() {
+    public synchronized Collection<SQLException> closeDatabaseCommunicationEngines(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
-        for (DatabaseCommunicationEngine each : cachedDatabaseCommunicationEngines) {
+        for (DatabaseCommunicationEngine each : databaseCommunicationEngines) {
+            if (!includeInUse && inUseDatabaseCommunicationEngines.contains(each)) {
+                continue;
+            }
             try {
                 each.close();
             } catch (final SQLException ex) {
                 result.add(ex);
             }
         }
-        cachedDatabaseCommunicationEngines.clear();
+        if (includeInUse) {
+            inUseDatabaseCommunicationEngines.clear();
+        }
+        databaseCommunicationEngines.retainAll(inUseDatabaseCommunicationEngines);
         return result;
     }
     

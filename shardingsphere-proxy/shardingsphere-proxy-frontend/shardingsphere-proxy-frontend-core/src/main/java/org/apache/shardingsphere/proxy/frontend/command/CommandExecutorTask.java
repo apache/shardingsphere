@@ -25,9 +25,9 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
-import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaHolder;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
@@ -80,7 +80,7 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
-                exceptions.addAll(backendConnection.closeDatabaseCommunicationEngines());
+                exceptions.addAll(backendConnection.closeDatabaseCommunicationEngines(true));
                 exceptions.addAll(backendConnection.closeConnections(false));
             }
             processClosedExceptions(exceptions);
@@ -121,6 +121,7 @@ public final class CommandExecutorTask implements Runnable {
     private Collection<SQLException> closeExecutionResources() {
         Collection<SQLException> result = new LinkedList<>();
         PrimaryVisitedManager.clear();
+        result.addAll(backendConnection.closeDatabaseCommunicationEngines(false));
         result.addAll(backendConnection.closeFederateExecutor());
         return result;
     }
