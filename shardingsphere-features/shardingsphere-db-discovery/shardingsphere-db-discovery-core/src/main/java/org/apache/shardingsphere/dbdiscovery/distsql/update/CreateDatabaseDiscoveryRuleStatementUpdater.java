@@ -115,6 +115,11 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLCre
     }
     
     @Override
+    public Class<DatabaseDiscoveryRuleConfiguration> getRuleConfigurationClass() {
+        return DatabaseDiscoveryRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return CreateDatabaseDiscoveryRuleStatement.class.getCanonicalName();
     }

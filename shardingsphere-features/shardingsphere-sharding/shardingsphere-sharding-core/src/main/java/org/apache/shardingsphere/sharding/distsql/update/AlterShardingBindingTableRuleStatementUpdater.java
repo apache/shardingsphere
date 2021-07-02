@@ -89,6 +89,11 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLA
     }
     
     @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
+        return ShardingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return AlterShardingBindingTableRulesStatement.class.getCanonicalName();
     }

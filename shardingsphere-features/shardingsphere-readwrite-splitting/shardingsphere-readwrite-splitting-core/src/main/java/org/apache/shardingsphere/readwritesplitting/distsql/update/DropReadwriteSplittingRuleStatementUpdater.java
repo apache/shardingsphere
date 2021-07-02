@@ -72,6 +72,11 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RDLDrop
     }
     
     @Override
+    public Class<ReadwriteSplittingRuleConfiguration> getRuleConfigurationClass() {
+        return ReadwriteSplittingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return DropReadwriteSplittingRuleStatement.class.getCanonicalName();
     }

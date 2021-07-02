@@ -134,6 +134,11 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     }
     
     @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
+        return ShardingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return CreateShardingTableRuleStatement.class.getCanonicalName();
     }

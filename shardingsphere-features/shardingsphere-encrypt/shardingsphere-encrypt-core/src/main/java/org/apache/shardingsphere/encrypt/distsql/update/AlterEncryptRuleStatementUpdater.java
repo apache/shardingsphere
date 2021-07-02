@@ -110,6 +110,11 @@ public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<A
     }
     
     @Override
+    public Class<EncryptRuleConfiguration> getRuleConfigurationClass() {
+        return EncryptRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return AlterEncryptRuleStatement.class.getCanonicalName();
     }

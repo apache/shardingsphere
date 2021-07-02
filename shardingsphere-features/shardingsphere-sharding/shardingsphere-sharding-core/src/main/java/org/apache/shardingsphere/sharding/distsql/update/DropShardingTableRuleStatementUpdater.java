@@ -98,6 +98,11 @@ public final class DropShardingTableRuleStatementUpdater implements RDLDropUpdat
     }
     
     @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
+        return ShardingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return DropShardingTableRuleStatement.class.getCanonicalName();
     }

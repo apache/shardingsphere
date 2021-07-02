@@ -242,7 +242,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void assertExecuteShowResourceContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
@@ -265,6 +265,7 @@ public final class DistSQLBackendHandlerFactoryTest {
             when(mockedMetaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(metaData.getResource().getDataSources()).thenReturn(Collections.emptyMap());
             when(metaData.getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
             when(mockedMetaDataContexts.getMetaData("schema")).thenReturn(metaData);
             metaDataContexts.set(ProxyContext.getInstance(), mockedMetaDataContexts);

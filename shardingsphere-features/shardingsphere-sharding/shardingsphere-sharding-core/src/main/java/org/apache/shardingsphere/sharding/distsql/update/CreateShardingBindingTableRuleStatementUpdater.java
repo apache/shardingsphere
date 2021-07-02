@@ -97,6 +97,11 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
     }
     
     @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
+        return ShardingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return CreateShardingBindingTableRulesStatement.class.getCanonicalName();
     }

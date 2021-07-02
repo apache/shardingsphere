@@ -55,6 +55,11 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements RD
     }
     
     @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
+        return ShardingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return AlterShardingBroadcastTableRulesStatement.class.getCanonicalName();
     }
