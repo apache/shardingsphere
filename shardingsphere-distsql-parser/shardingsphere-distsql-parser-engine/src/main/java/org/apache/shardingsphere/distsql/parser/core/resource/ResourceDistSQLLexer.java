@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.distsql.parser.core.resource;
 
 import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementLexer;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
  * SQL lexer for resource dist SQL.
  */
-public final class ResourceDistSQLLexer extends DistSQLStatementLexer implements SQLLexer {
+public final class ResourceDistSQLLexer extends ResourceStatementLexer implements SQLLexer {
     
     public ResourceDistSQLLexer(final CharStream input) {
         super(input);

@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -45,14 +46,7 @@ public final class AddResourcesStatementConverterTest {
     private Collection<DataSourceSegment> createDataSourceSegments() {
         Collection<DataSourceSegment> result = new LinkedList<>();
         for (int i = 0; i < 2; i++) {
-            DataSourceSegment segment = new DataSourceSegment();
-            segment.setName(String.format("ds%s", i));
-            segment.setHostName("127.0.0.1");
-            segment.setPassword("3306");
-            segment.setDb(String.format("demo_ds_%s", i));
-            segment.setUser(String.format("root%s", i));
-            segment.setPassword(String.format("root%s", i));
-            result.add(segment);
+            result.add(new DataSourceSegment(String.format("ds%s", i), "127.0.0.1", "3306", String.format("demo_ds_%s", i), String.format("root%s", i), String.format("root%s", i), new Properties()));
         }
         return result;
     }

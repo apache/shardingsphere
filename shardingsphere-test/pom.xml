@@ -35,6 +35,7 @@
         <module>shardingsphere-integration-agent-test</module>
         <module>shardingsphere-integration-scaling-test</module>
         <module>shardingsphere-rewrite-test</module>
+        <module>shardingsphere-parser-test</module>
     </modules>
     
     <properties>

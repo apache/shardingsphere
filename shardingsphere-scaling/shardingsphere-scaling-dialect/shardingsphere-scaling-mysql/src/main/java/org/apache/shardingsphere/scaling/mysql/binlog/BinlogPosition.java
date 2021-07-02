@@ -28,8 +28,8 @@ import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
  */
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Setter
 @Getter
+@Setter
 public final class BinlogPosition implements ScalingPosition<BinlogPosition> {
     
     private final String filename;

@@ -37,6 +37,17 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
+    <metadata data-nodes="write_ds_0.t_order_federate,read_ds_0.t_order_federate">
+        <column name="order_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <metadata data-nodes="write_ds_1.t_order_item_federate,read_ds_1.t_order_item_federate">
+        <column name="item_id" type="numeric" />
+        <column name="order_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
     <row data-node="write_ds_0.t_single_table" values="1, 1000, init" />
     <row data-node="write_ds_0.t_single_table" values="2, 1101, init" />
     <row data-node="write_ds_0.t_single_table" values="3, 1202, init" />
@@ -351,6 +362,12 @@
     <row data-node="write_ds_7.t_broadcast_table" values="1, init" />
     <row data-node="write_ds_8.t_broadcast_table" values="1, init" />
     <row data-node="write_ds_9.t_broadcast_table" values="1, init" />
+    <row data-node="write_ds_0.t_order_federate" values="1000, 10, init" />
+    <row data-node="write_ds_0.t_order_federate" values="1001, 11, init" />
+    <row data-node="write_ds_1.t_order_item_federate" values="100000, 1000, 10, init" />
+    <row data-node="write_ds_1.t_order_item_federate" values="100001, 1000, 10, init" />
+    <row data-node="write_ds_1.t_order_item_federate" values="100100, 1001, 10, init" />
+    <row data-node="write_ds_1.t_order_item_federate" values="100101, 1001, 10, init" />
     <row data-node="read_ds_0.t_single_table" values="1, 1000, init_read" />
     <row data-node="read_ds_0.t_single_table" values="2, 1101, init_read" />
     <row data-node="read_ds_0.t_single_table" values="3, 1202, init_read" />
@@ -665,4 +682,10 @@
     <row data-node="read_ds_7.t_broadcast_table" values="1, init_read" />
     <row data-node="read_ds_8.t_broadcast_table" values="1, init_read" />
     <row data-node="read_ds_9.t_broadcast_table" values="1, init_read" />
+    <row data-node="read_ds_0.t_order_federate" values="1000, 10, init" />
+    <row data-node="read_ds_0.t_order_federate" values="1001, 11, init" />
+    <row data-node="read_ds_1.t_order_item_federate" values="100000, 1000, 10, init" />
+    <row data-node="read_ds_1.t_order_item_federate" values="100001, 1000, 10, init" />
+    <row data-node="read_ds_1.t_order_item_federate" values="100100, 1001, 10, init" />
+    <row data-node="read_ds_1.t_order_item_federate" values="100101, 1001, 10, init" />
 </dataset>

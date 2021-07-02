@@ -28,7 +28,7 @@ dropResource
     ;
 
 dataSource
-    : dataSourceName LP HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName COMMA USER EQ user (COMMA PASSWORD EQ password)? RP
+    : dataSourceName LP HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA PROPERTIES LP connectionProperties? RP)? RP
     ;
 
 dataSourceName
@@ -59,110 +59,10 @@ password
     : IDENTIFIER | INT | STRING
     ;
 
-createReadwriteSplittingRule
-    : CREATE READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
+connectionProperties
+    : connectionProperty (COMMA connectionProperty)*
     ;
 
-readwriteSplittingRuleDefinition
-    : ruleName LP (staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition) (COMMA functionDefinition)? RP
-    ;
-
-staticReadwriteSplittingRuleDefinition
-    : WRITE_RESOURCE EQ writeResourceName COMMA READ_RESOURCES LP resourceName (COMMA resourceName)* RP
-    ;
-
-dynamicReadwriteSplittingRuleDefinition
-    : AUTO_AWARE_RESOURCE EQ IDENTIFIER
-    ;
-
-alterReadwriteSplittingRule
-    : ALTER READWRITE_SPLITTING RULE readwriteSplittingRuleDefinition (COMMA readwriteSplittingRuleDefinition)*
-    ;
-
-resources
-    : RESOURCES LP IDENTIFIER (COMMA IDENTIFIER)* RP
-    ;
-
-writeResourceName
-    : resourceName
-    ;
-
-resourceName
-    : IDENTIFIER
-    ;
-
-ruleName
-    : IDENTIFIER
-    ;
-
-tableName
-    : IDENTIFIER
-    ;
-
-columnName
-    : IDENTIFIER
-    ;
-
-dropReadwriteSplittingRule
-    : DROP READWRITE_SPLITTING RULE IDENTIFIER (COMMA IDENTIFIER)*
-    ;
-
-functionDefinition
-    : TYPE LP NAME EQ functionName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-functionName
-    : IDENTIFIER
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
-    ;
-
-createDatabaseDiscoveryRule
-    : CREATE DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
-    ;
-
-databaseDiscoveryRuleDefinition
-    : ruleName LP resources COMMA functionDefinition RP
-    ;
-
-alterDatabaseDiscoveryRule
-    : ALTER DB_DISCOVERY RULE databaseDiscoveryRuleDefinition  (COMMA databaseDiscoveryRuleDefinition)*
-    ;
-
-dropDatabaseDiscoveryRule
-    : DROP DB_DISCOVERY RULE IDENTIFIER (COMMA IDENTIFIER)*
-    ;
-
-createEncryptRule
-    : CREATE ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
-    ;
-
-encryptRuleDefinition
-    : tableName LP (RESOURCE EQ resourceName COMMA)? COLUMNS LP columnDefinition (COMMA columnDefinition)*  RP RP
-    ;
-
-columnDefinition
-    : LP NAME EQ columnName (COMMA PLAIN EQ plainColumnName)? COMMA CIPHER EQ cipherColumnName COMMA functionDefinition RP
-    ;
-
-alterEncryptRule
-    : ALTER ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
-    ;
-
-dropEncryptRule
-    : DROP ENCRYPT RULE IDENTIFIER (COMMA IDENTIFIER)*
-    ;
-
-plainColumnName
-    : IDENTIFIER
-    ;
-
-cipherColumnName
-    : IDENTIFIER
+connectionProperty
+    : key=IDENTIFIER EQ value=IDENTIFIER
     ;

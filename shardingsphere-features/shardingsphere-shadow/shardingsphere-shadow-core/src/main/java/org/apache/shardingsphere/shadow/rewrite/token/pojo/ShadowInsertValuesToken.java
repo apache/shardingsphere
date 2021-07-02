@@ -20,8 +20,10 @@ package org.apache.shardingsphere.shadow.rewrite.token.pojo;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
 
+import java.util.StringJoiner;
+
 /**
- * Insert values token for encrypt.
+ * Insert values token for shadow.
  */
 public final class ShadowInsertValuesToken extends InsertValuesToken {
     
@@ -31,11 +33,11 @@ public final class ShadowInsertValuesToken extends InsertValuesToken {
     
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
+        String delimiter = ", ";
+        StringJoiner stringJoiner = new StringJoiner(delimiter);
         for (InsertValue each : getInsertValues()) {
-            result.append(each).append(", ");
+            stringJoiner.add(each.toString());
         }
-        result.delete(result.length() - 2, result.length());
-        return result.toString();
+        return stringJoiner.toString();
     }
 }

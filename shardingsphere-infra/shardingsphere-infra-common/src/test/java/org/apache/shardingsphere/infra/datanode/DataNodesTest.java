@@ -75,11 +75,11 @@ public final class DataNodesTest {
         }
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test
     public void assertGetDataNodesWithTableAbsent() {
         DataNodes dataNodes = new DataNodes(Lists.newArrayList(buildDataSourceContainedRule(), buildDataNodeContainedRule(true)));
         Collection<DataNode> userDataNodes = dataNodes.getDataNodes("order");
-        assertThat(userDataNodes, is(Collections.emptyMap()));
+        assertThat(userDataNodes, is(Collections.emptyList()));
     }
     
     @Test

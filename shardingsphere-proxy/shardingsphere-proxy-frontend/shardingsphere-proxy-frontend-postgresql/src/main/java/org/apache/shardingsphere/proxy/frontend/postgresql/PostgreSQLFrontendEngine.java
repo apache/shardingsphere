@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.PostgreSQLAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecuteEngine;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContextRegistry;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
@@ -47,6 +48,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     @Override
     public void release(final BackendConnection backendConnection) {
         PostgreSQLBinaryStatementRegistry.getInstance().unregister(backendConnection.getConnectionId());
+        PostgreSQLConnectionContextRegistry.getInstance().remove(backendConnection.getConnectionId());
     }
     
     @Override

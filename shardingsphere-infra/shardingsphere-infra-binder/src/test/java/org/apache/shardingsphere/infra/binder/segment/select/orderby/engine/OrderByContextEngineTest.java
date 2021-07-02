@@ -245,7 +245,7 @@ public final class OrderByContextEngineTest {
     
     private ShardingSphereSchema getShardingSphereSchemaForMySQLSelectWithoutOrderBy() {
         Map<String, TableMetaData> tables = new HashMap<>();
-        TableMetaData orderTable = new TableMetaData(Arrays.asList(
+        TableMetaData orderTable = new TableMetaData("t_order", Arrays.asList(
             new ColumnMetaData("order_id", Types.INTEGER, true, true, false),
             new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
             new ColumnMetaData("status", Types.VARCHAR, false, false, false)

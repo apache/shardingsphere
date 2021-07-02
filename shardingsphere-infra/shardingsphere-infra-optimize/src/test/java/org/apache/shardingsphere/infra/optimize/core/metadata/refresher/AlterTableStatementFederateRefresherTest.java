@@ -210,7 +210,7 @@ public final class AlterTableStatementFederateRefresherTest {
     }
     
     private FederateSchemaMetadata buildSchema() {
-        Map<String, TableMetaData> metaData = ImmutableMap.of("t_order", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", 1, false, false, false)),
+        Map<String, TableMetaData> metaData = ImmutableMap.of("t_order", new TableMetaData("t_order", Collections.singletonList(new ColumnMetaData("order_id", 1, false, false, false)),
                         Collections.singletonList(new IndexMetaData("index"))));
         return new FederateSchemaMetadata("t_order", metaData);
     }
