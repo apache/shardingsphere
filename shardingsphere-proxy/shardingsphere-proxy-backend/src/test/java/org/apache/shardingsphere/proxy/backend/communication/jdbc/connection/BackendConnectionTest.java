@@ -369,28 +369,63 @@ public final class BackendConnectionTest {
     public void assertAddDatabaseCommunicationEngine() {
         DatabaseCommunicationEngine expectedEngine = mock(DatabaseCommunicationEngine.class);
         backendConnection.add(expectedEngine);
-        Collection<DatabaseCommunicationEngine> actual = getCachedDatabaseCommunicationEngines();
+        Collection<DatabaseCommunicationEngine> actual = getDatabaseCommunicationEngines();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
     
     @Test
+    public void assertMarkDatabaseCommunicationEngineInUse() {
+        DatabaseCommunicationEngine expectedEngine = mock(DatabaseCommunicationEngine.class);
+        backendConnection.add(expectedEngine);
+        backendConnection.markResourceInUse(expectedEngine);
+        Collection<DatabaseCommunicationEngine> actual = getInUseDatabaseCommunicationEngines();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(expectedEngine));
+    }
+    
+    @Test
+    public void assertUnmarkInUseDatabaseCommunicationEngine() {
+        DatabaseCommunicationEngine engine = mock(DatabaseCommunicationEngine.class);
+        Collection<DatabaseCommunicationEngine> actual = getInUseDatabaseCommunicationEngines();
+        actual.add(engine);
+        backendConnection.unmarkResourceInUse(engine);
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
     public void assertCloseDatabaseCommunicationEngines() throws SQLException {
         DatabaseCommunicationEngine engine = mock(DatabaseCommunicationEngine.class);
+        DatabaseCommunicationEngine inUseEngine = mock(DatabaseCommunicationEngine.class);
         SQLException expectedException = mock(SQLException.class);
         doThrow(expectedException).when(engine).close();
-        Collection<DatabaseCommunicationEngine> cachedDatabaseCommunicationEngines = getCachedDatabaseCommunicationEngines();
-        cachedDatabaseCommunicationEngines.add(engine);
-        Collection<SQLException> actual = backendConnection.closeDatabaseCommunicationEngines();
-        verify(engine).close();
+        Collection<DatabaseCommunicationEngine> databaseCommunicationEngines = getDatabaseCommunicationEngines();
+        Collection<DatabaseCommunicationEngine> inUseDatabaseCommunicationEngines = getInUseDatabaseCommunicationEngines();
+        databaseCommunicationEngines.add(engine);
+        databaseCommunicationEngines.add(inUseEngine);
+        inUseDatabaseCommunicationEngines.add(inUseEngine);
+        Collection<SQLException> actual = backendConnection.closeDatabaseCommunicationEngines(false);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedException));
-        assertTrue(cachedDatabaseCommunicationEngines.isEmpty());
+        assertThat(inUseDatabaseCommunicationEngines.size(), is(1));
+        assertThat(databaseCommunicationEngines.size(), is(1));
+        verify(engine).close();
+        backendConnection.closeDatabaseCommunicationEngines(true);
+        verify(inUseEngine).close();
+        assertTrue(databaseCommunicationEngines.isEmpty());
+        assertTrue(inUseDatabaseCommunicationEngines.isEmpty());
     }
     
     @SneakyThrows
-    private Collection<DatabaseCommunicationEngine> getCachedDatabaseCommunicationEngines() {
-        Field field = BackendConnection.class.getDeclaredField("cachedDatabaseCommunicationEngines");
+    private Collection<DatabaseCommunicationEngine> getDatabaseCommunicationEngines() {
+        Field field = BackendConnection.class.getDeclaredField("databaseCommunicationEngines");
+        field.setAccessible(true);
+        return (Collection<DatabaseCommunicationEngine>) field.get(backendConnection);
+    }
+    
+    @SneakyThrows
+    private Collection<DatabaseCommunicationEngine> getInUseDatabaseCommunicationEngines() {
+        Field field = BackendConnection.class.getDeclaredField("inUseDatabaseCommunicationEngines");
         field.setAccessible(true);
         return (Collection<DatabaseCommunicationEngine>) field.get(backendConnection);
     }
