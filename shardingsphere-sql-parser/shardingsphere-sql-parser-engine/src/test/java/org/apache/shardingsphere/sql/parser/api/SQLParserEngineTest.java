@@ -78,10 +78,9 @@ public class SQLParserEngineTest {
         parseTreeCacheField.set(sqlParserEngine, parseTreeCache);
         
         sqlParserEngine.parse(SQL, true);
-        sqlParserEngine.parse(SQL, true);
-        
         verify(sqlParserExecutor, times(1)).parse(SQL);
-        
+        sqlParserEngine.parse(SQL, true);
+        verify(sqlParserExecutor, times(1)).parse(SQL);
         sqlParserEngine.parse(SQL, false);
         verify(sqlParserExecutor, times(2)).parse(SQL);
     }
