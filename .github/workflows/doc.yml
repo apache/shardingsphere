@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Deploy document
+name: Deploy Document
 
 on:
   release:
@@ -33,6 +33,6 @@ jobs:
         uses: benc-uk/workflow-dispatch@v1  
         with:
           workflow: Update Document
-          repo: qiliangfan/shardingsphere-doc
           token: ${{ secrets.PERSONAL_TOKEN }}
+          repo: qiliangfan/shardingsphere-doc
           inputs: '{"source": "Release Created!"}'
