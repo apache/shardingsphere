@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.config.datasource;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * JDBC parameter decorator.
@@ -30,9 +31,10 @@ public interface JDBCParameterDecorator<T extends DataSource> {
      * Decorate data source.
      * 
      * @param dataSource data source to be decorated
+     * @param additionalProps additional properties to decorate the data source
      * @return decorated data source
      */
-    T decorate(T dataSource);
+    T decorate(T dataSource, Properties additionalProps);
     
     /**
      * Get data source type.

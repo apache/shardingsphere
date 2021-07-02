@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.de
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
+import java.util.Properties;
 
 /**
  * JDBC parameter decorator for HikariCP.
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
 public final class HikariJDBCParameterDecorator implements JDBCParameterDecorator<HikariDataSource> {
     
     @Override
-    public HikariDataSource decorate(final HikariDataSource dataSource) {
+    public HikariDataSource decorate(final HikariDataSource dataSource, final Properties additionalProps) {
         dataSource.getDataSourceProperties().setProperty("useServerPrepStmts", Boolean.TRUE.toString());
         dataSource.getDataSourceProperties().setProperty("cachePrepStmts", Boolean.TRUE.toString());
         dataSource.getDataSourceProperties().setProperty("prepStmtCacheSize", "200000");
@@ -39,6 +40,9 @@ public final class HikariJDBCParameterDecorator implements JDBCParameterDecorato
         dataSource.getDataSourceProperties().setProperty("maintainTimeStats", Boolean.FALSE.toString());
         dataSource.getDataSourceProperties().setProperty("netTimeoutForStreamingResults", "0");
         dataSource.getDataSourceProperties().setProperty("tinyInt1isBit", Boolean.FALSE.toString());
+        if (null != additionalProps) {
+            dataSource.getDataSourceProperties().putAll(additionalProps);
+        }
         HikariDataSource result = new HikariDataSource(dataSource);
         dataSource.close();
         return result;

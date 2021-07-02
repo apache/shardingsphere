@@ -79,7 +79,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
             return null;
         }
         Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
-        return decorator.isPresent() ? decorator.get().decorate(result) : result;
+        return decorator.isPresent() ? decorator.get().decorate(result, dataSourceParameter.getAdditionalProps()) : result;
     }
     
     private void validateDriverClassName(final String driverClassName) {
