@@ -41,7 +41,7 @@ import java.sql.SQLException;
  * 1. Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  * 2. Please make sure sharding-governance-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
  */
-public final class JavaConfigurationExampleMain {
+public final class GovernanceRawJavaConfigurationExample {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.READWRITE_SPLITTING;

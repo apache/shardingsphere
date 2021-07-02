@@ -31,10 +31,10 @@ import java.sql.SQLException;
 @ComponentScan("org.apache.shardingsphere.example.core.jpa")
 @EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
-public class ExampleMain {
+public class GovernanceSpringBootExample {
     
     public static void main(final String[] args) throws SQLException {
-        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
+        try (ConfigurableApplicationContext applicationContext = SpringApplication.run(GovernanceSpringBootExample.class, args)) {
             ExampleExecuteTemplate.run(applicationContext.getBean(ExampleService.class));
         }
     }
