@@ -43,7 +43,8 @@ public final class DistSQLStatementParserEngineTest {
     
     private static final String ADD_RESOURCE_SINGLE_WITH_EMPTY_PROPERTIES = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PROPERTIES());";
     
-    private static final String ADD_RESOURCE_SINGLE_WITH_PROPERTIES = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PASSWORD=123456,PROPERTIES(\"useSSL\"=\"false\",\"serverTimezone\"=\"UTC\"));";
+    private static final String ADD_RESOURCE_SINGLE_WITH_PROPERTIES = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PASSWORD=123456,PROPERTIES(" 
+            + "\"useSSL\"=\"false\",\"serverTimezone\"=\"UTC\"));";
     
     private static final String DROP_RESOURCE = "DROP RESOURCE ds_0,ds_1";
     
