@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
@@ -95,7 +96,7 @@ public final class CommandExecutorTaskTest {
     
     @Before
     public void setup() {
-        when(backendConnection.closeDatabaseCommunicationEngines(true)).thenReturn(Collections.emptyList());
+        when(backendConnection.closeDatabaseCommunicationEngines(anyBoolean())).thenReturn(Collections.emptyList());
     }
     
     @Test
