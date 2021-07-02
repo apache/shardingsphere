@@ -24,6 +24,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ShowResourcesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ConnectionPropertiesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ConnectionPropertyContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
@@ -33,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -48,7 +51,16 @@ public final class ResourceDistSQLStatementVisitor extends ResourceStatementBase
     @Override
     public ASTNode visitDataSource(final DataSourceContext ctx) {
         return new DataSourceSegment(
-                ctx.dataSourceName().getText(), ctx.hostName().getText(), ctx.port().getText(), ctx.dbName().getText(), ctx.user().getText(), null == ctx.password() ? "" : ctx.password().getText());
+                ctx.dataSourceName().getText(), ctx.hostName().getText(), ctx.port().getText(), ctx.dbName().getText(), ctx.user().getText(), null == ctx.password() ? "" : ctx.password().getText(),
+                null == ctx.connectionProperties() ? new Properties() : getConnectionProperties(ctx.connectionProperties()));
+    }
+    
+    private Properties getConnectionProperties(final ConnectionPropertiesContext ctx) {
+        Properties result = new Properties();
+        for (ConnectionPropertyContext each : ctx.connectionProperty()) {
+            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+        }
+        return result;
     }
     
     @Override
