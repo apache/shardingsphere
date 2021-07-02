@@ -46,6 +46,9 @@
         
         <module>shardingsphere-test</module>
         <module>shardingsphere-distribution</module>
+        <module>
+            shardingsphere-features/shardingsphere-db-discovery/shardingsphere-db-discovery-distsql/shardingsphere-db-discovery-distsql-handler
+        </module>
     </modules>
     
     <properties>
