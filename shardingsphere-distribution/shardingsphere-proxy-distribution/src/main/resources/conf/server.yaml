@@ -59,3 +59,5 @@
 #  sql-show: false
 #  check-table-metadata-enabled: false
 #  lock-wait-timeout-milliseconds: 50000 # The maximum time to wait for a lock
+#  show-process-list-enabled: false
+#  show-process-list-no-report-threshold-millis: 100

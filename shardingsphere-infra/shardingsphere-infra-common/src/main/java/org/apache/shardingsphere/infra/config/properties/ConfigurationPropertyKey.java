@@ -119,6 +119,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(false), boolean.class),
     
     /**
+     * If execution time less than this threshold, then process will not be reported.
+     */
+    SHOW_PROCESS_LIST_NO_REPORT_THRESHOLD_MILLIS("show-process-list-no-report-threshold-millis", String.valueOf(100), long.class),
+    
+    /**
      * The length of time in milliseconds an SQL waits for a global lock before giving up.
      */
     LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class),
