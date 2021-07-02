@@ -52,6 +52,11 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     }
     
     @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
+        return ShardingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return CreateShardingBroadcastTableRulesStatement.class.getCanonicalName();
     }

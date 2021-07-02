@@ -130,6 +130,11 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RDLAlte
     }
     
     @Override
+    public Class<DatabaseDiscoveryRuleConfiguration> getRuleConfigurationClass() {
+        return DatabaseDiscoveryRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return AlterDatabaseDiscoveryRuleStatement.class.getCanonicalName();
     }

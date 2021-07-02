@@ -95,6 +95,11 @@ public final class CreateEncryptRuleStatementUpdater implements RDLCreateUpdater
     }
     
     @Override
+    public Class<EncryptRuleConfiguration> getRuleConfigurationClass() {
+        return EncryptRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return CreateEncryptRuleStatement.class.getCanonicalName();
     }

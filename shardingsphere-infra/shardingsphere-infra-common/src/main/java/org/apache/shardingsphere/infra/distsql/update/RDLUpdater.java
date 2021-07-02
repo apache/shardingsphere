@@ -39,4 +39,11 @@ public interface RDLUpdater<T extends SQLStatement, R extends RuleConfiguration>
      * @param resource ShardingSphere resource
      */
     void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig, ShardingSphereResource resource);
+    
+    /**
+     * Get rule configuration class.
+     * 
+     * @return rule configuration class
+     */
+    Class<R> getRuleConfigurationClass();
 }

@@ -170,6 +170,11 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
     }
     
     @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
+        return ShardingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return AlterShardingTableRuleStatement.class.getCanonicalName();
     }

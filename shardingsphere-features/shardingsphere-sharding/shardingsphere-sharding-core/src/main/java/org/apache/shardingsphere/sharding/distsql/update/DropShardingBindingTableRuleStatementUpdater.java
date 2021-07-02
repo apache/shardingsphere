@@ -47,6 +47,11 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RDLDr
     }
     
     @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
+        return ShardingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return DropShardingBindingTableRulesStatement.class.getCanonicalName();
     }

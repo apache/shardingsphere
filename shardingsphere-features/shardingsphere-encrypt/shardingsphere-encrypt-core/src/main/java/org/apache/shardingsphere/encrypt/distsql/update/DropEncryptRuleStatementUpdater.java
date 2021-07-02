@@ -70,6 +70,11 @@ public final class DropEncryptRuleStatementUpdater implements RDLDropUpdater<Dro
     }
     
     @Override
+    public Class<EncryptRuleConfiguration> getRuleConfigurationClass() {
+        return EncryptRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return DropEncryptRuleStatement.class.getCanonicalName();
     }

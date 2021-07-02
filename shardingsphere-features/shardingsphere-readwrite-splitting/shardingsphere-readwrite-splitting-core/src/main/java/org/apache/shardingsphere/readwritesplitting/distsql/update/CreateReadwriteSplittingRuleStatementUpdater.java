@@ -112,6 +112,11 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RDLCr
     }
     
     @Override
+    public Class<ReadwriteSplittingRuleConfiguration> getRuleConfigurationClass() {
+        return ReadwriteSplittingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return CreateReadwriteSplittingRuleStatement.class.getCanonicalName();
     }

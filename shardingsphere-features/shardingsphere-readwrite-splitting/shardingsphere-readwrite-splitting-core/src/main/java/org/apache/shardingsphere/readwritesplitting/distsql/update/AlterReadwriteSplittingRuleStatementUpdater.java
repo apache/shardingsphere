@@ -124,6 +124,11 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RDLAlt
     }
     
     @Override
+    public Class<ReadwriteSplittingRuleConfiguration> getRuleConfigurationClass() {
+        return ReadwriteSplittingRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return AlterReadwriteSplittingRuleStatement.class.getCanonicalName();
     }

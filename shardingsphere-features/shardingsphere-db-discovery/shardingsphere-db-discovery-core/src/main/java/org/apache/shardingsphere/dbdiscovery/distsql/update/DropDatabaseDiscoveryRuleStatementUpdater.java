@@ -72,6 +72,11 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RDLDropU
     }
     
     @Override
+    public Class<DatabaseDiscoveryRuleConfiguration> getRuleConfigurationClass() {
+        return DatabaseDiscoveryRuleConfiguration.class;
+    }
+    
+    @Override
     public String getType() {
         return DropDatabaseDiscoveryRuleStatement.class.getCanonicalName();
     }
