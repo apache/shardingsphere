@@ -31,9 +31,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setup Workflow Dispatch
-        uses: benc-uk/workflow-dispatch@v1  
+        uses: mvasigh/dispatch-action@main
         with:
           workflow: Update Document
           token: ${{ secrets.PERSONAL_TOKEN }}
-          repo: qiliangfan/shardingsphere-doc
-          inputs: '{"source": "Release Created!"}'
+          repo: shardingsphere-doc
+          owner: qiliangfan
+          event_type: update
