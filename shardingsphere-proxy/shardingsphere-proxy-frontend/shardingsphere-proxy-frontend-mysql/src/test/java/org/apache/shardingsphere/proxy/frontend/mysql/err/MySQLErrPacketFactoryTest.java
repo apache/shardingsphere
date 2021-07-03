@@ -20,12 +20,11 @@ package org.apache.shardingsphere.proxy.frontend.mysql.err;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.sharding.distsql.exception.ShardingTableRuleNotExistedException;
-import org.apache.shardingsphere.sharding.distsql.exception.ShardingTableRulesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
@@ -38,13 +37,13 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class MySQLErrPacketFactoryTest {
     
@@ -194,23 +193,18 @@ public final class MySQLErrPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithShardingTableRuleNotExistedException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ShardingTableRuleNotExistedException("test", Collections.singleton("tbl")));
+    public void assertNewInstanceWithRuleDefinitionViolationException() {
+        RuleDefinitionViolationException exception = mock(RuleDefinitionViolationException.class);
+        when(exception.getErrorCode()).thenReturn(1);
+        when(exception.getSqlState()).thenReturn("C0000");
+        when(exception.getErrorMessage()).thenReturn("Test error");
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(exception);
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1106));
-        assertThat(actual.getSqlState(), is("C1106"));
-        assertThat(actual.getErrorMessage(), is("Sharding table rules [tbl] do not exist in schema test."));
+        assertThat(actual.getErrorCode(), is(1));
+        assertThat(actual.getSqlState(), is("C0000"));
+        assertThat(actual.getErrorMessage(), is("Test error"));
     }
     
-    @Test
-    public void assertNewInstanceWithTablesInUsedException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ShardingTableRulesInUsedException(Collections.singleton("tbl")));
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1107));
-        assertThat(actual.getSqlState(), is("C1107"));
-        assertThat(actual.getErrorMessage(), is("Sharding table rules [tbl] are still used by binding table rule."));
-    }
-
     @Test
     public void assertNewInstanceWithUnsupportedCommandException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedCommandException("No reason"));
