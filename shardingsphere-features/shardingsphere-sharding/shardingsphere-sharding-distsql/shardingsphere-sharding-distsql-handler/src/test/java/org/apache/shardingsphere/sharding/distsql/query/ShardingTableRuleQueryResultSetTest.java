@@ -17,22 +17,23 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRuleQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.junit.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -45,7 +46,7 @@ public final class ShardingTableRuleQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(createRuleConfiguration());
+        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         RQLResultSet resultSet = new ShardingTableRuleQueryResultSet();
         resultSet.init(metaData, mock(ShowShardingTableRulesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
@@ -66,14 +67,34 @@ public final class ShardingTableRuleQueryResultSetTest {
         assertThat(actual.get(13), is("worker-id=123"));
     }
     
-    @SuppressWarnings("unchecked")
-    private Collection<RuleConfiguration> createRuleConfiguration() {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(), Collection.class));
+    private RuleConfiguration createRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(createShardingTableRuleConfiguration());
+        result.getBindingTableGroups().add("t_order,t_order_item");
+        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database_inline"));
+        result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        result.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration("ds_${user_id % 2}"));
+        result.getShardingAlgorithms().put("t_order_inline", createShardingInlineAlgorithmConfiguration("t_order_${order_id % 2}"));
+        result.getKeyGenerators().put("snowflake", createKeyGeneratorConfiguration());
+        return result;
     }
     
-    @SneakyThrows
-    private String readYAML() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/distsql/sharding-rule-config.yaml").toURI()))
-                .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+    private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
+        result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_inline"));
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+        return result;
+    }
+    
+    private ShardingSphereAlgorithmConfiguration createShardingInlineAlgorithmConfiguration(final String algorithmExpression) {
+        Properties props = new Properties();
+        props.put("algorithm-expression", algorithmExpression);
+        return new ShardingSphereAlgorithmConfiguration("INLINE", props);
+    }
+    
+    private ShardingSphereAlgorithmConfiguration createKeyGeneratorConfiguration() {
+        Properties props = new Properties();
+        props.put("worker-id", "123");
+        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", props);
     }
 }
