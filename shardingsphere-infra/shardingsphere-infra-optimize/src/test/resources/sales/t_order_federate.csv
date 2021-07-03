@@ -1,0 +1,4 @@
+order_id:int,order_item:string
+10,"Sales"
+20,"Marketing"
+30,"Accounts"

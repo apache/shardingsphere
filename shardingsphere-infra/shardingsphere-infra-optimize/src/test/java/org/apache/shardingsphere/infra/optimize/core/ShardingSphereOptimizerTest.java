@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContext;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
+import org.apache.shardingsphere.infra.optimize.core.local.LocalSchema;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,34 +51,22 @@ import static org.mockito.Mockito.when;
 public class ShardingSphereOptimizerTest {
     
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES =
-        "select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, "
-            + "t_order_item_federate_sharding where t_order_federate.order_id = "
-            + "t_order_item_federate_sharding.item_id";
-
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS = "select o.*, i.* from"
-        + " t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id";
-
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_REWRITE =
-        "select t_order_federate.*, t_order_item_federate_sharding.* from "
-            + "t_order_federate, t_order_item_federate_sharding "
-            + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
-            + "AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding'";
-
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ORDER_BY =
-        "select t_order_federate.* from t_order_federate, t_order_item_federate_sharding "
-            + "where t_order_federate.order_id = t_order_item_federate_sharding.item_id "
-            + "ORDER BY t_order_item_federate_sharding.user_id";
+        "SELECT t_order_federate.order_id, t_order_item_federate_sharding.remarks " 
+            + "FROM t_order_federate "
+            + "INNER JOIN t_order_item_federate_sharding ";
     
     private ShardingSphereOptimizer optimizer;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Schema calciteSchema;
     
     @Before
     public void init() {
+        String url = this.getClass().getClassLoader().getResource("").getPath() + "/sales";
+        //String url = "/home/wangguangyuan/IdeaProjects/shardingsphere/shardingsphere-infra/shardingsphere-infra-optimize/src/test/resources/sales";
+        calciteSchema = new LocalSchema(new File(url));
         Map<String, ShardingSphereMetaData> metaDataMap = createMetaDataMap();
         OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(metaDataMap);
         OptimizeContext context = createContext(optimizeContextFactory);
@@ -98,7 +88,7 @@ public class ShardingSphereOptimizerTest {
         return Collections.singletonMap("testSchema", shardingSphereMetaData);
     }
     
-    private OptimizeContext createContext(OptimizeContextFactory optimizeContextFactory) {
+    private OptimizeContext createContext(final OptimizeContextFactory optimizeContextFactory) {
         OptimizeContext result = optimizeContextFactory.create("testSchema", calciteSchema);
         return result;
     }
@@ -106,5 +96,7 @@ public class ShardingSphereOptimizerTest {
     @Test
     public void testSimpleSelect() {
         RelNode relNode = optimizer.optimize(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES);
+        System.out.println("---------explain---------------");
+        System.out.println(relNode.explain());
     }
 }

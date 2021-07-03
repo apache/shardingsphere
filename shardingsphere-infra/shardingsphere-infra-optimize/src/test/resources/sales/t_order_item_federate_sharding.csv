@@ -1,0 +1,7 @@
+item_id:int,remarks:string
+10,"Sales"
+20,"Marketing"
+30,"Accounts"
+40,"40"
+50,"50"
+60,"60"
