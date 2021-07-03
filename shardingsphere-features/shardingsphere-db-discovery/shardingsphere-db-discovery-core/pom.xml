@@ -49,6 +49,7 @@
             <artifactId>shardingsphere-db-discovery-mgr</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-route</artifactId>
