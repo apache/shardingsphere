@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.update;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -24,18 +24,16 @@ import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedExceptio
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.distsql.exception.InvalidLoadBalancersException;
-import org.apache.shardingsphere.readwritesplitting.distsql.exception.ReadwriteSplittingRuleNotExistedException;
+import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
+import org.apache.shardingsphere.readwritesplitting.distsql.handler.exception.InvalidLoadBalancersException;
+import org.apache.shardingsphere.readwritesplitting.distsql.handler.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.yaml.converter.ReadwriteSplittingRuleStatementConverter;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Properties;
@@ -115,12 +113,9 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RDLAlt
     }
     
     private void addRuleConfiguration(final AlterReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        Optional<ReadwriteSplittingRuleConfiguration> toBeAlteredRuleConfig = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Collections.singletonList(ReadwriteSplittingRuleStatementConverter.convert(sqlStatement))).stream()
-                .map(each -> (ReadwriteSplittingRuleConfiguration) each).findFirst();
-        Preconditions.checkState(toBeAlteredRuleConfig.isPresent());
-        currentRuleConfig.getDataSources().addAll(toBeAlteredRuleConfig.get().getDataSources());
-        currentRuleConfig.getLoadBalancers().putAll(toBeAlteredRuleConfig.get().getLoadBalancers());
+        ReadwriteSplittingRuleConfiguration toBeAlteredRuleConfig = ReadwriteSplittingRuleStatementConverter.convert(sqlStatement.getRules());
+        currentRuleConfig.getDataSources().addAll(toBeAlteredRuleConfig.getDataSources());
+        currentRuleConfig.getLoadBalancers().putAll(toBeAlteredRuleConfig.getLoadBalancers());
     }
     
     @Override

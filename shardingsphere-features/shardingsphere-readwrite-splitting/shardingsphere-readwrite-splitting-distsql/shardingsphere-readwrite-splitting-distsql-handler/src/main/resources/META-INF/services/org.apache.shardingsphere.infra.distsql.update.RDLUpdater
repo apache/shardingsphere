@@ -15,4 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.readwritesplitting.distsql.query.ReadwriteSplittingRuleQueryResultSet
+org.apache.shardingsphere.readwritesplitting.distsql.handler.update.CreateReadwriteSplittingRuleStatementUpdater
+org.apache.shardingsphere.readwritesplitting.distsql.handler.update.AlterReadwriteSplittingRuleStatementUpdater
+org.apache.shardingsphere.readwritesplitting.distsql.handler.update.DropReadwriteSplittingRuleStatementUpdater

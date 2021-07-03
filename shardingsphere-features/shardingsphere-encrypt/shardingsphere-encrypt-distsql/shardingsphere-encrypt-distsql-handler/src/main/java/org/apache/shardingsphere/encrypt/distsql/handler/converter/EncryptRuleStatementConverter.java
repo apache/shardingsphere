@@ -69,11 +69,11 @@ public final class EncryptRuleStatementConverter {
                 .toMap(each -> getEncryptorName(ruleSegment.getTableName(), each.getName()), EncryptRuleStatementConverter::createEncryptorConfiguration));
     }
     
-    private static String getEncryptorName(final String tableName, final String columnName) {
-        return String.format("%s_%s", tableName, columnName);
-    }
-    
     private static ShardingSphereAlgorithmConfiguration createEncryptorConfiguration(final EncryptColumnSegment columnSegment) {
         return new ShardingSphereAlgorithmConfiguration(columnSegment.getEncryptor().getName(), columnSegment.getEncryptor().getProps());
+    }
+    
+    private static String getEncryptorName(final String tableName, final String columnName) {
+        return String.format("%s_%s", tableName, columnName);
     }
 }

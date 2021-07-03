@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.exception;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.exception;
 
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 
