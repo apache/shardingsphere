@@ -35,7 +35,7 @@ public final class YamlExecuteProcessUnit {
     
     private String unitID;
     
-    private volatile ExecuteProcessConstants status;
+    private ExecuteProcessConstants status;
     
     public YamlExecuteProcessUnit(final ExecuteProcessUnit executeProcessUnit) {
         unitID = executeProcessUnit.getUnitID();

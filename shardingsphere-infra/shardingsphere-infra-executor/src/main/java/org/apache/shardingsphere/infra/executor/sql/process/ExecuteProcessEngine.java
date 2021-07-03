@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +31,10 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collection;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import java.util.Map;
 
 /**
  * Execute process engine.
@@ -61,7 +61,6 @@ public final class ExecuteProcessEngine {
         SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
         if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext, props)) {
             long noReportThresholdMillis = props.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_NO_REPORT_THRESHOLD_MILLIS);
-            log.info("noReportThresholdMillis={}", noReportThresholdMillis);
             ExecuteProcessReportContext reportContext = new ExecuteProcessReportContext(executionGroupContext.getExecutionID(), noReportThresholdMillis);
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), reportContext);
             HANDLERS.iterator().next().report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);

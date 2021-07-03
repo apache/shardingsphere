@@ -36,7 +36,7 @@ public final class ExecuteProcessReportContext {
     
     private volatile YamlExecuteProcessContext yamlExecuteProcessContext;
     
-    private volatile boolean reportToGovernanceDonePartially;
+    private boolean reportToGovernanceDonePartially;
     
     @Override
     public String toString() {
