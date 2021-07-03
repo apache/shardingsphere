@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.handler.exception.EncryptRuleNotExistedException;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 
 import java.util.Collection;
@@ -35,18 +36,21 @@ import java.util.stream.Collectors;
 public final class DropEncryptRuleStatementUpdater implements RDLDropUpdater<DropEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final String schemaName, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+    public void checkSQLStatement(final String schemaName, final DropEncryptRuleStatement sqlStatement, 
+                                  final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
         checkToBeDroppedEncryptTableNames(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    private void checkCurrentRuleConfiguration(final String schemaName, final DropEncryptRuleStatement sqlStatement, 
+                                               final EncryptRuleConfiguration currentRuleConfig) throws EncryptRuleNotExistedException {
         if (null == currentRuleConfig) {
             throw new EncryptRuleNotExistedException(schemaName, sqlStatement.getTables());
         }
     }
     
-    private void checkToBeDroppedEncryptTableNames(final String schemaName, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    private void checkToBeDroppedEncryptTableNames(final String schemaName, final DropEncryptRuleStatement sqlStatement, 
+                                                   final EncryptRuleConfiguration currentRuleConfig) throws EncryptRuleNotExistedException {
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistedTableNames.isEmpty()) {

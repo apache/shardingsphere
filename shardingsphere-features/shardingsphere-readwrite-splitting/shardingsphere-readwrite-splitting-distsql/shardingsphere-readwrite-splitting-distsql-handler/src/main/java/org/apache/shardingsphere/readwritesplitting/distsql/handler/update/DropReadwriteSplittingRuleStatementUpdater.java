@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -36,18 +37,20 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RDLDrop
     
     @Override
     public void checkSQLStatement(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 
-                                  final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+                                  final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
         checkToBeDroppedRuleNames(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    private void checkCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 
+                                               final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws ReadwriteSplittingRuleNotExistedException {
         if (null == currentRuleConfig) {
             throw new ReadwriteSplittingRuleNotExistedException(schemaName, sqlStatement.getRuleNames());
         }
     }
     
-    private void checkToBeDroppedRuleNames(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    private void checkToBeDroppedRuleNames(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 
+                                           final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws ReadwriteSplittingRuleNotExistedException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {

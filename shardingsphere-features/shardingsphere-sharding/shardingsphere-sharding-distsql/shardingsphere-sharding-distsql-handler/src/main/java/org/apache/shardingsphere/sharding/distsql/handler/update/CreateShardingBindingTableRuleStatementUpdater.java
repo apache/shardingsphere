@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -40,19 +41,20 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeCreatedBindingTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedDuplicateBindingTables(sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws ShardingBindingTableRuleNotExistsException {
         if (null == currentRuleConfig) {
             throw new ShardingBindingTableRuleNotExistsException(schemaName);
         }
     }
     
-    private void checkToBeCreatedBindingTables(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkToBeCreatedBindingTables(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, 
+                                               final ShardingRuleConfiguration currentRuleConfig) throws ShardingTableRuleNotExistedException {
         Collection<String> notExistedBindingTables = new HashSet<>();
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
         for (String each : sqlStatement.getBindingTables()) {
@@ -72,7 +74,8 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
         return result;
     }
     
-    private void checkToBeCreatedDuplicateBindingTables(final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkToBeCreatedDuplicateBindingTables(final CreateShardingBindingTableRulesStatement sqlStatement, 
+                                                        final ShardingRuleConfiguration currentRuleConfig) throws DuplicateBindingTablesException {
         Collection<String> toBeCreatedBindingTables = new HashSet<>();
         Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeCreatedBindingTables.add(each)).collect(Collectors.toSet());
         duplicateBindingTables.addAll(getCurrentBindingTables(currentRuleConfig).stream().filter(each -> !toBeCreatedBindingTables.add(each)).collect(Collectors.toSet()));

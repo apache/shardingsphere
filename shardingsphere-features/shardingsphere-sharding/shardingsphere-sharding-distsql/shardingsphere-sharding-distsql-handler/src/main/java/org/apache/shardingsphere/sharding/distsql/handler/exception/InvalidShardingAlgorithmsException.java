@@ -29,6 +29,6 @@ public final class InvalidShardingAlgorithmsException extends RuleDefinitionViol
     private static final long serialVersionUID = 4257890788163115250L;
     
     public InvalidShardingAlgorithmsException(final Collection<String> algorithms) {
-        super(1119, "C1119", String.format("Invalid sharding algorithms %s", algorithms));
+        super(1119, String.format("Invalid sharding algorithms %s", algorithms));
     }
 }

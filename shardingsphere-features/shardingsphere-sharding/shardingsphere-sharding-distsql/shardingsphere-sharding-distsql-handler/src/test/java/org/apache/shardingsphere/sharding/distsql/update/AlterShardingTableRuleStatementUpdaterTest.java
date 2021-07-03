@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -42,22 +43,22 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     private final AlterShardingTableRuleStatementUpdater updater = new AlterShardingTableRuleStatementUpdater();
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("t_order", "STANDARD_TEST"), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = DuplicateTablesException.class)
-    public void assertCheckSQLStatementWithDuplicateTables() {
+    public void assertCheckSQLStatementWithDuplicateTables() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createDuplicatedSQLStatement(), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutExistTable() {
+    public void assertCheckSQLStatementWithoutExistTable() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("invalid_table", "STANDARD_TEST"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = InvalidShardingAlgorithmsException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredShardingAlgorithms() {
+    public void assertCheckSQLStatementWithoutToBeAlteredShardingAlgorithms() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("t_order", "INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     

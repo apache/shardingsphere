@@ -196,8 +196,8 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithRuleDefinitionViolationException() {
         RuleDefinitionViolationException exception = mock(RuleDefinitionViolationException.class);
         when(exception.getErrorCode()).thenReturn(1);
-        when(exception.getSqlState()).thenReturn("C0000");
-        when(exception.getErrorMessage()).thenReturn("Test error");
+        when(exception.getSQLState()).thenReturn("C0000");
+        when(exception.getMessage()).thenReturn("Test error");
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(exception);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1));

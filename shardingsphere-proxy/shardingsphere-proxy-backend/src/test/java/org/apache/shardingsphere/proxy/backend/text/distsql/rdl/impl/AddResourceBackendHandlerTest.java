@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -81,7 +82,7 @@ public final class AddResourceBackendHandlerTest {
     }
     
     @Test
-    public void assertExecute() {
+    public void assertExecute() throws RuleDefinitionViolationException {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);

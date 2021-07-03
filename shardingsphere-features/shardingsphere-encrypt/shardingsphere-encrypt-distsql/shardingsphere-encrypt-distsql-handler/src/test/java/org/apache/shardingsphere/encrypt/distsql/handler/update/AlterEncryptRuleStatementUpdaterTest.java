@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.distsql.handler.exception.InvalidEncryp
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.junit.Test;
 
@@ -40,17 +41,17 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     private final AlterEncryptRuleStatementUpdater updater = new AlterEncryptRuleStatementUpdater();
     
     @Test(expected = EncryptRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("MD5"), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = EncryptRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredRules() {
+    public void assertCheckSQLStatementWithoutToBeAlteredRules() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), new HashMap<>()), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = InvalidEncryptorsException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredEncryptors() {
+    public void assertCheckSQLStatementWithoutToBeAlteredEncryptors() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     

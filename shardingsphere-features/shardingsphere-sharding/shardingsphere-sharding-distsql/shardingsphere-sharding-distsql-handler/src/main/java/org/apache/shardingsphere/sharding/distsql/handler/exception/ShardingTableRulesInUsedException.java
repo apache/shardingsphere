@@ -29,6 +29,6 @@ public final class ShardingTableRulesInUsedException extends RuleDefinitionViola
     private static final long serialVersionUID = -6958306664517015097L;
     
     public ShardingTableRulesInUsedException(final Collection<String> tableNames) {
-        super(1107, "C1107", String.format("Sharding table rules %s are still used by binding table rule.", tableNames));
+        super(1107, String.format("Sharding table rules %s are still used by binding table rule.", tableNames));
     }
 }

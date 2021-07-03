@@ -26,6 +26,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptR
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -46,13 +47,14 @@ public final class CreateEncryptRuleStatementUpdater implements RDLCreateUpdater
     }
     
     @Override
-    public void checkSQLStatement(final String schemaName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+    public void checkSQLStatement(final String schemaName, final CreateEncryptRuleStatement sqlStatement, 
+                                  final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
         checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedEncryptors(sqlStatement);
         // TODO check resource
     }
     
-    private void checkDuplicateRuleNames(final String schemaName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    private void checkDuplicateRuleNames(final String schemaName, final CreateEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws DuplicateRuleNamesException {
         if (null != currentRuleConfig) {
             Collection<String> currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> toBeCreatedDuplicateRuleNames = sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
@@ -62,7 +64,7 @@ public final class CreateEncryptRuleStatementUpdater implements RDLCreateUpdater
         }
     }
     
-    private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {
+    private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) throws InvalidEncryptorsException {
         Collection<String> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
         Collection<String> notExistedEncryptors = encryptors.stream().filter(

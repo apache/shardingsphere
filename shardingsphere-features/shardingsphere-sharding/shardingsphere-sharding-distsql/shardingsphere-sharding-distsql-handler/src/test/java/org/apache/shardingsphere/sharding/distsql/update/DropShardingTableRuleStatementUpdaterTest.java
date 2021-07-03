@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import com.google.common.base.Splitter;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -45,17 +46,17 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     private final DropShardingTableRuleStatementUpdater updater = new DropShardingTableRuleStatementUpdater();
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", new DropShardingTableRuleStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutExistedTableRule() {
+    public void assertCheckSQLStatementWithoutExistedTableRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("t_order"), new ShardingRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = ShardingTableRulesInUsedException.class)
-    public void assertCheckSQLStatementWithBindingTableRule() {
+    public void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("t_order_item"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     

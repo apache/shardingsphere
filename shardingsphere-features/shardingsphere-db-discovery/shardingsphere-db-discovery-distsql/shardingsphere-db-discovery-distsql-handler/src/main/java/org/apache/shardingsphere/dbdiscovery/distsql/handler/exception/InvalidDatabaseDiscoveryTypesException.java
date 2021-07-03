@@ -29,6 +29,6 @@ public final class InvalidDatabaseDiscoveryTypesException extends RuleDefinition
     private static final long serialVersionUID = -6919328513016324005L;
     
     public InvalidDatabaseDiscoveryTypesException(final Collection<String> databaseDiscoveryTypes) {
-        super(1115, "C1115", String.format("Invalid database discovery types %s.", databaseDiscoveryTypes));
+        super(1115, String.format("Invalid database discovery types %s.", databaseDiscoveryTypes));
     }
 }

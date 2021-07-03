@@ -27,6 +27,6 @@ public final class ResourceNotExistedException extends RuleDefinitionViolationEx
     private static final long serialVersionUID = 1704331180489268L;
     
     public ResourceNotExistedException(final String schemaName, final Collection<String> resourceNames) {
-        super(1102, "C1102", String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
+        super(1102, String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
     }
 }

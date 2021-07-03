@@ -29,6 +29,6 @@ public final class DuplicateTablesException extends RuleDefinitionViolationExcep
     private static final long serialVersionUID = 3539438597135687601L;
     
     public DuplicateTablesException(final Collection<String> tableNames) {
-        super(1108, "C1108", String.format("Duplicate table names %s.", tableNames));
+        super(1108, String.format("Duplicate table names %s.", tableNames));
     }
 }

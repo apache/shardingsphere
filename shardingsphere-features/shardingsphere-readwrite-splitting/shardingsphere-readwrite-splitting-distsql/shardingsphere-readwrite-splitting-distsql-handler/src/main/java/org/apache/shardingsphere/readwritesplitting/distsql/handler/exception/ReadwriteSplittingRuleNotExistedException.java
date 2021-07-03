@@ -29,6 +29,6 @@ public final class ReadwriteSplittingRuleNotExistedException extends RuleDefinit
     private static final long serialVersionUID = -5119217255419990719L;
     
     public ReadwriteSplittingRuleNotExistedException(final String schemaName, final Collection<String> ruleNames) {
-        super(1113, "C113", String.format("Readwrite splitting rules %s do not exist in schema %s.", ruleNames, schemaName));
+        super(1113, String.format("Readwrite splitting rules %s do not exist in schema %s.", ruleNames, schemaName));
     }
 }

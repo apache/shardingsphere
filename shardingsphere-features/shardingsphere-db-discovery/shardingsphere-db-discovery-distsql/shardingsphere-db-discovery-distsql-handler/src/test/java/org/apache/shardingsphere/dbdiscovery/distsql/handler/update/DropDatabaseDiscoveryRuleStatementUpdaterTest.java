@@ -22,6 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.distsql.handler.exception.DatabaseDiscoveryRuleNotExistedException;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.junit.Test;
 
@@ -38,12 +39,12 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     private final DropDatabaseDiscoveryRuleStatementUpdater updater = new DropDatabaseDiscoveryRuleStatementUpdater();
     
     @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutToBeDroppedRules() {
+    public void assertCheckSQLStatementWithoutToBeDroppedRules() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }
     

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RDLUpdater;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -53,7 +54,7 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    protected ResponseHeader execute(final String schemaName, final T sqlStatement) {
+    protected ResponseHeader execute(final String schemaName, final T sqlStatement) throws RuleDefinitionViolationException {
         RDLUpdater rdlUpdater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         Class<? extends RuleConfiguration> ruleConfigClass = rdlUpdater.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(schemaName, ruleConfigClass).orElse(null);
@@ -73,7 +74,7 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     }
     
     @SuppressWarnings("rawtypes")
-    private void processSQLStatement(final String schemaName, final T sqlStatement, final RDLUpdater updater, final RuleConfiguration currentRuleConfig) {
+    private void processSQLStatement(final String schemaName, final T sqlStatement, final RDLUpdater updater, final RuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         if (updater instanceof RDLCreateUpdater) {
             processCreate(schemaName, sqlStatement, (RDLCreateUpdater) updater, currentRuleConfig);
         } else if (updater instanceof RDLAlterUpdater) {
@@ -86,7 +87,7 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processCreate(final String schemaName, final T sqlStatement, final RDLCreateUpdater updater, final RuleConfiguration currentRuleConfig) {
+    private void processCreate(final String schemaName, final T sqlStatement, final RDLCreateUpdater updater, final RuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         RuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(schemaName, sqlStatement);
         updater.updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig, toBeCreatedRuleConfig);
         if (null == currentRuleConfig && null != toBeCreatedRuleConfig) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -42,24 +43,24 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     private final AlterReadwriteSplittingRuleStatementUpdater updater = new AlterReadwriteSplittingRuleStatementUpdater();
     
     @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredRules() {
+    public void assertCheckSQLStatementWithoutToBeAlteredRules() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = ResourceNotExistedException.class)
-    public void assertCheckSQLStatementWithoutExistedResources() {
+    public void assertCheckSQLStatementWithoutExistedResources() throws RuleDefinitionViolationException {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("read_ds_0"));
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), createCurrentRuleConfiguration(), resource);
     }
     
     @Test(expected = InvalidLoadBalancersException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredLoadBalancers() {
+    public void assertCheckSQLStatementWithoutToBeAlteredLoadBalancers() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     

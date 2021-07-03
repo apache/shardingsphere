@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSeg
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -44,13 +45,13 @@ public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> imple
     private final BackendConnection backendConnection;
     
     @Override
-    public final ResponseHeader execute() {
+    public final ResponseHeader execute() throws SQLException {
         String schemaName = getSchemaName(backendConnection, sqlStatement);
         checkSchema(schemaName);
         return execute(schemaName, sqlStatement);
     }
     
-    protected abstract ResponseHeader execute(String schemaName, T sqlStatement);
+    protected abstract ResponseHeader execute(String schemaName, T sqlStatement) throws SQLException;
     
     private String getSchemaName(final BackendConnection backendConnection, final T sqlStatement) {
         Optional<SchemaSegment> schemaFromSQL = sqlStatement instanceof FromSchemaAvailable ? ((FromSchemaAvailable) sqlStatement).getSchema() : Optional.empty();

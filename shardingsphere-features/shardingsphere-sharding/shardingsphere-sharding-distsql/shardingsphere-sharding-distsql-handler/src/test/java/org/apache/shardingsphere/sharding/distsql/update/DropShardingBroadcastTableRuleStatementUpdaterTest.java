@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -34,12 +35,12 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     private final DropShardingBroadcastTableRuleStatementUpdater updater = new DropShardingBroadcastTableRuleStatementUpdater();
     
     @Test(expected = ShardingBroadcastTableRuleNotExistsException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = ShardingBroadcastTableRuleNotExistsException.class)
-    public void assertCheckSQLStatementWithoutExistBroadcastTableRule() {
+    public void assertCheckSQLStatementWithoutExistBroadcastTableRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement(), new ShardingRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     

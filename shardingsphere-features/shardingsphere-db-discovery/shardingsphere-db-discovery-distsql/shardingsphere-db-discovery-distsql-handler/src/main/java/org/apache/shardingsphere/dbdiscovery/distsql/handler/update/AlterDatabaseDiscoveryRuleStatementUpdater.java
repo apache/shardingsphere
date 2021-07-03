@@ -28,6 +28,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatab
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -50,20 +51,22 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RDLAlte
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
-                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredResources(schemaName, sqlStatement, resource);
         checkToBeAlteredDiscoveryType(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+    private void checkCurrentRuleConfiguration(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, 
+                                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DatabaseDiscoveryRuleNotExistedException {
         if (null == currentRuleConfig) {
             throw new DatabaseDiscoveryRuleNotExistedException(schemaName, getToBeAlteredRuleNames(sqlStatement));
         }
     }
     
-    private void checkToBeAlteredRules(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+    private void checkToBeAlteredRules(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, 
+                                       final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DatabaseDiscoveryRuleNotExistedException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
@@ -75,7 +78,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RDLAlte
         return sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredResources(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) {
+    private void checkToBeAlteredResources(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws ResourceNotExistedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
         if (!notExistedResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistedResources);
@@ -88,7 +91,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RDLAlte
         return result;
     }
     
-    private void checkToBeAlteredDiscoveryType(final AlterDatabaseDiscoveryRuleStatement sqlStatement) {
+    private void checkToBeAlteredDiscoveryType(final AlterDatabaseDiscoveryRuleStatement sqlStatement) throws InvalidDatabaseDiscoveryTypesException {
         Collection<String> notExistedDiscoveryTypes = getToBeAlteredDiscoveryTypeNames(sqlStatement).stream()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedDiscoveryTypes.isEmpty()) {

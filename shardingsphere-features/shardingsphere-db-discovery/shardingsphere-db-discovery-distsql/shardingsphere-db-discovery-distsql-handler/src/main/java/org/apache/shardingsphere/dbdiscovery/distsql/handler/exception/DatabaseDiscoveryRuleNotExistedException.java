@@ -29,6 +29,6 @@ public final class DatabaseDiscoveryRuleNotExistedException extends RuleDefiniti
     private static final long serialVersionUID = 1293361372683913161L;
     
     public DatabaseDiscoveryRuleNotExistedException(final String schemaName, final Collection<String> ruleNames) {
-        super(1116, "C1116", String.format("Database discovery rules %s do not exist in schema %s.", ruleNames, schemaName));
+        super(1116, String.format("Database discovery rules %s do not exist in schema %s.", ruleNames, schemaName));
     }
 }

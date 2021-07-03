@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -39,19 +40,20 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLA
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlertedBindingTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredDuplicateBindingTables(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws ShardingBindingTableRuleNotExistsException {
         if (null == currentRuleConfig) {
             throw new ShardingBindingTableRuleNotExistsException(schemaName);
         }
     }
     
-    private void checkToBeAlertedBindingTables(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkToBeAlertedBindingTables(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, 
+                                               final ShardingRuleConfiguration currentRuleConfig) throws ShardingTableRuleNotExistedException {
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
         Collection<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !currentLogicTables.contains(each)).collect(Collectors.toSet());
         if (!notExistedBindingTables.isEmpty()) {
@@ -66,7 +68,7 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLA
         return result;
     }
     
-    private void checkToBeAlteredDuplicateBindingTables(final AlterShardingBindingTableRulesStatement sqlStatement) {
+    private void checkToBeAlteredDuplicateBindingTables(final AlterShardingBindingTableRulesStatement sqlStatement) throws DuplicateBindingTablesException {
         Collection<String> toBeAlteredBindingTables = new HashSet<>();
         Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeAlteredBindingTables.add(each)).collect(Collectors.toSet());
         if (!duplicateBindingTables.isEmpty()) {

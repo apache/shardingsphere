@@ -24,10 +24,11 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateResourceException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidResourceException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -59,7 +60,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
+    public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) throws RuleDefinitionViolationException {
         check(schemaName, sqlStatement);
         Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
@@ -72,7 +73,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final String schemaName, final AddResourceStatement sqlStatement) {
+    private void check(final String schemaName, final AddResourceStatement sqlStatement) throws DuplicateResourceException {
         List<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
         Set<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {

@@ -29,6 +29,6 @@ public final class InvalidLoadBalancersException extends RuleDefinitionViolation
     private static final long serialVersionUID = -8028595443792872970L;
     
     public InvalidLoadBalancersException(final Collection<String> loadBalancers) {
-        super(1114, "C1114", String.format("Invalid load balancers %s.", loadBalancers));
+        super(1114, String.format("Invalid load balancers %s.", loadBalancers));
     }
 }

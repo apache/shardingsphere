@@ -17,21 +17,16 @@
 
 package org.apache.shardingsphere.infra.exception.rule;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.sql.SQLException;
 
 /**
  * Rule definition violation exception.
  */
-@RequiredArgsConstructor
-@Getter
-public abstract class RuleDefinitionViolationException extends RuntimeException {
+public abstract class RuleDefinitionViolationException extends SQLException {
     
     private static final long serialVersionUID = 1090914641996552474L;
     
-    private final int errorCode;
-    
-    private final String sqlState;
-    
-    private final String errorMessage;
+    public RuleDefinitionViolationException(final int errorCode, final String reason) {
+        super(reason, "C" + errorCode, errorCode);
+    }
 }
