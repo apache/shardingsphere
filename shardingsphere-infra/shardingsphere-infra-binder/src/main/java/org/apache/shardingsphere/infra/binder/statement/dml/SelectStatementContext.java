@@ -32,8 +32,10 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.engine.P
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -42,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Ex
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -63,7 +66,7 @@ import java.util.stream.Collectors;
  * Select SQL statement context.
  */
 @Getter
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable {
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, SchemaAvailable {
     
     private final TablesContext tablesContext;
     
@@ -95,8 +98,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         containsSubqueyAggregation = containsSubqueyAggregation();
     }
     
-    public SelectStatementContext(final ShardingSphereSchema schema, final List<Object> parameters, final SelectStatement sqlStatement) {
+    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
+        ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
@@ -105,6 +109,13 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         containsSubquery = containsSubquery();
         generateOrderByStartIndex = generateOrderByStartIndex();
         containsSubqueyAggregation = containsSubqueyAggregation();
+    }
+    
+    private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
+        String schemaName = getSchemaName().orElse(defaultSchemaName);
+        ShardingSphereMetaData metaData = metaDataMap.get(schemaName);
+        Preconditions.checkState(null != metaData, String.format("Can not get metaData by schemaName [%s].", schemaName));
+        return metaData.getSchema();
     }
     
     private boolean containsSubquery() {
@@ -274,5 +285,16 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private Collection<SimpleTableSegment> getTemporarySimpleTableSegments(final Collection<TableSegment> tableSegments) {
         return tableSegments.stream().filter(each -> each instanceof SubqueryTableSegment).map(each
             -> new SimpleTableSegment(each.getStartIndex(), each.getStopIndex(), new IdentifierValue(each.getAlias().orElse("")))).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Collection<SchemaSegment> getSchemas() {
+        return getAllTables().stream().filter(each -> each.getOwner().isPresent()).map(each -> each.getOwner().get())
+                .map(each -> new SchemaSegment(each.getStartIndex(), each.getStopIndex(), each.getIdentifier())).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Optional<String> getSchemaName() {
+        return getSchemas().stream().findFirst().map(each -> each.getIdentifier().getValue());
     }
 }

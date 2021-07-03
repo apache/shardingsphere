@@ -48,7 +48,7 @@ public final class TableMetaDataLoader {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             String formattedTableNamePattern = databaseType.formatTableNamePattern(tableNamePattern);
             return isTableExist(connectionAdapter, formattedTableNamePattern)
-                    ? Optional.of(new TableMetaData(ColumnMetaDataLoader.load(
+                    ? Optional.of(new TableMetaData(tableNamePattern, ColumnMetaDataLoader.load(
                             connectionAdapter, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern)))
                     : Optional.empty();
         }

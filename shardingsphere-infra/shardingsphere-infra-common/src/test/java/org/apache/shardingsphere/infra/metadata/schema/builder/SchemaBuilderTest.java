@@ -36,8 +36,10 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -80,19 +82,18 @@ public final class SchemaBuilderTest {
     
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
-        Map<Map<String, TableMetaData>, Map<String, TableMetaData>> actual = SchemaBuilder.build(schemaBuilderMaterials);
-        Map<String, TableMetaData> actualTables = actual.keySet().iterator().next();
-        Map<String, TableMetaData> logicTables = actual.values().iterator().next();
-        assertThat(actualTables.size(), is(2));
-        assertThat(logicTables.size(), is(2));
-        assertSchemaOfShardingTables(actualTables);
+        Map<TableMetaData, TableMetaData> actual = SchemaBuilder.build(schemaBuilderMaterials);
+        assertThat(actual.values().size(), is(2));
+        assertThat(actual.keySet().size(), is(2));
+        assertSchemaOfShardingTables(actual.keySet());
     }
     
-    private void assertSchemaOfShardingTables(final Map<String, TableMetaData> actual) {
-        assertTrue(actual.containsKey("data_node_routed_table1"));
-        assertThat(actual.get("data_node_routed_table1").getColumns().size(), is(0));
-        assertTrue(actual.containsKey("data_node_routed_table2"));
-        assertThat(actual.get("data_node_routed_table2").getColumns().size(), is(0));
+    private void assertSchemaOfShardingTables(final Collection<TableMetaData> actual) {
+        Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
+        assertTrue(tableMetaDataMap.containsKey("data_node_routed_table1"));
+        assertThat(tableMetaDataMap.get("data_node_routed_table1").getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.containsKey("data_node_routed_table2"));
+        assertThat(tableMetaDataMap.get("data_node_routed_table2").getColumns().size(), is(0));
     }
     
     @Test
@@ -110,16 +111,16 @@ public final class SchemaBuilderTest {
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         String[] mockReturnTables = {singleTableNames[1], "data_node_routed_table1_0", "data_node_routed_table1_1", "data_node_routed_table2_0", "data_node_routed_table2_1"};
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], mockReturnTables);
-        Map<Map<String, TableMetaData>, Map<String, TableMetaData>> actual = SchemaBuilder.build(schemaBuilderMaterials);
-        Map<String, TableMetaData> actualTables = actual.keySet().iterator().next();
-        assertThat(actualTables.size(), is(4));
-        assertActualOfShardingTablesAndSingleTables(actualTables);
+        Map<TableMetaData, TableMetaData> tableMetaDatas = SchemaBuilder.build(schemaBuilderMaterials);
+        assertThat(tableMetaDatas.keySet().size(), is(4));
+        assertActualOfShardingTablesAndSingleTables(tableMetaDatas.keySet());
     }
     
-    private void assertActualOfShardingTablesAndSingleTables(final Map<String, TableMetaData> actual) {
-        assertTrue(actual.containsKey(singleTableNames[0]));
-        assertThat(actual.get(singleTableNames[0]).getColumns().size(), is(0));
-        assertTrue(actual.containsKey(singleTableNames[1]));
-        assertThat(actual.get(singleTableNames[1]).getColumns().size(), is(0));
+    private void assertActualOfShardingTablesAndSingleTables(final Collection<TableMetaData> actual) {
+        Map<String, TableMetaData> tableMetaDataMap = actual.stream().collect(Collectors.toMap(TableMetaData::getName, v -> v));
+        assertTrue(tableMetaDataMap.containsKey(singleTableNames[0]));
+        assertThat(tableMetaDataMap.get(singleTableNames[0]).getColumns().size(), is(0));
+        assertTrue(tableMetaDataMap.containsKey(singleTableNames[1]));
+        assertThat(tableMetaDataMap.get(singleTableNames[1]).getColumns().size(), is(0));
     }
 }

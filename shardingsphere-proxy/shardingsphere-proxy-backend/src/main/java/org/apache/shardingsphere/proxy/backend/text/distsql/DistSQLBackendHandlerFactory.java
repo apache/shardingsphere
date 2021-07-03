@@ -28,6 +28,8 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandle
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -51,7 +53,7 @@ public final class DistSQLBackendHandlerFactory {
         if (sqlStatement instanceof RQLStatement) {
             return Optional.of(RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, backendConnection));
         }
-        if (sqlStatement instanceof RDLStatement) {
+        if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(RDLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection));
         }
         return RALBackendHandlerFactory.newInstance(sqlStatement);

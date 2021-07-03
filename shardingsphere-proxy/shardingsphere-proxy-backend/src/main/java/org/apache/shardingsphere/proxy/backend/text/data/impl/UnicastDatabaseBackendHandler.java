@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedExcep
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -39,7 +39,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
-    private final SQLStatement sqlStatement;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final String sql;
     
@@ -53,7 +53,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         if (!ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
             throw new RuleNotExistedException();
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     

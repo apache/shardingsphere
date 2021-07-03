@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByCont
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -48,9 +49,12 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ProjectionsContextEngineTest {
     
@@ -84,7 +88,7 @@ public final class ProjectionsContextEngineTest {
     private void assertProjectionsContextCreatedProperly(final SelectStatement selectStatement) {
         ProjectionsContextEngine projectionsContextEngine = new ProjectionsContextEngine(null);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         Collection<SimpleTableSegment> tables = selectStatementContext.getAllSimpleTableSegments();
         ProjectionsSegment projectionsSegment = selectStatement.getProjections();
         ProjectionsContext actual = projectionsContextEngine
@@ -124,7 +128,7 @@ public final class ProjectionsContextEngineTest {
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
         projectionsSegment.getProjections().addAll(Collections.singleton(shorthandProjectionSegment));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         Collection<SimpleTableSegment> tables = selectStatementContext.getAllSimpleTableSegments();
         ProjectionsContext actual = new ProjectionsContextEngine(schema)
                 .createProjectionsContext(tables, projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false));
@@ -165,7 +169,7 @@ public final class ProjectionsContextEngineTest {
         projectionsSegment.getProjections().addAll(Collections.singleton(shorthandProjectionSegment));
         OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(0, 1, 0, OrderDirection.ASC));
         OrderByContext orderByContext = new OrderByContext(Collections.singletonList(orderByItem), true);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         Collection<SimpleTableSegment> tables = selectStatementContext.getAllSimpleTableSegments();
         ProjectionsContext actual = new ProjectionsContextEngine(schema)
                 .createProjectionsContext(tables, projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
@@ -206,11 +210,19 @@ public final class ProjectionsContextEngineTest {
         projectionsSegment.getProjections().addAll(Collections.singleton(shorthandProjectionSegment));
         OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 1, "", OrderDirection.ASC));
         OrderByContext orderByContext = new OrderByContext(Collections.singletonList(orderByItem), true);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         Collection<SimpleTableSegment> tables = selectStatementContext.getAllSimpleTableSegments();
         ProjectionsContext actual = new ProjectionsContextEngine(schema)
                 .createProjectionsContext(tables, projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
         assertNotNull(actual);
+    }
+    
+    private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getSchema()).thenReturn(schema);
+        metaDataMap.put("schema", metaData);
+        return new SelectStatementContext(metaDataMap, Collections.emptyList(), selectStatement, "schema");
     }
     
     @Test
@@ -248,7 +260,7 @@ public final class ProjectionsContextEngineTest {
         projectionsSegment.getProjections().addAll(Collections.singleton(shorthandProjectionSegment));
         OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC));
         OrderByContext orderByContext = new OrderByContext(Collections.singletonList(orderByItem), true);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         Collection<SimpleTableSegment> tables = selectStatementContext.getAllSimpleTableSegments();
         ProjectionsContext actual = new ProjectionsContextEngine(schema)
                 .createProjectionsContext(tables, projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
@@ -290,7 +302,7 @@ public final class ProjectionsContextEngineTest {
         projectionsSegment.getProjections().addAll(Collections.singleton(shorthandProjectionSegment));
         OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC));
         OrderByContext orderByContext = new OrderByContext(Collections.singletonList(orderByItem), true);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         Collection<SimpleTableSegment> tables = selectStatementContext.getAllSimpleTableSegments();
         ProjectionsContext actual = new ProjectionsContextEngine(schema)
                 .createProjectionsContext(tables, projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
@@ -340,7 +352,7 @@ public final class ProjectionsContextEngineTest {
         projectionsSegment.getProjections().addAll(Lists.newArrayList(columnProjectionSegment, shorthandProjectionSegment));
         OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC));
         OrderByContext orderByContext = new OrderByContext(Collections.singleton(orderByItem), false);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         Collection<SimpleTableSegment> tables = selectStatementContext.getAllSimpleTableSegments();
         ProjectionsContext actual = new ProjectionsContextEngine(schema)
                 .createProjectionsContext(tables, projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
@@ -386,7 +398,7 @@ public final class ProjectionsContextEngineTest {
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("d")));
         OrderByItem groupByItem = new OrderByItem(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC));
         GroupByContext groupByContext = new GroupByContext(Collections.singleton(groupByItem));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         ProjectionsContext actual = new ProjectionsContextEngine(schema)
                 .createProjectionsContext(selectStatementContext.getFromSimpleTableSegments(), projectionsSegment, groupByContext, new OrderByContext(Collections.emptyList(), false));
         assertNotNull(actual);
@@ -431,7 +443,7 @@ public final class ProjectionsContextEngineTest {
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("TAble")));
         OrderByItem groupByItem = new OrderByItem(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC));
         GroupByContext groupByContext = new GroupByContext(Collections.singleton(groupByItem));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(schema, new LinkedList<>(), selectStatement);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         ProjectionsContext actual = new ProjectionsContextEngine(schema)
                 .createProjectionsContext(selectStatementContext.getFromSimpleTableSegments(), projectionsSegment, groupByContext, new OrderByContext(Collections.emptyList(), false));
         assertNotNull(actual);

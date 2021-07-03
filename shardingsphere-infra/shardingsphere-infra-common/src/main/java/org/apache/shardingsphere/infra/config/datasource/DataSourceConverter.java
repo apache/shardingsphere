@@ -50,7 +50,7 @@ public final class DataSourceConverter {
      * @return data source configuration map
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
-        return dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry ->
-                DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSourceMap.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

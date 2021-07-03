@@ -43,22 +43,20 @@ import java.util.Properties;
  */
 public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
     
-    private final Class<? extends RuleConfiguration> ruleConfigClass;
-    
     static {
         ShardingSphereServiceLoader.register(RDLUpdater.class);
     }
     
-    public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection, final Class<? extends RuleConfiguration> ruleConfigClass) {
+    public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
-        this.ruleConfigClass = ruleConfigClass;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected ResponseHeader execute(final String schemaName, final T sqlStatement) {
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(schemaName).orElse(null);
         RDLUpdater rdlUpdater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        Class<? extends RuleConfiguration> ruleConfigClass = rdlUpdater.getRuleConfigurationClass();
+        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(schemaName, ruleConfigClass).orElse(null);
         rdlUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
         if (rdlUpdater instanceof RDLCreateUpdater) {
             RuleConfiguration toBeCreatedRuleConfig = ((RDLCreateUpdater) rdlUpdater).buildToBeCreatedRuleConfiguration(schemaName, sqlStatement);
@@ -79,7 +77,7 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private Optional<RuleConfiguration> findCurrentRuleConfiguration(final String schemaName) {
+    private Optional<RuleConfiguration> findCurrentRuleConfiguration(final String schemaName, final Class<? extends RuleConfiguration> ruleConfigClass) {
         for (RuleConfiguration each : ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()) {
             if (ruleConfigClass.isAssignableFrom(each.getClass())) {
                 return Optional.of(each);

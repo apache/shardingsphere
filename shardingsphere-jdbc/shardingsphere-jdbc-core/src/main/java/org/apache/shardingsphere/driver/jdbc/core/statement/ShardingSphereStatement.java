@@ -66,7 +66,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrep
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
@@ -360,11 +359,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private LogicSQL createLogicSQL(final String sql) {
-        ShardingSphereSchema schema = metaDataContexts.getDefaultMetaData().getSchema();
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(
                 DatabaseTypeRegistry.getTrunkDatabaseTypeName(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schema, Collections.emptyList(), sqlStatement);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement, DefaultSchema.LOGIC_NAME);
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
     }
     
