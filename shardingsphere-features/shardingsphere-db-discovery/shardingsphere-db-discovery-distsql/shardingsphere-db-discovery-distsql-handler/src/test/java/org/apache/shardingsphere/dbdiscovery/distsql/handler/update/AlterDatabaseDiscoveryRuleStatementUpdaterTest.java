@@ -24,6 +24,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.handler.exception.InvalidDa
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.junit.Test;
 
@@ -42,25 +43,25 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     private final AlterDatabaseDiscoveryRuleStatementUpdater updater = new AlterDatabaseDiscoveryRuleStatementUpdater();
     
     @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() {
+    public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), 
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = ResourceNotExistedException.class)
-    public void assertCheckSQLStatementWithoutExistedResources() {
+    public void assertCheckSQLStatementWithoutExistedResources() throws RuleDefinitionViolationException {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), createCurrentRuleConfiguration(), resource);
     }
     
     @Test(expected = InvalidDatabaseDiscoveryTypesException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredDiscoveryTypes() {
+    public void assertCheckSQLStatementWithoutToBeAlteredDiscoveryTypes() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     

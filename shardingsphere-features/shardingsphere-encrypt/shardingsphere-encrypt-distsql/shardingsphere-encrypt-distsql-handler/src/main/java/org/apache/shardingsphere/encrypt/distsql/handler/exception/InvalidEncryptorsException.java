@@ -29,6 +29,6 @@ public final class InvalidEncryptorsException extends RuleDefinitionViolationExc
     private static final long serialVersionUID = 3175781664028568140L;
     
     public InvalidEncryptorsException(final Collection<String> encryptors) {
-        super(1117, "C1117", String.format("Invalid encryptors %s.", encryptors));
+        super(1117, String.format("Invalid encryptors %s.", encryptors));
     }
 }

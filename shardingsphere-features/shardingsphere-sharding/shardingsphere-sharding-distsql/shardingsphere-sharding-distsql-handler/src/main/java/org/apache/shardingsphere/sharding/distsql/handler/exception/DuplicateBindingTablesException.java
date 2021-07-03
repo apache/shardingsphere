@@ -29,6 +29,6 @@ public final class DuplicateBindingTablesException extends RuleDefinitionViolati
     private static final long serialVersionUID = -8295737924657889408L;
     
     public DuplicateBindingTablesException(final Collection<String> tableNames) {
-        super(1121, "C1121", String.format("Duplicate sharding binding tables %s.", tableNames));
+        super(1121, String.format("Duplicate sharding binding tables %s.", tableNames));
     }
 }

@@ -27,6 +27,6 @@ public final class DuplicateResourceException extends RuleDefinitionViolationExc
     private static final long serialVersionUID = 2103793827572264148L;
     
     public DuplicateResourceException(final Collection<String> resourceNames) {
-        super(1104, "C1104", String.format("Duplicate resource names %s.", resourceNames));
+        super(1104, String.format("Duplicate resource names %s.", resourceNames));
     }
 }

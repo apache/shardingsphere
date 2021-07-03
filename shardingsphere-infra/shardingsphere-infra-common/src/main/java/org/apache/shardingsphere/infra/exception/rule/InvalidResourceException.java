@@ -27,6 +27,6 @@ public final class InvalidResourceException extends RuleDefinitionViolationExcep
     private static final long serialVersionUID = 7029641448948791509L;
     
     public InvalidResourceException(final Collection<String> resourceNames) {
-        super(1103, "C1103", String.format("Can not add invalid resources %s.", resourceNames));
+        super(1103, String.format("Can not add invalid resources %s.", resourceNames));
     }
 }

@@ -29,6 +29,6 @@ public final class ShardingTableRuleNotExistedException extends RuleDefinitionVi
     private static final long serialVersionUID = 8565541404478688849L;
     
     public ShardingTableRuleNotExistedException(final String schemaName, final Collection<String> tableNames) {
-        super(1106, "C1106", String.format("Sharding table rules %s do not exist in schema %s.", tableNames, schemaName));
+        super(1106, String.format("Sharding table rules %s do not exist in schema %s.", tableNames, schemaName));
     }
 }

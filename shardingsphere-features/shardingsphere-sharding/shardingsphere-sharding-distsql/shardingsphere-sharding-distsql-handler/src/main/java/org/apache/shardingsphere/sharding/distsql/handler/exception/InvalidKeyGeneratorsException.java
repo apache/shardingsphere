@@ -29,6 +29,6 @@ public final class InvalidKeyGeneratorsException extends RuleDefinitionViolation
     private static final long serialVersionUID = -1671459113165055997L;
     
     public InvalidKeyGeneratorsException(final Collection<String> keyGenerators) {
-        super(1120, "C1120", String.format("Invalid key generators %s.", keyGenerators));
+        super(1120, String.format("Invalid key generators %s.", keyGenerators));
     }
 }

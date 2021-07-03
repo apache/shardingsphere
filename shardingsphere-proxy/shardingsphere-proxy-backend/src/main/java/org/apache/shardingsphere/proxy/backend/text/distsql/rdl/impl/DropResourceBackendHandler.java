@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceS
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
@@ -50,7 +51,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) {
+    public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) throws RuleDefinitionViolationException {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
         check(schemaName, toBeDroppedResourceNames);
         drop(schemaName, toBeDroppedResourceNames);
@@ -58,12 +59,12 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final String schemaName, final Collection<String> toBeDroppedResourceNames) {
+    private void check(final String schemaName, final Collection<String> toBeDroppedResourceNames) throws ResourceNotExistedException, ResourceInUsedException {
         checkResourceNameExisted(schemaName, toBeDroppedResourceNames);
         checkResourceNameNotInUse(schemaName, toBeDroppedResourceNames);
     }
     
-    private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) {
+    private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) throws ResourceNotExistedException {
         Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
         if (!notExistedResourceNames.isEmpty()) {
@@ -71,7 +72,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         }
     }
     
-    private void checkResourceNameNotInUse(final String schemaName, final Collection<String> toBeDroppedResourceNames) {
+    private void checkResourceNameNotInUse(final String schemaName, final Collection<String> toBeDroppedResourceNames) throws ResourceInUsedException {
         Collection<String> inUsedResourceNames = getInUsedResourceNames(schemaName);
         inUsedResourceNames.retainAll(toBeDroppedResourceNames);
         if (!inUsedResourceNames.isEmpty()) {

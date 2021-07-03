@@ -27,6 +27,6 @@ public final class ResourceInUsedException extends RuleDefinitionViolationExcept
     private static final long serialVersionUID = -3427324685070457375L;
     
     public ResourceInUsedException(final Collection<String> resourceNames) {
-        super(1101, "C1101", String.format("Resources %s in the rule are still in used.", resourceNames));
+        super(1101, String.format("Resources %s in the rule are still in used.", resourceNames));
     }
 }

@@ -27,6 +27,6 @@ public final class ShardingBindingTableRuleNotExistsException extends RuleDefini
     private static final long serialVersionUID = -1930065143932541970L;
     
     public ShardingBindingTableRuleNotExistsException(final String schemaName) {
-        super(1111, "C1111", String.format("Sharding binding table rules do not exist in schema %s.", schemaName));
+        super(1111, String.format("Sharding binding table rules do not exist in schema %s.", schemaName));
     }
 }

@@ -27,6 +27,6 @@ public final class ShardingBroadcastTableRuleNotExistsException extends RuleDefi
     private static final long serialVersionUID = 2816401356514609173L;
     
     public ShardingBroadcastTableRuleNotExistsException(final String schemaName) {
-        super(1112, "C1112", String.format("Sharding broadcast table rules do not exist in schema %s.", schemaName));
+        super(1112, String.format("Sharding broadcast table rules do not exist in schema %s.", schemaName));
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -57,14 +58,14 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
         checkToBeCreatedResource(schemaName, sqlStatement, resource);
         checkDuplicateTables(sqlStatement, currentRuleConfig);
         checkToBeCreatedShardingAlgorithms(sqlStatement);
         checkToBeCreatedKeyGenerators(sqlStatement);
     }
     
-    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource) {
+    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource) throws ResourceNotExistedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeCreatedResources(sqlStatement));
         if (!notExistedResources.isEmpty()) {
             throw new ResourceNotExistedException(schemaName, notExistedResources);
@@ -77,7 +78,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
         return result;
     }
     
-    private void checkDuplicateTables(final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkDuplicateTables(final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DuplicateTablesException {
         Collection<String> shardingTableNames = null == currentRuleConfig ? Collections.emptyList() : getShardingTables(currentRuleConfig);
         Set<String> duplicateTableNames = sqlStatement.getRules().stream().collect(Collectors.toMap(TableRuleSegment::getLogicTable, each -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
@@ -94,7 +95,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
         return result;
     }
     
-    private void checkToBeCreatedShardingAlgorithms(final CreateShardingTableRuleStatement sqlStatement) {
+    private void checkToBeCreatedShardingAlgorithms(final CreateShardingTableRuleStatement sqlStatement) throws InvalidShardingAlgorithmsException {
         Collection<String> notExistedShardingAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
@@ -103,7 +104,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
         }
     }
     
-    private void checkToBeCreatedKeyGenerators(final CreateShardingTableRuleStatement sqlStatement) {
+    private void checkToBeCreatedKeyGenerators(final CreateShardingTableRuleStatement sqlStatement) throws InvalidKeyGeneratorsException {
         Collection<String> invalidKeyGenerators = getToBeCreatedKeyGenerators(sqlStatement).stream().distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());

@@ -27,6 +27,6 @@ public final class DuplicateRuleNamesException extends RuleDefinitionViolationEx
     private static final long serialVersionUID = -1738699538105858939L;
     
     public DuplicateRuleNamesException(final String schemaName, final Collection<String> ruleNames) {
-        super(1105, "C1105", String.format("Duplicate rule names %s in schema %s", ruleNames, schemaName));
+        super(1105, String.format("Duplicate rule names %s in schema %s", ruleNames, schemaName));
     }
 }

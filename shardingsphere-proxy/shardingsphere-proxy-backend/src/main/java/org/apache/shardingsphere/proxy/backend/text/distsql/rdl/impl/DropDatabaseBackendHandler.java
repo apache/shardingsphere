@@ -56,8 +56,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     }
     
     private boolean isDropCurrentDatabase(final String databaseName) {
-        return !Strings.isNullOrEmpty(backendConnection.getSchemaName())
-                && backendConnection.getSchemaName().equals(databaseName);
+        return !Strings.isNullOrEmpty(backendConnection.getSchemaName()) && backendConnection.getSchemaName().equals(databaseName);
     }
     
     private void post(final DropDatabaseStatement sqlStatement) {

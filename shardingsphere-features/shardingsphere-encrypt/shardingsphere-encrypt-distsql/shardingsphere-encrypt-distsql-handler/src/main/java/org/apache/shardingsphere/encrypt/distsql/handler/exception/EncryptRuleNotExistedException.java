@@ -29,6 +29,6 @@ public final class EncryptRuleNotExistedException extends RuleDefinitionViolatio
     private static final long serialVersionUID = -3070306238552517428L;
     
     public EncryptRuleNotExistedException(final String schemaName, final Collection<String> tables) {
-        super(1118, "C1118", "Encrypt rules %s do not exist in schema %s.");
+        super(1118, String.format("Encrypt rules %s do not exist in schema %s.", tables, schemaName));
     }
 }
