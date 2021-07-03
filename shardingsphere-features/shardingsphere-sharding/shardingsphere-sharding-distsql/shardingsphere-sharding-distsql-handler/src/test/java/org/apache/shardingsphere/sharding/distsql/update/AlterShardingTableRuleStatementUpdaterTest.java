@@ -43,7 +43,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() {
-        updater.checkSQLStatement("foo", createSQLStatement("t_order", "HASH_MOD"), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement("t_order", "STANDARD_TEST"), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = DuplicateTablesException.class)
@@ -53,7 +53,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     @Test(expected = ShardingTableRuleNotExistedException.class)
     public void assertCheckSQLStatementWithoutExistTable() {
-        updater.checkSQLStatement("foo", createSQLStatement("invalid_table", "HASH_MOD"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement("invalid_table", "STANDARD_TEST"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = InvalidShardingAlgorithmsException.class)
@@ -63,7 +63,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement("t_order", "HASH_MOD"), createCurrentRuleConfiguration());
+        updater.updateCurrentRuleConfiguration("foo", createSQLStatement("t_order", "STANDARD_TEST"), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
     }
     
@@ -73,7 +73,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     }
     
     private AlterShardingTableRuleStatement createDuplicatedSQLStatement() {
-        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), "order_id", new AlgorithmSegment("HASH_MOD", new Properties()), null, null);
+        TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), "order_id", new AlgorithmSegment("STANDARD_TEST", new Properties()), null, null);
         return new AlterShardingTableRuleStatement(Arrays.asList(ruleSegment, ruleSegment));
     }
     
@@ -81,7 +81,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
         ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order");
-        shardingAutoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "test"));
+        shardingAutoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "STANDARD_TEST"));
         result.getAutoTables().add(shardingAutoTableRuleConfig);
         return result;
     }
