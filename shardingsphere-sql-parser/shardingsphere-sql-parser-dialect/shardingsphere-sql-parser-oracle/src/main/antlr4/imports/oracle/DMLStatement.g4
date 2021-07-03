@@ -154,7 +154,7 @@ unionClause
     ;
 
 queryBlock
-    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause? whereClause? groupByClause? havingClause?
+    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? groupByClause? havingClause?
     ;
 
 withClause
