@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Drop readwrite-splitting rule statement updater.
  */
-public final class DropReadwriteSplittingRuleStatementUpdater implements RDLDropUpdater<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
+public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDefinitionDropUpdater<DropReadwriteSplittingRuleStatement, ReadwriteSplittingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 

@@ -18,34 +18,29 @@
 package org.apache.shardingsphere.infra.distsql.update;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * RDL updater.
+ * Alter rule rule definition updater.
  * 
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-public interface RDLUpdater<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
+public interface RuleDefinitionAlterUpdater<T extends SQLStatement, R extends RuleConfiguration> extends RuleDefinitionUpdater<T, R> {
     
     /**
-     * Check SQL statement.
+     * Build to be altered rule configuration.
      *
-     * @param schemaName schema name
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration
-     * @param resource ShardingSphere resource
-     * @throws DistSQLException definition violation exception
+     * @return built to be altered rule configuration
      */
-    void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig, ShardingSphereResource resource) throws DistSQLException;
+    RuleConfiguration buildToBeAlteredRuleConfiguration(T sqlStatement);
     
     /**
-     * Get rule configuration class.
-     * 
-     * @return rule configuration class
+     * Update current rule configuration.
+     *
+     * @param currentRuleConfig current rule configuration to be updated
+     * @param toBeAlteredRuleConfig to be altered rule configuration
      */
-    Class<R> getRuleConfigurationClass();
+    void updateCurrentRuleConfiguration(R currentRuleConfig, R toBeAlteredRuleConfig);
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 /**
  * Alter sharding broadcast table rule statement updater.
  */
-public final class AlterShardingBroadcastTableRuleStatementUpdater implements RDLAlterUpdater<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
+public final class AlterShardingBroadcastTableRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingBroadcastTableRulesStatement sqlStatement, 

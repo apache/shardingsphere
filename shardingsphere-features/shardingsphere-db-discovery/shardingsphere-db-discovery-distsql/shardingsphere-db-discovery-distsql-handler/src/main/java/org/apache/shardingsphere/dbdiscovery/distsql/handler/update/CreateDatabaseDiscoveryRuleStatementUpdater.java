@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseD
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
-import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Create database discovery rule statement updater.
  */
-public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLCreateUpdater<CreateDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
+public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateDatabaseDiscoveryRuleStatement, DatabaseDiscoveryRuleConfiguration> {
     
     static {
         // TODO consider about register once only

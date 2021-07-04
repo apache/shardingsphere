@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
-import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Drop encrypt rule statement updater.
  */
-public final class DropEncryptRuleStatementUpdater implements RDLDropUpdater<DropEncryptRuleStatement, EncryptRuleConfiguration> {
+public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDropUpdater<DropEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final DropEncryptRuleStatement sqlStatement, 

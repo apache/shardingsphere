@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Create sharding binding table rule statement updater.
  */
-public final class CreateShardingBindingTableRuleStatementUpdater implements RDLCreateUpdater<CreateShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
+public final class CreateShardingBindingTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, 
