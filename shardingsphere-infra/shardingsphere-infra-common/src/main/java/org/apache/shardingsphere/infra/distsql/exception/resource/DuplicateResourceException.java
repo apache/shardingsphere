@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
 import java.util.Collection;
 
@@ -27,6 +27,6 @@ public final class DuplicateResourceException extends ResourceDefinitionViolatio
     private static final long serialVersionUID = 2103793827572264148L;
     
     public DuplicateResourceException(final Collection<String> resourceNames) {
-        super(1104, String.format("Duplicate resource names %s.", resourceNames));
+        super(1103, String.format("Duplicate resource names %s.", resourceNames));
     }
 }

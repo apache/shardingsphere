@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
+import java.util.Collection;
 
 /**
- * Rule definition violation exception.
+ * Invalid algorithm configuration exception.
  */
-public abstract class RuleDefinitionViolationException extends ShardingSphereSQLException {
+public final class InvalidAlgorithmConfigurationException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = 1090914641996552474L;
+    private static final long serialVersionUID = 9076740384552385180L;
     
-    public RuleDefinitionViolationException(final int errorCode, final String reason) {
-        super(errorCode, reason);
+    public InvalidAlgorithmConfigurationException(final String algorithmType, final Collection<String> algorithms) {
+        super(1114, String.format("Invalid %s algorithms %s", algorithmType, algorithms));
     }
 }

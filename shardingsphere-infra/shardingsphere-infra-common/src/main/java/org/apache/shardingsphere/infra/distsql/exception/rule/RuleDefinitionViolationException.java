@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
-import java.util.Collection;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 
 /**
- * Required rule missed exception.
+ * Rule definition violation exception.
  */
-public final class RequiredRuleMissedException extends RuleDefinitionViolationException {
+public abstract class RuleDefinitionViolationException extends DistSQLException {
     
-    private static final long serialVersionUID = -8464574460917965546L;
+    private static final long serialVersionUID = 1090914641996552474L;
     
-    public RequiredRuleMissedException(final String ruleType, final String schemaName) {
-        super(1106, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
-    }
-    
-    public RequiredRuleMissedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1106, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
+    public RuleDefinitionViolationException(final int errorCode, final String reason) {
+        super(errorCode, reason);
     }
 }

@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
-import java.util.Collection;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 
 /**
- * Invalid algorithm configuration exception.
+ * Resource definition violation exception.
  */
-public final class InvalidAlgorithmConfigurationException extends RuleDefinitionViolationException {
+public abstract class ResourceDefinitionViolationException extends DistSQLException {
     
-    private static final long serialVersionUID = 9076740384552385180L;
+    private static final long serialVersionUID = -2686784350802985974L;
     
-    public InvalidAlgorithmConfigurationException(final String algorithmType, final Collection<String> algorithms) {
-        super(1119, String.format("Invalid %s algorithms %s", algorithmType, algorithms));
+    public ResourceDefinitionViolationException(final int errorCode, final String reason) {
+        super(errorCode, reason);
     }
 }

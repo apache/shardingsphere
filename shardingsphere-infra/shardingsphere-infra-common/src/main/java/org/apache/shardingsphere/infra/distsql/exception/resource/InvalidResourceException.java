@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
 import java.util.Collection;
 
@@ -27,6 +27,6 @@ public final class InvalidResourceException extends ResourceDefinitionViolationE
     private static final long serialVersionUID = 7029641448948791509L;
     
     public InvalidResourceException(final Collection<String> resourceNames) {
-        super(1103, String.format("Can not add invalid resources %s.", resourceNames));
+        super(1104, String.format("Can not add invalid resources %s.", resourceNames));
     }
 }

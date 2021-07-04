@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
 import java.util.Collection;
 
 /**
- * Duplicate rule exception.
+ * Rule in used exception.
  */
-public final class DuplicateRuleException extends RuleDefinitionViolationException {
+public final class RuleInUsedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = -1738699538105858939L;
+    private static final long serialVersionUID = 3308787279125477660L;
     
-    public DuplicateRuleException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1105, String.format("Duplicate %s rule names `%s` in schema `%s`", ruleType, ruleNames, schemaName));
+    public RuleInUsedException(final String ruleType, final String schemaName) {
+        super(1111, String.format("%s rule in schema `%s` is still in used.", ruleType, schemaName));
+    }
+    
+    public RuleInUsedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+        super(1111, String.format("%s rules `%s` in schema `%s` are still in used.", ruleType, schemaName, ruleNames));
     }
 }

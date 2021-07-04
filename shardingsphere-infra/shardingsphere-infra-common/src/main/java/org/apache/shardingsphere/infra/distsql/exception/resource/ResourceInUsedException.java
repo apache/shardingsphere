@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
-import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * ShardingSphere SQL exception.
+ * Resource in used exception.
  */
-public abstract class ShardingSphereSQLException extends SQLException {
+public final class ResourceInUsedException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = -6464411607608071400L;
+    private static final long serialVersionUID = -3427324685070457375L;
     
-    public ShardingSphereSQLException(final int errorCode, final String reason) {
-        super(reason, "C" + errorCode, errorCode);
+    public ResourceInUsedException(final Collection<String> resourceNames) {
+        super(1101, String.format("Resources %s in the rule are still in used.", resourceNames));
     }
 }

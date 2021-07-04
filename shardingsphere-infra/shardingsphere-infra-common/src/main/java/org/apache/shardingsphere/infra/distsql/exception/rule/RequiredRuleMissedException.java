@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
 import java.util.Collection;
 
 /**
- * Required resource missed exception.
+ * Required rule missed exception.
  */
-public final class RequiredResourceMissedException extends ResourceDefinitionViolationException {
+public final class RequiredRuleMissedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = 1704331180489268L;
+    private static final long serialVersionUID = -8464574460917965546L;
     
-    public RequiredResourceMissedException(final String schemaName, final Collection<String> resourceNames) {
-        super(1102, String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
+    public RequiredRuleMissedException(final String ruleType, final String schemaName) {
+        super(1112, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
+    }
+    
+    public RequiredRuleMissedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+        super(1112, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
     }
 }
