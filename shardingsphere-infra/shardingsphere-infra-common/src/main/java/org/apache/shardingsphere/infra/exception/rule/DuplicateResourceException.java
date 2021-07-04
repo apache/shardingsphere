@@ -20,13 +20,13 @@ package org.apache.shardingsphere.infra.exception.rule;
 import java.util.Collection;
 
 /**
- * Resource duplicated exception.
+ * Duplicate resource exception.
  */
-public final class ResourceDuplicatedException extends RuleDefinitionViolationException {
+public final class DuplicateResourceException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 2103793827572264148L;
     
-    public ResourceDuplicatedException(final Collection<String> resourceNames) {
+    public DuplicateResourceException(final Collection<String> resourceNames) {
         super(1104, String.format("Duplicate resource names %s.", resourceNames));
     }
 }
