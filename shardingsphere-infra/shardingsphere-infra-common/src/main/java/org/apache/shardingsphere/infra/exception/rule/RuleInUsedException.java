@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.exception;
+package org.apache.shardingsphere.infra.exception.rule;
 
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import java.util.Collection;
 
 /**
- * Sharding binding table rule not exists exception.
+ * Rule in used exception.
  */
-public final class ShardingBindingTableRuleNotExistsException extends RuleDefinitionViolationException {
+public final class RuleInUsedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = -1930065143932541970L;
+    private static final long serialVersionUID = 3308787279125477660L;
     
-    public ShardingBindingTableRuleNotExistsException(final String schemaName) {
-        super(1111, String.format("Sharding binding table rules do not exist in schema %s.", schemaName));
+    public RuleInUsedException(final String ruleType, final Collection<String> ruleNames) {
+        super(1107, String.format("%s rules `%s` are still in used.", ruleType, ruleNames));
     }
 }
