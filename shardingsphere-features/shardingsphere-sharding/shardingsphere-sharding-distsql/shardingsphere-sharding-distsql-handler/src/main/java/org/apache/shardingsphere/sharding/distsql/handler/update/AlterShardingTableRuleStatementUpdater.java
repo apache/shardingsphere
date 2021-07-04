@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
-import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -57,7 +57,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws ShardingSphereSQLException {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlteredResources(schemaName, sqlStatement, resource);
         checkToBeAlteredShardingTables(schemaName, sqlStatement, currentRuleConfig);

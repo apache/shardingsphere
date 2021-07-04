@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.distsql.update;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -38,9 +38,9 @@ public interface RDLUpdater<T extends SQLStatement, R extends RuleConfiguration>
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration
      * @param resource ShardingSphere resource
-     * @throws ShardingSphereSQLException definition violation exception
+     * @throws DistSQLException definition violation exception
      */
-    void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig, ShardingSphereResource resource) throws ShardingSphereSQLException;
+    void checkSQLStatement(String schemaName, T sqlStatement, R currentRuleConfig, ShardingSphereResource resource) throws DistSQLException;
     
     /**
      * Get rule configuration class.

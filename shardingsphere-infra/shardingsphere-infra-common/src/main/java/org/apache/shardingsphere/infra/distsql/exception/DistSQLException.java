@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.distsql.exception;
 
 import java.sql.SQLException;
 
 /**
- * ShardingSphere SQL exception.
+ * Dist SQL exception.
  */
-public abstract class ShardingSphereSQLException extends SQLException {
+public abstract class DistSQLException extends SQLException {
     
     private static final long serialVersionUID = -6464411607608071400L;
     
-    public ShardingSphereSQLException(final int errorCode, final String reason) {
+    public DistSQLException(final int errorCode, final String reason) {
         super(reason, "C" + errorCode, errorCode);
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
-import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
@@ -57,7 +57,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws ShardingSphereSQLException {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
         checkToBeCreatedResource(schemaName, sqlStatement, resource);
         checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedShardingAlgorithms(sqlStatement);

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.distsql.exception.resource;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 
 /**
  * Resource definition violation exception.
  */
-public abstract class ResourceDefinitionViolationException extends ShardingSphereSQLException {
+public abstract class ResourceDefinitionViolationException extends DistSQLException {
     
     private static final long serialVersionUID = -2686784350802985974L;
     
