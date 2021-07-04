@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.distsql.update;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -45,7 +44,6 @@ public interface RDLCreateUpdater<T extends SQLStatement, R extends RuleConfigur
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration to be updated
      * @param toBeCreatedRuleConfig to be created rule configuration
-     * @throws RuleDefinitionViolationException rule definition violation exception
      */
-    void updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig, R toBeCreatedRuleConfig) throws RuleDefinitionViolationException;
+    void updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig, R toBeCreatedRuleConfig);
 }
