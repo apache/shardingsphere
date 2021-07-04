@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.exception.resource;
 
 import java.util.Collection;
 
 /**
- * Resource not existed exception.
+ * Invalid resource exception.
  */
-public final class ResourceNotExistedException extends RuleDefinitionViolationException {
+public final class InvalidResourceException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = 1704331180489268L;
+    private static final long serialVersionUID = 7029641448948791509L;
     
-    public ResourceNotExistedException(final String schemaName, final Collection<String> resourceNames) {
-        super(1102, String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
+    public InvalidResourceException(final Collection<String> resourceNames) {
+        super(1103, String.format("Can not add invalid resources %s.", resourceNames));
     }
 }

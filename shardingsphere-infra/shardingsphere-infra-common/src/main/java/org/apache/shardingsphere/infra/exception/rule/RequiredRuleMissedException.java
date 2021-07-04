@@ -20,13 +20,17 @@ package org.apache.shardingsphere.infra.exception.rule;
 import java.util.Collection;
 
 /**
- * Duplicate resource exception.
+ * Required rule missed exception.
  */
-public final class DuplicateResourceException extends RuleDefinitionViolationException {
+public final class RequiredRuleMissedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = 2103793827572264148L;
+    private static final long serialVersionUID = -8464574460917965546L;
     
-    public DuplicateResourceException(final Collection<String> resourceNames) {
-        super(1104, String.format("Duplicate resource names %s.", resourceNames));
+    public RequiredRuleMissedException(final String ruleType, final String schemaName) {
+        super(1106, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
+    }
+    
+    public RequiredRuleMissedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+        super(1106, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
     }
 }

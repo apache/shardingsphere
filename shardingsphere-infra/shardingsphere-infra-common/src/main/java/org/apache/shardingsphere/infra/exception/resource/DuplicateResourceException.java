@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.exception;
-
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+package org.apache.shardingsphere.infra.exception.resource;
 
 import java.util.Collection;
 
 /**
- * Sharding table rule not existed exception.
+ * Duplicate resource exception.
  */
-public final class ShardingTableRuleNotExistedException extends RuleDefinitionViolationException {
+public final class DuplicateResourceException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = 8565541404478688849L;
+    private static final long serialVersionUID = 2103793827572264148L;
     
-    public ShardingTableRuleNotExistedException(final String schemaName, final Collection<String> tableNames) {
-        super(1106, String.format("Sharding table rules %s do not exist in schema %s.", tableNames, schemaName));
+    public DuplicateResourceException(final Collection<String> resourceNames) {
+        super(1104, String.format("Duplicate resource names %s.", resourceNames));
     }
 }

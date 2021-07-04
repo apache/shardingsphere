@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.exception.resource;
 
 import java.util.Collection;
 
 /**
- * Invalid resource exception.
+ * Resource in used exception.
  */
-public final class InvalidResourceException extends RuleDefinitionViolationException {
+public final class ResourceInUsedException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = 7029641448948791509L;
+    private static final long serialVersionUID = -3427324685070457375L;
     
-    public InvalidResourceException(final Collection<String> resourceNames) {
-        super(1103, String.format("Can not add invalid resources %s.", resourceNames));
+    public ResourceInUsedException(final Collection<String> resourceNames) {
+        super(1101, String.format("Resources %s in the rule are still in used.", resourceNames));
     }
 }

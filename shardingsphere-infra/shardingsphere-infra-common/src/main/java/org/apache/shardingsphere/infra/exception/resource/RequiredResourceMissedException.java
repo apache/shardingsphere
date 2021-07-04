@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.exception.resource;
 
 import java.util.Collection;
 
 /**
- * Current rule not existed exception.
+ * Required resource missed exception.
  */
-public final class CurrentRuleNotExistedException extends RuleDefinitionViolationException {
+public final class RequiredResourceMissedException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = -8464574460917965546L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    public CurrentRuleNotExistedException(final String ruleType, final String schemaName) {
-        super(1106, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
-    }
-    
-    public CurrentRuleNotExistedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1106, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
+    public RequiredResourceMissedException(final String schemaName, final Collection<String> resourceNames) {
+        super(1102, String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
     }
 }
