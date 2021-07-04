@@ -54,6 +54,9 @@ class LocalEnumerator<E> implements Enumerator<E> {
             if (strings == null) {
                 strings = new String[]{"EmptyFileHasNoColumns:boolean"};
             }
+            while (strings[0].contains("#")) {
+                strings = reader.readNext();
+            }
             for (String string : strings) {
                 final String name;
                 final LocalFieldType fieldType;
