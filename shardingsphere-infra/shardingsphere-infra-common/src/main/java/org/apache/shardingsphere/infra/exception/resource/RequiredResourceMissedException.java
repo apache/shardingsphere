@@ -20,13 +20,13 @@ package org.apache.shardingsphere.infra.exception.resource;
 import java.util.Collection;
 
 /**
- * Resource not existed exception.
+ * Required resource missed exception.
  */
-public final class ResourceNotExistedException extends ResourceDefinitionViolationException {
+public final class RequiredResourceMissedException extends ResourceDefinitionViolationException {
     
     private static final long serialVersionUID = 1704331180489268L;
     
-    public ResourceNotExistedException(final String schemaName, final Collection<String> resourceNames) {
+    public RequiredResourceMissedException(final String schemaName, final Collection<String> resourceNames) {
         super(1102, String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
     }
 }

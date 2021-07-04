@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.resource.ResourceDefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.resource.ResourceInUsedException;
-import org.apache.shardingsphere.infra.exception.resource.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
@@ -59,16 +59,16 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final String schemaName, final Collection<String> toBeDroppedResourceNames) throws ResourceNotExistedException, ResourceInUsedException {
+    private void check(final String schemaName, final Collection<String> toBeDroppedResourceNames) throws RequiredResourceMissedException, ResourceInUsedException {
         checkResourceNameExisted(schemaName, toBeDroppedResourceNames);
         checkResourceNameNotInUse(schemaName, toBeDroppedResourceNames);
     }
     
-    private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) throws ResourceNotExistedException {
+    private void checkResourceNameExisted(final String schemaName, final Collection<String> resourceNames) throws RequiredResourceMissedException {
         Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
         if (!notExistedResourceNames.isEmpty()) {
-            throw new ResourceNotExistedException(schemaName, notExistedResourceNames);
+            throw new RequiredResourceMissedException(schemaName, notExistedResourceNames);
         }
     }
     
