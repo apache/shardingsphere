@@ -24,7 +24,7 @@ import java.util.Collection;
  */
 public final class RuleInUsedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = -6958306664517015097L;
+    private static final long serialVersionUID = 3308787279125477660L;
     
     public RuleInUsedException(final String ruleType, final Collection<String> ruleNames) {
         super(1107, String.format("%s rules `%s` are still in used.", ruleType, ruleNames));
