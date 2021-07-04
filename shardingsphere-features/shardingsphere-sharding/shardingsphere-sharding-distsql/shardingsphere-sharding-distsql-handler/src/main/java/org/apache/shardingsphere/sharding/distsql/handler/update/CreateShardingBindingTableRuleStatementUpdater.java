@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDuplicatedException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingBindingTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
@@ -44,7 +44,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeCreatedBindingTables(schemaName, sqlStatement, currentRuleConfig);
-        checkToBeCreatedDuplicateBindingTables(sqlStatement, currentRuleConfig);
+        checkToBeCreatedDuplicateBindingTables(schemaName, sqlStatement, currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws ShardingBindingTableRuleNotExistsException {
@@ -74,13 +74,13 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
         return result;
     }
     
-    private void checkToBeCreatedDuplicateBindingTables(final CreateShardingBindingTableRulesStatement sqlStatement, 
-                                                        final ShardingRuleConfiguration currentRuleConfig) throws DuplicateBindingTablesException {
+    private void checkToBeCreatedDuplicateBindingTables(final String schemaName, 
+                                                        final CreateShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleDuplicatedException {
         Collection<String> toBeCreatedBindingTables = new HashSet<>();
         Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeCreatedBindingTables.add(each)).collect(Collectors.toSet());
         duplicateBindingTables.addAll(getCurrentBindingTables(currentRuleConfig).stream().filter(each -> !toBeCreatedBindingTables.add(each)).collect(Collectors.toSet()));
         if (!duplicateBindingTables.isEmpty()) {
-            throw new DuplicateBindingTablesException(duplicateBindingTables);
+            throw new RuleDuplicatedException("binding", schemaName, duplicateBindingTables);
         }
     }
     
