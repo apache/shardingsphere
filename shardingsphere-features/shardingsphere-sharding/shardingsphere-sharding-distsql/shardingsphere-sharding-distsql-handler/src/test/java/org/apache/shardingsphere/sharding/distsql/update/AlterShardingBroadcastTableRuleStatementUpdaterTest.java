@@ -40,7 +40,7 @@ public final class AlterShardingBroadcastTableRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement("t_2"), createCurrentRuleConfiguration());
+        updater.updateCurrentRuleConfiguration(createSQLStatement("t_2"), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
     }
     

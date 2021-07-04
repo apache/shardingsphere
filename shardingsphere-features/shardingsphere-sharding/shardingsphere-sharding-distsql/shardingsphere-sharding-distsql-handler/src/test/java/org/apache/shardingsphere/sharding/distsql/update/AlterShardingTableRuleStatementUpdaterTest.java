@@ -64,7 +64,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement("t_order", "STANDARD_TEST"), createCurrentRuleConfiguration());
+        updater.updateCurrentRuleConfiguration(createSQLStatement("t_order", "STANDARD_TEST"), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
     }
     

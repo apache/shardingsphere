@@ -49,7 +49,7 @@ public final class AlterShardingBindingTableRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createDuplicatedSQLStatement(), createCurrentRuleConfiguration());
+        updater.updateCurrentRuleConfiguration(createDuplicatedSQLStatement(), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
     }
     
