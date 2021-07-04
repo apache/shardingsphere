@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -38,17 +38,17 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * RDL backend handler.
+ * Rule definition backend handler.
  *
  * @param <T> type of SQL statement
  */
-public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
+public final class RuleDefinitionBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
     
     static {
         ShardingSphereServiceLoader.register(RuleDefinitionUpdater.class);
     }
     
-    public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
+    public RuleDefinitionBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
@@ -103,8 +103,8 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processDrop(final String schemaName, final T sqlStatement, final RuleDefinitionDropUpdater rdlUpdater, final RuleConfiguration currentRuleConfig) {
-        if (rdlUpdater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
+    private void processDrop(final String schemaName, final T sqlStatement, final RuleDefinitionDropUpdater updater, final RuleConfiguration currentRuleConfig) {
+        if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(currentRuleConfig);
         }
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
