@@ -43,15 +43,15 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement) {
-        return new ShardingRuleConfiguration();
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.setBroadcastTables(sqlStatement.getTables());
+        return result;
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, 
                                                final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        if (null == currentRuleConfig) {
-            toBeCreatedRuleConfig.setBroadcastTables(sqlStatement.getTables());
-        } else {
+        if (null != currentRuleConfig) {
             currentRuleConfig.getBroadcastTables().addAll(sqlStatement.getTables());
         }
     }

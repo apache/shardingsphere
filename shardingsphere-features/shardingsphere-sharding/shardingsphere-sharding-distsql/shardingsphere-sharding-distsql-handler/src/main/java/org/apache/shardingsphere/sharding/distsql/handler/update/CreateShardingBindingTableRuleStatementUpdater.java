@@ -48,7 +48,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
     
     private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Binding", schemaName);
+            throw new RequiredRuleMissedException("Sharding", schemaName);
         }
     }
     
