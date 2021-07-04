@@ -19,15 +19,19 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.generator.generic;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Remove token generator.
@@ -44,6 +48,9 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         }
         if (sqlStatementContext.getSqlStatement() instanceof MySQLShowColumnsStatement) {
             return ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
+        }
+        if (sqlStatementContext instanceof TableAvailable) {
+            return ((TableAvailable) sqlStatementContext).getAllTables().stream().anyMatch(each -> each.getOwner().isPresent());
         }
         return false;
     }
@@ -64,6 +71,18 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
             Preconditions.checkState(((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
             RemoveAvailable removeAvailable = ((MySQLShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
             return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
+        }
+        if (sqlStatementContext instanceof TableAvailable) {
+            Preconditions.checkState(((TableAvailable) sqlStatementContext).getAllTables().stream().anyMatch(each -> each.getOwner().isPresent()));
+            Collection<RemoveToken> result = new LinkedList<>();
+            for (SimpleTableSegment each : ((TableAvailable) sqlStatementContext).getAllTables()) {
+                if (!each.getOwner().isPresent()) {
+                    continue;
+                }
+                OwnerSegment owner = each.getOwner().get();
+                result.add(new RemoveToken(owner.getStartIndex(), each.getTableName().getStartIndex() - 1));
+            }
+            return result;
         }
         return Collections.emptyList();
     }

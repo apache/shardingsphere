@@ -194,7 +194,8 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
-        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
+        TableNameSegment tableName = new TableNameSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
+        SimpleTableSegment result = new SimpleTableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName);
         OwnerContext owner = ctx.owner();
         if (null != owner) {
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));

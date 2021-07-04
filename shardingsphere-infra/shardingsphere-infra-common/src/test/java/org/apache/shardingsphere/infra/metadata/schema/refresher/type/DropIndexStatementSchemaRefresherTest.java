@@ -42,14 +42,14 @@ public final class DropIndexStatementSchemaRefresherTest {
     @Test
     public void refreshForMySQL() throws SQLException {
         MySQLDropIndexStatement dropIndexStatement = new MySQLDropIndexStatement();
-        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        dropIndexStatement.setTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         refresh(dropIndexStatement);
     }
     
     @Test
     public void refreshForSQLServer() throws SQLException {
         SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement();
-        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        dropIndexStatement.setTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         refresh(dropIndexStatement);
     }
     
@@ -64,14 +64,14 @@ public final class DropIndexStatementSchemaRefresherTest {
     @Test
     public void assertRemoveIndexesForMySQL() throws SQLException {
         MySQLDropIndexStatement dropIndexStatement = new MySQLDropIndexStatement();
-        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        dropIndexStatement.setTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         assertRemoveIndexes(dropIndexStatement);
     }
     
     @Test
     public void assertRemoveIndexesForSQLServer() throws SQLException {
         SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement();
-        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        dropIndexStatement.setTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         assertRemoveIndexes(dropIndexStatement);
     }
     

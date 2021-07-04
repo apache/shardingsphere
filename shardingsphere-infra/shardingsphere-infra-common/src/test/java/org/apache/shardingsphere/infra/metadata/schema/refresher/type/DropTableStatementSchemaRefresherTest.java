@@ -67,7 +67,7 @@ public final class DropTableStatementSchemaRefresherTest {
     private void refresh(final DropTableStatement dropTableStatement) throws SQLException {
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         SchemaRefresher<DropTableStatement> schemaRefresher = new DropTableStatementSchemaRefresher();
-        dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        dropTableStatement.getTables().add(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         schemaRefresher.refresh(schema, Collections.emptyList(), dropTableStatement, mock(SchemaBuilderMaterials.class));
         assertFalse(schema.containsTable("t_order"));
     }
@@ -99,7 +99,7 @@ public final class DropTableStatementSchemaRefresherTest {
     
     private void refreshWithUnConfigured(final DropTableStatement dropTableStatement) throws SQLException {
         SchemaRefresher<DropTableStatement> schemaRefresher = new DropTableStatementSchemaRefresher();
-        dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
+        dropTableStatement.getTables().add(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
         schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), Collections.singletonList("t_order_item"), dropTableStatement, mock(SchemaBuilderMaterials.class));
     }
 }

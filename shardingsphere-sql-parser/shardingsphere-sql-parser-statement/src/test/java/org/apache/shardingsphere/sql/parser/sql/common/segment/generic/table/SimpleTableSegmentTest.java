@@ -28,13 +28,15 @@ public final class SimpleTableSegmentTest {
     
     @Test
     public void getStartIndexWithoutOwner() {
-        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
+        TableNameSegment tableName = new TableNameSegment(0, 0, new IdentifierValue("tbl"));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, tableName);
         assertThat(tableSegment.getStartIndex(), is(10));
     }
     
     @Test
     public void getStartIndexWithOwner() {
-        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
+        TableNameSegment tableName = new TableNameSegment(0, 0, new IdentifierValue("tbl"));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, tableName);
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("o")));
         assertThat(tableSegment.getStartIndex(), is(7));
     }

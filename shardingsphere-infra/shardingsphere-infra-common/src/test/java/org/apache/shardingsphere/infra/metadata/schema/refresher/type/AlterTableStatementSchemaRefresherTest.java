@@ -133,7 +133,7 @@ public final class AlterTableStatementSchemaRefresherTest {
     }
 
     private void refresh(final AlterTableStatement alterTableStatement) throws SQLException {
-        alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        alterTableStatement.setTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
         DataSource dataSource = mock(DataSource.class);
@@ -152,7 +152,7 @@ public final class AlterTableStatementSchemaRefresherTest {
     }
     
     private void refreshWithTableRule(final AlterTableStatement alterTableStatement) throws SQLException {
-        alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        alterTableStatement.setTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         TableContainedRule rule = mock(TableContainedRule.class);
         Collection<ShardingSphereRule> rules = Collections.singletonList(rule);
@@ -175,8 +175,8 @@ public final class AlterTableStatementSchemaRefresherTest {
     }
     
     private void refreshWithRenameTable(final AlterTableStatement alterTableStatement) throws SQLException {
-        alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        alterTableStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
+        alterTableStatement.setTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        alterTableStatement.setRenameTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
         DataSource dataSource = mock(DataSource.class);
@@ -196,8 +196,8 @@ public final class AlterTableStatementSchemaRefresherTest {
     }
     
     private void refreshWithRenameTableWithTableRule(final AlterTableStatement alterTableStatement) throws SQLException {
-        alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        alterTableStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
+        alterTableStatement.setTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        alterTableStatement.setRenameTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         TableContainedRule rule = mock(TableContainedRule.class);
         Collection<ShardingSphereRule> rules = Collections.singletonList(rule);

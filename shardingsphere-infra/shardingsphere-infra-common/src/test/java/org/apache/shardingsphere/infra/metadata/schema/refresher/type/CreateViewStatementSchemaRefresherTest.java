@@ -45,7 +45,7 @@ public final class CreateViewStatementSchemaRefresherTest {
     }
     
     private void refreshWithUnConfigured(final CreateViewStatement createViewStatement) throws SQLException {
-        createViewStatement.setView(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
+        createViewStatement.setView(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order_item_0"))));
         SchemaRefresher<CreateViewStatement> schemaRefresher = new CreateViewStatementSchemaRefresher();
         schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), Collections.singletonList("t_order_item"), createViewStatement, mock(SchemaBuilderMaterials.class));
     }

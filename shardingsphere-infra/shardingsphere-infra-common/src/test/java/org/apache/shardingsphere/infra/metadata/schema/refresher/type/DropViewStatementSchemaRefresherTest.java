@@ -46,7 +46,7 @@ public final class DropViewStatementSchemaRefresherTest {
     
     private void refreshWithUnConfigured(final DropViewStatement dropViewStatement) throws SQLException {
         SchemaRefresher<DropViewStatement> schemaRefresher = new DropViewStatementSchemaRefresher();
-        dropViewStatement.getViews().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
+        dropViewStatement.getViews().add(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
         schemaRefresher.refresh(ShardingSphereSchemaBuildUtil.buildSchema(), Collections.singletonList("t_order_item"), dropViewStatement, mock(SchemaBuilderMaterials.class));
     }
 }
