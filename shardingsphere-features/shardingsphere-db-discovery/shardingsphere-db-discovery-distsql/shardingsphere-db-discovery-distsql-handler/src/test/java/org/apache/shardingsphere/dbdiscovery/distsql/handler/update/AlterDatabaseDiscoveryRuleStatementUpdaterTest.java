@@ -19,10 +19,10 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.handler.exception.DatabaseDiscoveryRuleNotExistedException;
 import org.apache.shardingsphere.dbdiscovery.distsql.handler.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -42,12 +42,12 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     
     private final AlterDatabaseDiscoveryRuleStatementUpdater updater = new AlterDatabaseDiscoveryRuleStatementUpdater();
     
-    @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
+    @Test(expected = CurrentRuleNotExistedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
+    @Test(expected = CurrentRuleNotExistedException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), 
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));

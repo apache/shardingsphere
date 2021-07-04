@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.handler.exception;
-
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+package org.apache.shardingsphere.infra.exception.rule;
 
 import java.util.Collection;
 
 /**
- * Database discovery rule not existed exception.
+ * Current rule not existed exception.
  */
-public final class DatabaseDiscoveryRuleNotExistedException extends RuleDefinitionViolationException {
+public final class CurrentRuleNotExistedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = 1293361372683913161L;
+    private static final long serialVersionUID = -8464574460917965546L;
     
-    public DatabaseDiscoveryRuleNotExistedException(final String schemaName, final Collection<String> ruleNames) {
-        super(1116, String.format("Database discovery rules %s do not exist in schema %s.", ruleNames, schemaName));
+    public CurrentRuleNotExistedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+        super(1106, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
     }
 }
