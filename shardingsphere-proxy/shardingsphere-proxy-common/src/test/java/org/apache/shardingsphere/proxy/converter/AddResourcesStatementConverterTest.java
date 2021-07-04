@@ -41,12 +41,15 @@ public final class AddResourcesStatementConverterTest {
         assertThat(actual.size(), is(2));
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
         assertThat(actual.values().iterator().next().getUsername(), is("root0"));
+        assertThat(actual.values().iterator().next().getAdditionalProps().getProperty("useSSL"), is("false"));
     }
     
     private Collection<DataSourceSegment> createDataSourceSegments() {
         Collection<DataSourceSegment> result = new LinkedList<>();
+        Properties properties = new Properties();
+        properties.setProperty("useSSL", "false");
         for (int i = 0; i < 2; i++) {
-            result.add(new DataSourceSegment(String.format("ds%s", i), "127.0.0.1", "3306", String.format("demo_ds_%s", i), String.format("root%s", i), String.format("root%s", i), new Properties()));
+            result.add(new DataSourceSegment(String.format("ds%s", i), "127.0.0.1", "3306", String.format("demo_ds_%s", i), String.format("root%s", i), String.format("root%s", i), properties));
         }
         return result;
     }

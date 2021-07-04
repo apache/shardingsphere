@@ -63,14 +63,35 @@ public final class YamlDataSourceConfigurationSwapperTest {
     }
     
     @Test
+    public void assertSwapToDataSourceConfigurationWithAdditionalProps() {
+        Map<String, Object> yamlConfig = new HashMap<>(3, 1);
+        yamlConfig.put("dataSourceClassName", "xxx.jdbc.driver");
+        yamlConfig.put("url", "xx:xxx");
+        yamlConfig.put("username", "root");
+        Map<String, Object> additionalProps = new HashMap<>(2, 1);
+        additionalProps.put("useSSL", "false");
+        additionalProps.put("serverTimezone", "UTC");
+        yamlConfig.put("properties", additionalProps);
+        DataSourceConfiguration actual = swapper.swapToDataSourceConfiguration(yamlConfig);
+        assertThat(actual.getDataSourceClassName(), is("xxx.jdbc.driver"));
+        assertThat(actual.getProps().size(), is(2));
+        assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
+        assertThat(actual.getProps().get("username").toString(), is("root"));
+        assertThat(actual.getAdditionalProps().getProperty("useSSL"), is("false"));
+        assertThat(actual.getAdditionalProps().getProperty("serverTimezone"), is("UTC"));
+    }
+    
+    @Test
     public void assertSwapToMap() {
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration("xxx.jdbc.driver");
         dataSourceConfig.getProps().put("url", "xx:xxx");
         dataSourceConfig.getProps().put("username", "root");
+        dataSourceConfig.getAdditionalProps().put("useSSL", "false");
         Map<String, Object> actual = swapper.swapToMap(dataSourceConfig);
         assertThat(actual.get("dataSourceClassName"), is("xxx.jdbc.driver"));
         assertThat(actual.get("url").toString(), is("xx:xxx"));
         assertThat(actual.get("username").toString(), is("root"));
+        assertThat(((Map<String, Object>) actual.get("properties")).get("useSSL").toString(), is("false"));
     }
 
     private Map<String, Map<String, Object>> createYamlConfig() {

@@ -53,4 +53,30 @@ public final class HikariJDBCParameterDecoratorTest {
         assertThat(props.getProperty("netTimeoutForStreamingResults"), is("0"));
         assertThat(props.getProperty("tinyInt1isBit"), is(Boolean.FALSE.toString()));
     }
+    
+    @Test
+    public void assertDecoratedHikariDataSourceWithAdditionalProps() {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setDriverClassName("org.apache.shardingsphere.test.mock.MockedDriver");
+        dataSource.setJdbcUrl("mock:jdbc");
+        Properties additionalProps = new Properties();
+        additionalProps.setProperty("useSSL", "false");
+        additionalProps.setProperty("serverTimezone", "UTC");
+        HikariDataSource actual = new HikariJDBCParameterDecorator().decorate(dataSource, additionalProps);
+        Properties props = actual.getDataSourceProperties();
+        assertThat(props.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("prepStmtCacheSize"), is("200000"));
+        assertThat(props.getProperty("prepStmtCacheSqlLimit"), is("2048"));
+        assertThat(props.getProperty("useLocalSessionState"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("cacheResultSetMetadata"), is(Boolean.FALSE.toString()));
+        assertThat(props.getProperty("cacheServerConfiguration"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
+        assertThat(props.getProperty("maintainTimeStats"), is(Boolean.FALSE.toString()));
+        assertThat(props.getProperty("netTimeoutForStreamingResults"), is("0"));
+        assertThat(props.getProperty("tinyInt1isBit"), is(Boolean.FALSE.toString()));
+        assertThat(props.getProperty("useSSL"), is("false"));
+        assertThat(props.getProperty("serverTimezone"), is("UTC"));
+    }
 }
