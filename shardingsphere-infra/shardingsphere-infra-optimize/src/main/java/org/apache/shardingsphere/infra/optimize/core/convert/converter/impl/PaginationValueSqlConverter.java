@@ -28,7 +28,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 
 import java.util.Optional;
 
-public final class PaginationValueSqlConverter implements SqlNodeConverter<PaginationValueSegment> {
+/**
+ * Pagination value converter.
+ */
+public final class PaginationValueSqlConverter implements SqlNodeConverter<PaginationValueSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final PaginationValueSegment paginationValue) {

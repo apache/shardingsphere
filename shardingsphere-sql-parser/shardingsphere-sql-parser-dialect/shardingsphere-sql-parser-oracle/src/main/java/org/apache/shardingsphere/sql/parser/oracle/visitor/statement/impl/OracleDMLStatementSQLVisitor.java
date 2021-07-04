@@ -29,8 +29,13 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Assign
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConditionalInsertClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConditionalInsertElsePartContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConditionalInsertWhenPartContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteWhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlSubqueryClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForUpdateClauseContext;
@@ -39,6 +44,9 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FromCl
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertIntoClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertMultiTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertSingleTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinSpecificationContext;
@@ -48,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeA
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeSetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeUpdateClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiTableElementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByItemContext;
@@ -63,6 +72,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetAss
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryFactoringClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableCollectionExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableReferenceContext;
@@ -98,6 +108,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Hav
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
@@ -135,33 +146,143 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
         // TODO :deal with insert select
         if (null != ctx.insertSingleTable()) {
-            OracleInsertStatement result = (OracleInsertStatement) visit(ctx.insertSingleTable().insertValuesClause());
-            result.setTable((SimpleTableSegment) visit(ctx.insertSingleTable().insertIntoClause().tableName()));
-            result.setParameterCount(getCurrentParameterIndex());
+            OracleInsertStatement result = (OracleInsertStatement) visit(ctx.insertSingleTable());
+            return result;
+        } else {
+            OracleInsertStatement result = (OracleInsertStatement) visit(ctx.insertMultiTable());
             return result;
         }
-        return new OracleInsertStatement();
+    }
+    
+    @Override
+    public ASTNode visitInsertSingleTable(final InsertSingleTableContext ctx) {
+        OracleInsertStatement result = (OracleInsertStatement) visit(ctx.insertIntoClause());
+        if (null != ctx.insertValuesClause()) {
+            result.getValues().addAll(createInsertValuesSegments(ctx.insertValuesClause().assignmentValues()));
+        }
+        if (null != ctx.selectSubquery()) {
+            OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
+            result.setSelectSubquery(subquerySegment);
+        }
+        result.setParameterCount(getCurrentParameterIndex());
+        return result;
+    }
+    
+    private Collection<InsertValuesSegment> createInsertValuesSegments(final AssignmentValuesContext ctx) {
+        Collection<InsertValuesSegment> result = new LinkedList<>();
+        result.add((InsertValuesSegment) visit(ctx));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertMultiTable(final InsertMultiTableContext ctx) {
+        OracleInsertStatement result = new OracleInsertStatement();
+        if (null != ctx.conditionalInsertClause()) {
+            result.setInsertMultiTableElementSegment((InsertMultiTableElementSegment) visit(ctx.conditionalInsertClause()));
+        } else {
+            result.setInsertMultiTableElementSegment(createInsertMultiTableElementSegment(ctx.multiTableElement()));
+        }
+        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
+        SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
+        result.setSelectSubquery(subquerySegment);
+        result.setParameterCount(getCurrentParameterIndex());
+        return result;
+    }
+    
+    private InsertMultiTableElementSegment createInsertMultiTableElementSegment(final List<MultiTableElementContext> ctx) {
+        Collection<OracleInsertStatement> insertStatements = new LinkedList<>();
+        for (MultiTableElementContext each: ctx) {
+            insertStatements.add((OracleInsertStatement) visit(each));
+        }
+        InsertMultiTableElementSegment result = new InsertMultiTableElementSegment(ctx.get(0).getStart().getStartIndex(), ctx.get(ctx.size() - 1).getStop().getStopIndex());
+        result.getInsertStatements().addAll(insertStatements);
+        return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         OracleInsertStatement result = new OracleInsertStatement();
+        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertIntoClause(final InsertIntoClauseContext ctx) {
+        OracleInsertStatement result = new OracleInsertStatement();
+        if (null != ctx.dmlTableExprClause().dmlTableClause()) {
+            result.setTable((SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause()));
+        } else if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
+            result.setInsertSelect((SubquerySegment) visit(ctx.dmlTableExprClause().dmlSubqueryClause()));
+        } else {
+            result.setInsertSelect((SubquerySegment) visit(ctx.dmlTableExprClause().tableCollectionExpr()));
+        }
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
             result.setInsertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            result.setInsertColumns(new InsertColumnsSegment(ctx.stop.getStopIndex() + 1, ctx.stop.getStopIndex() + 1, Collections.emptyList()));
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         return result;
     }
     
-    private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
-        Collection<InsertValuesSegment> result = new LinkedList<>();
-        for (AssignmentValuesContext each : assignmentValuesContexts) {
-            result.add((InsertValuesSegment) visit(each));
+    @Override
+    public ASTNode visitDmlTableClause(final DmlTableClauseContext ctx) {
+        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDmlSubqueryClause(final DmlSubqueryClauseContext ctx) {
+        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
+        SubquerySegment result = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTableCollectionExpr(final TableCollectionExprContext ctx) {
+        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.collectionExpr().selectSubquery());
+        SubquerySegment result = new SubquerySegment(ctx.collectionExpr().selectSubquery().start.getStartIndex(), ctx.collectionExpr().selectSubquery().stop.getStopIndex(), subquery);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitConditionalInsertClause(final ConditionalInsertClauseContext ctx) {
+        Collection<OracleInsertStatement> insertStatements = new LinkedList<>();
+        for (ConditionalInsertWhenPartContext each: ctx.conditionalInsertWhenPart()) {
+            insertStatements.addAll(createInsertStatementsFromConditionalInsertWhen(each));
+        }
+        if (null != ctx.conditionalInsertElsePart()) {
+            insertStatements.addAll(createInsertStatementsFromConditionalInsertElse(ctx.conditionalInsertElsePart()));
+        }
+        InsertMultiTableElementSegment result = new InsertMultiTableElementSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.getInsertStatements().addAll(insertStatements);
+        return result;
+    }
+    
+    private Collection<OracleInsertStatement> createInsertStatementsFromConditionalInsertWhen(final ConditionalInsertWhenPartContext ctx) {
+        Collection<OracleInsertStatement> result = new LinkedList<>();
+        for (MultiTableElementContext each: ctx.multiTableElement()) {
+            result.add((OracleInsertStatement) visit(each));
+        }
+        return result;
+    }
+    
+    private Collection<OracleInsertStatement> createInsertStatementsFromConditionalInsertElse(final ConditionalInsertElsePartContext ctx) {
+        Collection<OracleInsertStatement> result = new LinkedList<>();
+        for (MultiTableElementContext each: ctx.multiTableElement()) {
+            result.add((OracleInsertStatement) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMultiTableElement(final MultiTableElementContext ctx) {
+        OracleInsertStatement result = (OracleInsertStatement) visit(ctx.insertIntoClause());
+        if (null != ctx.insertValuesClause()) {
+            result.getValues().addAll(createInsertValuesSegments(ctx.insertValuesClause().assignmentValues()));
         }
         return result;
     }

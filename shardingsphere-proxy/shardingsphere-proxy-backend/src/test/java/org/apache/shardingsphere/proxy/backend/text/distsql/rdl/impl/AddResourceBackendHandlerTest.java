@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -39,6 +40,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -80,18 +82,18 @@ public final class AddResourceBackendHandlerTest {
     }
     
     @Test
-    public void assertExecute() {
+    public void assertExecute() throws DistSQLException {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
         when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         when(shardingSphereResource.getDataSources()).thenReturn(new HashMap<>());
         when(dataSourceValidator.validate(any(DataSourceConfiguration.class))).thenReturn(true);
-        ResponseHeader responseHeader = addResourceBackendHandler.execute("test", buildAddResourceStatement());
+        ResponseHeader responseHeader = addResourceBackendHandler.execute("test", createAddResourceStatement());
         assertTrue(responseHeader instanceof UpdateResponseHeader);
     }
     
-    private AddResourceStatement buildAddResourceStatement() {
-        return new AddResourceStatement(Collections.singleton(new DataSourceSegment("ds_0", "127.0.0.1", "test0", "3306", "root", "")));
+    private AddResourceStatement createAddResourceStatement() {
+        return new AddResourceStatement(Collections.singleton(new DataSourceSegment("ds_0", "127.0.0.1", "test0", "3306", "root", "", new Properties())));
     }
 }

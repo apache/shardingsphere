@@ -95,9 +95,11 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
     
     @Override
     public void close() throws SQLException {
-        if (!isPortalSuspended()) {
-            connectionContext.getPortal(packet.getPortal()).close();
+        if (isPortalSuspended()) {
+            connectionContext.getPortal(packet.getPortal()).suspend();
+            return;
         }
+        connectionContext.getPortal(packet.getPortal()).close();
         if (connectionContext.getSqlStatement().isPresent()
                 && (connectionContext.getSqlStatement().get() instanceof CommitStatement || connectionContext.getSqlStatement().get() instanceof RollbackStatement)) {
             connectionContext.closeAllPortals();

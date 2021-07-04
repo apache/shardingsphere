@@ -37,6 +37,6 @@ public final class ShardingSphereSchemaBuildUtil {
      */
     public static ShardingSphereSchema buildSchema() {
         return new ShardingSphereSchema(ImmutableMap.of("t_order", 
-                new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", 1, false, false, false)), Collections.singletonList(new IndexMetaData("index")))));
+                new TableMetaData("t_order", Collections.singletonList(new ColumnMetaData("order_id", 1, false, false, false)), Collections.singletonList(new IndexMetaData("index")))));
     }
 }

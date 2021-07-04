@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
@@ -95,7 +96,7 @@ public final class CommandExecutorTaskTest {
     
     @Before
     public void setup() {
-        when(backendConnection.closeDatabaseCommunicationEngines()).thenReturn(Collections.emptyList());
+        when(backendConnection.closeDatabaseCommunicationEngines(anyBoolean())).thenReturn(Collections.emptyList());
     }
     
     @Test
@@ -115,7 +116,7 @@ public final class CommandExecutorTaskTest {
         verify(connectionStatus).waitUntilConnectionRelease();
         verify(connectionStatus).switchToUsing();
         verify(queryCommandExecutor).close();
-        verify(backendConnection).closeDatabaseCommunicationEngines();
+        verify(backendConnection).closeDatabaseCommunicationEngines(true);
     }
     
     @Test
@@ -139,7 +140,7 @@ public final class CommandExecutorTaskTest {
         verify(handlerContext).flush();
         verify(executeEngine).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
         verify(queryCommandExecutor).close();
-        verify(backendConnection).closeDatabaseCommunicationEngines();
+        verify(backendConnection).closeDatabaseCommunicationEngines(true);
     }
     
     @Test
@@ -163,7 +164,7 @@ public final class CommandExecutorTaskTest {
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
         verify(commandExecutor).close();
-        verify(backendConnection).closeDatabaseCommunicationEngines();
+        verify(backendConnection).closeDatabaseCommunicationEngines(true);
     }
     
     @Test
@@ -180,6 +181,6 @@ public final class CommandExecutorTaskTest {
         CommandExecutorTask actual = new CommandExecutorTask(engine, backendConnection, handlerContext, message);
         actual.run();
         verify(handlerContext, atLeast(2)).writeAndFlush(databasePacket);
-        verify(backendConnection).closeDatabaseCommunicationEngines();
+        verify(backendConnection).closeDatabaseCommunicationEngines(true);
     }
 }

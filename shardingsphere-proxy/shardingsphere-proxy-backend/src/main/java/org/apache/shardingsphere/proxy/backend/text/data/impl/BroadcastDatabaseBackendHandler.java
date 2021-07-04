@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 
@@ -37,7 +37,7 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
-    private final SQLStatement sqlStatement;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final String sql;
     
@@ -51,9 +51,9 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
             if (!ProxyContext.getInstance().getMetaData(each).isComplete()) {
                 throw new RuleNotExistedException();
             }
-            databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection).execute();
+            databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection).execute();
         }
         backendConnection.setCurrentSchema(originalSchema);
-        return new UpdateResponseHeader(sqlStatement);
+        return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());
     }
 }

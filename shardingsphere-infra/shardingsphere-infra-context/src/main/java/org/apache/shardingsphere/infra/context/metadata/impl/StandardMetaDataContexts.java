@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -54,23 +55,8 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     private final StateContext stateContext;
     
     public StandardMetaDataContexts() {
-        this(new LinkedHashMap<>(), 
-                new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null, new ConfigurationProperties(new Properties()));
-    }
-    
-    /**
-     * todo remove this deprecated constructor.
-     * @deprecated old
-     */
-    @Deprecated
-    public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData, 
-                                    final ExecutorEngine executorEngine, final ConfigurationProperties props) {
-        this.metaDataMap = new LinkedHashMap<>(metaDataMap);
-        this.globalRuleMetaData = globalRuleMetaData;
-        this.executorEngine = executorEngine;
-        optimizeContextFactory = new OptimizeContextFactory(metaDataMap);
-        this.props = props;
-        stateContext = new StateContext();
+        this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
+                null, new ConfigurationProperties(new Properties()), new OptimizeContextFactory(new HashMap<>()));
     }
     
     public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,

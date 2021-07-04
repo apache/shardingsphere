@@ -72,16 +72,18 @@ public final class SchemaBuilder {
      * @return actual and logic table meta data
      * @throws SQLException SQL exception
      */
-    public static Map<Map<String, TableMetaData>, Map<String, TableMetaData>> build(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<Map<String, TableMetaData>, Map<String, TableMetaData>> result = new HashMap<>();
-        Map<String, TableMetaData> actualTableMetaMap = appendRemainTables(materials);
-        Map<String, TableMetaData> logicTableMetaMap = addRuleConfiguredTables(materials, actualTableMetaMap);
-        result.put(actualTableMetaMap, logicTableMetaMap);
-        return result;
+    public static Map<TableMetaData, TableMetaData> build(final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, TableMetaData> actualTableMetaMap = buildActualTableMetaDataMap(materials);
+        Map<String, TableMetaData> logicTableMetaMap = buildLogicTableMetaDataMap(materials, actualTableMetaMap);
+        Map<TableMetaData, TableMetaData> tableMetaDataMap = new HashMap<>(actualTableMetaMap.size(), 1);
+        for (Entry<String, TableMetaData> entry : actualTableMetaMap.entrySet()) {
+            tableMetaDataMap.put(entry.getValue(), logicTableMetaMap.getOrDefault(entry.getKey(), entry.getValue()));
+        }
+        return tableMetaDataMap;
     }
     
-    private static Map<String, TableMetaData> appendRemainTables(final SchemaBuilderMaterials materials) throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>();
+    private static Map<String, TableMetaData> buildActualTableMetaDataMap(final SchemaBuilderMaterials materials) throws SQLException {
+        Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
         appendRemainTables(materials, result);
         for (ShardingSphereRule rule : materials.getRules()) {
             if (rule instanceof TableContainedRule) {
@@ -104,7 +106,7 @@ public final class SchemaBuilder {
         appendDefaultRemainTables(materials, tables);
     }
     
-    private static Map<String, TableMetaData> addRuleConfiguredTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
+    private static Map<String, TableMetaData> buildLogicTableMetaDataMap(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(materials.getRules().size(), 1);
         for (ShardingSphereRule rule : materials.getRules()) {
             if (rule instanceof TableContainedRule) {
@@ -158,7 +160,7 @@ public final class SchemaBuilder {
     }
     
     private static TableMetaData loadTableMetaData(final String tableName, final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
-        TableMetaData result = new TableMetaData();
+        TableMetaData result = new TableMetaData(tableName);
         try (Connection connection = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             result.getColumns().putAll(loadColumnMetaDataMap(tableName, databaseType, connection));
         }
