@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
@@ -58,6 +59,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -247,9 +249,9 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(ShowResourcesStatement.class), connection);
+            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(RuleDefinitionStatement.class), connection);
         } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("No Registry center to execute `ShowResourcesStatement` SQL"));
+            assertThat(ex.getMessage(), containsString("No Registry center to execute "));
         }
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowResourcesStatement.class), connection).execute();
