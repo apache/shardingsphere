@@ -101,8 +101,8 @@ public class ShardingSphereOptimizerTest {
         String expected = "EnumerableCalc(expr#0..3=[{inputs}], order_id=[$t0], remarks=[$t3])\n"
             + "  EnumerableNestedLoopJoin(condition=[true], joinType=[inner])\n"
             + "    LocalTableScan(table=[[testSchema, t_order_federate]], fields=[[0, 1]])\n"
-            + "    LocalTableScan(table=[[testSchema, t_order_item_federate_sharding]], fields=[[0, 1]])\n";
-        String actual = relNode.explain();
+            + "    LocalTableScan(table=[[testSchema, t_order_item_federate_sharding]], fields=[[0, 1]])";
+        String actual = relNode.explain().trim();
         assertEquals(expected, actual);
     }
 }
