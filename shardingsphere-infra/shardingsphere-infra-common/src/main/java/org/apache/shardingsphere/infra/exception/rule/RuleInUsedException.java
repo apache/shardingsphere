@@ -26,6 +26,10 @@ public final class RuleInUsedException extends RuleDefinitionViolationException 
     
     private static final long serialVersionUID = 3308787279125477660L;
     
+    public RuleInUsedException(final String ruleType, final String schemaName) {
+        super(1107, String.format("%s rule in schema `%s` are still in used.", ruleType, schemaName));
+    }
+    
     public RuleInUsedException(final String ruleType, final Collection<String> ruleNames) {
         super(1107, String.format("%s rules `%s` are still in used.", ruleType, ruleNames));
     }
