@@ -31,11 +31,10 @@ public interface RDLCreateUpdater<T extends SQLStatement, R extends RuleConfigur
     /**
      * Build to be created rule configuration.
      * 
-     * @param schemaName schema name
      * @param sqlStatement SQL statement
      * @return built to be created rule configuration
      */
-    RuleConfiguration buildToBeCreatedRuleConfiguration(String schemaName, T sqlStatement);
+    RuleConfiguration buildToBeCreatedRuleConfiguration(T sqlStatement);
     
     /**
      * Update current rule configuration.

@@ -88,7 +88,7 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processCreate(final String schemaName, final T sqlStatement, final RDLCreateUpdater updater, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(schemaName, sqlStatement);
+        RuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
         if (null == currentRuleConfig) {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(toBeCreatedRuleConfig);
         } else {

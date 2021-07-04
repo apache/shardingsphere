@@ -93,7 +93,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RDLCr
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
+    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateReadwriteSplittingRuleStatement sqlStatement) {
         return ReadwriteSplittingRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

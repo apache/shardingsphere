@@ -117,7 +117,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingTableRuleStatement sqlStatement) {
         return ShardingRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
