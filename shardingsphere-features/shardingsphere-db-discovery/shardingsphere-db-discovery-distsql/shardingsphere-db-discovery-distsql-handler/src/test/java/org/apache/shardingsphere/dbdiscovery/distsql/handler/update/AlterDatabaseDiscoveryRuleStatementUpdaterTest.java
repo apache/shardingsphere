@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
@@ -43,25 +43,25 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     private final AlterDatabaseDiscoveryRuleStatementUpdater updater = new AlterDatabaseDiscoveryRuleStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws ShardingSphereSQLException {
         updater.checkSQLStatement("foo", new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() throws ShardingSphereSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), 
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = RequiredResourceMissedException.class)
-    public void assertCheckSQLStatementWithoutExistedResources() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithoutExistedResources() throws ShardingSphereSQLException {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), createCurrentRuleConfiguration(), resource);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredDiscoveryTypes() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithoutToBeAlteredDiscoveryTypes() throws ShardingSphereSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     

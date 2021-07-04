@@ -20,13 +20,13 @@ package org.apache.shardingsphere.infra.exception;
 import java.sql.SQLException;
 
 /**
- * Definition violation exception.
+ * ShardingSphere SQL exception.
  */
-public abstract class DefinitionViolationException extends SQLException {
+public abstract class ShardingSphereSQLException extends SQLException {
     
     private static final long serialVersionUID = -6464411607608071400L;
     
-    public DefinitionViolationException(final int errorCode, final String reason) {
+    public ShardingSphereSQLException(final int errorCode, final String reason) {
         super(reason, "C" + errorCode, errorCode);
     }
 }

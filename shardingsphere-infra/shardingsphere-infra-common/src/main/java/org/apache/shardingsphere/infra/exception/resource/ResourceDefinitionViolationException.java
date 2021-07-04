@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.exception.resource;
 
-import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
 
 /**
  * Resource definition violation exception.
  */
-public abstract class ResourceDefinitionViolationException extends DefinitionViolationException {
+public abstract class ResourceDefinitionViolationException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = -2686784350802985974L;
     

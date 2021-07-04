@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
@@ -43,19 +43,19 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     private final CreateReadwriteSplittingRuleStatementUpdater updater = new CreateReadwriteSplittingRuleStatementUpdater();
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDuplicateRuleNames() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithDuplicateRuleNames() throws ShardingSphereSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), getCurrentRuleConfig(), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = RequiredResourceMissedException.class)
-    public void assertCheckSQLStatementWithoutExistedResources() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithoutExistedResources() throws ShardingSphereSQLException {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), null, resource);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() throws ShardingSphereSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), null, mock(ShardingSphereResource.class));
     }
     

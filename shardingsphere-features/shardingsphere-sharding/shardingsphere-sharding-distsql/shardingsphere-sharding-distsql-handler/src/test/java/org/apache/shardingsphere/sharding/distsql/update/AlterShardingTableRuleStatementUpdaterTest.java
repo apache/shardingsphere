@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
@@ -43,22 +43,22 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     private final AlterShardingTableRuleStatementUpdater updater = new AlterShardingTableRuleStatementUpdater();
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithoutCurrentRule() throws ShardingSphereSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("t_order", "STANDARD_TEST"), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDuplicateTables() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithDuplicateTables() throws ShardingSphereSQLException {
         updater.checkSQLStatement("foo", createDuplicatedSQLStatement(), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertCheckSQLStatementWithoutExistTable() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithoutExistTable() throws ShardingSphereSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("invalid_table", "STANDARD_TEST"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredShardingAlgorithms() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithoutToBeAlteredShardingAlgorithms() throws ShardingSphereSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("t_order", "INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
