@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.exception.rule.RuleDuplicatedException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -125,10 +125,10 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
         return sqlStatement.getRules().stream().filter(each -> null != each.getKeyGenerateStrategy()).map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
     }
     
-    private void checkToBeAlteredDuplicateShardingTables(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) throws RuleDuplicatedException {
+    private void checkToBeAlteredDuplicateShardingTables(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) throws DuplicateRuleException {
         Collection<String> duplicateTables = getDuplicateTables(sqlStatement);
         if (!duplicateTables.isEmpty()) {
-            throw new RuleDuplicatedException("sharding", schemaName, duplicateTables);
+            throw new DuplicateRuleException("sharding", schemaName, duplicateTables);
         }
     }
     
