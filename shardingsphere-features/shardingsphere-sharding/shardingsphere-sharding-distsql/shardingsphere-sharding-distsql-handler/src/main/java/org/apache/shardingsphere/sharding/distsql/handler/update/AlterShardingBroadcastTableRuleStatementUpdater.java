@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
@@ -42,17 +42,24 @@ public final class AlterShardingBroadcastTableRuleStatementUpdater implements RD
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingBroadcastTableRulesStatement sqlStatement) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.setBroadcastTables(sqlStatement.getTables());
+        return result;
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         dropRuleConfiguration(currentRuleConfig);
-        addRuleConfiguration(sqlStatement, currentRuleConfig);
+        addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
     }
     
     private void dropRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBroadcastTables().clear();
     }
     
-    private void addRuleConfiguration(final AlterShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getBroadcastTables().addAll(sqlStatement.getTables());
+    private void addRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        currentRuleConfig.getBroadcastTables().addAll(toBeAlteredRuleConfig.getBroadcastTables());
     }
     
     @Override

@@ -24,10 +24,11 @@ import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleSt
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -87,22 +88,26 @@ public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<A
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        dropRuleConfiguration(sqlStatement, currentRuleConfig);
-        addRuleConfiguration(sqlStatement, currentRuleConfig);
+    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterEncryptRuleStatement sqlStatement) {
+        return EncryptRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
-    private void dropRuleConfiguration(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        for (String each : getToBeAlteredEncryptTableNames(sqlStatement)) {
-            Optional<EncryptTableRuleConfiguration> toBeRemovedEncryptTableRuleConfig = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(each)).findAny();
-            Preconditions.checkState(toBeRemovedEncryptTableRuleConfig.isPresent());
-            currentRuleConfig.getTables().remove(toBeRemovedEncryptTableRuleConfig.get());
-            toBeRemovedEncryptTableRuleConfig.get().getColumns().forEach(column -> currentRuleConfig.getEncryptors().remove(column.getEncryptorName()));
+    @Override
+    public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeAlteredRuleConfig) {
+        dropRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+        addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+    }
+    
+    private void dropRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeAlteredRuleConfig) {
+        for (EncryptTableRuleConfiguration each : toBeAlteredRuleConfig.getTables()) {
+            Optional<EncryptTableRuleConfiguration> toBeRemovedTableRuleConfig = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(each.getName())).findAny();
+            Preconditions.checkState(toBeRemovedTableRuleConfig.isPresent());
+            currentRuleConfig.getTables().remove(toBeRemovedTableRuleConfig.get());
+            toBeRemovedTableRuleConfig.get().getColumns().forEach(column -> currentRuleConfig.getEncryptors().remove(column.getEncryptorName()));
         }
     }
     
-    private void addRuleConfiguration(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
-        EncryptRuleConfiguration toBeAlteredRuleConfig = EncryptRuleStatementConverter.convert(sqlStatement.getRules());
+    private void addRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeAlteredRuleConfig) {
         currentRuleConfig.getTables().addAll(toBeAlteredRuleConfig.getTables());
         currentRuleConfig.getEncryptors().putAll(toBeAlteredRuleConfig.getEncryptors());
     }

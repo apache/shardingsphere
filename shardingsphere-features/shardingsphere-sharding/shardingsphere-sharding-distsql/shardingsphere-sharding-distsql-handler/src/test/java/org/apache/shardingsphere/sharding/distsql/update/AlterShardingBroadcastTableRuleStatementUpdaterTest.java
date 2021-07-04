@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.distsql.update;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingBroadcastTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
 import org.junit.Test;
@@ -35,22 +34,10 @@ public final class AlterShardingBroadcastTableRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement("foo", createSQLStatement("t_1"), null, mock(ShardingSphereResource.class));
+        updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class));
     }
     
-    @Test
-    public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration(createSQLStatement("t_2"), createCurrentRuleConfiguration());
-        // TODO assert current rule configuration
-    }
-    
-    private AlterShardingBroadcastTableRulesStatement createSQLStatement(final String broadcastTableName) {
-        return new AlterShardingBroadcastTableRulesStatement(Collections.singleton(broadcastTableName));
-    }
-    
-    private ShardingRuleConfiguration createCurrentRuleConfiguration() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getBroadcastTables().add("t_1");
-        return result;
+    private AlterShardingBroadcastTableRulesStatement createSQLStatement() {
+        return new AlterShardingBroadcastTableRulesStatement(Collections.singleton("t_1"));
     }
 }

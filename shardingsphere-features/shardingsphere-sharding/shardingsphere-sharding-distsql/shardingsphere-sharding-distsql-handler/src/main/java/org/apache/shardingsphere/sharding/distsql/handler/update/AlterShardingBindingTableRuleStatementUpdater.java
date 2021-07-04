@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -76,19 +77,26 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLA
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingBindingTableRulesStatement sqlStatement) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        for (BindingTableRuleSegment each : sqlStatement.getRules()) {
+            result.getBindingTableGroups().add(each.getTableGroups());
+        }
+        return result;
+    }
+    
+    @Override
+    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         dropRuleConfiguration(currentRuleConfig);
-        addRuleConfiguration(sqlStatement, currentRuleConfig);
+        addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
     }
     
     private void dropRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBindingTableGroups().clear();
     }
     
-    private void addRuleConfiguration(final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        for (BindingTableRuleSegment each : sqlStatement.getRules()) {
-            currentRuleConfig.getBindingTableGroups().add(each.getTableGroups());
-        }
+    private void addRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        currentRuleConfig.getBindingTableGroups().addAll(toBeAlteredRuleConfig.getBindingTableGroups());
     }
     
     @Override
