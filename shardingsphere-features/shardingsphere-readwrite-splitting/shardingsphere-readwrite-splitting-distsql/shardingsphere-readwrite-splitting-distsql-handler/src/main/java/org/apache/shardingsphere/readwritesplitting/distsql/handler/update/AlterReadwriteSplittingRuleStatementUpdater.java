@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
-import org.apache.shardingsphere.infra.exception.rule.NotExistedRuleException;
+import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
@@ -59,18 +59,18 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RDLAlt
         checkToBeAlteredLoadBalancer(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws NotExistedRuleException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RuleNotExistedException {
         if (null == currentRuleConfig) {
-            throw new NotExistedRuleException("Readwrite splitting", schemaName);
+            throw new RuleNotExistedException("Readwrite splitting", schemaName);
         }
     }
     
     private void checkToBeAlteredRules(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, 
-                                       final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws NotExistedRuleException {
+                                       final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RuleNotExistedException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
-            throw new NotExistedRuleException("Readwrite splitting", schemaName, notExistedRuleNames);
+            throw new RuleNotExistedException("Readwrite splitting", schemaName, notExistedRuleNames);
         }
     }
     

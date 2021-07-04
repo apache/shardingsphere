@@ -20,17 +20,17 @@ package org.apache.shardingsphere.infra.exception.rule;
 import java.util.Collection;
 
 /**
- * Not existed rule exception.
+ * Rule not existed exception.
  */
-public final class NotExistedRuleException extends RuleDefinitionViolationException {
+public final class RuleNotExistedException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -8464574460917965546L;
     
-    public NotExistedRuleException(final String ruleType, final String schemaName) {
+    public RuleNotExistedException(final String ruleType, final String schemaName) {
         super(1106, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
     }
     
-    public NotExistedRuleException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+    public RuleNotExistedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
         super(1106, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
     }
 }

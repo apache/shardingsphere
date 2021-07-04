@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.rule.NotExistedRuleException;
+import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
@@ -42,12 +42,12 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     private final AlterReadwriteSplittingRuleStatementUpdater updater = new AlterReadwriteSplittingRuleStatementUpdater();
     
-    @Test(expected = NotExistedRuleException.class)
+    @Test(expected = RuleNotExistedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), null, mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = NotExistedRuleException.class)
+    @Test(expected = RuleNotExistedException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredRules() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
-import org.apache.shardingsphere.infra.exception.rule.NotExistedRuleException;
+import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 
@@ -42,18 +42,18 @@ public final class DropEncryptRuleStatementUpdater implements RDLDropUpdater<Dro
         checkToBeDroppedEncryptTableNames(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final EncryptRuleConfiguration currentRuleConfig) throws NotExistedRuleException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final EncryptRuleConfiguration currentRuleConfig) throws RuleNotExistedException {
         if (null == currentRuleConfig) {
-            throw new NotExistedRuleException("Encrypt", schemaName);
+            throw new RuleNotExistedException("Encrypt", schemaName);
         }
     }
     
     private void checkToBeDroppedEncryptTableNames(final String schemaName, final DropEncryptRuleStatement sqlStatement, 
-                                                   final EncryptRuleConfiguration currentRuleConfig) throws NotExistedRuleException {
+                                                   final EncryptRuleConfiguration currentRuleConfig) throws RuleNotExistedException {
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistedTableNames.isEmpty()) {
-            throw new NotExistedRuleException("Encrypt", schemaName, notExistedTableNames);
+            throw new RuleNotExistedException("Encrypt", schemaName, notExistedTableNames);
         }
     }
     
