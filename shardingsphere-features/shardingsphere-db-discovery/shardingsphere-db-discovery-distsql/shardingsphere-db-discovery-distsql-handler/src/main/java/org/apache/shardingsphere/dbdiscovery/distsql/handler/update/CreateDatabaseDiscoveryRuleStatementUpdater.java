@@ -77,7 +77,8 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLCre
                 .collect(Collectors.toSet());
     }
     
-    private void checkToBeCreatedResources(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
+    private void checkToBeCreatedResources(final String schemaName, 
+                                           final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
         Collection<String> resources = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
         Collection<String> notExistResources = resource.getNotExistedResources(resources);

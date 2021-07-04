@@ -77,7 +77,8 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RDLAlte
         return sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredResources(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
+    private void checkToBeAlteredResources(final String schemaName, 
+                                           final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
         if (!notExistedResources.isEmpty()) {
             throw new RequiredResourceMissedException(schemaName, notExistedResources);

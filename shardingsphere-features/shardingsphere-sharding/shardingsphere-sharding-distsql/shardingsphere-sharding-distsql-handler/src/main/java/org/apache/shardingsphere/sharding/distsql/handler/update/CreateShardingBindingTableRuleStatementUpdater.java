@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingBindingTableRuleNotExistsException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBindingTableRulesStatement;
 
@@ -54,7 +53,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
     }
     
     private void checkToBeCreatedBindingTables(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, 
-                                               final ShardingRuleConfiguration currentRuleConfig) throws ShardingTableRuleNotExistedException {
+                                               final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         Collection<String> notExistedBindingTables = new HashSet<>();
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
         for (String each : sqlStatement.getBindingTables()) {
@@ -63,7 +62,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
             }
         }
         if (!notExistedBindingTables.isEmpty()) {
-            throw new ShardingTableRuleNotExistedException(schemaName, notExistedBindingTables);
+            throw new DuplicateRuleException("binding", schemaName, notExistedBindingTables);
         }
     }
     
