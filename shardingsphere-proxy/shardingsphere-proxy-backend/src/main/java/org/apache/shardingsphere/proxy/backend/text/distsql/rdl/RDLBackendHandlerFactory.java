@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -77,6 +78,6 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof DropDatabaseStatement) {
             return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, backendConnection);
         }
-        return new RuleDefinitionBackendHandler<>(sqlStatement, backendConnection);
+        return new RuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, backendConnection);
     }
 }
