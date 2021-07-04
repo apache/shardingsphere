@@ -64,7 +64,7 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement("t_order"), currentRuleConfig);
+        updater.updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig);
         assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
         assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
     }

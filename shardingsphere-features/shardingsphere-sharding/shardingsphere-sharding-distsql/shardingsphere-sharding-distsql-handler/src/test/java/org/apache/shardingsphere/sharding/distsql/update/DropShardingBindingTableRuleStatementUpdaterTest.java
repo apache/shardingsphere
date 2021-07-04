@@ -47,7 +47,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement(), currentRuleConfig);
+        updater.updateCurrentRuleConfiguration(createSQLStatement(), currentRuleConfig);
         assertTrue(currentRuleConfig.getBindingTableGroups().isEmpty());
     }
     
