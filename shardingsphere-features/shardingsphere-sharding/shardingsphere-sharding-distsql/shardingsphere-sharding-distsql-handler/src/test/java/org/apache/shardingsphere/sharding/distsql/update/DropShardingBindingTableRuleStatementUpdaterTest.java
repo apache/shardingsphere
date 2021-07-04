@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
+import org.apache.shardingsphere.infra.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingBindingTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingBindingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 import org.junit.Test;
@@ -34,12 +34,12 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     
     private final DropShardingBindingTableRuleStatementUpdater updater = new DropShardingBindingTableRuleStatementUpdater();
     
-    @Test(expected = ShardingBindingTableRuleNotExistsException.class)
+    @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = ShardingBindingTableRuleNotExistsException.class)
+    @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutExistedBindingTableRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement(), new ShardingRuleConfiguration(), mock(ShardingSphereResource.class));
     }
