@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.exception.resource;
 
 import java.util.Collection;
 
 /**
  * Duplicate resource exception.
  */
-public final class DuplicateResourceException extends RuleDefinitionViolationException {
+public final class DuplicateResourceException extends ResourceDefinitionViolationException {
     
     private static final long serialVersionUID = 2103793827572264148L;
     

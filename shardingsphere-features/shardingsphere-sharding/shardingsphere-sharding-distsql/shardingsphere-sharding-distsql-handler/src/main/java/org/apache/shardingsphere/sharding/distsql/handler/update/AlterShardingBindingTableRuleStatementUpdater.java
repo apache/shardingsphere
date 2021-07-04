@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
-import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.exception.rule.RuleDuplicatedException;
+import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -46,9 +46,9 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLA
         checkToBeAlteredDuplicateBindingTables(schemaName, sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new CurrentRuleNotExistedException("Sharding", schemaName);
+            throw new RequiredRuleMissedException("Sharding", schemaName);
         }
     }
     
@@ -68,11 +68,11 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLA
         return result;
     }
     
-    private void checkToBeAlteredDuplicateBindingTables(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement) throws RuleDuplicatedException {
+    private void checkToBeAlteredDuplicateBindingTables(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement) throws DuplicateRuleException {
         Collection<String> toBeAlteredBindingTables = new HashSet<>();
         Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeAlteredBindingTables.add(each)).collect(Collectors.toSet());
         if (!duplicateBindingTables.isEmpty()) {
-            throw new RuleDuplicatedException("binding", schemaName, duplicateBindingTables);
+            throw new DuplicateRuleException("binding", schemaName, duplicateBindingTables);
         }
     }
     

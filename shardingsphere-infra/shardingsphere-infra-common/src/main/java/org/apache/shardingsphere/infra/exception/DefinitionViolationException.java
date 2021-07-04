@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.exception;
 
-import java.util.Collection;
+import java.sql.SQLException;
 
 /**
- * Current rule not existed exception.
+ * Definition violation exception.
  */
-public final class CurrentRuleNotExistedException extends RuleDefinitionViolationException {
+public abstract class DefinitionViolationException extends SQLException {
     
-    private static final long serialVersionUID = -8464574460917965546L;
+    private static final long serialVersionUID = -6464411607608071400L;
     
-    public CurrentRuleNotExistedException(final String ruleType, final String schemaName) {
-        super(1106, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
-    }
-    
-    public CurrentRuleNotExistedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1106, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
+    public DefinitionViolationException(final int errorCode, final String reason) {
+        super(reason, "C" + errorCode, errorCode);
     }
 }

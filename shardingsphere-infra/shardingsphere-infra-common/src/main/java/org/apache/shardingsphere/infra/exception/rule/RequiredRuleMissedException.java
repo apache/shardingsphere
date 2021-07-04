@@ -20,13 +20,17 @@ package org.apache.shardingsphere.infra.exception.rule;
 import java.util.Collection;
 
 /**
- * Invalid resource exception.
+ * Required rule missed exception.
  */
-public final class InvalidResourceException extends RuleDefinitionViolationException {
+public final class RequiredRuleMissedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = 7029641448948791509L;
+    private static final long serialVersionUID = -8464574460917965546L;
     
-    public InvalidResourceException(final Collection<String> resourceNames) {
-        super(1103, String.format("Can not add invalid resources %s.", resourceNames));
+    public RequiredRuleMissedException(final String ruleType, final String schemaName) {
+        super(1106, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
+    }
+    
+    public RequiredRuleMissedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+        super(1106, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
     }
 }
