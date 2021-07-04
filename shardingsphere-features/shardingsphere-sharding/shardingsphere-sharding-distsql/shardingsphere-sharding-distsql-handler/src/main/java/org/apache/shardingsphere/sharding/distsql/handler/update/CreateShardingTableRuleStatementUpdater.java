@@ -122,8 +122,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
-                                               final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
             currentRuleConfig.getAutoTables().addAll(toBeCreatedRuleConfig.getAutoTables());
             currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());

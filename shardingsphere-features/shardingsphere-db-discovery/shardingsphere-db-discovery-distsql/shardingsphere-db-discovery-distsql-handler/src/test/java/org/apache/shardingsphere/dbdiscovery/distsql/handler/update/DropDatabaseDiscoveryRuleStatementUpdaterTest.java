@@ -50,7 +50,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement(), createCurrentRuleConfiguration());
+        updater.updateCurrentRuleConfiguration(createSQLStatement(), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
     }
     

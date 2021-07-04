@@ -104,7 +104,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RDLAlte
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final AlterDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(sqlStatement, currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
     }

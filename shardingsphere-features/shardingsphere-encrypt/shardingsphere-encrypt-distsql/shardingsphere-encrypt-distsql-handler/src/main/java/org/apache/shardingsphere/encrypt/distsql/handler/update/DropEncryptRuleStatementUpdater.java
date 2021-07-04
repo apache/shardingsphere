@@ -58,7 +58,7 @@ public final class DropEncryptRuleStatementUpdater implements RDLDropUpdater<Dro
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final DropEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         for (String each : sqlStatement.getTables()) {
             dropRule(currentRuleConfig, each);
         }

@@ -31,9 +31,8 @@ public interface RDLAlterUpdater<T extends SQLStatement, R extends RuleConfigura
     /**
      * Update current rule configuration.
      * 
-     * @param schemaName schema name
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration to be updated
      */
-    void updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig);
+    void updateCurrentRuleConfiguration(T sqlStatement, R currentRuleConfig);
 }

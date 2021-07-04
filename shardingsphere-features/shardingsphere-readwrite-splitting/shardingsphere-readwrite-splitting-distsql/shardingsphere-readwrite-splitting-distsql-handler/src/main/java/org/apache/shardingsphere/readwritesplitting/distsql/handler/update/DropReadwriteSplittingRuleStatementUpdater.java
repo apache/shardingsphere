@@ -58,7 +58,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RDLDrop
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final DropReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         for (String each : sqlStatement.getRuleNames()) {
             dropRule(currentRuleConfig, each);
         }

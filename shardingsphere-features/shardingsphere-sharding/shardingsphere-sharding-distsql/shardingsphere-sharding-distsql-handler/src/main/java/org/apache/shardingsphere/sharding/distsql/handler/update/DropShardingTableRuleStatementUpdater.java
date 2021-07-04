@@ -88,7 +88,7 @@ public final class DropShardingTableRuleStatementUpdater implements RDLDropUpdat
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         for (String each : getToBeDroppedShardingTableNames(sqlStatement)) {
             dropShardingTable(currentRuleConfig, each);
         }

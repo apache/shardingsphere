@@ -57,7 +57,7 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement("MD5"), createCurrentRuleConfiguration());
+        updater.updateCurrentRuleConfiguration(createSQLStatement("MD5"), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
     }
     

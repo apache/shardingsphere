@@ -76,7 +76,7 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLA
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
     }

@@ -47,7 +47,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement(), currentRuleConfig);
+        updater.updateCurrentRuleConfiguration(createSQLStatement(), currentRuleConfig);
         assertTrue(currentRuleConfig.getBroadcastTables().isEmpty());
     }
     

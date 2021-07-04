@@ -48,7 +48,7 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
     
     private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new RequiredRuleMissedException("Binding", schemaName);
+            throw new RequiredRuleMissedException("Sharding", schemaName);
         }
     }
     
@@ -89,14 +89,17 @@ public final class CreateShardingBindingTableRuleStatementUpdater implements RDL
     
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement) {
-        return null;
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        for (BindingTableRuleSegment each : sqlStatement.getRules()) {
+            result.getBindingTableGroups().add(each.getTableGroups());
+        }
+        return result;
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBindingTableRulesStatement sqlStatement, 
-                                               final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        for (BindingTableRuleSegment each : sqlStatement.getRules()) {
-            currentRuleConfig.getBindingTableGroups().add(each.getTableGroups());
+    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+        if (null != currentRuleConfig) {
+            currentRuleConfig.getBindingTableGroups().addAll(toBeCreatedRuleConfig.getBindingTableGroups());
         }
     }
     
