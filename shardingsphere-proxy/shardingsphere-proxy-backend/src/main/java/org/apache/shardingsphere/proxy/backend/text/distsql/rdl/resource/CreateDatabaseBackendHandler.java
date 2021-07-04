@@ -15,52 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseDroppedSQLNotificationEvent;
+import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseCreatedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 
 /**
- * Drop database backend handler.
+ * Create database backend handler.
  */
 @RequiredArgsConstructor
-public final class DropDatabaseBackendHandler implements TextProtocolBackendHandler {
+public final class CreateDatabaseBackendHandler implements TextProtocolBackendHandler {
     
-    private final DropDatabaseStatement sqlStatement;
-    
-    private final BackendConnection backendConnection;
+    private final CreateDatabaseStatement sqlStatement;
     
     @Override
     public ResponseHeader execute() {
         check(sqlStatement);
-        if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
-            backendConnection.setCurrentSchema(null);
-        }
         post(sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final DropDatabaseStatement sqlStatement) {
-        if (!ProxyContext.getInstance().getAllSchemaNames().contains(sqlStatement.getDatabaseName())) {
-            throw new DBDropExistsException(sqlStatement.getDatabaseName());
+    private void check(final CreateDatabaseStatement sqlStatement) {
+        if (ProxyContext.getInstance().getAllSchemaNames().contains(sqlStatement.getDatabaseName())) {
+            throw new DBCreateExistsException(sqlStatement.getDatabaseName());
         }
     }
     
-    private boolean isDropCurrentDatabase(final String databaseName) {
-        return !Strings.isNullOrEmpty(backendConnection.getSchemaName()) && backendConnection.getSchemaName().equals(databaseName);
-    }
-    
-    private void post(final DropDatabaseStatement sqlStatement) {
+    private void post(final CreateDatabaseStatement sqlStatement) {
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DatabaseDroppedSQLNotificationEvent(sqlStatement.getDatabaseName()));
+        ShardingSphereEventBus.getInstance().post(new DatabaseCreatedSQLNotificationEvent(sqlStatement.getDatabaseName()));
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingB
 /**
  * Drop sharding broadcast table rule statement updater.
  */
-public final class DropShardingBroadcastTableRuleStatementUpdater implements RDLDropUpdater<DropShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
+public final class DropShardingBroadcastTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement, 

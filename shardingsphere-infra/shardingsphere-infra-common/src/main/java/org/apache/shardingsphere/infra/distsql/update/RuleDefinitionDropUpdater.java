@@ -21,26 +21,19 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Create rule RDL updater.
+ * Drop rule rule definition updater.
  * 
  * @param <T> type of SQL statement
  * @param <R> type of rule configuration
  */
-public interface RDLCreateUpdater<T extends SQLStatement, R extends RuleConfiguration> extends RDLUpdater<T, R> {
-    
-    /**
-     * Build to be created rule configuration.
-     * 
-     * @param sqlStatement SQL statement
-     * @return built to be created rule configuration
-     */
-    RuleConfiguration buildToBeCreatedRuleConfiguration(T sqlStatement);
+public interface RuleDefinitionDropUpdater<T extends SQLStatement, R extends RuleConfiguration> extends RuleDefinitionUpdater<T, R> {
     
     /**
      * Update current rule configuration.
-     * 
+     *
+     * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration to be updated
-     * @param toBeCreatedRuleConfig to be created rule configuration
+     * @return current rule configuration is empty or not 
      */
-    void updateCurrentRuleConfiguration(R currentRuleConfig, R toBeCreatedRuleConfig);
+    boolean updateCurrentRuleConfiguration(T sqlStatement, R currentRuleConfig);
 }

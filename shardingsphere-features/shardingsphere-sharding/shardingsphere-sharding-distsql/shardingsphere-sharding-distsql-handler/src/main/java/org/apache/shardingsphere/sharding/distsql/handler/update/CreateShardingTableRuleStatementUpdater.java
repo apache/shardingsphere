@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 /**
  * Create sharding table rule statement updater.
  */
-public final class CreateShardingTableRuleStatementUpdater implements RDLCreateUpdater<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
+public final class CreateShardingTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
     
     static {
         // TODO consider about register once only

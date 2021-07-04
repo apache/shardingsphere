@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule;
 
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
-import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
-import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
-import org.apache.shardingsphere.infra.distsql.update.RDLUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -38,28 +38,28 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * RDL backend handler.
+ * Rule definition backend handler.
  *
  * @param <T> type of SQL statement
  */
-public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
+public final class RuleDefinitionBackendHandler<T extends SQLStatement> extends SchemaRequiredBackendHandler<T> {
     
     static {
-        ShardingSphereServiceLoader.register(RDLUpdater.class);
+        ShardingSphereServiceLoader.register(RuleDefinitionUpdater.class);
     }
     
-    public RDLBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
+    public RuleDefinitionBackendHandler(final T sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected ResponseHeader execute(final String schemaName, final T sqlStatement) throws DistSQLException {
-        RDLUpdater rdlUpdater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
-        Class<? extends RuleConfiguration> ruleConfigClass = rdlUpdater.getRuleConfigurationClass();
+        RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPIRegistry.getRegisteredService(RuleDefinitionUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        Class<? extends RuleConfiguration> ruleConfigClass = ruleDefinitionUpdater.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(schemaName, ruleConfigClass).orElse(null);
-        rdlUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
-        processSQLStatement(schemaName, sqlStatement, rdlUpdater, currentRuleConfig);
+        ruleDefinitionUpdater.checkSQLStatement(schemaName, sqlStatement, currentRuleConfig, ProxyContext.getInstance().getMetaData(schemaName).getResource());
+        processSQLStatement(schemaName, sqlStatement, ruleDefinitionUpdater, currentRuleConfig);
         postRuleConfigurationChange(schemaName);
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -74,20 +74,20 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     }
     
     @SuppressWarnings("rawtypes")
-    private void processSQLStatement(final String schemaName, final T sqlStatement, final RDLUpdater updater, final RuleConfiguration currentRuleConfig) {
-        if (updater instanceof RDLCreateUpdater) {
-            processCreate(schemaName, sqlStatement, (RDLCreateUpdater) updater, currentRuleConfig);
-        } else if (updater instanceof RDLAlterUpdater) {
-            processAlter(sqlStatement, (RDLAlterUpdater) updater, currentRuleConfig);
-        } else if (updater instanceof RDLDropUpdater) {
-            processDrop(schemaName, sqlStatement, (RDLDropUpdater) updater, currentRuleConfig);
+    private void processSQLStatement(final String schemaName, final T sqlStatement, final RuleDefinitionUpdater updater, final RuleConfiguration currentRuleConfig) {
+        if (updater instanceof RuleDefinitionCreateUpdater) {
+            processCreate(schemaName, sqlStatement, (RuleDefinitionCreateUpdater) updater, currentRuleConfig);
+        } else if (updater instanceof RuleDefinitionAlterUpdater) {
+            processAlter(sqlStatement, (RuleDefinitionAlterUpdater) updater, currentRuleConfig);
+        } else if (updater instanceof RuleDefinitionDropUpdater) {
+            processDrop(schemaName, sqlStatement, (RuleDefinitionDropUpdater) updater, currentRuleConfig);
         } else {
             throw new UnsupportedOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getCanonicalName()));
         }
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processCreate(final String schemaName, final T sqlStatement, final RDLCreateUpdater updater, final RuleConfiguration currentRuleConfig) {
+    private void processCreate(final String schemaName, final T sqlStatement, final RuleDefinitionCreateUpdater updater, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(sqlStatement);
         if (null == currentRuleConfig) {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().add(toBeCreatedRuleConfig);
@@ -97,14 +97,14 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processAlter(final T sqlStatement, final RDLAlterUpdater updater, final RuleConfiguration currentRuleConfig) {
+    private void processAlter(final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
         updater.updateCurrentRuleConfiguration(toBeAlteredRuleConfig, currentRuleConfig);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processDrop(final String schemaName, final T sqlStatement, final RDLDropUpdater rdlUpdater, final RuleConfiguration currentRuleConfig) {
-        if (rdlUpdater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
+    private void processDrop(final String schemaName, final T sqlStatement, final RuleDefinitionDropUpdater updater, final RuleConfiguration currentRuleConfig) {
+        if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(currentRuleConfig);
         }
     }
