@@ -96,7 +96,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLCre
     }
     
     @Override
-    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         return DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules());
     }
     

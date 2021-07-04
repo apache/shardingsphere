@@ -75,7 +75,7 @@ public final class CreateEncryptRuleStatementUpdater implements RDLCreateUpdater
     }
     
     @Override
-    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateEncryptRuleStatement sqlStatement) {
+    public EncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateEncryptRuleStatement sqlStatement) {
         return EncryptRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
