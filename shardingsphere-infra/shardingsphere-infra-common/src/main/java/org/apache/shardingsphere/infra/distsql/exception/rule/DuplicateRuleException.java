@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
+import java.util.Collection;
 
 /**
- * Resource definition violation exception.
+ * Duplicate rule exception.
  */
-public abstract class ResourceDefinitionViolationException extends ShardingSphereSQLException {
+public final class DuplicateRuleException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = -2686784350802985974L;
+    private static final long serialVersionUID = -1738699538105858939L;
     
-    public ResourceDefinitionViolationException(final int errorCode, final String reason) {
-        super(errorCode, reason);
+    public DuplicateRuleException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+        super(1113, String.format("Duplicate %s rule names `%s` in schema `%s`", ruleType, ruleNames, schemaName));
     }
 }

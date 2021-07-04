@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
 import java.util.Collection;
 
 /**
- * Required rule missed exception.
+ * Invalid algorithm configuration exception.
  */
-public final class RequiredRuleMissedException extends RuleDefinitionViolationException {
+public final class InvalidAlgorithmConfigurationException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = -8464574460917965546L;
+    private static final long serialVersionUID = 9076740384552385180L;
     
-    public RequiredRuleMissedException(final String ruleType, final String schemaName) {
-        super(1112, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
-    }
-    
-    public RequiredRuleMissedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
-        super(1112, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
+    public InvalidAlgorithmConfigurationException(final String algorithmType, final Collection<String> algorithms) {
+        super(1114, String.format("Invalid %s algorithms %s", algorithmType, algorithms));
     }
 }

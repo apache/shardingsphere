@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.resource;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
 import java.util.Collection;
 
