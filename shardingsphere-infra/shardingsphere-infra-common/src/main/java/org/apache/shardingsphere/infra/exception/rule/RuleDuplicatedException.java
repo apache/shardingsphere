@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.exception;
-
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+package org.apache.shardingsphere.infra.exception.rule;
 
 import java.util.Collection;
 
 /**
- * Duplicate tables exception.
+ * Rule duplicated exception.
  */
-public final class DuplicateTablesException extends RuleDefinitionViolationException {
+public final class RuleDuplicatedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = 3539438597135687601L;
+    private static final long serialVersionUID = -1738699538105858939L;
     
-    public DuplicateTablesException(final Collection<String> tableNames) {
-        super(1108, String.format("Duplicate table names %s.", tableNames));
+    public RuleDuplicatedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+        super(1105, String.format("Duplicate %s rule names `%s` in schema `%s`", ruleType, ruleNames, schemaName));
     }
 }

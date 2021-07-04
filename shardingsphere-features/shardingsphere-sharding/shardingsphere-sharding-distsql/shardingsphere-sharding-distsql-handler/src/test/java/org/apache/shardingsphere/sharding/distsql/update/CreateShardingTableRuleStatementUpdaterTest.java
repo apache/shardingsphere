@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.distsql.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDuplicatedException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.DuplicateTablesException;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
@@ -37,7 +37,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
     
-    @Test(expected = DuplicateTablesException.class)
+    @Test(expected = RuleDuplicatedException.class)
     public void assertExecuteWithDuplicateTables() throws RuleDefinitionViolationException {
         TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, null, null, null);
         updater.checkSQLStatement("foo", createSQLStatement(ruleSegment, ruleSegment), null, mock(ShardingSphereResource.class));

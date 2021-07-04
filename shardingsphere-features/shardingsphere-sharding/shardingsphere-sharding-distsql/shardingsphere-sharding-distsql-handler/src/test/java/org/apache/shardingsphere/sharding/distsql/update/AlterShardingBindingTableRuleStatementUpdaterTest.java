@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDuplicatedException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.DuplicateBindingTablesException;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingBindingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
@@ -42,7 +42,7 @@ public final class AlterShardingBindingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = DuplicateBindingTablesException.class)
+    @Test(expected = RuleDuplicatedException.class)
     public void assertCheckSQLStatementWithDuplicateTables() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createDuplicatedSQLStatement(), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }

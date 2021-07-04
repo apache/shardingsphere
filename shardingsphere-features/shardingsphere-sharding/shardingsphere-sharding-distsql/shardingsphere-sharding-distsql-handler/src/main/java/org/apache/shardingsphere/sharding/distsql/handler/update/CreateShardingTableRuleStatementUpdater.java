@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDuplicatedException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingRuleStatementConverter;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.DuplicateTablesException;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -59,7 +59,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     public void checkSQLStatement(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
         checkToBeCreatedResource(schemaName, sqlStatement, resource);
-        checkDuplicateTables(sqlStatement, currentRuleConfig);
+        checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedShardingAlgorithms(sqlStatement);
         checkToBeCreatedKeyGenerators(sqlStatement);
     }
@@ -77,13 +77,13 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
         return result;
     }
     
-    private void checkDuplicateTables(final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DuplicateTablesException {
+    private void checkDuplicateTables(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleDuplicatedException {
         Collection<String> shardingTableNames = null == currentRuleConfig ? Collections.emptyList() : getShardingTables(currentRuleConfig);
         Set<String> duplicateTableNames = sqlStatement.getRules().stream().collect(Collectors.toMap(TableRuleSegment::getLogicTable, each -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         duplicateTableNames.addAll(sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).filter(shardingTableNames::contains).collect(Collectors.toSet()));
         if (!duplicateTableNames.isEmpty()) {
-            throw new DuplicateTablesException(duplicateTableNames);
+            throw new RuleDuplicatedException("sharding", schemaName, duplicateTableNames);
         }
     }
     
