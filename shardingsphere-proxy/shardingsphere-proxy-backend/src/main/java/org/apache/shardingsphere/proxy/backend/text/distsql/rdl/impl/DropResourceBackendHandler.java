@@ -21,14 +21,14 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceS
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.resource.ResourceInUsedException;
+import org.apache.shardingsphere.infra.exception.resource.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.infra.exception.rule.ResourceInUsedException;
-import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -51,7 +51,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) throws RuleDefinitionViolationException {
+    public ResponseHeader execute(final String schemaName, final DropResourceStatement sqlStatement) throws DefinitionViolationException {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
         check(schemaName, toBeDroppedResourceNames);
         drop(schemaName, toBeDroppedResourceNames);
