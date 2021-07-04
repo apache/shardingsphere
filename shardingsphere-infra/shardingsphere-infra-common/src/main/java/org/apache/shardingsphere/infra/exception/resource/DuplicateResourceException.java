@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.exception.resource;
 
 import java.util.Collection;
 
 /**
- * Invalid resource exception.
+ * Duplicate resource exception.
  */
-public final class InvalidResourceException extends RuleDefinitionViolationException {
+public final class DuplicateResourceException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = 7029641448948791509L;
+    private static final long serialVersionUID = 2103793827572264148L;
     
-    public InvalidResourceException(final Collection<String> resourceNames) {
-        super(1103, String.format("Can not add invalid resources %s.", resourceNames));
+    public DuplicateResourceException(final Collection<String> resourceNames) {
+        super(1104, String.format("Duplicate resource names %s.", resourceNames));
     }
 }

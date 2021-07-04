@@ -24,10 +24,10 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
-import org.apache.shardingsphere.infra.exception.rule.RuleDuplicatedException;
+import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.resource.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDuplicatedException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -50,7 +50,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLCre
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, 
-                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DefinitionViolationException {
         checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedResources(schemaName, sqlStatement, resource);
         checkToBeCreatedDiscoverTypes(sqlStatement);

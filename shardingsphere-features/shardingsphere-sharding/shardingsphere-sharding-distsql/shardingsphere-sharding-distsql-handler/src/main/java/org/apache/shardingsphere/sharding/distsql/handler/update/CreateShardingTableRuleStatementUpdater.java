@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
+import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.resource.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDuplicatedException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -57,7 +57,7 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DefinitionViolationException {
         checkToBeCreatedResource(schemaName, sqlStatement, resource);
         checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedShardingAlgorithms(sqlStatement);

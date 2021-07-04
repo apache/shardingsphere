@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RDLUpdater;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -54,7 +55,7 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    protected ResponseHeader execute(final String schemaName, final T sqlStatement) throws RuleDefinitionViolationException {
+    protected ResponseHeader execute(final String schemaName, final T sqlStatement) throws DefinitionViolationException {
         RDLUpdater rdlUpdater = TypedSPIRegistry.getRegisteredService(RDLUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         Class<? extends RuleConfiguration> ruleConfigClass = rdlUpdater.getRuleConfigurationClass();
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(schemaName, ruleConfigClass).orElse(null);
