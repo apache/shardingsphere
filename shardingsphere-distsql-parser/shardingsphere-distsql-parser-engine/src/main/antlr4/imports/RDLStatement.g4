@@ -64,5 +64,5 @@ connectionProperties
     ;
 
 connectionProperty
-    : key=IDENTIFIER EQ value=IDENTIFIER
+    : key=(IDENTIFIER | STRING) EQ value=(IDENTIFIER | STRING)
     ;
