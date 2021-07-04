@@ -51,14 +51,14 @@ public final class LocalTableScan extends TableScan implements EnumerableRel {
     private final LocalTranslatableTable csvTable;
     
     private final int[] fields;
-
+    
     public LocalTableScan(final RelOptCluster cluster, final RelOptTable table, final LocalTranslatableTable csvTable, final int[] fields) {
         super(cluster, cluster.traitSetOf(EnumerableConvention.INSTANCE), table);
         this.csvTable = csvTable;
         this.fields = fields;
         assert csvTable != null;
     }
-
+    
     /**
      * Copy rel node.
      * @param traitSet trait set
@@ -69,7 +69,7 @@ public final class LocalTableScan extends TableScan implements EnumerableRel {
         assert inputs.isEmpty();
         return new LocalTableScan(getCluster(), table, csvTable, fields);
     }
-
+    
     /**
      * Explain terms.
      * @param pw rel writer
@@ -78,21 +78,20 @@ public final class LocalTableScan extends TableScan implements EnumerableRel {
     @Override public RelWriter explainTerms(final RelWriter pw) {
         return super.explainTerms(pw).item("fields", Primitive.asList(fields));
     }
-
+    
     /**
      * Derive row type.
      * @return rel data type
      */
     @Override public RelDataType deriveRowType() {
         final List<RelDataTypeField> fieldList = table.getRowType().getFieldList();
-        final RelDataTypeFactory.Builder builder =
-            getCluster().getTypeFactory().builder();
+        final RelDataTypeFactory.Builder builder = getCluster().getTypeFactory().builder();
         for (int field : fields) {
             builder.add(fieldList.get(field));
         }
         return builder.build();
     }
-
+    
     /**
      * Register a rule.
      * @param planner rel opt planner
@@ -100,7 +99,7 @@ public final class LocalTableScan extends TableScan implements EnumerableRel {
     @Override public void register(final RelOptPlanner planner) {
         planner.addRule(LocalProjectTableScanRule.INSTANCE);
     }
-
+    
     /**
      * Compute cost.
      * @param planner rel pt planner
@@ -115,11 +114,9 @@ public final class LocalTableScan extends TableScan implements EnumerableRel {
         //
         // For example, if table has 3 fields, project has 1 field,
         // then factor = (1 + 2) / (3 + 2) = 0.6
-        return super.computeSelfCost(planner, mq)
-            .multiplyBy(((double) fields.length + 2D)
-                / ((double) table.getRowType().getFieldCount() + 2D));
+        return super.computeSelfCost(planner, mq).multiplyBy(((double) fields.length + 2D) / ((double) table.getRowType().getFieldCount() + 2D));
     }
-
+    
     /**
      * Implement enumberable rel.
      * @param implementor enumerable rel implementor
@@ -127,16 +124,8 @@ public final class LocalTableScan extends TableScan implements EnumerableRel {
      * @return reulst of implement
      */
     public Result implement(final EnumerableRelImplementor implementor, final Prefer pref) {
-        PhysType physType =
-            PhysTypeImpl.of(
-                implementor.getTypeFactory(),
-                getRowType(),
-                pref.preferArray());
-        return implementor.result(
-            physType,
-            Blocks.toBlock(
-                Expressions.call(table.getExpression(LocalTranslatableTable.class),
-                    "project", implementor.getRootExpression(),
-                    Expressions.constant(fields))));
+        PhysType physType = PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), pref.preferArray());
+        return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(LocalTranslatableTable.class),
+                    "project", implementor.getRootExpression(), Expressions.constant(fields))));
     }
 }

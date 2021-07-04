@@ -36,7 +36,7 @@ public class LocalSchema extends AbstractSchema {
     private final File directoryFile;
     
     private Map<String, Table> tableMap;
-  
+    
     /**
      * Creates a CSV schema.
      * @param directoryFile Directory that holds csv files
@@ -55,20 +55,24 @@ public class LocalSchema extends AbstractSchema {
     private static String trimOrNull(final String s, final String suffix) {
         return s.endsWith(suffix) ? s.substring(0, s.length() - suffix.length()) : null;
     }
-  
-    @Override protected Map<String, Table> getTableMap() {
+    
+    /**
+     * Get table map.
+     * @return map of table
+     */
+    @Override
+    public Map<String, Table> getTableMap() {
         if (tableMap == null) {
             tableMap = createTableMap();
         }
         return tableMap;
     }
-  
+    
     private Map<String, Table> createTableMap() {
         final Source baseSource = Sources.of(directoryFile);
         File[] files = directoryFile.listFiles((dir, name) -> {
             final String nameSansGz = trim(name, ".gz");
-            return nameSansGz.endsWith(".csv")
-                || nameSansGz.endsWith(".json");
+            return nameSansGz.endsWith(".csv") || nameSansGz.endsWith(".json");
         });
         if (files == null) {
             System.out.println("directory " + directoryFile + " not found");

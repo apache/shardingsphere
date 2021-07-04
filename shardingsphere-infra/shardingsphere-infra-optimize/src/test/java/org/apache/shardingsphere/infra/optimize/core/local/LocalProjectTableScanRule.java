@@ -28,46 +28,38 @@ import org.apache.calcite.tools.RelBuilderFactory;
 import java.util.List;
 
 /**
- * Planner rule that projects from a {@link LocalTableScan} scan just the columns
+ * Planner rule that projects from a scan just the columns
  * needed to satisfy a projection. If the projection's expressions are trivial,
  * the projection is removed.
  */
 public class LocalProjectTableScanRule extends RelOptRule {
-    public static final LocalProjectTableScanRule INSTANCE =
-        new LocalProjectTableScanRule(RelFactories.LOGICAL_BUILDER);
-
+    
+    public static final LocalProjectTableScanRule INSTANCE = new LocalProjectTableScanRule(RelFactories.LOGICAL_BUILDER);
+    
     /**
      * Creates a CsvProjectTableScanRule.
      * @param relBuilderFactory Builder for relational expressions
      */
     public LocalProjectTableScanRule(final RelBuilderFactory relBuilderFactory) {
         super(
-            operand(LogicalProject.class,
-                operand(LocalTableScan.class, none())),
-            relBuilderFactory,
-            "CsvProjectTableScanRule");
+            operand(LogicalProject.class, operand(LocalTableScan.class, none())), relBuilderFactory, "CsvProjectTableScanRule");
     }
-
+    
     /**
      * Match rule.
      * @param call rel opt rule call
      */
-    @Override public void onMatch(final RelOptRuleCall call) {
+    @Override
+    public void onMatch(final RelOptRuleCall call) {
         final LogicalProject project = call.rel(0);
         final LocalTableScan scan = call.rel(1);
         int[] fields = getProjectFields(project.getProjects());
         if (fields == null) {
-            // Project contains expressions more complex than just field references.
             return;
         }
-        call.transformTo(
-            new LocalTableScan(
-                scan.getCluster(),
-                scan.getTable(),
-                scan.getCsvTable(),
-                fields));
+        call.transformTo(new LocalTableScan(scan.getCluster(), scan.getTable(), scan.getCsvTable(), fields));
     }
-  
+    
     private int[] getProjectFields(final List<RexNode> exps) {
         final int[] fields = new int[exps.size()];
         for (int i = 0; i < exps.size(); i++) {

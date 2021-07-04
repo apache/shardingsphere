@@ -17,11 +17,7 @@
 
 package org.apache.shardingsphere.infra.optimize.core.local;
 
-import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
-import org.apache.calcite.linq4j.AbstractEnumerable;
-import org.apache.calcite.linq4j.Enumerable;
-import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.linq4j.Queryable;
 import org.apache.calcite.linq4j.tree.Expression;
@@ -37,25 +33,26 @@ import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.calcite.util.Source;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Base class for table that reads CSV files.
  */
-@Data
 public class LocalTranslatableTable extends AbstractTable implements QueryableTable, TranslatableTable {
     
+    @Getter
     private final Source source;
-    
-    private final RelProtoDataType protoRowType;
-    
-    private List<LocalFieldType> fieldTypes;
 
+    @Getter
+    private final RelProtoDataType protoRowType;
+
+    @Getter
+    private List<LocalFieldType> fieldTypes;
+    
     /**
      * Construct method.
      * @param source source
@@ -65,7 +62,7 @@ public class LocalTranslatableTable extends AbstractTable implements QueryableTa
         this.source = source;
         this.protoRowType = protoRowType;
     }
-
+    
     /**
      * Get row type.
      * @param typeFactory rel data type factory
@@ -82,7 +79,7 @@ public class LocalTranslatableTable extends AbstractTable implements QueryableTa
             return LocalEnumerator.deduceRowType((JavaTypeFactory) typeFactory, source, null);
         }
     }
-
+    
     /**
      * Get name of table type.
      * @return name of table type
@@ -90,22 +87,7 @@ public class LocalTranslatableTable extends AbstractTable implements QueryableTa
     public String toString() {
         return "LocalTranslatableTable";
     }
-
-    /**
-     * Create calcite enumerable object.
-     * @param root data context
-     * @param fields field array
-     * @return calcite enumerable object
-     */
-    public Enumerable<Object> project(final DataContext root, final int[] fields) {
-        final AtomicBoolean cancelFlag = DataContext.Variable.CANCEL_FLAG.get(root);
-        return new AbstractEnumerable<Object>() {
-            public Enumerator<Object> enumerator() {
-                return new LocalEnumerator<>(source, cancelFlag, fieldTypes, fields);
-            }
-        };
-    }
-
+    
     /**
      * Get table expression.
      * @param schema parent schema
@@ -116,7 +98,7 @@ public class LocalTranslatableTable extends AbstractTable implements QueryableTa
     public Expression getExpression(final SchemaPlus schema, final String tableName, final Class clazz) {
         return Schemas.tableExpression(schema, getElementType(), tableName, clazz);
     }
-
+    
     /**
      * Get element type.
      * @return element type
@@ -124,7 +106,7 @@ public class LocalTranslatableTable extends AbstractTable implements QueryableTa
     public Type getElementType() {
         return Object[].class;
     }
-
+    
     /**
      * Generate an unsupported operation exception.
      * @param queryProvider query provider
@@ -136,7 +118,7 @@ public class LocalTranslatableTable extends AbstractTable implements QueryableTa
     public <T> Queryable<T> asQueryable(final QueryProvider queryProvider, final SchemaPlus schema, final String tableName) {
         throw new UnsupportedOperationException();
     }
-
+    
     /**
      * Get rel node.
      * @param context  rel context

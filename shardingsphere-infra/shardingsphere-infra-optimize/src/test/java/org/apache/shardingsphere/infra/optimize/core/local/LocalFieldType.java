@@ -26,12 +26,9 @@ import java.util.Map;
 
 /**
  * Type of a field in a CSV file.
- *
- * <p>Usually, and unless specified explicitly in the header row, a field is
- * of type {@link #STRING}. But specifying the field type in the header row
- * makes it easier to write SQL.</p>
  */
 enum LocalFieldType {
+    
     STRING(String.class, "string"),
     BOOLEAN(Primitive.BOOLEAN),
     BYTE(Primitive.BYTE),
@@ -44,35 +41,54 @@ enum LocalFieldType {
     DATE(java.sql.Date.class, "date"),
     TIME(java.sql.Time.class, "time"),
     TIMESTAMP(java.sql.Timestamp.class, "timestamp");
-
+    
     private static final Map<String, LocalFieldType> MAP = new HashMap<>();
+    
     private final Class clazz;
+    
     private final String simpleName;
-  
+    
     static {
         for (LocalFieldType value : values()) {
             MAP.put(value.simpleName, value);
         }
     }
-  
+
+    /**
+     * Construct local field type with primitive.
+     * @param primitive primitive field type
+     */
     LocalFieldType(final Primitive primitive) {
         this(primitive.boxClass, primitive.primitiveName);
     }
-  
+
+    /**
+     * Construct local field type with class and name.
+     * @param clazz field class
+     * @param simpleName field name
+     */
     LocalFieldType(final Class clazz, final String simpleName) {
         this.clazz = clazz;
         this.simpleName = simpleName;
     }
-  
+    
+    /**
+     * Get rel data type with type factory.
+     * @param typeFactory java type factory
+     * @return rel data type
+     */
     public RelDataType toType(final JavaTypeFactory typeFactory) {
         RelDataType javaType = typeFactory.createJavaType(clazz);
         RelDataType sqlType = typeFactory.createSqlType(javaType.getSqlTypeName());
         return typeFactory.createTypeWithNullability(sqlType, true);
     }
-  
+
+    /**
+     * Get local field type with name.
+     * @param typeString typa name
+     * @return local field type
+     */
     public static LocalFieldType of(final String typeString) {
         return MAP.get(typeString);
     }
 }
-
-// End CsvFieldType.java

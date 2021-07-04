@@ -37,15 +37,17 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * testcase of shardingshphere optimizer.
+ * Test cases of shardingshphere optimizer.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ShardingSphereOptimizerTest {
@@ -64,39 +66,43 @@ public class ShardingSphereOptimizerTest {
     
     @Before
     public void init() {
-        String url = this.getClass().getClassLoader().getResource("").getPath() + "/sales";
-        //String url = "/home/wangguangyuan/IdeaProjects/shardingsphere/shardingsphere-infra/shardingsphere-infra-optimize/src/test/resources/sales";
-        calciteSchema = new LocalSchema(new File(url));
-        Map<String, ShardingSphereMetaData> metaDataMap = createMetaDataMap();
-        OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(metaDataMap);
-        OptimizeContext context = createContext(optimizeContextFactory);
-        optimizer = new ShardingSphereOptimizer(context);
+        URL path = this.getClass().getClassLoader().getResource("");
+        if(null != path){
+            String url = path.getPath() + "/sales";
+            calciteSchema = new LocalSchema(new File(url));
+            Map<String, ShardingSphereMetaData> metaDataMap = createMetaDataMap();
+            OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(metaDataMap);
+            OptimizeContext context = createContext(optimizeContextFactory);
+            optimizer = new ShardingSphereOptimizer(context);
+        }
     }
-
+    
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(shardingSphereMetaData.getResource()).thenReturn(resource);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap();
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
         tableMetaDataMap.put("t_order_federate", mock(TableMetaData.class));
         tableMetaDataMap.put("t_order_item_federate_sharding", mock(TableMetaData.class));
         when(schema.getTables()).thenReturn(tableMetaDataMap);
         when(shardingSphereMetaData.getSchema()).thenReturn(schema);
         when(shardingSphereMetaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        
         return Collections.singletonMap("testSchema", shardingSphereMetaData);
     }
     
     private OptimizeContext createContext(final OptimizeContextFactory optimizeContextFactory) {
-        OptimizeContext result = optimizeContextFactory.create("testSchema", calciteSchema);
-        return result;
+        return optimizeContextFactory.create("testSchema", calciteSchema);
     }
     
     @Test
     public void testSimpleSelect() {
         RelNode relNode = optimizer.optimize(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES);
-        System.out.println("---------explain---------------");
-        System.out.println(relNode.explain());
+        String expected = "EnumerableCalc(expr#0..3=[{inputs}], order_id=[$t0], remarks=[$t3])\n"
+            + "  EnumerableNestedLoopJoin(condition=[true], joinType=[inner])\n"
+            + "    LocalTableScan(table=[[testSchema, t_order_federate]], fields=[[0, 1]])\n"
+            + "    LocalTableScan(table=[[testSchema, t_order_item_federate_sharding]], fields=[[0, 1]])\n";
+        String actual = relNode.explain();
+        assertEquals(expected, actual);
     }
 }
