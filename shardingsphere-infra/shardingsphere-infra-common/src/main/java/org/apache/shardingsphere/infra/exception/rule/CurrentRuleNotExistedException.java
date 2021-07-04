@@ -26,6 +26,10 @@ public final class CurrentRuleNotExistedException extends RuleDefinitionViolatio
     
     private static final long serialVersionUID = -8464574460917965546L;
     
+    public CurrentRuleNotExistedException(final String ruleType, final String schemaName) {
+        super(1106, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
+    }
+    
     public CurrentRuleNotExistedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
         super(1106, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
     }

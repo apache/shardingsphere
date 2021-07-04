@@ -52,16 +52,15 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RDLAlte
     @Override
     public void checkSQLStatement(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredResources(schemaName, sqlStatement, resource);
         checkToBeAlteredDiscoveryType(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, 
-                                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
         if (null == currentRuleConfig) {
-            throw new CurrentRuleNotExistedException("Database discovery", schemaName, getToBeAlteredRuleNames(sqlStatement));
+            throw new CurrentRuleNotExistedException("Database discovery", schemaName);
         }
     }
     

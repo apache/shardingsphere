@@ -38,14 +38,13 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RDLDrop
     @Override
     public void checkSQLStatement(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeDroppedRuleNames(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DropReadwriteSplittingRuleStatement sqlStatement, 
-                                               final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
         if (null == currentRuleConfig) {
-            throw new CurrentRuleNotExistedException("Readwrite splitting", schemaName, sqlStatement.getRuleNames());
+            throw new CurrentRuleNotExistedException("Readwrite splitting", schemaName);
         }
     }
     

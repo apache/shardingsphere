@@ -38,14 +38,13 @@ public final class DropEncryptRuleStatementUpdater implements RDLDropUpdater<Dro
     @Override
     public void checkSQLStatement(final String schemaName, final DropEncryptRuleStatement sqlStatement, 
                                   final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeDroppedEncryptTableNames(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DropEncryptRuleStatement sqlStatement, 
-                                               final EncryptRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final EncryptRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
         if (null == currentRuleConfig) {
-            throw new CurrentRuleNotExistedException("Encrypt", schemaName, sqlStatement.getTables());
+            throw new CurrentRuleNotExistedException("Encrypt", schemaName);
         }
     }
     

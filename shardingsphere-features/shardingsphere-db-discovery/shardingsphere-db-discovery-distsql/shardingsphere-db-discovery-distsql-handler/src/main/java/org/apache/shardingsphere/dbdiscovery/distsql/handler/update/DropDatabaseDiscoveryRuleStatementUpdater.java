@@ -38,14 +38,13 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RDLDropU
     @Override
     public void checkSQLStatement(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, 
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeDroppedRuleNames(schemaName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, 
-                                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
         if (null == currentRuleConfig) {
-            throw new CurrentRuleNotExistedException("Database discovery", schemaName, sqlStatement.getRuleNames());
+            throw new CurrentRuleNotExistedException("Database discovery", schemaName);
         }
     }
     

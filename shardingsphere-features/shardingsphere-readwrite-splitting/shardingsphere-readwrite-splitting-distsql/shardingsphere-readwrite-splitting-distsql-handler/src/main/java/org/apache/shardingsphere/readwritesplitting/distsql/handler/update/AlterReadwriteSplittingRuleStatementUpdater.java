@@ -53,16 +53,15 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RDLAlt
     @Override
     public void checkSQLStatement(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, 
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredResources(schemaName, sqlStatement, resource);
         checkToBeAlteredLoadBalancer(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, 
-                                               final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
         if (null == currentRuleConfig) {
-            throw new CurrentRuleNotExistedException("Readwrite splitting", schemaName, getToBeAlteredRuleNames(sqlStatement));
+            throw new CurrentRuleNotExistedException("Readwrite splitting", schemaName);
         }
     }
     

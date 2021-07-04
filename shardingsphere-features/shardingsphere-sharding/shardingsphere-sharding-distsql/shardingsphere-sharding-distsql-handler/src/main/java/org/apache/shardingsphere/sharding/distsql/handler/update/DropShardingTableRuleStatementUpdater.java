@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
+import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -41,15 +42,14 @@ public final class DropShardingTableRuleStatementUpdater implements RDLDropUpdat
     @Override
     public void checkSQLStatement(final String schemaName, final DropShardingTableRuleStatement sqlStatement, 
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeDroppedShardingTableNames(schemaName, sqlStatement, currentRuleConfig);
         checkBindingTables(sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final DropShardingTableRuleStatement sqlStatement, 
-                                               final ShardingRuleConfiguration currentRuleConfig) throws ShardingTableRuleNotExistedException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
         if (null == currentRuleConfig) {
-            throw new ShardingTableRuleNotExistedException(schemaName, getToBeDroppedShardingTableNames(sqlStatement));
+            throw new CurrentRuleNotExistedException("Sharding", schemaName);
         }
     }
     

@@ -51,15 +51,14 @@ public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<A
     @Override
     public void checkSQLStatement(final String schemaName, final AlterEncryptRuleStatement sqlStatement, 
                                   final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
-        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredEncryptors(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final AlterEncryptRuleStatement sqlStatement, 
-                                               final EncryptRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final EncryptRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
         if (null == currentRuleConfig) {
-            throw new CurrentRuleNotExistedException("Encrypt", schemaName, getToBeAlteredEncryptTableNames(sqlStatement));
+            throw new CurrentRuleNotExistedException("Encrypt", schemaName);
         }
     }
     
