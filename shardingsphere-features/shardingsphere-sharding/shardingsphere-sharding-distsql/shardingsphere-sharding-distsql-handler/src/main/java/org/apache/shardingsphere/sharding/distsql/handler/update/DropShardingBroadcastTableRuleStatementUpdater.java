@@ -42,7 +42,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements RDL
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBroadcastTables().clear();
         return false;
     }

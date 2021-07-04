@@ -58,7 +58,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RDLDropU
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final String schemaName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         for (String each : sqlStatement.getRuleNames()) {
             dropRule(currentRuleConfig, each);
         }

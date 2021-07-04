@@ -104,7 +104,7 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processDrop(final String schemaName, final T sqlStatement, final RDLDropUpdater rdlUpdater, final RuleConfiguration currentRuleConfig) {
-        if (rdlUpdater.updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig)) {
+        if (rdlUpdater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
             ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().remove(currentRuleConfig);
         }
     }
