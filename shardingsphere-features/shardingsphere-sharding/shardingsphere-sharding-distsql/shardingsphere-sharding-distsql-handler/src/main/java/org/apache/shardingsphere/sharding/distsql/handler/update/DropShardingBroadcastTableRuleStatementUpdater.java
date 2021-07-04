@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
+import org.apache.shardingsphere.infra.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingBroadcastTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
 
 /**
@@ -35,9 +35,9 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements RDL
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws ShardingBroadcastTableRuleNotExistsException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig || currentRuleConfig.getBroadcastTables().isEmpty()) {
-            throw new ShardingBroadcastTableRuleNotExistsException(schemaName);
+            throw new RequiredRuleMissedException("Broadcast", schemaName);
         }
     }
     
