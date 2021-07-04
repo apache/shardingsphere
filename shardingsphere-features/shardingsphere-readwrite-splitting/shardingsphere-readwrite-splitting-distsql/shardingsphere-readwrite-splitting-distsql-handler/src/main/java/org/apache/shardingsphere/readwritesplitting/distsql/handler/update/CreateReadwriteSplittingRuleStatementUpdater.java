@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
+import org.apache.shardingsphere.infra.exception.rule.RuleDuplicatedException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
@@ -57,12 +57,12 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RDLCr
     }
     
     private void checkDuplicateRuleNames(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, 
-                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DuplicateRuleNamesException {
+                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RuleDuplicatedException {
         if (null != currentRuleConfig) {
             Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
             if (!duplicateRuleNames.isEmpty()) {
-                throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
+                throw new RuleDuplicatedException("readwrite splitting", schemaName, duplicateRuleNames);
             }
         }
     }
