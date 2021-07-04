@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.NotExistedRuleException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -37,7 +37,7 @@ public final class AlterShardingBindingTableRuleStatementUpdaterTest {
     
     private final AlterShardingBindingTableRuleStatementUpdater updater = new AlterShardingBindingTableRuleStatementUpdater();
     
-    @Test(expected = RuleNotExistedException.class)
+    @Test(expected = NotExistedRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class));
     }

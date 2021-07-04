@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.NotExistedRuleException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
@@ -42,12 +42,12 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     
     private final AlterDatabaseDiscoveryRuleStatementUpdater updater = new AlterDatabaseDiscoveryRuleStatementUpdater();
     
-    @Test(expected = RuleNotExistedException.class)
+    @Test(expected = NotExistedRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = RuleNotExistedException.class)
+    @Test(expected = NotExistedRuleException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), 
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));

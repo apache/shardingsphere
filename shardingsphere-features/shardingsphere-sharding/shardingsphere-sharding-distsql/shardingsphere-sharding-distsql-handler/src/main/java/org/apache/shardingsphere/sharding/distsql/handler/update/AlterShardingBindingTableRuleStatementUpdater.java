@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
-import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.NotExistedRuleException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -46,9 +46,9 @@ public final class AlterShardingBindingTableRuleStatementUpdater implements RDLA
         checkToBeAlteredDuplicateBindingTables(schemaName, sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RuleNotExistedException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws NotExistedRuleException {
         if (null == currentRuleConfig) {
-            throw new RuleNotExistedException("Sharding", schemaName);
+            throw new NotExistedRuleException("Sharding", schemaName);
         }
     }
     

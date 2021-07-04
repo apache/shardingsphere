@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.exception.rule.RuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.NotExistedRuleException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
@@ -42,7 +42,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     private final AlterShardingTableRuleStatementUpdater updater = new AlterShardingTableRuleStatementUpdater();
     
-    @Test(expected = RuleNotExistedException.class)
+    @Test(expected = NotExistedRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("t_order", "STANDARD_TEST"), null, mock(ShardingSphereResource.class));
     }
@@ -52,7 +52,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement("foo", createDuplicatedSQLStatement(), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = RuleNotExistedException.class)
+    @Test(expected = NotExistedRuleException.class)
     public void assertCheckSQLStatementWithoutExistTable() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("invalid_table", "STANDARD_TEST"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
