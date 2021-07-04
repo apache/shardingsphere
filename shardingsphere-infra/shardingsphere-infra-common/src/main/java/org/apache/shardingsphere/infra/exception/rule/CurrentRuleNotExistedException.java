@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.exception;
-
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+package org.apache.shardingsphere.infra.exception.rule;
 
 import java.util.Collection;
 
 /**
- * Readwrite splitting rule not existed exception.
+ * Current rule not existed exception.
  */
-public final class ReadwriteSplittingRuleNotExistedException extends RuleDefinitionViolationException {
+public final class CurrentRuleNotExistedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = -5119217255419990719L;
+    private static final long serialVersionUID = -8464574460917965546L;
     
-    public ReadwriteSplittingRuleNotExistedException(final String schemaName, final Collection<String> ruleNames) {
-        super(1113, String.format("Readwrite splitting rules %s do not exist in schema %s.", ruleNames, schemaName));
+    public CurrentRuleNotExistedException(final String ruleType, final String schemaName) {
+        super(1106, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
+    }
+    
+    public CurrentRuleNotExistedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+        super(1106, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
     }
 }
