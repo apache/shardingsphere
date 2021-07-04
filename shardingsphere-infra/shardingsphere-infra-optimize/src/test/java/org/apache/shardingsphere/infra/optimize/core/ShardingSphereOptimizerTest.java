@@ -67,7 +67,7 @@ public class ShardingSphereOptimizerTest {
     @Before
     public void init() {
         URL path = this.getClass().getClassLoader().getResource("");
-        if(null != path){
+        if (null != path) {
             String url = path.getPath() + "/sales";
             calciteSchema = new LocalSchema(new File(url));
             Map<String, ShardingSphereMetaData> metaDataMap = createMetaDataMap();
