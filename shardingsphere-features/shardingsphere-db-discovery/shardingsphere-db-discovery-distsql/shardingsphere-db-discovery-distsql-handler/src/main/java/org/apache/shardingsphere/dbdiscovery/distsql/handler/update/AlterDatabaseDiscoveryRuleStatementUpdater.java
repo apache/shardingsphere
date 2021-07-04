@@ -26,7 +26,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatab
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
-import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -90,11 +90,11 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RDLAlte
         return result;
     }
     
-    private void checkToBeAlteredDiscoveryType(final AlterDatabaseDiscoveryRuleStatement sqlStatement) throws InvalidAlgorithmException {
+    private void checkToBeAlteredDiscoveryType(final AlterDatabaseDiscoveryRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedDiscoveryTypes = getToBeAlteredDiscoveryTypeNames(sqlStatement).stream()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedDiscoveryTypes.isEmpty()) {
-            throw new InvalidAlgorithmException("database discovery", notExistedDiscoveryTypes);
+            throw new InvalidAlgorithmConfigurationException("database discover", notExistedDiscoveryTypes);
         }
     }
     

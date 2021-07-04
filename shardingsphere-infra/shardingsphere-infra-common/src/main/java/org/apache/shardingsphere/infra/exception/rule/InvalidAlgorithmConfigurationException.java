@@ -20,13 +20,13 @@ package org.apache.shardingsphere.infra.exception.rule;
 import java.util.Collection;
 
 /**
- * Invalid algorithm exception.
+ * Invalid algorithm configuration exception.
  */
-public final class InvalidAlgorithmException extends RuleDefinitionViolationException {
+public final class InvalidAlgorithmConfigurationException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = 9076740384552385180L;
     
-    public InvalidAlgorithmException(final String algorithmType, final Collection<String> algorithms) {
+    public InvalidAlgorithmConfigurationException(final String algorithmType, final Collection<String> algorithms) {
         super(1119, String.format("Invalid %s algorithms %s", algorithmType, algorithms));
     }
 }

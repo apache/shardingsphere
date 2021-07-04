@@ -25,7 +25,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateData
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
-import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -86,11 +86,11 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLCre
         }
     }
     
-    private void checkToBeCreatedDiscoverTypes(final CreateDatabaseDiscoveryRuleStatement sqlStatement) throws InvalidAlgorithmException {
+    private void checkToBeCreatedDiscoverTypes(final CreateDatabaseDiscoveryRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedDiscoveryTypes = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedDiscoveryTypes.isEmpty()) {
-            throw new InvalidAlgorithmException("database discovery", notExistedDiscoveryTypes);
+            throw new InvalidAlgorithmConfigurationException("database discover", notExistedDiscoveryTypes);
         }
     }
     
