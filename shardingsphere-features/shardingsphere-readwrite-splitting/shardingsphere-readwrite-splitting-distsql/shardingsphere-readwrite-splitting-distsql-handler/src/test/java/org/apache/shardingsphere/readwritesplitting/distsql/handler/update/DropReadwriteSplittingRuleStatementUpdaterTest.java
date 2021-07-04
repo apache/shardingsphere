@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.exception.ReadwriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.junit.Test;
 
@@ -37,19 +38,19 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     private final DropReadwriteSplittingRuleStatementUpdater updater = new DropReadwriteSplittingRuleStatementUpdater();
     
-    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    @Test(expected = RequiredRuleMissedException.class)
+    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = ReadwriteSplittingRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutToBeDroppedRule() {
+    @Test(expected = RequiredRuleMissedException.class)
+    public void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement(), createCurrentRuleConfiguration());
+        updater.updateCurrentRuleConfiguration(createSQLStatement(), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
     }
     

@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.DuplicateTablesException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.InvalidShardingAlgorithmsException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
@@ -41,29 +42,29 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     private final AlterShardingTableRuleStatementUpdater updater = new AlterShardingTableRuleStatementUpdater();
     
-    @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    @Test(expected = RequiredRuleMissedException.class)
+    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("t_order", "STANDARD_TEST"), null, mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = DuplicateTablesException.class)
-    public void assertCheckSQLStatementWithDuplicateTables() {
+    @Test(expected = DuplicateRuleException.class)
+    public void assertCheckSQLStatementWithDuplicateTables() throws DistSQLException {
         updater.checkSQLStatement("foo", createDuplicatedSQLStatement(), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = ShardingTableRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutExistTable() {
+    @Test(expected = RequiredRuleMissedException.class)
+    public void assertCheckSQLStatementWithoutExistTable() throws DistSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("invalid_table", "STANDARD_TEST"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = InvalidShardingAlgorithmsException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredShardingAlgorithms() {
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckSQLStatementWithoutToBeAlteredShardingAlgorithms() throws DistSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("t_order", "INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement("t_order", "STANDARD_TEST"), createCurrentRuleConfiguration());
+        updater.updateCurrentRuleConfiguration(createSQLStatement("t_order", "STANDARD_TEST"), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
     }
     

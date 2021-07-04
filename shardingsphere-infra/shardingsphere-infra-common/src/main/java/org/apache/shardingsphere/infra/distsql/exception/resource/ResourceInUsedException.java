@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
 import java.util.Collection;
 
 /**
- * Resource not existed exception.
+ * Resource in used exception.
  */
-public final class ResourceNotExistedException extends RuleDefinitionViolationException {
+public final class ResourceInUsedException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = 1704331180489268L;
+    private static final long serialVersionUID = -3427324685070457375L;
     
-    public ResourceNotExistedException(final String schemaName, final Collection<String> resourceNames) {
-        super(1102, "C1102", String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
+    public ResourceInUsedException(final Collection<String> resourceNames) {
+        super(1101, String.format("Resources %s in the rule are still in used.", resourceNames));
     }
 }

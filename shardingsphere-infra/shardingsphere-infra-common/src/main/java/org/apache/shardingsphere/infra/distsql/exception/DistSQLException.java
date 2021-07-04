@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception;
 
-import java.util.Collection;
+import java.sql.SQLException;
 
 /**
- * Invalid resource exception.
+ * Dist SQL exception.
  */
-public final class InvalidResourceException extends RuleDefinitionViolationException {
+public abstract class DistSQLException extends SQLException {
     
-    private static final long serialVersionUID = 7029641448948791509L;
+    private static final long serialVersionUID = -6464411607608071400L;
     
-    public InvalidResourceException(final Collection<String> resourceNames) {
-        super(1103, "C1103", String.format("Can not add invalid resources %s.", resourceNames));
+    public DistSQLException(final int errorCode, final String reason) {
+        super(reason, "C" + errorCode, errorCode);
     }
 }

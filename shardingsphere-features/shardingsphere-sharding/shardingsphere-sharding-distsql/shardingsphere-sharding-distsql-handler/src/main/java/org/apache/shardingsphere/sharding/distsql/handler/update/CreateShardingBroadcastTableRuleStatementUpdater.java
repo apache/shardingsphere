@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingBroadcastTableRuleExistedException;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
 
 /**
@@ -30,24 +31,27 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
+    }
+    
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RuleInUsedException {
+        if (null != currentRuleConfig && !currentRuleConfig.getBroadcastTables().isEmpty()) {
+            throw new RuleInUsedException("Broadcast", schemaName);
+        }
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement) {
-        return new ShardingRuleConfiguration();
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingBroadcastTableRulesStatement sqlStatement) {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.setBroadcastTables(sqlStatement.getTables());
+        return result;
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingBroadcastTableRulesStatement sqlStatement, 
-                                               final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        if (null == currentRuleConfig) {
-            toBeCreatedRuleConfig.setBroadcastTables(sqlStatement.getTables());
-        } else {
-            if (!currentRuleConfig.getBroadcastTables().isEmpty()) {
-                throw new ShardingBroadcastTableRuleExistedException(schemaName);
-            }
-            currentRuleConfig.getBroadcastTables().addAll(sqlStatement.getTables());
+    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+        if (null != currentRuleConfig) {
+            currentRuleConfig.getBroadcastTables().addAll(toBeCreatedRuleConfig.getBroadcastTables());
         }
     }
     

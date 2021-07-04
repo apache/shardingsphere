@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.handler.exception;
-
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
 import java.util.Collection;
 
 /**
- * Invalid database discovery types exception.
+ * Required rule missed exception.
  */
-public final class InvalidDatabaseDiscoveryTypesException extends RuleDefinitionViolationException {
+public final class RequiredRuleMissedException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = -6919328513016324005L;
+    private static final long serialVersionUID = -8464574460917965546L;
     
-    public InvalidDatabaseDiscoveryTypesException(final Collection<String> databaseDiscoveryTypes) {
-        super(1115, "C1115", String.format("Invalid database discovery types %s.", databaseDiscoveryTypes));
+    public RequiredRuleMissedException(final String ruleType, final String schemaName) {
+        super(1112, String.format("%s rule does not exist in schema `%s`.", ruleType, schemaName));
+    }
+    
+    public RequiredRuleMissedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+        super(1112, String.format("%s rules `%s` do not exist in schema `%s`.", ruleType, ruleNames, schemaName));
     }
 }

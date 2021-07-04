@@ -19,11 +19,12 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.handler.exception.DatabaseDiscoveryRuleNotExistedException;
-import org.apache.shardingsphere.dbdiscovery.distsql.handler.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.junit.Test;
 
@@ -41,32 +42,32 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     
     private final AlterDatabaseDiscoveryRuleStatementUpdater updater = new AlterDatabaseDiscoveryRuleStatementUpdater();
     
-    @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    @Test(expected = RequiredRuleMissedException.class)
+    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
         updater.checkSQLStatement("foo", new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null, mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = DatabaseDiscoveryRuleNotExistedException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() {
+    @Test(expected = RequiredRuleMissedException.class)
+    public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() throws DistSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), 
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = ResourceNotExistedException.class)
-    public void assertCheckSQLStatementWithoutExistedResources() {
+    @Test(expected = RequiredResourceMissedException.class)
+    public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), createCurrentRuleConfiguration(), resource);
     }
     
-    @Test(expected = InvalidDatabaseDiscoveryTypesException.class)
-    public void assertCheckSQLStatementWithoutToBeAlteredDiscoveryTypes() {
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckSQLStatementWithoutToBeAlteredDiscoveryTypes() throws DistSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createSQLStatement("TEST"), createCurrentRuleConfiguration());
+        updater.updateCurrentRuleConfiguration(createSQLStatement("TEST"), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
     }
     

@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
-import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -26,9 +29,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingRuleStatementConverter;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.DuplicateTablesException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.InvalidKeyGeneratorsException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -57,17 +57,17 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
         checkToBeCreatedResource(schemaName, sqlStatement, resource);
-        checkDuplicateTables(sqlStatement, currentRuleConfig);
+        checkDuplicateTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedShardingAlgorithms(sqlStatement);
         checkToBeCreatedKeyGenerators(sqlStatement);
     }
     
-    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource) {
+    private void checkToBeCreatedResource(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
         Collection<String> notExistedResources = resource.getNotExistedResources(getToBeCreatedResources(sqlStatement));
         if (!notExistedResources.isEmpty()) {
-            throw new ResourceNotExistedException(schemaName, notExistedResources);
+            throw new RequiredResourceMissedException(schemaName, notExistedResources);
         }
     }
     
@@ -77,13 +77,13 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
         return result;
     }
     
-    private void checkDuplicateTables(final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkDuplicateTables(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         Collection<String> shardingTableNames = null == currentRuleConfig ? Collections.emptyList() : getShardingTables(currentRuleConfig);
         Set<String> duplicateTableNames = sqlStatement.getRules().stream().collect(Collectors.toMap(TableRuleSegment::getLogicTable, each -> 1, Integer::sum))
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         duplicateTableNames.addAll(sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).filter(shardingTableNames::contains).collect(Collectors.toSet()));
         if (!duplicateTableNames.isEmpty()) {
-            throw new DuplicateTablesException(duplicateTableNames);
+            throw new DuplicateRuleException("sharding", schemaName, duplicateTableNames);
         }
     }
     
@@ -94,21 +94,21 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
         return result;
     }
     
-    private void checkToBeCreatedShardingAlgorithms(final CreateShardingTableRuleStatement sqlStatement) {
+    private void checkToBeCreatedShardingAlgorithms(final CreateShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedShardingAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!notExistedShardingAlgorithms.isEmpty()) {
-            throw new InvalidShardingAlgorithmsException(notExistedShardingAlgorithms);
+            throw new InvalidAlgorithmConfigurationException("sharding", notExistedShardingAlgorithms);
         }
     }
     
-    private void checkToBeCreatedKeyGenerators(final CreateShardingTableRuleStatement sqlStatement) {
+    private void checkToBeCreatedKeyGenerators(final CreateShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> invalidKeyGenerators = getToBeCreatedKeyGenerators(sqlStatement).stream().distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent())
                 .collect(Collectors.toList());
         if (!invalidKeyGenerators.isEmpty()) {
-            throw new InvalidKeyGeneratorsException(invalidKeyGenerators);
+            throw new InvalidAlgorithmConfigurationException("key generator", invalidKeyGenerators);
         }
     }
     
@@ -117,13 +117,12 @@ public final class CreateShardingTableRuleStatementUpdater implements RDLCreateU
     }
     
     @Override
-    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement) {
+    public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateShardingTableRuleStatement sqlStatement) {
         return ShardingRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateShardingTableRuleStatement sqlStatement, 
-                                               final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
             currentRuleConfig.getAutoTables().addAll(toBeCreatedRuleConfig.getAutoTables());
             currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());

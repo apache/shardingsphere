@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.exception;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import java.util.Collection;
 
 /**
- * Sharding broadcast table rule not exists exception.
+ * Invalid resource exception.
  */
-public final class ShardingBroadcastTableRuleNotExistsException extends RuleDefinitionViolationException {
+public final class InvalidResourceException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = 2816401356514609173L;
+    private static final long serialVersionUID = 7029641448948791509L;
     
-    public ShardingBroadcastTableRuleNotExistsException(final String schemaName) {
-        super(1112, "C1112", String.format("Sharding broadcast table rules do not exist in schema %s.", schemaName));
+    public InvalidResourceException(final Collection<String> resourceNames) {
+        super(1104, String.format("Can not add invalid resources %s.", resourceNames));
     }
 }

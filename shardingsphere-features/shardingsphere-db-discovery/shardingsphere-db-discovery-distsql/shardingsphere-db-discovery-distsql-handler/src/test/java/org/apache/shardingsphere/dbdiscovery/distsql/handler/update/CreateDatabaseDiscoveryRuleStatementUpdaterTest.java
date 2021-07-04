@@ -19,11 +19,12 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.handler.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
-import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.junit.Test;
 
@@ -39,22 +40,22 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     
     private final CreateDatabaseDiscoveryRuleStatementUpdater updater = new CreateDatabaseDiscoveryRuleStatementUpdater();
     
-    @Test(expected = DuplicateRuleNamesException.class)
-    public void assertCheckSQLStatementWithDuplicateRuleNames() {
+    @Test(expected = DuplicateRuleException.class)
+    public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("pr_ds", Collections.emptyList(), "test");
         updater.checkSQLStatement(
                 "foo", createSQLStatement("TEST"), new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.emptyMap()), mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = ResourceNotExistedException.class)
-    public void assertCheckSQLStatementWithoutExistedResources() {
+    @Test(expected = RequiredResourceMissedException.class)
+    public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds_read_0"));
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), null, resource);
     }
     
-    @Test(expected = InvalidDatabaseDiscoveryTypesException.class)
-    public void assertCheckSQLStatementWithDatabaseDiscoveryType() {
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckSQLStatementWithDatabaseDiscoveryType() throws DistSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), null, mock(ShardingSphereResource.class));
     }
     

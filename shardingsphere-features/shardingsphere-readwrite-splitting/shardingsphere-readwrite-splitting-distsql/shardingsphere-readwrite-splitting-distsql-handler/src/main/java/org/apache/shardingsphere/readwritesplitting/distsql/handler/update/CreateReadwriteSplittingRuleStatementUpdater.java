@@ -19,15 +19,16 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
-import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.exception.InvalidLoadBalancersException;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
@@ -49,26 +50,28 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RDLCr
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, 
-                                  final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+                                  final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
         checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedResources(schemaName, sqlStatement, resource);
         checkToBeCreatedLoadBalancers(sqlStatement);
     }
     
-    private void checkDuplicateRuleNames(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
+    private void checkDuplicateRuleNames(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, 
+                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         if (null != currentRuleConfig) {
             Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
             if (!duplicateRuleNames.isEmpty()) {
-                throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
+                throw new DuplicateRuleException("readwrite splitting", schemaName, duplicateRuleNames);
             }
         }
     }
     
-    private void checkToBeCreatedResources(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereResource resource) {
+    private void checkToBeCreatedResources(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, 
+                                           final ShardingSphereResource resource) throws RequiredResourceMissedException {
         Collection<String> notExistResources = resource.getNotExistedResources(getToBeCreatedResources(sqlStatement));
         if (!notExistResources.isEmpty()) {
-            throw new ResourceNotExistedException(schemaName, notExistResources);
+            throw new RequiredResourceMissedException(schemaName, notExistResources);
         }
     }
     
@@ -81,22 +84,21 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RDLCr
         return result;
     }
     
-    private void checkToBeCreatedLoadBalancers(final CreateReadwriteSplittingRuleStatement sqlStatement) {
+    private void checkToBeCreatedLoadBalancers(final CreateReadwriteSplittingRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedLoadBalancers = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedLoadBalancers.isEmpty()) {
-            throw new InvalidLoadBalancersException(notExistedLoadBalancers);
+            throw new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers);
         }
     }
     
     @Override
-    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement) {
+    public ReadwriteSplittingRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateReadwriteSplittingRuleStatement sqlStatement) {
         return ReadwriteSplittingRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateReadwriteSplittingRuleStatement sqlStatement, 
-                                               final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
             currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
             currentRuleConfig.getLoadBalancers().putAll(toBeCreatedRuleConfig.getLoadBalancers());

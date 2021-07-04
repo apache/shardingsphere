@@ -20,13 +20,14 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseDiscoveryRuleStatementConverter;
-import org.apache.shardingsphere.dbdiscovery.distsql.handler.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
-import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -49,19 +50,20 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLCre
     
     @Override
     public void checkSQLStatement(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, 
-                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+                                  final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
         checkDuplicateRuleNames(schemaName, sqlStatement, currentRuleConfig);
         checkToBeCreatedResources(schemaName, sqlStatement, resource);
         checkToBeCreatedDiscoverTypes(sqlStatement);
     }
     
-    private void checkDuplicateRuleNames(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+    private void checkDuplicateRuleNames(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, 
+                                         final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DuplicateRuleException {
         if (null != currentRuleConfig) {
             Collection<String> existRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getName).filter(existRuleNames::contains).collect(Collectors.toSet());
             duplicateRuleNames.addAll(getToBeCreatedDuplicateRuleNames(sqlStatement));
             if (!duplicateRuleNames.isEmpty()) {
-                throw new DuplicateRuleNamesException(schemaName, duplicateRuleNames);
+                throw new DuplicateRuleException("database discovery", schemaName, duplicateRuleNames);
             }
         }
     }
@@ -75,31 +77,31 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RDLCre
                 .collect(Collectors.toSet());
     }
     
-    private void checkToBeCreatedResources(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) {
+    private void checkToBeCreatedResources(final String schemaName, 
+                                           final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
         Collection<String> resources = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
         Collection<String> notExistResources = resource.getNotExistedResources(resources);
         if (!notExistResources.isEmpty()) {
-            throw new ResourceNotExistedException(schemaName, notExistResources);
+            throw new RequiredResourceMissedException(schemaName, notExistResources);
         }
     }
     
-    private void checkToBeCreatedDiscoverTypes(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+    private void checkToBeCreatedDiscoverTypes(final CreateDatabaseDiscoveryRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedDiscoveryTypes = sqlStatement.getRules().stream().map(DatabaseDiscoveryRuleSegment::getDiscoveryTypeName).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryType.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedDiscoveryTypes.isEmpty()) {
-            throw new InvalidDatabaseDiscoveryTypesException(notExistedDiscoveryTypes);
+            throw new InvalidAlgorithmConfigurationException("database discover", notExistedDiscoveryTypes);
         }
     }
     
     @Override
-    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
+    public DatabaseDiscoveryRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         return DatabaseDiscoveryRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, 
-                                               final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
             currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
             currentRuleConfig.getDiscoveryTypes().putAll(toBeCreatedRuleConfig.getDiscoveryTypes());

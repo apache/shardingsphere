@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.exception;
-
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
 import java.util.Collection;
 
 /**
- * Invalid key Generators exception.
+ * Required resource missed exception.
  */
-public final class InvalidKeyGeneratorsException extends RuleDefinitionViolationException {
+public final class RequiredResourceMissedException extends ResourceDefinitionViolationException {
     
-    private static final long serialVersionUID = -1671459113165055997L;
+    private static final long serialVersionUID = 1704331180489268L;
     
-    public InvalidKeyGeneratorsException(final Collection<String> keyGenerators) {
-        super(1120, "C1120", String.format("Invalid key generators %s.", keyGenerators));
+    public RequiredResourceMissedException(final String schemaName, final Collection<String> resourceNames) {
+        super(1102, String.format("Resources %s do not exist in schema %s.", resourceNames, schemaName));
     }
 }

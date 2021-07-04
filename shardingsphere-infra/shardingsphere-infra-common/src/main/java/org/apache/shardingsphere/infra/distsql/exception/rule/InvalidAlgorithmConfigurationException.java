@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.distsql.handler.exception;
-
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
 import java.util.Collection;
 
 /**
- * Readwrite splitting rule not existed exception.
+ * Invalid algorithm configuration exception.
  */
-public final class ReadwriteSplittingRuleNotExistedException extends RuleDefinitionViolationException {
+public final class InvalidAlgorithmConfigurationException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = -5119217255419990719L;
+    private static final long serialVersionUID = 9076740384552385180L;
     
-    public ReadwriteSplittingRuleNotExistedException(final String schemaName, final Collection<String> ruleNames) {
-        super(1113, "C113", String.format("Readwrite splitting rules %s do not exist in schema %s.", ruleNames, schemaName));
+    public InvalidAlgorithmConfigurationException(final String algorithmType, final Collection<String> algorithms) {
+        super(1114, String.format("Invalid %s algorithms %s", algorithmType, algorithms));
     }
 }

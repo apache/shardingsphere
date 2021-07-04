@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.rule;
+package org.apache.shardingsphere.infra.distsql.exception.resource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 
 /**
- * Rule definition violation exception.
+ * Resource definition violation exception.
  */
-@RequiredArgsConstructor
-@Getter
-public abstract class RuleDefinitionViolationException extends RuntimeException {
+public abstract class ResourceDefinitionViolationException extends DistSQLException {
     
-    private static final long serialVersionUID = 1090914641996552474L;
+    private static final long serialVersionUID = -2686784350802985974L;
     
-    private final int errorCode;
-    
-    private final String sqlState;
-    
-    private final String errorMessage;
+    public ResourceDefinitionViolationException(final int errorCode, final String reason) {
+        super(errorCode, reason);
+    }
 }

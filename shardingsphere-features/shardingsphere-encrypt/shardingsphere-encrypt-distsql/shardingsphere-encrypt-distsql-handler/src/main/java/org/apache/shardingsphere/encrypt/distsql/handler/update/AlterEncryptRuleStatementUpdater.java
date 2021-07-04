@@ -21,12 +21,13 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
-import org.apache.shardingsphere.encrypt.distsql.handler.exception.EncryptRuleNotExistedException;
-import org.apache.shardingsphere.encrypt.distsql.handler.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -48,23 +49,24 @@ public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<A
     }
     
     @Override
-    public void checkSQLStatement(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
-        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+    public void checkSQLStatement(final String schemaName, final AlterEncryptRuleStatement sqlStatement, 
+                                  final EncryptRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlteredRules(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredEncryptors(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    private void checkCurrentRuleConfiguration(final String schemaName, final EncryptRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new EncryptRuleNotExistedException(schemaName, getToBeAlteredEncryptTableNames(sqlStatement));
+            throw new RequiredRuleMissedException("Encrypt", schemaName);
         }
     }
     
-    private void checkToBeAlteredRules(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    private void checkToBeAlteredRules(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistEncryptTableNames = getToBeAlteredEncryptTableNames(sqlStatement).stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistEncryptTableNames.isEmpty()) {
-            throw new EncryptRuleNotExistedException(schemaName, notExistEncryptTableNames);
+            throw new RequiredRuleMissedException("Encrypt", schemaName, notExistEncryptTableNames);
         }
     }
     
@@ -72,7 +74,7 @@ public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<A
         return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) {
+    private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> encryptors = new LinkedHashSet<>();
         for (EncryptRuleSegment each : sqlStatement.getRules()) {
             encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet()));
@@ -80,12 +82,12 @@ public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<A
         Collection<String> invalidEncryptors = encryptors.stream().filter(
             each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!invalidEncryptors.isEmpty()) {
-            throw new InvalidEncryptorsException(invalidEncryptors);
+            throw new InvalidAlgorithmConfigurationException("encryptor", invalidEncryptors);
         }
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(sqlStatement, currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
     }

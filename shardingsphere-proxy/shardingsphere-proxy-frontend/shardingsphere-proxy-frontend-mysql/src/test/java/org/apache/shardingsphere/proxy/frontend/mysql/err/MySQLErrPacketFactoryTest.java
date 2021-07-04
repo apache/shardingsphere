@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.err;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
@@ -196,8 +196,8 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithRuleDefinitionViolationException() {
         RuleDefinitionViolationException exception = mock(RuleDefinitionViolationException.class);
         when(exception.getErrorCode()).thenReturn(1);
-        when(exception.getSqlState()).thenReturn("C0000");
-        when(exception.getErrorMessage()).thenReturn("Test error");
+        when(exception.getSQLState()).thenReturn("C0000");
+        when(exception.getMessage()).thenReturn("Test error");
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(exception);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(1));

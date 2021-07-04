@@ -31,10 +31,9 @@ public interface RDLDropUpdater<T extends SQLStatement, R extends RuleConfigurat
     /**
      * Update current rule configuration.
      *
-     * @param schemaName schema name
      * @param sqlStatement SQL statement
      * @param currentRuleConfig current rule configuration to be updated
      * @return current rule configuration is empty or not 
      */
-    boolean updateCurrentRuleConfiguration(String schemaName, T sqlStatement, R currentRuleConfig);
+    boolean updateCurrentRuleConfiguration(T sqlStatement, R currentRuleConfig);
 }

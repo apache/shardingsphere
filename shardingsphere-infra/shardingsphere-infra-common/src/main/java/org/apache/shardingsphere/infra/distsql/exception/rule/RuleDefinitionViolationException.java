@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.exception;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 
 /**
- * Invalid sharding algorithms exception.
+ * Rule definition violation exception.
  */
-public final class InvalidShardingAlgorithmsException extends RuleDefinitionViolationException {
+public abstract class RuleDefinitionViolationException extends DistSQLException {
     
-    private static final long serialVersionUID = 4257890788163115250L;
+    private static final long serialVersionUID = 1090914641996552474L;
     
-    public InvalidShardingAlgorithmsException(final Collection<String> algorithms) {
-        super(1119, "C1119", String.format("Invalid sharding algorithms %s", algorithms));
+    public RuleDefinitionViolationException(final int errorCode, final String reason) {
+        super(errorCode, reason);
     }
 }

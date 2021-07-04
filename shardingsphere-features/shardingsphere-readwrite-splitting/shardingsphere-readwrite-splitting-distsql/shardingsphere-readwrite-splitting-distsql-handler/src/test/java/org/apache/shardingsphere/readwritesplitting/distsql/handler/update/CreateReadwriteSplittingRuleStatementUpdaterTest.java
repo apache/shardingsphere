@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
-import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.exception.InvalidLoadBalancersException;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.junit.Test;
@@ -41,20 +42,20 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     private final CreateReadwriteSplittingRuleStatementUpdater updater = new CreateReadwriteSplittingRuleStatementUpdater();
     
-    @Test(expected = DuplicateRuleNamesException.class)
-    public void assertCheckSQLStatementWithDuplicateRuleNames() {
+    @Test(expected = DuplicateRuleException.class)
+    public void assertCheckSQLStatementWithDuplicateRuleNames() throws DistSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), getCurrentRuleConfig(), mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = ResourceNotExistedException.class)
-    public void assertCheckSQLStatementWithoutExistedResources() {
+    @Test(expected = RequiredResourceMissedException.class)
+    public void assertCheckSQLStatementWithoutExistedResources() throws DistSQLException {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         when(resource.getNotExistedResources(any())).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), null, resource);
     }
     
-    @Test(expected = InvalidLoadBalancersException.class)
-    public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() {
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() throws DistSQLException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), null, mock(ShardingSphereResource.class));
     }
     

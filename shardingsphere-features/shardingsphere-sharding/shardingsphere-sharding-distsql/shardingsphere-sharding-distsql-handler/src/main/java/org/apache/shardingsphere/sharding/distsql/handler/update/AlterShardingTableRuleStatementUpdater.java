@@ -19,7 +19,11 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
-import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
+import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -27,10 +31,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingRuleStatementConverter;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.DuplicateTablesException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.InvalidKeyGeneratorsException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.InvalidShardingAlgorithmsException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -57,18 +57,18 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
     
     @Override
     public void checkSQLStatement(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, 
-                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
-        checkCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig);
+                                  final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws DistSQLException {
+        checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
         checkToBeAlteredResources(schemaName, sqlStatement, resource);
         checkToBeAlteredShardingTables(schemaName, sqlStatement, currentRuleConfig);
         checkToBeAlteredShardingAlgorithm(sqlStatement);
         checkToBeAlteredKeyGenerators(sqlStatement);
-        checkToBeAlteredDuplicateShardingTables(sqlStatement);
+        checkToBeAlteredDuplicateShardingTables(schemaName, sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new ShardingTableRuleNotExistedException(schemaName, getToBeAlteredTableNames(sqlStatement));
+            throw new RequiredRuleMissedException("Sharding", schemaName);
         }
     }
     
@@ -76,10 +76,10 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
         return sqlStatement.getRules().stream().map(TableRuleSegment::getLogicTable).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredResources(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource) {
+    private void checkToBeAlteredResources(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingSphereResource resource) throws RequiredResourceMissedException {
         Collection<String> notExistResources = resource.getNotExistedResources(getToBeAlteredResources(sqlStatement));
         if (!notExistResources.isEmpty()) {
-            throw new ResourceNotExistedException(schemaName, notExistResources);
+            throw new RequiredResourceMissedException(schemaName, notExistResources);
         }
     }
     
@@ -89,11 +89,12 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
         return result;
     }
     
-    private void checkToBeAlteredShardingTables(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkToBeAlteredShardingTables(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, 
+                                                final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         Collection<String> currentShardingTables = getCurrentShardingTables(currentRuleConfig);
         Collection<String> notExistedShardingTables = getToBeAlteredTableNames(sqlStatement).stream().filter(each -> !currentShardingTables.contains(each)).collect(Collectors.toList());
         if (!notExistedShardingTables.isEmpty()) {
-            throw new ShardingTableRuleNotExistedException(schemaName, notExistedShardingTables);
+            throw new RequiredRuleMissedException("Sharding", schemaName, notExistedShardingTables);
         }
     }
     
@@ -104,19 +105,19 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
         return result;
     }
     
-    private void checkToBeAlteredShardingAlgorithm(final AlterShardingTableRuleStatement sqlStatement) {
+    private void checkToBeAlteredShardingAlgorithm(final AlterShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedShardingAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedShardingAlgorithms.isEmpty()) {
-            throw new InvalidShardingAlgorithmsException(notExistedShardingAlgorithms);
+            throw new InvalidAlgorithmConfigurationException("sharding", notExistedShardingAlgorithms);
         }
     }
     
-    private void checkToBeAlteredKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) {
+    private void checkToBeAlteredKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedKeyGenerators = getToBeAlteredKeyGenerators(sqlStatement).stream().distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedKeyGenerators.isEmpty()) {
-            throw new InvalidKeyGeneratorsException(notExistedKeyGenerators);
+            throw new InvalidAlgorithmConfigurationException("key generator", notExistedKeyGenerators);
         }
     }
     
@@ -124,10 +125,10 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
         return sqlStatement.getRules().stream().filter(each -> null != each.getKeyGenerateStrategy()).map(each -> each.getKeyGenerateStrategy().getName()).collect(Collectors.toSet());
     }
     
-    private void checkToBeAlteredDuplicateShardingTables(final AlterShardingTableRuleStatement sqlStatement) {
+    private void checkToBeAlteredDuplicateShardingTables(final String schemaName, final AlterShardingTableRuleStatement sqlStatement) throws DuplicateRuleException {
         Collection<String> duplicateTables = getDuplicateTables(sqlStatement);
         if (!duplicateTables.isEmpty()) {
-            throw new DuplicateTablesException(duplicateTables);
+            throw new DuplicateRuleException("sharding", schemaName, duplicateTables);
         }
     }
     
@@ -141,7 +142,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void updateCurrentRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         dropRuleConfiguration(sqlStatement, currentRuleConfig);
         addRuleConfiguration(sqlStatement, currentRuleConfig);
     }

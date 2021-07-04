@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.DuplicateBindingTablesException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingBindingTableRuleNotExistsException;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingBindingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
@@ -36,19 +37,19 @@ public final class AlterShardingBindingTableRuleStatementUpdaterTest {
     
     private final AlterShardingBindingTableRuleStatementUpdater updater = new AlterShardingBindingTableRuleStatementUpdater();
     
-    @Test(expected = ShardingBindingTableRuleNotExistsException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    @Test(expected = RequiredRuleMissedException.class)
+    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement(), null, mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = DuplicateBindingTablesException.class)
-    public void assertCheckSQLStatementWithDuplicateTables() {
+    @Test(expected = DuplicateRuleException.class)
+    public void assertCheckSQLStatementWithDuplicateTables() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createDuplicatedSQLStatement(), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration("foo", createDuplicatedSQLStatement(), createCurrentRuleConfiguration());
+        updater.updateCurrentRuleConfiguration(createDuplicatedSQLStatement(), createCurrentRuleConfiguration());
         // TODO assert current rule configuration
     }
     
