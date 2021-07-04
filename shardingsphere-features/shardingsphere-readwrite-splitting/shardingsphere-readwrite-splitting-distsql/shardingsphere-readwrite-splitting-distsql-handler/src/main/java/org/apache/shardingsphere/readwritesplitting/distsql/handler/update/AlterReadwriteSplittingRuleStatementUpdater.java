@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.exception.InvalidLoadBalancersException;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
@@ -78,16 +78,15 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RDLAlt
         return sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).collect(Collectors.toSet());
     }
     
-    private void checkToBeAlteredLoadBalancer(final AlterReadwriteSplittingRuleStatement sqlStatement) throws InvalidLoadBalancersException {
-        Collection<String> invalidLoadBalances = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
+    private void checkToBeAlteredLoadBalancer(final AlterReadwriteSplittingRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
+        Collection<String> invalidLoadBalancers = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
-        if (!invalidLoadBalances.isEmpty()) {
-            throw new InvalidLoadBalancersException(invalidLoadBalances);
+        if (!invalidLoadBalancers.isEmpty()) {
+            throw new InvalidAlgorithmConfigurationException("Load balancers", invalidLoadBalancers);
         }
     }
     
-    private void checkToBeAlteredResources(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, 
-                                           final ShardingSphereResource resource) throws ResourceNotExistedException {
+    private void checkToBeAlteredResources(final String schemaName, final AlterReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereResource resource) throws ResourceNotExistedException {
         Collection<String> resources = new LinkedHashSet<>();
         sqlStatement.getRules().stream().filter(each -> Strings.isNullOrEmpty(each.getAutoAwareResource())).forEach(each -> {
             resources.add(each.getWriteDataSource());
