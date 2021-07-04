@@ -58,21 +58,19 @@ public class ShardingSphereOptimizerTest {
             + "INNER JOIN t_order_item_federate_sharding ";
     
     private ShardingSphereOptimizer optimizer;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData shardingSphereMetaData;
-    
-    private Schema calciteSchema;
     
     @Before
     public void init() {
         URL path = this.getClass().getClassLoader().getResource("");
         if (null != path) {
             String url = path.getPath() + "/sales";
-            calciteSchema = new LocalSchema(new File(url));
+            Schema calciteSchema = new LocalSchema(new File(url));
             Map<String, ShardingSphereMetaData> metaDataMap = createMetaDataMap();
             OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(metaDataMap);
-            OptimizeContext context = createContext(optimizeContextFactory);
+            OptimizeContext context = optimizeContextFactory.create("testSchema", calciteSchema);
             optimizer = new ShardingSphereOptimizer(context);
         }
     }
@@ -89,10 +87,6 @@ public class ShardingSphereOptimizerTest {
         when(shardingSphereMetaData.getSchema()).thenReturn(schema);
         when(shardingSphereMetaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("testSchema", shardingSphereMetaData);
-    }
-    
-    private OptimizeContext createContext(final OptimizeContextFactory optimizeContextFactory) {
-        return optimizeContextFactory.create("testSchema", calciteSchema);
     }
     
     @Test

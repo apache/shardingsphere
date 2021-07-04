@@ -71,19 +71,15 @@ public class LocalSchema extends AbstractSchema {
     private Map<String, Table> createTableMap() {
         final Source baseSource = Sources.of(directoryFile);
         File[] files = directoryFile.listFiles((dir, name) -> {
-            final String nameSansGz = trim(name, ".gz");
-            return nameSansGz.endsWith(".csv") || nameSansGz.endsWith(".json");
+            return name.endsWith(".csv");
         });
         if (files == null) {
-            System.out.println("directory " + directoryFile + " not found");
             files = new File[0];
         }
-        // Build a map from table name to table; each file becomes a table.
         final ImmutableMap.Builder<String, Table> builder = ImmutableMap.builder();
         for (File file : files) {
             Source source = Sources.of(file);
-            Source sourceSansGz = source.trim(".gz");
-            final Source sourceSansCsv = sourceSansGz.trimOrNull(".csv");
+            final Source sourceSansCsv = source.trimOrNull(".csv");
             if (sourceSansCsv != null) {
                 final Table table = createTable(source);
                 builder.put(sourceSansCsv.relative(baseSource).path(), table);
