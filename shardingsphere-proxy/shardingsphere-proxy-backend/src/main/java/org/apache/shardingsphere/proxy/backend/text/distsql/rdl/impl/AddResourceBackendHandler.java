@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.exception.resource.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -60,7 +60,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     }
     
     @Override
-    public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) throws DefinitionViolationException {
+    public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) throws ShardingSphereSQLException {
         check(schemaName, sqlStatement);
         Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));

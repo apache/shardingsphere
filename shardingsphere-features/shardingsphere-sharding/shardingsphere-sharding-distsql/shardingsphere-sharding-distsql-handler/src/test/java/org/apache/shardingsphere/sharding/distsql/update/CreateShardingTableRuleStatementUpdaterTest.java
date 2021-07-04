@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -38,13 +38,13 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithDuplicateTables() throws DefinitionViolationException {
+    public void assertExecuteWithDuplicateTables() throws ShardingSphereSQLException {
         TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, null, null, null);
         updater.checkSQLStatement("foo", createSQLStatement(ruleSegment, ruleSegment), null, mock(ShardingSphereResource.class));
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckSQLStatementWithoutToBeCreatedShardingAlgorithms() throws DefinitionViolationException {
+    public void assertCheckSQLStatementWithoutToBeCreatedShardingAlgorithms() throws ShardingSphereSQLException {
         TableRuleSegment ruleSegment = new TableRuleSegment("t_order", Collections.emptyList(), null, new AlgorithmSegment("INVALID_TYPE", new Properties()), null, null);
         updater.checkSQLStatement("foo", createSQLStatement(ruleSegment), null, mock(ShardingSphereResource.class));
     }

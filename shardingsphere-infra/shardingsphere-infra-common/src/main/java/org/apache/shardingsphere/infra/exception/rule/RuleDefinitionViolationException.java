@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.exception.rule;
 
-import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
 
 /**
  * Rule definition violation exception.
  */
-public abstract class RuleDefinitionViolationException extends DefinitionViolationException {
+public abstract class RuleDefinitionViolationException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 1090914641996552474L;
     
