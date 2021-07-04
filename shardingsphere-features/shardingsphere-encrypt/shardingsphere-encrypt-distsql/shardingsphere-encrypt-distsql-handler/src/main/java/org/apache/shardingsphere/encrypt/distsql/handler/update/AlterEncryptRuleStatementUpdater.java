@@ -21,12 +21,12 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
-import org.apache.shardingsphere.encrypt.distsql.handler.exception.EncryptRuleNotExistedException;
 import org.apache.shardingsphere.encrypt.distsql.handler.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
+import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -57,17 +57,17 @@ public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<A
     }
     
     private void checkCurrentRuleConfiguration(final String schemaName, final AlterEncryptRuleStatement sqlStatement, 
-                                               final EncryptRuleConfiguration currentRuleConfig) throws EncryptRuleNotExistedException {
+                                               final EncryptRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
         if (null == currentRuleConfig) {
-            throw new EncryptRuleNotExistedException(schemaName, getToBeAlteredEncryptTableNames(sqlStatement));
+            throw new CurrentRuleNotExistedException("Encrypt", schemaName, getToBeAlteredEncryptTableNames(sqlStatement));
         }
     }
     
-    private void checkToBeAlteredRules(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws EncryptRuleNotExistedException {
+    private void checkToBeAlteredRules(final String schemaName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
         Collection<String> currentEncryptTableNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistEncryptTableNames = getToBeAlteredEncryptTableNames(sqlStatement).stream().filter(each -> !currentEncryptTableNames.contains(each)).collect(Collectors.toList());
         if (!notExistEncryptTableNames.isEmpty()) {
-            throw new EncryptRuleNotExistedException(schemaName, notExistEncryptTableNames);
+            throw new CurrentRuleNotExistedException("Encrypt", schemaName, notExistEncryptTableNames);
         }
     }
     
