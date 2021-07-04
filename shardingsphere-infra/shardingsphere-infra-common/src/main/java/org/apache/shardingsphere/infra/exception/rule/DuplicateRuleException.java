@@ -20,13 +20,13 @@ package org.apache.shardingsphere.infra.exception.rule;
 import java.util.Collection;
 
 /**
- * Rule duplicated exception.
+ * Duplicate rule exception.
  */
-public final class RuleDuplicatedException extends RuleDefinitionViolationException {
+public final class DuplicateRuleException extends RuleDefinitionViolationException {
     
     private static final long serialVersionUID = -1738699538105858939L;
     
-    public RuleDuplicatedException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
+    public DuplicateRuleException(final String ruleType, final String schemaName, final Collection<String> ruleNames) {
         super(1105, String.format("Duplicate %s rule names `%s` in schema `%s`", ruleType, ruleNames, schemaName));
     }
 }
