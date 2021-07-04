@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.exception.DefinitionViolationException;
 import org.apache.shardingsphere.infra.exception.resource.ResourceNotExistedException;
-import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -66,9 +66,9 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
         checkToBeAlteredDuplicateShardingTables(schemaName, sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
+    private void checkCurrentRuleConfiguration(final String schemaName, final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         if (null == currentRuleConfig) {
-            throw new CurrentRuleNotExistedException("Sharding", schemaName);
+            throw new RequiredRuleMissedException("Sharding", schemaName);
         }
     }
     
@@ -90,11 +90,11 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
     }
     
     private void checkToBeAlteredShardingTables(final String schemaName, final AlterShardingTableRuleStatement sqlStatement, 
-                                                final ShardingRuleConfiguration currentRuleConfig) throws CurrentRuleNotExistedException {
+                                                final ShardingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
         Collection<String> currentShardingTables = getCurrentShardingTables(currentRuleConfig);
         Collection<String> notExistedShardingTables = getToBeAlteredTableNames(sqlStatement).stream().filter(each -> !currentShardingTables.contains(each)).collect(Collectors.toList());
         if (!notExistedShardingTables.isEmpty()) {
-            throw new CurrentRuleNotExistedException("Sharding", schemaName, notExistedShardingTables);
+            throw new RequiredRuleMissedException("Sharding", schemaName, notExistedShardingTables);
         }
     }
     
