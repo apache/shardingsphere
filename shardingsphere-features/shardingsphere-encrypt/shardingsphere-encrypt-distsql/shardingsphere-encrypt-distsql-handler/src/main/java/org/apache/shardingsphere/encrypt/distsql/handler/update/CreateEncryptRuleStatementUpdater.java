@@ -20,12 +20,12 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
-import org.apache.shardingsphere.encrypt.distsql.handler.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -64,13 +64,13 @@ public final class CreateEncryptRuleStatementUpdater implements RDLCreateUpdater
         }
     }
     
-    private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) throws InvalidEncryptorsException {
+    private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet())));
         Collection<String> notExistedEncryptors = encryptors.stream().filter(
             each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedEncryptors.isEmpty()) {
-            throw new InvalidEncryptorsException(notExistedEncryptors);
+            throw new InvalidAlgorithmConfigurationException("encryptor", notExistedEncryptors);
         }
     }
     

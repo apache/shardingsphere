@@ -21,12 +21,12 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
-import org.apache.shardingsphere.encrypt.distsql.handler.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -74,7 +74,7 @@ public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<A
         return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) throws InvalidEncryptorsException {
+    private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> encryptors = new LinkedHashSet<>();
         for (EncryptRuleSegment each : sqlStatement.getRules()) {
             encryptors.addAll(each.getColumns().stream().map(column -> column.getEncryptor().getName()).collect(Collectors.toSet()));
@@ -82,7 +82,7 @@ public final class AlterEncryptRuleStatementUpdater implements RDLAlterUpdater<A
         Collection<String> invalidEncryptors = encryptors.stream().filter(
             each -> !TypedSPIRegistry.findRegisteredService(EncryptAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!invalidEncryptors.isEmpty()) {
-            throw new InvalidEncryptorsException(invalidEncryptors);
+            throw new InvalidAlgorithmConfigurationException("encryptor", invalidEncryptors);
         }
     }
     

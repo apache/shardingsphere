@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.exception.DuplicateTablesException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
@@ -57,7 +57,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement("foo", createSQLStatement("invalid_table", "STANDARD_TEST"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = InvalidShardingAlgorithmsException.class)
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredShardingAlgorithms() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("t_order", "INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }

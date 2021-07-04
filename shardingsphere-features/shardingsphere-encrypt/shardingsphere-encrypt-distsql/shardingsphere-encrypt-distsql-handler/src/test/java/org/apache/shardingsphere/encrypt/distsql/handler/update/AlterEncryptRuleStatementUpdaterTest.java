@@ -20,11 +20,11 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.distsql.handler.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public final class AlterEncryptRuleStatementUpdaterTest {
         updater.checkSQLStatement("foo", createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), new HashMap<>()), mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = InvalidEncryptorsException.class)
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithoutToBeAlteredEncryptors() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }

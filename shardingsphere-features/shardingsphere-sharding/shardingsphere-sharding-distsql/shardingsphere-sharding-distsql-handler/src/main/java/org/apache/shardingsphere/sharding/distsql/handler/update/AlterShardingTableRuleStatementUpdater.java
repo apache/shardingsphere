@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.exception.rule.CurrentRuleNotExistedException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -30,8 +31,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.handler.exception.DuplicateTablesException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.InvalidKeyGeneratorsException;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.InvalidShardingAlgorithmsException;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -106,19 +105,19 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
         return result;
     }
     
-    private void checkToBeAlteredShardingAlgorithm(final AlterShardingTableRuleStatement sqlStatement) throws InvalidShardingAlgorithmsException {
+    private void checkToBeAlteredShardingAlgorithm(final AlterShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedShardingAlgorithms = sqlStatement.getRules().stream().map(each -> each.getTableStrategy().getName()).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ShardingAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedShardingAlgorithms.isEmpty()) {
-            throw new InvalidShardingAlgorithmsException(notExistedShardingAlgorithms);
+            throw new InvalidAlgorithmConfigurationException("sharding", notExistedShardingAlgorithms);
         }
     }
     
-    private void checkToBeAlteredKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) throws InvalidKeyGeneratorsException {
+    private void checkToBeAlteredKeyGenerators(final AlterShardingTableRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedKeyGenerators = getToBeAlteredKeyGenerators(sqlStatement).stream().distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(KeyGenerateAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedKeyGenerators.isEmpty()) {
-            throw new InvalidKeyGeneratorsException(notExistedKeyGenerators);
+            throw new InvalidAlgorithmConfigurationException("key generator", notExistedKeyGenerators);
         }
     }
     

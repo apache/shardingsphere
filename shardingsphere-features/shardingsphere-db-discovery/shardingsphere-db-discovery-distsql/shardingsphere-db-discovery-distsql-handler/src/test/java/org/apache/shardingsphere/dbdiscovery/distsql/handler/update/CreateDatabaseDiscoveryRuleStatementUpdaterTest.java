@@ -19,10 +19,10 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.handler.exception.InvalidDatabaseDiscoveryTypesException;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -54,7 +54,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
         updater.checkSQLStatement("foo", createSQLStatement("TEST"), null, resource);
     }
     
-    @Test(expected = InvalidDatabaseDiscoveryTypesException.class)
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckSQLStatementWithDatabaseDiscoveryType() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), null, mock(ShardingSphereResource.class));
     }

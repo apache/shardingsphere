@@ -20,6 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
+import org.apache.shardingsphere.infra.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.exception.rule.ResourceNotExistedException;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.handler.converter.ReadwriteSplittingRuleStatementConverter;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.exception.InvalidLoadBalancersException;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
@@ -84,11 +84,11 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RDLCr
         return result;
     }
     
-    private void checkToBeCreatedLoadBalancers(final CreateReadwriteSplittingRuleStatement sqlStatement) throws InvalidLoadBalancersException {
+    private void checkToBeCreatedLoadBalancers(final CreateReadwriteSplittingRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> notExistedLoadBalancers = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).distinct()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, each, new Properties()).isPresent()).collect(Collectors.toList());
         if (!notExistedLoadBalancers.isEmpty()) {
-            throw new InvalidLoadBalancersException(notExistedLoadBalancers);
+            throw new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers);
         }
     }
     

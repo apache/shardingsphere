@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.handler.exception;
-
-import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+package org.apache.shardingsphere.infra.exception.rule;
 
 import java.util.Collection;
 
 /**
- * Invalid database discovery types exception.
+ * Invalid algorithm configuration exception.
  */
-public final class InvalidDatabaseDiscoveryTypesException extends RuleDefinitionViolationException {
+public final class InvalidAlgorithmConfigurationException extends RuleDefinitionViolationException {
     
-    private static final long serialVersionUID = -6919328513016324005L;
+    private static final long serialVersionUID = 9076740384552385180L;
     
-    public InvalidDatabaseDiscoveryTypesException(final Collection<String> databaseDiscoveryTypes) {
-        super(1115, String.format("Invalid database discovery types %s.", databaseDiscoveryTypes));
+    public InvalidAlgorithmConfigurationException(final String algorithmType, final Collection<String> algorithms) {
+        super(1119, String.format("Invalid %s algorithms %s", algorithmType, algorithms));
     }
 }
