@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.distsql.update.RDLAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -142,14 +142,20 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        dropRuleConfiguration(sqlStatement, currentRuleConfig);
-        addRuleConfiguration(sqlStatement, currentRuleConfig);
+    public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement) {
+        return ShardingRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
-    private void dropRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        for (String each : getToBeAlteredTableNames(sqlStatement)) {
-            Optional<ShardingAutoTableRuleConfiguration> shardingAutoTableRuleConfig = currentRuleConfig.getAutoTables().stream().filter(tableRule -> each.equals(tableRule.getLogicTable())).findAny();
+    @Override
+    public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        dropRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+        addRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+    }
+    
+    private void dropRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
+        for (ShardingTableRuleConfiguration each : toBeAlteredRuleConfig.getTables()) {
+            Optional<ShardingAutoTableRuleConfiguration> shardingAutoTableRuleConfig
+                    = currentRuleConfig.getAutoTables().stream().filter(tableRule -> each.getLogicTable().equals(tableRule.getLogicTable())).findAny();
             Preconditions.checkState(shardingAutoTableRuleConfig.isPresent());
             currentRuleConfig.getAutoTables().remove(shardingAutoTableRuleConfig.get());
             currentRuleConfig.getShardingAlgorithms().remove(shardingAutoTableRuleConfig.get().getShardingStrategy().getShardingAlgorithmName());
@@ -159,8 +165,7 @@ public final class AlterShardingTableRuleStatementUpdater implements RDLAlterUpd
         }
     }
     
-    private void addRuleConfiguration(final AlterShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingRuleConfiguration toBeAlteredRuleConfig = ShardingRuleStatementConverter.convert(sqlStatement.getRules());
+    private void addRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeAlteredRuleConfig) {
         currentRuleConfig.getAutoTables().addAll(toBeAlteredRuleConfig.getAutoTables());
         currentRuleConfig.getShardingAlgorithms().putAll(toBeAlteredRuleConfig.getShardingAlgorithms());
         currentRuleConfig.getKeyGenerators().putAll(toBeAlteredRuleConfig.getKeyGenerators());

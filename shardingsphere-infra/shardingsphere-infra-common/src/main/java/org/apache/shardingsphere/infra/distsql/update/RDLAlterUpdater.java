@@ -29,10 +29,18 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 public interface RDLAlterUpdater<T extends SQLStatement, R extends RuleConfiguration> extends RDLUpdater<T, R> {
     
     /**
-     * Update current rule configuration.
-     * 
+     * Build to be altered rule configuration.
+     *
      * @param sqlStatement SQL statement
-     * @param currentRuleConfig current rule configuration to be updated
+     * @return built to be altered rule configuration
      */
-    void updateCurrentRuleConfiguration(T sqlStatement, R currentRuleConfig);
+    RuleConfiguration buildToBeAlteredRuleConfiguration(T sqlStatement);
+    
+    /**
+     * Update current rule configuration.
+     *
+     * @param currentRuleConfig current rule configuration to be updated
+     * @param toBeAlteredRuleConfig to be altered rule configuration
+     */
+    void updateCurrentRuleConfiguration(R currentRuleConfig, R toBeAlteredRuleConfig);
 }

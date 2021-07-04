@@ -55,12 +55,6 @@ public final class AlterEncryptRuleStatementUpdaterTest {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
-    @Test
-    public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration(createSQLStatement("MD5"), createCurrentRuleConfiguration());
-        // TODO assert current rule configuration
-    }
-    
     private AlterEncryptRuleStatement createSQLStatement(final String encryptorName) {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", new AlgorithmSegment(encryptorName, new Properties()));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));

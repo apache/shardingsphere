@@ -62,12 +62,6 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement("foo", createSQLStatement("t_order", "INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
-    @Test
-    public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration(createSQLStatement("t_order", "STANDARD_TEST"), createCurrentRuleConfiguration());
-        // TODO assert current rule configuration
-    }
-    
     private AlterShardingTableRuleStatement createSQLStatement(final String tableName, final String shardingAlgorithmName) {
         TableRuleSegment ruleSegment = new TableRuleSegment(tableName, Arrays.asList("ds_0", "ds_1"), "order_id", new AlgorithmSegment(shardingAlgorithmName, new Properties()), null, null);
         return new AlterShardingTableRuleStatement(Collections.singleton(ruleSegment));

@@ -98,7 +98,8 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void processAlter(final T sqlStatement, final RDLAlterUpdater updater, final RuleConfiguration currentRuleConfig) {
-        updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
+        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
+        updater.updateCurrentRuleConfiguration(toBeAlteredRuleConfig, currentRuleConfig);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
