@@ -88,7 +88,7 @@ public final class RDLBackendHandler<T extends SQLStatement> extends SchemaRequi
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processCreate(final String schemaName, final T sqlStatement, final RDLCreateUpdater updater, final RuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
+    private void processCreate(final String schemaName, final T sqlStatement, final RDLCreateUpdater updater, final RuleConfiguration currentRuleConfig) {
         RuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(schemaName, sqlStatement);
         updater.updateCurrentRuleConfiguration(schemaName, sqlStatement, currentRuleConfig, toBeCreatedRuleConfig);
         if (null == currentRuleConfig && null != toBeCreatedRuleConfig) {
