@@ -71,14 +71,14 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     public InsertStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, final InsertStatement sqlStatement, final String defaultSchemaName) {
         super(sqlStatement);
-        tablesContext = getTablesContext(sqlStatement);
-        ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
-        List<String> insertColumnNames = getInsertColumnNames();
-        columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
         insertSelectContext = getInsertSelectContext(metaDataMap, parameters, parametersOffset, defaultSchemaName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
+        tablesContext = getTablesContext(sqlStatement);
+        ShardingSphereSchema schema = getSchema(metaDataMap, defaultSchemaName);
+        List<String> insertColumnNames = getInsertColumnNames();
+        columnNames = useDefaultColumns() ? schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : insertColumnNames;
         generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
     }
     

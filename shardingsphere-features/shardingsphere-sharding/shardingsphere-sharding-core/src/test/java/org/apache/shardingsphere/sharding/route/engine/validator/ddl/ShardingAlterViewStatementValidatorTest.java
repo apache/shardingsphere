@@ -45,7 +45,7 @@ public final class ShardingAlterViewStatementValidatorTest {
     @Test
     public void assertValidateAlterViewForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setFrom(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setSelect(selectStatement);
         SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
@@ -57,7 +57,7 @@ public final class ShardingAlterViewStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertValidateAlterViewWithShardingTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setFrom(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setSelect(selectStatement);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);

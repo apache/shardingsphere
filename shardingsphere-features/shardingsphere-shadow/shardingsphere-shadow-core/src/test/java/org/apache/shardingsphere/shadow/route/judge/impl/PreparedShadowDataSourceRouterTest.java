@@ -60,7 +60,7 @@ public final class PreparedShadowDataSourceRouterTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
         InsertStatement insertStatement = new MySQLInsertStatement();
-        insertStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0,
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
         insertStatement.setInsertColumns(insertColumnsSegment);

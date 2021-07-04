@@ -282,7 +282,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private Collection<SimpleTableSegment> getTemporarySimpleTableSegments(final Collection<TableSegment> tableSegments) {
-        return tableSegments.stream().filter(each -> each instanceof SubqueryTableSegment).map(each -> new SimpleTableSegment(each.getStartIndex(), 
-                each.getStopIndex(), new TableNameSegment(each.getStartIndex(), each.getStopIndex(), new IdentifierValue(each.getAlias().orElse(""))))).collect(Collectors.toList());
+        return tableSegments.stream().filter(each -> each instanceof SubqueryTableSegment).map(each -> new SimpleTableSegment(
+                new TableNameSegment(each.getStartIndex(), each.getStopIndex(), new IdentifierValue(each.getAlias().orElse(""))))).collect(Collectors.toList());
     }
 }

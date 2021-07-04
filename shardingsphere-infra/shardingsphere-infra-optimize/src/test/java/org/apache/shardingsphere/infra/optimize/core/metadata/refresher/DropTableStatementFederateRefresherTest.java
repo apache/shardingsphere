@@ -72,7 +72,7 @@ public final class DropTableStatementFederateRefresherTest {
     private void refresh(final DropTableStatement dropTableStatement) throws SQLException {
         FederateSchemaMetadata schema = buildSchema();
         FederateRefresher<DropTableStatement> schemaRefresher = new DropTableStatementFederateRefresher();
-        dropTableStatement.getTables().add(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
+        dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         schemaRefresher.refresh(schema, Collections.emptyList(), dropTableStatement, mock(SchemaBuilderMaterials.class));
         assertFalse(schema.getTables().containsKey("t_order"));
     }
@@ -105,7 +105,7 @@ public final class DropTableStatementFederateRefresherTest {
     private void refreshWithUnConfigured(final DropTableStatement dropTableStatement) throws SQLException {
         FederateSchemaMetadata schema = buildSchema();
         FederateRefresher<DropTableStatement> schemaRefresher = new DropTableStatementFederateRefresher();
-        dropTableStatement.getTables().add(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
+        dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
         schemaRefresher.refresh(schema, Collections.singletonList("t_order_item"), dropTableStatement, mock(SchemaBuilderMaterials.class));
     }
 

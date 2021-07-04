@@ -49,7 +49,7 @@ public final class TablesContextTest {
     
     @Test
     public void assertInstanceCreatedWhenNoExceptionThrown() {
-        SimpleTableSegment tableSegment = new SimpleTableSegment(0, 10, new TableNameSegment(0, 10, new IdentifierValue("tbl")));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("tbl")));
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
         new TablesContext(Collections.singletonList(tableSegment));
     }
@@ -102,7 +102,7 @@ public final class TablesContextTest {
     }
     
     private SimpleTableSegment createTableSegment(final String tableName, final String alias) {
-        SimpleTableSegment result = new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue(tableName)));
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
         result.setAlias(aliasSegment);
         return result;

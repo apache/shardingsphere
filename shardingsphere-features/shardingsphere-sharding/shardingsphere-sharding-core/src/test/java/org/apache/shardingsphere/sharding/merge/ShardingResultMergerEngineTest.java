@@ -104,7 +104,7 @@ public final class ShardingResultMergerEngineTest {
     public void assertNewInstanceWithOtherStatement() {
         InsertStatement insertStatement = new MySQLInsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
-        insertStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         InsertStatementContext sqlStatementContext = createInsertStatementContext(insertStatement);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());

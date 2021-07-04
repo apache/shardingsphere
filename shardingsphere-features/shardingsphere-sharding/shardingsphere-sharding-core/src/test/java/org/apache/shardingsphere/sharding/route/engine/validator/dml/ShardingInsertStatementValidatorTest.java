@@ -136,7 +136,7 @@ public final class ShardingInsertStatementValidatorTest {
     
     private InsertStatement createInsertStatement() {
         MySQLInsertStatement result = new MySQLInsertStatement();
-        result.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
         AssignmentSegment assignmentSegment = new AssignmentSegment(0, 0, columnSegment, new ParameterMarkerExpressionSegment(0, 0, 1));
         result.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment)));
@@ -156,14 +156,14 @@ public final class ShardingInsertStatementValidatorTest {
     
     private TablesContext createSingleTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
-        result.add(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         return new TablesContext(result);
     }
     
     private TablesContext createMultiTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
-        result.add(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        result.add(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("order"))));
+        result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         return new TablesContext(result);
     }
 }

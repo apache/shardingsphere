@@ -62,7 +62,7 @@ public final class OrderByStreamMergedResultTest {
     @Before
     public void setUp() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new TableNameSegment(10, 13, new IdentifierValue("tbl")));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
         selectStatement.setFrom(tableSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);

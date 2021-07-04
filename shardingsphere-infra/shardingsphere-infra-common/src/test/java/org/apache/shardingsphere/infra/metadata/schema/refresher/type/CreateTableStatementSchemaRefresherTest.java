@@ -135,7 +135,7 @@ public final class CreateTableStatementSchemaRefresherTest {
     
     // TODO add more tests for tables with table rule
     private void refresh(final CreateTableStatement createTableStatement) throws SQLException {
-        createTableStatement.setTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
+        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
         DataSource dataSource = mock(DataSource.class);
@@ -154,7 +154,7 @@ public final class CreateTableStatementSchemaRefresherTest {
     }
     
     private void refreshWithTableRule(final CreateTableStatement createTableStatement) throws SQLException {
-        createTableStatement.setTable(new SimpleTableSegment(1, 3, new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
+        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         ShardingSphereRule rule = mock(TableContainedRule.class);
         Collection<ShardingSphereRule> rules = Arrays.asList(rule);
         when(materials.getRules()).thenReturn(rules);

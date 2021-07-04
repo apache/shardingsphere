@@ -254,7 +254,7 @@ public final class ProjectionsContextEngineTest {
     private void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsent(final SelectStatement selectStatement) {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
-        selectStatement.setFrom(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("name"))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("name"))));
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
@@ -296,7 +296,7 @@ public final class ProjectionsContextEngineTest {
     private void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresent(final SelectStatement selectStatement) {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
-        selectStatement.setFrom(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("name"))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("name"))));
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
@@ -336,13 +336,13 @@ public final class ProjectionsContextEngineTest {
     }
     
     private void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresent(final SelectStatement selectStatement) {
-        SimpleTableSegment tableSegment = new SimpleTableSegment(0, 10, new TableNameSegment(0, 0, new IdentifierValue("name")));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("name")));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
         selectStatement.setFrom(tableSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
-        SimpleTableSegment table = new SimpleTableSegment(0, 10, new TableNameSegment(0, 0, new IdentifierValue("name")));
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("name")));
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         table.setOwner(new OwnerSegment(0, 10, new IdentifierValue("name")));
         shorthandProjectionSegment.setOwner(owner);

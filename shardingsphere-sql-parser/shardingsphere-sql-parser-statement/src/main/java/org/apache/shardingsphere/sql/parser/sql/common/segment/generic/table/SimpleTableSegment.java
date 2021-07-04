@@ -32,19 +32,26 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
 public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
     private final TableNameSegment tableName;
     
+    @Setter
     private OwnerSegment owner;
     
+    @Setter
     private AliasSegment alias;
+    
+    @Override
+    public int getStartIndex() {
+        return null == owner ? tableName.getStartIndex() : owner.getStartIndex();
+    }
+    
+    @Override
+    public int getStopIndex() {
+        return null == alias ? tableName.getStopIndex() : alias.getStopIndex();
+    }
     
     @Override
     public Optional<OwnerSegment> getOwner() {

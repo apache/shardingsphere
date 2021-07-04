@@ -55,7 +55,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     @Test
     public void assertPreValidateCreateIndexWhenTableExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
-        sqlStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
         when(schema.containsTable("t_order")).thenReturn(true);
         TableMetaData tableMetaData = mock(TableMetaData.class);
@@ -69,7 +69,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     @Test(expected = NoSuchTableException.class)
     public void assertPreValidateCreateIndexWhenTableNotExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
-        sqlStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
         when(schema.containsTable("t_order")).thenReturn(false);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), schema);
@@ -78,7 +78,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertPreValidateCreateIndexWhenTableExistIndexExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
-        sqlStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IdentifierValue("t_order_index")));
         when(schema.containsTable("t_order")).thenReturn(true);
         TableMetaData tableMetaData = mock(TableMetaData.class);
@@ -92,7 +92,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     @Test
     public void assertPreValidateCreateIndexWithoutIndexNameWhenTableExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
-        sqlStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
         sqlStatement.setGeneratedIndexStartIndex(10);
         when(schema.containsTable("t_order")).thenReturn(true);
@@ -106,7 +106,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     @Test(expected = NoSuchTableException.class)
     public void assertPreValidateCreateIndexWithoutIndexNameWhenTableNotExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
-        sqlStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
         sqlStatement.setGeneratedIndexStartIndex(10);
         when(schema.containsTable("t_order")).thenReturn(false);
@@ -116,7 +116,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertPreValidateCreateIndexWithoutIndexNameWhenTableExistIndexExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
-        sqlStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
         sqlStatement.setGeneratedIndexStartIndex(10);
         when(schema.containsTable("t_order")).thenReturn(true);

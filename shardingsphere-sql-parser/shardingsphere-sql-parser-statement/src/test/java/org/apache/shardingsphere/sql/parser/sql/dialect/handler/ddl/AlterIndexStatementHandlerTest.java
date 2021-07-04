@@ -35,8 +35,7 @@ public final class AlterIndexStatementHandlerTest {
     @Test
     public void assertGetSimpleTableSegmentWithSimpleTableSegmentForSQLServer() {
         SQLServerAlterIndexStatement alterIndexStatement = new SQLServerAlterIndexStatement();
-        TableNameSegment tableName = new TableNameSegment(0, 0, new IdentifierValue(""));
-        alterIndexStatement.setTable(new SimpleTableSegment(0, 0, tableName));
+        alterIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(alterIndexStatement);
         assertTrue(simpleTableSegment.isPresent());
     }

@@ -104,8 +104,8 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<SQLStat
     }
     
     private SimpleTableSegment getTableName(final TableNameContext ctx) {
-        SimpleTableSegment result = new SimpleTableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), 
-                new TableNameSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), new IdentifierValue(ctx.name().identifier().getText())));
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), 
+                ctx.name().getStop().getStopIndex(), new IdentifierValue(ctx.name().identifier().getText())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), new IdentifierValue(owner.identifier().getText())));

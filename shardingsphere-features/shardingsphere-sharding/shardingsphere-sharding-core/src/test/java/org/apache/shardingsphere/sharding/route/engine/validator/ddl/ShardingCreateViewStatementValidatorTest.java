@@ -45,7 +45,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     @Test
     public void assertValidateCreateViewForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setFrom(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         MySQLCreateViewStatement sqlStatement = new MySQLCreateViewStatement();
         sqlStatement.setSelect(selectStatement);
         SQLStatementContext<CreateViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
@@ -55,7 +55,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertValidateCreateViewWithShardingTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setFrom(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLCreateViewStatement sqlStatement = new MySQLCreateViewStatement();
         sqlStatement.setSelect(selectStatement);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);

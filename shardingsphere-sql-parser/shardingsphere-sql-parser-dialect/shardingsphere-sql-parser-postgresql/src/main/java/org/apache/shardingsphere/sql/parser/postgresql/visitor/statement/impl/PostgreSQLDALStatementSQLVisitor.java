@@ -122,7 +122,7 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
         for (VacuumRelationContext each : ctx.vacuumRelation()) {
             ColIdContext colId = each.qualifiedName().colId();
             TableNameSegment tableName = new TableNameSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), new IdentifierValue(colId.getText()));
-            result.getValue().add(new SimpleTableSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), tableName));
+            result.getValue().add(new SimpleTableSegment(tableName));
         }
         return result;
     }

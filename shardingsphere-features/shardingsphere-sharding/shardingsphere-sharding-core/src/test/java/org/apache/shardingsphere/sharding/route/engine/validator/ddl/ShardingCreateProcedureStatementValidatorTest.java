@@ -51,9 +51,9 @@ public final class ShardingCreateProcedureStatementValidatorTest {
     @Test
     public void assertValidateCreateProcedureForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setFrom(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
-        createTableStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(createTableStatement);
         ValidStatementSegment selectValidStatementSegment = new ValidStatementSegment(0, 0);
@@ -72,7 +72,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertValidateCreateProcedureWithShardingTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setFrom(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
@@ -86,7 +86,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
     @Test(expected = NoSuchTableException.class)
     public void assertValidateCreateProcedureWithNoSuchTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setFrom(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
@@ -100,7 +100,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
     @Test(expected = TableExistsException.class)
     public void assertValidateCreateProcedureWithTableExistsForMySQL() {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
-        createTableStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(createTableStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);

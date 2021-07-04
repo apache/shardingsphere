@@ -200,7 +200,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     private void assertNewInstanceForDCLForSingleTableWithShardingRule(final GrantStatement grantStatement) {
-        grantStatement.getTables().add(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        grantStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         GrantStatementContext sqlStatementContext = new GrantStatementContext(grantStatement);
         when(shardingRule.tableRuleExists(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(true);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
@@ -208,7 +208,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     private void assertNewInstanceForDCLForSingleTableWithoutShardingRule(final GrantStatement grantStatement) {
-        grantStatement.getTables().add(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        grantStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         GrantStatementContext sqlStatementContext = new GrantStatementContext(grantStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingTableBroadcastRoutingEngine.class));

@@ -346,7 +346,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     private SelectStatement buildSelectStatement(final SelectStatement result) {
-        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new TableNameSegment(10, 13, new IdentifierValue("tbl")));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
         result.setFrom(tableSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         result.setProjections(projectionsSegment);

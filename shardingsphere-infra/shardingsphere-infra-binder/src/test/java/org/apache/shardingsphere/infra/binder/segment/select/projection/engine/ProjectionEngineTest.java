@@ -72,8 +72,8 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegmentAndDuplicateTableSegment() {
         Collection<SimpleTableSegment> tableSegments = new LinkedList<>();
-        tableSegments.add(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        tableSegments.add(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        tableSegments.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        tableSegments.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("t_order")).thenReturn(Lists.newArrayList("order_id", "content"));
         Optional<Projection> actual = new ProjectionEngine(schema).createProjection(tableSegments, new ShorthandProjectionSegment(0, 0));

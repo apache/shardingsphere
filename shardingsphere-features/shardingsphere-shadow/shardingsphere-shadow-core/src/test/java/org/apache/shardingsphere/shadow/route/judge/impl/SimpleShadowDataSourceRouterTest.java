@@ -99,7 +99,7 @@ public final class SimpleShadowDataSourceRouterTest {
     }
     
     private void judgeForInsert(final InsertStatement insertStatement) {
-        insertStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0,
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
         insertStatement.setInsertColumns(insertColumnsSegment);

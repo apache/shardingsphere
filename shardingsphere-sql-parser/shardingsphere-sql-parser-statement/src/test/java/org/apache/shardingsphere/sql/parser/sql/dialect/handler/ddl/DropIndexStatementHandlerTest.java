@@ -34,8 +34,7 @@ public final class DropIndexStatementHandlerTest {
     @Test
     public void assertGetSimpleTableSegmentWithSimpleTableSegmentForMySQL() {
         MySQLDropIndexStatement dropIndexStatement = new MySQLDropIndexStatement();
-        TableNameSegment tableName = new TableNameSegment(0, 0, new IdentifierValue(""));
-        dropIndexStatement.setTable(new SimpleTableSegment(0, 0, tableName));
+        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
         assertTrue(simpleTableSegment.isPresent());
     }
@@ -50,8 +49,7 @@ public final class DropIndexStatementHandlerTest {
     @Test
     public void assertGetSimpleTableSegmentWithSimpleTableSegmentForSQLServer() {
         SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement();
-        TableNameSegment tableName = new TableNameSegment(0, 0, new IdentifierValue(""));
-        dropIndexStatement.setTable(new SimpleTableSegment(0, 0, tableName));
+        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
         assertTrue(simpleTableSegment.isPresent());
     }

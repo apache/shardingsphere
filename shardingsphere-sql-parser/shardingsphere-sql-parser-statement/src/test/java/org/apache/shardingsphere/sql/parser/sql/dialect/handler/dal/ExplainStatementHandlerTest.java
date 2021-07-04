@@ -33,7 +33,7 @@ public final class ExplainStatementHandlerTest {
     @Test
     public void assertGetSimpleTableSegmentWithSimpleTableSegmentForMySQL() {
         MySQLExplainStatement explainStatement = new MySQLExplainStatement();
-        explainStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue(""))));
+        explainStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = ExplainStatementHandler.getSimpleTableSegment(explainStatement);
         assertTrue(simpleTableSegment.isPresent());
     }

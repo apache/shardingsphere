@@ -78,8 +78,8 @@ public final class ShardingPrepareStatementValidatorTest {
     private PostgreSQLPrepareStatement createPostgreSQLPrepareStatement() {
         PostgreSQLSelectStatement select = new PostgreSQLSelectStatement();
         JoinTableSegment joinTable = new JoinTableSegment();
-        joinTable.setLeft(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        joinTable.setRight(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
+        joinTable.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        joinTable.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         select.setFrom(joinTable);
         PostgreSQLPrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         sqlStatement.setSelect(select);

@@ -259,7 +259,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitRenameTableSpecification(final RenameTableSpecificationContext ctx) {
         RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         TableNameSegment tableName = new TableNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
-        result.setRenameTable(new SimpleTableSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), tableName));
+        result.setRenameTable(new SimpleTableSegment(tableName));
         return result;
     }
     

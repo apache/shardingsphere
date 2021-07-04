@@ -100,7 +100,7 @@ public final class SQLStatementContextFactoryTest {
     }
     
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
-        insertStatement.setTable(new SimpleTableSegment(0, 0, new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(createMetaDataMap(), Collections.emptyList(), insertStatement, DefaultSchema.LOGIC_NAME);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof InsertStatementContext);
