@@ -15,21 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
-
-import java.util.Collection;
+package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
 /**
- * Add resource statement.
+ * Rule definition statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AddResourceStatement extends ResourceDefinitionStatement {
-    
-    private final Collection<DataSourceSegment> dataSources;
+public abstract class RuleDefinitionStatement extends RDLStatement {
 }
