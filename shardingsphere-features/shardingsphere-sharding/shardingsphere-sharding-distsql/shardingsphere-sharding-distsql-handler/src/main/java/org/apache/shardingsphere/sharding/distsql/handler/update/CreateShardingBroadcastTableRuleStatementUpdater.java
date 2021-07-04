@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.distsql.update.RDLCreateUpdater;
 import org.apache.shardingsphere.infra.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.exception.ShardingBroadcastTableRuleExistedException;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
 
 /**
@@ -46,7 +46,7 @@ public final class CreateShardingBroadcastTableRuleStatementUpdater implements R
             toBeCreatedRuleConfig.setBroadcastTables(sqlStatement.getTables());
         } else {
             if (!currentRuleConfig.getBroadcastTables().isEmpty()) {
-                throw new ShardingBroadcastTableRuleExistedException(schemaName);
+                throw new RuleInUsedException("Broadcast", schemaName);
             }
             currentRuleConfig.getBroadcastTables().addAll(sqlStatement.getTables());
         }
