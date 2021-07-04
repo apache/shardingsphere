@@ -80,8 +80,7 @@ public final class CreateEncryptRuleStatementUpdater implements RDLCreateUpdater
     }
     
     @Override
-    public void updateCurrentRuleConfiguration(final String schemaName, final CreateEncryptRuleStatement sqlStatement, 
-                                               final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
+    public void updateCurrentRuleConfiguration(final EncryptRuleConfiguration currentRuleConfig, final EncryptRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
             currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
             currentRuleConfig.getEncryptors().putAll(toBeCreatedRuleConfig.getEncryptors());
