@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.dboperate;
+package org.apache.shardingsphere.proxy.backend.text.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
