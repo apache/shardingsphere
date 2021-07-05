@@ -16,10 +16,7 @@
   -->
 
 <dataset>
-    <metadata table-name="t_user_details" data-nodes="encrypt_write_ds_${0..9}.t_user_details_${0..9},encrypt_read_ds_${0..9}.t_user_details_${0..9}">
-        <column name="user_id" type="integer" />
-        <column name="address_id" type="integer" />
-        <column name="number_plain" type="varchar" />
-        <column name="number_cipher" type="varchar" />
+    <metadata table-name="t_broadcast_table_for_ddl" data-nodes="write_ds.t_broadcast_table_for_ddl,read_${0..1}.t_broadcast_table_for_ddl">
+        <column name="id" type="integer" />
     </metadata>
 </dataset>
