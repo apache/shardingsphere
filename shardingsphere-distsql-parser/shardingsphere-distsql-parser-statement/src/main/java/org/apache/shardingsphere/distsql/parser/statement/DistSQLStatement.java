@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral;
+package org.apache.shardingsphere.distsql.parser.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * RAL statement.
+ * Dist SQL Statement.
  */
-public abstract class RALStatement extends DistSQLStatement {
+public abstract class DistSQLStatement extends AbstractSQLStatement {
 }
