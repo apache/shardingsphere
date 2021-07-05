@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.fixture;
+package org.apache.shardingsphere.sql.parser.core;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.atn.ATN;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.fixture.LexerFixture;
+import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
+import org.junit.Test;
 
-public final class LexerFixture extends Lexer implements SQLLexer {
+import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.instanceOf;
+
+public final class SQLParserFactoryTest {
     
-    public LexerFixture(final CharStream input) {
-        super(input);
-    }
+    private static final String SQL = "SELECT COUNT(*) FROM user";
     
-    @Override
-    public String[] getRuleNames() {
-        return new String[0];
-    }
-    
-    @Override
-    public String getGrammarFileName() {
-        return null;
-    }
-    
-    @Override
-    public ATN getATN() {
-        return null;
+    @Test
+    public void newInstance() {
+        SQLLexer sqlLexer = mock(LexerFixture.class);
+        SQLParser sqlParser = mock(ParserFixture.class);
+        SQLParser result = SQLParserFactory.newInstance(SQL, sqlLexer.getClass(), sqlParser.getClass());
+        assertThat(result, instanceOf(ParserFixture.class));
     }
 }
