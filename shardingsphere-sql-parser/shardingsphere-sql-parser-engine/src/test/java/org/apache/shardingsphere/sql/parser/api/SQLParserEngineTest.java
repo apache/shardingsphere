@@ -34,7 +34,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SQLParserEngineTest {
+public final class SQLParserEngineTest {
     
     private static final String SQL = "SELECT COUNT(*) FROM user";
     

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
 
-public class SQLParserFactoryTest {
+public final class SQLParserFactoryTest {
     
     private static final String SQL = "SELECT COUNT(*) FROM user";
     
