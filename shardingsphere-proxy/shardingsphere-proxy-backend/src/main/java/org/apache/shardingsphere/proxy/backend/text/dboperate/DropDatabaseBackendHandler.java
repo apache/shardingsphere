@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
+package org.apache.shardingsphere.proxy.backend.text.dboperate;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;

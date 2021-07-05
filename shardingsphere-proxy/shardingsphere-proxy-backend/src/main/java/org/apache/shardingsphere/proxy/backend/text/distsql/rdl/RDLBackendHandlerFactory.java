@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
@@ -28,13 +29,8 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.AddResourceBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.CreateDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.DropDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.DropResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule.RuleDefinitionBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
 import java.sql.SQLException;
 
@@ -48,35 +44,29 @@ public final class RDLBackendHandlerFactory {
      * Create new instance of RDL backend handler.
      * 
      * @param databaseType database type
-     * @param sqlStatement SQL statement
+     * @param sqlStatement RDL statement
      * @param backendConnection backend connection
      * @return RDL backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        TextProtocolBackendHandler result = createRDLBackendHandler(databaseType, sqlStatement, backendConnection);
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RDLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+        TextProtocolBackendHandler result = createBackendHandler(databaseType, sqlStatement, backendConnection);
         checkRegistryCenterExisted(sqlStatement);
         return result;
     }
     
-    private static void checkRegistryCenterExisted(final SQLStatement sqlStatement) throws SQLException {
+    private static void checkRegistryCenterExisted(final RDLStatement sqlStatement) throws SQLException {
         if (ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts) {
             throw new SQLException(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName()));
         }
     }
     
-    private static TextProtocolBackendHandler createRDLBackendHandler(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    private static TextProtocolBackendHandler createBackendHandler(final DatabaseType databaseType, final RDLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof AddResourceStatement) {
             return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof DropResourceStatement) {
             return new DropResourceBackendHandler((DropResourceStatement) sqlStatement, backendConnection);
-        }
-        if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, backendConnection);
         }
         return new RuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, backendConnection);
     }

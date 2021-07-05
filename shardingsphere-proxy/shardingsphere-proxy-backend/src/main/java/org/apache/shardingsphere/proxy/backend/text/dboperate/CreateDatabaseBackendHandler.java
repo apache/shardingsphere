@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
+package org.apache.shardingsphere.proxy.backend.text.dboperate;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseCreatedSQLNotificationEvent;
