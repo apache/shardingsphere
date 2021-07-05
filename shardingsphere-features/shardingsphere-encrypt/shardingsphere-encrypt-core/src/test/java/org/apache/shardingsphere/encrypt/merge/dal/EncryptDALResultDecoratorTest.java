@@ -94,6 +94,7 @@ public final class EncryptDALResultDecoratorTest {
     
     private SimpleTableSegment getSimpleTableSegment() {
         IdentifierValue identifierValue = new IdentifierValue("test");
-        return new SimpleTableSegment(new TableNameSegment(1, 4, identifierValue));
+        TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
+        return new SimpleTableSegment(tableNameSegment);
     }
 }

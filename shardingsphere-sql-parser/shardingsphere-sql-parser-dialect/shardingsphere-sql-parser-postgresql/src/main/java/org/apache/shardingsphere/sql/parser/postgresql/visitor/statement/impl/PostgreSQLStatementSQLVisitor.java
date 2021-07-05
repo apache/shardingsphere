@@ -952,7 +952,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
             return result;
         }
         //        TODO deal with functionTable and xmlTable
-        TableNameSegment tableName = new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("support"));
+        TableNameSegment tableName = new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("not support"));
         return new SimpleTableSegment(tableName);
     }
     

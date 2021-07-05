@@ -101,7 +101,8 @@ public final class MergedEncryptColumnsMergedResultTest {
     private MergedEncryptColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final EncryptRule encryptRule) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         IdentifierValue identifierValue = new IdentifierValue("test");
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(1, 4, identifierValue));
+        TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
+        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
         return new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, encryptRule);
     }

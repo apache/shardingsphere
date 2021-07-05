@@ -28,7 +28,7 @@ public final class SimpleTableSegmentTest {
     
     @Test
     public void getStartIndexWithoutOwner() {
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 0, new IdentifierValue("tbl")));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
         assertThat(tableSegment.getStartIndex(), is(10));
     }
     

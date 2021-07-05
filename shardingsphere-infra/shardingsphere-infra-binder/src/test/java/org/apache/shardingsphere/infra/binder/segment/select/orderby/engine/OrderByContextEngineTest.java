@@ -201,7 +201,7 @@ public final class OrderByContextEngineTest {
     @Test
     public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnOrderByQuery() {
         SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("t_order"))));
         when(selectStatement.getOrderBy()).thenReturn(Optional.of(new OrderBySegment(0, 1, Collections.singleton(new ColumnOrderByItemSegment(
             new ColumnSegment(0, 1, new IdentifierValue("order_id")), OrderDirection.ASC)))));
         GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
@@ -215,7 +215,7 @@ public final class OrderByContextEngineTest {
     @Test
     public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnCountQuery() {
         SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("t_order"))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
         projectionsSegment.setDistinctRow(false);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 1, AggregationType.COUNT, "COUNT(1)"));
