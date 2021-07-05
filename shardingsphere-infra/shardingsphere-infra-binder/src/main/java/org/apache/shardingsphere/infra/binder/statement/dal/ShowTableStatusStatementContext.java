@@ -15,20 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
+package org.apache.shardingsphere.infra.binder.statement.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * From schema segment.
+ * Show table status statement context.
  */
-@RequiredArgsConstructor
 @Getter
-public final class FromSchemaSegment implements SQLSegment {
+public final class ShowTableStatusStatementContext extends CommonSQLStatementContext<MySQLShowTableStatusStatement> implements RemoveAvailable {
     
-    private final int startIndex;
+    public ShowTableStatusStatementContext(final MySQLShowTableStatusStatement sqlStatement) {
+        super(sqlStatement);
+    }
     
-    private final int stopIndex;
+    @Override
+    public Collection<SQLSegment> getRemoveSegments() {
+        Collection<SQLSegment> result = new LinkedList<>();
+        getSqlStatement().getFromSchema().ifPresent(result::add);
+        return result;
+    }
 }

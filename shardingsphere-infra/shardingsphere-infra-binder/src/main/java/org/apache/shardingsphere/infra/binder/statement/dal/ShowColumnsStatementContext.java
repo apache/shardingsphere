@@ -19,19 +19,22 @@ package org.apache.shardingsphere.infra.binder.statement.dal;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.RemoveAvailable;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Show columns statement context.
  */
 @Getter
-public final class ShowColumnsStatementContext extends CommonSQLStatementContext<MySQLShowColumnsStatement> implements TableAvailable {
+public final class ShowColumnsStatementContext extends CommonSQLStatementContext<MySQLShowColumnsStatement> implements TableAvailable, RemoveAvailable {
     
     private final TablesContext tablesContext;
     
@@ -43,5 +46,12 @@ public final class ShowColumnsStatementContext extends CommonSQLStatementContext
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
         return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
+    }
+    
+    @Override
+    public Collection<SQLSegment> getRemoveSegments() {
+        Collection<SQLSegment> result = new LinkedList<>();
+        getSqlStatement().getFromSchema().ifPresent(result::add);
+        return result;
     }
 }

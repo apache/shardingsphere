@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.infra.binder.type;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+
+import java.util.Collection;
 
 /**
  * Remove available.
  */
-public interface RemoveAvailable extends SQLSegment {
+public interface RemoveAvailable {
+    
+    /**
+     * Get remove segments.
+     *
+     * @return remove segments
+     */
+    Collection<SQLSegment> getRemoveSegments();
 }

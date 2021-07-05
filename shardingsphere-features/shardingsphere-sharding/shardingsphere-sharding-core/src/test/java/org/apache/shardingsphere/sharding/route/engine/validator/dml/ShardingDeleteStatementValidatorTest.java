@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.route.engine.validator.dml.impl.Shardi
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
@@ -76,9 +77,9 @@ public final class ShardingDeleteStatementValidatorTest {
     
     private void assertValidateDeleteModifyMultiTables(final DeleteStatement sqlStatement) {
         DeleteMultiTableSegment tableSegment = new DeleteMultiTableSegment();
-        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
-        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
-        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("order_item")));
+        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
+        tableSegment.getActualDeleteTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order_item"))));
         sqlStatement.setTableSegment(tableSegment);
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement);
         Collection<String> shardingTableNames = Lists.newArrayList("order", "order_item");
