@@ -92,11 +92,11 @@ public class ShardingSphereOptimizerTest {
     @Test
     public void testSimpleSelect() {
         RelNode relNode = optimizer.optimize(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES);
-        String expected = "EnumerableCalc(expr#0..3=[{inputs}], order_id=[$t0], remarks=[$t3])\n"
-            + "  EnumerableNestedLoopJoin(condition=[true], joinType=[inner])\n"
-            + "    LocalTableScan(table=[[testSchema, t_order_federate]], fields=[[0, 1]])\n"
+        String expected = "EnumerableCalc(expr#0..3=[{inputs}], order_id=[$t0], remarks=[$t3])"
+            + "  EnumerableNestedLoopJoin(condition=[true], joinType=[inner])"
+            + "    LocalTableScan(table=[[testSchema, t_order_federate]], fields=[[0, 1]])"
             + "    LocalTableScan(table=[[testSchema, t_order_item_federate_sharding]], fields=[[0, 1]])";
-        String actual = relNode.explain().trim();
+        String actual = relNode.explain().replace("\n", "");
         assertEquals(expected, actual);
     }
 }
