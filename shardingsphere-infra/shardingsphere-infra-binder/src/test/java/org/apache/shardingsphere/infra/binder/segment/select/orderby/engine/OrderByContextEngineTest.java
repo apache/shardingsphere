@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -188,7 +189,7 @@ public final class OrderByContextEngineTest {
     @Test
     public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnPlainQuery() {
         SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
+        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("t_order"))));
         GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(getShardingSphereSchemaForMySQLSelectWithoutOrderBy(), selectStatement, groupByContext);
         assertTrue(actualOrderByContext.isGenerated());
@@ -200,7 +201,7 @@ public final class OrderByContextEngineTest {
     @Test
     public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnOrderByQuery() {
         SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
+        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("t_order"))));
         when(selectStatement.getOrderBy()).thenReturn(Optional.of(new OrderBySegment(0, 1, Collections.singleton(new ColumnOrderByItemSegment(
             new ColumnSegment(0, 1, new IdentifierValue("order_id")), OrderDirection.ASC)))));
         GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
@@ -214,7 +215,7 @@ public final class OrderByContextEngineTest {
     @Test
     public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnCountQuery() {
         SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
+        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("t_order"))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
         projectionsSegment.setDistinctRow(false);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 1, AggregationType.COUNT, "COUNT(1)"));

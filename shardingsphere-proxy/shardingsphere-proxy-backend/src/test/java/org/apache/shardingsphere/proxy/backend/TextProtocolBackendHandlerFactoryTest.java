@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -68,16 +67,14 @@ public final class TextProtocolBackendHandlerFactoryTest {
     
     @Before
     public void setUp() {
-        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         setTransactionContexts();
-        when(backendConnection.getSchemaName()).thenReturn("schema");
+        when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
+        when(backendConnection.getDefaultSchemaName()).thenReturn("schema");
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         mockGlobalRuleMetaData(metaDataContexts);
         ShardingSphereMetaData shardingSphereMetaData = mockShardingSphereMetaData();
         when(metaDataContexts.getAllSchemaNames().contains("schema")).thenReturn(true);
-        when(metaDataContexts.getMetaData("schema")).thenReturn(shardingSphereMetaData);
-        when(metaDataContexts.getMetaData("schema").getResource()).thenReturn(mock(ShardingSphereResource.class));
-        when(metaDataContexts.getMetaData("schema").getResource().getDatabaseType()).thenReturn(databaseType);
+        when(metaDataContexts.getMetaDataMap().get("schema")).thenReturn(shardingSphereMetaData);
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         ProxyContext proxyContext = ProxyContext.getInstance();
         proxyContext.init(metaDataContexts, transactionContexts);
@@ -86,6 +83,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
     private ShardingSphereMetaData mockShardingSphereMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(result.getSchema().getAllColumnNames("t_order")).thenReturn(Collections.singletonList("order_id"));
         return result;
     }
     

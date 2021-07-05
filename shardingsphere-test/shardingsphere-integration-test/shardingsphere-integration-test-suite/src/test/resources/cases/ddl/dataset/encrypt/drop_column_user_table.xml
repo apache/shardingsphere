@@ -18,6 +18,6 @@
 <dataset>
     <metadata table-name="t_user_details" data-nodes="encrypt.t_user_details">
         <column name="user_id" type="integer" />
-        <column name="address_id" type="numeric" />
+        <column name="address_id" type="integer" />
     </metadata>
 </dataset>

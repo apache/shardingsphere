@@ -84,7 +84,7 @@ public final class BackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
         verify(transactionStatus).setInTransaction(true);
-        verify(backendConnection).closeDatabaseCommunicationEngines();
+        verify(backendConnection).closeDatabaseCommunicationEngines(true);
         verify(backendConnection).closeConnections(false);
         verify(localTransactionManager).begin();
     }

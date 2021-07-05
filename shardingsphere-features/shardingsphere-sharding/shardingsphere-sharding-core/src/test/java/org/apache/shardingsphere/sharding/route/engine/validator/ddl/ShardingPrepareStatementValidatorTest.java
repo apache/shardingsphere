@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.Shardi
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
@@ -77,8 +78,8 @@ public final class ShardingPrepareStatementValidatorTest {
     private PostgreSQLPrepareStatement createPostgreSQLPrepareStatement() {
         PostgreSQLSelectStatement select = new PostgreSQLSelectStatement();
         JoinTableSegment joinTable = new JoinTableSegment();
-        joinTable.setLeft(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
-        joinTable.setRight(new SimpleTableSegment(0, 0, new IdentifierValue("t_order_item")));
+        joinTable.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        joinTable.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         select.setFrom(joinTable);
         PostgreSQLPrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         sqlStatement.setSelect(select);

@@ -75,6 +75,7 @@ public final class MySQLCommandExecutorFactoryTest {
     @Before
     public void setUp() throws ReflectiveOperationException {
         when(backendConnection.getSchemaName()).thenReturn("logic_db");
+        when(backendConnection.getDefaultSchemaName()).thenReturn("logic_db");
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
         ShardingSphereMetaData metaData = mockShardingSphereMetaData();
