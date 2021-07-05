@@ -33,6 +33,7 @@ import org.apache.shardingsphere.proxy.backend.communication.SQLStatementSchemaH
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.DistSQLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.extra.ExtraTextProtocolBackendHandler;
@@ -41,6 +42,8 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
@@ -95,6 +98,9 @@ public final class TextProtocolBackendHandlerFactory {
                 getRules(schemaName), schemaName, ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap(), backendConnection.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, backendConnection);
+        }
+        if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
+            return DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         }
         Optional<TextProtocolBackendHandler> distSQLBackendHandler = DistSQLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
         if (distSQLBackendHandler.isPresent()) {
