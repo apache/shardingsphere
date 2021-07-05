@@ -143,6 +143,6 @@
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />
         </assertion>
     </test-case>
-
+    
     <!-- TODO add single table DDL test cases -->
 </integration-test-cases>
