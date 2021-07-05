@@ -41,7 +41,7 @@ public final class RQLBackendHandlerFactory {
     /**
      * Create new instance of RDL backend handler.
      * 
-     * @param sqlStatement SQL statement
+     * @param sqlStatement RQL statement
      * @param backendConnection backend connection
      * @return RDL backend handler
      */
