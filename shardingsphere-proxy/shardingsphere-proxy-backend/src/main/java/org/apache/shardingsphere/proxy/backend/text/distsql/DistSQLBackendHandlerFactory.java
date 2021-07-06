@@ -56,7 +56,7 @@ public final class DistSQLBackendHandlerFactory {
             return RDLBackendHandlerFactory.newInstance(databaseType, (RDLStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof RALStatement) {
-            return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement);
+            return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement, backendConnection);
         }
         throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }

@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.distsql.statement;
+package org.apache.shardingsphere.infra.distsql.update;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Start scaling job statement.
+ * RAL updater.
+ * 
+ * @param <T> type of updatable RAL statement
  */
-@RequiredArgsConstructor
-@Getter
-public final class StartScalingJobStatement extends UpdatableRALStatement {
+public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
     
-    private final long jobId;
+    /**
+     * Execute update.
+     * 
+     * @param sqlStatement updatable RAL statement
+     */
+    void executeUpdate(T sqlStatement);
 }

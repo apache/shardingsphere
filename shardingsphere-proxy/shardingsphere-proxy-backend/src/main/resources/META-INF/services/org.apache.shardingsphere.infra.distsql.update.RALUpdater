@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.text.distsql.rql.DataSourceQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.CheckScalingJobQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingJobListQueryResultSet
-org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingJobStatusQueryResultSet
+org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.StartScalingJobUpdater
+org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.StopScalingJobUpdater
+org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ResetScalingJobUpdater
+org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.DropScalingJobUpdater

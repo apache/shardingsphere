@@ -19,32 +19,30 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 /**
- * RAL backend handler factory.
+ * Updatable RAL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RALBackendHandlerFactory {
+public final class UpdatableRALBackendHandlerFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(RALUpdater.class);
+    }
     
     /**
-     * Create new instance of RAL backend handler.
-     *
-     * @param sqlStatement RAL statement
-     * @param backendConnection backend connection
-     * @return RAL backend handler
+     * Create new instance of queryable RAL backend handler.
+     * 
+     * @param sqlStatement queryable RAL statement
+     * @return queryable RAL backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement, final BackendConnection backendConnection) {
-        if (sqlStatement instanceof QueryableRALStatement) {
-            return QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, backendConnection);
-        }
-        if (sqlStatement instanceof UpdatableRALStatement) {
-            return UpdatableRALBackendHandlerFactory.newInstance((UpdatableRALStatement) sqlStatement);
-        }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
+    public static TextProtocolBackendHandler newInstance(final UpdatableRALStatement sqlStatement) {
+        UpdatableRALBackendHandler result = new UpdatableRALBackendHandler();
+        result.setSqlStatement(sqlStatement);
+        return result;
     }
 }

@@ -20,31 +20,33 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
+import java.util.Properties;
+
 /**
- * RAL backend handler factory.
+ * Queryable RAL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RALBackendHandlerFactory {
+public final class QueryableRALBackendHandlerFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(RQLResultSet.class);
+    }
     
     /**
-     * Create new instance of RAL backend handler.
-     *
-     * @param sqlStatement RAL statement
+     * Create new instance of queryable RAL backend handler.
+     * 
+     * @param sqlStatement queryable RAL statement
      * @param backendConnection backend connection
-     * @return RAL backend handler
+     * @return queryable RAL backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement, final BackendConnection backendConnection) {
-        if (sqlStatement instanceof QueryableRALStatement) {
-            return QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, backendConnection);
-        }
-        if (sqlStatement instanceof UpdatableRALStatement) {
-            return UpdatableRALBackendHandlerFactory.newInstance((UpdatableRALStatement) sqlStatement);
-        }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
+    public static TextProtocolBackendHandler newInstance(final QueryableRALStatement sqlStatement, final BackendConnection backendConnection) {
+        RQLResultSet rqlResultSet = TypedSPIRegistry.getRegisteredService(RQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        return new QueryableRALBackendHandler(sqlStatement, backendConnection, rqlResultSet);
     }
 }
