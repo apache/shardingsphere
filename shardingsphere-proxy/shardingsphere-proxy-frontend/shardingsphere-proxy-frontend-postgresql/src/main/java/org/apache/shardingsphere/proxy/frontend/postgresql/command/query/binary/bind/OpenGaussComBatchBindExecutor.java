@@ -30,6 +30,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
@@ -75,11 +77,14 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     @Getter
     private volatile ResponseType responseType;
     
+    private SQLStatement sqlStatement;
+    
     private boolean batchBindComplete;
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         List<List<Object>> parameters = packet.getParameters();
+        sqlStatement = parseSql(packet.getSql(), backendConnection.getSchemaName());
         for (int i = 0; i < parameters.size(); i++) {
             List<Object> parameter = parameters.get(i);
             init(parameter);
@@ -96,15 +101,11 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     }
     
     private void init(final List<Object> parameter) {
-        databaseCommunicationEngines.add(DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatement(), packet.getSql(), parameter, backendConnection));
+        databaseCommunicationEngines.add(DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatementContext(parameter), packet.getSql(), parameter, backendConnection));
     }
     
-    private SQLStatement getSqlStatement() {
-        return connectionContext.getSqlStatement().orElseGet(() -> {
-            SQLStatement result = parseSql(packet.getSql(), backendConnection.getSchemaName());
-            connectionContext.setSqlStatement(result);
-            return result;
-        });
+    private SQLStatementContext<?> getSqlStatementContext(final List<Object> parameters) {
+        return SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, backendConnection.getDefaultSchemaName());
     }
     
     private SQLStatement parseSql(final String sql, final String schemaName) {
@@ -147,7 +148,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     @Override
     public PostgreSQLPacket getQueryRowPacket() throws SQLException {
         if (batchBindComplete) {
-            String sqlCommand = connectionContext.getSqlStatement().map(SQLStatement::getClass).map(PostgreSQLCommand::valueOf).map(command -> command.map(Enum::name).orElse("")).orElse("");
+            String sqlCommand = PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(Enum::name).orElse("");
             return new PostgreSQLCommandCompletePacket(sqlCommand, connectionContext.getUpdateCount());
         }
         QueryResponseRow queryResponseRow = databaseCommunicationEngines.get(0).getQueryResponseRow();
