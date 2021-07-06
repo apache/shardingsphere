@@ -24,8 +24,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ShowResourcesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ConnectionPropertiesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ConnectionPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.PoolPropertiesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.PoolPropertyContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
@@ -51,13 +51,13 @@ public final class ResourceDistSQLStatementVisitor extends ResourceStatementBase
     @Override
     public ASTNode visitDataSource(final DataSourceContext ctx) {
         return new DataSourceSegment(
-                ctx.dataSourceName().getText(), ctx.hostName().getText(), ctx.port().getText(), ctx.dbName().getText(), ctx.user().getText(), null == ctx.password() ? "" : ctx.password().getText(),
-                null == ctx.connectionProperties() ? new Properties() : getConnectionProperties(ctx.connectionProperties()));
+                ctx.dataSourceName().getText(), new IdentifierValue(ctx.url().getText()).getValue(), ctx.user().getText(), null == ctx.password() ? "" : ctx.password().getText(),
+                null == ctx.poolProperties() ? new Properties() : getPoolProperties(ctx.poolProperties()));
     }
     
-    private Properties getConnectionProperties(final ConnectionPropertiesContext ctx) {
+    private Properties getPoolProperties(final PoolPropertiesContext ctx) {
         Properties result = new Properties();
-        for (ConnectionPropertyContext each : ctx.connectionProperty()) {
+        for (PoolPropertyContext each : ctx.poolProperty()) {
             result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
         }
         return result;

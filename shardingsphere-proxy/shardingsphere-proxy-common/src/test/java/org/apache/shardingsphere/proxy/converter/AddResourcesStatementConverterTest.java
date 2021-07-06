@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ public final class AddResourcesStatementConverterTest {
     
     @Test
     public void assertConvert() {
-        Map<String, YamlDataSourceParameter> actual = AddResourcesStatementConverter.convert(new MySQLDatabaseType(), new AddResourceStatement(createDataSourceSegments()));
+        Map<String, YamlDataSourceParameter> actual = AddResourcesStatementConverter.convert(new AddResourceStatement(createDataSourceSegments()));
         assertThat(actual.size(), is(2));
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));
         assertThat(actual.values().iterator().next().getUsername(), is("root0"));
@@ -46,7 +45,8 @@ public final class AddResourcesStatementConverterTest {
     private Collection<DataSourceSegment> createDataSourceSegments() {
         Collection<DataSourceSegment> result = new LinkedList<>();
         for (int i = 0; i < 2; i++) {
-            result.add(new DataSourceSegment(String.format("ds%s", i), "127.0.0.1", "3306", String.format("demo_ds_%s", i), String.format("root%s", i), String.format("root%s", i), new Properties()));
+            result.add(new DataSourceSegment(String.format("ds%s", i), String.format("jdbc:mysql://127.0.0.1:3306/demo_ds_%s", i), String.format("root%s", i), String.format("root%s", i), 
+                    new Properties()));
         }
         return result;
     }

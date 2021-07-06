@@ -47,16 +47,8 @@ FROM
     : F R O M
     ;
 
-HOST
-    : H O S T
-    ;
-
-PORT
-    : P O R T
-    ;
-
-DB
-    : D B
+URL
+    : U R L
     ;
 
 USER

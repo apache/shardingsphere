@@ -63,7 +63,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) throws DistSQLException {
         check(schemaName, sqlStatement);
         Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(
-                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
+                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(sqlStatement)));
         Collection<String> invalidDataSourceNames = dataSourceConfigMap.entrySet()
                 .stream().filter(entry -> !dataSourceValidator.validate(entry.getValue())).map(Entry::getKey).collect(Collectors.toList());
         if (!invalidDataSourceNames.isEmpty()) {
