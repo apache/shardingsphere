@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql;
 
+import com.mchange.v1.db.sql.UnsupportedTypeException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -27,12 +30,8 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandlerFactory;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
 import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * DistSQL backend handler factory.
@@ -44,18 +43,21 @@ public final class DistSQLBackendHandlerFactory {
      * Create new instance of DistSQL backend handler.
      *
      * @param databaseType database type
-     * @param sqlStatement SQL statement
+     * @param sqlStatement dist SQL statement
      * @param backendConnection backend connection
      * @return text protocol backend handler
      * @throws SQLException SQL exception
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final DistSQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
         if (sqlStatement instanceof RQLStatement) {
-            return Optional.of(RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, backendConnection));
+            return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, backendConnection);
         }
-        if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return Optional.of(RDLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection));
+        if (sqlStatement instanceof RDLStatement) {
+            return RDLBackendHandlerFactory.newInstance(databaseType, (RDLStatement) sqlStatement, backendConnection);
         }
-        return RALBackendHandlerFactory.newInstance(sqlStatement);
+        if (sqlStatement instanceof RALStatement) {
+            return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement);
+        }
+        throw new UnsupportedTypeException(sqlStatement.getClass().getCanonicalName());
     }
 }

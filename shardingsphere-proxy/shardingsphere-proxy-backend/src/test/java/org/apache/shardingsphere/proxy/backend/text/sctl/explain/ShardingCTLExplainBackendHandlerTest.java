@@ -57,6 +57,7 @@ public final class ShardingCTLExplainBackendHandlerTest {
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
+        when(connection.getDefaultSchemaName()).thenReturn("schema");
         handler = new ShardingCTLExplainBackendHandler("sctl:explain select 1", connection);
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);

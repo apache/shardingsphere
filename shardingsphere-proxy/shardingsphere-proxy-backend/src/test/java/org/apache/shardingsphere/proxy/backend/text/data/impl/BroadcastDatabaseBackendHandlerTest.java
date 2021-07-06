@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -83,7 +84,7 @@ public final class BroadcastDatabaseBackendHandlerTest {
     @Test
     public void assertExecuteSuccess() throws SQLException {
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
-        BroadcastDatabaseBackendHandler broadcastBackendHandler = new BroadcastDatabaseBackendHandler(mock(SQLStatement.class), "SET timeout = 1000", backendConnection);
+        BroadcastDatabaseBackendHandler broadcastBackendHandler = new BroadcastDatabaseBackendHandler(mock(SQLStatementContext.class), "SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
         ResponseHeader actual = broadcastBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));

@@ -1842,3 +1842,13 @@ defaultCostClause
 defaultSelectivityClause
     : DEFAULT SELECTIVITY defaultSelectivity
     ;
+
+disassociateStatistics
+    : DISASSOCIATE STATISTICS FROM 
+    (COLUMNS tableName DOT_ columnName (COMMA_ tableName DOT_ columnName)*
+    | FUNCTIONS function (COMMA_ function)*
+    | PACKAGES packageName (COMMA_ packageName)*
+    | TYPES typeName (COMMA_ typeName)*
+    | INDEXES indexName (COMMA_ indexName)*
+    | INDEXTYPES indexTypeName (COMMA_ indexTypeName)*) FORCE?
+    ;

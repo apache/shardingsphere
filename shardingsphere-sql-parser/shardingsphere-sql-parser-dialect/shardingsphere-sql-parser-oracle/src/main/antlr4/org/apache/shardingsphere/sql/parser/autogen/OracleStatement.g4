@@ -53,5 +53,6 @@ execute
     | setConstraints
     | analyze
     | associateStatistics
+    | disassociateStatistics
     ) SEMI_?
     ;
