@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.distsql.handler;
 
-import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingJobStatement;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Check scaling job query result set.
  */
-public final class CheckScalingJobQueryResultSet implements RQLResultSet {
+public final class CheckScalingJobQueryResultSet implements DistSQLResultSet {
     
     private Iterator<Collection<Object>> data;
     

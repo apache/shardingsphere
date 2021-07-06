@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -35,7 +35,7 @@ import java.util.Properties;
 public final class RQLBackendHandlerFactory {
     
     static {
-        ShardingSphereServiceLoader.register(RQLResultSet.class);
+        ShardingSphereServiceLoader.register(DistSQLResultSet.class);
     }
     
     /**
@@ -46,7 +46,7 @@ public final class RQLBackendHandlerFactory {
      * @return RDL backend handler
      */
     public static TextProtocolBackendHandler newInstance(final RQLStatement sqlStatement, final BackendConnection backendConnection) {
-        RQLResultSet rqlResultSet = TypedSPIRegistry.getRegisteredService(RQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
-        return new RQLBackendHandler(sqlStatement, backendConnection, rqlResultSet);
+        DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        return new RQLBackendHandler(sqlStatement, backendConnection, resultSet);
     }
 }
