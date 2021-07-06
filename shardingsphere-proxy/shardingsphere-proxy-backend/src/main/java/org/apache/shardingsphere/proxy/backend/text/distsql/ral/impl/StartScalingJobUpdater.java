@@ -17,27 +17,25 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALUpdater;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.distsql.statement.DropScalingJobStatement;
+import org.apache.shardingsphere.scaling.distsql.statement.StartScalingJobStatement;
 
 /**
- * Drop scaling job backend handler.
+ * Start scaling job updater.
  */
-@RequiredArgsConstructor
-public final class DropScalingJobBackendHandler implements TextProtocolBackendHandler {
-    
-    private final DropScalingJobStatement sqlStatement;
+public final class StartScalingJobUpdater implements RALUpdater<StartScalingJobStatement> {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
     @Override
-    public ResponseHeader execute() {
-        scalingAPI.remove(sqlStatement.getJobId());
-        return new UpdateResponseHeader(sqlStatement);
+    public void executeUpdate(final StartScalingJobStatement sqlStatement) {
+        scalingAPI.start(sqlStatement.getJobId());
+    }
+    
+    @Override
+    public String getType() {
+        return StartScalingJobStatement.class.getCanonicalName();
     }
 }

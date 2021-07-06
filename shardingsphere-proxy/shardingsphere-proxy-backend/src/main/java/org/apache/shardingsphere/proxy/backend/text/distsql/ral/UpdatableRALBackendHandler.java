@@ -15,29 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.distsql.statement.StartScalingJobStatement;
+
+import java.util.Properties;
 
 /**
- * Start scaling job backend handler.
+ * Updatable RAL backend handler factory.
  */
-@RequiredArgsConstructor
-public final class StartScalingJobBackendHandler implements TextProtocolBackendHandler {
+@Setter
+public final class UpdatableRALBackendHandler implements TextProtocolBackendHandler {
     
-    private final StartScalingJobStatement sqlStatement;
+    static {
+        ShardingSphereServiceLoader.register(RALUpdater.class);
+    }
     
-    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
+    private UpdatableRALStatement sqlStatement;
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ResponseHeader execute() {
-        scalingAPI.start(sqlStatement.getJobId());
+        RALUpdater updater = TypedSPIRegistry.getRegisteredService(RALUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        updater.executeUpdate(sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
 }
