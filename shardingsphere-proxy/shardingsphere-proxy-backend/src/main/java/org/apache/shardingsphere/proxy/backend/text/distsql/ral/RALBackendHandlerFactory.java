@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.DropScalingJobBackendHandler;
@@ -48,10 +47,7 @@ public final class RALBackendHandlerFactory {
      */
     public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof QueryableRALStatement) {
-            try {
-                return QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, backendConnection);
-            } catch (final ServiceProviderNotFoundException ignored) {
-            }
+            return QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof StartScalingJobStatement) {
             return new StartScalingJobBackendHandler((StartScalingJobStatement) sqlStatement);
