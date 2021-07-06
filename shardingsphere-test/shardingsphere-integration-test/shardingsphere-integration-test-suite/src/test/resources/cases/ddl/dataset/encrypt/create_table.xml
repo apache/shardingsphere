@@ -19,7 +19,8 @@
     <metadata table-name="t_user_details" data-nodes="encrypt.t_user_details">
         <column name="user_id" type="integer" />
         <column name="address_id" type="integer" />
-        <column name="number_new_plain" type="varchar" />
-        <column name="number_new_cipher" type="varchar" />
+        <column name="number_cipher" type="varchar" />
+        <column name="number_plain" type="varchar" />
+        <column name="description" type="varchar" />
     </metadata>
 </dataset>
