@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
 
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALUpdater;
+import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingJobStatement;

@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
+package org.apache.shardingsphere.infra.distsql.update;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * RAL updater.
  * 
  * @param <T> type of updatable RAL statement
  */
-public interface RALUpdater<T extends UpdatableRALStatement> extends TypedSPI {
+public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
     
     /**
      * Execute update.
