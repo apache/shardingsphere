@@ -41,6 +41,8 @@ public final class HikariJDBCParameterDecorator implements JDBCParameterDecorato
         addJDBCProperty(dataSource, "maintainTimeStats", Boolean.FALSE.toString());
         addJDBCProperty(dataSource, "netTimeoutForStreamingResults", "0");
         addJDBCProperty(dataSource, "tinyInt1isBit", Boolean.FALSE.toString());
+        addJDBCProperty(dataSource, "useSSL", Boolean.FALSE.toString());
+        addJDBCProperty(dataSource, "serverTimezone", "UTC");
         HikariDataSource result = new HikariDataSource(dataSource);
         dataSource.close();
         return result;
