@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.query;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;

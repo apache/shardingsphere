@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
+package org.apache.shardingsphere.scaling.distsql.handler;
 
 import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;

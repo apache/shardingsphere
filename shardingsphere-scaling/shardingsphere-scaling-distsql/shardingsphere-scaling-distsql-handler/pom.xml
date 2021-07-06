@@ -22,16 +22,28 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-scaling</artifactId>
+        <artifactId>shardingsphere-scaling-distsql</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-scaling-distsql</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-scaling-distsql-handler</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-scaling-distsql-statement</module>
-        <module>shardingsphere-scaling-distsql-parser</module>
-        <module>shardingsphere-scaling-distsql-handler</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-scaling-distsql-statement</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-scaling-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

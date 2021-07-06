@@ -15,34 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
+package org.apache.shardingsphere.scaling.distsql.handler;
 
-import org.apache.shardingsphere.proxy.backend.exception.ScalingJobOperateException;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingJobStatement;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.scaling.distsql.statement.StartScalingJobStatement;
 
 /**
- * Reset scaling job updater.
+ * Start scaling job updater.
  */
-public final class ResetScalingJobUpdater implements RALUpdater<ResetScalingJobStatement> {
+public final class StartScalingJobUpdater implements RALUpdater<StartScalingJobStatement> {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
     @Override
-    public void executeUpdate(final ResetScalingJobStatement sqlStatement) {
-        try {
-            scalingAPI.reset(sqlStatement.getJobId());
-        } catch (final SQLException ex) {
-            throw new ScalingJobOperateException(ex.getMessage());
-        }
+    public void executeUpdate(final StartScalingJobStatement sqlStatement) {
+        scalingAPI.start(sqlStatement.getJobId());
     }
     
     @Override
     public String getType() {
-        return ResetScalingJobStatement.class.getCanonicalName();
+        return StartScalingJobStatement.class.getCanonicalName();
     }
 }
