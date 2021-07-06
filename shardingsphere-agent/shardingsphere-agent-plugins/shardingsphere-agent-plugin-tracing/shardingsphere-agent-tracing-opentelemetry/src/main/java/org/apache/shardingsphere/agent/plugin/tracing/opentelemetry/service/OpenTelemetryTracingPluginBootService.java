@@ -17,22 +17,26 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.service;
 
+import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.autoconfigure.OpenTelemetrySdkAutoConfiguration;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 
 public class OpenTelemetryTracingPluginBootService implements PluginBootService {
     @Override
-    public void start(PluginConfiguration pluginConfig) {
-
+    public void start(final PluginConfiguration pluginConfig) {
+        pluginConfig.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
+        OpenTelemetrySdk sdk = OpenTelemetrySdkAutoConfiguration.initialize();
+        // tracer will be created
+        sdk.getTracer("shardingsphere-agent");
     }
 
     @Override
     public void close() throws Exception {
-
     }
 
     @Override
     public String getType() {
-        return null;
+        return "OpenTelemetry";
     }
 }
