@@ -104,7 +104,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-scaling-distsql-statement</artifactId>
+            <artifactId>shardingsphere-scaling-distsql-handler</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
