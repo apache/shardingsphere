@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -77,8 +77,8 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType).parse(explainStatement.get().getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaDataMap(), Collections.emptyList(), sqlStatement, defaultSchemaName);
         // TODO optimize SQLStatementSchemaHolder
-        if (sqlStatementContext instanceof SchemaAvailable) {
-            ((SchemaAvailable) sqlStatementContext).getSchemaName().ifPresent(SQLStatementSchemaHolder::set);
+        if (sqlStatementContext instanceof TableAvailable) {
+            ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().ifPresent(SQLStatementSchemaHolder::set);
         }
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
         if (!metaData.isComplete()) {

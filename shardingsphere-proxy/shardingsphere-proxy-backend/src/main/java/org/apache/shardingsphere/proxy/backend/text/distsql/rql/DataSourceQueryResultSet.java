@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResources
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * Result set for show data source.
  */
-public final class DataSourceQueryResultSet implements RQLResultSet {
+public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
     private Map<String, DataSourceParameter> dataSourceParameterMap;
     

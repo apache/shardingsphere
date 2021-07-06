@@ -55,6 +55,10 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket
     private void writeBinaryValue(final PostgreSQLPacketPayload payload, final BinaryCell each) {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType());
         Object value = each.getData();
+        if (null == value) {
+            payload.writeInt4(0xFFFFFFFF);
+            return;
+        }
         payload.writeInt4(binaryProtocolValue.getColumnLength(value));
         binaryProtocolValue.write(payload, value);
     }

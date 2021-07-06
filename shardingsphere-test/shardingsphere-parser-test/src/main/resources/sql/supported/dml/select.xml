@@ -80,6 +80,7 @@
     <sql-case id="select_with_jsonb_path_contain_any_value" value="SELECT content_json::jsonb @?'$.keyword[*]?(@==&quot;ss&quot;)' FROM tb_content_json" db-types="PostgreSQL" />
     <sql-case id="select_with_jsonb_path_predicate_check" value="SELECT content_json::jsonb@@'$.keyword[*]==&quot;ss&quot;' FROM tb_content_json" db-types="PostgreSQL" />
     <sql-case id="select_with_assignment_operator" value="SELECT @rn := 1, @now_code := '' FROM t_order" db-types="MySQL" />
+    <sql-case id="select_from_dual" value="SELECT 1 FROM DUAL" db-types="MySQL" />
     <sql-case id="select_with_simple_table" value="SELECT * FROM employees WHERE department_id = 30 ORDER BY last_name" db-types="Oracle" />
     <sql-case id="select_with_binding_tables_with_subquery_without_join" value="SELECT a.department_id &quot;Department&quot;, a.num_emp/b.total_count &quot;%_Employees&quot;, a.sal_sum/b.total_sal &quot;%_Salary&quot; 
     FROM (SELECT department_id, COUNT(*) num_emp, SUM(salary) sal_sum FROM employees GROUP BY department_id) a, (SELECT COUNT(*) total_count, SUM(salary) total_sal FROM employees) b ORDER BY a.department_id" db-types="Oracle" />

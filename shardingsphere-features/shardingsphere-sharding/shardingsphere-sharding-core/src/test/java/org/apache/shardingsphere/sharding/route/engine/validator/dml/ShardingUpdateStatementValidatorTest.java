@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
@@ -59,8 +60,8 @@ public final class ShardingUpdateStatementValidatorTest {
     public void assertValidateUpdateModifyMultiTables() {
         UpdateStatement updateStatement = createUpdateStatement();
         JoinTableSegment joinTableSegment = new JoinTableSegment();
-        joinTableSegment.setLeft(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
-        joinTableSegment.setRight(new SimpleTableSegment(0, 0, new IdentifierValue("order")));
+        joinTableSegment.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         updateStatement.setTableSegment(joinTableSegment);
         SQLStatementContext<UpdateStatement> sqlStatementContext = new UpdateStatementContext(updateStatement);
         Collection<String> tableNames = Lists.newArrayList("order", "order_item");
@@ -104,7 +105,7 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new MySQLUpdateStatement();
-        result.setTableSegment(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
+        result.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         result.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, "")))));
         return result;
@@ -112,7 +113,7 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new MySQLUpdateStatement();
-        result.setTableSegment(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
+        result.setTableSegment(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         Collection<AssignmentSegment> assignments = Collections.singletonList(
                 new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);

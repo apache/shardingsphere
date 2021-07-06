@@ -20,11 +20,12 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.distsql.handler.exception.InvalidEncryptorsException;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
-import org.apache.shardingsphere.infra.exception.rule.DuplicateRuleNamesException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.junit.Test;
 
@@ -37,13 +38,13 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();
     
-    @Test(expected = DuplicateRuleNamesException.class)
-    public void assertCheckSQLStatementWithDuplicateEncryptRule() {
+    @Test(expected = DuplicateRuleException.class)
+    public void assertCheckSQLStatementWithDuplicateEncryptRule() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("MD5"), getCurrentRuleConfig(), mock(ShardingSphereResource.class));
     }
     
-    @Test(expected = InvalidEncryptorsException.class)
-    public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() throws RuleDefinitionViolationException {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), null, mock(ShardingSphereResource.class));
     }
     

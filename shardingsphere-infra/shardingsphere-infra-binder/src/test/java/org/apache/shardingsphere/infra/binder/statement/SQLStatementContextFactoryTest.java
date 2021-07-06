@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -99,7 +100,7 @@ public final class SQLStatementContextFactoryTest {
     }
     
     private void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(final InsertStatement insertStatement) {
-        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(createMetaDataMap(), Collections.emptyList(), insertStatement, DefaultSchema.LOGIC_NAME);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof InsertStatementContext);

@@ -2215,6 +2215,10 @@ ASSOCIATE
     : A S S O C I A T E
     ;
 
+DISASSOCIATE
+    : D I S A S S O C I A T E
+    ;
+
 FUNCTIONS
     : F U N C T I O N S
     ;
