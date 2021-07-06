@@ -80,4 +80,5 @@
     <sql-case id="select_with_jsonb_path_contain_any_value" value="SELECT content_json::jsonb @?'$.keyword[*]?(@==&quot;ss&quot;)' FROM tb_content_json" db-types="PostgreSQL" />
     <sql-case id="select_with_jsonb_path_predicate_check" value="SELECT content_json::jsonb@@'$.keyword[*]==&quot;ss&quot;' FROM tb_content_json" db-types="PostgreSQL" />
     <sql-case id="select_with_assignment_operator" value="SELECT @rn := 1, @now_code := '' FROM t_order" db-types="MySQL" />
+    <sql-case id="select_from_dual" value="SELECT 1 FROM DUAL" db-types="MySQL" />
 </sql-cases>
