@@ -26,13 +26,11 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.DropScalingJobBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ResetScalingJobBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingJobListBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingJobStatusBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.StartScalingJobBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.StopScalingJobBackendHandler;
 import org.apache.shardingsphere.scaling.distsql.statement.DropScalingJobStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingJobStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobStatusStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StartScalingJobStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.StopScalingJobStatement;
@@ -56,9 +54,6 @@ public final class RALBackendHandlerFactory {
                 return QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, backendConnection);
             } catch (final ServiceProviderNotFoundException ignored) {
             }
-        }
-        if (sqlStatement instanceof ShowScalingJobListStatement) {
-            return new ShowScalingJobListBackendHandler();
         }
         if (sqlStatement instanceof ShowScalingJobStatusStatement) {
             return new ShowScalingJobStatusBackendHandler((ShowScalingJobStatusStatement) sqlStatement);
