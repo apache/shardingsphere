@@ -27,9 +27,9 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryH
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Queryable RAL backend handler.
@@ -46,8 +46,10 @@ public final class QueryableRALBackendHandler extends SchemaRequiredBackendHandl
     @Override
     protected ResponseHeader execute(final String schemaName, final RALStatement sqlStatement) {
         resultSet.init(ProxyContext.getInstance().getMetaData(schemaName), sqlStatement);
-        List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream().map(
-            each -> new QueryHeader(schemaName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
+        List<QueryHeader> queryHeaders = new ArrayList<>();
+        for (String each : resultSet.getColumnNames()) {
+            queryHeaders.add(new QueryHeader(schemaName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        }
         return new QueryResponseHeader(queryHeaders);
     }
     
