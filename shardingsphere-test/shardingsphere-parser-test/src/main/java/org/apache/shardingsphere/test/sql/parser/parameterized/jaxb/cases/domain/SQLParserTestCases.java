@@ -68,6 +68,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DisassociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
@@ -350,6 +351,9 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "associate-statistics")
     private final List<AssociateStatisticsStatementTestCase> associateStatisticsTestCase = new LinkedList<>();
+
+    @XmlElement(name = "disassociate-statistics")
+    private final List<DisassociateStatisticsStatementTestCase> disassociateStatisticsTestCase = new LinkedList<>();
     
     @XmlElement(name = "add-resource")
     private final List<AddResourceStatementTestCase> addResourceTestCase = new LinkedList<>();
@@ -511,6 +515,7 @@ public final class SQLParserTestCases {
         putAll(dropSequenceTestCase, result);
         putAll(analyzeTestCase, result);
         putAll(associateStatisticsTestCase, result);
+        putAll(disassociateStatisticsTestCase, result);
         putAll(addResourceTestCase, result);
         putAll(alterDataBaseDiscoveryRuleTestCase, result);
         putAll(alterEncryptRuleTestCase, result);
