@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
 
 import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.Cases;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -30,7 +31,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "sql-cases")
 @Getter
-public final class SQLCases {
+public final class SQLCases extends Cases {
     
     @XmlAttribute(name = "db-types")
     private String databaseTypes;
