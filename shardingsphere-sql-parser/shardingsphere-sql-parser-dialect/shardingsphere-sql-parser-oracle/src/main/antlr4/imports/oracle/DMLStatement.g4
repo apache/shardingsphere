@@ -154,7 +154,7 @@ unionClause
     ;
 
 queryBlock
-    : withClause? SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause? havingClause?
+    : withClause? SELECT duplicateSpecification? projections fromClause? whereClause? groupByClause?
     ;
 
 withClause
@@ -423,7 +423,28 @@ whereClause
     ;
 
 groupByClause
-    : GROUP BY orderByItem (COMMA_ orderByItem)*
+    : GROUP BY groupByItem (COMMA_ groupByItem)* havingClause?
+    ;
+
+groupByItem
+    : rollupCubeClause | groupingSetsClause | expr
+    ;
+
+rollupCubeClause
+    : (ROLLUP | CUBE) LP_ groupingExprList RP_
+    ;
+
+groupingSetsClause
+    : GROUPING SETS LP_ (rollupCubeClause | groupingExprList) (COMMA_ (rollupCubeClause | groupingExprList))* RP_
+    ;
+
+groupingExprList
+    : expressionList (COMMA_ expressionList)*
+    ;
+
+expressionList
+    : exprs
+    | LP_ expr? (COMMA_ expr?)* RP_
     ;
 
 havingClause
