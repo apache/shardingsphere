@@ -152,9 +152,6 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         if (null != ctx.aclType()) {
             switch (ctx.aclType().getText().toLowerCase()) {
-                case "table":
-                    result.setAclType(ACLTypeEnum.TABLE);
-                    break;
                 case "function":
                     result.setAclType(ACLTypeEnum.FUNCTION);
                     break;
