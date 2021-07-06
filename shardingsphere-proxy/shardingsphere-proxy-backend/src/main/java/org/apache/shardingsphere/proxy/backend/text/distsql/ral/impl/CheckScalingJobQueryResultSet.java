@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
 
 import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingJobStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -35,13 +34,11 @@ import java.util.stream.Collectors;
  */
 public final class CheckScalingJobQueryResultSet implements RQLResultSet {
     
-    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
-    
     private Iterator<Collection<Object>> data;
     
     @Override
     public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        data = scalingAPI.dataConsistencyCheck(((CheckScalingJobStatement) sqlStatement).getJobId()).entrySet().stream()
+        data = ScalingAPIFactory.getScalingAPI().dataConsistencyCheck(((CheckScalingJobStatement) sqlStatement).getJobId()).entrySet().stream()
                 .map(entry -> {
                     Collection<Object> list = new LinkedList<>();
                     list.add(entry.getKey());
