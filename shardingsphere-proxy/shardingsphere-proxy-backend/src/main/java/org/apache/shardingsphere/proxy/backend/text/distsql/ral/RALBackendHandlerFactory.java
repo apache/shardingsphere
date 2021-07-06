@@ -19,16 +19,17 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.CheckScalingJobBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.DropScalingJobBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ResetScalingJobBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingJobListBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingJobStatusBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.StartScalingJobBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.StopScalingJobBackendHandler;
-import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingJobStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.DropScalingJobStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingJobStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
@@ -46,9 +47,16 @@ public final class RALBackendHandlerFactory {
      * Create new instance of RAL backend handler.
      *
      * @param sqlStatement RAL statement
+     * @param backendConnection backend connection
      * @return RAL backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement) {
+    public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement, final BackendConnection backendConnection) {
+        if (sqlStatement instanceof QueryableRALStatement) {
+            try {
+                return QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, backendConnection);
+            } catch (final ServiceProviderNotFoundException ignored) {
+            }
+        }
         if (sqlStatement instanceof ShowScalingJobListStatement) {
             return new ShowScalingJobListBackendHandler();
         }
@@ -66,9 +74,6 @@ public final class RALBackendHandlerFactory {
         }
         if (sqlStatement instanceof ResetScalingJobStatement) {
             return new ResetScalingJobBackendHandler((ResetScalingJobStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof CheckScalingJobStatement) {
-            return new CheckScalingJobBackendHandler((CheckScalingJobStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
