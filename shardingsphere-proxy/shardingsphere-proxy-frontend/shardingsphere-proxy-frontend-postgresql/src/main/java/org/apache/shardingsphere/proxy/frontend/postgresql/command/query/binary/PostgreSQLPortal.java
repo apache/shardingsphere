@@ -51,6 +51,8 @@ import java.util.List;
 @Getter
 public final class PostgreSQLPortal {
     
+    private final SQLStatement sqlStatement;
+    
     private final List<PostgreSQLValueFormat> resultFormats;
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
@@ -61,6 +63,7 @@ public final class PostgreSQLPortal {
     
     public PostgreSQLPortal(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
                             final BackendConnection backendConnection) throws SQLException {
+        this.sqlStatement = sqlStatement;
         this.resultFormats = resultFormats;
         this.backendConnection = backendConnection;
         if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement) {
