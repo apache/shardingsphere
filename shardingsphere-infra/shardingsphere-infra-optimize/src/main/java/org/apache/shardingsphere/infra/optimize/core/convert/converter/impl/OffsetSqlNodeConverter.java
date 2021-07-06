@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+
 /**
  * Offset sql node converter.
  */
 public final class OffsetSqlNodeConverter extends AbstractLimitSqlNodeConverter {
 
     public OffsetSqlNodeConverter() {
-        super(limitSegment -> limitSegment.getOffset());
+        super(LimitSegment::getOffset);
     }
 }
