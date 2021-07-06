@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  */
 public final class SQLCasesLoader extends CasesLoader {
 
-    public SQLCasesLoader(String rootDirection) {
+    public SQLCasesLoader(final String rootDirection) {
         super(rootDirection);
     }
 
@@ -88,7 +88,7 @@ public final class SQLCasesLoader extends CasesLoader {
     public Collection<Object[]> getTestParameters(final Collection<String> databaseTypes) {
         Collection<Object[]> result = new LinkedList<>();
         for (Case each : super.getSqlCases().values()) {
-            result.addAll(getTestParameters(databaseTypes, (SQLCase) each));
+            result.addAll(getSQLTestParameters(databaseTypes, (SQLCase) each));
         }
         return result;
     }
@@ -110,15 +110,15 @@ public final class SQLCasesLoader extends CasesLoader {
         return replace(sql, "?", parameters.toArray());
     }
     
-    private Collection<Object[]> getTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
+    private Collection<Object[]> getSQLTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
-            result.addAll(getTestParameters(databaseTypes, sqlCase, each));
+            result.addAll(getSQLTestParameters(databaseTypes, sqlCase, each));
         }
         return result;
     }
     
-    private static Collection<Object[]> getTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase, final SQLCaseType sqlCaseType) {
+    private static Collection<Object[]> getSQLTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase, final SQLCaseType sqlCaseType) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
             if (databaseTypes.contains(each)) {

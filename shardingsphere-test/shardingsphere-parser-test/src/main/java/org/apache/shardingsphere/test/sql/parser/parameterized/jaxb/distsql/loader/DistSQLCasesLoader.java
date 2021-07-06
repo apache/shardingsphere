@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public final class DistSQLCasesLoader extends CasesLoader {
 
-    public DistSQLCasesLoader(String rootDirection) {
+    public DistSQLCasesLoader(final String rootDirection) {
         super(rootDirection);
     }
 
@@ -51,7 +51,7 @@ public final class DistSQLCasesLoader extends CasesLoader {
     }
 
     @Override
-    public Collection<Object[]> getTestParameters(Collection<String> databaseTypes) {
+    public Collection<Object[]> getTestParameters(final Collection<String> databaseTypes) {
         Collection<Object[]> result = new LinkedList<>();
         for (Case each : super.getSqlCases().values()) {
             Object[] parameters = new Object[1];
@@ -62,7 +62,7 @@ public final class DistSQLCasesLoader extends CasesLoader {
     }
 
     @Override
-    public String getCaseValue(String sqlCaseId, SQLCaseType sqlCaseType, List<?> parameters) {
+    public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
         Map<String, Case> sqlCaseMap = super.getSqlCases();
         Preconditions.checkState(sqlCaseMap.containsKey(sqlCaseId), "Can't find case of ID: %s", sqlCaseId);
         DistSQLCase statement = (DistSQLCase) sqlCaseMap.get(sqlCaseId);

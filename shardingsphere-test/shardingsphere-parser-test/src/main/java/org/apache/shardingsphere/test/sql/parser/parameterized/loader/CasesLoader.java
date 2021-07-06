@@ -67,23 +67,23 @@ public abstract class CasesLoader {
         }
         return result;
     }
-
+    
     /**
-     * build case map
+     * build case map.
      * @param caseMap result map
      * @param inputStream xml inputStream 
-     * @throws JAXBException
+     * @throws JAXBException JAXBException
      */
-    protected abstract void buildCaseMap(final Map<String, Case> caseMap, final InputStream inputStream) throws JAXBException;
-
+    protected abstract void buildCaseMap(Map<String, Case> caseMap, InputStream inputStream) throws JAXBException;
+    
     /**
      * Get test parameters for junit parameterized test cases.
      *
      * @param databaseTypes database types
      * @return test parameters for junit parameterized test cases
      */
-    protected abstract Collection<Object[]> getTestParameters(final Collection<String> databaseTypes);
-
+    protected abstract Collection<Object[]> getTestParameters(Collection<String> databaseTypes);
+    
     /**
      * Get case value.
      *
@@ -92,7 +92,7 @@ public abstract class CasesLoader {
      * @param parameters SQL parameters
      * @return SQL
      */
-    public abstract String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters);
+    public abstract String getCaseValue(String sqlCaseId, SQLCaseType sqlCaseType, List<?> parameters);
     
     /**
      * Get all SQL case IDs.

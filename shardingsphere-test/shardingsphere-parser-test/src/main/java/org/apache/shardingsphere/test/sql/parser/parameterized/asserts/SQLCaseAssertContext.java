@@ -32,9 +32,9 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class SQLCaseAssertContext {
     
-    private final CasesLoader CASES_LOADER;
-    
     private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    
+    private final CasesLoader casesLoader;
     
     private final String sqlCaseId;
     
@@ -64,13 +64,13 @@ public final class SQLCaseAssertContext {
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            builder.append(CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList()));
+            builder.append(casesLoader.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList()));
             builder.append(System.lineSeparator());
             builder.append("SQL Params  : ");
             builder.append(SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
             builder.append(System.lineSeparator());
         } else {
-            builder.append(CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
+            builder.append(casesLoader.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
         }
     }
     

@@ -41,7 +41,7 @@ public class DistSQLParserParameterizedTest {
     
     private final String sqlCaseId;
     
-    public DistSQLParserParameterizedTest(String sqlCaseId) {
+    public DistSQLParserParameterizedTest(final String sqlCaseId) {
         this.sqlCaseId = sqlCaseId;
     }
 

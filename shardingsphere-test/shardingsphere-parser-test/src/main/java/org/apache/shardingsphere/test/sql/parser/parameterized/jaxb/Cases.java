@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb;
 
 /**
- * Base cases
+ * Base cases.
  */
 public abstract class Cases {
 }
