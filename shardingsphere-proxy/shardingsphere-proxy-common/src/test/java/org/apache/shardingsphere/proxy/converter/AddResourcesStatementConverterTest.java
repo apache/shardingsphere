@@ -48,7 +48,8 @@ public final class AddResourcesStatementConverterTest {
         Properties customPoolProps = new Properties();
         customPoolProps.setProperty("maxPoolSize", "30");
         for (int i = 0; i < 2; i++) {
-            result.add(new DataSourceSegment(String.format("ds%s", i), String.format("jdbc:mysql://127.0.0.1:3306/demo_ds_%s", i), String.format("root%s", i), String.format("root%s", i), customPoolProps));
+            result.add(new DataSourceSegment(String.format("ds%s", i), String.format("jdbc:mysql://127.0.0.1:3306/demo_ds_%s", i), String.format("root%s", i), String.format("root%s", i),
+                    customPoolProps));
         }
         return result;
     }
