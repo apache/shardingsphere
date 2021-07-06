@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Collection;
 
 /**
- * RQL result set.
+ * Dist SQL result set.
  */
-public interface RQLResultSet extends TypedSPI {
+public interface DistSQLResultSet extends TypedSPI {
     
     /**
      * Initialize data.
