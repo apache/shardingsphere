@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStat
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -47,14 +46,13 @@ public final class RDLBackendHandlerFactory {
     /**
      * Create new instance of RDL backend handler.
      * 
-     * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param backendConnection backend connection
      * @return RDL backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        TextProtocolBackendHandler result = createRDLBackendHandler(databaseType, sqlStatement, backendConnection);
+    public static TextProtocolBackendHandler newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+        TextProtocolBackendHandler result = createRDLBackendHandler(sqlStatement, backendConnection);
         checkRegistryCenterExisted(sqlStatement);
         return result;
     }
@@ -65,9 +63,9 @@ public final class RDLBackendHandlerFactory {
         }
     }
     
-    private static TextProtocolBackendHandler createRDLBackendHandler(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    private static TextProtocolBackendHandler createRDLBackendHandler(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof AddResourceStatement) {
-            return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection);
+            return new AddResourceBackendHandler((AddResourceStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof DropResourceStatement) {
             return new DropResourceBackendHandler((DropResourceStatement) sqlStatement, backendConnection);

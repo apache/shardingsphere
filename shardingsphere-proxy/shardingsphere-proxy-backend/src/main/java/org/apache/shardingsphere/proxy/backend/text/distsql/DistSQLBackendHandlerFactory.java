@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
@@ -43,18 +42,17 @@ public final class DistSQLBackendHandlerFactory {
     /**
      * Create new instance of DistSQL backend handler.
      *
-     * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param backendConnection backend connection
      * @return text protocol backend handler
      * @throws SQLException SQL exception
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+    public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
         if (sqlStatement instanceof RQLStatement) {
             return Optional.of(RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof RDLStatement || sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
-            return Optional.of(RDLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection));
+            return Optional.of(RDLBackendHandlerFactory.newInstance(sqlStatement, backendConnection));
         }
         return RALBackendHandlerFactory.newInstance(sqlStatement);
     }

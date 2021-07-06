@@ -45,7 +45,7 @@ public final class AddResourcesStatementConverterTest {
     private Collection<DataSourceSegment> createDataSourceSegments() {
         Collection<DataSourceSegment> result = new LinkedList<>();
         for (int i = 0; i < 2; i++) {
-            result.add(new DataSourceSegment(String.format("ds%s", i), String.format("jdbc:mysql://127.0.0.1:3306/demo_ds_%s", i), String.format("root%s", i), String.format("root%s", i), 
+            result.add(new DataSourceSegment(String.format("ds%s", i), String.format("jdbc:mysql://127.0.0.1:3306/demo_ds_%s", i), String.format("root%s", i), String.format("root%s", i),
                     new Properties()));
         }
         return result;

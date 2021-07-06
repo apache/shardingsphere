@@ -96,7 +96,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, backendConnection);
         }
-        Optional<TextProtocolBackendHandler> distSQLBackendHandler = DistSQLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
+        Optional<TextProtocolBackendHandler> distSQLBackendHandler = DistSQLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         if (distSQLBackendHandler.isPresent()) {
             return distSQLBackendHandler.get();
         }

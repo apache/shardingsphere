@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResource
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -75,7 +74,7 @@ public final class AddResourceBackendHandlerTest {
     
     @Before
     public void setUp() throws Exception {
-        addResourceBackendHandler = new AddResourceBackendHandler(new MySQLDatabaseType(), addResourceStatement, backendConnection);
+        addResourceBackendHandler = new AddResourceBackendHandler(addResourceStatement, backendConnection);
         Field field = addResourceBackendHandler.getClass().getDeclaredField("dataSourceValidator");
         field.setAccessible(true);
         field.set(addResourceBackendHandler, dataSourceValidator);
