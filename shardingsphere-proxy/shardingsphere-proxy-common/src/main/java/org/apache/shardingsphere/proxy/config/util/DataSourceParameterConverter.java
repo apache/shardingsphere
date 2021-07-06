@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -85,6 +86,9 @@ public final class DataSourceParameterConverter {
         result.setPassword(yamlDataSourceParameter.getPassword());
         result.setReadOnly(yamlDataSourceParameter.isReadOnly());
         result.setUrl(yamlDataSourceParameter.getUrl());
+        if (null != yamlDataSourceParameter.getCustomPoolProps()) {
+            result.setCustomPoolProps(yamlDataSourceParameter.getCustomPoolProps());
+        }
         return result;
     }
     
@@ -119,6 +123,9 @@ public final class DataSourceParameterConverter {
         result.getProps().put("minPoolSize", dataSourceParameter.getMinPoolSize());
         result.getProps().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
+        if (null != dataSourceParameter.getCustomPoolProps()) {
+            result.getProps().putAll(new HashMap(dataSourceParameter.getCustomPoolProps()));
+        }
         return result;
     }
 }

@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -187,5 +188,28 @@ public final class DataSourceConfigurationTest {
         List<String> actualConnectionInitSql = (List<String>) actual.getProps().get("connectionInitSqls");
         assertThat(actualConnectionInitSql, hasItem("set names utf8mb4;"));
         assertThat(actualConnectionInitSql, hasItem("set names utf8;"));
+    }
+    
+    @Test
+    public void assertCreateDataSourceWithCustomPoolProps() {
+        Map<String, Object> props = new HashMap<>(16, 1);
+        props.put("driverClassName", "org.h2.Driver");
+        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("username", "root");
+        props.put("password", "root");
+        props.put("loginTimeout", "5000");
+        Properties customPoolProps = new Properties();
+        customPoolProps.setProperty("maximumPoolSize", "30");
+        customPoolProps.setProperty("idleTimeout", "30000");
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        dataSourceConfig.getProps().putAll(props);
+        dataSourceConfig.getProps().putAll(new HashMap(customPoolProps));
+        HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
+        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
+        assertThat(actual.getMaximumPoolSize(), is(30));
+        assertThat(actual.getIdleTimeout(), is(30000L));
     }
 }
