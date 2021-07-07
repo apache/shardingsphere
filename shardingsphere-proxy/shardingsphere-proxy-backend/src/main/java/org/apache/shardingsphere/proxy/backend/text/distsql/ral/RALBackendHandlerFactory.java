@@ -19,22 +19,13 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.CheckScalingJobBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.DropScalingJobBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ResetScalingJobBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingJobListBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingJobStatusBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.StartScalingJobBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.StopScalingJobBackendHandler;
-import org.apache.shardingsphere.scaling.distsql.statement.CheckScalingJobStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.DropScalingJobStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ResetScalingJobStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobListStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingJobStatusStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.StartScalingJobStatement;
-import org.apache.shardingsphere.scaling.distsql.statement.StopScalingJobStatement;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.query.QueryableRALBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.update.UpdatableRALBackendHandlerFactory;
 
 /**
  * RAL backend handler factory.
@@ -46,29 +37,15 @@ public final class RALBackendHandlerFactory {
      * Create new instance of RAL backend handler.
      *
      * @param sqlStatement RAL statement
+     * @param backendConnection backend connection
      * @return RAL backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement) {
-        if (sqlStatement instanceof ShowScalingJobListStatement) {
-            return new ShowScalingJobListBackendHandler();
+    public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement, final BackendConnection backendConnection) {
+        if (sqlStatement instanceof QueryableRALStatement) {
+            return QueryableRALBackendHandlerFactory.newInstance((QueryableRALStatement) sqlStatement, backendConnection);
         }
-        if (sqlStatement instanceof ShowScalingJobStatusStatement) {
-            return new ShowScalingJobStatusBackendHandler((ShowScalingJobStatusStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof StartScalingJobStatement) {
-            return new StartScalingJobBackendHandler((StartScalingJobStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof StopScalingJobStatement) {
-            return new StopScalingJobBackendHandler((StopScalingJobStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof DropScalingJobStatement) {
-            return new DropScalingJobBackendHandler((DropScalingJobStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof ResetScalingJobStatement) {
-            return new ResetScalingJobBackendHandler((ResetScalingJobStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof CheckScalingJobStatement) {
-            return new CheckScalingJobBackendHandler((CheckScalingJobStatement) sqlStatement);
+        if (sqlStatement instanceof UpdatableRALStatement) {
+            return UpdatableRALBackendHandlerFactory.newInstance((UpdatableRALStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }

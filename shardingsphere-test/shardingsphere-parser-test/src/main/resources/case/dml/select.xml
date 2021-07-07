@@ -2915,5 +2915,11 @@
             <simple-table name="t_order" start-index="38" stop-index="44" />
         </from>
     </select>
+
+    <select sql-case-id="select_from_dual" >
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7" />
+        </projections>
+    </select>
 </sql-parser-test-cases>
 

@@ -49,8 +49,6 @@ public final class PostgreSQLConnectionContext {
     @Getter
     private final Collection<CommandExecutor> pendingExecutors = new LinkedList<>();
     
-    private SQLStatement sqlStatement;
-    
     @Getter
     private long updateCount;
     
@@ -67,10 +65,7 @@ public final class PostgreSQLConnectionContext {
      */
     public PostgreSQLPortal createPortal(final String portal, final String sql, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
                                          final BackendConnection backendConnection) throws SQLException {
-        if (!getSqlStatement().isPresent()) {
-            SQLStatement result = parseSql(sql, backendConnection.getSchemaName());
-            setSqlStatement(result);
-        }
+        SQLStatement sqlStatement = parseSql(sql, backendConnection.getSchemaName());
         PostgreSQLPortal result = new PostgreSQLPortal(sqlStatement, sql, parameters, resultFormats, backendConnection);
         portals.put(portal, result);
         return result;
@@ -138,20 +133,10 @@ public final class PostgreSQLConnectionContext {
     }
     
     /**
-     * Get SQL statement.
-     *
-     * @return SQL statement
-     */
-    public Optional<SQLStatement> getSqlStatement() {
-        return Optional.ofNullable(sqlStatement);
-    }
-    
-    /**
      * Clear context.
      */
     public void clearContext() {
         pendingExecutors.clear();
-        sqlStatement = null;
         updateCount = 0;
     }
 }
