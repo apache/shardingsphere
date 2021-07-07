@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
@@ -35,7 +34,6 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,21 +42,26 @@ import java.util.List;
 @Getter
 public final class OpenGaussComBatchBindPacket extends PostgreSQLCommandPacket {
     
+    private PostgreSQLPacketPayload payload;
+    
     private final String statementId;
     
     private final String sql;
     
-    private final List<List<Object>> parameters;
+    private final List<Integer> parameterFormats;
     
     private final List<PostgreSQLValueFormat> resultFormats;
     
+    private final PostgreSQLBinaryStatement binaryStatement;
+    
     public OpenGaussComBatchBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
+        this.payload = payload;
         payload.readInt4();
         payload.readInt4();
         payload.readStringNul();
         statementId = payload.readStringNul();
         int parameterFormatCount = payload.readInt2();
-        List<Integer> parameterFormats = new ArrayList<>(parameterFormatCount);
+        parameterFormats = new ArrayList<>(parameterFormatCount);
         for (int i = 0; i < parameterFormatCount; i++) {
             parameterFormats.add(payload.readInt2());
         }
@@ -67,37 +70,45 @@ public final class OpenGaussComBatchBindPacket extends PostgreSQLCommandPacket {
         for (int i = 0; i < resultFormatsLength; i++) {
             resultFormats.add(PostgreSQLValueFormat.valueOf(payload.readInt2()));
         }
-        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
+        binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
         sql = null == binaryStatement ? null : binaryStatement.getSql();
-        List<Object> allParameters = null == sql ? Collections.emptyList() : getParameters(payload, parameterFormats, binaryStatement.getColumnTypes());
-        parameters = Lists.partition(allParameters, parameterFormatCount);
-        payload.readInt1();
-        payload.readStringNul();
-        payload.readInt4();
     }
     
-    private List<Object> getParameters(final PostgreSQLPacketPayload payload, final List<Integer> parameterFormats, final List<PostgreSQLBinaryColumnType> columnTypes) {
+    /**
+     * Check If Batch Bind Packet has parameters.
+     *
+     * @return has next parameters
+     */
+    public boolean hasNextParameters() {
+        if (payload.getByteBuf().readableBytes() < 1) {
+            return false;
+        }
+        payload.getByteBuf().markReaderIndex();
+        int c = payload.readInt1();
+        payload.getByteBuf().resetReaderIndex();
+        return 'E' != c;
+    }
+    
+    /**
+     * Read a group of parameters.
+     *
+     * @return a group of parameters
+     */
+    public List<Object> readOneGroupOfParameters() {
+        List<PostgreSQLBinaryColumnType> columnTypes = binaryStatement.getColumnTypes();
         int parameterCount = payload.readInt2();
         List<Object> result = new ArrayList<>(parameterCount);
-        for (int parameterIndex = 0; hasNextParameter(payload); parameterIndex++) {
+        for (int parameterIndex = 0; parameterIndex < parameterCount; parameterIndex++) {
             int parameterValueLength = payload.readInt4();
             if (-1 == parameterValueLength) {
                 result.add(null);
                 continue;
             }
-            int modedParameterIndex = parameterIndex % parameterCount;
-            Object parameterValue = isTextParameterValue(parameterFormats, modedParameterIndex)
-                    ? getTextParameters(payload, parameterValueLength, columnTypes.get(modedParameterIndex)) : getBinaryParameters(payload, parameterValueLength, columnTypes.get(modedParameterIndex));
+            Object parameterValue = isTextParameterValue(parameterFormats, parameterIndex)
+                    ? getTextParameters(payload, parameterValueLength, columnTypes.get(parameterIndex)) : getBinaryParameters(payload, parameterValueLength, columnTypes.get(parameterIndex));
             result.add(parameterValue);
         }
         return result;
-    }
-    
-    private boolean hasNextParameter(final PostgreSQLPacketPayload payload) {
-        payload.getByteBuf().markReaderIndex();
-        int c = payload.readInt1();
-        payload.getByteBuf().resetReaderIndex();
-        return 'E' != c;
     }
     
     private boolean isTextParameterValue(final List<Integer> parameterFormats, final int parameterIndex) {

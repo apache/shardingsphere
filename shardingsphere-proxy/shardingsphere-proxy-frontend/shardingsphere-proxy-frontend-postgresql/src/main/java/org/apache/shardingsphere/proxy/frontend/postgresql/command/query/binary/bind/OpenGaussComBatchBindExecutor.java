@@ -19,16 +19,12 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.OpenGaussComBatchBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLBindCompletePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -38,9 +34,6 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -53,10 +46,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,8 +63,6 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     private final BackendConnection backendConnection;
     
-    private final List<DatabaseCommunicationEngine> databaseCommunicationEngines = new LinkedList<>();
-    
     @Getter
     private volatile ResponseType responseType;
     
@@ -83,25 +72,24 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        List<List<Object>> parameters = packet.getParameters();
         sqlStatement = parseSql(packet.getSql(), backendConnection.getSchemaName());
-        for (int i = 0; i < parameters.size(); i++) {
-            List<Object> parameter = parameters.get(i);
-            init(parameter);
-            ResponseHeader responseHeader = databaseCommunicationEngines.get(i).execute();
-            if (responseHeader instanceof QueryResponseHeader && connectionContext.getDescribeExecutor().isPresent()) {
-                connectionContext.getDescribeExecutor().get().setRowDescriptionPacket(getRowDescriptionPacket((QueryResponseHeader) responseHeader));
-            }
-            if (responseHeader instanceof UpdateResponseHeader) {
-                responseType = ResponseType.UPDATE;
-                connectionContext.setUpdateCount(connectionContext.getUpdateCount() + ((UpdateResponseHeader) responseHeader).getUpdateCount());
+        while (packet.hasNextParameters()) {
+            List<Object> parameters = packet.readOneGroupOfParameters();
+            DatabaseCommunicationEngine databaseCommunicationEngine = newEngine(parameters);
+            try {
+                ResponseHeader responseHeader = databaseCommunicationEngine.execute();
+                if (responseHeader instanceof UpdateResponseHeader) {
+                    connectionContext.setUpdateCount(connectionContext.getUpdateCount() + ((UpdateResponseHeader) responseHeader).getUpdateCount());
+                }
+            } finally {
+                databaseCommunicationEngine.close();
             }
         }
         return Collections.singletonList(new PostgreSQLBindCompletePacket());
     }
     
-    private void init(final List<Object> parameter) {
-        databaseCommunicationEngines.add(DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatementContext(parameter), packet.getSql(), parameter, backendConnection));
+    private DatabaseCommunicationEngine newEngine(final List<Object> parameter) {
+        return DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(getSqlStatementContext(parameter), packet.getSql(), parameter, backendConnection);
     }
     
     private SQLStatementContext<?> getSqlStatementContext(final List<Object> parameters) {
@@ -134,49 +122,12 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     
     @Override
     public boolean next() throws SQLException {
-        Iterator<DatabaseCommunicationEngine> iterator = databaseCommunicationEngines.iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next().next()) {
-                return true;
-            } else {
-                iterator.remove();
-            }
-        }
         return !batchBindComplete && (batchBindComplete = true);
     }
     
     @Override
-    public PostgreSQLPacket getQueryRowPacket() throws SQLException {
-        if (batchBindComplete) {
-            String sqlCommand = PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(Enum::name).orElse("");
-            return new PostgreSQLCommandCompletePacket(sqlCommand, connectionContext.getUpdateCount());
-        }
-        QueryResponseRow queryResponseRow = databaseCommunicationEngines.get(0).getQueryResponseRow();
-        return new PostgreSQLDataRowPacket(getData(queryResponseRow));
-    }
-    
-    private List<Object> getData(final QueryResponseRow queryResponseRow) {
-        Collection<QueryResponseCell> cells = queryResponseRow.getCells();
-        List<Object> result = new ArrayList<>(cells.size());
-        List<QueryResponseCell> columns = new ArrayList<>(cells);
-        for (int i = 0; i < columns.size(); i++) {
-            PostgreSQLValueFormat format = determineValueFormat(i);
-            result.add(PostgreSQLValueFormat.BINARY == format ? createBinaryCell(columns.get(i)) : columns.get(i).getData());
-        }
-        return result;
-    }
-    
-    private PostgreSQLValueFormat determineValueFormat(final int columnIndex) {
-        List<PostgreSQLValueFormat> resultFormats = packet.getResultFormats();
-        return resultFormats.isEmpty() ? PostgreSQLValueFormat.TEXT : resultFormats.get(columnIndex % resultFormats.size());
-    }
-    
-    private BinaryCell createBinaryCell(final QueryResponseCell cell) {
-        return new BinaryCell(PostgreSQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) cell).getJdbcType()), cell.getData());
-    }
-    
-    @Override
-    public void close() throws SQLException {
-        databaseCommunicationEngines.clear();
+    public PostgreSQLPacket getQueryRowPacket() {
+        String sqlCommand = PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(Enum::name).orElse("");
+        return new PostgreSQLCommandCompletePacket(sqlCommand, connectionContext.getUpdateCount());
     }
 }
