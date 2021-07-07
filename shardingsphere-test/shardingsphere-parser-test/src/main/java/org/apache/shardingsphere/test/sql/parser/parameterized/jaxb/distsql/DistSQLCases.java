@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.distsql;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.Case;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.Cases;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * SQL test case for xml tag.
+ * DistSQL test cases for xml root tag.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "sql-cases")
 @Getter
-@Setter
-public final class SQLCase extends Case {
+public final class DistSQLCases extends Cases {
     
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
-    
-    @XmlAttribute(name = "rule-type")
-    private String ruleType;
+    @XmlElement(name = "distsql-case")
+    private List<DistSQLCase> distSQLCases = new LinkedList<>();
 }
