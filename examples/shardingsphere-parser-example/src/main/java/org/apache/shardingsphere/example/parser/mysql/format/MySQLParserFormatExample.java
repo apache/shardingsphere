@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.parser;
+package org.apache.shardingsphere.example.parser.mysql.format;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -23,14 +23,29 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 
 import java.util.Properties;
 
-public class SQLParserFormatExample {
-
+public class MySQLParserFormatExample {
+    
+    private static final String DML_SELECT_SQL = "select age as b, name n from table1 join table2 where id=1 and name='lu';";
+    
+    private static final String DML_INSERT_SQL = "insert into user (name, age, status) values ('z', 18, 1);";
+    
+    private static final String DML_DELETE_SQL = "delete from user where id = 1;";
+    
+    private static final String DML_UPDATE_SQL = "update user set name = 'j' where id = 1;";
+    
+    private static final String DDL_CREATE_SQL = "create table user (id bigint(20) PRIMARY KEY AUTO_INCREMENT, name varchar(20), age int(2), status int(1));";
+    
+    private static final String DDL_DROP_SQL = "drop table user";
+    
+    private static final String DDL_ALTER_SQL = "alter table user change name name_new VARCHAR(20);";
+    
+    private static final String DDL_SHOW_SQL = "show columns from user;";
+    
     public static void main(String[] args) {
-        String sql = "select age as b, name n from table1 join table2 where id=1 and name='lu';";
         Properties props = new Properties();
         props.setProperty("parameterized", "false");
         SQLParserEngine parserEngine = new SQLParserEngine("MySQL");
-        ParseTree tree = parserEngine.parse(sql, false);
+        ParseTree tree = parserEngine.parse(DDL_ALTER_SQL, false);
         SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
         String result = visitorEngine.visit(tree);
         System.out.println(result);
