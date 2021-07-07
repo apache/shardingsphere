@@ -51,7 +51,7 @@ public final class DistSQLParserParameterizedTest {
     }
     
     @Test
-    public final void assertDistSQL() {
+    public void assertDistSQL() {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String sql = DIST_SQL_CASES_LOADER.getCaseValue(sqlCaseId, null, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SQLStatement actual = parseSQLStatement(sql);
