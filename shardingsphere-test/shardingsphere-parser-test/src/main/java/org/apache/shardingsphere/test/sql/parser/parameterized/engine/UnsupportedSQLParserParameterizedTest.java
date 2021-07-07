@@ -40,12 +40,12 @@ public abstract class UnsupportedSQLParserParameterizedTest {
     private final SQLCaseType sqlCaseType;
     
     protected static Collection<Object[]> getTestParameters(final String databaseType) {
-        return SQL_CASES_LOADER.getSQLTestParameters(Collections.singleton(databaseType));
+        return SQL_CASES_LOADER.getTestParameters(Collections.singleton(databaseType));
     }
     
     @Test(expected = SQLParsingException.class)
     public final void assertUnsupportedSQL() {
-        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList());
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         new SQLParserEngine(databaseType).parse(sql, false);
     }

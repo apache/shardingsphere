@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.Case;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * SQL test case for xml tag.
+ * Base case for xml tag.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-@Setter
-public final class SQLCase extends Case {
+public abstract class Case {
     
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
+    @XmlAttribute
+    private String id;
     
-    @XmlAttribute(name = "rule-type")
-    private String ruleType;
+    @XmlAttribute
+    private String value;
 }
