@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
@@ -48,7 +49,7 @@ public final class TablesContextTest {
     
     @Test
     public void assertInstanceCreatedWhenNoExceptionThrown() {
-        SimpleTableSegment tableSegment = new SimpleTableSegment(0, 10, new IdentifierValue("tbl"));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("tbl")));
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
         new TablesContext(Collections.singletonList(tableSegment));
     }
@@ -91,8 +92,17 @@ public final class TablesContextTest {
         assertThat(actual.get(), is("table_1"));
     }
     
+    @Test
+    public void assertFindTableNameWhenTableNameOrAliasIgnoreCase() {
+        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableNameFromSQL("Tbl_1");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("table_1"));
+    }
+    
     private SimpleTableSegment createTableSegment(final String tableName, final String alias) {
-        SimpleTableSegment result = new SimpleTableSegment(0, 0, new IdentifierValue(tableName));
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
         result.setAlias(aliasSegment);
         return result;

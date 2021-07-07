@@ -18,15 +18,28 @@
 package org.apache.shardingsphere.sharding.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Binding table rule segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class BindingTableRuleSegment implements ASTNode {
     
-    private String tables;
+    private final String tableGroups;
+    
+    /**
+     * Get binding tables.
+     * 
+     * @return binding tables
+     */
+    public Collection<String> getBindingTables() {
+        return Arrays.stream(tableGroups.split(",")).map(String::trim).collect(Collectors.toList());
+    }
 }

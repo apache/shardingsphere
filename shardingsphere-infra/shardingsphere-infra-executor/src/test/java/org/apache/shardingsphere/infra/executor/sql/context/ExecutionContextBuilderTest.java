@@ -105,24 +105,24 @@ public final class ExecutionContextBuilderTest {
     
     private ShardingSphereSchema buildSchemaWithoutPrimaryKey() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("logicName1", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
+        tableMetaDataMap.put("logicName1", new TableMetaData("logicName1", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("status", Types.INTEGER, false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData("t_other", Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet()));
         return new ShardingSphereSchema(tableMetaDataMap);
     }
     
     private ShardingSphereSchema buildSchema() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("logicName1", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
+        tableMetaDataMap.put("logicName1", new TableMetaData("logicName1", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("status", Types.INTEGER, false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("logicName2", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", Types.INTEGER, true, false, false),
+        tableMetaDataMap.put("logicName2", new TableMetaData("logicName2", Arrays.asList(new ColumnMetaData("item_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("order_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("status", Types.VARCHAR, false, false, false),
                 new ColumnMetaData("c_date", Types.TIMESTAMP, false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData("t_other", Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet()));
         return new ShardingSphereSchema(tableMetaDataMap);
     }
 }

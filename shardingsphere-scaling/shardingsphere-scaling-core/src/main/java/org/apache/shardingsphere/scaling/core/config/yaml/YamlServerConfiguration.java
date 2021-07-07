@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 /**
  * Global server configuration.
  */
-@Setter
 @Getter
+@Setter
 public final class YamlServerConfiguration implements YamlConfiguration {
     
     private YamlScalingConfiguration scaling = new YamlScalingConfiguration();

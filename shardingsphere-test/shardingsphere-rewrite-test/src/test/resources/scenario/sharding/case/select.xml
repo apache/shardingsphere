@@ -35,7 +35,7 @@
 
     <rewrite-assertion id="select_with_sum_fun">
         <input sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account WHERE account_id = 100" />
-        <output sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account_0 WHERE account_id = 100" />
+        <output sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account WHERE account_id = 100" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_avg_fun">
@@ -59,9 +59,9 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_schema">
-        <input sql="SELECT * FROM db.t_account" />
-        <output sql="SELECT * FROM db.t_account_0"/>
-        <output sql="SELECT * FROM db.t_account_1"/>
+        <input sql="SELECT * FROM sharding_db.t_account" />
+        <output sql="SELECT * FROM t_account_0"/>
+        <output sql="SELECT * FROM t_account_1"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery" db-type="MySQL">
@@ -96,15 +96,15 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="select_without_sharding_value_for_parameters">
-        <input sql="SELECT * FROM db.t_account WHERE amount = ?" parameters="1000" />
-        <output sql="SELECT * FROM db.t_account_0 WHERE amount = ?" parameters="1000" />
-        <output sql="SELECT * FROM db.t_account_1 WHERE amount = ?" parameters="1000" />
+        <input sql="SELECT * FROM sharding_db.t_account WHERE amount = ?" parameters="1000" />
+        <output sql="SELECT * FROM t_account_0 WHERE amount = ?" parameters="1000" />
+        <output sql="SELECT * FROM t_account_1 WHERE amount = ?" parameters="1000" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_without_sharding_value_for_literals">
-        <input sql="SELECT * FROM db.t_account WHERE amount = 1000" />
-        <output sql="SELECT * FROM db.t_account_0 WHERE amount = 1000" />
-        <output sql="SELECT * FROM db.t_account_1 WHERE amount = 1000" />
+        <input sql="SELECT * FROM sharding_db.t_account WHERE amount = 1000" />
+        <output sql="SELECT * FROM t_account_0 WHERE amount = 1000" />
+        <output sql="SELECT * FROM t_account_1 WHERE amount = 1000" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_for_literals_with_order_by" db-type="MySQL">

@@ -84,7 +84,7 @@ public final class DataSourceConfigurationTest {
         props.put("driverClassName", "org.h2.Driver");
         props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         props.put("username", "root");
-        props.put("password", Integer.valueOf(123));
+        props.put("password", 123);
         props.put("loginTimeout", "5000");
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProps().putAll(props);

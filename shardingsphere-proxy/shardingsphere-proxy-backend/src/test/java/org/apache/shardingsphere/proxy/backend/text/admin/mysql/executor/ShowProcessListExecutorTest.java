@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Before;
@@ -61,7 +62,7 @@ public final class ShowProcessListExecutorTest {
         metaDataContextsField.setAccessible(true);
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         MetaDataContexts metaDataContexts = new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
-            new ConfigurationProperties(new Properties()));
+            new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
         metaDataContextsField.set(ProxyContext.getInstance(), metaDataContexts);
     }
     

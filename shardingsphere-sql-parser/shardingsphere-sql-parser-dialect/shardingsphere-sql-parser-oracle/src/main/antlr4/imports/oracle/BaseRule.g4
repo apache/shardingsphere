@@ -96,7 +96,7 @@ unreservedWord
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST
+    | COLLATION | REAL | TYPE | FIRST | RANK
     ;
 
 schemaName
@@ -124,6 +124,26 @@ clusterName
     ;
 
 indexName
+    : (owner DOT_)? name
+    ;
+
+statisticsTypeName
+    : (owner DOT_)? name
+    ;
+
+function
+    : (owner DOT_)? name
+    ;
+
+packageName
+    : (owner DOT_)? name
+    ;
+
+typeName
+    : (owner DOT_)? name
+    ;
+
+indexTypeName
     : (owner DOT_)? name
     ;
 
@@ -192,10 +212,6 @@ opaqueFormatSpec
     ;
 
 accessDriverType
-    : identifier
-    ;
-
-type
     : identifier
     ;
 
@@ -446,10 +462,6 @@ orderByItem
 
 attributeName
     : oracleId
-    ;
-
-indexTypeName
-    : IDENTIFIER_
     ;
 
 simpleExprs
@@ -730,4 +742,32 @@ unitName
 
 procedureName
     : identifier
+    ;
+
+cpuCost
+    : INTEGER_
+    ;
+
+ioCost
+    : INTEGER_
+    ;
+
+networkCost
+    : INTEGER_
+    ;
+
+defaultSelectivity
+    : INTEGER_
+    ;
+
+dataItem
+    : variableName
+    ;
+
+variableName
+    : identifier | stringLiterals
+    ;
+
+materializedViewName
+    : (owner DOT_)? name
     ;

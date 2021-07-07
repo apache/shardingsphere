@@ -378,6 +378,7 @@ docker tag e9ea51023687 apache/shardingsphere-ui:${RELEASE.VERSION}
 3.4 发布Docker镜像
 
 ```shell
+docker login
 docker push apache/shardingsphere-ui:latest
 docker push apache/shardingsphere-ui:${RELEASE_VERSION}
 ```

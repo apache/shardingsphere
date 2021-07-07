@@ -28,7 +28,7 @@ import java.util.Optional;
  * Show rules statement.
  */
 @RequiredArgsConstructor
-public class ShowRulesStatement extends RQLStatement implements FromSchemaAvailable {
+public abstract class ShowRulesStatement extends RQLStatement implements FromSchemaAvailable {
     
     private final SchemaSegment schema;
     

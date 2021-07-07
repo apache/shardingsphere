@@ -48,7 +48,7 @@ public final class FederateExecutionContextGenerator {
      */
     public ExecutionContext generate() {
         RouteContext routeContext = getRouteContext(routeExecutionContext.getRouteContext());
-        return new ExecutionContext(routeExecutionContext.getSqlStatementContext(),
+        return new ExecutionContext(routeExecutionContext.getLogicSQL(),
                 getExecutionUnits(routeContext.getRouteUnits(), generator), routeContext);
     }
     

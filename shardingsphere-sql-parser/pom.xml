@@ -34,7 +34,5 @@
         <module>shardingsphere-sql-parser-statement</module>
         <module>shardingsphere-sql-parser-engine</module>
         <module>shardingsphere-sql-parser-dialect</module>
-        
-        <module>shardingsphere-sql-parser-test</module>
     </modules>
 </project>

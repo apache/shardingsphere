@@ -19,25 +19,14 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DatabaseDiscoveryRulesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.EncryptRulesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReadwriteSplittingRulesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBindingTableRulesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingBroadcastTableRulesQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingTableRulesQueryBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Optional;
+import java.util.Properties;
 
 /**
  * RQL backend handler factory.
@@ -45,35 +34,19 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RQLBackendHandlerFactory {
     
+    static {
+        ShardingSphereServiceLoader.register(DistSQLResultSet.class);
+    }
+    
     /**
      * Create new instance of RDL backend handler.
      * 
-     * @param sqlStatement SQL statement
+     * @param sqlStatement RQL statement
      * @param backendConnection backend connection
      * @return RDL backend handler
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
-        if (sqlStatement instanceof ShowResourcesStatement) {
-            return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection));
-        }
-        if (sqlStatement instanceof ShowShardingBindingTableRulesStatement) {
-            return Optional.of(new ShardingBindingTableRulesQueryBackendHandler((ShowShardingBindingTableRulesStatement) sqlStatement, backendConnection));
-        }
-        if (sqlStatement instanceof ShowShardingBroadcastTableRulesStatement) {
-            return Optional.of(new ShardingBroadcastTableRulesQueryBackendHandler((ShowShardingBroadcastTableRulesStatement) sqlStatement, backendConnection));
-        }
-        if (sqlStatement instanceof ShowReadwriteSplittingRulesStatement) {
-            return Optional.of(new ReadwriteSplittingRulesQueryBackendHandler((ShowReadwriteSplittingRulesStatement) sqlStatement, backendConnection));
-        }
-        if (sqlStatement instanceof ShowDatabaseDiscoveryRulesStatement) {
-            return Optional.of(new DatabaseDiscoveryRulesQueryBackendHandler((ShowDatabaseDiscoveryRulesStatement) sqlStatement, backendConnection));
-        }
-        if (sqlStatement instanceof ShowEncryptRulesStatement) {
-            return Optional.of(new EncryptRulesQueryBackendHandler((ShowEncryptRulesStatement) sqlStatement, backendConnection));
-        }
-        if (sqlStatement instanceof ShowShardingTableRulesStatement) {
-            return Optional.of(new ShardingTableRulesQueryBackendHandler((ShowShardingTableRulesStatement) sqlStatement, backendConnection));
-        }
-        return Optional.empty();
+    public static TextProtocolBackendHandler newInstance(final RQLStatement sqlStatement, final BackendConnection backendConnection) {
+        DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        return new RQLBackendHandler(sqlStatement, backendConnection, resultSet);
     }
 }

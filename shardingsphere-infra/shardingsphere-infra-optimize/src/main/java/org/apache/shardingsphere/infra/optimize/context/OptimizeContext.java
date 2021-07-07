@@ -23,6 +23,7 @@ import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.Properties;
 
@@ -33,12 +34,19 @@ import java.util.Properties;
 @Getter
 public final class OptimizeContext {
     
+    private final DatabaseType databaseType;
+    
     private final Properties connectionProperties;
     
     private final String schemaName;
     
     private final Schema logicSchema;
     
+    /**
+     * Remove calcite's parser.
+     * @deprecated Use ShardingSphere parser instead.
+     */
+    @Deprecated
     private final SqlParser.Config parserConfig;
     
     private final SqlValidator validator;

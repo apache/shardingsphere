@@ -33,12 +33,15 @@ public final class ExecuteProcessContext {
     
     private final String executionID;
     
+    private final String sql;
+    
     private final Collection<ExecuteProcessUnit> unitStatuses;
     
     private final long startTimeMillis = System.currentTimeMillis();
     
-    public ExecuteProcessContext(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
         this.executionID = executionGroupContext.getExecutionID();
+        this.sql = sql;
         unitStatuses = createExecutionUnitStatuses(executionGroupContext, constants);
     }
     

@@ -72,15 +72,23 @@ public final class TableMetaDataBuilder {
                 RuleBasedTableMetaDataBuilder loader = entry.getValue();
                 Optional<TableMetaData> result = loader.load(tableName, materials.getDatabaseType(), materials.getDataSourceMap(), dataNodes, rule, materials.getProps());
                 if (result.isPresent()) {
-                    return result;
+                    TableMetaData tableMetaData = new TableMetaData(tableName, result.get().getColumns().values(), result.get().getIndexes().values());
+                    return Optional.of(tableMetaData);
                 }
             }
         }
         return Optional.empty();
     }
-    
+
+    /**
+     * Load logic table metadata.
+     * @param tableName table name
+     * @param tableMetaData table meta data
+     * @param rules shardingSphere rules
+     * @return table meta data
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
+    public static TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final Collection<ShardingSphereRule> rules) {
         TableMetaData result = null;
         for (Entry<ShardingSphereRule, RuleBasedTableMetaDataBuilder> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleBasedTableMetaDataBuilder.class).entrySet()) {
             if (entry.getKey() instanceof TableContainedRule) {

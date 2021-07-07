@@ -21,11 +21,12 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -49,31 +50,37 @@ import static org.mockito.Mockito.mock;
 public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
+        return assertRoute(sql, parameters, 1);
+    }
+    
+    protected final RouteContext assertRoute(final String sql, final List<Object> parameters, final int routeUnitSize) {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereSchema schema = buildSchema();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL");
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schema, parameters, sqlStatementParserEngine.parse(sql, false));
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(shardingRule));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, schema);
+        metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, parameters, sqlStatementParserEngine.parse(sql, false), DefaultSchema.LOGIC_NAME);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
         RouteContext result = new SQLRouteEngine(Collections.singletonList(shardingRule), props).route(logicSQL, metaData);
-        assertThat(result.getRouteUnits().size(), is(1));
+        assertThat(result.getRouteUnits().size(), is(routeUnitSize));
         return result;
     }
     
     private ShardingSphereSchema buildSchema() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
+        tableMetaDataMap.put("t_order", new TableMetaData("t_order", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("status", Types.INTEGER, false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", Types.INTEGER, true, false, false),
+        tableMetaDataMap.put("t_order_item", new TableMetaData("t_order_item", Arrays.asList(new ColumnMetaData("item_id", Types.INTEGER, true, false, false),
                 new ColumnMetaData("order_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
                 new ColumnMetaData("status", Types.VARCHAR, false, false, false),
                 new ColumnMetaData("c_date", Types.TIMESTAMP, false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_category", new TableMetaData());
+        tableMetaDataMap.put("t_other", new TableMetaData("t_other", Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_category", new TableMetaData("t_category"));
         return new ShardingSphereSchema(tableMetaDataMap);
     }
 }

@@ -5,4 +5,4 @@ weight = 3
 chapter = true
 +++
 
-## TODO
+This chapter describes the syntax of SCTL in detail, and introduces the use method of SCTL in combination with use practices.
