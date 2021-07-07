@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.parser;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import lombok.Getter;
 
-import java.util.Properties;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
-public class SQLParserParameterizedExample {
-
-    public static void main(String[] args) {
-        String sql = "select age as b, name n from table1 join table2 where id=1 and name='lu';";
-        Properties props = new Properties();
-        SQLParserEngine parserEngine = new SQLParserEngine("MySQL");
-        ParseTree tree = parserEngine.parse(sql, false);
-        SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
-        String result = visitorEngine.visit(tree);
-        System.out.println(result);
-    }
+/**
+ * Base case for xml tag.
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@Getter
+public abstract class Case {
+    
+    @XmlAttribute
+    private String id;
+    
+    @XmlAttribute
+    private String value;
 }

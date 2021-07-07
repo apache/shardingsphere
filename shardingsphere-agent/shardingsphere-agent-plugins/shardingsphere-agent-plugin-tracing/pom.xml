@@ -34,6 +34,7 @@
         <module>shardingsphere-agent-tracing-jaeger</module>
         <module>shardingsphere-agent-tracing-zipkin</module>
         <module>shardingsphere-agent-tracing-opentracing</module>
+        <module>shardingsphere-agent-tracing-opentelemetry</module>
     </modules>
     
     <properties>
@@ -42,6 +43,8 @@
         <jaeger-client.version>0.31.0</jaeger-client.version>
         <zipkin-brave.version>5.13.2</zipkin-brave.version>
         <zipkin-reporter.version>2.16.2</zipkin-reporter.version>
+        <opentelemetry.version>1.3.0</opentelemetry.version>
+        <opentelemetry-autoconfigure.version>1.3.0-alpha</opentelemetry-autoconfigure.version>
     </properties>
     
     <dependencies>
