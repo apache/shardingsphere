@@ -174,4 +174,9 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
     private BinaryCell createBinaryCell(final QueryResponseCell cell) {
         return new BinaryCell(PostgreSQLBinaryColumnType.valueOfJDBCType(((BinaryQueryResponseCell) cell).getJdbcType()), cell.getData());
     }
+    
+    @Override
+    public void close() throws SQLException {
+        databaseCommunicationEngines.clear();
+    }
 }
