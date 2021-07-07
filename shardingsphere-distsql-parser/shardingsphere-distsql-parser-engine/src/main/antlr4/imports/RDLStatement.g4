@@ -28,10 +28,34 @@ dropResource
     ;
 
 dataSource
-    : dataSourceName LP URL EQ url COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA PROPERTIES LP poolProperties? RP)? RP
+    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA PROPERTIES LP poolProperties? RP)? RP
     ;
 
 dataSourceName
+    : IDENTIFIER
+    ;
+
+simpleSource
+    : HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName
+    ;
+
+urlSource
+    : URL EQ url
+    ;
+
+hostName
+    : IDENTIFIER | ip
+    ;
+
+ip
+    : NUMBER+
+    ;
+
+port
+    : INT
+    ;
+
+dbName
     : IDENTIFIER
     ;
 

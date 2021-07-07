@@ -51,6 +51,18 @@ URL
     : U R L
     ;
 
+HOST
+    : H O S T
+    ;
+
+PORT
+    : P O R T
+    ;
+
+DB
+    : D B
+    ;
+
 USER
     : U S E R
     ;

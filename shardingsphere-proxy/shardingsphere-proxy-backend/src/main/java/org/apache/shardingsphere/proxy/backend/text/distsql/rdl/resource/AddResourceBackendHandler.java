@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResource
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
@@ -48,10 +49,13 @@ import java.util.stream.Collectors;
  */
 public final class AddResourceBackendHandler extends SchemaRequiredBackendHandler<AddResourceStatement> {
     
+    private final DatabaseType databaseType;
+    
     private final DataSourceValidator dataSourceValidator;
     
-    public AddResourceBackendHandler(final AddResourceStatement sqlStatement, final BackendConnection backendConnection) {
+    public AddResourceBackendHandler(final DatabaseType databaseType, final AddResourceStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
+        this.databaseType = databaseType;
         dataSourceValidator = new DataSourceValidator();
     }
     
@@ -59,7 +63,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) throws DistSQLException {
         check(schemaName, sqlStatement);
         Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(
-                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(sqlStatement)));
+                DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
         Collection<String> invalidDataSourceNames = dataSourceConfigMap.entrySet()
                 .stream().filter(entry -> !dataSourceValidator.validate(entry.getValue())).map(Entry::getKey).collect(Collectors.toList());
         if (!invalidDataSourceNames.isEmpty()) {
