@@ -82,7 +82,7 @@ public final class OpenGaussComBatchBindExecutor implements QueryCommandExecutor
                     connectionContext.setUpdateCount(connectionContext.getUpdateCount() + ((UpdateResponseHeader) responseHeader).getUpdateCount());
                 }
             } finally {
-                databaseCommunicationEngine.close();
+                backendConnection.closeDatabaseCommunicationEngines(false);
             }
         }
         return Collections.singletonList(new PostgreSQLBindCompletePacket());
