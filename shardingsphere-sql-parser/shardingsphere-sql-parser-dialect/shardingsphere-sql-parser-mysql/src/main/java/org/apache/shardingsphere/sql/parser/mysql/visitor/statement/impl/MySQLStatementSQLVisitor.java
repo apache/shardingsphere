@@ -614,7 +614,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.selectSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
-        if (null != ctx.fromClause()) {
+        if (null != ctx.fromClause() && null != ctx.fromClause().tableReferences()) {
             TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
             result.setFrom(tableSource);
         }
