@@ -32,6 +32,6 @@ import java.util.List;
 @Getter
 public final class DistSQLCases extends Cases {
     
-    @XmlElement(name = "distSQL-case")
+    @XmlElement(name = "distsql-case")
     private List<DistSQLCase> distSQLCases = new LinkedList<>();
 }
