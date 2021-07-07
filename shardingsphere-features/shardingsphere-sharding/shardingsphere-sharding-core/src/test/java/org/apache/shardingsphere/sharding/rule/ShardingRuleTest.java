@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.rule.single.SingleTableRule;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -301,13 +300,6 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetTables() {
         assertThat(createMaximumShardingRule().getTables(), is(Arrays.asList("logic_table", "sub_logic_table")));
-    }
-    
-    @Test
-    public void assertGetAllDataNodesWithSingleTables() {
-        ShardingRule shardingRule = createMaximumShardingRule();
-        shardingRule.getSingleTableRules().put("single", new SingleTableRule("single", "ds_0"));
-        assertThat(shardingRule.getAllDataNodes().size(), is(3));
     }
     
     @Test

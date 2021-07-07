@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rule.single;
+package org.apache.shardingsphere.infra.rule;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class SingleTableRule {
+public final class SingleTableDataNode {
     
     private final String tableName;
     
