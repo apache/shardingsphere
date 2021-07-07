@@ -54,6 +54,8 @@ public final class OpenGaussComBatchBindPacket extends PostgreSQLCommandPacket {
     
     private final PostgreSQLBinaryStatement binaryStatement;
     
+    private final int eachGroupParametersCount;
+    
     public OpenGaussComBatchBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
         this.payload = payload;
         payload.readInt4();
@@ -72,6 +74,7 @@ public final class OpenGaussComBatchBindPacket extends PostgreSQLCommandPacket {
         }
         binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
         sql = null == binaryStatement ? null : binaryStatement.getSql();
+        eachGroupParametersCount = payload.readInt2();
     }
     
     /**
@@ -96,9 +99,8 @@ public final class OpenGaussComBatchBindPacket extends PostgreSQLCommandPacket {
      */
     public List<Object> readOneGroupOfParameters() {
         List<PostgreSQLBinaryColumnType> columnTypes = binaryStatement.getColumnTypes();
-        int parameterCount = payload.readInt2();
-        List<Object> result = new ArrayList<>(parameterCount);
-        for (int parameterIndex = 0; parameterIndex < parameterCount; parameterIndex++) {
+        List<Object> result = new ArrayList<>(eachGroupParametersCount);
+        for (int parameterIndex = 0; parameterIndex < eachGroupParametersCount; parameterIndex++) {
             int parameterValueLength = payload.readInt4();
             if (-1 == parameterValueLength) {
                 result.add(null);
