@@ -32,7 +32,7 @@ public class OpenTelemetryTracingPluginBootService implements PluginBootService 
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
     }
 
     @Override
