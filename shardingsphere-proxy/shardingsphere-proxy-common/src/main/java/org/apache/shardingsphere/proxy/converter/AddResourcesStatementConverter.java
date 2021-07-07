@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import java.util.LinkedHashMap;
@@ -37,16 +36,15 @@ public final class AddResourcesStatementConverter {
     /**
      * Convert add resource statement to YAML data source parameter map.
      *
-     * @param databaseType database type
      * @param sqlStatement add resource statement
      * @return YAML data source parameter map
      */
-    public static Map<String, YamlDataSourceParameter> convert(final DatabaseType databaseType, final AddResourceStatement sqlStatement) {
+    public static Map<String, YamlDataSourceParameter> convert(final AddResourceStatement sqlStatement) {
         Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {
             DataSourceParameter parameter = new DataSourceParameter();
             YamlDataSourceParameter dataSource = new YamlDataSourceParameter();
-            dataSource.setUrl(getURL(databaseType, each));
+            dataSource.setUrl(each.getUrl());
             dataSource.setUsername(each.getUser());
             dataSource.setPassword(each.getPassword());
             dataSource.setMinPoolSize(parameter.getMinPoolSize());
@@ -54,12 +52,9 @@ public final class AddResourcesStatementConverter {
             dataSource.setConnectionTimeoutMilliseconds(parameter.getConnectionTimeoutMilliseconds());
             dataSource.setIdleTimeoutMilliseconds(parameter.getIdleTimeoutMilliseconds());
             dataSource.setMaintenanceIntervalMilliseconds(parameter.getMaintenanceIntervalMilliseconds());
+            dataSource.setCustomPoolProps(each.getProperties());
             result.put(each.getName(), dataSource);
         }
         return result;
-    }
-    
-    private static String getURL(final DatabaseType databaseType, final DataSourceSegment dataSourceSegment) {
-        return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), dataSourceSegment.getHostName(), dataSourceSegment.getPort(), dataSourceSegment.getDb());
     }
 }

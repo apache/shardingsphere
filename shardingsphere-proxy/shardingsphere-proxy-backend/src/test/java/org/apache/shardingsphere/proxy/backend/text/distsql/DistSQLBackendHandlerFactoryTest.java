@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -82,12 +83,12 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AddResourceStatement.class), connection);
+            RDLBackendHandlerFactory.newInstance(mock(AddResourceStatement.class), connection);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `AddResourceStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AddResourceStatement.class), connection).execute();
+        ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(AddResourceStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -96,12 +97,12 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateShardingTableRuleStatement.class), connection);
+            RDLBackendHandlerFactory.newInstance(mock(CreateShardingTableRuleStatement.class), connection);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `CreateShardingTableRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateShardingTableRuleStatement.class), connection).execute();
+        ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(CreateShardingTableRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -110,12 +111,12 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropResourceStatement.class), connection);
+            RDLBackendHandlerFactory.newInstance(mock(DropResourceStatement.class), connection);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `DropResourceStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropResourceStatement.class), connection).execute();
+        ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(DropResourceStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -124,12 +125,12 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReadwriteSplittingRuleStatement.class), connection);
+            RDLBackendHandlerFactory.newInstance(mock(DropReadwriteSplittingRuleStatement.class), connection);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `DropReadwriteSplittingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReadwriteSplittingRuleStatement.class), connection).execute();
+        ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(DropReadwriteSplittingRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
 
@@ -138,12 +139,12 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateReadwriteSplittingRuleStatement.class), connection);
+            RDLBackendHandlerFactory.newInstance(mock(CreateReadwriteSplittingRuleStatement.class), connection);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `CreateReadwriteSplittingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateReadwriteSplittingRuleStatement.class), connection).execute();
+        ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(CreateReadwriteSplittingRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -152,12 +153,12 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterReadwriteSplittingRuleStatement.class), connection);
+            RDLBackendHandlerFactory.newInstance(mock(AlterReadwriteSplittingRuleStatement.class), connection);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("No Registry center to execute `AlterReadwriteSplittingRuleStatement` SQL"));
         }
         setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterReadwriteSplittingRuleStatement.class), connection).execute();
+        ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(AlterReadwriteSplittingRuleStatement.class), connection).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
@@ -166,7 +167,7 @@ public final class DistSQLBackendHandlerFactoryTest {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
         try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(RuleDefinitionStatement.class), connection);
+            RDLBackendHandlerFactory.newInstance(mock(RuleDefinitionStatement.class), connection);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), containsString("No Registry center to execute "));
         }
