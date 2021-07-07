@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -78,7 +79,7 @@ public final class OrderByContextEngine {
     private OrderByContext getDefaultOrderByContextWithoutOrderBy(final GroupByContext groupByContext) {
         return new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty());
     }
-
+    
     private OrderByContext createOrderByContextForDistinctRowWithoutGroupBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
         if (groupByContext.getItems().isEmpty() && selectStatement.getProjections().isDistinctRow()) {
             int index = 0;
@@ -110,7 +111,7 @@ public final class OrderByContextEngine {
             return Optional.empty();
         }
         for (String each : tableMetaData.getPrimaryKeyColumns()) {
-            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each));
+            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each, QuoteCharacter.NONE));
             OrderByItem item = new OrderByItem(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC));
             item.setIndex(index++);
             orderByItems.add(item);
