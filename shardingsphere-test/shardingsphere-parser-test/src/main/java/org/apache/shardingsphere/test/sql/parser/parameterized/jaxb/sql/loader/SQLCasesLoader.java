@@ -70,9 +70,9 @@ public final class SQLCasesLoader extends CasesLoader {
     public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
         switch (sqlCaseType) {
             case Literal:
-                return getLiteralSQL(getSQLFromMap(sqlCaseId, super.getSqlCases()), parameters);
+                return getLiteralSQL(getSQLFromMap(sqlCaseId, super.getCases()), parameters);
             case Placeholder:
-                return getPlaceholderSQL(getSQLFromMap(sqlCaseId, super.getSqlCases()));
+                return getPlaceholderSQL(getSQLFromMap(sqlCaseId, super.getCases()));
             default:
                 throw new UnsupportedOperationException(sqlCaseType.name());
         }
@@ -87,7 +87,7 @@ public final class SQLCasesLoader extends CasesLoader {
     @Override
     public Collection<Object[]> getTestParameters(final Collection<String> databaseTypes) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Case each : super.getSqlCases().values()) {
+        for (Case each : super.getCases().values()) {
             result.addAll(getSQLTestParameters(databaseTypes, (SQLCase) each));
         }
         return result;

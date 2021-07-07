@@ -33,7 +33,7 @@ import org.junit.runners.Parameterized;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-public class DistSQLParserParameterizedTest {
+public final class DistSQLParserParameterizedTest {
     
     private static final DistSQLCasesLoader DIST_SQL_CASES_LOADER = CasesRegistry.getInstance().getDistSQLCasesLoader();
     
@@ -61,5 +61,4 @@ public class DistSQLParserParameterizedTest {
     private SQLStatement parseSQLStatement(final String sql) {
         return new DistSQLStatementParserEngine().parse(sql);
     }
-
 }

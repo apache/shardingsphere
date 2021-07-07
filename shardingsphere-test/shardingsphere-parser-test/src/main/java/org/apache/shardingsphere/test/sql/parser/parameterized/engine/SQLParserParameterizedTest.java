@@ -33,11 +33,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Properties;
-
-import static org.junit.Assert.fail;
 
 @RequiredArgsConstructor
 public abstract class SQLParserParameterizedTest {
@@ -53,7 +50,6 @@ public abstract class SQLParserParameterizedTest {
     private final SQLCaseType sqlCaseType;
     
     protected static Collection<Object[]> getTestParameters(final String... databaseTypes) {
-        //checkTestCases();
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : SQL_CASES_LOADER.getTestParameters(Arrays.asList(databaseTypes))) {
             if (!isPlaceholderWithoutParameter(each)) {
@@ -61,14 +57,6 @@ public abstract class SQLParserParameterizedTest {
             }
         }
         return result;
-    }
-    
-    private static void checkTestCases() {
-        Collection<String> allSQLCaseIDs = new HashSet<>(SQL_CASES_LOADER.getAllSQLCaseIDs());
-        if (allSQLCaseIDs.size() != SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs().size()) {
-            allSQLCaseIDs.removeAll(SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs());
-            fail(String.format("The count of SQL cases and SQL parser cases are mismatched, missing cases are: %s", allSQLCaseIDs));
-        }
     }
     
     private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParameter) {

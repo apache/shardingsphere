@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.Case;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.SQLCasesLoader;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -40,22 +39,22 @@ import java.util.TreeMap;
 @Getter
 public abstract class CasesLoader {
     
-    private final Map<String, Case> sqlCases;
+    private final Map<String, Case> cases;
     
     public CasesLoader(final String rootDirection) {
-        sqlCases = load(rootDirection);
+        cases = load(rootDirection);
     }
     
     @SneakyThrows({JAXBException.class, IOException.class})
     private Map<String, Case> load(final String path) {
-        File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        File file = new File(CasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         return file.isFile() ? loadFromJar(file, path) : loadFromTargetDirectory(path);
     }
     
     private Map<String, Case> loadFromJar(final File file, final String path) throws JAXBException {
         Map<String, Case> result = new TreeMap<>();
         for (String each : TestCaseFileLoader.loadFileNamesFromJar(file, path)) {
-            buildCaseMap(result, SQLCasesLoader.class.getClassLoader().getResourceAsStream(each));
+            buildCaseMap(result, CasesLoader.class.getClassLoader().getResourceAsStream(each));
         }
         return result;
     }
@@ -100,6 +99,6 @@ public abstract class CasesLoader {
      * @return all SQL case IDs
      */
     public Collection<String> getAllSQLCaseIDs() {
-        return sqlCases.keySet();
+        return cases.keySet();
     }
 }

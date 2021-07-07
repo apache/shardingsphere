@@ -53,7 +53,7 @@ public final class DistSQLCasesLoader extends CasesLoader {
     @Override
     public Collection<Object[]> getTestParameters(final Collection<String> databaseTypes) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Case each : super.getSqlCases().values()) {
+        for (Case each : super.getCases().values()) {
             Object[] parameters = new Object[1];
             parameters[0] = each.getId();
             result.add(parameters);
@@ -63,7 +63,7 @@ public final class DistSQLCasesLoader extends CasesLoader {
 
     @Override
     public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
-        Map<String, Case> sqlCaseMap = super.getSqlCases();
+        Map<String, Case> sqlCaseMap = super.getCases();
         Preconditions.checkState(sqlCaseMap.containsKey(sqlCaseId), "Can't find case of ID: %s", sqlCaseId);
         DistSQLCase statement = (DistSQLCase) sqlCaseMap.get(sqlCaseId);
         return statement.getValue();
