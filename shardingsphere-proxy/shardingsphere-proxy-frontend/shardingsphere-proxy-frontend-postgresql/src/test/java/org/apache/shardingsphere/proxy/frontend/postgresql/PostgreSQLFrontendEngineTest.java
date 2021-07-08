@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
@@ -30,8 +29,6 @@ import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentMap;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -51,15 +48,11 @@ public final class PostgreSQLFrontendEngineTest {
         BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         int connectionId = 1;
         when(backendConnection.getConnectionId()).thenReturn(connectionId);
-        PostgreSQLBinaryStatementRegistry registry = PostgreSQLBinaryStatementRegistry.getInstance();
-        registry.register(connectionId);
         PostgreSQLConnectionContextRegistry.getInstance().get(connectionId);
-        assertNotNull(registry.get(connectionId));
         PostgreSQLFrontendEngine frontendEngine = new PostgreSQLFrontendEngine();
         ConnectionThreadExecutorGroup.getInstance().register(connectionId);
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionId);
         frontendEngine.release(backendConnection);
-        assertNull(registry.get(connectionId));
         assertTrue(getConnectionContexts().isEmpty());
     }
     

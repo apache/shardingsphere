@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.close;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLCloseCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -56,7 +55,6 @@ public final class PostgreSQLComCloseExecutorTest {
     @Before
     public void setUp() {
         when(backendConnection.getConnectionId()).thenReturn(CONNECTION_ID);
-        PostgreSQLBinaryStatementRegistry.getInstance().register(CONNECTION_ID);
     }
     
     @Test
