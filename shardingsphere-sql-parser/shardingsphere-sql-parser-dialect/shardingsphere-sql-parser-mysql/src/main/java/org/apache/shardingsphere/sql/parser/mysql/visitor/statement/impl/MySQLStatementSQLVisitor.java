@@ -198,8 +198,6 @@ import java.util.Properties;
 @NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
-    
-    private int currentParameterIndex;
 
     private static final String JOIN_TYPE_INNER = "INNER";
 
@@ -208,6 +206,8 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     private static final String JOIN_TYPE_RIGHT = "RIGHT";
 
     private static final String JOIN_TYPE_NATURAL = "NATURAL";
+
+    private int currentParameterIndex;
     
     public MySQLStatementSQLVisitor(final Properties props) {
     }
@@ -1376,8 +1376,8 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         return result;
     }
 
-    private String doGetJoinType(JoinedTableContext ctx) {
-        // TODO:need more joinType support
+    private String doGetJoinType(final JoinedTableContext ctx) {
+        // TODO : need more joinType support
         String joinType = null;
         if (null != ctx.innerJoinType() && null != ctx.innerJoinType().JOIN()) {
             joinType = JOIN_TYPE_INNER;
