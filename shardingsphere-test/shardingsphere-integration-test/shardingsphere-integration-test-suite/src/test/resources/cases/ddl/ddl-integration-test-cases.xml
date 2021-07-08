@@ -149,11 +149,11 @@
     </test-case>
     
     <!--FIXME #11103-->
-    <test-case sql="ALTER TABLE t_user_details CHANGE number number_new VARCHAR(50)" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="alter_change.xml">
-            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details CHANGE number number_new VARCHAR(50)" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
+<!--        <assertion expected-data-file="alter_change.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
     
     <!--FIXME #11105-->
     <test-case sql="ALTER TABLE t_user_details DROP COLUMN number" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
