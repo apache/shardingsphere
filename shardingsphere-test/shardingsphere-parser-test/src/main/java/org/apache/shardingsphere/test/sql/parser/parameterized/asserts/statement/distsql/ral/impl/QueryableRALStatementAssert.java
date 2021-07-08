@@ -40,6 +40,7 @@ public final class QueryableRALStatementAssert {
      * @param expected      expected queryable RAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final QueryableRALStatement actual, final SQLParserTestCase expected) {
+        // TODO add more test case
         if (actual instanceof ShowScalingJobListStatement) {
             ShowScalingJobListStatementAssert.assertIs(assertContext, (ShowScalingJobListStatement) actual, (ShowScalingJobListStatementTestCase) expected);
         }
