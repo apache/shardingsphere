@@ -62,7 +62,6 @@ public final class PostgreSQLComParseExecutorTest {
     public void assertNewInstance() throws NoSuchFieldException, IllegalAccessException {
         when(parsePacket.getSql()).thenReturn("SELECT 1");
         when(parsePacket.getStatementId()).thenReturn("2");
-        when(backendConnection.getConnectionId()).thenReturn(1);
         when(backendConnection.getSchemaName()).thenReturn("schema");
         when(connectionContext.getBinaryStatements()).thenReturn(new ConcurrentHashMap<>(1, 1));
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
