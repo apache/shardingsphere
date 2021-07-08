@@ -47,6 +47,10 @@ FROM
     : F R O M
     ;
 
+URL
+    : U R L
+    ;
+
 HOST
     : H O S T
     ;

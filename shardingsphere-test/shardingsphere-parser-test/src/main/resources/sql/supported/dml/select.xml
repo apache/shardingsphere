@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="select_constant_without_table" value="SELECT 1 as a" />
+    <sql-case id="select_constant_without_table" value="SELECT 1 as a" db-types="MySQL, PostgreSQL, SQLServer"/>
     <sql-case id="select_with_operator_ilike" value="SELECT id from t_order where name !~ '^pg_toast'" db-types="PostgreSQL"/>
     <sql-case id="select_with_binary_operation_of_aggregation_expr" value="SELECT (count(*)+1) as a" db-types="MySQL" />
     <sql-case id="select_with_schema_func" value="SELECT schema(), database()" db-types="MySQL" />
@@ -83,4 +83,11 @@
     <sql-case id="select_from_dual" value="SELECT 1 FROM DUAL" db-types="MySQL" />
     <sql-case id="select_with_cast_as_signed" value="SELECT user_id,CAST(order_id AS SIGNED) FROM t_order" db-types="MySQL"/>
     <sql-case id="select_with_cast_as_unsigned" value="SELECT CAST(order_id AS UNSIGNED),user_id FROM t_order" db-types="MySQL"/>
+    <sql-case id="select_with_simple_table" value="SELECT * FROM employees WHERE department_id = 30 ORDER BY last_name" db-types="Oracle" />
+    <sql-case id="select_with_binding_tables_with_subquery_without_join" value="SELECT a.department_id &quot;Department&quot;, a.num_emp/b.total_count &quot;%_Employees&quot;, a.sal_sum/b.total_sal &quot;%_Salary&quot; 
+    FROM (SELECT department_id, COUNT(*) num_emp, SUM(salary) sal_sum FROM employees GROUP BY department_id) a, (SELECT COUNT(*) total_count, SUM(salary) total_sal FROM employees) b ORDER BY a.department_id" db-types="Oracle" />
+    <sql-case id="select_with_partitioned_table" value="SELECT * FROM sales PARTITION (sales_q2_2000) s WHERE s.amount_sold > 1500 ORDER BY cust_id, time_id, channel_id" db-types="Oracle" />
+    <sql-case id="select_with_binding_tables_without_join" value="SELECT last_name, job_id, departments.department_id, department_name FROM employees, departments WHERE employees.department_id = departments.department_id ORDER BY last_name, job_id" db-types="Oracle" />
+    <sql-case id="select_with_lateral_clause" value="SELECT * FROM employees e, LATERAL(SELECT * FROM departments d WHERE e.department_id = d.department_id)" db-types="Oracle" />
+    <sql-case id="select_with_containers" value="SELECT * FROM CONTAINERS(employees)" db-types="Oracle" />
 </sql-cases>
