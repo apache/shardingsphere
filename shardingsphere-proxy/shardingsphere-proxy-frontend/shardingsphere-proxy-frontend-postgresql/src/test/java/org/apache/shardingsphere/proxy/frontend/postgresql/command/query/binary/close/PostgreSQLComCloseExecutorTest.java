@@ -42,8 +42,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLComCloseExecutorTest {
     
-    private static final int CONNECTION_ID = new Random().nextInt() & Integer.MAX_VALUE;
-    
     @Mock
     private PostgreSQLConnectionContext connectionContext;
     
@@ -55,7 +53,6 @@ public final class PostgreSQLComCloseExecutorTest {
     
     @Before
     public void setUp() {
-        when(backendConnection.getConnectionId()).thenReturn(CONNECTION_ID);
         when(connectionContext.getBinaryStatements()).thenReturn(new ConcurrentHashMap<>(1, 1));
     }
     
