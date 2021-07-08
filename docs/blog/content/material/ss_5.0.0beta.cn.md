@@ -1,10 +1,8 @@
 +++
 title = "新版发布｜ShardingSphere 5.0.0-beta 来了！"
-weight = 1
+weight = 14
 chapter = true
 +++
-
-# 新版发布｜ShardingSphere 5.0.0-beta 来了！
 
 Original 潘娟 SphereEx 6/22
 
@@ -17,7 +15,7 @@ Original 潘娟 SphereEx 6/22
 
 ![Juan](https://shardingsphere.apache.org/blog/img/ss_5.0.0beta1.jpg)
 
->**潘娟 | Trista**
+> **潘娟 | Trista**
 >
 >SphereEx 联合创始人
 >
