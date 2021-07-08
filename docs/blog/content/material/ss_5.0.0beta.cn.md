@@ -1,9 +1,15 @@
++++
+title = "新版发布｜ShardingSphere 5.0.0-beta 来了！"
+weight = 1
+chapter = true
++++
+
 # 新版发布｜ShardingSphere 5.0.0-beta 来了！
 
 Original 潘娟 SphereEx 6/22
 
->
-Apache ShardingSphere 5.0.0-beta 版在经过长达半年的筹备后，终于将在近期正式 Release! 本文将带领大家一同预览新版本即将带来哪些重大亮点功能。
+
+>Apache ShardingSphere 5.0.0-beta 版在经过长达半年的筹备后，终于将在近期正式 Release! 本文将带领大家一同预览新版本即将带来哪些重大亮点功能。
 
 
 
@@ -11,11 +17,13 @@ Apache ShardingSphere 5.0.0-beta 版在经过长达半年的筹备后，终于�
 
 ![Juan](https://shardingsphere.apache.org/blog/img/ss_5.0.0beta1.jpg)
 
->潘娟 | Trista
-
+>**潘娟 | Trista**
+>
 >SphereEx 联合创始人
-
->SphereEx co-founder, Apache member, Apache ShardingSphere PMC, Apache brpc(Incubating) mentor, 本次 Release manager。前京东科技高级 DBA，曾负责京东数科数据库智能平台的设计与研发，现专注于分布式数据库 & 中间件生态及开源领域。被评为《2020 中国开源先锋人物》，多次受邀参加数据库 & 架构领域的相关会议分享。
+>
+>SphereEx co-founder, Apache member, Apache ShardingSphere PMC, Apache brpc(Incubating) mentor, 本次 Release manager。
+>
+>前京东科技高级 DBA，曾负责京东数科数据库智能平台的设计与研发，现专注于分布式数据库 & 中间件生态及开源领域。被评为《2020 中国开源先锋人物》，多次受邀参加数据库 & 架构领域的相关会议分享。
 
 
 
@@ -23,7 +31,7 @@ Apache ShardingSphere 5.0.0-beta 版在经过长达半年的筹备后，终于�
 
 
 
-### 本次 Release 将会带来以下重要特性：
+## 本次 Release 将会带来以下重要特性：
 
 ### 1. 亮点功能
 
@@ -103,7 +111,6 @@ ShardingSphere 的可插拔架构为用户提供丰富的扩展能力，同时�
 
 由于 ShardingSphere 要帮助用户屏蔽及管理所有数据库实例及元数据信息，故在应用启动时，会出现长时间加载元数据信息的性能问题，特别是在上千台服务器实例情况下，元数据加载慢的问题更为明显。本次发行的版本，特别针对社区呼声较高的元数据加载问题进行多次性能调优和架构调整。取代原生的 JDBC 驱动加载方式，改为针对不同数据库方言，进行并行化的 SQL 查询方式一次性取出所有元数据信息，从而大幅度提升启动性能。
 
-
 #### 使用便捷：新增内置性能测试体系
 
 ShardingSphere 在功能不断完善、新功能不断开发的进程中，一直欠缺一套完善、全面的整合 & 性能测试体系，在保证每次提交都能正常编译的同时，不影响其他模块，并能观测到性能的上升及下降趋势。此外，针对数据分片、数据加密、读写分离、分布式管控、权限控制、SQL 支持度等功能进行整合测试保证；对不同数据库、不同分片或加密策略、不同版本之间的性能进行监控和调优提供基础保证。
@@ -112,12 +119,8 @@ ShardingSphere 在功能不断完善、新功能不断开发的进程中，一�
 
 除了上述列举的功能外，本次发布还进行了其他方面的功能增强、性能优化、缺陷修复等处理。在后续的系列文章中，我们将会持续为大家带来 Apache ShardingSphere 5.0.0-beta 的正式发布报道、各个特性及功能的深度技术文章，欢迎锁定我们的系列更新！
 
-##### 🔗ShardingSphere GitHub 地址：
+**🔗	ShardingSphere GitHub 地址：**
 
 <https://github.com/apache/shardingsphere>
 
-
-
-
-
-##### 在使用 ShardingSphere 的过程中，如果您发现任何问题，有新的想法、建议，欢迎点击“阅读原文”链接通过 Apache 邮件列表参与到 ShardingSphere 的社区建设中。
+**在使用 ShardingSphere 的过程中，如果您发现任何问题，有新的想法、建议，欢迎点击 [链接](https://shardingsphere.apache.org/community/cn/contribute/subscribe/) 通过 Apache 邮件列表参与到 ShardingSphere 的社区建设中。**
