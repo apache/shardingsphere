@@ -174,6 +174,8 @@ In addition to above mentioned features, for a comprehensive list of enhancement
 
 **Project Address:** <https://shardingsphere.apache.org/>
 
+**Mailing List:** <https://shardingsphere.apache.org/community/en/contribute/subscribe/>
+
 #### Community Contribution:
 
 The release of Apache ShardingSphere 5.0.0-beta could not have happened without the outstanding support and contribution of the community. 
