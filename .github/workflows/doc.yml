@@ -35,5 +35,5 @@ jobs:
         with:
           token: ${{ secrets.PERSONAL_TOKEN }}
           repo: shardingsphere-doc
-          owner: apache
+          owner: ${{ github.actor	}}
           event_type: update
