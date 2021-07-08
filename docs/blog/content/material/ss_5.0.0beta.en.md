@@ -1,10 +1,8 @@
 +++
 title = "Following 6 months of development Apache ShardingSphere 5.0.0-beta has been officially released!"
-weight = 1
+weight = 14
 chapter = true
 +++
-
-# Following 6 months of development Apache ShardingSphere 5.0.0-beta has been officially released! 
 
 As an Apache top-level project, ShardingSphere goes through community verification, voting and many other steps before it can be released. Such steps ensure the release is compliant with the Apache Release License specifications, and meeting the users’ expectations set for the 5.0.0-beta milestone. The current version’s architecture has been completed and the version is officially available.
 
@@ -186,13 +184,13 @@ Since the 5.0.0-alpha release until now, 41 contributors have contributed 1574 P
 
 ![](https://shardingsphere.apache.org/blog/img/ss_5.0.0beta1.jpg)
 
->**Pan Juan | Trista**
+> **Pan Juan | Trista**
 >
 >SphereEx co-founder, Apache member, Apache ShardingSphere PMC, Apache brpc (Incubating) mentor, Release manager. 
 >
 >Senior DBA at JD Technology, she was responsible for the design and development of JD Digital Science and Technology's intelligent database platform. She now focuses on distributed database & middleware ecosystem, and the open-source community. 
 Recipient of the "2020 China Open-Source Pioneer" award, she is frequently invited to speak and share her insights at relevant conferences in the fields of database & database architecture.
-
+>
 >**GitHub:** <https://tristazero.github.io>
 
 
