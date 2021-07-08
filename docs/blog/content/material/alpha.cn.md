@@ -1,6 +1,6 @@
 +++
 title = "停滞数年后，ElasticJob 携首个 Apache 版本 3.0.0-alpha 回归"
-weight = 1
+weight = 13
 chapter = true
 +++
 ## 停滞数年后，ElasticJob 携首个 Apache 版本 3.0.0-alpha 回归

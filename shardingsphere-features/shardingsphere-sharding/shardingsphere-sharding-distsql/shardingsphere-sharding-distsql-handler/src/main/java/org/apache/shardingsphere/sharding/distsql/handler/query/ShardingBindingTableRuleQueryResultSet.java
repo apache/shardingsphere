@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Result set for show sharding binding table rules.
  */
-public final class ShardingBindingTableRuleQueryResultSet implements RQLResultSet {
+public final class ShardingBindingTableRuleQueryResultSet implements DistSQLResultSet {
     
     private Iterator<String> data;
     

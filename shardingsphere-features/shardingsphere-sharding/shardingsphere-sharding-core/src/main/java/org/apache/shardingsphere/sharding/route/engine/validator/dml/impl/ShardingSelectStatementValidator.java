@@ -19,16 +19,12 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.SchemaAvailable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,9 +40,6 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
         if (isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
             needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
-        Collection<SchemaSegment> schemas = sqlStatementContext instanceof SchemaAvailable ? ((SchemaAvailable) sqlStatementContext).getSchemas() : Collections.emptyList();
-        long schemaCount = schemas.stream().map(each -> each.getIdentifier().getValue()).distinct().count();
-        Preconditions.checkState(schemaCount <= 1, "Can not support statement with multiple different schema.");
     }
     
     @Override

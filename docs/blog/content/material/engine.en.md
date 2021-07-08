@@ -1,6 +1,6 @@
 +++
 title = "How automatic executor of ShardingSphere works"
-weight = 10
+weight = 4
 chapter = true
 +++
 

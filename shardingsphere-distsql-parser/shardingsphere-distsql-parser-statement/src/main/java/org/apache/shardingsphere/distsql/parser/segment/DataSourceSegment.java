@@ -32,6 +32,8 @@ public final class DataSourceSegment implements ASTNode {
     
     private final String name;
     
+    private final String url;
+    
     private final String hostName;
     
     private final String port;

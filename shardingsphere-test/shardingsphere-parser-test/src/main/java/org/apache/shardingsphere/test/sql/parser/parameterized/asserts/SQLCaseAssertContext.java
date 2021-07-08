@@ -22,8 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.SQLCasesLoader;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.SQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.parameterized.loader.CasesLoader;
 
 import java.util.Collections;
 
@@ -33,9 +32,9 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class SQLCaseAssertContext {
     
-    private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
-    
     private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    
+    private final CasesLoader casesLoader;
     
     private final String sqlCaseId;
     
@@ -65,13 +64,13 @@ public final class SQLCaseAssertContext {
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            builder.append(SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
+            builder.append(casesLoader.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList()));
             builder.append(System.lineSeparator());
             builder.append("SQL Params  : ");
             builder.append(SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
             builder.append(System.lineSeparator());
         } else {
-            builder.append(SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
+            builder.append(casesLoader.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
         }
     }
     

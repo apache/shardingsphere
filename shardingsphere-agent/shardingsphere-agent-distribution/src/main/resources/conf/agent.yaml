@@ -21,6 +21,7 @@ ignoredPluginNames:
   - Opentracing
   - Zipkin
   - Prometheus
+  - OpenTelemetry
 
 plugins:
   Prometheus:
@@ -46,6 +47,10 @@ plugins:
   Opentracing:
     props:
       OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
+  OpenTelemetry:
+    props:
+      otel.resource.attributes: "service.name=shardingsphere-agent"
+      otel.traces.exporter: "zipkin"
   Logging:
     props:
       LEVEL: "INFO"
