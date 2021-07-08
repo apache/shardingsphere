@@ -31,18 +31,16 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>example-spring-jpa</artifactId>
+            <artifactId>example-spring-mybatis</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
         </dependency>
-        
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
