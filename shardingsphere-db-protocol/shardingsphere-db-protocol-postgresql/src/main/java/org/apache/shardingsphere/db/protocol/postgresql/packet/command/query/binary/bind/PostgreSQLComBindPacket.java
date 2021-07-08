@@ -22,8 +22,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinar
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -34,7 +32,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -43,30 +41,39 @@ import java.util.List;
 @Getter
 public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
+    private final PostgreSQLPacketPayload payload;
+    
     private final String portal;
     
     private final String statementId;
-    
-    private final String sql;
     
     private final List<Object> parameters;
     
     private final List<PostgreSQLValueFormat> resultFormats;
     
-    public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final int connectionId) {
+    public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload) {
+        this.payload = payload;
         payload.readInt4();
         portal = payload.readStringNul();
         statementId = payload.readStringNul();
+        parameters = new LinkedList<>();
+        resultFormats = new LinkedList<>();
+    }
+    
+    /**
+     * Init.
+     * @param columnTypes column types
+     */
+    public void init(final List<PostgreSQLBinaryColumnType> columnTypes) {
         int parameterFormatCount = payload.readInt2();
         List<Integer> parameterFormats = new ArrayList<>(parameterFormatCount);
         for (int i = 0; i < parameterFormatCount; i++) {
             parameterFormats.add(payload.readInt2());
         }
-        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
-        sql = null == binaryStatement ? null : binaryStatement.getSql();
-        parameters = null == sql ? Collections.emptyList() : getParameters(payload, parameterFormats, binaryStatement.getColumnTypes());
+        if (!columnTypes.isEmpty()) {
+            parameters.addAll(getParameters(payload, parameterFormats, columnTypes));
+        }
         int resultFormatsLength = payload.readInt2();
-        resultFormats = new ArrayList<>(resultFormatsLength);
         for (int i = 0; i < resultFormatsLength; i++) {
             resultFormats.add(PostgreSQLValueFormat.valueOf(payload.readInt2()));
         }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
 import org.junit.Before;
@@ -41,6 +42,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,6 +51,9 @@ public final class PostgreSQLComBindExecutorTest {
     
     @Mock
     private PostgreSQLConnectionContext connectionContext;
+    
+    @Mock
+    private PostgreSQLBinaryStatement binaryStatement;
     
     @Mock
     private PostgreSQLPortal portal;
@@ -61,11 +66,14 @@ public final class PostgreSQLComBindExecutorTest {
     
     @Before
     public void setup() throws SQLException {
+        when(bindPacket.getStatementId()).thenReturn("1");
         when(bindPacket.getPortal()).thenReturn("C_1");
-        when(bindPacket.getSql()).thenReturn("");
         when(bindPacket.getParameters()).thenReturn(Collections.emptyList());
         when(bindPacket.getResultFormats()).thenReturn(Collections.emptyList());
-        when(connectionContext.createPortal(anyString(), anyString(), any(List.class), any(List.class), eq(backendConnection))).thenReturn(portal);
+        doNothing().when(bindPacket).init(any(List.class));
+        when(binaryStatement.getColumnTypes()).thenReturn(Collections.emptyList());
+        when(connectionContext.getPostgreSQLBinaryStatement(anyString())).thenReturn(binaryStatement);
+        when(connectionContext.createPortal(anyString(), any(PostgreSQLBinaryStatement.class), any(List.class), any(List.class), eq(backendConnection))).thenReturn(portal);
     }
     
     @Test
