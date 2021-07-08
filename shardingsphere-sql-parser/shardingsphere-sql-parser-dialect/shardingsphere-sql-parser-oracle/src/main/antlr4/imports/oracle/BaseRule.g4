@@ -111,6 +111,10 @@ viewName
     : (owner DOT_)? name
     ;
 
+materializedViewName
+    : (owner DOT_)? name
+    ;
+
 columnName
     : (owner DOT_)? name
     ;
@@ -768,6 +772,26 @@ variableName
     : identifier | stringLiterals
     ;
 
-materializedViewName
+validTimeColumn
+    : columnName
+    ;
+
+attrDim
+    : identifier
+    ;
+
+hierarchyName
     : (owner DOT_)? name
+    ;
+
+analyticViewName
+    : (owner DOT_)? name
+    ;
+
+samplePercent
+    : numberLiterals
+    ;
+
+seedValue
+    : numberLiterals
     ;
