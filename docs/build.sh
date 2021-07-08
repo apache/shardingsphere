@@ -3,15 +3,15 @@ cd `dirname $0`
 
 rm -rf target
 
-mkdir -p target/document/preview
+mkdir -p target/document/master
 cd document
 hugo --cleanDestinationDir
-find ../document/public/ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/document/preview|g' {} \;
+find ../document/public/ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/document/master|g' {} \;
 cd public/en
 sed -i -e 's/cn/en/g' index.html
 cd ../..
 cd ..
-mv document/public/* target/document/preview/
+mv document/public/* target/document/master/
 
 mkdir target/community
 cd community
