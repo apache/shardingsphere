@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,11 +25,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Show sharding broadcast table rules statement test case.
+ * Show read-write splitting rules statement test case.
  */
 @Getter
 @Setter
-public final class ShowShardingBroadcastTableRulesStatementTestCase extends SQLParserTestCase {
+public final class ShowReadWriteSplittingRulesStatementTestCase extends SQLParserTestCase {
     
     @XmlElement
     private ExpectedSchema schema;
