@@ -25,6 +25,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNull;
 
 public final class HikariJDBCParameterDecoratorTest {
     
@@ -60,7 +61,7 @@ public final class HikariJDBCParameterDecoratorTest {
     public void assertDecoratedHikariDataSourceWithExistedParam() {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName("org.apache.shardingsphere.test.mock.MockedDriver");
-        dataSource.setJdbcUrl("mock:jdbc://127.0.0.1:3306/test0?tinyInt1isBit=false&useSSL=false");
+        dataSource.setJdbcUrl("mock:jdbc://127.0.0.1:3306/test0?tinyInt1isBit=true&useSSL=false");
         HikariDataSource actual = new HikariJDBCParameterDecorator().decorate(dataSource);
         Properties props = actual.getDataSourceProperties();
         assertThat(props.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
@@ -74,8 +75,8 @@ public final class HikariJDBCParameterDecoratorTest {
         assertThat(props.getProperty("elideSetAutoCommits"), is(Boolean.TRUE.toString()));
         assertThat(props.getProperty("maintainTimeStats"), is(Boolean.FALSE.toString()));
         assertThat(props.getProperty("netTimeoutForStreamingResults"), is("0"));
-        assertThat(props.getProperty("tinyInt1isBit"), is(Boolean.FALSE.toString()));
-        assertThat(props.getProperty("useSSL"), is(Boolean.FALSE.toString()));
+        assertNull(props.getProperty("tinyInt1isBit"));
+        assertNull(props.getProperty("useSSL"));
         assertThat(props.getProperty("serverTimezone"), is("UTC"));
     }
 }

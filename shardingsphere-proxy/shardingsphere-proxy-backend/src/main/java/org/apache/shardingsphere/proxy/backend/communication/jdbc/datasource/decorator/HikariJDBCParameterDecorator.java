@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.de
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceURIUtil;
 import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionUrlParser;
 
 import java.util.Map;
 
@@ -31,7 +31,7 @@ public final class HikariJDBCParameterDecorator implements JDBCParameterDecorato
     
     @Override
     public HikariDataSource decorate(final HikariDataSource dataSource) {
-        Map<String, String> urlProps = DataSourceURIUtil.getQueryMapFromUrl(dataSource.getJdbcUrl());
+        Map<String, String> urlProps = new ConnectionUrlParser(dataSource.getJdbcUrl()).getQueryMap();
         addJDBCProperty(dataSource, urlProps, "useServerPrepStmts", Boolean.TRUE.toString());
         addJDBCProperty(dataSource, urlProps, "useServerPrepStmts", Boolean.TRUE.toString());
         addJDBCProperty(dataSource, urlProps, "cachePrepStmts", Boolean.TRUE.toString());
