@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -55,6 +56,7 @@ public final class PostgreSQLComCloseExecutorTest {
     @Before
     public void setUp() {
         when(backendConnection.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(connectionContext.getBinaryStatements()).thenReturn(new ConcurrentHashMap<>(1, 1));
     }
     
     @Test
