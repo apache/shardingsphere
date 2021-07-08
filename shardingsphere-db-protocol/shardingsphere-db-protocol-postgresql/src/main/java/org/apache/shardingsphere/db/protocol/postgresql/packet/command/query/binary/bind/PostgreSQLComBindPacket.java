@@ -32,7 +32,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -47,15 +47,17 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     private final String statementId;
     
-    private List<Object> parameters;
+    private final List<Object> parameters;
     
-    private List<PostgreSQLValueFormat> resultFormats;
+    private final List<PostgreSQLValueFormat> resultFormats;
     
     public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload) {
         this.payload = payload;
         payload.readInt4();
         portal = payload.readStringNul();
         statementId = payload.readStringNul();
+        parameters = new LinkedList<>();
+        resultFormats = new LinkedList<>();
     }
     
     /**
@@ -68,9 +70,10 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         for (int i = 0; i < parameterFormatCount; i++) {
             parameterFormats.add(payload.readInt2());
         }
-        parameters = columnTypes.isEmpty() ? Collections.emptyList() : getParameters(payload, parameterFormats, columnTypes);
+        if (!columnTypes.isEmpty()) {
+            parameters.addAll(getParameters(payload, parameterFormats, columnTypes));
+        }
         int resultFormatsLength = payload.readInt2();
-        resultFormats = new ArrayList<>(resultFormatsLength);
         for (int i = 0; i < resultFormatsLength; i++) {
             resultFormats.add(PostgreSQLValueFormat.valueOf(payload.readInt2()));
         }

@@ -60,7 +60,6 @@ public final class PostgreSQLCommandPacketFactoryTest {
         when(payload.readInt4()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("stat-id");
         when(payload.readStringNul()).thenReturn("SELECT * FROM t_order");
-        when(payload.readInt2()).thenReturn(0);
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.BIND_COMMAND, payload, 1), instanceOf(PostgreSQLComBindPacket.class));
     }
     
