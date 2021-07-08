@@ -190,6 +190,7 @@ public final class OrderByContextEngineTest {
     public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnPlainQuery() {
         SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
         when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 1, new IdentifierValue("t_order"))));
+        when(selectStatement.getProjections().getProjections()).thenReturn(Collections.emptyList());
         GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(getShardingSphereSchemaForMySQLSelectWithoutOrderBy(), selectStatement, groupByContext);
         assertTrue(actualOrderByContext.isGenerated());
