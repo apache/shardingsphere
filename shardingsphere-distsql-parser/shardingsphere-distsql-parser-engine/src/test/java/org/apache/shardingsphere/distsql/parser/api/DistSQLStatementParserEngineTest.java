@@ -41,10 +41,19 @@ public final class DistSQLStatementParserEngineTest {
     private static final String ADD_RESOURCE_MULTIPLE = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PASSWORD=123456),"
             + "ds_1(HOST=127.0.0.1,PORT=3306,DB=test1,USER=ROOT,PASSWORD=123456);";
     
-    private static final String ADD_RESOURCE_SINGLE_WITH_EMPTY_PROPERTIES = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PROPERTIES());";
+    private static final String ADD_RESOURCE_SINGLE_WITH_PROPERTIES = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PASSWORD=123456,PROPERTIES(\"maxPoolSize\"=30));";
     
-    private static final String ADD_RESOURCE_SINGLE_WITH_PROPERTIES = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PASSWORD=123456,PROPERTIES(" 
-            + "\"useSSL\"=\"false\",\"serverTimezone\"=\"UTC\"));";
+    private static final String ADD_RESOURCE_SINGLE_WITHOUT_PASSWORD_BY_URL = "ADD RESOURCE ds_0(URL=\"jdbc:mysql://127.0.0.1:3306/test0\",USER=ROOT);";
+    
+    private static final String ADD_RESOURCE_SINGLE_WITH_PASSWORD_BY_URL = "ADD RESOURCE ds_0(URL=\"jdbc:mysql://127.0.0.1:3306/test0\",USER=ROOT,PASSWORD=123456);";
+    
+    private static final String ADD_RESOURCE_MULTIPLE_BY_URL = "ADD RESOURCE ds_0(URL=\"jdbc:mysql://127.0.0.1:3306/test0\",USER=ROOT,PASSWORD=123456),"
+            + "ds_1(URL=\"jdbc:mysql://127.0.0.1:3306/test1\",USER=ROOT,PASSWORD=123456);";
+    
+    private static final String ADD_RESOURCE_SINGLE_WITH_EMPTY_PROPERTIES_BY_URL = "ADD RESOURCE ds_0(URL=\"jdbc:mysql://127.0.0.1:3306/test0\",USER=ROOT,PROPERTIES());";
+    
+    private static final String ADD_RESOURCE_SINGLE_WITH_PROPERTIES_BY_URL = "ADD RESOURCE ds_0(URL=\"jdbc:mysql://127.0.0.1:3306/test0\",USER=ROOT,PASSWORD=123456,PROPERTIES(" 
+            + "\"maxPoolSize\"=30));";
     
     private static final String DROP_RESOURCE = "DROP RESOURCE ds_0,ds_1";
     
@@ -100,28 +109,6 @@ public final class DistSQLStatementParserEngineTest {
     }
     
     @Test
-    public void assertParseDropResource() {
-        SQLStatement sqlStatement = engine.parse(DROP_RESOURCE);
-        assertTrue(sqlStatement instanceof DropResourceStatement);
-        assertThat(((DropResourceStatement) sqlStatement).getNames().size(), is(2));
-        assertTrue(((DropResourceStatement) sqlStatement).getNames().containsAll(Arrays.asList("ds_0", "ds_1")));
-    }
-    
-    @Test
-    public void assertParseAddSingleResourceWithEmptyProperties() {
-        SQLStatement sqlStatement = engine.parse(ADD_RESOURCE_SINGLE_WITH_EMPTY_PROPERTIES);
-        assertTrue(sqlStatement instanceof AddResourceStatement);
-        assertThat(((AddResourceStatement) sqlStatement).getDataSources().size(), is(1));
-        DataSourceSegment dataSourceSegment = ((AddResourceStatement) sqlStatement).getDataSources().iterator().next();
-        assertThat(dataSourceSegment.getName(), is("ds_0"));
-        assertThat(dataSourceSegment.getHostName(), is("127.0.0.1"));
-        assertThat(dataSourceSegment.getPort(), is("3306"));
-        assertThat(dataSourceSegment.getDb(), is("test0"));
-        assertThat(dataSourceSegment.getUser(), is("ROOT"));
-        assertThat(dataSourceSegment.getProperties().size(), is(0));
-    }
-    
-    @Test
     public void assertParseAddSingleResourceWithProperties() {
         SQLStatement sqlStatement = engine.parse(ADD_RESOURCE_SINGLE_WITH_PROPERTIES);
         assertTrue(sqlStatement instanceof AddResourceStatement);
@@ -133,8 +120,82 @@ public final class DistSQLStatementParserEngineTest {
         assertThat(dataSourceSegment.getDb(), is("test0"));
         assertThat(dataSourceSegment.getUser(), is("ROOT"));
         assertThat(dataSourceSegment.getPassword(), is("123456"));
-        assertThat(dataSourceSegment.getProperties().size(), is(2));
-        assertThat(dataSourceSegment.getProperties().getProperty("useSSL"), is("false"));
-        assertThat(dataSourceSegment.getProperties().getProperty("serverTimezone"), is("UTC"));
+        assertThat(dataSourceSegment.getProperties().size(), is(1));
+        assertThat(dataSourceSegment.getProperties().getProperty("maxPoolSize"), is("30"));
+    }
+    
+    @Test
+    public void assertParseAddSingleResourceWithoutPasswordByUrl() {
+        SQLStatement sqlStatement = engine.parse(ADD_RESOURCE_SINGLE_WITHOUT_PASSWORD_BY_URL);
+        assertTrue(sqlStatement instanceof AddResourceStatement);
+        assertThat(((AddResourceStatement) sqlStatement).getDataSources().size(), is(1));
+        DataSourceSegment dataSourceSegment = ((AddResourceStatement) sqlStatement).getDataSources().iterator().next();
+        assertThat(dataSourceSegment.getName(), is("ds_0"));
+        assertThat(dataSourceSegment.getUrl(), is("jdbc:mysql://127.0.0.1:3306/test0"));
+        assertThat(dataSourceSegment.getUser(), is("ROOT"));
+    }
+    
+    @Test
+    public void assertParseAddSingleResourceWithPasswordByUrl() {
+        SQLStatement sqlStatement = engine.parse(ADD_RESOURCE_SINGLE_WITH_PASSWORD_BY_URL);
+        assertTrue(sqlStatement instanceof AddResourceStatement);
+        assertThat(((AddResourceStatement) sqlStatement).getDataSources().size(), is(1));
+        DataSourceSegment dataSourceSegment = ((AddResourceStatement) sqlStatement).getDataSources().iterator().next();
+        assertThat(dataSourceSegment.getName(), is("ds_0"));
+        assertThat(dataSourceSegment.getUrl(), is("jdbc:mysql://127.0.0.1:3306/test0"));
+        assertThat(dataSourceSegment.getUser(), is("ROOT"));
+        assertThat(dataSourceSegment.getPassword(), is("123456"));
+    }
+    
+    @Test
+    public void assertParseAddMultipleResourcesByUrl() {
+        SQLStatement sqlStatement = engine.parse(ADD_RESOURCE_MULTIPLE_BY_URL);
+        assertTrue(sqlStatement instanceof AddResourceStatement);
+        assertThat(((AddResourceStatement) sqlStatement).getDataSources().size(), is(2));
+        List<DataSourceSegment> dataSourceSegments = new ArrayList<>(((AddResourceStatement) sqlStatement).getDataSources());
+        DataSourceSegment dataSourceSegment = dataSourceSegments.get(0);
+        assertThat(dataSourceSegment.getName(), is("ds_0"));
+        assertThat(dataSourceSegment.getUrl(), is("jdbc:mysql://127.0.0.1:3306/test0"));
+        assertThat(dataSourceSegment.getUser(), is("ROOT"));
+        assertThat(dataSourceSegment.getPassword(), is("123456"));
+        dataSourceSegment = dataSourceSegments.get(1);
+        assertThat(dataSourceSegment.getName(), is("ds_1"));
+        assertThat(dataSourceSegment.getUrl(), is("jdbc:mysql://127.0.0.1:3306/test1"));
+        assertThat(dataSourceSegment.getUser(), is("ROOT"));
+        assertThat(dataSourceSegment.getPassword(), is("123456"));
+    }
+    
+    @Test
+    public void assertParseDropResource() {
+        SQLStatement sqlStatement = engine.parse(DROP_RESOURCE);
+        assertTrue(sqlStatement instanceof DropResourceStatement);
+        assertThat(((DropResourceStatement) sqlStatement).getNames().size(), is(2));
+        assertTrue(((DropResourceStatement) sqlStatement).getNames().containsAll(Arrays.asList("ds_0", "ds_1")));
+    }
+    
+    @Test
+    public void assertParseAddSingleResourceWithEmptyPropertiesByUrl() {
+        SQLStatement sqlStatement = engine.parse(ADD_RESOURCE_SINGLE_WITH_EMPTY_PROPERTIES_BY_URL);
+        assertTrue(sqlStatement instanceof AddResourceStatement);
+        assertThat(((AddResourceStatement) sqlStatement).getDataSources().size(), is(1));
+        DataSourceSegment dataSourceSegment = ((AddResourceStatement) sqlStatement).getDataSources().iterator().next();
+        assertThat(dataSourceSegment.getName(), is("ds_0"));
+        assertThat(dataSourceSegment.getUrl(), is("jdbc:mysql://127.0.0.1:3306/test0"));
+        assertThat(dataSourceSegment.getUser(), is("ROOT"));
+        assertThat(dataSourceSegment.getProperties().size(), is(0));
+    }
+    
+    @Test
+    public void assertParseAddSingleResourceWithPropertiesByUrl() {
+        SQLStatement sqlStatement = engine.parse(ADD_RESOURCE_SINGLE_WITH_PROPERTIES_BY_URL);
+        assertTrue(sqlStatement instanceof AddResourceStatement);
+        assertThat(((AddResourceStatement) sqlStatement).getDataSources().size(), is(1));
+        DataSourceSegment dataSourceSegment = ((AddResourceStatement) sqlStatement).getDataSources().iterator().next();
+        assertThat(dataSourceSegment.getName(), is("ds_0"));
+        assertThat(dataSourceSegment.getUrl(), is("jdbc:mysql://127.0.0.1:3306/test0"));
+        assertThat(dataSourceSegment.getUser(), is("ROOT"));
+        assertThat(dataSourceSegment.getPassword(), is("123456"));
+        assertThat(dataSourceSegment.getProperties().size(), is(1));
+        assertThat(dataSourceSegment.getProperties().getProperty("maxPoolSize"), is("30"));
     }
 }
