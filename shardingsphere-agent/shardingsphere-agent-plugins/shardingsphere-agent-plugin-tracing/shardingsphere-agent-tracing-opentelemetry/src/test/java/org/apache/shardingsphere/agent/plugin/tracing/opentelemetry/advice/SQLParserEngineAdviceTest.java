@@ -39,7 +39,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
+public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
 
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();

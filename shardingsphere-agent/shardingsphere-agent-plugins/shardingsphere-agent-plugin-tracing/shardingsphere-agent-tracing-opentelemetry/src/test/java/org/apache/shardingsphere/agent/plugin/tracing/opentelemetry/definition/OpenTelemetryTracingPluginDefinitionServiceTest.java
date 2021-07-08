@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-public class OpenTelemetryTracingPluginDefinitionServiceTest {
+public final class OpenTelemetryTracingPluginDefinitionServiceTest {
 
     private final OpenTelemetryTracingPluginDefinitionService definitionService = new OpenTelemetryTracingPluginDefinitionService();
 

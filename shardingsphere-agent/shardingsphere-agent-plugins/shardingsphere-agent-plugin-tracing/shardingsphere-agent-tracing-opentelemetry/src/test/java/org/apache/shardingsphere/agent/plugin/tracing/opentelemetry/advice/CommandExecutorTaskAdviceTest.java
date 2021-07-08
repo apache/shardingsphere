@@ -36,7 +36,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
+public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
 
     @ClassRule
     public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
