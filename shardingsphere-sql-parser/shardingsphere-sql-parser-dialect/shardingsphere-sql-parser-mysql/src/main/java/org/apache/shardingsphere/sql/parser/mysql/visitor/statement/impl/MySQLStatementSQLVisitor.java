@@ -200,6 +200,14 @@ import java.util.Properties;
 public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
+
+    private static final String JOIN_TYPE_INNER = "INNER";
+
+    private static final String JOIN_TYPE_LEFT = "LEFT";
+
+    private static final String JOIN_TYPE_RIGHT = "RIGHT";
+
+    private static final String JOIN_TYPE_NATURAL = "NATURAL";
     
     public MySQLStatementSQLVisitor(final Properties props) {
     }
@@ -1359,6 +1367,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         result.setLeft(tableSegment);
         result.setStartIndex(tableSegment.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
+        result.setJoinType(doGetJoinType(ctx));
         TableSegment right = null != ctx.tableFactor() ? (TableSegment) visit(ctx.tableFactor()) : (TableSegment) visit(ctx.tableReference());
         result.setRight(right);
         if (null != ctx.joinSpecification()) {
@@ -1366,7 +1375,20 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-    
+
+    private String doGetJoinType(JoinedTableContext ctx) {
+        // TODO:need more joinType support
+        String joinType = null;
+        if (null != ctx.innerJoinType() && null != ctx.innerJoinType().JOIN()) {
+            joinType = JOIN_TYPE_INNER;
+        } else if (null != ctx.outerJoinType()) {
+            joinType = ctx.outerJoinType().LEFT() != null ? JOIN_TYPE_LEFT : JOIN_TYPE_RIGHT;
+        } else if (null != ctx.naturalJoinType()) {
+            joinType = JOIN_TYPE_NATURAL;
+        }
+        return joinType;
+    }
+
     private JoinTableSegment visitJoinSpecification(final JoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {
         if (null != ctx.expr()) {
             ExpressionSegment condition = (ExpressionSegment) visit(ctx.expr());
