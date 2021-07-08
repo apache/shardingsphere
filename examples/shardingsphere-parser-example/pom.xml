@@ -39,5 +39,10 @@
             <artifactId>shardingsphere-sql-parser-mysql</artifactId>
             <version>5.0.0-RC1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-oracle</artifactId>
+            <version>5.0.0-RC1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
