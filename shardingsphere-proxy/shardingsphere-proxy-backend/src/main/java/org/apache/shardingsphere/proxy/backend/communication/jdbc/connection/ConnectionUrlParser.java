@@ -19,17 +19,18 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * JDBC connection url parser.
  */
+@Getter
 public final class ConnectionUrlParser {
     
     private static final String KEY_SCHEME = "scheme";
@@ -52,32 +53,23 @@ public final class ConnectionUrlParser {
     
     private final Matcher matcher;
     
-    private String scheme;
+    private final String scheme;
     
-    private String authority;
+    private final String authority;
     
-    private String path;
+    private final String path;
     
-    private String query;
+    private final String query;
     
     public ConnectionUrlParser(final String jdbcUrl) {
         matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
         if (!matcher.matches()) {
             throw new ShardingSphereConfigurationException("Incorrect JDBC url format: %s", jdbcUrl);
         }
-        this.scheme = matcher.group(KEY_SCHEME);
-        this.authority = matcher.group(KEY_AUTHORITY);
-        this.path = matcher.group(KEY_PATH);
-        this.query = matcher.group(KEY_QUERY);
-    }
-    
-    /**
-     * Get properties of JDBC url.
-     *
-     * @return connection properties
-     */
-    public Optional<String> getQuery() {
-        return Strings.isNullOrEmpty(query) ? Optional.empty() : Optional.of(query);
+        scheme = matcher.group(KEY_SCHEME);
+        authority = matcher.group(KEY_AUTHORITY);
+        path = matcher.group(KEY_PATH);
+        query = matcher.group(KEY_QUERY);
     }
     
     /**
@@ -86,9 +78,9 @@ public final class ConnectionUrlParser {
      * @return properties map
      */
     public Map<String, String> getQueryMap() {
-        if (getQuery().isPresent()) {
-            return Splitter.on("&").withKeyValueSeparator("=").split(getQuery().get());
+        if (!Strings.isNullOrEmpty(query)) {
+            return Splitter.on("&").withKeyValueSeparator("=").split(query);
         }
-        return new HashMap<>(16, 1);
+        return Collections.emptyMap();
     }
 }
