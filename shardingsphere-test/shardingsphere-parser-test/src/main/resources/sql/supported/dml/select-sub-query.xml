@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="select_sub_query_with_project" value="SELECT order_id, (SELECT 1) AS num FROM t_order" />
+    <sql-case id="select_sub_query_with_project" value="SELECT order_id, (SELECT 1) AS num FROM t_order" db-types="MySQL, PostgreSQL, SQLServer"/>
     <sql-case id="select_sub_query_with_table" value="SELECT t.* FROM (SELECT * FROM t_order WHERE order_id IN (?, ?)) t" />
     <sql-case id="select_with_equal_subquery" value="SELECT * FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />
     <sql-case id="select_with_in_subquery" value="SELECT * FROM t_order WHERE user_id IN (SELECT user_id FROM t_order_item WHERE id IN (10, 11))" db-types="MySQL" />
