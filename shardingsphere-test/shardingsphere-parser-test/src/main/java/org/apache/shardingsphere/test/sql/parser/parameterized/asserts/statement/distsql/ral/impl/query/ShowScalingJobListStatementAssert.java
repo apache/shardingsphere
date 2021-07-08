@@ -34,6 +34,5 @@ public final class ShowScalingJobListStatementAssert {
      * @param expected      expected show scaling job list statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowScalingJobListStatement actual, final ShowScalingJobListStatementTestCase expected) {
-        System.out.println("000");
     }
 }
