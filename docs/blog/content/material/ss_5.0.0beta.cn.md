@@ -1,3 +1,9 @@
++++
+title = "新版发布｜ShardingSphere 5.0.0-beta 来了！"
+weight = 1
+chapter = true
++++
+
 # 新版发布｜ShardingSphere 5.0.0-beta 来了！
 
 Original 潘娟 SphereEx 6/22

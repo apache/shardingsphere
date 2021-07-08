@@ -1,3 +1,8 @@
++++
+title = "Following 6 months of development Apache ShardingSphere 5.0.0-beta has been officially released!"
+weight = 1
+chapter = true
++++
 
 # Following 6 months of development Apache ShardingSphere 5.0.0-beta has been officially released! 
 

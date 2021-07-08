@@ -6,7 +6,9 @@ chapter = true
 
 Welcome to pick up some of article selections to read. Moreover look forward to your contribution!
 
-1. [After years of stagnation, ElasticJob is back with the first Apache version 3.0.0-alpha](/en/material/alpha/)
+1. [Following 6 months of development Apache ShardingSphere 5.0.0-beta has been officially released! ](/en/material/ss_5.0.0beta/)
+
+2. [After years of stagnation, ElasticJob is back with the first Apache version 3.0.0-alpha](/en/material/alpha/)
 
 2. [News! The distributed scheduling project ElasticJob is about to restart](/en/material/elasticjob/)
 
