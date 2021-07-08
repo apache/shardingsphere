@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
@@ -38,22 +39,23 @@ public class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
 
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Span span = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
+        SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
                 .spanBuilder(OPERATION_NAME)
                 .setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME)
-                .setSpanKind(SpanKind.CLIENT)
-                .startSpan();
+                .setSpanKind(SpanKind.CLIENT);
+        Span span = spanBuilder.startSpan();
+        target.setAttachment(span);
         ExecutorDataMap.getValue().put(OpenTelemetryConstants.ROOT_SPAN, span);
     }
 
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Span.current().end();
+        ((Span) target.getAttachment()).end();
         ExecutorDataMap.getValue().remove(OpenTelemetryConstants.ROOT_SPAN);
     }
 
     @Override
     public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
-        Span.current().setStatus(StatusCode.ERROR).recordException(throwable);
+        ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);
     }
 }
