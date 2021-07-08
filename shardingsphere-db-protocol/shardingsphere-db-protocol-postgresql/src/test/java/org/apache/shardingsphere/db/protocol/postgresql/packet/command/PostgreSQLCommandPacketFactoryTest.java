@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
@@ -61,8 +60,6 @@ public final class PostgreSQLCommandPacketFactoryTest {
         when(payload.readInt4()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("stat-id");
         when(payload.readStringNul()).thenReturn("SELECT * FROM t_order");
-        when(payload.readInt2()).thenReturn(0);
-        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.BIND_COMMAND, payload, 1), instanceOf(PostgreSQLComBindPacket.class));
     }
     

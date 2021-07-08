@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.distsql;
 
 import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.Case;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 /**
- * SQL cases registry.
+ * DistSQL test case for xml tag.
  */
-public final class SQLCasesRegistry {
-    
-    private static final SQLCasesRegistry INSTANCE = new SQLCasesRegistry();
-    
-    @Getter
-    private final SQLCasesLoader sqlCasesLoader;
-    
-    private SQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("sql/supported/");
-    }
-    
-    /**
-     * Get singleton instance.
-     * 
-     * @return singleton instance
-     */
-    public static SQLCasesRegistry getInstance() {
-        return INSTANCE;
-    }
+@XmlAccessorType(XmlAccessType.FIELD)
+@Getter
+@Setter
+public final class DistSQLCase extends Case {
 }

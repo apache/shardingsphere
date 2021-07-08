@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Binary prepared statement for PostgreSQL.
+ * Base case for xml tag.
  */
-@RequiredArgsConstructor
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class PostgreSQLBinaryStatement {
+public abstract class Case {
     
-    private final String sql;
+    @XmlAttribute
+    private String id;
     
-    private final int parameterCount;
-    
-    private final List<PostgreSQLBinaryColumnType> columnTypes;
+    @XmlAttribute
+    private String value;
 }

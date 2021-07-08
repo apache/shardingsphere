@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.decorator;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionUrlParser;
+
+import java.util.Map;
 
 /**
  * JDBC parameter decorator for HikariCP.
@@ -27,21 +31,31 @@ public final class HikariJDBCParameterDecorator implements JDBCParameterDecorato
     
     @Override
     public HikariDataSource decorate(final HikariDataSource dataSource) {
-        dataSource.getDataSourceProperties().setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        dataSource.getDataSourceProperties().setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        dataSource.getDataSourceProperties().setProperty("prepStmtCacheSize", "200000");
-        dataSource.getDataSourceProperties().setProperty("prepStmtCacheSqlLimit", "2048");
-        dataSource.getDataSourceProperties().setProperty("useLocalSessionState", Boolean.TRUE.toString());
-        dataSource.getDataSourceProperties().setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        dataSource.getDataSourceProperties().setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
-        dataSource.getDataSourceProperties().setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        dataSource.getDataSourceProperties().setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        dataSource.getDataSourceProperties().setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        dataSource.getDataSourceProperties().setProperty("netTimeoutForStreamingResults", "0");
-        dataSource.getDataSourceProperties().setProperty("tinyInt1isBit", Boolean.FALSE.toString());
+        Map<String, String> urlProps = new ConnectionUrlParser(dataSource.getJdbcUrl()).getQueryMap();
+        addJDBCProperty(dataSource, urlProps, "useServerPrepStmts", Boolean.TRUE.toString());
+        addJDBCProperty(dataSource, urlProps, "useServerPrepStmts", Boolean.TRUE.toString());
+        addJDBCProperty(dataSource, urlProps, "cachePrepStmts", Boolean.TRUE.toString());
+        addJDBCProperty(dataSource, urlProps, "prepStmtCacheSize", "200000");
+        addJDBCProperty(dataSource, urlProps, "prepStmtCacheSqlLimit", "2048");
+        addJDBCProperty(dataSource, urlProps, "useLocalSessionState", Boolean.TRUE.toString());
+        addJDBCProperty(dataSource, urlProps, "rewriteBatchedStatements", Boolean.TRUE.toString());
+        addJDBCProperty(dataSource, urlProps, "cacheResultSetMetadata", Boolean.FALSE.toString());
+        addJDBCProperty(dataSource, urlProps, "cacheServerConfiguration", Boolean.TRUE.toString());
+        addJDBCProperty(dataSource, urlProps, "elideSetAutoCommits", Boolean.TRUE.toString());
+        addJDBCProperty(dataSource, urlProps, "maintainTimeStats", Boolean.FALSE.toString());
+        addJDBCProperty(dataSource, urlProps, "netTimeoutForStreamingResults", "0");
+        addJDBCProperty(dataSource, urlProps, "tinyInt1isBit", Boolean.FALSE.toString());
+        addJDBCProperty(dataSource, urlProps, "useSSL", Boolean.FALSE.toString());
+        addJDBCProperty(dataSource, urlProps, "serverTimezone", "UTC");
         HikariDataSource result = new HikariDataSource(dataSource);
         dataSource.close();
         return result;
+    }
+    
+    private void addJDBCProperty(final HikariConfig config, final Map<String, String> urlProps, final String key, final String value) {
+        if (urlProps.isEmpty() || !urlProps.containsKey(key)) {
+            config.addDataSourceProperty(key, value);
+        }
     }
     
     @Override
