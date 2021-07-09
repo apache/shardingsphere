@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlElement;
-
 /**
- * Show sharding binding table rules statement test case.
+ * Show scaling job list statement test case.
  */
-@Getter
-@Setter
-public final class ShowShardingBindingTableRulesStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedSchema schema;
+public final class ShowScalingJobListStatementTestCase extends SQLParserTestCase {
 }
