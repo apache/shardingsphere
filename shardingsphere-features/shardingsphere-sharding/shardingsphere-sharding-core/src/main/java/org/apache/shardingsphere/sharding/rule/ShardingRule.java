@@ -336,14 +336,16 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
      * Judge whether all tables are in same data source or not.
      * 
      * @param logicTableNames logic table names
+     * @param routeDataSourceNames route dataSource names
      * @return whether all tables are in same data source or not
      */
-    public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames) {
+    public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames, final List<String> routeDataSourceNames) {
         Set<String> tableNames = Sets.newHashSet(logicTableNames);
         Set<String> dataSourceNames = Sets.newHashSet();
         dataSourceNames.addAll(tableRules.stream().filter(each -> tableNames.contains(each.getLogicTable())).flatMap(each 
             -> each.getActualDataNodes().stream()).map(DataNode::getDataSourceName).collect(Collectors.toSet()));
         dataSourceNames.addAll(broadcastTables.stream().filter(tableNames::contains).flatMap(each -> getDataSourceNames().stream()).collect(Collectors.toSet()));
+        dataSourceNames.addAll(routeDataSourceNames);
         return 1 == dataSourceNames.size();
     }
     

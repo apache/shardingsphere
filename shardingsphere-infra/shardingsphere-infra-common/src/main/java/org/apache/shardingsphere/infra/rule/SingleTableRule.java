@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -49,14 +50,16 @@ public final class SingleTableRule implements FeatureRule, SchemaRule, DataNodeC
     private final Map<String, SingleTableDataNode> singleTableDataNodes;
     
     public SingleTableRule(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, dataSourceMap, Collections.emptyList());
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, dataSourceMap);
         dataSourceNames = dataSourceMap.keySet();
         ShardingSphereEventBus.getInstance().register(this);
     }
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        return Collections.emptyMap();
+        Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
+        singleTableDataNodes.forEach((key, value) -> result.put(key, Collections.singleton(new DataNode(value.getDataSourceName(), value.getTableName()))));
+        return result;
     }
     
     @Override
