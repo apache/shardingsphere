@@ -3,7 +3,7 @@
     <h1>{{ .Title }}</h1>
 	<div class="catalogue">
         <ul>
-        {{- range (.Paginate .Data.Pages).Pages.ByWeight.Reverse -}}
+        {{- range (.Paginate .Data.Pages.ByWeight.Reverse).Pages -}}
             <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
         {{- end -}}
         </ul>

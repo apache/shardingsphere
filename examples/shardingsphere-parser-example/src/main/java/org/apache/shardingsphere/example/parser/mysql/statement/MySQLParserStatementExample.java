@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class MySQLParserStatementExample {
+public final class MySQLParserStatementExample {
     
     private static final String DML_SELECT_SQL = "SELECT t.id, t.name, t.age FROM table1 AS t ORDER BY t.id DESC;";
     
@@ -36,7 +36,7 @@ public class MySQLParserStatementExample {
     
     private static final String DML_DELETE_SQL = "DELETE FROM table1 AS t1 WHERE id = 1;";
     
-    private static final String DDL_CREAT_SQL = "CREATE TABLE table2 (id BIGINT(20) PRIMARY KEY, name VARCHAR(20), age INT(2))";
+    private static final String DDL_CREATE_SQL = "CREATE TABLE table2 (id BIGINT(20) PRIMARY KEY, name VARCHAR(20), age INT(2))";
     
     private static final String DDL_DROP_SQL = "DROP TABLE table1, table2;";
     
@@ -48,7 +48,7 @@ public class MySQLParserStatementExample {
     
     static {
         MYSQL_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL,
-                DDL_CREAT_SQL, DDL_DROP_SQL, DDL_ALTER_SQL, DDL_SHOW_SQL);
+                DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL, DDL_SHOW_SQL);
     }
     
     public static void main(String[] args) {

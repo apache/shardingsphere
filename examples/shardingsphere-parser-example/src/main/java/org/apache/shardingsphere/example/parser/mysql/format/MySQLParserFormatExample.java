@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class MySQLParserFormatExample {
+public final class MySQLParserFormatExample {
     
     private static final String DML_SELECT_SQL = "SELECT age AS b, name AS n FROM table1 JOIN table2 WHERE id = 1 AND name = 'lu';";
     

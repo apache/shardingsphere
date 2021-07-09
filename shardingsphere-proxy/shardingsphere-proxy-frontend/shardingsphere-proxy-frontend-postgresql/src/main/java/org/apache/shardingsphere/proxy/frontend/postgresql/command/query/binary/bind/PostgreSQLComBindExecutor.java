@@ -29,6 +29,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
 
@@ -51,7 +52,9 @@ public final class PostgreSQLComBindExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        PostgreSQLPortal portal = connectionContext.createPortal(packet.getPortal(), packet.getSql(), packet.getParameters(), packet.getResultFormats(), backendConnection);
+        PostgreSQLBinaryStatement binaryStatement = connectionContext.getPostgreSQLBinaryStatement(packet.getStatementId());
+        packet.init(binaryStatement.getColumnTypes());
+        PostgreSQLPortal portal = connectionContext.createPortal(packet.getPortal(), binaryStatement, packet.getParameters(), packet.getResultFormats(), backendConnection);
         List<DatabasePacket<?>> result = new LinkedList<>();
         result.add(new PostgreSQLBindCompletePacket());
         ResponseHeader responseHeader = portal.execute();

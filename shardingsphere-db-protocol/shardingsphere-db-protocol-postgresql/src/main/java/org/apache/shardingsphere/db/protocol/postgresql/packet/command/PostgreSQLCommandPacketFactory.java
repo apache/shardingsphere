@@ -51,7 +51,7 @@ public final class PostgreSQLCommandPacketFactory {
             case PARSE_COMMAND:
                 return new PostgreSQLComParsePacket(payload);
             case BIND_COMMAND:
-                return new PostgreSQLComBindPacket(payload, connectionId);
+                return new PostgreSQLComBindPacket(payload);
             case DESCRIBE_COMMAND:
                 return new PostgreSQLComDescribePacket(payload);
             case EXECUTE_COMMAND:
