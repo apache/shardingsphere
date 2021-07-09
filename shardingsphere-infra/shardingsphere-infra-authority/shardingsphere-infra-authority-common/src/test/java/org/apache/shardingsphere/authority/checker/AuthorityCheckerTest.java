@@ -119,9 +119,9 @@ public class AuthorityCheckerTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         CreateTableStatement createTableStatement = mock(CreateTableStatement.class);
         InsertStatement insertStatement = mock(InsertStatement.class);
-        assertThat(sqlChecker.check(selectStatement, Collections.emptyList(),  new Grantee("root", "localhost") ,"db0", Collections.emptyMap(), rule).isPassed(), is(true));
-        assertThat(sqlChecker.check(insertStatement, Collections.emptyList(),  new Grantee("root", "localhost") ,"db0", Collections.emptyMap(), rule).isPassed(), is(true));
-        assertThat(sqlChecker.check(createTableStatement, Collections.emptyList(),  new Grantee("root", "localhost") ,"db0", Collections.emptyMap(), rule).isPassed(), is(true));
+        assertThat(sqlChecker.check(selectStatement, Collections.emptyList(), new Grantee("root", "localhost"),"db0", Collections.emptyMap(), rule).isPassed(), is(true));
+        assertThat(sqlChecker.check(insertStatement, Collections.emptyList(), new Grantee("root", "localhost"),"db0", Collections.emptyMap(), rule).isPassed(), is(true));
+        assertThat(sqlChecker.check(createTableStatement, Collections.emptyList(), new Grantee("root", "localhost"),"db0", Collections.emptyMap(), rule).isPassed(), is(true));
     }
 
     private Map<String, ShardingSphereMetaData> createMetaDataMap(final Collection<ShardingSphereUser> users) throws SQLException {
