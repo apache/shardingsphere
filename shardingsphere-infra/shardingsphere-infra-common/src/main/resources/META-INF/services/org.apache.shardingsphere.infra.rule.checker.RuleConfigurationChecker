@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.rule.checker.SingleTableRuleConfigurationChecker
+org.apache.shardingsphere.infra.rule.checker.single.SingleTableRuleConfigurationChecker

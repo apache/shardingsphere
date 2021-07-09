@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.rule.builder.SingleTableRuleBuilder
+org.apache.shardingsphere.infra.rule.builder.single.SingleTableRuleBuilder

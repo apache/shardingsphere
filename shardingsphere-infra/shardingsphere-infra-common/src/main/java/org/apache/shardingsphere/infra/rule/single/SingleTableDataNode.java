@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.checker;
+package org.apache.shardingsphere.infra.rule.single;
 
-import org.apache.shardingsphere.infra.config.SingleTableRuleConfiguration;
-import org.apache.shardingsphere.infra.constant.SingleTableOrder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Single table rule configuration checker.
+ * Single table data node.
  */
-public final class SingleTableRuleConfigurationChecker implements RuleConfigurationChecker<SingleTableRuleConfiguration> {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+public final class SingleTableDataNode {
     
-    @Override
-    public void check(final String schemaName, final SingleTableRuleConfiguration config) {
-    }
+    private final String tableName;
     
-    @Override
-    public int getOrder() {
-        return SingleTableOrder.ORDER;
-    }
-    
-    @Override
-    public Class<SingleTableRuleConfiguration> getTypeClass() {
-        return SingleTableRuleConfiguration.class;
-    }
+    private final String dataSourceName;
 }

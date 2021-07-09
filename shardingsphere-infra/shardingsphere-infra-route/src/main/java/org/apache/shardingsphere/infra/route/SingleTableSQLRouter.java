@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SingleTablesRoutingEngine;
-import org.apache.shardingsphere.infra.rule.SingleTableRule;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 
 import java.util.Collection;
 
@@ -43,7 +43,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData, 
+    public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData,
                                      final SingleTableRule rule, final ConfigurationProperties props) {
     }
     

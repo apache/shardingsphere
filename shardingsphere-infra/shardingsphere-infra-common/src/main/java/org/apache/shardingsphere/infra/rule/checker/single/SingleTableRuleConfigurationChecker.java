@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder;
+package org.apache.shardingsphere.infra.rule.checker.single;
 
-import org.apache.shardingsphere.infra.config.SingleTableRuleConfiguration;
+import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.SingleTableRule;
-import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
-
-import javax.sql.DataSource;
-import java.util.Map;
+import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationChecker;
 
 /**
- * Single table rule builder.
+ * Single table rule configuration checker.
  */
-public final class SingleTableRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<SingleTableRuleConfiguration> {
+public final class SingleTableRuleConfigurationChecker implements RuleConfigurationChecker<SingleTableRuleConfiguration> {
     
     @Override
-    public SingleTableRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final SingleTableRuleConfiguration config) {
-        return new SingleTableRule(databaseType, dataSourceMap);
+    public void check(final String schemaName, final SingleTableRuleConfiguration config) {
     }
     
     @Override

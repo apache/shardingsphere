@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule;
+package org.apache.shardingsphere.infra.rule.single;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;

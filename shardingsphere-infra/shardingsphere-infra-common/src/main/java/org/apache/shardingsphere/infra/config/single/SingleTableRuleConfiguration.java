@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule;
+package org.apache.shardingsphere.infra.config.single;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 
 /**
- * Single table rule.
+ * Default table rule configuration.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-public final class SingleTableDataNode {
-    
-    private final String tableName;
-    
-    private final String dataSourceName;
+public final class SingleTableRuleConfiguration implements SchemaRuleConfiguration {
 }
