@@ -12,13 +12,13 @@ dataSource:
     simpleSource | urlSource
 
 simpleSource:
-    dataSourceName(HOST=hostName,PORT=port,DB=dbName,USER=user [,PASSWORD=password] [,PROPERTIES(poolProperty)])
+    dataSourceName(HOST=hostName,PORT=port,DB=dbName,USER=user [,PASSWORD=password] [,PROPERTIES(poolProperty [,poolProperty]) ...])
 
 urlSource:
     dataSourceName(URL=url,USER=user [,PASSWORD=password] [,PROPERTIES(poolProperty)])
 
 poolProperty:
-    "key1"="valu1","key2"=alue2
+    "key"= ("value" | value)
     
 DROP RESOURCE dataSourceName [, dataSourceName] ...    
 ```
