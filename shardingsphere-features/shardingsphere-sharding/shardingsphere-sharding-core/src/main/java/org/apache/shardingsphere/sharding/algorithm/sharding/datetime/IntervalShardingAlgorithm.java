@@ -137,11 +137,10 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         LocalDateTime endTime = hasEndTime ? parseDateTime(shardingValue.getValueRange().upperEndpoint().toString()) : dateTimeUpper;
         LocalDateTime calculateTime = startTime;
         Set<String> result = new HashSet<>();
-        while (!calculateTime.isAfter(endTime)) {
+        while (!calculateTime.isAfter(endTime) || calculateTime.format(tableSuffixPattern).equals(endTime.format(tableSuffixPattern))) {
             result.addAll(getMatchedTables(calculateTime, availableTargetNames));
             calculateTime = calculateTime.plus(stepAmount, stepUnit);
         }
-        result.addAll(getMatchedTables(endTime, availableTargetNames));
         return result;
     }
     
