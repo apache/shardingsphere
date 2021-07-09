@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * ShardingSphere schema refresher for drop view statement.
@@ -36,7 +37,7 @@ public final class DropViewStatementSchemaRefresher implements SchemaRefresher<D
     public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, final DropViewStatement sqlStatement, final SchemaBuilderMaterials materials) {
         sqlStatement.getViews().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
         for (SimpleTableSegment each : sqlStatement.getViews()) {
-            ShardingSphereEventBus.getInstance().post(new DropTableEvent(each.getTableName().getIdentifier().getValue()));
+            ShardingSphereEventBus.getInstance().post(new DropTableEvent(Collections.singletonList(each.getTableName().getIdentifier().getValue())));
         }
     }
 }

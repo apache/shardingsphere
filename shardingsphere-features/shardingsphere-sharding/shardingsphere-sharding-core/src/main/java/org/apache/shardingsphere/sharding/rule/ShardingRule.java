@@ -105,7 +105,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
-        getExcludedTables().forEach(each -> ShardingSphereEventBus.getInstance().post(new DropTableEvent(each)));
+        ShardingSphereEventBus.getInstance().post(new DropTableEvent(getExcludedTables()));
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
@@ -121,7 +121,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
-        getExcludedTables().forEach(each -> ShardingSphereEventBus.getInstance().post(new DropTableEvent(each)));
+        ShardingSphereEventBus.getInstance().post(new DropTableEvent(getExcludedTables()));
     }
     
     private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, 
@@ -176,12 +176,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         return new BindingTableRule(Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream().map(this::getTableRule).collect(Collectors.toList()));
     }
     
-    /**
-     * Get excluded tables.
-     * 
-     * @return excluded tables
-     */
-    public Collection<String> getExcludedTables() {
+    private Collection<String> getExcludedTables() {
         Collection<String> result = new HashSet<>(getTables());
         result.addAll(getAllActualTables());
         result.addAll(broadcastTables);

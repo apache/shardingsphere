@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.single;
 import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
 
 /**
- * Default table rule configuration.
+ * Single table rule configuration.
  */
 public final class SingleTableRuleConfiguration implements SchemaRuleConfiguration {
 }

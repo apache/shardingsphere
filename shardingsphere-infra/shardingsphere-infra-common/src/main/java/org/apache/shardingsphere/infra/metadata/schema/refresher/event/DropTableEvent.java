@@ -18,14 +18,19 @@
 package org.apache.shardingsphere.infra.metadata.schema.refresher.event;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Drop table event.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropTableEvent {
     
-    private final String tableName;
+    private final Collection<String> tableNames;
+    
+    public DropTableEvent(Collection<String> tableNames) {
+        this.tableNames = null == tableNames ? Collections.emptyList() : tableNames;
+    }
 }

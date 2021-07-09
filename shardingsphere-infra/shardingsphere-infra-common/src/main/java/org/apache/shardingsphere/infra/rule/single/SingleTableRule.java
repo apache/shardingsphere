@@ -131,6 +131,9 @@ public final class SingleTableRule implements FeatureRule, SchemaRule, DataNodeC
      */
     @Subscribe
     public void dropSingleTable(final DropTableEvent event) {
-        singleTableDataNodes.remove(event.getTableName());
+        if (event.getTableNames().isEmpty()) {
+            return;
+        }
+        event.getTableNames().forEach(singleTableDataNodes::remove);
     }
 }

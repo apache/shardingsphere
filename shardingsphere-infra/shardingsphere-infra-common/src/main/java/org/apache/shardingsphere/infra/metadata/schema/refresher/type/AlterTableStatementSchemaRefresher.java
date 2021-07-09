@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableS
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -55,7 +56,7 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
     
     private void removeTableMetaData(final ShardingSphereSchema schema, final String tableName) {
         schema.remove(tableName);
-        ShardingSphereEventBus.getInstance().post(new DropTableEvent(tableName));
+        ShardingSphereEventBus.getInstance().post(new DropTableEvent(Collections.singletonList(tableName)));
     }
     
     private void putTableMetaData(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, 
