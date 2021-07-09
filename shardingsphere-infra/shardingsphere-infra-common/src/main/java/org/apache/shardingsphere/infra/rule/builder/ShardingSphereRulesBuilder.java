@@ -70,12 +70,12 @@ public final class ShardingSphereRulesBuilder {
     }
     
     private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigurations) {
-        Collection<RuleConfiguration> configurations = Lists.newLinkedList();
-        configurations.add(new SingleTableRuleConfiguration());
+        Collection<RuleConfiguration> result = Lists.newLinkedList();
+        result.add(new SingleTableRuleConfiguration());
         if (!schemaRuleConfigurations.isEmpty()) {
-            configurations.addAll(schemaRuleConfigurations);
+            result.addAll(schemaRuleConfigurations);
         }
-        return configurations;
+        return result;
     }
     
     @SuppressWarnings("rawtypes")
