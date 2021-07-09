@@ -292,3 +292,11 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 进入 [Settings -> Languages & Frameworks -> ANTLR v4 default project settings](jetbrains://idea/settings?name=Languages+%26+Frameworks--ANTLR+v4+default+project+settings) 配置生成代码的输出目录为 `target/gen`，如图：
 
 ![Configure ANTLR plugin](https://shardingsphere.apache.org/document/current/img/faq/configure-antlr-plugin.png)
+
+## 25. 使用DistSQL添加数据源时，如何设置自定义的JDBC连接参数或连接池属性？
+
+回答：
+
+1. 如需自定义JDBC参数，请使用 `urlSource` 的方式定义 `dataSource`。
+2. ShardingSphere预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout`等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
+3. 以上规则请参考 [相关介绍](cn/features/dist-sql/syntax/rdl/rdl-resource/)
