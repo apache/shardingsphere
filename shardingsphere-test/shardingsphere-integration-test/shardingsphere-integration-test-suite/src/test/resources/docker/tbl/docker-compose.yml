@@ -28,7 +28,20 @@ services:
       - "33160:3306"
     environment:
       - LANG=C.UTF-8
-  
+
+  postgres:
+    image: "postgres:12.6"
+    container_name: db-postgres
+    volumes:
+      - ../../env/db/init-sql/postgresql:/docker-entrypoint-initdb.d/
+    ports:
+      - "54321:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      #      POSTGRES_HOST_AUTH_METHOD: trust
+      PG_SYSTEM_MAX_CONNECTIONS: 200
+
 #  zookeeper:
 #    image: "zookeeper:3.6.2"
 #    container_name: tbl-register-center
