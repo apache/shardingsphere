@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +64,7 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         if (sqlStatement instanceof DMLStatement && needMergeShardingValues) {
             mergeShardingConditions(shardingConditions);
         }
-        ShardingRouteEngineFactory.newInstance(rule, metaData, logicSQL.getSqlStatementContext(), shardingConditions, props).route(result, rule);
+        ShardingRouteEngineFactory.newInstance(rule, metaData, logicSQL.getSqlStatementContext(), shardingConditions, props, result.getRouteUnits()).route(result, rule);
         validator.ifPresent(v -> v.postValidate(rule, logicSQL.getSqlStatementContext(), result, metaData.getSchema()));
     }
     
@@ -97,7 +98,10 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
                                      final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShardingRule rule, final ConfigurationProperties props) {
-        route(logicSQL, metaData, rule, props, routeContext);
+        Collection<String> shardingBroadcastLogicTableNames = rule.getShardingBroadcastLogicTableNames(logicSQL.getSqlStatementContext().getTablesContext().getTableNames());
+        if (!shardingBroadcastLogicTableNames.isEmpty()) {
+            route(logicSQL, metaData, rule, props, routeContext);
+        }
     }
     
     @Override

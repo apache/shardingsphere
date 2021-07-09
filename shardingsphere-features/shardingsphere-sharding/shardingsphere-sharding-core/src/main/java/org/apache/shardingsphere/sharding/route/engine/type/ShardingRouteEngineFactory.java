@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDatabaseBroadcastRoutingEngine;
@@ -59,6 +60,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Sharding routing engine factory.
@@ -74,10 +77,11 @@ public final class ShardingRouteEngineFactory {
      * @param sqlStatementContext SQL statement context
      * @param shardingConditions shardingConditions
      * @param props ShardingSphere properties
+     * @param routeUnits route units
      * @return new instance of routing engine
      */
-    public static ShardingRouteEngine newInstance(final ShardingRule shardingRule, final ShardingSphereMetaData metaData,
-                                                  final SQLStatementContext<?> sqlStatementContext, final ShardingConditions shardingConditions, final ConfigurationProperties props) {
+    public static ShardingRouteEngine newInstance(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext, 
+                                                  final ShardingConditions shardingConditions, final ConfigurationProperties props, final Collection<RouteUnit> routeUnits) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof TCLStatement) {
             return new ShardingDatabaseBroadcastRoutingEngine();
@@ -91,8 +95,7 @@ public final class ShardingRouteEngineFactory {
         if (sqlStatement instanceof DCLStatement) {
             return getDCLRoutingEngine(metaData, sqlStatementContext);
         }
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        return getDQLRoutingEngine(shardingRule, sqlStatementContext, shardingConditions, props, sqlStatement, tableNames);
+        return getDQLRoutingEngine(shardingRule, sqlStatementContext, shardingConditions, props, routeUnits);
     }
     
     private static ShardingRouteEngine getDDLRoutingEngine(final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {
@@ -143,11 +146,11 @@ public final class ShardingRouteEngineFactory {
         return false;
     }
     
-    private static ShardingRouteEngine getDQLRoutingEngine(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext,
-                                                           final ShardingConditions shardingConditions, final ConfigurationProperties props,
-                                                           final SQLStatement sqlStatement, final Collection<String> tableNames) {
+    private static ShardingRouteEngine getDQLRoutingEngine(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext, 
+                                                           final ShardingConditions shardingConditions, final ConfigurationProperties props, final Collection<RouteUnit> routeUnits) {
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (shardingRule.isAllBroadcastTables(tableNames)) {
-            return sqlStatement instanceof SelectStatement ? new ShardingUnicastRoutingEngine(tableNames) : new ShardingDatabaseBroadcastRoutingEngine();
+            return sqlStatementContext.getSqlStatement() instanceof SelectStatement ? new ShardingUnicastRoutingEngine(tableNames) : new ShardingDatabaseBroadcastRoutingEngine();
         }
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new ShardingUnicastRoutingEngine(tableNames);
@@ -155,7 +158,7 @@ public final class ShardingRouteEngineFactory {
         if (isShardingStandardQuery(sqlStatementContext, tableNames, shardingRule)) {
             return new ShardingStandardRoutingEngine(tableNames.iterator().next(), shardingConditions, props);
         }
-        if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule)) {
+        if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule, routeUnits)) {
             return new ShardingFederatedRoutingEngine(tableNames);
         }
         // TODO config for cartesian set
@@ -167,7 +170,8 @@ public final class ShardingRouteEngineFactory {
         return (shardingRule.isAllBindingTables(tableNames) || shardingRule.isAllShardingTables(tableNames) && 1 == tableNames.size()) && !needExecuteByCalcite;
     }
     
-    private static boolean isShardingFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final ShardingRule shardingRule) {
+    private static boolean isShardingFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, 
+                                                    final ShardingRule shardingRule, final Collection<RouteUnit> routeUnits) {
         if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
@@ -175,7 +179,8 @@ public final class ShardingRouteEngineFactory {
         if (isNeedExecuteByCalcite(select)) {
             return true;
         }
-        if ((!select.isContainsJoinQuery() && !select.isContainsSubquery()) || shardingRule.isAllTablesInSameDataSource(tableNames)) {
+        List<String> routeDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
+        if ((!select.isContainsJoinQuery() && !select.isContainsSubquery()) || shardingRule.isAllTablesInSameDataSource(tableNames, routeDataSourceNames)) {
             return false;
         }
         return shardingRule.isAllShardingTables(tableNames) || (shardingRule.tableRuleExists(tableNames) && shardingRule.singleTableRuleExists(tableNames));

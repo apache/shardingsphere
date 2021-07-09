@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.constant;
+package org.apache.shardingsphere.infra.rule.checker;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.SingleTableRuleConfiguration;
+import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 
 /**
- * Single table order.
+ * Single table rule configuration checker.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SingleTableOrder {
+public final class SingleTableRuleConfigurationChecker implements RuleConfigurationChecker<SingleTableRuleConfiguration> {
     
-    /**
-     * Single table order.
-     */
-    public static final int ORDER = -1;
+    @Override
+    public void check(final String schemaName, final SingleTableRuleConfiguration config) {
+    }
+    
+    @Override
+    public int getOrder() {
+        return SingleTableOrder.ORDER;
+    }
+    
+    @Override
+    public Class<SingleTableRuleConfiguration> getTypeClass() {
+        return SingleTableRuleConfiguration.class;
+    }
 }

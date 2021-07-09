@@ -31,24 +31,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Single table rule loader.
+ * Single table data node loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SingleTableDataNodeLoader {
     
     /**
-     * Load single table rules.
+     * Load single table data node.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
-     * @param excludedTables exclude table names
-     * @return single table rule map
+     * @return single table data node map
      */
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
+    public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Map<String, SingleTableDataNode> result = new HashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Map<String, SingleTableDataNode> singleTableDataNodes = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
+            Map<String, SingleTableDataNode> singleTableDataNodes = load(databaseType, entry.getKey(), entry.getValue());
             // TODO recover check single table must be unique. Current situation cannot recognize replica query rule or databaseDiscovery rule for single table duplicate. 
 //            singleTableDataNodes.keySet().forEach(each -> Preconditions.checkState(!result.containsKey(each), "Single table conflict, there are multiple tables `%s` existed.", each));
             result.putAll(singleTableDataNodes);
@@ -56,8 +55,7 @@ public final class SingleTableDataNodeLoader {
         return result;
     }
     
-    private static Map<String, SingleTableDataNode> load(final DatabaseType databaseType,
-                                                     final String dataSourceName, final DataSource dataSource, final Collection<String> excludedTables) {
+    private static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource) {
         Collection<String> tables;
         try {
             tables = SchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType);
@@ -66,9 +64,7 @@ public final class SingleTableDataNodeLoader {
         }
         Map<String, SingleTableDataNode> result = new HashMap<>(tables.size(), 1);
         for (String each : tables) {
-            if (!excludedTables.contains(each)) {
-                result.put(each, new SingleTableDataNode(each, dataSourceName));
-            }
+            result.put(each, new SingleTableDataNode(each, dataSourceName));
         }
         return result;
     }

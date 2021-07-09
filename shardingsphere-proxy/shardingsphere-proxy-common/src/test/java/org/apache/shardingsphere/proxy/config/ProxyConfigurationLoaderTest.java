@@ -101,7 +101,7 @@ public final class ProxyConfigurationLoaderTest {
     private void assertEncryptRuleConfiguration(final YamlProxyRuleConfiguration actual) {
         assertThat(actual.getSchemaName(), is("encrypt_db"));
         assertThat(actual.getDataSources().size(), is(1));
-        assertDataSourceParameter(actual.getDataSources().get("dataSource"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
+        assertDataSourceParameter(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
         assertFalse(actual.getRules().stream().filter(
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
         Optional<YamlEncryptRuleConfiguration> encryptRuleConfig = actual.getRules().stream().filter(
