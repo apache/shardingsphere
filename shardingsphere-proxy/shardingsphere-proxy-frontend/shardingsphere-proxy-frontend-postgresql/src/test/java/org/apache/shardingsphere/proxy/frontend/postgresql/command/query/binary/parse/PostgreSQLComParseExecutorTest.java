@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.parse;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -39,6 +38,7 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -62,13 +62,12 @@ public final class PostgreSQLComParseExecutorTest {
     public void assertNewInstance() throws NoSuchFieldException, IllegalAccessException {
         when(parsePacket.getSql()).thenReturn("SELECT 1");
         when(parsePacket.getStatementId()).thenReturn("2");
-        when(backendConnection.getConnectionId()).thenReturn(1);
         when(backendConnection.getSchemaName()).thenReturn("schema");
+        when(connectionContext.getBinaryStatements()).thenReturn(new ConcurrentHashMap<>(1, 1));
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(),
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
-        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
         PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(connectionContext, parsePacket, backendConnection);
         assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));
     }
@@ -83,8 +82,7 @@ public final class PostgreSQLComParseExecutorTest {
     public void assertGetSqlWithNull() {
         when(parsePacket.getStatementId()).thenReturn("");
         when(parsePacket.getSql()).thenReturn("");
-        when(backendConnection.getConnectionId()).thenReturn(1);
-        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
+        when(connectionContext.getBinaryStatements()).thenReturn(new ConcurrentHashMap<>(1, 1));
         PostgreSQLComParseExecutor actual = new PostgreSQLComParseExecutor(connectionContext, parsePacket, backendConnection);
         assertThat(actual.execute().iterator().next(), instanceOf(PostgreSQLParseCompletePacket.class));
     }

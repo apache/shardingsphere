@@ -19,8 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLCloseCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -47,7 +45,7 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         switch (packet.getType()) {
             case PREPARED_STATEMENT:
-                closePreparedStatement();
+                connectionContext.getBinaryStatements().remove(packet.getName());
                 break;
             case PORTAL:
                 closePortal();
@@ -56,13 +54,6 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
                 throw new UnsupportedOperationException(packet.getType().name());
         }
         return Collections.singletonList(new PostgreSQLCloseCompletePacket());
-    }
-    
-    private void closePreparedStatement() {
-        ConnectionScopeBinaryStatementRegistry binaryStatementRegistry = PostgreSQLBinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
-        if (null != binaryStatementRegistry) {
-            binaryStatementRegistry.closeStatement(packet.getName());
-        }
     }
     
     private void closePortal() throws SQLException {

@@ -36,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryRes
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
@@ -61,19 +62,21 @@ public final class PostgreSQLPortal {
     
     private final BackendConnection backendConnection;
     
-    public PostgreSQLPortal(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
+    public PostgreSQLPortal(final PostgreSQLBinaryStatement binaryStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
                             final BackendConnection backendConnection) throws SQLException {
-        this.sqlStatement = sqlStatement;
+        this.sqlStatement = binaryStatement.getSqlStatement();
         this.resultFormats = resultFormats;
         this.backendConnection = backendConnection;
         if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement) {
             databaseCommunicationEngine = null;
-            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), sql, backendConnection);
+            textProtocolBackendHandler = 
+                    TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), binaryStatement.getSql(), backendConnection);
             return;
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, backendConnection.getDefaultSchemaName());
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, sql, parameters, backendConnection);
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, 
+                binaryStatement.getSql(), parameters, backendConnection);
         textProtocolBackendHandler = null;
     }
     

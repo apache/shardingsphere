@@ -27,6 +27,20 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 
 import java.util.Collections;
@@ -74,7 +88,54 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (sqlStatement instanceof MySQLShowDatabasesStatement) {
             return PrivilegeType.SHOW_DB;
         }
+        if (sqlStatement instanceof DMLStatement) {
+            return getDMLPrivilege(sqlStatement);
+        }
+        if (sqlStatement instanceof DDLStatement) {
+            return getDDLPrivilege(sqlStatement);
+        }
         // TODO add more Privilege and SQL statement mapping
+        return null;
+    }
+
+    private PrivilegeType getDMLPrivilege(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return PrivilegeType.SELECT;
+        }
+        if (sqlStatement instanceof InsertStatement) {
+            return PrivilegeType.INSERT;
+        }
+        if (sqlStatement instanceof UpdateStatement) {
+            return PrivilegeType.UPDATE;
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return PrivilegeType.DELETE;
+        }
+        return null;
+    }
+
+    private PrivilegeType getDDLPrivilege(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof AlterDatabaseStatement) {
+            return PrivilegeType.ALTER_ANY_DATABASE;
+        }
+        if (sqlStatement instanceof AlterTableStatement) {
+            return PrivilegeType.ALTER;
+        }
+        if (sqlStatement instanceof CreateDatabaseStatement) {
+            return PrivilegeType.CREATE_DATABASE;
+        }
+        if (sqlStatement instanceof CreateTableStatement) {
+            return PrivilegeType.CREATE_TABLE;
+        }
+        if (sqlStatement instanceof CreateFunctionStatement) {
+            return PrivilegeType.CREATE_FUNCTION;
+        }
+        if (sqlStatement instanceof DropTableStatement || sqlStatement instanceof DropDatabaseStatement) {
+            return PrivilegeType.DROP;
+        }
+        if (sqlStatement instanceof TruncateStatement) {
+            return PrivilegeType.TRUNCATE;
+        }
         return null;
     }
     

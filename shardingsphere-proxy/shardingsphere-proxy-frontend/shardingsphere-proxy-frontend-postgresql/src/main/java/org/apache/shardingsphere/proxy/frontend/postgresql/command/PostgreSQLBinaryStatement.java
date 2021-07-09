@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary;
+package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public final class PostgreSQLBinaryStatement {
     
     private final String sql;
     
-    private final int parameterCount;
+    private final SQLStatement sqlStatement;
     
     private final List<PostgreSQLBinaryColumnType> columnTypes;
 }
