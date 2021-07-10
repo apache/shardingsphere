@@ -41,7 +41,7 @@ public final class SQL92ParserStatementExample {
     private static final String DDL_DROP_SQL = "DROP TABLE table1, table2;";
     
     private static final String DDL_ALTER_SQL = "ALTER TABLE table1 DROP age;";
-
+    
     private static final List<String> SQL92_PARSER_STATEMENT_LIST;
     
     static {
