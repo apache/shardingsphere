@@ -31,8 +31,8 @@ public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetter implements S
     
     @Override
     public void setFetchSize(final Statement statement) throws SQLException {
-        int configuredFetchSize = ProxyContext.getInstance().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_MEMORY_STRICTLY_FETCH_SIZE);
-        statement.setFetchSize(Integer.MIN_VALUE == configuredFetchSize ? 1 : configuredFetchSize);
+        int configuredFetchSize = ProxyContext.getInstance().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE);
+        statement.setFetchSize(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE.getDefaultValue().equals(String.valueOf(configuredFetchSize)) ? 1 : configuredFetchSize);
     }
     
     @Override

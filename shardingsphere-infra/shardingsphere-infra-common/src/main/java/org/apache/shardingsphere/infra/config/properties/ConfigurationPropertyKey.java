@@ -129,10 +129,10 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     LOCK_ENABLED("lock-enabled", String.valueOf(false), boolean.class),
     
     /**
-     * Proxy memory strictly fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
-     * The default value is Integer.MIN_VALUE, which means set the minimum value for different JDBC drivers.
+     * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
+     * The default value is -1, which means set the minimum value for different JDBC drivers.
      */
-    PROXY_MEMORY_STRICTLY_FETCH_SIZE("proxy-memory-strictly-fetch-size", String.valueOf(Integer.MIN_VALUE), int.class);
+    PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", "-1", int.class);
     
     private final String key;
     
