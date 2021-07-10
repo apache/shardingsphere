@@ -41,7 +41,7 @@ public final class PostgreSQLCommandPacketFactory {
      *
      * @param commandPacketType command packet type for PostgreSQL
      * @param payload packet payload for PostgreSQL
-     * @param connectionId connection id
+     * @param connectionId connection ID
      * @return command packet for PostgreSQL
      */
     public static PostgreSQLCommandPacket newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) {
@@ -51,7 +51,7 @@ public final class PostgreSQLCommandPacketFactory {
             case PARSE_COMMAND:
                 return new PostgreSQLComParsePacket(payload);
             case BIND_COMMAND:
-                return new PostgreSQLComBindPacket(payload);
+                return new PostgreSQLComBindPacket(payload, connectionId);
             case DESCRIBE_COMMAND:
                 return new PostgreSQLComDescribePacket(payload);
             case EXECUTE_COMMAND:

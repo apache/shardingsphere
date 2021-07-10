@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.execute.PostgreSQLComExecutePacket;
@@ -36,6 +37,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.parse.PostgreSQLComParseExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -44,7 +47,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -62,6 +65,12 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     @Mock
     private PostgreSQLConnectionContext connectionContext;
     
+    @Before
+    public void setup() {
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
+        when(backendConnection.getConnectionId()).thenReturn(1);
+    }
+    
     @Test
     public void assertPendingCommandExecutors() throws SQLException {
         PostgreSQLConnectionContext connectionContext = mock(PostgreSQLConnectionContext.class);
@@ -78,7 +87,6 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     @Test
     public void assertNewInstance() throws SQLException {
         when(backendConnection.getSchemaName()).thenReturn("schema");
-        when(connectionContext.getBinaryStatements()).thenReturn(new ConcurrentHashMap<>(1, 1));
         Collection<InputOutput> inputOutputs = Arrays.asList(
             new InputOutput(PostgreSQLCommandPacketType.SIMPLE_QUERY, PostgreSQLComQueryPacket.class, PostgreSQLComQueryExecutor.class),
             new InputOutput(PostgreSQLCommandPacketType.PARSE_COMMAND, PostgreSQLComParsePacket.class, PostgreSQLComParseExecutor.class),

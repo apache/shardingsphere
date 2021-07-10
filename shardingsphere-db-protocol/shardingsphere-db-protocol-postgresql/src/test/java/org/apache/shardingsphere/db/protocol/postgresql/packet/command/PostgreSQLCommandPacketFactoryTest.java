@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
@@ -26,10 +28,14 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bin
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLComTerminationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -40,6 +46,12 @@ public final class PostgreSQLCommandPacketFactoryTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
+    
+    @Before
+    public void init() {
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1, "sts-id", "", new EmptyStatement(),
+                Collections.singletonList(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8));
+    }
     
     @Test
     public void assertNewInstanceWithQueryComPacket() {
