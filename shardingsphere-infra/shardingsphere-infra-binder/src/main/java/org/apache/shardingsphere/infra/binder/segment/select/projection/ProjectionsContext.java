@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -24,6 +25,13 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +54,7 @@ public final class ProjectionsContext {
     private final boolean distinctRow;
     
     private final Collection<Projection> projections;
-    
+
     /**
      * Judge is unqualified shorthand projection or not.
      * 
@@ -139,5 +147,32 @@ public final class ProjectionsContext {
             }
         }
         return result;
+    }
+
+    public static int getProjectionCount(ShardingSphereMetaData shardingSphereMetaData, SelectStatement selectStatement) {
+        ProjectionsSegment projections = selectStatement.getProjections();
+        Collection<ProjectionSegment> projectionSegments = projections.getProjections();
+        return isShorthandProjectionAndSimpleTable(projectionSegments, selectStatement)
+                ? getTableColumnCount(shardingSphereMetaData, (SimpleTableSegment) selectStatement.getFrom())
+                : projectionSegments.size();
+    }
+
+    private static boolean isShorthandProjectionAndSimpleTable(Collection<ProjectionSegment> c, SelectStatement statement) {
+        return isShorthandProjection(c) && isSimpleTableStatement(statement);
+    }
+
+    private static boolean isShorthandProjection(Collection<ProjectionSegment> c) {
+        return c.size() == 1 && c.iterator().next() instanceof ShorthandProjectionSegment;
+    }
+
+    private static boolean isSimpleTableStatement(SelectStatement statement) {
+        return statement.getFrom() instanceof SimpleTableSegment;
+    }
+
+    private static int getTableColumnCount(ShardingSphereMetaData shardingSphereMetaData, SimpleTableSegment table) {
+        String tableName = table.getTableName().getIdentifier().getValue();
+        TableMetaData tableMetaData = shardingSphereMetaData.getSchema().get(tableName);
+        Preconditions.checkNotNull(tableMetaData, "Table '%s' not found", tableName);
+        return tableMetaData.getColumns().size();
     }
 }

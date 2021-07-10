@@ -26,6 +26,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.p
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -73,37 +74,13 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private int getProjectionCount(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement
-                ? getProjectionCount((SelectStatement) sqlStatement) : 0;
-    }
-
-    private int getProjectionCount(SelectStatement selectStatement) {
-        ProjectionsSegment projections = selectStatement.getProjections();
-        Collection<ProjectionSegment> projectionSegments = projections.getProjections();
-        return isShorthandProjectionAndSimpleTable(projectionSegments, selectStatement)
-            ? getTableColumnCount((SimpleTableSegment) selectStatement.getFrom())
-            : projectionSegments.size();
-    }
-
-    private boolean isShorthandProjectionAndSimpleTable(Collection<ProjectionSegment> c, SelectStatement statement) {
-        return isShorthandProjection(c) && isSimpleTableStatement(statement);
-    }
-
-    private boolean isShorthandProjection(Collection<ProjectionSegment> c) {
-        return c.size() == 1 && c.iterator().next() instanceof ShorthandProjectionSegment;
-    }
-
-    private boolean isSimpleTableStatement(SelectStatement statement) {
-        return statement.getFrom() instanceof SimpleTableSegment;
-    }
-
-    private int getTableColumnCount(SimpleTableSegment table) {
-        String schemaName = backendConnection.getSchemaName();
-        ShardingSphereMetaData shardingSphereMetaData = ProxyContext.getInstance().getMetaData(schemaName);
-        String tableName = table.getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData = shardingSphereMetaData.getSchema().get(tableName);
-        Preconditions.checkNotNull(tableMetaData, "Table '%s' not found", tableName);
-        return tableMetaData.getColumns().size();
+        int projectionCount = 0;
+        if (sqlStatement instanceof SelectStatement) {
+            String schemaName = backendConnection.getSchemaName();
+            ShardingSphereMetaData shardingSphereMetaData = ProxyContext.getInstance().getMetaData(schemaName);
+            projectionCount = ProjectionsContext.getProjectionCount(shardingSphereMetaData, (SelectStatement) sqlStatement);
+        }
+        return projectionCount;
     }
 
     private Collection<DatabasePacket<?>> createPackets(final int statementId, final int projectionCount, final int parameterCount) {
