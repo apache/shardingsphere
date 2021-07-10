@@ -47,7 +47,7 @@ services:
 #    container_name: readwrite-splitting-register-center
 #    ports:
 #      - "22810:2181"
-  
+
   shardingsphere-proxy:
     image: apache/shardingsphere-proxy-test
     container_name: readwrite-splitting-shardingsphere-proxy

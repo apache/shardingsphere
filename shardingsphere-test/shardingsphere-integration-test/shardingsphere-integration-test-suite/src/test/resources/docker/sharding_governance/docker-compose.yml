@@ -47,7 +47,7 @@ services:
     container_name: sharding-governance-register-center
     ports:
       - "26810:2181"
-  
+
   shardingsphere-proxy_1:
     image: apache/shardingsphere-proxy-test
     container_name: sharding-governance-1-shardingsphere-proxy
