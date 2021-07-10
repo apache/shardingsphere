@@ -57,5 +57,6 @@ public final class SQL92ParserStatementExample {
             SQL92Statement sqlStatement = visitorEngine.visit(tree);
             System.out.println(sqlStatement.toString());
         });
+        
     }
 }
