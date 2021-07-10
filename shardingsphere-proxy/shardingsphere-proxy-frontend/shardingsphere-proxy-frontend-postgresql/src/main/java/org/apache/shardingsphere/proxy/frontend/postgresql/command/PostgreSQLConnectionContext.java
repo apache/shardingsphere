@@ -20,31 +20,25 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe.PostgreSQLComDescribeExecutor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * PostgreSQL connection context.
  */
 @Setter
 public final class PostgreSQLConnectionContext {
-    
-    @Getter
-    private final ConcurrentMap<String, PostgreSQLBinaryStatement> binaryStatements = new ConcurrentHashMap<>(65535, 1);
     
     private final Map<String, PostgreSQLPortal> portals = new LinkedHashMap<>();
     
@@ -130,15 +124,5 @@ public final class PostgreSQLConnectionContext {
     public void clearContext() {
         pendingExecutors.clear();
         updateCount = 0;
-    }
-    
-    /**
-     * Get postgreSQL binary statement.
-     * 
-     * @param statementId statement Id
-     * @return postgreSQL binary statement
-     */
-    public PostgreSQLBinaryStatement getPostgreSQLBinaryStatement(final String statementId) {
-        return binaryStatements.getOrDefault(statementId, new PostgreSQLBinaryStatement("", new EmptyStatement(), Collections.emptyList()));
     }
 }

@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.close;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLCloseCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +32,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -51,8 +53,9 @@ public final class PostgreSQLComCloseExecutorTest {
     private BackendConnection backendConnection;
     
     @Before
-    public void setUp() {
-        when(connectionContext.getBinaryStatements()).thenReturn(new ConcurrentHashMap<>(1, 1));
+    public void setup() {
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
+        when(backendConnection.getConnectionId()).thenReturn(1);
     }
     
     @Test
