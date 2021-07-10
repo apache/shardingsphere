@@ -100,11 +100,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private int getTableColumnCount(SimpleTableSegment table) {
         String schemaName = backendConnection.getSchemaName();
         ShardingSphereMetaData shardingSphereMetaData = ProxyContext.getInstance().getMetaData(schemaName);
-
         String tableName = table.getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData = shardingSphereMetaData.getSchema().get(tableName);
         Preconditions.checkNotNull(tableMetaData, "Table '%s' not found", tableName);
-
         return tableMetaData.getColumns().size();
     }
 
