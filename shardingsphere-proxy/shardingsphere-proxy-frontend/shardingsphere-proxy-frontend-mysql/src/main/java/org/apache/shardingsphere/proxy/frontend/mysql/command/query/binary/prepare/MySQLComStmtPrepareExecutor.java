@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
@@ -26,11 +27,17 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.p
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -66,9 +73,41 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private int getProjectionCount(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
+        return sqlStatement instanceof SelectStatement
+                ? getProjectionCount((SelectStatement) sqlStatement) : 0;
     }
-    
+
+    private int getProjectionCount(SelectStatement selectStatement) {
+        ProjectionsSegment projections = selectStatement.getProjections();
+        Collection<ProjectionSegment> projectionSegments = projections.getProjections();
+        return isShorthandProjectionAndSimpleTable(projectionSegments, selectStatement)
+            ? getTableColumnCount((SimpleTableSegment) selectStatement.getFrom())
+            : projectionSegments.size();
+    }
+
+    private boolean isShorthandProjectionAndSimpleTable(Collection<ProjectionSegment> c, SelectStatement statement) {
+        return isShorthandProjection(c) && isSimpleTableStatement(statement);
+    }
+
+    private boolean isShorthandProjection(Collection<ProjectionSegment> c) {
+        return c.size() == 1 && c.iterator().next() instanceof ShorthandProjectionSegment;
+    }
+
+    private boolean isSimpleTableStatement(SelectStatement statement) {
+        return statement.getFrom() instanceof SimpleTableSegment;
+    }
+
+    private int getTableColumnCount(SimpleTableSegment table) {
+        String schemaName = backendConnection.getSchemaName();
+        ShardingSphereMetaData shardingSphereMetaData = ProxyContext.getInstance().getMetaData(schemaName);
+
+        String tableName = table.getTableName().getIdentifier().getValue();
+        TableMetaData tableMetaData = shardingSphereMetaData.getSchema().get(tableName);
+        Preconditions.checkNotNull(tableMetaData, "Table '%s' not found", tableName);
+
+        return tableMetaData.getColumns().size();
+    }
+
     private Collection<DatabasePacket<?>> createPackets(final int statementId, final int projectionCount, final int parameterCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, statementId, projectionCount, parameterCount, 0));
