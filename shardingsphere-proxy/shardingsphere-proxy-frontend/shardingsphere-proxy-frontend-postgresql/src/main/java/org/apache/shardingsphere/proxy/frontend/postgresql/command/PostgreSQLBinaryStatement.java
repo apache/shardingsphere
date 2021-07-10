@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.impl;
+package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 /**
- * Show read-write splitting rules statement test case.
+ * Binary prepared statement for PostgreSQL.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ShowReadWriteSplittingRulesStatementTestCase extends SQLParserTestCase {
+public final class PostgreSQLBinaryStatement {
     
-    @XmlElement
-    private ExpectedSchema schema;
+    private final String sql;
+    
+    private final SQLStatement sqlStatement;
+    
+    private final List<PostgreSQLBinaryColumnType> columnTypes;
 }

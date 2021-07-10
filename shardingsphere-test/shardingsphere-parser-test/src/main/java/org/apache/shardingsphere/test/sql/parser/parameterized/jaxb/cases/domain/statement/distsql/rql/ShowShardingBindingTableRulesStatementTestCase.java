@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Binary prepared statement for PostgreSQL.
+ * Show sharding binding table rules statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class PostgreSQLBinaryStatement {
+@Setter
+public final class ShowShardingBindingTableRulesStatementTestCase extends SQLParserTestCase {
     
-    private final String sql;
-    
-    private final int parameterCount;
-    
-    private final List<PostgreSQLBinaryColumnType> columnTypes;
+    @XmlElement
+    private ExpectedSchema schema;
 }

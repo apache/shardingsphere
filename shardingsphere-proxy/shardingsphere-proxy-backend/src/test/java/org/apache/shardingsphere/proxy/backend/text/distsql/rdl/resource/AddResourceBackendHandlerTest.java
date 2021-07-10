@@ -94,6 +94,6 @@ public final class AddResourceBackendHandlerTest {
     }
     
     private AddResourceStatement createAddResourceStatement() {
-        return new AddResourceStatement(Collections.singleton(new DataSourceSegment("ds_0", "127.0.0.1", "test0", "3306", "root", "", new Properties())));
+        return new AddResourceStatement(Collections.singleton(new DataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/test0", null, null, null, "root", "", new Properties())));
     }
 }

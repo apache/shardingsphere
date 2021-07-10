@@ -52,8 +52,7 @@ public final class PaginationContextEngine {
         Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(selectStatement);
         Optional<WhereSegment> whereSegment = selectStatement.getWhere();
         if (topProjectionSegment.isPresent()) {
-            return new TopPaginationContextEngine().createPaginationContext(
-                    topProjectionSegment.get(), whereSegment.isPresent() ? whereSegment.get().getExpr() : null, parameters);
+            return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), whereSegment.map(WhereSegment::getExpr).orElse(null), parameters);
         }
         if (whereSegment.isPresent()) {
             return new RowNumberPaginationContextEngine().createPaginationContext(whereSegment.get().getExpr(), projectionsContext, parameters);
