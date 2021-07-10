@@ -154,7 +154,7 @@ unionClause
     ;
 
 queryBlock
-    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? groupByClause?
+    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? hierarchicalQueryClause? groupByClause?
     ;
 
 withClause
@@ -620,6 +620,11 @@ inlineAnalyticView
 
 whereClause
     : WHERE expr
+    ;
+
+hierarchicalQueryClause
+    : CONNECT BY NOCYCLE? expr (START WITH expr)?
+    | START WITH expr CONNECT BY NOCYCLE? expr
     ;
 
 groupByClause
