@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlElement;
-
 /**
- * Show read-write splitting rules statement test case.
+ * Updatable RAL statement assert.
  */
-@Getter
-@Setter
-public final class ShowReadWriteSplittingRulesStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedSchema schema;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class UpdatableRALStatementAssert {
+
+    /**
+     * Assert updatable RAL statement is correct with expected parser result.
+     *
+     * @param assertContext assert context
+     * @param actual        actual updatable RAL statement
+     * @param expected      expected updatable RAL statement test case
+     */
+    public static void assertIs(final SQLCaseAssertContext assertContext, final UpdatableRALStatement actual, final SQLParserTestCase expected) {
+    }
 }

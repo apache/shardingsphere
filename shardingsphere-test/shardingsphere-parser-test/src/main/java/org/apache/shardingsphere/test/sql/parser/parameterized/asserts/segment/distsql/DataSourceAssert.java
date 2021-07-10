@@ -49,6 +49,8 @@ public final class DataSourceAssert {
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getName(), CoreMatchers.is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
+                    actual.getClass().getSimpleName())), actual.getUrl(), CoreMatchers.is(expected.getUrl()));
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getHostName(), CoreMatchers.is(expected.getHostName()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getPort(), CoreMatchers.is(expected.getPort()));

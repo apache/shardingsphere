@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.example.transaction.xa.spring.boot;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 @SpringBootApplication
 @Import(TransactionConfiguration.class)
 public class TransactionXaSpringBootExample {
     
-    @Autowired
+    @Resource
     private XAOrderService orderService;
     
     public static void main(final String[] args) {

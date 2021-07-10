@@ -30,6 +30,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ExpectedDataSource extends AbstractExpectedIdentifierSQLSegment {
     
+    @XmlAttribute
+    private String url;
+    
     @XmlAttribute(name = "host-name")
     private String hostName;
     

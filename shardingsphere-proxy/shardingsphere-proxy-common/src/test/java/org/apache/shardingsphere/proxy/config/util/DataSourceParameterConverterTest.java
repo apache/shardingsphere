@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -80,14 +81,16 @@ public final class DataSourceParameterConverterTest {
     
     @Test
     public void assertGetDataSourceParameterMapFromYamlConfiguration() {
-        Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>();
         YamlDataSourceParameter yamlDataSourceParameter0 = new YamlDataSourceParameter();
         yamlDataSourceParameter0.setUrl("jdbc:mysql://localhost:3306/t_order");
+        yamlDataSourceParameter0.setCustomPoolProps(getCustomPoolProps());
         setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter0);
-        yamlDataSourceParameterMap.put("ds_0", yamlDataSourceParameter0);
         YamlDataSourceParameter yamlDataSourceParameter1 = new YamlDataSourceParameter();
         yamlDataSourceParameter1.setUrl("jdbc:mysql://localhost:3306/t_order_item");
+        yamlDataSourceParameter1.setCustomPoolProps(getCustomPoolProps());
         setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter1);
+        Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>();
+        yamlDataSourceParameterMap.put("ds_0", yamlDataSourceParameter0);
         yamlDataSourceParameterMap.put("ds_1", yamlDataSourceParameter1);
         Map<String, DataSourceParameter> actualDataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(yamlDataSourceParameterMap);
         assertThat(actualDataSourceParameterMap.size(), is(2));
@@ -117,5 +120,15 @@ public final class DataSourceParameterConverterTest {
         assertThat(dataSourceParameter.getMaintenanceIntervalMilliseconds(), is(30 * 1000L));
         assertThat(dataSourceParameter.getUsername(), is("root"));
         assertThat(dataSourceParameter.getPassword(), is("root"));
+        assertThat(dataSourceParameter.getCustomPoolProps().size(), is(2));
+        assertThat(dataSourceParameter.getCustomPoolProps().get("maxPoolSize"), is(30));
+        assertThat(dataSourceParameter.getCustomPoolProps().get("idleTimeoutMilliseconds"), is("30000"));
+    }
+    
+    private Properties getCustomPoolProps() {
+        Properties result = new Properties();
+        result.put("maxPoolSize", 30);
+        result.put("idleTimeoutMilliseconds", "30000");
+        return result;
     }
 }
