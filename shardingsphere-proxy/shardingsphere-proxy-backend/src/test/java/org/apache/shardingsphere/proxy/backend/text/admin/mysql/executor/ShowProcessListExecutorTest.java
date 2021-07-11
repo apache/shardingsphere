@@ -43,6 +43,7 @@ public final class ShowProcessListExecutorTest {
         Field processListDataField = showProcessListExecutor.getClass().getDeclaredField("processListData");
         processListDataField.setAccessible(true);
         String executionNodeValue = "executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
+            + "sql: alter table t_order add column a varchar(64) after order_id\n"
             + "startTimeMillis: 1617939785160\n"
             + "schemaName: sharding_db\n"
             + "username: sharding\n"
@@ -66,6 +67,7 @@ public final class ShowProcessListExecutorTest {
             assertThat(mergedResult.getValue(3, String.class), is("127.0.0.1"));
             assertThat(mergedResult.getValue(4, String.class), is("sharding_db"));
             assertThat(mergedResult.getValue(7, String.class), is("Executing 1/2"));
+            assertThat(mergedResult.getValue(8, String.class), is("alter table t_order add column a varchar(64) after order_id"));
         }
     }
 }
