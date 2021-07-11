@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,8 @@ public final class PostgreSQLComBindPacketTest {
     
     @Before
     public void init() {
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1, "sts-id", "select 1", new EmptyStatement(), 
+                Collections.singletonList(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8));
         when(payload.readInt4()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("");
         when(payload.readStringNul()).thenReturn("sts-id");
@@ -51,9 +55,8 @@ public final class PostgreSQLComBindPacketTest {
     public void assertWrite() {
         when(payload.readInt2()).thenReturn(1);
         when(payload.readInt4()).thenReturn(1);
-        PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload);
+        PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
         bindPacket.write(payload);
-        bindPacket.init(Collections.singletonList(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8));
         assertThat(bindPacket.getParameters().size(), is(1));
         assertThat(bindPacket.getResultFormats().size(), is(1));
         assertThat(bindPacket.getResultFormats().get(0), is(PostgreSQLValueFormat.BINARY));
@@ -61,14 +64,14 @@ public final class PostgreSQLComBindPacketTest {
     
     @Test
     public void assertWriteWithEmptySql() {
-        PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload);
+        PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
         bindPacket.write(payload);
-        assertThat(bindPacket.getParameters().size(), is(0));
+        assertThat(bindPacket.getParameters().size(), is(1));
     }
     
     @Test
     public void getMessageType() {
-        PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload);
+        PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
         assertThat(bindPacket.getIdentifier(), is(PostgreSQLCommandPacketType.BIND_COMMAND));
     }
 }

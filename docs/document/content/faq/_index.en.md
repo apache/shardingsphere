@@ -213,7 +213,7 @@ tar zxvf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.g
 
 Answer:
 
-In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](https://shardingsphere.apache.org/document/current/en/features/spi/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
+In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](https://shardingsphere.apache.org/document/current/en/features/pluggable-architecture/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
 
 ## 16. Why does my custom distributed primary key do not work after implementing `ShardingKeyGenerator` interface and configuring `type` property?
 
@@ -223,7 +223,7 @@ Answer:
 
 More detail for SPI usage, please search by yourself.
 
-Other ShardingSphere [functionality implementation](https://shardingsphere.apache.org/document/current/en/features/spi/) will take effect in the same way.
+Other ShardingSphere [functionality implementation](https://shardingsphere.apache.org/document/current/en/features/pluggable-architecture/) will take effect in the same way.
 
 ## 17. How to solve that `data encryption` can't work with JPA?
 
