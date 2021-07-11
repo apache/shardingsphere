@@ -289,3 +289,11 @@ Answer:
 Goto [Settings -> Languages & Frameworks -> ANTLR v4 default project settings](jetbrains://idea/settings?name=Languages+%26+Frameworks--ANTLR+v4+default+project+settings) and configure the output directory of the generated code as `target/gen` as shown:
 
 ![Configure ANTLR plugin](https://shardingsphere.apache.org/document/current/img/faq/configure-antlr-plugin.png)
+
+## 25. How to set custom JDBC connection properties or connection pool properties when adding a data source using DistSQL?
+
+Answer:
+
+1. If you need to customize JDBC connection properties, please take the `urlSource` way to define `dataSource`.
+2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
+3. Please refer to [Related introduction](en/features/dist-sql/syntax/rdl/rdl-resource/) for above rules.
