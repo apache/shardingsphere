@@ -30,7 +30,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -54,11 +53,11 @@ public final class MySQLAuthenticationHandler {
      */
     public Optional<MySQLServerErrorCode> login(final String username, final String hostname, final byte[] authenticationResponse, final String databaseName) {
         Grantee grantee = new Grantee(username, hostname);
-        if (!SQLCheckEngine.check(grantee, (a, b) -> isPasswordRight((ShardingSphereUser) a, (byte[]) b), authenticationResponse, getRules(databaseName))) {
+        Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getRules(databaseName);
+        if (!SQLCheckEngine.check(grantee, (a, b) -> isPasswordRight((ShardingSphereUser) a, (byte[]) b), authenticationResponse, rules)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
-        return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)
-                ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
+        return null == databaseName || SQLCheckEngine.check(databaseName, rules, grantee) ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
     }
 
     private boolean isPasswordRight(final ShardingSphereUser user, final byte[] authentication) {
@@ -80,15 +79,6 @@ public final class MySQLAuthenticationHandler {
         for (int i = 0; i < input.length; ++i) {
             result[i] = (byte) (input[i] ^ secret[i]);
         }
-        return result;
-    }
-    
-    private Collection<ShardingSphereRule> getRules(final String databaseName) {
-        Collection<ShardingSphereRule> result = new LinkedList<>();
-        if (!Strings.isNullOrEmpty(databaseName) && ProxyContext.getInstance().schemaExists(databaseName)) {
-            result.addAll(ProxyContext.getInstance().getMetaDataContexts().getMetaData(databaseName).getRuleMetaData().getRules());
-        }
-        result.addAll(ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules());
         return result;
     }
 }
