@@ -126,7 +126,7 @@ public final class FederateJDBCExecutorTest extends AbstractSQLFederationTest {
                 columnMetaDatas.add(new ColumnMetaData(colunmn, 1, false, false, false));
                 indexMetaDatas.add(new IndexMetaData("index"));
             }
-            TableMetaData tableMetaData = new TableMetaData(columnMetaDatas, indexMetaDatas);
+            TableMetaData tableMetaData = new TableMetaData(table, columnMetaDatas, indexMetaDatas);
             tableMetaDatas.put(table, tableMetaData);
         }
         return new FederateSchemaMetadata(schemaName, tableMetaDatas);
