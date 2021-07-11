@@ -25,7 +25,12 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.p
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -35,7 +40,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * COM_STMT_PREPARE command executor for MySQL.
@@ -66,9 +73,20 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private int getProjectionCount(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
+        int projectionCount = 0;
+        if (sqlStatement instanceof SelectStatement) {
+            String schemaName = backendConnection.getSchemaName();
+            ProxyContext proxyContext = ProxyContext.getInstance();
+            MetaDataContexts metaDataContexts = proxyContext.getMetaDataContexts();
+            Map<String, ShardingSphereMetaData> metaDataMap = metaDataContexts.getMetaDataMap();
+            SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory.newInstance(
+                    metaDataMap, Collections.emptyList(), sqlStatement, schemaName);
+            ProjectionsContext projectionsContext = sqlStatementContext.getProjectionsContext();
+            projectionCount = projectionsContext.getExpandProjections().size();
+        }
+        return projectionCount;
     }
-    
+
     private Collection<DatabasePacket<?>> createPackets(final int statementId, final int projectionCount, final int parameterCount) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, statementId, projectionCount, parameterCount, 0));
