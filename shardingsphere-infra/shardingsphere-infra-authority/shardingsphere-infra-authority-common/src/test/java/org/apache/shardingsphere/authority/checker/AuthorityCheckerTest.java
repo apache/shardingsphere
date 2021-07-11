@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
-public class AuthorityCheckerTest {
+public final class AuthorityCheckerTest {
 
     static {
         ShardingSphereServiceLoader.register(SQLChecker.class);
@@ -85,11 +85,8 @@ public class AuthorityCheckerTest {
         AuthorityRule rule = new AuthorityRule(ruleConfig, createMetaDataMap(users), users);
         SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
         assertThat(sqlChecker, notNullValue());
-        // true
         assertThat(sqlChecker.check("db0", new Grantee("root", "localhost"), rule), is(true));
-        // false
         assertThat(sqlChecker.check("db1", new Grantee("root", "localhost"), rule), is(false));
-        // false
         assertThat(sqlChecker.check("db0", new Grantee("other", "localhost"), rule), is(false));
     }
 
