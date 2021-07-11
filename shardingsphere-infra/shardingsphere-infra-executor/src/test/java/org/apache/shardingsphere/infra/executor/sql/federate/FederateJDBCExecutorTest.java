@@ -121,10 +121,12 @@ public final class FederateJDBCExecutorTest extends AbstractSQLFederationTest {
         Map<String, TableMetaData> tableMetaDatas = new HashMap<>();
         for (String table: tableNames) {
             List<ColumnMetaData> columnMetaDatas = new ArrayList<>();
+            List<IndexMetaData> indexMetaDatas = new ArrayList<>();
             for (String colunmn: tableColumns.get(table)) {
                 columnMetaDatas.add(new ColumnMetaData(colunmn, 1, false, false, false));
+                indexMetaDatas.add(new IndexMetaData("index"));
             }
-            TableMetaData tableMetaData = new TableMetaData(columnMetaDatas, Collections.singletonList(new IndexMetaData(tableColumns.get(table).get(0))));
+            TableMetaData tableMetaData = new TableMetaData(columnMetaDatas, indexMetaDatas);
             tableMetaDatas.put(table, tableMetaData);
         }
         return new FederateSchemaMetadata(schemaName, tableMetaDatas);
