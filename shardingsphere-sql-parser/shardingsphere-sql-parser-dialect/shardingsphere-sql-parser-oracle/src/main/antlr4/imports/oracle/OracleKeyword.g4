@@ -2342,3 +2342,31 @@ FINAL
 PREV
     : P R E V
     ;
+
+NOAUDIT
+    : N O A U D I T
+    ;
+
+WHENEVER
+    : W H E N E V E R
+    ;
+
+SUCCESSFUL
+    : S U C C E S S F U L
+    ;
+
+USERS
+    : U S E R S
+    ;
+
+GRANTED
+    : G R A N T E D
+    ;
+
+ROLES
+    : R O L E S
+    ;
+
+NAMESPACE
+    : N A M E S P A C E
+    ;
