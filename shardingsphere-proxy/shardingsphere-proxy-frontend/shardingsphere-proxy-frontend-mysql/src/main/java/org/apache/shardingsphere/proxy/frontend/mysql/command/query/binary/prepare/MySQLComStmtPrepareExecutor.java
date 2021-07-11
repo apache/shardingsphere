@@ -26,9 +26,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.p
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
@@ -73,18 +71,13 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private int getProjectionCount(final SQLStatement sqlStatement) {
-        int projectionCount = 0;
         if (sqlStatement instanceof SelectStatement) {
+            Map<String, ShardingSphereMetaData> metaDataMap = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap();
             String schemaName = backendConnection.getSchemaName();
-            ProxyContext proxyContext = ProxyContext.getInstance();
-            MetaDataContexts metaDataContexts = proxyContext.getMetaDataContexts();
-            Map<String, ShardingSphereMetaData> metaDataMap = metaDataContexts.getMetaDataMap();
-            SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory.newInstance(
-                    metaDataMap, Collections.emptyList(), sqlStatement, schemaName);
-            ProjectionsContext projectionsContext = sqlStatementContext.getProjectionsContext();
-            projectionCount = projectionsContext.getExpandProjections().size();
+            SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory.newInstance(metaDataMap, Collections.emptyList(), sqlStatement, schemaName);
+            return sqlStatementContext.getProjectionsContext().getExpandProjections().size();
         }
-        return projectionCount;
+        return 0;
     }
 
     private Collection<DatabasePacket<?>> createPackets(final int statementId, final int projectionCount, final int parameterCount) {

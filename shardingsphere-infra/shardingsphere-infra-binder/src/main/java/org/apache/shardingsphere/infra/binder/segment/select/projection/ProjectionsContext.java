@@ -38,18 +38,18 @@ import java.util.Optional;
 @Getter
 @ToString
 public final class ProjectionsContext {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
-
+    
     private final boolean distinctRow;
-
+    
     private final Collection<Projection> projections;
-
+    
     /**
      * Judge is unqualified shorthand projection or not.
-     *
+     * 
      * @return is unqualified shorthand projection or not
      */
     public boolean isUnqualifiedShorthandProjection() {
@@ -59,10 +59,10 @@ public final class ProjectionsContext {
         Projection projection = projections.iterator().next();
         return projection instanceof ShorthandProjection && !((ShorthandProjection) projection).getOwner().isPresent();
     }
-
+    
     /**
      * Find alias.
-     *
+     * 
      * @param projectionName projection name
      * @return projection alias
      */
@@ -74,10 +74,10 @@ public final class ProjectionsContext {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Find projection index.
-     *
+     * 
      * @param projectionName projection name
      * @return projection index
      */
@@ -91,10 +91,10 @@ public final class ProjectionsContext {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Get aggregation projections.
-     *
+     * 
      * @return aggregation projections
      */
     public List<AggregationProjection> getAggregationProjections() {
@@ -108,10 +108,10 @@ public final class ProjectionsContext {
         }
         return result;
     }
-
+    
     /**
      * Get aggregation distinct projections.
-     *
+     * 
      * @return aggregation distinct projections
      */
     public List<AggregationDistinctProjection> getAggregationDistinctProjections() {
@@ -123,10 +123,10 @@ public final class ProjectionsContext {
         }
         return result;
     }
-
+    
     /**
      * Get expand projections with shorthand projections.
-     *
+     * 
      * @return expand projections
      */
     public List<Projection> getExpandProjections() {
@@ -140,5 +140,4 @@ public final class ProjectionsContext {
         }
         return result;
     }
-
 }
