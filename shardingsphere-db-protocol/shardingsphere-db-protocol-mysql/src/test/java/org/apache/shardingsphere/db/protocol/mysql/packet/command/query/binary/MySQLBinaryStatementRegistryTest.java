@@ -54,9 +54,9 @@ public final class MySQLBinaryStatementRegistryTest {
     }
     
     @Test
-    public void assertRemoveIfPresent() {
+    public void assertUnregisterIfPresent() {
         MySQLBinaryStatementRegistry.getInstance().register(sql, 1);
-        MySQLBinaryStatementRegistry.getInstance().remove(1);
+        MySQLBinaryStatementRegistry.getInstance().unregister(1);
         MySQLBinaryStatement actual = MySQLBinaryStatementRegistry.getInstance().getBinaryStatement(1);
         assertNull(actual);
     }

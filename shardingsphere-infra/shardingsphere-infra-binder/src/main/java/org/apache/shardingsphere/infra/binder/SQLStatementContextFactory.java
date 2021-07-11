@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementCont
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.ShowTableStatusStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dal.ShowTablesStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dcl.DenyUserStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dcl.GrantStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dcl.RevokeStatementContext;
@@ -47,7 +49,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -77,10 +79,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * SQL statement context factory.
@@ -91,14 +96,16 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param schema ShardingSphere schema
+     * @param metaDataMap metaData map
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
+     * @param defaultSchemaName default schema name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final ShardingSphereSchema schema, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, 
+                                                     final SQLStatement sqlStatement, final String defaultSchemaName) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(schema, parameters, (DMLStatement) sqlStatement);
+            return getDMLStatementContext(metaDataMap, parameters, (DMLStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof DDLStatement) {
             return getDDLStatementContext((DDLStatement) sqlStatement);
@@ -112,9 +119,10 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDMLStatementContext(final ShardingSphereSchema schema, final List<Object> parameters, final DMLStatement sqlStatement) {
+    private static SQLStatementContext<?> getDMLStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters, 
+                                                                 final DMLStatement sqlStatement, final String defaultSchemaName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(schema, parameters, (SelectStatement) sqlStatement);
+            return new SelectStatementContext(metaDataMap, parameters, (SelectStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -123,7 +131,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(schema, parameters, (InsertStatement) sqlStatement);
+            return new InsertStatementContext(metaDataMap, parameters, (InsertStatement) sqlStatement, defaultSchemaName);
         }
         if (sqlStatement instanceof CallStatement) {
             return new CallStatementContext((CallStatement) sqlStatement);
@@ -196,6 +204,12 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof MySQLShowColumnsStatement) {
             return new ShowColumnsStatementContext((MySQLShowColumnsStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof MySQLShowTablesStatement) {
+            return new ShowTablesStatementContext((MySQLShowTablesStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof MySQLShowTableStatusStatement) {
+            return new ShowTableStatusStatementContext((MySQLShowTableStatusStatement) sqlStatement);
         }
         if (sqlStatement instanceof MySQLShowIndexStatement) {
             return new ShowIndexStatementContext((MySQLShowIndexStatement) sqlStatement);

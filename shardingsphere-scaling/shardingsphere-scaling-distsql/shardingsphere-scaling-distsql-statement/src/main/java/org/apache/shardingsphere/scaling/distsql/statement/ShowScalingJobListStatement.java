@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.distsql.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
  * Show scaling job list statement.
  */
-public final class ShowScalingJobListStatement extends RALStatement {
+public final class ShowScalingJobListStatement extends QueryableRALStatement {
 }

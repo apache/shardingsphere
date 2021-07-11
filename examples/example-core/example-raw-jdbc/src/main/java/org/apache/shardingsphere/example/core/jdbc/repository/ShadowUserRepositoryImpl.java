@@ -40,7 +40,7 @@ public final class ShadowUserRepositoryImpl implements ShadowUserRepository {
     @Override
     public void createTableIfNotExists() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_user "
-                + "(user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), user_name_plain VARCHAR(200), pwd VARCHAR(200), assisted_query_pwd VARCHAR(200), PRIMARY KEY (user_id))";
+                + "(user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), pwd VARCHAR(200), PRIMARY KEY (user_id))";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);

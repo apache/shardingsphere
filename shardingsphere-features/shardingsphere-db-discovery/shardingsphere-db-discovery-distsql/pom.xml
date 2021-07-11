@@ -32,5 +32,6 @@
     <modules>
         <module>shardingsphere-db-discovery-distsql-statement</module>
         <module>shardingsphere-db-discovery-distsql-parser</module>
+        <module>shardingsphere-db-discovery-distsql-handler</module>
     </modules>
 </project>

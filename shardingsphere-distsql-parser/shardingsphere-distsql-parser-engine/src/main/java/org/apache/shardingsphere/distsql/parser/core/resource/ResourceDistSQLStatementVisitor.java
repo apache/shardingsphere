@@ -24,6 +24,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.ShowResourcesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.PoolPropertiesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ResourceStatementParser.PoolPropertyContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
@@ -33,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -47,8 +50,29 @@ public final class ResourceDistSQLStatementVisitor extends ResourceStatementBase
     
     @Override
     public ASTNode visitDataSource(final DataSourceContext ctx) {
-        return new DataSourceSegment(
-                ctx.dataSourceName().getText(), ctx.hostName().getText(), ctx.port().getText(), ctx.dbName().getText(), ctx.user().getText(), null == ctx.password() ? "" : ctx.password().getText());
+        String url = null;
+        String hostName = null;
+        String port = null;
+        String dbName = null;
+        if (null != ctx.urlSource()) {
+            url = new IdentifierValue(ctx.urlSource().url().getText()).getValue();
+        }
+        if (null != ctx.simpleSource()) {
+            hostName = ctx.simpleSource().hostName().getText();
+            port = ctx.simpleSource().port().getText();
+            dbName = ctx.simpleSource().dbName().getText();
+        }
+        return new DataSourceSegment(ctx.dataSourceName().getText(), url, hostName, port, dbName,
+                ctx.user().getText(), null == ctx.password() ? "" : ctx.password().getText(),
+                null == ctx.poolProperties() ? new Properties() : getPoolProperties(ctx.poolProperties()));
+    }
+    
+    private Properties getPoolProperties(final PoolPropertiesContext ctx) {
+        Properties result = new Properties();
+        for (PoolPropertyContext each : ctx.poolProperty()) {
+            result.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+        }
+        return result;
     }
     
     @Override

@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+
 /**
  * Row count sql node converter.
  */
 public final class RowCountSqlNodeConverter extends AbstractLimitSqlNodeConverter {
     
     public RowCountSqlNodeConverter() {
-        super(limitSegment -> limitSegment.getRowCount());
+        super(LimitSegment::getRowCount);
     }
 }

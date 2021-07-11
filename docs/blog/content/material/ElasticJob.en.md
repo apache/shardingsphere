@@ -1,7 +1,7 @@
 
 +++
 title = "News! The distributed scheduling project ElasticJob set sail again"
-weight = 2
+weight = 12
 chapter = true
 +++
 

@@ -58,11 +58,11 @@ public final class SchemaYamlSwapper implements YamlConfigurationSwapper<YamlSch
     
     private ShardingSphereSchema swapSchema(final YamlSchema schema) {
         return new ShardingSphereSchema(MapUtils.isEmpty(schema.getTables()) ? Maps.newLinkedHashMap() : schema.getTables().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> swapTable(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+                .collect(Collectors.toMap(Entry::getKey, entry -> swapTable(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
-    private TableMetaData swapTable(final YamlTableMetaData table) {
-        return new TableMetaData(swapColumns(table.getColumns()), swapIndexes(table.getIndexes()));
+    private TableMetaData swapTable(final String tableName, final YamlTableMetaData table) {
+        return new TableMetaData(tableName, swapColumns(table.getColumns()), swapIndexes(table.getIndexes()));
     }
     
     private Collection<IndexMetaData> swapIndexes(final Map<String, YamlIndexMetaData> indexes) {

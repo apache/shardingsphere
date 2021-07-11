@@ -20,8 +20,6 @@ package org.apache.shardingsphere.agent.metrics.prometheus.service;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.exception.PluginConfigurationException;
@@ -29,6 +27,9 @@ import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
 import org.apache.shardingsphere.agent.metrics.prometheus.register.PrometheusMetricsRegister;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
 /**
  * Prometheus plugin boot service.
@@ -76,7 +77,7 @@ public final class PrometheusPluginBootService implements PluginBootService {
         }
         try {
             httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
-            log.info(String.format("Prometheus metrics HTTP server `%s:%s` start success.", inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
+            log.info("Prometheus metrics HTTP server `{}:{}` start success.", inetSocketAddress.getHostString(), inetSocketAddress.getPort());
         } catch (final IOException ex) {
             log.error("Prometheus metrics HTTP server start fail", ex);
         }

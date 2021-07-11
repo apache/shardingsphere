@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.data;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
@@ -37,18 +38,19 @@ public final class DatabaseBackendHandlerFactory {
     /**
      * New instance of database backend handler.
      * 
-     * @param sqlStatement SQL statement
+     * @param sqlStatementContext SQL statement context
      * @param sql SQL
      * @param backendConnection backend connection
      * @return database backend handler
      */
-    public static DatabaseBackendHandler newInstance(final SQLStatement sqlStatement, final String sql, final BackendConnection backendConnection) {
+    public static DatabaseBackendHandler newInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final BackendConnection backendConnection) {
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SetStatement) {
-            return new BroadcastDatabaseBackendHandler(sqlStatement, sql, backendConnection);
+            return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, backendConnection);
         }
         if (sqlStatement instanceof DALStatement || (sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom())) {
-            return new UnicastDatabaseBackendHandler(sqlStatement, sql, backendConnection);
+            return new UnicastDatabaseBackendHandler(sqlStatementContext, sql, backendConnection);
         }
-        return new SchemaAssignedDatabaseBackendHandler(sqlStatement, sql, backendConnection);
+        return new SchemaAssignedDatabaseBackendHandler(sqlStatementContext, sql, backendConnection);
     }
 }

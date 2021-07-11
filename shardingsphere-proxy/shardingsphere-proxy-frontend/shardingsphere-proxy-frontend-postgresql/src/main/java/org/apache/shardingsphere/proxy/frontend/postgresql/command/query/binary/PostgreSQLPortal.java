@@ -19,20 +19,24 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
+import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
@@ -48,21 +52,31 @@ import java.util.List;
 @Getter
 public final class PostgreSQLPortal {
     
+    private final SQLStatement sqlStatement;
+    
     private final List<PostgreSQLValueFormat> resultFormats;
     
     private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    public PostgreSQLPortal(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
+    private final BackendConnection backendConnection;
+    
+    public PostgreSQLPortal(final PostgreSQLBinaryStatement binaryStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
                             final BackendConnection backendConnection) throws SQLException {
+        this.sqlStatement = binaryStatement.getSqlStatement();
         this.resultFormats = resultFormats;
+        this.backendConnection = backendConnection;
         if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement) {
             databaseCommunicationEngine = null;
-            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), sql, backendConnection);
+            textProtocolBackendHandler = 
+                    TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL"), binaryStatement.getSql(), backendConnection);
             return;
         }
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatement, sql, parameters, backendConnection);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
+                ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap(), parameters, sqlStatement, backendConnection.getDefaultSchemaName());
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, 
+                binaryStatement.getSql(), parameters, backendConnection);
         textProtocolBackendHandler = null;
     }
     
@@ -117,13 +131,20 @@ public final class PostgreSQLPortal {
     }
     
     /**
+     * Suspend the portal.
+     */
+    public void suspend() {
+        backendConnection.markResourceInUse(databaseCommunicationEngine);
+    }
+    
+    /**
      * Close portal.
      *
      * @throws SQLException SQL exception
      */
     public void close() throws SQLException {
         if (null != databaseCommunicationEngine) {
-            databaseCommunicationEngine.close();
+            backendConnection.unmarkResourceInUse(databaseCommunicationEngine);
         }
         if (null != textProtocolBackendHandler) {
             textProtocolBackendHandler.close();

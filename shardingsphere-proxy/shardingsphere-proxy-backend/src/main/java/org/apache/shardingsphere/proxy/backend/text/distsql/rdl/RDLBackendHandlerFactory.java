@@ -19,44 +19,18 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AddResourceBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropResourceBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.RDLBackendHandler;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableRuleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.AddResourceBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource.DropResourceBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.rule.RuleDefinitionBackendHandler;
 
 import java.sql.SQLException;
 
@@ -70,58 +44,30 @@ public final class RDLBackendHandlerFactory {
      * Create new instance of RDL backend handler.
      * 
      * @param databaseType database type
-     * @param sqlStatement SQL statement
+     * @param sqlStatement RDL statement
      * @param backendConnection backend connection
      * @return RDL backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
-        TextProtocolBackendHandler result = createRDLBackendHandler(databaseType, sqlStatement, backendConnection);
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RDLStatement sqlStatement, final BackendConnection backendConnection) throws SQLException {
+        TextProtocolBackendHandler result = createBackendHandler(databaseType, sqlStatement, backendConnection);
         checkRegistryCenterExisted(sqlStatement);
         return result;
     }
     
-    private static void checkRegistryCenterExisted(final SQLStatement sqlStatement) throws SQLException {
+    private static void checkRegistryCenterExisted(final RDLStatement sqlStatement) throws SQLException {
         if (ProxyContext.getInstance().getMetaDataContexts() instanceof StandardMetaDataContexts) {
             throw new SQLException(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName()));
         }
     }
     
-    private static TextProtocolBackendHandler createRDLBackendHandler(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    private static TextProtocolBackendHandler createBackendHandler(final DatabaseType databaseType, final RDLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof AddResourceStatement) {
             return new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof DropResourceStatement) {
             return new DropResourceBackendHandler((DropResourceStatement) sqlStatement, backendConnection);
         }
-        if (sqlStatement instanceof CreateDatabaseStatement) {
-            return new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof DropDatabaseStatement) {
-            return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, backendConnection);
-        }
-        return new RDLBackendHandler<>(sqlStatement, backendConnection, getRuleConfigurationClass(sqlStatement));
-    }
-    
-    private static Class<? extends RuleConfiguration> getRuleConfigurationClass(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof CreateShardingTableRuleStatement || sqlStatement instanceof AlterShardingTableRuleStatement || sqlStatement instanceof DropShardingTableRuleStatement
-                || sqlStatement instanceof CreateShardingBindingTableRulesStatement || sqlStatement instanceof AlterShardingBindingTableRulesStatement
-                || sqlStatement instanceof DropShardingBindingTableRulesStatement
-                || sqlStatement instanceof CreateShardingBroadcastTableRulesStatement || sqlStatement instanceof AlterShardingBroadcastTableRulesStatement
-                || sqlStatement instanceof DropShardingBroadcastTableRulesStatement) {
-            return ShardingRuleConfiguration.class;
-        }
-        if (sqlStatement instanceof CreateReadwriteSplittingRuleStatement
-                || sqlStatement instanceof AlterReadwriteSplittingRuleStatement || sqlStatement instanceof DropReadwriteSplittingRuleStatement) {
-            return ReadwriteSplittingRuleConfiguration.class;
-        }
-        if (sqlStatement instanceof CreateDatabaseDiscoveryRuleStatement
-                || sqlStatement instanceof AlterDatabaseDiscoveryRuleStatement || sqlStatement instanceof DropDatabaseDiscoveryRuleStatement) {
-            return DatabaseDiscoveryRuleConfiguration.class;
-        }
-        if (sqlStatement instanceof CreateEncryptRuleStatement || sqlStatement instanceof AlterEncryptRuleStatement || sqlStatement instanceof DropEncryptRuleStatement) {
-            return EncryptRuleConfiguration.class;
-        }
-        throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
+        return new RuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, backendConnection);
     }
 }

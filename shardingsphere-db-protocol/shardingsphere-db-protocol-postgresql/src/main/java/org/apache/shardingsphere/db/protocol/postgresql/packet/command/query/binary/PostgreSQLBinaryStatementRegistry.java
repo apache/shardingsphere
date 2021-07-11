@@ -18,55 +18,78 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
  * PostgreSQL binary prepared statement registry.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.NONE)
 public final class PostgreSQLBinaryStatementRegistry {
     
     private static final PostgreSQLBinaryStatementRegistry INSTANCE = new PostgreSQLBinaryStatementRegistry();
     
-    private final ConcurrentMap<Integer, ConnectionScopeBinaryStatementRegistry> registries = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Integer, PostgreSQLConnectionBinaryStatementRegistry> connectionBinaryStatements = new ConcurrentHashMap<>(65535, 1);
+    
     
     /**
-     * Get instance of binary statement registry.
+     * Get prepared statement registry instance.
      *
-     * @return instance of binary statement registry.
+     * @return prepared statement registry instance
      */
     public static PostgreSQLBinaryStatementRegistry getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Register.
+     * Register SQL.
      *
-     * @param connectionId connection id
+     * @param connectionId connection ID
+     * @param statementId statement ID
+     * @param sql SQL
+     * @param sqlStatement sql statement
+     * @param binaryColumnTypes binary statement column types
      */
-    public void register(final int connectionId) {
-        registries.put(connectionId, new ConnectionScopeBinaryStatementRegistry());
+    public void register(final int connectionId, final String statementId, final String sql, final SQLStatement sqlStatement, final List<PostgreSQLBinaryColumnType> binaryColumnTypes) {
+        if (!connectionBinaryStatements.containsKey(connectionId)) {
+            connectionBinaryStatements.put(connectionId, new PostgreSQLConnectionBinaryStatementRegistry());
+        }
+        connectionBinaryStatements.get(connectionId).getBinaryStatements().put(statementId, new PostgreSQLBinaryStatement(sql, sqlStatement, binaryColumnTypes));
     }
     
     /**
-     * Unregister.
+     * Get binary prepared statement.
      *
-     * @param connectionId connection id
+     * @param connectionId connection ID
+     * @param statementId statement ID
+     * @return binary prepared statement
      */
-    public void unregister(final int connectionId) {
-        registries.remove(connectionId);
+    public PostgreSQLBinaryStatement getBinaryStatement(final int connectionId, final String statementId) {
+        return connectionBinaryStatements.get(connectionId).binaryStatements.getOrDefault(statementId, new PostgreSQLBinaryStatement("", new EmptyStatement(), Collections.emptyList()));
     }
     
     /**
-     * Get connection scope binary statement registry.
+     * Remove prepared statement.
      *
-     * @param connectionId connection id
-     * @return connection scope binary statement registry
+     * @param connectionId connection ID
+     * @param statementId statement ID
      */
-    public ConnectionScopeBinaryStatementRegistry get(final int connectionId) {
-        return registries.get(connectionId);
+    public void unregister(final int connectionId, final String statementId) {
+        if (connectionBinaryStatements.containsKey(connectionId)) {
+            connectionBinaryStatements.get(connectionId).getBinaryStatements().remove(statementId); 
+        }
+    }
+    
+    @Getter
+    private final class PostgreSQLConnectionBinaryStatementRegistry {
+        
+        private final ConcurrentMap<String, PostgreSQLBinaryStatement> binaryStatements = new ConcurrentHashMap<>(65535, 1);
     }
 }
