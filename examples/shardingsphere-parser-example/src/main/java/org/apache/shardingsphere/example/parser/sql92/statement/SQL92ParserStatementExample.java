@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.parser.mysql.statement;
+package org.apache.shardingsphere.example.parser.sql92.statement;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public final class MySQLParserStatementExample {
+public final class SQL92ParserStatementExample {
     
     private static final String DML_SELECT_SQL = "SELECT t.id, t.name, t.age FROM table1 AS t ORDER BY t.id DESC;";
     
@@ -42,21 +42,19 @@ public final class MySQLParserStatementExample {
     
     private static final String DDL_ALTER_SQL = "ALTER TABLE table1 DROP age;";
     
-    private static final String DDL_SHOW_SQL = "SHOW COLUMNS FROM table1;";
-    
-    private static final List<String> MYSQL_PARSER_STATEMENT_LIST;
+    private static final List<String> SQL92_PARSER_STATEMENT_LIST;
     
     static {
-        MYSQL_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL,
-                DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL, DDL_SHOW_SQL);
+        SQL92_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL,
+                DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL);
     }
     
     public static void main(String[] args) {
-        MYSQL_PARSER_STATEMENT_LIST.stream().forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("MySQL");
+        SQL92_PARSER_STATEMENT_LIST.forEach(sql -> {
+            SQLParserEngine parserEngine = new SQLParserEngine("SQL92");
             ParseTree tree = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", new Properties());
-            MySQLStatement sqlStatement = visitorEngine.visit(tree);
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", "STATEMENT", new Properties());
+            SQL92Statement sqlStatement = visitorEngine.visit(tree);
             System.out.println(sqlStatement.toString());
         });
     }
