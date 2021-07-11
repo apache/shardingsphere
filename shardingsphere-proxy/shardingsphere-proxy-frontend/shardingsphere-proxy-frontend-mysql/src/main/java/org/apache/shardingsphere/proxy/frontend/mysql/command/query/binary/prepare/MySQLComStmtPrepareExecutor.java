@@ -82,7 +82,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory.newInstance(
                     metaDataMap, Collections.emptyList(), sqlStatement, schemaName);
             ProjectionsContext projectionsContext = sqlStatementContext.getProjectionsContext();
-            projectionCount = projectionsContext.getProjectionCount();
+            projectionCount = projectionsContext.getExpandProjections().size();
         }
         return projectionCount;
     }
