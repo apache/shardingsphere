@@ -28,7 +28,7 @@ import org.junit.rules.ExternalResource;
 
 import java.util.List;
 
-public class OpenTelemetryCollector extends ExternalResource implements CollectorRule {
+public final class OpenTelemetryCollector extends ExternalResource implements CollectorRule {
 
     private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
 
