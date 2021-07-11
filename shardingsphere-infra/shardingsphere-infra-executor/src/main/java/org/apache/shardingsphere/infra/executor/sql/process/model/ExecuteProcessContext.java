@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionU
 
 import java.util.Collection;
 import java.util.LinkedList;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 /**
  * Execute process context.
@@ -32,6 +33,12 @@ import java.util.LinkedList;
 public final class ExecuteProcessContext {
     
     private final String executionID;
+    
+    private final String schemaName;
+    
+    private final String username;
+    
+    private final String hostname;
     
     private final String sql;
     
@@ -42,6 +49,10 @@ public final class ExecuteProcessContext {
     public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
         this.executionID = executionGroupContext.getExecutionID();
         this.sql = sql;
+        this.schemaName = executionGroupContext.getSchemaName();
+        Grantee grantee = executionGroupContext.getGrantee();
+        this.username = null != grantee ? grantee.getUsername() : null;
+        this.hostname = null != grantee ? grantee.getHostname() : null;
         unitStatuses = createExecutionUnitStatuses(executionGroupContext, constants);
     }
     

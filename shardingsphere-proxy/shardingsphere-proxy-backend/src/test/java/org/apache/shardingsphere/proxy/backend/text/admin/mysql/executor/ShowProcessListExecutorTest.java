@@ -31,9 +31,9 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -79,6 +79,9 @@ public final class ShowProcessListExecutorTest {
         childrenValuesField.setAccessible(true);
         String executionNodeValue = "executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
             + "startTimeMillis: 1617939785160\n"
+            + "schemaName: sharding_db\n"
+            + "username: sharding\n"
+            + "hostname: 127.0.0.1\n"
             + "unitStatuses:\n"
             + "- status: EXECUTE_STATUS_START\n"
             + "  unitID: unitID1\n"
@@ -89,22 +92,15 @@ public final class ShowProcessListExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        showProcessListExecutor.execute(mockBackendConnection());
+        showProcessListExecutor.execute(new BackendConnection(TransactionType.LOCAL));
         assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
         MergedResult mergedResult = showProcessListExecutor.getMergedResult();
         while (mergedResult.next()) {
             assertThat(mergedResult.getValue(1, String.class), is("f6c2336a-63ba-41bf-941e-2e3504eb2c80"));
-            assertThat(mergedResult.getValue(2, String.class), is("root"));
-            assertThat(mergedResult.getValue(3, String.class), is("localhost:30000"));
-            assertThat(mergedResult.getValue(4, String.class), is(SCHEMA_NAME));
+            assertThat(mergedResult.getValue(2, String.class), is("sharding"));
+            assertThat(mergedResult.getValue(3, String.class), is("127.0.0.1"));
+            assertThat(mergedResult.getValue(4, String.class), is("sharding_db"));
             assertThat(mergedResult.getValue(7, String.class), is("Executing 1/2"));
         }
-    }
-    
-    private BackendConnection mockBackendConnection() {
-        BackendConnection result = mock(BackendConnection.class);
-        when(result.getGrantee()).thenReturn(new Grantee("root", "localhost:30000"));
-        when(result.getSchemaName()).thenReturn(SCHEMA_NAME);
-        return result;
     }
 }

@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -88,13 +87,12 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         }
         Collection<YamlExecuteProcessContext> processContexts = processListData.stream()
             .map(value -> YamlEngine.unmarshal(value, YamlExecuteProcessContext.class)).collect(Collectors.toList());
-        Grantee grantee = backendConnection.getGrantee();
         List<MemoryQueryResultDataRow> rows = processContexts.stream().map(processContext -> {
             List<Object> rowValues = new ArrayList<>(8);
             rowValues.add(processContext.getExecutionID());
-            rowValues.add(grantee.getUsername());
-            rowValues.add(grantee.getHostname());
-            rowValues.add(backendConnection.getSchemaName());
+            rowValues.add(processContext.getUsername());
+            rowValues.add(processContext.getHostname());
+            rowValues.add(processContext.getSchemaName());
             rowValues.add("Execute");
             rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
             int processDoneCount = processContext.getUnitStatuses().stream().map(processUnit -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == processUnit.getStatus() ? 1 : 0).reduce(0, Integer::sum);
