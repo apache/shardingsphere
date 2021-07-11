@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 /**
- * joinType for JoinTableSegment.
+ * Join type enum.
  */
 public enum JoinType {
     MYSQL_INNER_JOIN("INNER", "MySQL"),
@@ -38,7 +38,7 @@ public enum JoinType {
     }
 
     /**
-     * get joinType.
+     * Get joinType.
      * @return joinType.
      */
     public String getJoinType() {
@@ -46,7 +46,7 @@ public enum JoinType {
     }
 
     /**
-     * get databaseType.
+     * Get databaseType.
      * @return databaseType.
      */
     public String getDatabaseType() {
