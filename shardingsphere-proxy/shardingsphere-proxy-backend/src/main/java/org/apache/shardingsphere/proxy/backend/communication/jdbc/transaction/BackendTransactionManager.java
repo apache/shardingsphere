@@ -52,7 +52,7 @@ public final class BackendTransactionManager implements TransactionManager {
         if (!connection.getTransactionStatus().isInTransaction()) {
             connection.getTransactionStatus().setInTransaction(true);
             TransactionHolder.setInTransaction();
-            connection.closeDatabaseCommunicationEngines();
+            connection.closeDatabaseCommunicationEngines(true);
             connection.closeConnections(false);
         }
         if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {

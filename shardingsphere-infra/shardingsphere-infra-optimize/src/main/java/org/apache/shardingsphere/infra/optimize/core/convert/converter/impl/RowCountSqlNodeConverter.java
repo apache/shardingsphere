@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.infra.optimize.core.convert.converter.impl;
 
-import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.infra.optimize.core.convert.converter.SqlNodeConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-
-import java.util.Optional;
 
 /**
  * Row count sql node converter.
  */
-public final class RowCountSqlNodeConverter implements SqlNodeConverter<LimitSegment> {
+public final class RowCountSqlNodeConverter extends AbstractLimitSqlNodeConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final LimitSegment limitSegment) {
-        if (null == limitSegment || !limitSegment.getRowCount().isPresent()) {
-            return Optional.empty();
-        }
-        return new PaginationValueSqlConverter().convert(limitSegment.getRowCount().get());
+    public RowCountSqlNodeConverter() {
+        super(LimitSegment::getRowCount);
     }
 }

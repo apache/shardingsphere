@@ -140,6 +140,6 @@ public final class EncryptTableMetaDataBuilderTest {
     private TableMetaData createTableMetaData() {
         Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 1, true, true, true),
                 new ColumnMetaData("pwd_cipher", 2, false, false, true), new ColumnMetaData("pwd_plain", 2, false, false, true));
-        return new TableMetaData(columns, Collections.emptyList());
+        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList());
     }
 }

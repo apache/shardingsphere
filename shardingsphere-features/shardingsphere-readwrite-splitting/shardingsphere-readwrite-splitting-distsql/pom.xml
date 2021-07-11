@@ -32,5 +32,6 @@
     <modules>
         <module>shardingsphere-readwrite-splitting-distsql-statement</module>
         <module>shardingsphere-readwrite-splitting-distsql-parser</module>
+        <module>shardingsphere-readwrite-splitting-distsql-handler</module>
     </modules>
 </project>

@@ -109,7 +109,7 @@ public final class SelectStatementHandler implements SQLStatementHandler {
      */
     public static Optional<WithSegment> getWithSegment(final SelectStatement selectStatement) {
         if (selectStatement instanceof OracleStatement) {
-            return ((OracleSelectStatement) selectStatement).getWithSegment();
+            return selectStatement.getWithSegment();
         }
         return Optional.empty();
     }

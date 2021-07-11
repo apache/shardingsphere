@@ -32,5 +32,6 @@
     <modules>
         <module>shardingsphere-scaling-distsql-statement</module>
         <module>shardingsphere-scaling-distsql-parser</module>
+        <module>shardingsphere-scaling-distsql-handler</module>
     </modules>
 </project>

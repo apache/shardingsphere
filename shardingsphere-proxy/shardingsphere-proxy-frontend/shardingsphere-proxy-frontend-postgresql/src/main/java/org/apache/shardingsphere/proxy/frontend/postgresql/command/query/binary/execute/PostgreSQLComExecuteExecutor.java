@@ -28,7 +28,6 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
@@ -84,10 +83,11 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
         if (isPortalSuspended()) {
             return new PostgreSQLPortalSuspendedPacket();
         }
-        if (connectionContext.getSqlStatement().map(EmptyStatement.class::isInstance).orElse(false)) {
+        PostgreSQLPortal portal = connectionContext.getPortal(packet.getPortal());
+        if (portal.getSqlStatement() instanceof EmptyStatement) {
             return new PostgreSQLEmptyQueryResponsePacket();
         }
-        String sqlCommand = connectionContext.getSqlStatement().map(SQLStatement::getClass).map(PostgreSQLCommand::valueOf).map(command -> command.map(Enum::name).orElse("")).orElse("");
+        String sqlCommand = PostgreSQLCommand.valueOf(portal.getSqlStatement().getClass()).map(Enum::name).orElse("");
         PostgreSQLCommandCompletePacket result = new PostgreSQLCommandCompletePacket(sqlCommand, Math.max(dataRows, connectionContext.getUpdateCount()));
         connectionContext.clearContext();
         return result;
@@ -95,12 +95,15 @@ public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
     
     @Override
     public void close() throws SQLException {
-        if (!isPortalSuspended()) {
-            connectionContext.getPortal(packet.getPortal()).close();
+        PostgreSQLPortal portal = connectionContext.getPortal(packet.getPortal());
+        if (isPortalSuspended()) {
+            portal.suspend();
+            return;
         }
-        if (connectionContext.getSqlStatement().isPresent()
-                && (connectionContext.getSqlStatement().get() instanceof CommitStatement || connectionContext.getSqlStatement().get() instanceof RollbackStatement)) {
+        if (portal.getSqlStatement() instanceof CommitStatement || portal.getSqlStatement() instanceof RollbackStatement) {
             connectionContext.closeAllPortals();
+        } else {
+            connectionContext.closePortal(packet.getPortal());
         }
     }
     

@@ -19,10 +19,11 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Alter sharding binding table rules statement.
@@ -32,4 +33,17 @@ import java.util.Collection;
 public final class AlterShardingBindingTableRulesStatement extends AlterRuleStatement {
     
     private final Collection<BindingTableRuleSegment> rules;
+    
+    /**
+     * Get binding tables.
+     * 
+     * @return binding tables
+     */
+    public Collection<String> getBindingTables() {
+        Collection<String> result = new LinkedList<>();
+        for (BindingTableRuleSegment each : rules) {
+            result.addAll(each.getBindingTables());
+        }
+        return result;
+    }
 }

@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Shorthan
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
@@ -71,8 +72,8 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegmentAndDuplicateTableSegment() {
         Collection<SimpleTableSegment> tableSegments = new LinkedList<>();
-        tableSegments.add(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
-        tableSegments.add(new SimpleTableSegment(0, 0, new IdentifierValue("t_order")));
+        tableSegments.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        tableSegments.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllColumnNames("t_order")).thenReturn(Lists.newArrayList("order_id", "content"));
         Optional<Projection> actual = new ProjectionEngine(schema).createProjection(tableSegments, new ShorthandProjectionSegment(0, 0));

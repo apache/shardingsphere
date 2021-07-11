@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class TableExtractorTest {
 
@@ -53,8 +53,8 @@ public class TableExtractorTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         LockSegment lockSegment = new LockSegment(108, 154);
         selectStatement.setLock(lockSegment);
-        lockSegment.getTables().add(new SimpleTableSegment(122, 128, new IdentifierValue("t_order")));
-        lockSegment.getTables().add(new SimpleTableSegment(143, 154, new IdentifierValue("t_order_item")));
+        lockSegment.getTables().add(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order"))));
+        lockSegment.getTables().add(new SimpleTableSegment(new TableNameSegment(143, 154, new IdentifierValue("t_order_item"))));
         tableExtractor.extractTablesFromSelect(selectStatement);
         assertNotNull(tableExtractor.getRewriteTables());
         assertEquals(2, tableExtractor.getRewriteTables().size());

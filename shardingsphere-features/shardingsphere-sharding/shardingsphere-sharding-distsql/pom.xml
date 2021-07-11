@@ -32,5 +32,6 @@
     <modules>
         <module>shardingsphere-sharding-distsql-statement</module>
         <module>shardingsphere-sharding-distsql-parser</module>
+        <module>shardingsphere-sharding-distsql-handler</module>
     </modules>
 </project>

@@ -47,6 +47,10 @@ FROM
     : F R O M
     ;
 
+URL
+    : U R L
+    ;
+
 HOST
     : H O S T
     ;
@@ -69,4 +73,8 @@ PASSWORD
 
 NAME
     : N A M E
+    ;
+
+PROPERTIES
+    : P R O P E R T I E S
     ;

@@ -108,7 +108,14 @@ public final class InventoryTaskSplitter {
     private Collection<ScalingPosition<?>> getInventoryPositions(
             final JobContext jobContext, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final MetaDataManager metaDataManager) {
         if (null != jobContext.getInitProgress()) {
-            return jobContext.getInitProgress().getInventoryPosition(dumperConfig.getTableName()).values();
+            Collection<ScalingPosition<?>> result = jobContext.getInitProgress().getInventoryPosition(dumperConfig.getTableName()).values();
+            result.stream().findFirst().ifPresent(position -> {
+                if (position instanceof PrimaryKeyPosition) {
+                    String primaryKey = metaDataManager.getTableMetaData(dumperConfig.getTableName()).getPrimaryKeyColumns().get(0);
+                    dumperConfig.setPrimaryKey(primaryKey);
+                }
+            });
+            return result;
         }
         if (isSpiltByPrimaryKeyRange(metaDataManager, dumperConfig.getTableName())) {
             String primaryKey = metaDataManager.getTableMetaData(dumperConfig.getTableName()).getPrimaryKeyColumns().get(0);
