@@ -17,7 +17,7 @@
 
 CREATE DATABASE encrypt;
 
-GRANT ALL PRIVILEGES ON DATABASE encrypt TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE encrypt TO root;
 
 \c encrypt
 
