@@ -21,35 +21,26 @@ package org.apache.shardingsphere.sql.parser.sql.common.constant;
  * Join type enum.
  */
 public enum JoinType {
-    MYSQL_INNER_JOIN("INNER", "MySQL"),
-    MYSQL_STRAIGHT_JOIN("STRAIGHT", "MySQL"),
-    MYSQL_LEFT_JOIN("LEFT", "MySQL"),
-    MYSQL_RIGHT_JOIN("RIGHT", "MySQL"),
-    MYSQL_NATURAL_INNER_JOIN("NATURAL_INNER", "MySQL"),
-    MYSQL_NATURAL_LEFT_JOIN("NATURAL_LEFT", "MySQL"),
-    MYSQL_NATURAL_RIGHT_JOIN("NATURAL_RIGHT", "MySQL");
+    MYSQL_INNER_JOIN("INNER"),
+    MYSQL_STRAIGHT_JOIN("STRAIGHT"),
+    MYSQL_LEFT_JOIN("LEFT"),
+    MYSQL_RIGHT_JOIN("RIGHT"),
+    MYSQL_NATURAL_INNER_JOIN("NATURAL_INNER"),
+    MYSQL_NATURAL_LEFT_JOIN("NATURAL_LEFT"),
+    MYSQL_NATURAL_RIGHT_JOIN("NATURAL_RIGHT");
 
     private final String joinType;
-    private final String databaseType;
 
-    JoinType(final String joinType, final String databaseType) {
+    JoinType(final String joinType) {
         this.joinType = joinType;
-        this.databaseType = databaseType;
     }
 
     /**
      * Get joinType.
+     *
      * @return joinType.
      */
     public String getJoinType() {
         return joinType;
-    }
-
-    /**
-     * Get databaseType.
-     * @return databaseType.
-     */
-    public String getDatabaseType() {
-        return databaseType;
     }
 }
