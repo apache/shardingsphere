@@ -648,8 +648,7 @@ groupingExprList
     ;
 
 expressionList
-    : exprs
-    | LP_ expr? (COMMA_ expr?)* RP_
+    : exprs | LP_ expr? (COMMA_ expr?)* RP_
     ;
 
 havingClause
