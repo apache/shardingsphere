@@ -24,12 +24,14 @@ import org.apache.shardingsphere.governance.core.registry.cache.subscriber.Scali
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourceRegistryService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourceRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRuleRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
 import org.apache.shardingsphere.governance.core.registry.metadata.service.SchemaRegistryService;
 import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
 import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
+import org.apache.shardingsphere.governance.core.registry.state.service.UserStatusRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -80,6 +82,7 @@ public final class RegistryCenter {
         propsService = new PropertiesRegistryService(repository);
         schemaService = new SchemaRegistryService(repository);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
+        new GlobalRuleRegistrySubscriber(globalRuleService, new UserStatusRegistryService(repository));
         lockService = new LockRegistryService(repository);
         new ScalingRegistrySubscriber(repository, schemaRuleService);
         new ProcessRegistrySubscriber(repository);
