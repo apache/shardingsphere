@@ -80,6 +80,6 @@ public final class SchemaRuleRegistryServiceTest {
     public void assertUpdate() {
         RuleConfigurationsAlteredSQLNotificationEvent event = new RuleConfigurationsAlteredSQLNotificationEvent("foo_db", Collections.emptyList());
         schemaRuleRegistryService.update(event);
-        verify(registryCenterRepository).persist("/metadata/foo_db/rules", "!!map []\n");
+        verify(registryCenterRepository).persist("/metadata/foo_db/rules", "[]\n");
     }
 }
