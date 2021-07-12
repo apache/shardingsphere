@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryColumnType;
 import org.junit.Test;
 
 import java.sql.Types;

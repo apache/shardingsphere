@@ -16,55 +16,55 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="CREATE TABLE t_order_details(id int, description varchar(10))" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="CREATE TABLE t_order_details(id int, description varchar(10))" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion expected-data-file="create_table.xml">
             <initial-sql affected-table="t_order_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="CREATE INDEX t_order_details_index ON t_order_details (id)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="CREATE INDEX t_order_details_index ON t_order_details (id)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion expected-data-file="create_index.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="CREATE UNIQUE INDEX t_order_details_index ON t_order_details (id)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="CREATE UNIQUE INDEX t_order_details_index ON t_order_details (id)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion expected-data-file="create_unique_index.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="ALTER TABLE t_order_details ADD name varchar(10)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="ALTER TABLE t_order_details ADD name varchar(10)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion expected-data-file="alter_add.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="ALTER TABLE t_order_details DROP COLUMN description" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="ALTER TABLE t_order_details DROP COLUMN description" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion expected-data-file="alter_drop.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="ALTER TABLE t_order_details CHANGE description description_new varchar(10)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="ALTER TABLE t_order_details CHANGE description description_new varchar(10)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion expected-data-file="alter_change.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="DROP TABLE t_order_details" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="DROP TABLE t_order_details" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion expected-data-file="drop_table.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="DROP INDEX t_order_details_index ON t_order_details" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="DROP INDEX t_order_details_index ON t_order_details" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10));CREATE INDEX t_order_details_index ON t_order_details(description)" affected-table="t_order_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="TRUNCATE TABLE t_order_details" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="TRUNCATE TABLE t_order_details" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
         </assertion>
@@ -149,18 +149,18 @@
     </test-case>
     
     <!--FIXME #11103-->
-<!--    <test-case sql="ALTER TABLE t_user_details CHANGE number number_new VARCHAR(50)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
+<!--    <test-case sql="ALTER TABLE t_user_details CHANGE number number_new VARCHAR(50)" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
 <!--        <assertion expected-data-file="alter_change.xml">-->
 <!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
     
     <!--FIXME #11105-->
-<!--    <test-case sql="ALTER TABLE t_user_details DROP COLUMN number" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
-<!--        <assertion expected-data-file="alter_drop.xml">-->
-<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details"/>-->
-<!--        </assertion>-->
-<!--    </test-case>-->
+    <test-case sql="ALTER TABLE t_user_details DROP COLUMN number" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="alter_drop.xml">
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details"/>
+        </assertion>
+    </test-case>
     
     <test-case sql="DROP TABLE t_user_details" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="drop_table.xml">

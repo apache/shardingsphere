@@ -19,17 +19,17 @@ package org.apache.shardingsphere.example.governance.spring.boot;
 
 import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.SQLException;
 
-@ComponentScan("org.apache.shardingsphere.example.core.jpa")
-@EntityScan(basePackages = "org.apache.shardingsphere.example.core.jpa.entity")
+@ComponentScan("org.apache.shardingsphere.example.core.mybatis")
+@MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
 @SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class GovernanceSpringBootExample {
     

@@ -80,10 +80,9 @@ public final class MySQLBinaryStatementRegistry {
      *
      * @param statementId statement ID
      */
-    public synchronized void remove(final int statementId) {
-        MySQLBinaryStatement binaryStatement = getBinaryStatement(statementId);
-        if (null != binaryStatement) {
-            statementIdAssigner.remove(binaryStatement.getSql());
+    public synchronized void unregister(final int statementId) {
+        if (binaryStatements.containsKey(statementId)) {
+            statementIdAssigner.remove(binaryStatements.get(statementId).getSql());
             binaryStatements.remove(statementId);
         }
     }
