@@ -67,6 +67,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     
     @Before
     public void setup() {
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
         PostgreSQLBinaryStatementRegistry.getInstance().register(1, "2", "", new EmptyStatement(), Collections.emptyList());
         when(backendConnection.getConnectionId()).thenReturn(1);
     }
