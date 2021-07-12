@@ -57,7 +57,6 @@ public final class PostgreSQLBinaryStatementRegistry {
         connectionBinaryStatements.put(connectionId, new PostgreSQLConnectionBinaryStatementRegistry());
     }
     
-    
     /**
      * Register.
      *
