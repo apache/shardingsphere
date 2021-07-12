@@ -74,8 +74,8 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     }
     
     private boolean isEncryptorInUse(final EncryptRuleConfiguration currentRuleConfig, final String toBeDroppedEncryptorName) {
-        for (EncryptTableRuleConfiguration encryptTableRuleConfiguration : currentRuleConfig.getTables()) {
-            if (encryptTableRuleConfiguration.getColumns().stream().filter(column -> column.getEncryptorName().equals(toBeDroppedEncryptorName)).findAny().isPresent()) {
+        for (EncryptTableRuleConfiguration each : currentRuleConfig.getTables()) {
+            if (each.getColumns().stream().filter(column -> column.getEncryptorName().equals(toBeDroppedEncryptorName)).findAny().isPresent()) {
                 return true;
             }
         }
