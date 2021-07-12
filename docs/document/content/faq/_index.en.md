@@ -215,7 +215,7 @@ Answer:
 
 In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](https://shardingsphere.apache.org/document/current/en/features/pluggable-architecture/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
 
-## 16. Why does my custom distributed primary key do not work after implementing `ShardingKeyGenerator` interface and configuring `type` property?
+## 16. Why does my custom distributed primary key do not work after implementing `KeyGenerateAlgorithm` interface and configuring `type` property?
 
 Answer:
 
