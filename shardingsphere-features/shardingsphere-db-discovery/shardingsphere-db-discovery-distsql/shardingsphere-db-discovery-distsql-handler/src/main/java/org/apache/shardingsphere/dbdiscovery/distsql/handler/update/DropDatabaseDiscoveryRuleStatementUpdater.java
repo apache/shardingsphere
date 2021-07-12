@@ -69,8 +69,13 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
         Optional<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(dataSource -> dataSource.getName().equals(ruleName)).findAny();
         Preconditions.checkState(dataSourceRuleConfig.isPresent());
         currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
-        // TODO Do we need to check DiscoveryType not in use before drop it? 
-        currentRuleConfig.getDiscoveryTypes().remove(dataSourceRuleConfig.get().getDiscoveryTypeName());
+        if (isDiscoveryTypeNotInUse(currentRuleConfig, dataSourceRuleConfig.get().getDiscoveryTypeName())) {
+            currentRuleConfig.getDiscoveryTypes().remove(dataSourceRuleConfig.get().getDiscoveryTypeName());
+        }
+    }
+    
+    private boolean isDiscoveryTypeNotInUse(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String toBeDroppedDiscoveryTypeName) {
+        return !currentRuleConfig.getDataSources().stream().filter(each -> each.getDiscoveryTypeName().equals(toBeDroppedDiscoveryTypeName)).findAny().isPresent();
     }
     
     @Override

@@ -49,6 +49,7 @@ public final class PostgreSQLCommandPacketFactoryTest {
     
     @Before
     public void init() {
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
         PostgreSQLBinaryStatementRegistry.getInstance().register(1, "sts-id", "", new EmptyStatement(),
                 Collections.singletonList(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_INT8));
     }
