@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
@@ -72,7 +72,7 @@ public final class OpenGaussComBatchBindPacket extends PostgreSQLCommandPacket {
         for (int i = 0; i < resultFormatsLength; i++) {
             resultFormats.add(PostgreSQLValueFormat.valueOf(payload.readInt2()));
         }
-        binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId).getBinaryStatement(statementId);
+        binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().getBinaryStatement(connectionId, statementId);
         sql = null == binaryStatement ? null : binaryStatement.getSql();
         eachGroupParametersCount = payload.readInt2();
     }
