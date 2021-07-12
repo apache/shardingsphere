@@ -15,6 +15,35 @@
 -- limitations under the License.
 --
 
+CREATE DATABASE tbl;
+
+GRANT ALL PRIVILEGES ON DATABASE tbl TO postgres;
+
+\c tbl
+
+DROP TABLE IF EXISTS t_order_0;
+DROP TABLE IF EXISTS t_order_item_0;
+DROP TABLE IF EXISTS t_order_1;
+DROP TABLE IF EXISTS t_order_item_1;
+DROP TABLE IF EXISTS t_order_2;
+DROP TABLE IF EXISTS t_order_item_2;
+DROP TABLE IF EXISTS t_order_3;
+DROP TABLE IF EXISTS t_order_item_3;
+DROP TABLE IF EXISTS t_order_4;
+DROP TABLE IF EXISTS t_order_item_4;
+DROP TABLE IF EXISTS t_order_5;
+DROP TABLE IF EXISTS t_order_item_5;
+DROP TABLE IF EXISTS t_order_6;
+DROP TABLE IF EXISTS t_order_item_6;
+DROP TABLE IF EXISTS t_order_7;
+DROP TABLE IF EXISTS t_order_item_7;
+DROP TABLE IF EXISTS t_order_8;
+DROP TABLE IF EXISTS t_order_item_8;
+DROP TABLE IF EXISTS t_order_9;
+DROP TABLE IF EXISTS t_order_item_9;
+DROP TABLE IF EXISTS t_broadcast_table;
+DROP TABLE IF EXISTS t_single_table;
+
 CREATE TABLE t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE INDEX order_index_t_order_0 ON t_order_0 (order_id);

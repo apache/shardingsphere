@@ -213,7 +213,7 @@ tar zxvf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.g
 
 Answer:
 
-In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](https://shardingsphere.apache.org/document/current/en/features/spi/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
+In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](https://shardingsphere.apache.org/document/current/en/features/pluggable-architecture/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
 
 ## 16. Why does my custom distributed primary key do not work after implementing `ShardingKeyGenerator` interface and configuring `type` property?
 
@@ -223,7 +223,7 @@ Answer:
 
 More detail for SPI usage, please search by yourself.
 
-Other ShardingSphere [functionality implementation](https://shardingsphere.apache.org/document/current/en/features/spi/) will take effect in the same way.
+Other ShardingSphere [functionality implementation](https://shardingsphere.apache.org/document/current/en/features/pluggable-architecture/) will take effect in the same way.
 
 ## 17. How to solve that `data encryption` can't work with JPA?
 
@@ -289,3 +289,11 @@ Answer:
 Goto [Settings -> Languages & Frameworks -> ANTLR v4 default project settings](jetbrains://idea/settings?name=Languages+%26+Frameworks--ANTLR+v4+default+project+settings) and configure the output directory of the generated code as `target/gen` as shown:
 
 ![Configure ANTLR plugin](https://shardingsphere.apache.org/document/current/img/faq/configure-antlr-plugin.png)
+
+## 25. How to set custom JDBC connection properties or connection pool properties when adding a data source using DistSQL?
+
+Answer:
+
+1. If you need to customize JDBC connection properties, please take the `urlSource` way to define `dataSource`.
+2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
+3. Please refer to [Related introduction](en/features/dist-sql/syntax/rdl/rdl-resource/) for above rules.

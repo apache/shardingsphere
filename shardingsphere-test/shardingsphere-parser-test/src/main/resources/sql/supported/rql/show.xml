@@ -17,13 +17,13 @@
   -->
 
 <sql-cases>
-    <sql-case id="show-sharding-binding-table-rules" value="SHOW SHARDING BINDING TABLE RULES FROM sharding_db" db-types="DistSQL" />
-    <sql-case id="show-sharding-broadcast-table-rules" value="SHOW SHARDING BROADCAST TABLE RULES FROM sharding_db" db-types="DistSQL" />
-    <sql-case id="show-sharding-table-rules" value="SHOW SHARDING TABLE RULES FROM schemaName" db-types="DistSQL" />
-    <sql-case id="show-sharding-table-rule" value="SHOW SHARDING TABLE RULE t_order" db-types="DistSQL" />
-    <sql-case id="show-sharding-table-rule-from" value="SHOW SHARDING TABLE RULE t_order FROM schemaName" db-types="DistSQL" />
-    <sql-case id="show-readwrite-splitting-rules" value="SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db" db-types="DistSQL" />
-    <sql-case id="show-db-discovery-rules" value="SHOW DB_DISCOVERY RULES FROM db_discovery_db" db-types="DistSQL" />
-    <sql-case id="show-encrypt-rules" value="SHOW ENCRYPT RULES FROM encrypt_db" db-types="DistSQL" />
-    <sql-case id="show-encrypt-table-rules" value="SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db" db-types="DistSQL" />
+    <distsql-case id="show-sharding-binding-table-rules" value="SHOW SHARDING BINDING TABLE RULES FROM sharding_db" />
+    <distsql-case id="show-sharding-broadcast-table-rules" value="SHOW SHARDING BROADCAST TABLE RULES FROM sharding_db" />
+    <distsql-case id="show-sharding-table-rules" value="SHOW SHARDING TABLE RULES FROM schemaName" />
+    <distsql-case id="show-sharding-table-rule" value="SHOW SHARDING TABLE RULE t_order" />
+    <distsql-case id="show-sharding-table-rule-from" value="SHOW SHARDING TABLE RULE t_order FROM schemaName" />
+    <distsql-case id="show-readwrite-splitting-rules" value="SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db" />
+    <distsql-case id="show-db-discovery-rules" value="SHOW DB_DISCOVERY RULES FROM db_discovery_db" />
+    <distsql-case id="show-encrypt-rules" value="SHOW ENCRYPT RULES FROM encrypt_db" />
+    <distsql-case id="show-encrypt-table-rules" value="SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db" />
 </sql-cases>

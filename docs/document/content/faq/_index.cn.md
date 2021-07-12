@@ -216,7 +216,7 @@ tar zxvf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.g
 
 回答：
 
-ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shardingsphere.apache.org/document/current/cn/features/spi/)注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中type类型来寻找对应的SPI实现，因此必须在配置文件中指定类型。
+ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shardingsphere.apache.org/document/current/cn/features/pluggable-architecture/)注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中type类型来寻找对应的SPI实现，因此必须在配置文件中指定类型。
 
 ## 16. 为什么我实现了`ShardingKeyGenerator`接口，也配置了Type，但是自定义的分布式主键依然不生效？
 
@@ -226,7 +226,7 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 
 具体的SPI使用方式，请大家自行搜索。
 
-与分布式主键`ShardingKeyGenerator`接口相同，其他ShardingSphere的[扩展功能](https://shardingsphere.apache.org/document/current/cn/features/spi/)也需要用相同的方式注入才能生效。
+与分布式主键`ShardingKeyGenerator`接口相同，其他ShardingSphere的[扩展功能](https://shardingsphere.apache.org/document/current/cn/features/pluggable-architecture/)也需要用相同的方式注入才能生效。
 
 ## 17. JPA 和 数据加密无法一起使用，如何解决？
 
@@ -292,3 +292,11 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 进入 [Settings -> Languages & Frameworks -> ANTLR v4 default project settings](jetbrains://idea/settings?name=Languages+%26+Frameworks--ANTLR+v4+default+project+settings) 配置生成代码的输出目录为 `target/gen`，如图：
 
 ![Configure ANTLR plugin](https://shardingsphere.apache.org/document/current/img/faq/configure-antlr-plugin.png)
+
+## 25. 使用DistSQL添加数据源时，如何设置自定义的JDBC连接参数或连接池属性？
+
+回答：
+
+1. 如需自定义JDBC参数，请使用 `urlSource` 的方式定义 `dataSource`。
+2. ShardingSphere预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout`等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
+3. 以上规则请参考 [相关介绍](cn/features/dist-sql/syntax/rdl/rdl-resource/)

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
     public void assertGetRowData() {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
-        RQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
+        DistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
         resultSet.init(metaData, mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), CoreMatchers.is(4));

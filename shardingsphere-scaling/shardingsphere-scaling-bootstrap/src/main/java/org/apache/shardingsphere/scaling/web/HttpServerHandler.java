@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.web;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSerializer;
 import com.google.gson.LongSerializationPolicy;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.util.ResponseContentUtil;
 
 import java.sql.SQLException;
@@ -51,7 +53,9 @@ import java.util.Optional;
 @Slf4j
 public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     
-    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().setLongSerializationPolicy(LongSerializationPolicy.STRING)
+            .registerTypeHierarchyAdapter(ScalingPosition.class, (JsonSerializer) (o, type, jsonSerializationContext) -> new Gson().toJsonTree(o))
+            .create();
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     

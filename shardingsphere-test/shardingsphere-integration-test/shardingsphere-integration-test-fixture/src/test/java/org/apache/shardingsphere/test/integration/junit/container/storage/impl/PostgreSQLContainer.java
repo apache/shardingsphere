@@ -34,6 +34,7 @@ public final class PostgreSQLContainer extends ShardingSphereStorageContainer {
     protected void configure() {
         addEnv("POSTGRES_USER", "postgres");
         addEnv("POSTGRES_PASSWORD", "postgres");
+        addEnv("PG_SYSTEM_MAX_CONNECTIONS", "200");
         withInitSQLMapping("/env/" + getParameterizedArray().getScenario() + "/init-sql/postgresql");
         super.configure();
     }

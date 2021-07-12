@@ -28,11 +28,19 @@ dropResource
     ;
 
 dataSource
-    : dataSourceName LP HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA PROPERTIES LP connectionProperties? RP)? RP
+    : dataSourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA PROPERTIES LP poolProperties? RP)? RP
     ;
 
 dataSourceName
     : IDENTIFIER
+    ;
+
+simpleSource
+    : HOST EQ hostName COMMA PORT EQ port COMMA DB EQ dbName
+    ;
+
+urlSource
+    : URL EQ url
     ;
 
 hostName
@@ -51,6 +59,10 @@ dbName
     : IDENTIFIER
     ;
 
+url
+    : (IDENTIFIER | STRING)
+    ;
+
 user
     : IDENTIFIER | NUMBER
     ;
@@ -59,10 +71,10 @@ password
     : IDENTIFIER | INT | STRING
     ;
 
-connectionProperties
-    : connectionProperty (COMMA connectionProperty)*
+poolProperties
+    : poolProperty (COMMA poolProperty)*
     ;
 
-connectionProperty
-    : key=IDENTIFIER EQ value=IDENTIFIER
+poolProperty
+    : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
     ;
