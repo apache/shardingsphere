@@ -23,9 +23,18 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -166,4 +175,22 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         // TODO outer join is not supported by parser of ShardingSphere 
     }
+
+    @Test
+    public void testExpressionSegment() {
+        String sql = "select 10 + 30 from t_order where 1 + 1 order by 1 + 1";
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
+        Collection<ProjectionSegment> projectionSegments = ((MySQLSelectStatement) sqlStatement).getProjections().getProjections();
+        ProjectionSegment projectionSegment = projectionSegments.stream().findFirst().orElse(null);
+        assertThat(projectionSegment, instanceOf(ExpressionProjectionSegment.class));
+        assert projectionSegment != null;
+        assertThat(((ExpressionProjectionSegment) projectionSegment).getExpr(), instanceOf(BinaryOperationExpression.class));
+        OrderBySegment orderBySegment = ((MySQLSelectStatement) sqlStatement).getOrderBy().orElse(null);
+        assert orderBySegment != null;
+        OrderByItemSegment orderByItemSegment = orderBySegment.getOrderByItems().stream().findFirst().orElse(null);
+        assert orderByItemSegment != null;
+        assertThat(orderByItemSegment, instanceOf(ExpressionOrderByItemSegment.class));
+        assertThat(((ExpressionOrderByItemSegment) orderByItemSegment).getExpr(), instanceOf(BinaryOperationExpression.class));
+    }
+
 }
