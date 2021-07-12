@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -36,16 +34,11 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.startsWith;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -92,32 +85,6 @@ public final class DataSourceRegistryServiceTest {
         when(registryCenterRepository.get("/metadata/foo_db/dataSources")).thenReturn("");
         Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("foo_db");
         assertThat(actual.size(), is(0));
-    }
-    
-    @Test
-    public void assertUpdateWithDataSourceAddedEvent() {
-        DataSourceAddedSQLNotificationEvent event = new DataSourceAddedSQLNotificationEvent("foo_db", createDataSourceConfigurations());
-        dataSourceRegistryService.update(event);
-        verify(registryCenterRepository).persist(startsWith("/metadata/foo_db/dataSources"), anyString());
-    }
-    
-    @Test
-    public void assertUpdateWithDataSourceAlteredEvent() {
-        DataSourceDroppedSQLNotificationEvent event = new DataSourceDroppedSQLNotificationEvent("foo_db", Collections.singletonList("ds_0"));
-        dataSourceRegistryService.update(event);
-        verify(registryCenterRepository).persist(startsWith("/metadata/foo_db/dataSources"), anyString());
-    }
-    
-    private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
-        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry ->
-                DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
-        result.put("ds_0", createDataSource("ds_0"));
-        result.put("ds_1", createDataSource("ds_1"));
-        return result;
     }
     
     private DataSource createDataSource(final String name) {
