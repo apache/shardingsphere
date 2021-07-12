@@ -95,7 +95,7 @@ public final class YamlEngineTest {
         }
         YamlEngine.unmarshal(yamlContent.toString(), YamlRootRuleConfigurations.class);
     }
-
+    
     @Test
     public void assertMarshalCollection() {
         YamlRuleConfigurationFixture actual = new YamlRuleConfigurationFixture();
