@@ -36,9 +36,9 @@ public enum JoinType {
     }
 
     /**
-     * Get joinType.
+     * Get join type.
      *
-     * @return joinType.
+     * @return table join type
      */
     public String getJoinType() {
         return joinType;
