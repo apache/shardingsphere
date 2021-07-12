@@ -38,7 +38,6 @@ public final class PostgreSQLBinaryStatementRegistry {
     
     private final ConcurrentMap<Integer, PostgreSQLConnectionBinaryStatementRegistry> connectionBinaryStatements = new ConcurrentHashMap<>(65535, 1);
     
-    
     /**
      * Get prepared statement registry instance.
      *
