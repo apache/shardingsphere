@@ -37,17 +37,17 @@ import java.util.List;
  * SQL rewrite context decorator for shadow.
  */
 public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShadowRule> {
-
+    
     @Override
     public void decorate(final ShadowRule shadowRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         doShadowDecorate(shadowRule, sqlRewriteContext);
     }
-
+    
     private void doShadowDecorate(final ShadowRule shadowRule, final SQLRewriteContext sqlRewriteContext) {
         doParameterRewriter(shadowRule, sqlRewriteContext);
         sqlRewriteContext.addSQLTokenGenerators(new ShadowTokenGenerateBuilder(shadowRule).getSQLTokenGenerators());
     }
-
+    
     @SuppressWarnings("unchecked")
     private void doParameterRewriter(final ShadowRule shadowRule, final SQLRewriteContext sqlRewriteContext) {
         ShardingSphereSchema schema = sqlRewriteContext.getSchema();
@@ -64,7 +64,7 @@ public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContext
             }
         }
     }
-
+    
     @Override
     public int getOrder() {
         return ShadowOrder.ORDER;

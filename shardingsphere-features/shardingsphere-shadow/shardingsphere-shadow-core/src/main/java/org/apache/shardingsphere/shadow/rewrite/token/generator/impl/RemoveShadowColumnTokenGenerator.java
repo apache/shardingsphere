@@ -45,7 +45,7 @@ public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGe
         }
         return false;
     }
-
+    
     @Override
     public Collection<RemoveToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
@@ -53,7 +53,7 @@ public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGe
         sqlSegment.ifPresent(insertColumnsSegment -> generateRemoveTokenForShadow(insertColumnsSegment, result));
         return result;
     }
-
+    
     private void generateRemoveTokenForShadow(final InsertColumnsSegment insertColumnsSegment, final Collection<RemoveToken> removeTokens) {
         List<ColumnSegment> columnSegments = (LinkedList<ColumnSegment>) insertColumnsSegment.getColumns();
         String shadowColumn = getShadowColumn();
