@@ -26,12 +26,17 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class DropReadwriteSplittingRuleStatementUpdaterTest {
@@ -50,8 +55,16 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration(createSQLStatement(), createCurrentRuleConfiguration());
-        // TODO assert current rule configuration
+        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = createCurrentRuleConfiguration();
+        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), readwriteSplittingRuleConfiguration));
+        assertThat(readwriteSplittingRuleConfiguration.getLoadBalancers().size(), is(1));
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfigurationWithInUsedLoadBalancer() {
+        ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfiguration = createMultipleCurrentRuleConfigurations();
+        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement(), readwriteSplittingRuleConfiguration));
+        assertThat(readwriteSplittingRuleConfiguration.getLoadBalancers().size(), is(1));
     }
     
     private DropReadwriteSplittingRuleStatement createSQLStatement() {
@@ -63,5 +76,13 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
         loadBalancers.put("readwrite_ds", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", null, null, null, "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), loadBalancers);
+    }
+    
+    private ReadwriteSplittingRuleConfiguration createMultipleCurrentRuleConfigurations() {
+        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>(1, 1);
+        loadBalancers.put("readwrite_ds", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", null, null, null, "TEST");
+        return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Arrays.asList(dataSourceRuleConfig, 
+                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds_another", null, null, null, "TEST"))), loadBalancers);
     }
 }
