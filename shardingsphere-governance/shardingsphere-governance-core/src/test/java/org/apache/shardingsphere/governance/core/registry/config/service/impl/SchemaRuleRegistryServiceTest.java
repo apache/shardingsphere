@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.junit.Before;
@@ -33,13 +32,11 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -74,12 +71,5 @@ public final class SchemaRuleRegistryServiceTest {
     private String readYAML() {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/regcenter/data-schema-rule.yaml").toURI()))
                 .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-    }
-    
-    @Test
-    public void assertUpdate() {
-        RuleConfigurationsAlteredSQLNotificationEvent event = new RuleConfigurationsAlteredSQLNotificationEvent("foo_db", Collections.emptyList());
-        schemaRuleRegistryService.update(event);
-        verify(registryCenterRepository).persist("/metadata/foo_db/rules", "!!map []\n");
     }
 }

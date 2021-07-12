@@ -27,6 +27,7 @@ import org.apache.shardingsphere.governance.core.registry.config.service.impl.Gl
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRuleRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesRegistryService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.metadata.service.SchemaRegistryService;
 import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
@@ -76,14 +77,19 @@ public final class RegistryCenter {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
         dataSourceService = new DataSourceRegistryService(repository);
-        new DataSourceRegistrySubscriber(dataSourceService);
         schemaRuleService = new SchemaRuleRegistryService(repository);
         globalRuleService = new GlobalRuleRegistryService(repository);
         propsService = new PropertiesRegistryService(repository);
         schemaService = new SchemaRegistryService(repository);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
-        new GlobalRuleRegistrySubscriber(globalRuleService, new UserStatusRegistryService(repository));
         lockService = new LockRegistryService(repository);
+        createSubscriber(repository);
+    }
+    
+    private void createSubscriber(final RegistryCenterRepository repository) {
+        new DataSourceRegistrySubscriber(dataSourceService);
+        new GlobalRuleRegistrySubscriber(globalRuleService, new UserStatusRegistryService(repository));
+        new SchemaRuleRegistrySubscriber(schemaRuleService);
         new ScalingRegistrySubscriber(repository, schemaRuleService);
         new ProcessRegistrySubscriber(repository);
         ShardingSphereEventBus.getInstance().register(this);
