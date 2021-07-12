@@ -53,7 +53,7 @@ public final class PostgreSQLComBindExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().getBinaryStatement(backendConnection.getConnectionId(), packet.getStatementId());
+        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId(), packet.getStatementId());
         PostgreSQLPortal portal = connectionContext.createPortal(packet.getPortal(), binaryStatement, packet.getParameters(), packet.getResultFormats(), backendConnection);
         List<DatabasePacket<?>> result = new LinkedList<>();
         result.add(new PostgreSQLBindCompletePacket());
