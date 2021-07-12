@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.example.core.jdbc.repository;
 
-import org.apache.shardingsphere.example.core.api.repository.UserRepository;
 import org.apache.shardingsphere.example.core.api.entity.User;
+import org.apache.shardingsphere.example.core.api.repository.UserRepository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

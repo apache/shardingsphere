@@ -70,7 +70,13 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
                 = currentRuleConfig.getDataSources().stream().filter(dataSource -> ruleName.equals(dataSource.getName())).findAny();
         Preconditions.checkState(dataSourceRuleConfig.isPresent());
         currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get());
-        currentRuleConfig.getLoadBalancers().remove(dataSourceRuleConfig.get().getLoadBalancerName());
+        if (isLoadBalancerNotInUse(currentRuleConfig, dataSourceRuleConfig.get().getLoadBalancerName())) {
+            currentRuleConfig.getLoadBalancers().remove(dataSourceRuleConfig.get().getLoadBalancerName());
+        }
+    }
+    
+    private boolean isLoadBalancerNotInUse(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String toBeDroppedLoadBalancerName) {
+        return !currentRuleConfig.getDataSources().stream().filter(each -> each.getLoadBalancerName().equals(toBeDroppedLoadBalancerName)).findAny().isPresent();
     }
     
     @Override

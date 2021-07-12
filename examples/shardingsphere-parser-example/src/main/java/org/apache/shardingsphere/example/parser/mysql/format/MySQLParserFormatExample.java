@@ -43,7 +43,7 @@ public final class MySQLParserFormatExample {
     
     private static final String DDL_SHOW_SQL = "SHOW COLUMNS FROM user;";
     
-    private static List<String> MYSQL_FORMAT_SQL_LIST;
+    private static final List<String> MYSQL_FORMAT_SQL_LIST;
     
     static {
         MYSQL_FORMAT_SQL_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_DELETE_SQL, DML_UPDATE_SQL, DDL_CREATE_SQL,

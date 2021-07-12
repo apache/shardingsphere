@@ -28,13 +28,26 @@ services:
       - "33260:3306"
     environment:
       - LANG=C.UTF-8
-  
+
+  postgres:
+    image: "postgres:12.6"
+    container_name: db-postgres
+    volumes:
+      - ../../env/db/init-sql/postgresql:/docker-entrypoint-initdb.d/
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      #      POSTGRES_HOST_AUTH_METHOD: trust
+      PG_SYSTEM_MAX_CONNECTIONS: 200
+
 #  zookeeper:
 #    image: "zookeeper:3.6.2"
 #    container_name: readwrite-splitting-register-center
 #    ports:
 #      - "22810:2181"
-  
+
   shardingsphere-proxy:
     image: apache/shardingsphere-proxy-test
     container_name: readwrite-splitting-shardingsphere-proxy

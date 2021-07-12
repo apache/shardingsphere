@@ -187,6 +187,10 @@ ilmPolicyName
     : identifier
     ;
 
+policyName
+    : identifier
+    ;
+
 functionName
     : identifier
     ;
@@ -291,6 +295,10 @@ roleName
     : identifier
     ;
 
+userName
+    : identifier
+    ;
+
 password
     : identifier
     ;
@@ -308,7 +316,7 @@ tableNames
     ;
 
 oracleId
-    : IDENTIFIER_ | (STRING_ DOT_)* STRING_
+    : identifier | (STRING_ DOT_)* STRING_
     ;
 
 collationName
@@ -794,4 +802,8 @@ samplePercent
 
 seedValue
     : numberLiterals
+    ;
+
+namespace
+    : identifier
     ;
