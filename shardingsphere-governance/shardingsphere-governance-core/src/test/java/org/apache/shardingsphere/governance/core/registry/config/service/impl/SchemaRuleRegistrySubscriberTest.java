@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -34,17 +33,10 @@ public final class SchemaRuleRegistrySubscriberTest {
     @Mock
     private SchemaRuleRegistryService schemaRuleRegistryService;
     
-    private SchemaRuleRegistrySubscriber schemaRuleRegistrySubscriber;
-    
-    @Before
-    public void setUp() throws ReflectiveOperationException {
-        schemaRuleRegistrySubscriber = new SchemaRuleRegistrySubscriber(schemaRuleRegistryService);
-    }
-    
     @Test
     public void assertUpdate() {
         RuleConfigurationsAlteredSQLNotificationEvent event = new RuleConfigurationsAlteredSQLNotificationEvent("foo_db", Collections.emptyList());
-        schemaRuleRegistrySubscriber.update(event);
+        new SchemaRuleRegistrySubscriber(schemaRuleRegistryService).update(event);
         verify(schemaRuleRegistryService).persist(event.getSchemaName(), event.getRuleConfigurations());
     }
 }

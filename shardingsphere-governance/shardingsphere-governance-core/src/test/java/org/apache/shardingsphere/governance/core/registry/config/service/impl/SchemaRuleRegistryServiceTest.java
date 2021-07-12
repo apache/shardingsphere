@@ -20,14 +20,12 @@ package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -43,27 +41,17 @@ import static org.mockito.Mockito.when;
 public final class SchemaRuleRegistryServiceTest {
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
-    
-    private SchemaRuleRegistryService schemaRuleRegistryService;
-    
-    @Before
-    public void setUp() throws ReflectiveOperationException {
-        schemaRuleRegistryService = new SchemaRuleRegistryService(registryCenterRepository);
-        Field field = schemaRuleRegistryService.getClass().getDeclaredField("repository");
-        field.setAccessible(true);
-        field.set(schemaRuleRegistryService, registryCenterRepository);
-    }
+    private RegistryCenterRepository repository;
     
     @Test
     public void assertLoadWithoutExistedNode() {
-        assertTrue(schemaRuleRegistryService.load("foo_db").isEmpty());
+        assertTrue(new SchemaRuleRegistryService(repository).load("foo_db").isEmpty());
     }
     
     @Test
     public void assertLoadWithExistedNode() {
-        when(registryCenterRepository.get("/metadata/foo_db/rules")).thenReturn(readYAML());
-        Collection<RuleConfiguration> actual = schemaRuleRegistryService.load("foo_db");
+        when(repository.get("/metadata/foo_db/rules")).thenReturn(readYAML());
+        Collection<RuleConfiguration> actual = new SchemaRuleRegistryService(repository).load("foo_db");
         assertThat(actual.size(), is(1));
     }
     

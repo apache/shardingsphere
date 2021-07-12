@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,7 +28,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -45,22 +43,12 @@ import static org.mockito.Mockito.when;
 public final class DataSourceRegistryServiceTest {
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
-    
-    private DataSourceRegistryService dataSourceRegistryService;
-    
-    @Before
-    public void setUp() throws ReflectiveOperationException {
-        dataSourceRegistryService = new DataSourceRegistryService(registryCenterRepository);
-        Field field = dataSourceRegistryService.getClass().getDeclaredField("repository");
-        field.setAccessible(true);
-        field.set(dataSourceRegistryService, registryCenterRepository);
-    }
+    private RegistryCenterRepository repository;
     
     @Test
     public void assertLoad() {
-        when(registryCenterRepository.get("/metadata/foo_db/dataSources")).thenReturn(readDataSourceYaml());
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("foo_db");
+        when(repository.get("/metadata/foo_db/dataSources")).thenReturn(readDataSourceYaml());
+        Map<String, DataSourceConfiguration> actual = new DataSourceRegistryService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
         assertDataSourceConfiguration(actual.get("ds_0"), DataSourceConfiguration.getDataSourceConfiguration(createDataSource("ds_0")));
         assertDataSourceConfiguration(actual.get("ds_1"), DataSourceConfiguration.getDataSourceConfiguration(createDataSource("ds_1")));
@@ -82,8 +70,8 @@ public final class DataSourceRegistryServiceTest {
     
     @Test
     public void assertLoadWithoutPath() {
-        when(registryCenterRepository.get("/metadata/foo_db/dataSources")).thenReturn("");
-        Map<String, DataSourceConfiguration> actual = dataSourceRegistryService.load("foo_db");
+        when(repository.get("/metadata/foo_db/dataSources")).thenReturn("");
+        Map<String, DataSourceConfiguration> actual = new DataSourceRegistryService(repository).load("foo_db");
         assertThat(actual.size(), is(0));
     }
     

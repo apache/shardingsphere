@@ -21,7 +21,6 @@ import org.apache.shardingsphere.governance.core.registry.config.event.datasourc
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -44,18 +43,11 @@ public final class DataSourceRegistrySubscriberTest {
     @Mock
     private DataSourceRegistryService dataSourceRegistryService;
     
-    private DataSourceRegistrySubscriber dataSourceRegistrySubscriber;
-    
-    @Before
-    public void setUp() throws ReflectiveOperationException {
-        dataSourceRegistrySubscriber = new DataSourceRegistrySubscriber(dataSourceRegistryService);
-    }
-    
     @Test
     public void assertUpdateWithDataSourceAddedEvent() {
         Map<String, DataSourceConfiguration> dataSourceConfigs = createDataSourceConfigurations();
         DataSourceAddedSQLNotificationEvent event = new DataSourceAddedSQLNotificationEvent("foo_db", dataSourceConfigs);
-        dataSourceRegistrySubscriber.update(event);
+        new DataSourceRegistrySubscriber(dataSourceRegistryService).update(event);
         verify(dataSourceRegistryService).persist("foo_db", dataSourceConfigs);
     }
     
@@ -64,7 +56,7 @@ public final class DataSourceRegistrySubscriberTest {
         DataSourceDroppedSQLNotificationEvent event = new DataSourceDroppedSQLNotificationEvent("foo_db", Collections.singletonList("ds_0"));
         Map<String, DataSourceConfiguration> dataSourceConfigs = createDataSourceConfigurations();
         when(dataSourceRegistryService.load("foo_db")).thenReturn(dataSourceConfigs);
-        dataSourceRegistrySubscriber.update(event);
+        new DataSourceRegistrySubscriber(dataSourceRegistryService).update(event);
         dataSourceConfigs.remove("ds_0");
         verify(dataSourceRegistryService).persist("foo_db", dataSourceConfigs);
     }
