@@ -41,17 +41,17 @@ import static org.mockito.Mockito.when;
 public final class SchemaRuleRegistryServiceTest {
     
     @Mock
-    private RegistryCenterRepository repository;
+    private RegistryCenterRepository registryCenterRepository;
     
     @Test
     public void assertLoadWithoutExistedNode() {
-        assertTrue(new SchemaRuleRegistryService(repository).load("foo_db").isEmpty());
+        assertTrue(new SchemaRuleRegistryService(registryCenterRepository).load("foo_db").isEmpty());
     }
     
     @Test
     public void assertLoadWithExistedNode() {
-        when(repository.get("/metadata/foo_db/rules")).thenReturn(readYAML());
-        Collection<RuleConfiguration> actual = new SchemaRuleRegistryService(repository).load("foo_db");
+        when(registryCenterRepository.get("/metadata/foo_db/rules")).thenReturn(readYAML());
+        Collection<RuleConfiguration> actual = new SchemaRuleRegistryService(registryCenterRepository).load("foo_db");
         assertThat(actual.size(), is(1));
     }
     
