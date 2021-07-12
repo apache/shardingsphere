@@ -34,11 +34,15 @@ import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewri
 public abstract class ShadowParameterRewriter<T extends SQLStatementContext> implements ParameterRewriter<T>, ShadowRuleAware {
     
     private ShadowRule shadowRule;
-    
+
     @Override
     public final boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         return isNeedRewriteForShadow(sqlStatementContext);
     }
     
     protected abstract boolean isNeedRewriteForShadow(SQLStatementContext sqlStatementContext);
+
+    protected String getShadowColumn() {
+        return shadowRule.getColumn();
+    }
 }
