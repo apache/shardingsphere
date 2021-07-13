@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -146,13 +145,5 @@ public final class RegistryCenterTest {
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
                 .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-    }
-    
-    @Test
-    public void assertRegisterInstanceOnline() {
-        registryCenter.registerInstanceOnline();
-        verify(registryCenterRepository).persist("/states/datanodes", "");
-        verify(registryCenterRepository).persist("/states/primarynodes", "");
-        verify(registryCenterRepository).persistEphemeral(anyString(), anyString());
     }
 }
