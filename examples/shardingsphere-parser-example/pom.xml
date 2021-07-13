@@ -49,5 +49,10 @@
             <artifactId>shardingsphere-sql-parser-sql92</artifactId>
             <version>5.0.0-RC1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
+            <version>5.0.0-RC1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

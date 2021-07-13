@@ -20,7 +20,7 @@ ignoredPluginNames:
   - Jaeger
   - Opentracing
   - Zipkin
-  - OpenTelemetry
+  - Prometheus
 
 plugins:
   prometheus:
@@ -49,6 +49,7 @@ plugins:
     props:
       otel.resource.attributes: "service.name=shardingsphere-agent"
       otel.traces.exporter: "zipkin"
+      otel.exporter.zipkin.endpoint: "http://zipkin.agent.tracing.opentelemetry.host:9411/api/v2/spans"
   Logging:
     props:
       LEVEL: "INFO"

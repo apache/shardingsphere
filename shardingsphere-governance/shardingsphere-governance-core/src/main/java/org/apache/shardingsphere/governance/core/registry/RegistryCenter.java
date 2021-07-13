@@ -84,10 +84,10 @@ public final class RegistryCenter {
         schemaService = new SchemaRegistryService(repository);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
-        createSubscriber(repository);
+        createSubscribers(repository);
     }
     
-    private void createSubscriber(final RegistryCenterRepository repository) {
+    private void createSubscribers(final RegistryCenterRepository repository) {
         new DataSourceRegistrySubscriber(dataSourceService);
         new GlobalRuleRegistrySubscriber(globalRuleService, new UserStatusRegistryService(repository));
         new SchemaRuleRegistrySubscriber(schemaRuleService);
