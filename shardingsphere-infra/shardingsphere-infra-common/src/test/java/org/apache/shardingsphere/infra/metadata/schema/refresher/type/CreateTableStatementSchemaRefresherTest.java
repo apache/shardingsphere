@@ -43,7 +43,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -155,10 +154,10 @@ public final class CreateTableStatementSchemaRefresherTest {
     
     private void refreshWithTableRule(final CreateTableStatement createTableStatement) throws SQLException {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
-        ShardingSphereRule rule = mock(TableContainedRule.class);
-        Collection<ShardingSphereRule> rules = Arrays.asList(rule);
+        TableContainedRule rule = mock(TableContainedRule.class);
+        Collection<ShardingSphereRule> rules = Collections.singletonList(rule);
         when(materials.getRules()).thenReturn(rules);
-        when(((TableContainedRule) rule).getTables()).thenReturn(Arrays.asList("t_order_0"));
+        when(rule.getTables()).thenReturn(Collections.singletonList("t_order_0"));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
         DataSource dataSource = mock(DataSource.class);

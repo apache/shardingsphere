@@ -1824,4 +1824,18 @@
             </projections>
         </select-subquery>
     </insert>
+
+    <insert sql-case-id="insert_with_rank_column">
+        <table name="sales" start-index="12" stop-index="16" />
+        <columns start-index="18" stop-index="23">
+            <column name="rank" start-index="19" stop-index="22" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="33" stop-index="33" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

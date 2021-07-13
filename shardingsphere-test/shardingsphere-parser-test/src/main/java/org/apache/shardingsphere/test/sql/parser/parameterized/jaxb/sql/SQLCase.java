@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.Case;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -30,13 +31,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class SQLCase {
-    
-    @XmlAttribute
-    private String id;
-    
-    @XmlAttribute
-    private String value;
+public final class SQLCase extends Case {
     
     @XmlAttribute(name = "db-types")
     private String databaseTypes;

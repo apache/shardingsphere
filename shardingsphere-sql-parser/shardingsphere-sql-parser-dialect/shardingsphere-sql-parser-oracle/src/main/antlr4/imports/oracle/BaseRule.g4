@@ -96,7 +96,7 @@ unreservedWord
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST
+    | COLLATION | REAL | TYPE | FIRST | RANK
     ;
 
 schemaName
@@ -108,6 +108,10 @@ tableName
     ;
 
 viewName
+    : (owner DOT_)? name
+    ;
+
+materializedViewName
     : (owner DOT_)? name
     ;
 
@@ -180,6 +184,10 @@ serviceName
     ;
 
 ilmPolicyName
+    : identifier
+    ;
+
+policyName
     : identifier
     ;
 
@@ -287,6 +295,10 @@ roleName
     : identifier
     ;
 
+userName
+    : identifier
+    ;
+
 password
     : identifier
     ;
@@ -304,7 +316,7 @@ tableNames
     ;
 
 oracleId
-    : IDENTIFIER_ | (STRING_ DOT_)* STRING_
+    : identifier | (STRING_ DOT_)* STRING_
     ;
 
 collationName
@@ -768,6 +780,30 @@ variableName
     : identifier | stringLiterals
     ;
 
-materializedViewName
+validTimeColumn
+    : columnName
+    ;
+
+attrDim
+    : identifier
+    ;
+
+hierarchyName
     : (owner DOT_)? name
+    ;
+
+analyticViewName
+    : (owner DOT_)? name
+    ;
+
+samplePercent
+    : numberLiterals
+    ;
+
+seedValue
+    : numberLiterals
+    ;
+
+namespace
+    : identifier
     ;

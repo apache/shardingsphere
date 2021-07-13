@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -43,12 +42,6 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Alt
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropDatabaseStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +55,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -77,81 +69,6 @@ public final class DistSQLBackendHandlerFactoryTest {
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), 
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
-    }
-    
-    @Test
-    public void assertExecuteMySQLCreateDatabaseContext() throws SQLException {
-        assertExecuteCreateDatabaseContext(new MySQLCreateDatabaseStatement());
-    }
-    
-    @Test
-    public void assertExecutePostgreSQLCreateDatabaseContext() throws SQLException {
-        assertExecuteCreateDatabaseContext(new PostgreSQLCreateDatabaseStatement());
-    }
-
-    private void assertExecuteCreateDatabaseContext(final CreateDatabaseStatement sqlStatement) throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchemaName()).thenReturn("schema");
-        sqlStatement.setDatabaseName("new_db");
-        try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), sqlStatement, connection);
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
-        }
-        setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), sqlStatement, connection).execute();
-        assertThat(response, instanceOf(UpdateResponseHeader.class));
-    }
-    
-    @Test
-    public void assertExecuteMySQLDropDatabaseContext() throws SQLException {
-        assertExecuteDropDatabaseContext(new MySQLDropDatabaseStatement());
-    }
-    
-    @Test
-    public void assertExecutePostgreSQLDropDatabaseContext() throws SQLException {
-        assertExecuteDropDatabaseContext(new PostgreSQLDropDatabaseStatement());
-    }
-    
-    private void assertExecuteDropDatabaseContext(final DropDatabaseStatement sqlStatement) throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchemaName()).thenReturn("schema");
-        sqlStatement.setDatabaseName("schema");
-        try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), sqlStatement, connection);
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
-        }
-        setGovernanceMetaDataContexts(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), sqlStatement, connection).execute();
-        assertThat(response, instanceOf(UpdateResponseHeader.class));
-    }
-    
-    @Test
-    public void assertExecuteMySQLCreateDatabaseContextWithException() throws SQLException {
-        assertExecuteCreateDatabaseContextWithException(new MySQLCreateDatabaseStatement());
-    }
-    
-    @Test
-    public void assertExecutePostgreSQLCreateDatabaseContextWithException() throws SQLException {
-        assertExecuteCreateDatabaseContextWithException(new PostgreSQLCreateDatabaseStatement());
-    }
-    
-    public void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) throws SQLException {
-        BackendConnection connection = mock(BackendConnection.class);
-        when(connection.getSchemaName()).thenReturn("schema");
-        sqlStatement.setDatabaseName("schema");
-        try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), sqlStatement, connection);
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is(String.format("No Registry center to execute `%s` SQL", sqlStatement.getClass().getSimpleName())));
-        }
-        setGovernanceMetaDataContexts(true);
-        try {
-            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), sqlStatement, connection);
-        } catch (final DBCreateExistsException ex) {
-            assertNull(ex.getMessage());
-        }
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

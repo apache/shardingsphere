@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -116,8 +117,7 @@ public final class DataSourceConfiguration {
             try {
                 Optional<Method> setterMethod = findSetterMethod(methods, entry.getKey());
                 if (setterMethod.isPresent() && null != entry.getValue()) {
-                    setterMethod.get().invoke(result, setterMethod.get().getParameterTypes()[0] == String.class
-                            ? String.valueOf(entry.getValue()) : entry.getValue());
+                    setDataSourceField(setterMethod.get(), result, entry.getValue());
                 }
             } catch (final IllegalArgumentException ex) {
                 throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource, because %s", entry.getKey(), ex.getMessage());
@@ -125,6 +125,21 @@ public final class DataSourceConfiguration {
         }
         Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
         return decorator.isPresent() ? decorator.get().decorate(result) : result;
+    }
+    
+    private void setDataSourceField(final Method method, final DataSource target, final Object value) throws InvocationTargetException, IllegalAccessException {
+        Class<?> paramType = method.getParameterTypes()[0];
+        if (paramType == int.class) {
+            method.invoke(target, Integer.parseInt(value.toString()));
+        } else if (paramType == long.class) {
+            method.invoke(target, Long.parseLong(value.toString()));
+        } else if (paramType == boolean.class || paramType == Boolean.class) {
+            method.invoke(target, Boolean.parseBoolean(value.toString()));
+        } else if (paramType == String.class) {
+            method.invoke(target, value.toString());
+        } else {
+            method.invoke(target, value);
+        }
     }
     
     @SuppressWarnings("rawtypes")

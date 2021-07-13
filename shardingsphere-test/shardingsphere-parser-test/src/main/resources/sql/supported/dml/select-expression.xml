@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="select_with_expression" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="MySQL, H2, Oracle, SQL92, SQLServer"/>
+    <sql-case id="select_with_expression" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="MySQL, H2, SQL92, SQLServer"/>
     <sql-case id="select_with_expression_for_postgresql" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="PostgresQL" />
     <sql-case id="select_with_date_function" value="SELECT DATE(i.creation_date) AS creation_date FROM `t_order_item` AS i ORDER BY DATE(i.creation_date) DESC" db-types="MySQL" />
     <sql-case id="select_with_regexp" value="SELECT * FROM t_order_item t WHERE t.status REGEXP ? AND t.item_id IN (?, ?)" db-types="MySQL" />
@@ -75,4 +75,7 @@
     <sql-case id="select_where_with_simple_expr_with_json_unquote_extract_sign" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; &quot;$[1]&quot;" db-types="MySQL"/>
     <sql-case id="select_where_with_simple_expr_with_match" value="SELECT * FROM t_order WHERE MATCH (order_id) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL"/>
     <sql-case id="select_where_with_simple_expr_with_case" value="SELECT * FROM t_order WHERE CASE WHEN order_id &gt; ? THEN ? ELSE ? END" db-types="MySQL"/>
+    <sql-case id="select_where_with_expr_with_not_with_order_by" value="SELECT last_name, job_id, salary, department_id FROM employees WHERE NOT (job_id = 'PU_CLERK' AND department_id = 30) ORDER BY last_name" db-types="Oracle"/>
+    <sql-case id="select_where_with_subquery" value="SELECT last_name, department_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE last_name = 'Lorentz') ORDER BY last_name, department_id" db-types="Oracle"/>
+    <sql-case id="select_where_with_expr_with_not_in" value="SELECT * FROM employees WHERE department_id NOT IN (SELECT department_id FROM departments WHERE location_id = 1700) ORDER BY last_name" db-types="Oracle"/>
 </sql-cases>
