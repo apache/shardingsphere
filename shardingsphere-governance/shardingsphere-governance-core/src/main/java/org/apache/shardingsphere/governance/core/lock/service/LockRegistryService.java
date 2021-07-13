@@ -31,8 +31,6 @@ import java.util.concurrent.TimeUnit;
  */
 public final class LockRegistryService {
     
-    private static final int CHECK_ACK_MAXIMUM = 5;
-    
     private static final int CHECK_ACK_INTERVAL_SECONDS = 1;
     
     private final String instanceId;
@@ -101,29 +99,22 @@ public final class LockRegistryService {
      * Check lock ack.
      * 
      * @param lockName lock name
+     * @param timeoutMilliseconds the maximum time in milliseconds to ack                
      * @return true if all instances ack lock, false if not
      */
-    public boolean checkLockAck(final String lockName) {
-        boolean result = checkAck(lockName, LockAck.LOCKED.name());
+    public boolean checkLockAck(final String lockName, final long timeoutMilliseconds) {
+        boolean result = checkAck(lockName, LockAck.LOCKED.name(), timeoutMilliseconds);
         if (!result) {
             releaseLock(lockName);
         }
         return result;
     }
     
-    /**
-     * Check unlock ack.
-     * 
-     * @param lockName lock name
-     * @return true if all instances ack unlock, false if not
-     */
-    public boolean checkUnlockAck(final String lockName) {
-        return checkAck(lockName, LockAck.UNLOCKED.name());
-    }
-    
-    private boolean checkAck(final String lockName, final String ackValue) {
+    private boolean checkAck(final String lockName, final String ackValue, final long timeoutMilliseconds) {
         Collection<String> instanceIds = repository.getChildrenKeys(StatesNode.getProxyNodesPath());
-        for (int i = 0; i < CHECK_ACK_MAXIMUM; i++) {
+        long checkMilliseconds = timeoutMilliseconds;
+        while (checkMilliseconds > 0) {
+            long start = System.currentTimeMillis();
             if (check(instanceIds, lockName, ackValue)) {
                 return true;
             }
@@ -133,6 +124,7 @@ public final class LockRegistryService {
             } catch (final InterruptedException ex) {
                 // CHECKSTYLE:ON
             }
+            checkMilliseconds -= System.currentTimeMillis() - start;
         }
         return false;
     }
