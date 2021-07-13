@@ -10,7 +10,7 @@ Currently, main APM functions lie in the performance diagnosis of distributed sy
 
 Apache ShardingSphere is not responsible for gathering, storing and demonstrating APM data, but sends the core information of SQL parsing and enforcement to APM to process. 
 In other words, Apache ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocol. 
-It can connect to APM systems in two ways.
+It can connect to APM systems in three ways.
 
 The first way is to send performance tracing data by OpenTracing API. 
 APM products facing OpenTracing protocol can all automatically connect to Apache ShardingSphere, like SkyWalking, Zipkin and Jaeger. 
@@ -22,6 +22,9 @@ Its disadvantage is that OpenTracing protocol is not stable in its development, 
 The second way is to use SkyWalking's automatic monitor agent. 
 Cooperating with [Apache SkyWalking](https://skywalking.apache.org/) team, 
 Apache ShardingSphere team has realized `ShardingSphere` automatic monitor agent to automatically send application performance data to `SkyWalking`.
+
+The third way is to send performance tracing data by OpenTelemetry. OpenTelemetry was merged by OpenTracing and OpenCencus in 2019.
+In this way, you only need to fill in the appropriate configuration in the agent configuration file according to [OpenTelemetry SDK Autoconfigure Guide](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure).
 
 ## Usage
 
@@ -52,6 +55,18 @@ ShardingTracer.init(new SkywalkingTracer());
 ### Use SkyWalking's Automatic Agent
 
 Please refer to [SkyWalking Manual](https://github.com/apache/skywalking/blob/5.x/docs/en/Quick-start.md).
+
+### Use OpenTelemetry
+
+Just fill in the configuration in `agent.yaml`. For example, export Traces data to Zipkin.
+
+```yaml
+OpenTelemetry:
+    props:
+      otel.resource.attributes: "service.name=shardingsphere-agent"
+      otel.traces.exporter: "zipkin"
+      otel.exporter.zipkin.endpoint: "http://127.0.0.1:9411/api/v2/spans"
+```
 
 ## Result Demonstration
 

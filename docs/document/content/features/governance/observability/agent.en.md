@@ -43,6 +43,7 @@ ignoredPluginNames: # A collection of ignored plugins, indicating that the plugi
   - Jaeger
   - Zipkin
   - Prometheus
+  - OpenTelemetry
   - Logging
 
 plugins:
@@ -66,10 +67,17 @@ plugins:
     props:
       SERVICE_NAME: "shardingsphere-agent"
       URL_VERSION: "/api/v2/spans" #zipkin uri
+  Opentracing:
+    props:
+      OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
+  OpenTelemetry:
+    props:
+      otel.resource.attributes: "service.name=shardingsphere-agent" #Resource information of opentelemetry, multiple configurations can be separated by ','
+      otel.traces.exporter: "zipkin" #the exporter of traces
   Logging:
     props:
       LEVEL: "INFO" #log level
 
-``
+```
 
  When ignoredPluginNames is configured, plugins in the collection are ignored!
