@@ -73,7 +73,7 @@ public final class DataSourceEnvironmentUtil {
     /**
      * Get URL.
      *
-     * @param dataSourceName data source name
+     * @param databaseType database type
      * @param host database host
      * @param port database port
      * @param dataSourceName data source name
