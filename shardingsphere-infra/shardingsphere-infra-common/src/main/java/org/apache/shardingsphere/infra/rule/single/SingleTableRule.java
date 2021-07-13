@@ -90,9 +90,8 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
      */
     @Subscribe
     public void dropSingleTable(final DropTableEvent event) {
-        if (event.getTableNames().isEmpty()) {
-            return;
+        if (!event.getTableNames().isEmpty()) {
+            event.getTableNames().forEach(singleTableDataNodes::remove);
         }
-        event.getTableNames().forEach(singleTableDataNodes::remove);
     }
 }
