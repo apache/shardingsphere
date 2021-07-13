@@ -24,14 +24,12 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,22 +50,12 @@ public final class GlobalRuleRegistryServiceTest {
     private static final String YAML_DATA = "yaml/regcenter/data-global-rule.yaml";
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
-    
-    private GlobalRuleRegistryService globalRuleRegistryService;
-    
-    @Before
-    public void setUp() throws ReflectiveOperationException {
-        globalRuleRegistryService = new GlobalRuleRegistryService(registryCenterRepository);
-        Field field = globalRuleRegistryService.getClass().getDeclaredField("repository");
-        field.setAccessible(true);
-        field.set(globalRuleRegistryService, registryCenterRepository);
-    }
+    private RegistryCenterRepository repository;
     
     @Test
     public void assertLoad() {
-        when(registryCenterRepository.get("/rules")).thenReturn(readYAML(YAML_DATA));
-        Collection<RuleConfiguration> globalRuleConfigs = globalRuleRegistryService.load();
+        when(repository.get("/rules")).thenReturn(readYAML(YAML_DATA));
+        Collection<RuleConfiguration> globalRuleConfigs = new GlobalRuleRegistryService(repository).load();
         assertFalse(globalRuleConfigs.isEmpty());
         Collection<ShardingSphereUser> users = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .flatMap(each -> ((AuthorityRuleConfiguration) each).getUsers().stream()).collect(Collectors.toList());

@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.representer.ShardingSphereYamlRepresenter;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.ByteArrayInputStream;
@@ -30,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
 
 /**
  * YAML engine.
@@ -89,6 +91,9 @@ public final class YamlEngine {
      * @return YAML content
      */
     public static String marshal(final Object value) {
+        if (value instanceof Collection) {
+            return new Yaml(new ShardingSphereYamlRepresenter()).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
+        }
         return new Yaml(new ShardingSphereYamlRepresenter()).dumpAsMap(value);
     }
 }

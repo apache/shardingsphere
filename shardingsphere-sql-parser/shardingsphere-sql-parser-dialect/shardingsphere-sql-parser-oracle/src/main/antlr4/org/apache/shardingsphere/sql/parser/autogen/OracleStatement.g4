@@ -54,5 +54,7 @@ execute
     | analyze
     | associateStatistics
     | disassociateStatistics
+    | audit
+    | noAudit
     ) SEMI_?
     ;

@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class MySQLParserFormatExample {
+public final class MySQLParserFormatExample {
     
     private static final String DML_SELECT_SQL = "SELECT age AS b, name AS n FROM table1 JOIN table2 WHERE id = 1 AND name = 'lu';";
     
@@ -43,7 +43,7 @@ public class MySQLParserFormatExample {
     
     private static final String DDL_SHOW_SQL = "SHOW COLUMNS FROM user;";
     
-    private static List<String> MYSQL_FORMAT_SQL_LIST;
+    private static final List<String> MYSQL_FORMAT_SQL_LIST;
     
     static {
         MYSQL_FORMAT_SQL_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_DELETE_SQL, DML_UPDATE_SQL, DDL_CREATE_SQL,

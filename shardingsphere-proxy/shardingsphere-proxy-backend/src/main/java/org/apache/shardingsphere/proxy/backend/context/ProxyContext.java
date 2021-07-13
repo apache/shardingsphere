@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -30,6 +31,8 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -121,5 +124,21 @@ public final class ProxyContext {
      */
     public StateContext getStateContext() {
         return metaDataContexts.getStateContext();
+    }
+    
+    /**
+     * Get rules.
+     * 
+     * @param databaseName database name
+     * @return rules
+     */
+    // TODO performance enhancement: cache when call init() and pay attention for refresh of rule modification
+    public Collection<ShardingSphereRule> getRules(final String databaseName) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        if (!Strings.isNullOrEmpty(databaseName) && schemaExists(databaseName)) {
+            result.addAll(metaDataContexts.getMetaData(databaseName).getRuleMetaData().getRules());
+        }
+        result.addAll(metaDataContexts.getGlobalRuleMetaData().getRules());
+        return result;
     }
 }

@@ -130,11 +130,6 @@ public final class OrderByContextEngine {
         if (!(tableSegment instanceof SimpleTableSegment)) {
             return false;
         }
-        for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
-            if (projectionSegment instanceof AggregationProjectionSegment) {
-                return false;
-            }
-        }
-        return true;
+        return selectStatement.getProjections().getProjections().stream().noneMatch(each -> each instanceof AggregationProjectionSegment);
     }
 }

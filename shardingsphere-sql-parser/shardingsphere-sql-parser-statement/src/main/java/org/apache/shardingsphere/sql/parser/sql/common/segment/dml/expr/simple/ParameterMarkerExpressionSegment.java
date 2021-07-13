@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
 /**
  * Parameter marker expression segment.
@@ -27,7 +28,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment {
+public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment, ProjectionSegment {
     
     private final int startIndex;
     
