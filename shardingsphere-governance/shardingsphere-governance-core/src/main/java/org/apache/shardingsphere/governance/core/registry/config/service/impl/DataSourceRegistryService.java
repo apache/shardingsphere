@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.registry.config.service.SchemaBasedRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 
@@ -34,14 +34,10 @@ import java.util.stream.Collectors;
 /**
  * Data source registry service.
  */
+@RequiredArgsConstructor
 public final class DataSourceRegistryService implements SchemaBasedRegistryService<Map<String, DataSourceConfiguration>> {
     
     private final RegistryCenterRepository repository;
-    
-    public DataSourceRegistryService(final RegistryCenterRepository repository) {
-        this.repository = repository;
-        ShardingSphereEventBus.getInstance().register(this);
-    }
     
     @Override
     public void persist(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {

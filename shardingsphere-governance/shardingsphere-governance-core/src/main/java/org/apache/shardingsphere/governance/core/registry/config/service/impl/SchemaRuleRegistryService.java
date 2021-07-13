@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.registry.config.service.SchemaBasedRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -34,14 +34,10 @@ import java.util.LinkedList;
 /**
  * Schema rule registry service.
  */
+@RequiredArgsConstructor
 public final class SchemaRuleRegistryService implements SchemaBasedRegistryService<Collection<RuleConfiguration>> {
     
     private final RegistryCenterRepository repository;
-    
-    public SchemaRuleRegistryService(final RegistryCenterRepository repository) {
-        this.repository = repository;
-        ShardingSphereEventBus.getInstance().register(this);
-    }
     
     @Override
     public void persist(final String schemaName, final Collection<RuleConfiguration> configs, final boolean isOverwrite) {
