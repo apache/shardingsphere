@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.test.integration.env.datasource.DataSourceEnvironmentUtil;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.postgresql.util.PSQLException;
@@ -51,7 +52,7 @@ public final class PostgreSQLContainer extends ShardingSphereStorageContainer {
         // TODO logic need prefect
         while (time++ < 20) {
             Class.forName(getDriverClassName());
-            try (Connection ignored = DriverManager.getConnection(String.format("jdbc:postgresql://%s:%s/", getHost(), getPort()), getUsername(), getPassword())) {
+            try (Connection ignored = DriverManager.getConnection(DataSourceEnvironmentUtil.getURL("PostgreSQL", getHost(), getPort()), getUsername(), getPassword())) {
                 break;
             } catch (PSQLException ex) {
                 Thread.sleep(1000);
@@ -61,7 +62,7 @@ public final class PostgreSQLContainer extends ShardingSphereStorageContainer {
 
     @Override
     protected String getUrl(final String dataSourceName) {
-        return String.format("jdbc:postgresql://%s:%s/%s", getHost(), getPort(), dataSourceName);
+        return DataSourceEnvironmentUtil.getURL("PostgreSQL", getHost(), getPort(), dataSourceName);
     }
     
     @Override
