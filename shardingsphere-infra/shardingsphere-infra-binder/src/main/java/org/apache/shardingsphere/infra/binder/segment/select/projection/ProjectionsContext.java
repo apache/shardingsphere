@@ -77,7 +77,7 @@ public final class ProjectionsContext {
     
     /**
      * Find projection index.
-     *
+     * 
      * @param projectionName projection name
      * @return projection index
      */
@@ -94,7 +94,7 @@ public final class ProjectionsContext {
     
     /**
      * Get aggregation projections.
-     *
+     * 
      * @return aggregation projections
      */
     public List<AggregationProjection> getAggregationProjections() {
@@ -111,7 +111,7 @@ public final class ProjectionsContext {
     
     /**
      * Get aggregation distinct projections.
-     *
+     * 
      * @return aggregation distinct projections
      */
     public List<AggregationDistinctProjection> getAggregationDistinctProjections() {

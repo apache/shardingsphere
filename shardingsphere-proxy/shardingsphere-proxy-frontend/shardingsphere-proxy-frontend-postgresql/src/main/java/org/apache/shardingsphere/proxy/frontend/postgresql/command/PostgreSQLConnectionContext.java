@@ -20,15 +20,11 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.PostgreSQLPortal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.binary.describe.PostgreSQLComDescribeExecutor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -56,28 +52,18 @@ public final class PostgreSQLConnectionContext {
      * Create a portal.
      *
      * @param portal portal name
-     * @param sql sql
+     * @param binaryStatement binary statement
      * @param parameters bind parameters
      * @param resultFormats result formats
      * @param backendConnection backend connection
      * @return a new portal
      * @throws SQLException SQL exception
      */
-    public PostgreSQLPortal createPortal(final String portal, final String sql, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
+    public PostgreSQLPortal createPortal(final String portal, final PostgreSQLBinaryStatement binaryStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
                                          final BackendConnection backendConnection) throws SQLException {
-        SQLStatement sqlStatement = parseSql(sql, backendConnection.getSchemaName());
-        PostgreSQLPortal result = new PostgreSQLPortal(sqlStatement, sql, parameters, resultFormats, backendConnection);
+        PostgreSQLPortal result = new PostgreSQLPortal(binaryStatement, parameters, resultFormats, backendConnection);
         portals.put(portal, result);
         return result;
-    }
-    
-    private SQLStatement parseSql(final String sql, final String schemaName) {
-        if (sql.isEmpty()) {
-            return new EmptyStatement();
-        }
-        ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(
-                DatabaseTypeRegistry.getTrunkDatabaseTypeName(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType()));
-        return sqlStatementParserEngine.parse(sql, true);
     }
     
     /**

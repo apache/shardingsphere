@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized;
 import org.apache.shardingsphere.distsql.parser.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.SQLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.AbstractSQLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.CasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.SQLParserTestCasesRegistryFactory;
@@ -55,7 +55,7 @@ public final class DistSQLParserParameterizedTest {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String sql = DIST_SQL_CASES_LOADER.getCaseValue(sqlCaseId, null, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SQLStatement actual = parseSQLStatement(sql);
-        SQLStatementAssert.assertIs(new SQLCaseAssertContext(DIST_SQL_CASES_LOADER, sqlCaseId, null), actual, expected);
+        AbstractSQLStatementAssert.assertIs(new SQLCaseAssertContext(DIST_SQL_CASES_LOADER, sqlCaseId, null), actual, expected);
     }
     
     private SQLStatement parseSQLStatement(final String sql) {

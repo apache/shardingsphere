@@ -44,7 +44,7 @@ public final class MySQLParserStatementExample {
     
     private static final String DDL_SHOW_SQL = "SHOW COLUMNS FROM table1;";
     
-    private static List<String> MYSQL_PARSER_STATEMENT_LIST;
+    private static final List<String> MYSQL_PARSER_STATEMENT_LIST;
     
     static {
         MYSQL_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL,
