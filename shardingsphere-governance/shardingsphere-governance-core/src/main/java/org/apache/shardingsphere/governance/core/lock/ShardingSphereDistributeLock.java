@@ -87,8 +87,7 @@ public final class ShardingSphereDistributeLock implements ShardingSphereLock {
      */
     @Subscribe
     public void renew(final PropertiesChangedEvent event) {
-        ConfigurationProperties props = new ConfigurationProperties(event.getProps());
-        lockTimeoutMilliseconds = props.<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
+        lockTimeoutMilliseconds = new ConfigurationProperties(event.getProps()).<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
     }
     
     /**

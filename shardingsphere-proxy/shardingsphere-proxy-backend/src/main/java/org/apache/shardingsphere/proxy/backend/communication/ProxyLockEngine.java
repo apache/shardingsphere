@@ -92,9 +92,9 @@ public final class ProxyLockEngine {
     }
     
     private void checkTableLock(final ShardingSphereLock lock, final Collection<String> tableNames) {
-        for (String tableName : tableNames) {
-            if (lock.isLocked(LockNameUtil.getTableLockName(schemaName, tableName))) {
-                throw new TableLockedException(schemaName, tableName);
+        for (String each : tableNames) {
+            if (lock.isLocked(LockNameUtil.getTableLockName(schemaName, each))) {
+                throw new TableLockedException(schemaName, each);
             }
         }
     }
