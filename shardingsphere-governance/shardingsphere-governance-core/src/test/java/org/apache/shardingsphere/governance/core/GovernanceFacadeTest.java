@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.governance.core;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -40,7 +40,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -66,7 +65,7 @@ public final class GovernanceFacadeTest {
     
     @Test
     public void assertOnlineInstance() {
-        RegistryCenter registryCenter = mock(RegistryCenter.class, RETURNS_DEEP_STUBS);
+        RegistryCenter registryCenter = mock(RegistryCenter.class);
         GovernanceWatcherFactory listenerFactory = mock(GovernanceWatcherFactory.class);
         setField(governanceFacade, "registryCenter", registryCenter);
         setField(governanceFacade, "listenerFactory", listenerFactory);
@@ -76,6 +75,7 @@ public final class GovernanceFacadeTest {
         Properties props = new Properties();
         governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props);
         verify(registryCenter).persistConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
+        verify(registryCenter).registerInstanceOnline();
         verify(listenerFactory).watchListeners();
     }
     

@@ -110,4 +110,11 @@ public final class RegistryCenter {
             schemaRuleService.persist(schemaName, schemaRuleConfigs.get(schemaName), isOverwrite);
         }
     }
+    
+    /**
+     * Register instance online.
+     */
+    public void registerInstanceOnline() {
+        instanceStatusService.registerInstanceOnline(instanceId);
+    }
 }
