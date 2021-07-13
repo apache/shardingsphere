@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PropertiesRegistryServiceTest {
+public final class PropertiesPersistServiceTest {
     
     private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
@@ -41,7 +41,7 @@ public final class PropertiesRegistryServiceTest {
     @Test
     public void assertLoad() {
         when(repository.get("/props")).thenReturn(PROPS_YAML);
-        Properties actual = new PropertiesRegistryService(repository).load();
+        Properties actual = new PropertiesPersistService(repository).load();
         assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));
     }
 }

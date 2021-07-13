@@ -38,20 +38,20 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaRuleRegistryServiceTest {
+public final class SchemaRulePersistServiceTest {
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
+    private RegistryCenterRepository repository;
     
     @Test
     public void assertLoadWithoutExistedNode() {
-        assertTrue(new SchemaRuleRegistryService(registryCenterRepository).load("foo_db").isEmpty());
+        assertTrue(new SchemaRulePersistService(repository).load("foo_db").isEmpty());
     }
     
     @Test
     public void assertLoadWithExistedNode() {
-        when(registryCenterRepository.get("/metadata/foo_db/rules")).thenReturn(readYAML());
-        Collection<RuleConfiguration> actual = new SchemaRuleRegistryService(registryCenterRepository).load("foo_db");
+        when(repository.get("/metadata/foo_db/rules")).thenReturn(readYAML());
+        Collection<RuleConfiguration> actual = new SchemaRulePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(1));
     }
     

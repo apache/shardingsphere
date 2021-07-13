@@ -31,12 +31,12 @@ import static org.mockito.Mockito.verify;
 public final class SchemaRuleRegistrySubscriberTest {
     
     @Mock
-    private SchemaRuleRegistryService schemaRuleRegistryService;
+    private SchemaRulePersistService persistService;
     
     @Test
     public void assertUpdate() {
         RuleConfigurationsAlteredSQLNotificationEvent event = new RuleConfigurationsAlteredSQLNotificationEvent("foo_db", Collections.emptyList());
-        new SchemaRuleRegistrySubscriber(schemaRuleRegistryService).update(event);
-        verify(schemaRuleRegistryService).persist(event.getSchemaName(), event.getRuleConfigurations());
+        new SchemaRuleRegistrySubscriber(persistService).update(event);
+        verify(persistService).persist(event.getSchemaName(), event.getRuleConfigurations());
     }
 }

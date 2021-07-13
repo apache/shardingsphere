@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.governance.core.registry.config.service;
 
 /**
- * Global registry service.
+ * Global persist service.
  * 
  * @param <T> type of configuration
  */
-public interface GlobalRegistryService<T> {
+public interface GlobalPersistService<T> {
     
     /**
      * Persist configurations.

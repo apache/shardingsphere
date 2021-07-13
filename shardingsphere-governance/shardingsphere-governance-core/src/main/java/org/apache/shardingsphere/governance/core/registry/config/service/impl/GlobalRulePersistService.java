@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
-import org.apache.shardingsphere.governance.core.registry.config.service.GlobalRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.GlobalPersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -30,10 +30,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Global rule registry service.
+ * Global rule persist service.
  */
 @RequiredArgsConstructor
-public final class GlobalRuleRegistryService implements GlobalRegistryService<Collection<RuleConfiguration>> {
+public final class GlobalRulePersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
     
     private final RegistryCenterRepository repository;
     

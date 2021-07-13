@@ -34,12 +34,12 @@ import java.util.Optional;
  */
 public final class GlobalRuleRegistrySubscriber {
     
-    private final GlobalRuleRegistryService globalRuleRegistryService;
+    private final GlobalRulePersistService persistService;
     
     private final UserStatusRegistryService userStatusRegistryService;
     
-    public GlobalRuleRegistrySubscriber(final GlobalRuleRegistryService globalRuleRegistryService, final UserStatusRegistryService userStatusRegistryService) {
-        this.globalRuleRegistryService = globalRuleRegistryService;
+    public GlobalRuleRegistrySubscriber(final GlobalRulePersistService persistService, final UserStatusRegistryService userStatusRegistryService) {
+        this.persistService = persistService;
         this.userStatusRegistryService = userStatusRegistryService;
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -51,12 +51,12 @@ public final class GlobalRuleRegistrySubscriber {
      */
     @Subscribe
     public void update(final CreateUserStatementEvent event) {
-        Collection<RuleConfiguration> globalRuleConfigs = globalRuleRegistryService.load();
+        Collection<RuleConfiguration> globalRuleConfigs = persistService.load();
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .findAny().map(each -> (AuthorityRuleConfiguration) each);
         Preconditions.checkState(authorityRuleConfig.isPresent(), "No available authority rules for governance.");
         authorityRuleConfig.get().getUsers().addAll(event.getUsers());
-        globalRuleRegistryService.persist(globalRuleConfigs, true);
+        persistService.persist(globalRuleConfigs, true);
     }
     
     /**
