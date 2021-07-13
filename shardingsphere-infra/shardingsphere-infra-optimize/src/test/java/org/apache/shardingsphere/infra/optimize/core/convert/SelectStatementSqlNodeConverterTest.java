@@ -23,6 +23,7 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -158,6 +159,7 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
                 + "o1.order_id = o2.order_id where o1.status='FINISHED' and o2.order_item_id > 1024 and 1=1 order by "
                 + "o1.order_id desc";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
+        assertEquals("INNER", ((JoinTableSegment) ((MySQLSelectStatement) sqlStatement).getFrom()).getJoinType());
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) sqlNode;

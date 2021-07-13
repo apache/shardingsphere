@@ -19,13 +19,13 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -121,6 +121,12 @@ public final class ShardingSphereResultSetTest {
     public void assertGetBooleanWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue(1, boolean.class)).thenReturn(true);
         assertTrue(shardingSphereResultSet.getBoolean("label"));
+    }
+    
+    @Test
+    public void assertGetBooleanWithColumnLabelCaseInsensitive() throws SQLException {
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn(true);
+        assertTrue(shardingSphereResultSet.getBoolean("lABel"));
     }
     
     @Test

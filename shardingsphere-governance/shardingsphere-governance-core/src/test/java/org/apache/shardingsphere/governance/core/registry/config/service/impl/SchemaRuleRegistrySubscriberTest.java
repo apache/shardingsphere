@@ -17,31 +17,26 @@
 
 package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Properties;
+import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PropertiesRegistryServiceTest {
-    
-    private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
+public final class SchemaRuleRegistrySubscriberTest {
     
     @Mock
-    private RegistryCenterRepository repository;
+    private SchemaRuleRegistryService schemaRuleRegistryService;
     
     @Test
-    public void assertLoad() {
-        when(repository.get("/props")).thenReturn(PROPS_YAML);
-        Properties actual = new PropertiesRegistryService(repository).load();
-        assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));
+    public void assertUpdate() {
+        RuleConfigurationsAlteredSQLNotificationEvent event = new RuleConfigurationsAlteredSQLNotificationEvent("foo_db", Collections.emptyList());
+        new SchemaRuleRegistrySubscriber(schemaRuleRegistryService).update(event);
+        verify(schemaRuleRegistryService).persist(event.getSchemaName(), event.getRuleConfigurations());
     }
 }
