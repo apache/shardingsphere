@@ -29,7 +29,6 @@ import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewrite
 import org.apache.shardingsphere.shadow.rewrite.token.ShadowTokenGenerateBuilder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -49,12 +48,9 @@ public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContext
     
     @SuppressWarnings("unchecked")
     private void doParameterRewriter(final ShadowRule shadowRule, final SQLRewriteContext sqlRewriteContext) {
-        Collection<ParameterRewriter> parameterRewriterCollection = new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getSchema());
-        List<Object> parameters;
-        SQLStatementContext<?> sqlStatementContext;
-        for (ParameterRewriter each : parameterRewriterCollection) {
-            parameters = sqlRewriteContext.getParameters();
-            sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
+        List<Object> parameters = sqlRewriteContext.getParameters();
+        SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
+        for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getSchema())) {
             if (!parameters.isEmpty() && each.isNeedRewrite(sqlStatementContext)) {
                 ParameterBuilder parameterBuilder = sqlRewriteContext.getParameterBuilder();
                 each.rewrite(parameterBuilder, sqlStatementContext, parameters);
