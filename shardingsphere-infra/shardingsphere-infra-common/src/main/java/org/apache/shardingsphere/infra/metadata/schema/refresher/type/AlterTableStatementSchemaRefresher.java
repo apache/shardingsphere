@@ -57,7 +57,7 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
     
     private void removeTableMetaData(final ShardingSphereSchema schema, final String tableName) {
         schema.remove(tableName);
-        ShardingSphereEventBus.getInstance().post(new DropTableEvent(Collections.singletonList(tableName)));
+        ShardingSphereEventBus.getInstance().post(new DropTableEvent(tableName));
     }
     
     private void putTableMetaData(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, 

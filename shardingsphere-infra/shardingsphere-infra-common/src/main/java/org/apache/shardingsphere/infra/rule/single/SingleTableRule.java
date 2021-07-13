@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.DropTableEvent;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.event.ExcludeTableEvent;
 import org.apache.shardingsphere.infra.rule.level.FeatureRule;
 import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 
@@ -83,7 +84,6 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
     public void createSingleTable(final CreateTableEvent event) {
         if (!singleTableDataNodes.containsKey(event.getTableName())) {
             singleTableDataNodes.put(event.getTableName(), new SingleTableDataNode(event.getTableName(), event.getDataSourceName()));
-            excludeTableNames.remove(event.getTableName());
         }
     }
     
@@ -94,9 +94,17 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
      */
     @Subscribe
     public void dropSingleTable(final DropTableEvent event) {
-        if (!event.getTableNames().isEmpty()) {
-            event.getTableNames().forEach(singleTableDataNodes::remove);
-            excludeTableNames.addAll(event.getTableNames());
-        }
+        singleTableDataNodes.remove(event.getTableName());
+    }
+    
+    /**
+     * Drop single table.
+     *
+     * @param event drop table event
+     */
+    @Subscribe
+    public void updateExcludeTable(final ExcludeTableEvent event) {
+        excludeTableNames.clear();
+        excludeTableNames.addAll(event.getTableNames());
     }
 }
