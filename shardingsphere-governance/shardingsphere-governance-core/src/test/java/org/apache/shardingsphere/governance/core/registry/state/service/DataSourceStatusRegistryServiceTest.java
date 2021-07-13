@@ -17,18 +17,12 @@
 
 package org.apache.shardingsphere.governance.core.registry.state.service;
 
-import org.apache.shardingsphere.governance.core.registry.state.ResourceState;
-import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,52 +34,14 @@ import static org.mockito.Mockito.when;
 public final class DataSourceStatusRegistryServiceTest {
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
-    
-    private DataSourceStatusRegistryService dataSourceStatusRegistryService;
-    
-    @Before
-    public void setUp() throws ReflectiveOperationException {
-        dataSourceStatusRegistryService = new DataSourceStatusRegistryService(registryCenterRepository);
-        Field field = dataSourceStatusRegistryService.getClass().getDeclaredField("repository");
-        field.setAccessible(true);
-        field.set(dataSourceStatusRegistryService, registryCenterRepository);
-    }
+    private RegistryCenterRepository repository;
     
     @Test
     public void assertLoadDisabledDataSources() {
         List<String> disabledDataSources = Collections.singletonList("replica_ds_0");
-        when(registryCenterRepository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
-        dataSourceStatusRegistryService.loadDisabledDataSources("replica_query_db");
-        verify(registryCenterRepository).getChildrenKeys(anyString());
-        verify(registryCenterRepository).get(anyString());
-    }
-
-    @Test
-    public void assertUpdateDataSourceDisabledState() {
-        assertUpdateDataSourceState(true, ResourceState.DISABLED.toString());
-    }
-
-    @Test
-    public void assertUpdateDataSourceEnabledState() {
-        assertUpdateDataSourceState(false, "");
-    }
-    
-    private void assertUpdateDataSourceState(final boolean isDisabled, final String value) {
-        String schemaName = "replica_query_db";
-        String dataSourceName = "replica_ds_0";
-        DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(schemaName, dataSourceName, isDisabled);
-        dataSourceStatusRegistryService.update(dataSourceDisabledEvent);
-        verify(registryCenterRepository).persist(StatesNode.getDataSourcePath(schemaName, dataSourceName), value);
-    }
-    
-    @Test
-    public void assertUpdatePrimaryDataSourceState() {
-        String schemaName = "replica_query_db";
-        String groupName = "group1";
-        String dataSourceName = "replica_ds_0";
-        PrimaryDataSourceEvent primaryDataSourceEvent = new PrimaryDataSourceEvent(schemaName, groupName, dataSourceName);
-        dataSourceStatusRegistryService.update(primaryDataSourceEvent);
-        verify(registryCenterRepository).persist(StatesNode.getPrimaryDataSourcePath(schemaName, groupName), dataSourceName);
+        when(repository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
+        new DataSourceStatusRegistryService(repository).loadDisabledDataSources("replica_query_db");
+        verify(repository).getChildrenKeys(anyString());
+        verify(repository).get(anyString());
     }
 }
