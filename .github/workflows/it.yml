@@ -36,7 +36,7 @@ jobs:
       matrix:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
-        database: [ MySQL, PostgreSQL ]
+        database: [ MySQL ]
         scenario: [ db,tbl,dbtbl_with_readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,readwrite_splitting ]
     steps:
       - name: Cache Maven Repos
