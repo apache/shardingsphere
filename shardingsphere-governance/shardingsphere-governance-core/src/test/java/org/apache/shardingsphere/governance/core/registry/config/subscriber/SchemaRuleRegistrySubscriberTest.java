@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service.impl;
+package org.apache.shardingsphere.governance.core.registry.config.subscriber;
 
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
