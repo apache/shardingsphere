@@ -26,16 +26,16 @@ CREATE DATABASE db_7;
 CREATE DATABASE db_8;
 CREATE DATABASE db_9;
 
-GRANT ALL PRIVILEGES ON DATABASE db_0 TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE db_1 TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE db_2 TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE db_3 TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE db_4 TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE db_5 TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE db_6 TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE db_7 TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE db_8 TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE db_9 TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE db_0 TO root;
+GRANT ALL PRIVILEGES ON DATABASE db_1 TO root;
+GRANT ALL PRIVILEGES ON DATABASE db_2 TO root;
+GRANT ALL PRIVILEGES ON DATABASE db_3 TO root;
+GRANT ALL PRIVILEGES ON DATABASE db_4 TO root;
+GRANT ALL PRIVILEGES ON DATABASE db_5 TO root;
+GRANT ALL PRIVILEGES ON DATABASE db_6 TO root;
+GRANT ALL PRIVILEGES ON DATABASE db_7 TO root;
+GRANT ALL PRIVILEGES ON DATABASE db_8 TO root;
+GRANT ALL PRIVILEGES ON DATABASE db_9 TO root;
 
 \c db_0;
 
@@ -57,12 +57,12 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
 DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_federate;
+DROP TABLE IF EXISTS t_order_item_federate;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+CREATE TABLE t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE INDEX order_index_t_order ON t_order (order_id);
 
 \c db_2;
@@ -70,12 +70,10 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
 DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_federate;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order ON t_order (order_id);
 
 \c db_3;
@@ -83,12 +81,10 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
 DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_federate;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order ON t_order (order_id);
 
 \c db_4;
@@ -96,12 +92,10 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
 DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_federate;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order ON t_order (order_id);
 
 \c db_5;
@@ -109,12 +103,10 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
 DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_federate;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order ON t_order (order_id);
 
 \c db_6;
@@ -122,12 +114,10 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
 DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_federate;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order ON t_order (order_id);
 
 \c db_7;
@@ -135,12 +125,10 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
 DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_federate;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order ON t_order (order_id);
 
 \c db_8;
@@ -148,12 +136,10 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
 DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_federate;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order ON t_order (order_id);
 
 \c db_9;
@@ -161,10 +147,8 @@ CREATE INDEX order_index_t_order ON t_order (order_id);
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
 DROP TABLE IF EXISTS t_broadcast_table;
-DROP TABLE IF EXISTS t_order_federate;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE INDEX order_index_t_order ON t_order (order_id);

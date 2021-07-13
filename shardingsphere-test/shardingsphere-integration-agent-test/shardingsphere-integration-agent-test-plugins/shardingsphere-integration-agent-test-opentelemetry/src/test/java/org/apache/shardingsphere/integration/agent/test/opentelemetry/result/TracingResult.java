@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service;
+package org.apache.shardingsphere.integration.agent.test.opentelemetry.result;
 
-/**
- * Global registry service.
- * 
- * @param <T> type of configuration
- */
-public interface GlobalRegistryService<T> {
-    
-    /**
-     * Persist configurations.
-     *
-     * @param globalRuleConfigs configurations
-     * @param isOverwrite is overwrite
-     */
-    void persist(T globalRuleConfigs, boolean isOverwrite);
-    
-    /**
-     * Load configurations.
-     *
-     * @return configurations
-     */
-    T load();
+import lombok.Data;
+
+import java.util.Map;
+
+@Data
+public class TracingResult {
+
+    private String traceId;
+
+    private String id;
+
+    private String name;
+
+    private Long timestamp;
+
+    private Long duration;
+
+    private Map<String, String> localEndpoint;
+
+    private Map<String, String> tags;
 }

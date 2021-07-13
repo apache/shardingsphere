@@ -19,13 +19,11 @@ package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -33,27 +31,17 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PropertiesRegistryServiceTest {
+public final class PropertiesPersistServiceTest {
     
     private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
-    
-    private PropertiesRegistryService propertiesRegistryService;
-    
-    @Before
-    public void setUp() throws ReflectiveOperationException {
-        propertiesRegistryService = new PropertiesRegistryService(registryCenterRepository);
-        Field field = propertiesRegistryService.getClass().getDeclaredField("repository");
-        field.setAccessible(true);
-        field.set(propertiesRegistryService, registryCenterRepository);
-    }
+    private RegistryCenterRepository repository;
     
     @Test
     public void assertLoad() {
-        when(registryCenterRepository.get("/props")).thenReturn(PROPS_YAML);
-        Properties actual = propertiesRegistryService.load();
+        when(repository.get("/props")).thenReturn(PROPS_YAML);
+        Properties actual = new PropertiesPersistService(repository).load();
         assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));
     }
 }

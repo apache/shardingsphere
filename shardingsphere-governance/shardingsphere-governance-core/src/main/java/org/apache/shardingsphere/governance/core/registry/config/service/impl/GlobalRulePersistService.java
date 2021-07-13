@@ -19,34 +19,40 @@ package org.apache.shardingsphere.governance.core.registry.config.service.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.config.service.GlobalRegistryService;
 import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.registry.config.service.GlobalPersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
-import java.util.Properties;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Properties registry service.
+ * Global rule persist service.
  */
 @RequiredArgsConstructor
-public final class PropertiesRegistryService implements GlobalRegistryService<Properties> {
+public final class GlobalRulePersistService implements GlobalPersistService<Collection<RuleConfiguration>> {
     
     private final RegistryCenterRepository repository;
     
     @Override
-    public void persist(final Properties props, final boolean isOverwrite) {
-        if (!props.isEmpty() && (isOverwrite || !isExisted())) {
-            repository.persist(GlobalNode.getPropsPath(), YamlEngine.marshal(props));
+    public void persist(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
+        if (!globalRuleConfigs.isEmpty() && (isOverwrite || !isExisted())) {
+            repository.persist(GlobalNode.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
         }
     }
     
-    private boolean isExisted() {
-        return !Strings.isNullOrEmpty(repository.get(GlobalNode.getPropsPath()));
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection<RuleConfiguration> load() {
+        return isExisted()
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(GlobalNode.getGlobalRuleNode()), Collection.class))
+                : Collections.emptyList();
     }
     
-    @Override
-    public Properties load() {
-        return Strings.isNullOrEmpty(repository.get(GlobalNode.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(GlobalNode.getPropsPath()), Properties.class);
+    private boolean isExisted() {
+        return !Strings.isNullOrEmpty(repository.get(GlobalNode.getGlobalRuleNode()));
     }
 }
