@@ -37,7 +37,6 @@ import org.apache.shardingsphere.governance.core.registry.state.subscriber.DataS
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Collection;
 import java.util.Map;
@@ -88,7 +87,6 @@ public final class RegistryCenter {
         new DataSourceStatusRegistrySubscriber(repository);
         new ScalingRegistrySubscriber(repository, schemaRuleService);
         new ProcessRegistrySubscriber(repository);
-        ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**
