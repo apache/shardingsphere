@@ -82,10 +82,10 @@ public final class ProxyLockEngine {
     }
     
     private void tryTableLock(final ShardingSphereLock lock, final Collection<String> tableNames) {
-        for (String tableName : tableNames) {
-            String lockName = LockNameUtil.getTableLockName(schemaName, tableName);
+        for (String each : tableNames) {
+            String lockName = LockNameUtil.getTableLockName(schemaName, each);
             if (!lock.tryLock(lockName)) {
-                throw new TableLockWaitTimeoutException(schemaName, tableName, lock.getDefaultTimeOut());
+                throw new TableLockWaitTimeoutException(schemaName, each, lock.getDefaultTimeOut());
             }
             lockNames.add(lockName);
         }
