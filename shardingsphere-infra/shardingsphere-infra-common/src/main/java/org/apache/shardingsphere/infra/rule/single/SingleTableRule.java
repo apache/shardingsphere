@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,6 +43,8 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
     private final Collection<String> dataSourceNames;
     
     private final Map<String, SingleTableDataNode> singleTableDataNodes;
+    
+    private final Collection<String> excludeTableNames = new HashSet<>();
     
     public SingleTableRule(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         dataSourceNames = dataSourceMap.keySet();
@@ -58,7 +61,7 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
     public boolean isSingleTableInSameDataSource(final Collection<String> logicTableNames) {
         long dataSourceCount = singleTableDataNodes.values().stream().filter(each -> Sets.newHashSet(
                 getSingleTableNames(logicTableNames)).contains(each.getTableName())).map(SingleTableDataNode::getDataSourceName).distinct().count();
-        return 1 == dataSourceCount;
+        return dataSourceCount <= 1;
     }
     
     /**
@@ -68,7 +71,7 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
      * @return sharding logic table names
      */
     public Collection<String> getSingleTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(singleTableDataNodes::containsKey).collect(Collectors.toCollection(LinkedList::new));
+        return logicTableNames.stream().filter(each -> !excludeTableNames.contains(each)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     /**
@@ -80,6 +83,7 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
     public void createSingleTable(final CreateTableEvent event) {
         if (!singleTableDataNodes.containsKey(event.getTableName())) {
             singleTableDataNodes.put(event.getTableName(), new SingleTableDataNode(event.getTableName(), event.getDataSourceName()));
+            excludeTableNames.remove(event.getTableName());
         }
     }
     
@@ -92,6 +96,7 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
     public void dropSingleTable(final DropTableEvent event) {
         if (!event.getTableNames().isEmpty()) {
             event.getTableNames().forEach(singleTableDataNodes::remove);
+            excludeTableNames.addAll(event.getTableNames());
         }
     }
 }
