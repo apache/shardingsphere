@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shadow.rewrite.context;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
@@ -50,9 +49,7 @@ public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContext
     
     @SuppressWarnings("unchecked")
     private void doParameterRewriter(final ShadowRule shadowRule, final SQLRewriteContext sqlRewriteContext) {
-        ShardingSphereSchema schema = sqlRewriteContext.getSchema();
-        ShadowParameterRewriterBuilder shadowParameterRewriterBuilder = new ShadowParameterRewriterBuilder(shadowRule);
-        Collection<ParameterRewriter> parameterRewriterCollection = shadowParameterRewriterBuilder.getParameterRewriters(schema);
+        Collection<ParameterRewriter> parameterRewriterCollection = new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getSchema());
         List<Object> parameters;
         SQLStatementContext<?> sqlStatementContext;
         for (ParameterRewriter each : parameterRewriterCollection) {
