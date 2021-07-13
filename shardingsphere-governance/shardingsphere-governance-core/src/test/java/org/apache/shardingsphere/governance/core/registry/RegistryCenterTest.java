@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,9 +57,6 @@ public final class RegistryCenterTest {
     private static final String SCHEMA_RULE_YAML = "yaml/regcenter/data-schema-rule.yaml";
     
     private static final String GLOBAL_RULE_YAML = "yaml/regcenter/data-global-rule.yaml";
-    
-    @Mock
-    private RegistryCenterRepository registryCenterRepository;
     
     @Mock
     private DataSourcePersistService dataSourceService;
@@ -77,8 +74,7 @@ public final class RegistryCenterTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        registryCenter = new RegistryCenter(registryCenterRepository);
-        setField("repository", registryCenterRepository);
+        registryCenter = new RegistryCenter(mock(RegistryCenterRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("schemaRuleService", schemaRuleService);
         setField("globalRuleService", globalRuleService);
@@ -146,13 +142,5 @@ public final class RegistryCenterTest {
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
                 .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-    }
-    
-    @Test
-    public void assertRegisterInstanceOnline() {
-        registryCenter.registerInstanceOnline();
-        verify(registryCenterRepository).persist("/states/datanodes", "");
-        verify(registryCenterRepository).persist("/states/primarynodes", "");
-        verify(registryCenterRepository).persistEphemeral(anyString(), anyString());
     }
 }

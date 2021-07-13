@@ -30,14 +30,13 @@ import org.apache.shardingsphere.governance.core.registry.config.subscriber.Glob
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.SchemaRuleRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.metadata.service.SchemaRegistryService;
 import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.state.node.StatesNode;
 import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
+import org.apache.shardingsphere.governance.core.registry.state.service.InstanceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.service.UserStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Collection;
 import java.util.Map;
@@ -47,42 +46,36 @@ import java.util.Properties;
 /**
  * Registry center.
  */
+@Getter
 public final class RegistryCenter {
     
     private final String instanceId;
     
-    private final RegistryCenterRepository repository;
-    
-    @Getter
     private final DataSourcePersistService dataSourceService;
     
-    @Getter
     private final SchemaRulePersistService schemaRuleService;
     
-    @Getter
     private final GlobalRulePersistService globalRuleService;
     
-    @Getter
     private final PropertiesPersistService propsService;
     
-    @Getter
     private final SchemaRegistryService schemaService;
     
-    @Getter
     private final DataSourceStatusRegistryService dataSourceStatusService;
     
-    @Getter
+    private final InstanceStatusRegistryService instanceStatusService;
+    
     private final LockRegistryService lockService;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
-        this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
         schemaRuleService = new SchemaRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         schemaService = new SchemaRegistryService(repository);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
+        instanceStatusService = new InstanceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
         createSubscribers(repository);
     }
@@ -94,7 +87,6 @@ public final class RegistryCenter {
         new DataSourceStatusRegistrySubscriber(repository);
         new ScalingRegistrySubscriber(repository, schemaRuleService);
         new ProcessRegistrySubscriber(repository);
-        ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**
@@ -121,8 +113,6 @@ public final class RegistryCenter {
      * Register instance online.
      */
     public void registerInstanceOnline() {
-        repository.persist(StatesNode.getDataNodesPath(), "");
-        repository.persist(StatesNode.getPrimaryNodesPath(), "");
-        repository.persistEphemeral(StatesNode.getProxyNodePath(instanceId), "");
+        instanceStatusService.registerInstanceOnline(instanceId);
     }
 }
