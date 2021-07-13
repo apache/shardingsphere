@@ -54,7 +54,7 @@ public final class HikariJDBCParameterDecorator implements JDBCParameterDecorato
     
     private void addJDBCProperty(final HikariConfig config, final Map<String, String> urlProps, final String key, final String value) {
         if (urlProps.isEmpty() || !urlProps.containsKey(key)) {
-            config.addDataSourceProperty(key, value);
+            config.getDataSourceProperties().setProperty(key, value);
         }
     }
     
