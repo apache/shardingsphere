@@ -52,10 +52,7 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShardingRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
-        Collection<String> tableNames = getShardingBroadcastTableNames(logicSQL, rule);
-        if (!tableNames.isEmpty()) {
-            route(logicSQL, metaData, rule, props, result);
-        }
+        route(logicSQL, metaData, rule, props, result);
         return result;
     }
     
