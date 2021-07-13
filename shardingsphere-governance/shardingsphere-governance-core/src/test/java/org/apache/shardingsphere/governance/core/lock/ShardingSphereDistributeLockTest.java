@@ -56,9 +56,7 @@ public final class ShardingSphereDistributeLockTest {
     
     @Test
     public void assertReleaseLock() {
-        when(lockService.checkUnlockAck("test")).thenReturn(Boolean.TRUE);
         lock.releaseLock("test");
-        verify(lockService).checkUnlockAck(eq("test"));
         verify(lockService).releaseLock(eq("test"));
     }
 }
