@@ -46,6 +46,7 @@ public final class AllSQLRouteExecutorTest {
         when(metaData.getResource().getDataSources().keySet()).thenReturn(Stream.of(name).collect(Collectors.toSet()));
         AllSQLRouteExecutor allSQLRouteExecutor = new AllSQLRouteExecutor();
         RouteContext actual = allSQLRouteExecutor.route(mock(LogicSQL.class), metaData);
+        assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is(name));
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is(name));
