@@ -41,4 +41,8 @@ public abstract class ShadowParameterRewriter<T extends SQLStatementContext> imp
     }
     
     protected abstract boolean isNeedRewriteForShadow(SQLStatementContext sqlStatementContext);
+    
+    protected String getShadowColumn() {
+        return shadowRule.getColumn();
+    }
 }

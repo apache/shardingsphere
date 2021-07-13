@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.rewrite.token.generator.impl;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTokenGenerator;
@@ -38,28 +37,33 @@ public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGe
     
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof InsertStatementContext)) {
-            return false;
+        InsertStatementContext insertStatementContext;
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            insertStatementContext = (InsertStatementContext) sqlStatementContext;
+            Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
+            return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
         }
-        Optional<InsertColumnsSegment> insertColumnsSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns();
-        return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
+        return false;
     }
     
     @Override
     public Collection<RemoveToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
-        Preconditions.checkState(sqlSegment.isPresent());
         Collection<RemoveToken> result = new LinkedList<>();
-        List<ColumnSegment> columns = (LinkedList<ColumnSegment>) sqlSegment.get().getColumns();
-        for (int i = 0; i < columns.size(); i++) {
-            if (getShadowRule().getColumn().equals(columns.get(i).getIdentifier().getValue())) {
-                if (i == 0) {
-                    result.add(new RemoveToken(columns.get(0).getStartIndex(), columns.get(i + 1).getStartIndex() - 1));
-                } else {
-                    result.add(new RemoveToken(columns.get(i - 1).getStopIndex() + 1, columns.get(i).getStopIndex()));
-                }
+        sqlSegment.ifPresent(insertColumnsSegment -> generateRemoveTokenForShadow(insertColumnsSegment, result));
+        return result;
+    }
+    
+    private void generateRemoveTokenForShadow(final InsertColumnsSegment insertColumnsSegment, final Collection<RemoveToken> removeTokens) {
+        List<ColumnSegment> columnSegments = (LinkedList<ColumnSegment>) insertColumnsSegment.getColumns();
+        String shadowColumn = getShadowColumn();
+        for (int i = 0; i < columnSegments.size(); i++) {
+            ColumnSegment columnSegment = columnSegments.get(i);
+            if (shadowColumn.equals(columnSegment.getIdentifier().getValue())) {
+                RemoveToken removeToken = i == 0 ? new RemoveToken(columnSegments.get(i).getStartIndex(), columnSegments.get(i + 1).getStartIndex() - 1)
+                        : new RemoveToken(columnSegments.get(i - 1).getStopIndex() + 1, columnSegments.get(i).getStopIndex());
+                removeTokens.add(removeToken);
             }
         }
-        return result;
     }
 }
