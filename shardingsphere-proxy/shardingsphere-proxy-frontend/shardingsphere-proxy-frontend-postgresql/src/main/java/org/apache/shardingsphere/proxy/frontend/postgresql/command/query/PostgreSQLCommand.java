@@ -53,7 +53,7 @@ public enum PostgreSQLCommand {
     ROLLBACK(RollbackStatement.class),
     SET(SetStatement.class);
     
-    private static final Map<Class<? extends SQLStatement>, Optional<PostgreSQLCommand>> CACHE = new ConcurrentHashMap<>(16, 1);
+    private static final Map<Class<? extends SQLStatement>, Optional<PostgreSQLCommand>> COMPUTED_CLASSES = new ConcurrentHashMap<>(16, 1);
     
     private final Collection<Class<? extends SQLStatement>> sqlStatementClasses;
     
@@ -69,7 +69,7 @@ public enum PostgreSQLCommand {
      * @return PostgreSQL command
      */
     public static Optional<PostgreSQLCommand> valueOf(final Class<? extends SQLStatement> sqlStatementClass) {
-        return CACHE.computeIfAbsent(sqlStatementClass, target -> Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny());
+        return COMPUTED_CLASSES.computeIfAbsent(sqlStatementClass, target -> Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny());
     }
     
     private static boolean matches(final Class<? extends SQLStatement> sqlStatementClass, final PostgreSQLCommand postgreSQLCommand) {
