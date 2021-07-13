@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.engine;
+package org.apache.shardingsphere.infra.route.engine.single;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -36,10 +36,10 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Single table engine.
+ * Single table route engine.
  */
 @RequiredArgsConstructor
-public final class SingleTablesRoutingEngine {
+public final class SingleTableRouteEngine {
     
     private final Collection<String> singleTableNames;
     
@@ -52,7 +52,7 @@ public final class SingleTablesRoutingEngine {
      * @param singleTableRule single table rule
      */
     public void route(final RouteContext routeContext, final SingleTableRule singleTableRule) {
-        if (isDDLTableStatement() || singleTableRule.isAllTablesInSameDataSource(singleTableNames)) {
+        if (isDDLTableStatement() || singleTableRule.isSingleTableInSameDataSource(singleTableNames)) {
             Set<String> existSingleTables = Sets.intersection(singleTableRule.getSingleTableDataNodes().keySet(), Sets.newHashSet(singleTableNames));
             if (!existSingleTables.isEmpty()) {
                 fillRouteContext(singleTableRule, routeContext, existSingleTables);

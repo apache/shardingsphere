@@ -30,7 +30,7 @@ public final class DropTableEvent {
     
     private final Collection<String> tableNames;
     
-    public DropTableEvent(Collection<String> tableNames) {
+    public DropTableEvent(final Collection<String> tableNames) {
         this.tableNames = null == tableNames ? Collections.emptyList() : tableNames;
     }
 }

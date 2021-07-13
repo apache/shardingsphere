@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.PrepareStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -60,18 +59,6 @@ public final class ShardingPrepareStatementValidatorTest {
     @Test
     public void assertPreValidatePrepareWithSameDatasourceSingleTablesForPostgreSQL() {
         SQLStatementContext<PostgreSQLPrepareStatement> sqlStatementContext = new PrepareStatementContext(createPostgreSQLPrepareStatement());
-        Collection<String> tableNames = Sets.newHashSet("t_order", "t_order_item");
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(false);
-        when(shardingRule.isSingleTablesInSameDataSource(tableNames)).thenReturn(true);
-        new ShardingPrepareStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
-    }
-    
-    @Test(expected = ShardingSphereException.class)
-    public void assertPreValidatePrepareWithDifferentDatasourceSingleTablesForPostgreSQL() {
-        SQLStatementContext<PostgreSQLPrepareStatement> sqlStatementContext = new PrepareStatementContext(createPostgreSQLPrepareStatement());
-        Collection<String> tableNames = Sets.newHashSet("t_order", "t_order_item");
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(false);
-        when(shardingRule.isSingleTablesInSameDataSource(tableNames)).thenReturn(false);
         new ShardingPrepareStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
     }
     

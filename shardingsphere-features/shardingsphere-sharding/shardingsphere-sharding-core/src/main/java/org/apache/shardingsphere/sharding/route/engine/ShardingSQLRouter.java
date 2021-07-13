@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
@@ -41,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Sharding SQL router.
@@ -98,10 +100,18 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext,
                                      final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final ShardingRule rule, final ConfigurationProperties props) {
-        Collection<String> shardingBroadcastLogicTableNames = rule.getShardingBroadcastLogicTableNames(logicSQL.getSqlStatementContext().getTablesContext().getTableNames());
-        if (!shardingBroadcastLogicTableNames.isEmpty()) {
+        Collection<String> shardingBroadcastTableNames = getShardingBroadcastTableNames(logicSQL, rule);
+        if (!shardingBroadcastTableNames.isEmpty()) {
             route(logicSQL, metaData, rule, props, routeContext);
         }
+    }
+    
+    private Collection<String> getShardingBroadcastTableNames(final LogicSQL logicSQL, final ShardingRule rule) {
+        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
+                : sqlStatementContext.getTablesContext().getTableNames();
+        return rule.getShardingBroadcastTableNames(tableNames);
     }
     
     @Override

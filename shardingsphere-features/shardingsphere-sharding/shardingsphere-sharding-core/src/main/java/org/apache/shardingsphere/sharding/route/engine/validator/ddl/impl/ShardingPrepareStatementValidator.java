@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDL
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,10 +37,6 @@ public final class ShardingPrepareStatementValidator extends ShardingDDLStatemen
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<PostgreSQLPrepareStatement> sqlStatementContext, 
                             final List<Object> parameters, final ShardingSphereSchema schema) {
-        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        if (!shardingRule.tableRuleExists(tableNames) && !shardingRule.isSingleTablesInSameDataSource(tableNames)) {
-            throw new ShardingSphereException("Single tables must be in the same datasource.");
-        }
     }
     
     @Override

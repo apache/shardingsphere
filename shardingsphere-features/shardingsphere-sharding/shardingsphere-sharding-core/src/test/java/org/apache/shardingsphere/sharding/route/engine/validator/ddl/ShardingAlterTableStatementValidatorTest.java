@@ -66,21 +66,6 @@ public final class ShardingAlterTableStatementValidatorTest {
         definitionSegment.setReferencedTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         sqlStatement.getAddConstraintDefinitions().add(new AddConstraintDefinitionSegment(0, 0, definitionSegment));
         SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
-        when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_item"))).thenReturn(false);
-        when(shardingRule.isSingleTablesInSameDataSource(Arrays.asList("t_order", "t_order_item"))).thenReturn(true);
-        new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
-    }
-    
-    @Test(expected = ShardingSphereException.class)
-    public void assertPreValidateAlterTableWithoutRenameTableWithDifferentDatasourceSingleTablesForPostgreSQL() {
-        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        ConstraintDefinitionSegment definitionSegment = new ConstraintDefinitionSegment(0, 0);
-        definitionSegment.setReferencedTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
-        sqlStatement.getAddConstraintDefinitions().add(new AddConstraintDefinitionSegment(0, 0, definitionSegment));
-        SQLStatementContext<AlterTableStatement> sqlStatementContext = new AlterTableStatementContext(sqlStatement);
-        when(shardingRule.tableRuleExists(Arrays.asList("t_order", "t_order_item"))).thenReturn(false);
-        when(shardingRule.isSingleTablesInSameDataSource(Arrays.asList("t_order", "t_order_item"))).thenReturn(false);
         new ShardingAlterTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
     }
     

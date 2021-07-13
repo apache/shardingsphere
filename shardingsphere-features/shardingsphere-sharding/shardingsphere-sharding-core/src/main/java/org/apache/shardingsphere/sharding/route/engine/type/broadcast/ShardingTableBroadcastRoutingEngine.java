@@ -59,7 +59,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         if (shardingLogicTableNames.size() > 1 && shardingRule.isAllBindingTables(shardingLogicTableNames)) {
             routeContext.getRouteUnits().addAll(getBindingTableRouteUnits(shardingRule, shardingLogicTableNames));
         } else {
-            Collection<RouteContext> routeContexts = getRouteContexts(shardingRule, shardingRule.getShardingBroadcastLogicTableNames(logicTableNames));
+            Collection<RouteContext> routeContexts = getRouteContexts(shardingRule, shardingRule.getShardingBroadcastTableNames(logicTableNames));
             if (!routeContext.getRouteUnits().isEmpty()) {
                 routeContexts.add(routeContext);
             }

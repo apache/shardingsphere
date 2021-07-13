@@ -18,14 +18,19 @@
 package org.apache.shardingsphere.infra.route;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.engine.SingleTablesRoutingEngine;
+import org.apache.shardingsphere.infra.route.engine.single.SingleTableRouteEngine;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Single table SQL router.
@@ -35,16 +40,32 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final SingleTableRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
-        Collection<String> singleTableNames = rule.getSingleTableNames(logicSQL.getSqlStatementContext().getTablesContext().getTableNames());
+        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        Collection<String> singleTableNames = getSingleTableNames(sqlStatementContext, rule);
         if (!singleTableNames.isEmpty()) {
-            new SingleTablesRoutingEngine(singleTableNames, logicSQL.getSqlStatementContext().getSqlStatement()).route(result, rule);
+            validateSingleTableDataSource(rule, sqlStatementContext, singleTableNames);
+            new SingleTableRouteEngine(singleTableNames, sqlStatementContext.getSqlStatement()).route(result, rule);
         }
         return result;
+    }
+    
+    private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule) {
+        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
+                ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
+                : sqlStatementContext.getTablesContext().getTableNames();
+        return rule.getSingleTableNames(tableNames);
+    }
+    
+    private void validateSingleTableDataSource(final SingleTableRule rule, final SQLStatementContext<?> sqlStatementContext, final Collection<String> singleTableNames) {
+        if (!(sqlStatementContext instanceof SelectStatementContext) && !rule.isSingleTableInSameDataSource(singleTableNames)) {
+            throw new ShardingSphereException("Single tables must be in the same datasource.");
+        }
     }
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData,
                                      final SingleTableRule rule, final ConfigurationProperties props) {
+        // TODO
     }
     
     @Override

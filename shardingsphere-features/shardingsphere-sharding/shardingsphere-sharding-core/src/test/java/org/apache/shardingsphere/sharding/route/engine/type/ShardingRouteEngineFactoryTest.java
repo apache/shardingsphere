@@ -118,6 +118,7 @@ public final class ShardingRouteEngineFactoryTest {
     @Test
     public void assertNewInstanceForDALWithTables() {
         tableNames.add("tbl");
+        when(shardingRule.getShardingBroadcastTableNames(tableNames)).thenReturn(Collections.singletonList("tbl"));
         DALStatement dalStatement = mock(DALStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props, Collections.emptyList());
@@ -267,6 +268,7 @@ public final class ShardingRouteEngineFactoryTest {
         DALStatement dalStatement = mock(MySQLShowCreateTableStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
+        when(shardingRule.getShardingBroadcastTableNames(tableNames)).thenReturn(Collections.singletonList("table_1"));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props, Collections.emptyList());
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
     }
@@ -276,6 +278,7 @@ public final class ShardingRouteEngineFactoryTest {
         DALStatement dalStatement = mock(MySQLShowColumnsStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
+        when(shardingRule.getShardingBroadcastTableNames(tableNames)).thenReturn(Collections.singletonList("table_1"));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props, Collections.emptyList());
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
     }
