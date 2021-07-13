@@ -70,6 +70,12 @@
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikari-cp.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <profiles>
