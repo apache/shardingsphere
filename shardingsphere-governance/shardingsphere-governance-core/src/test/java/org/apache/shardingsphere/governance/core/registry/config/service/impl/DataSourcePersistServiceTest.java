@@ -37,10 +37,11 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DataSourceRegistryServiceTest {
+public final class DataSourcePersistServiceTest {
     
     @Mock
     private RegistryCenterRepository repository;
@@ -48,7 +49,7 @@ public final class DataSourceRegistryServiceTest {
     @Test
     public void assertLoad() {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn(readDataSourceYaml());
-        Map<String, DataSourceConfiguration> actual = new DataSourceRegistryService(repository).load("foo_db");
+        Map<String, DataSourceConfiguration> actual = new DataSourcePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
         assertDataSourceConfiguration(actual.get("ds_0"), DataSourceConfiguration.getDataSourceConfiguration(createDataSource("ds_0")));
         assertDataSourceConfiguration(actual.get("ds_1"), DataSourceConfiguration.getDataSourceConfiguration(createDataSource("ds_1")));
@@ -71,8 +72,8 @@ public final class DataSourceRegistryServiceTest {
     @Test
     public void assertLoadWithoutPath() {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn("");
-        Map<String, DataSourceConfiguration> actual = new DataSourceRegistryService(repository).load("foo_db");
-        assertThat(actual.size(), is(0));
+        Map<String, DataSourceConfiguration> actual = new DataSourcePersistService(repository).load("foo_db");
+        assertTrue(actual.isEmpty());
     }
     
     private DataSource createDataSource(final String name) {

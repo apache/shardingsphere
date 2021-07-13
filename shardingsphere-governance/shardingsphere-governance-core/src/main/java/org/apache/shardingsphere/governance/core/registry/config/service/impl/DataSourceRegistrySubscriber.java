@@ -30,10 +30,10 @@ import java.util.Map;
  */
 public final class DataSourceRegistrySubscriber {
     
-    private final DataSourceRegistryService dataSourceRegistryService;
+    private final DataSourcePersistService persistService;
     
-    public DataSourceRegistrySubscriber(final DataSourceRegistryService dataSourceRegistryService) {
-        this.dataSourceRegistryService = dataSourceRegistryService;
+    public DataSourceRegistrySubscriber(final DataSourcePersistService persistService) {
+        this.persistService = persistService;
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -44,9 +44,9 @@ public final class DataSourceRegistrySubscriber {
      */
     @Subscribe
     public void update(final DataSourceAddedSQLNotificationEvent event) {
-        Map<String, DataSourceConfiguration> dataSourceConfigs = dataSourceRegistryService.load(event.getSchemaName());
+        Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.load(event.getSchemaName());
         dataSourceConfigs.putAll(event.getDataSourceConfigurations());
-        dataSourceRegistryService.persist(event.getSchemaName(), dataSourceConfigs);
+        persistService.persist(event.getSchemaName(), dataSourceConfigs);
     }
     
     /**
@@ -56,10 +56,10 @@ public final class DataSourceRegistrySubscriber {
      */
     @Subscribe
     public void update(final DataSourceDroppedSQLNotificationEvent event) {
-        Map<String, DataSourceConfiguration> dataSourceConfigs = dataSourceRegistryService.load(event.getSchemaName());
+        Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.load(event.getSchemaName());
         for (String each : event.getDataSourceNames()) {
             dataSourceConfigs.remove(each);
         }
-        dataSourceRegistryService.persist(event.getSchemaName(), dataSourceConfigs);
+        persistService.persist(event.getSchemaName(), dataSourceConfigs);
     }
 }

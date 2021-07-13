@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GlobalRuleRegistryServiceTest {
+public final class GlobalRulePersistServiceTest {
     
     private static final String YAML_DATA = "yaml/regcenter/data-global-rule.yaml";
     
@@ -55,7 +55,7 @@ public final class GlobalRuleRegistryServiceTest {
     @Test
     public void assertLoad() {
         when(repository.get("/rules")).thenReturn(readYAML(YAML_DATA));
-        Collection<RuleConfiguration> globalRuleConfigs = new GlobalRuleRegistryService(repository).load();
+        Collection<RuleConfiguration> globalRuleConfigs = new GlobalRulePersistService(repository).load();
         assertFalse(globalRuleConfigs.isEmpty());
         Collection<ShardingSphereUser> users = globalRuleConfigs.stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .flatMap(each -> ((AuthorityRuleConfiguration) each).getUsers().stream()).collect(Collectors.toList());

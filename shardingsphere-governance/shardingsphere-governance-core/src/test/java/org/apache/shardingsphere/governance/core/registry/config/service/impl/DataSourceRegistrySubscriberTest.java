@@ -41,24 +41,24 @@ import static org.mockito.Mockito.when;
 public final class DataSourceRegistrySubscriberTest {
     
     @Mock
-    private DataSourceRegistryService dataSourceRegistryService;
+    private DataSourcePersistService persistService;
     
     @Test
     public void assertUpdateWithDataSourceAddedEvent() {
         Map<String, DataSourceConfiguration> dataSourceConfigs = createDataSourceConfigurations();
         DataSourceAddedSQLNotificationEvent event = new DataSourceAddedSQLNotificationEvent("foo_db", dataSourceConfigs);
-        new DataSourceRegistrySubscriber(dataSourceRegistryService).update(event);
-        verify(dataSourceRegistryService).persist("foo_db", dataSourceConfigs);
+        new DataSourceRegistrySubscriber(persistService).update(event);
+        verify(persistService).persist("foo_db", dataSourceConfigs);
     }
     
     @Test
     public void assertUpdateWithDataSourceAlteredEvent() {
         DataSourceDroppedSQLNotificationEvent event = new DataSourceDroppedSQLNotificationEvent("foo_db", Collections.singletonList("ds_0"));
         Map<String, DataSourceConfiguration> dataSourceConfigs = createDataSourceConfigurations();
-        when(dataSourceRegistryService.load("foo_db")).thenReturn(dataSourceConfigs);
-        new DataSourceRegistrySubscriber(dataSourceRegistryService).update(event);
+        when(persistService.load("foo_db")).thenReturn(dataSourceConfigs);
+        new DataSourceRegistrySubscriber(persistService).update(event);
         dataSourceConfigs.remove("ds_0");
-        verify(dataSourceRegistryService).persist("foo_db", dataSourceConfigs);
+        verify(persistService).persist("foo_db", dataSourceConfigs);
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {

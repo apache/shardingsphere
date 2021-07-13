@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.governance.core.registry.config.service;
 
 /**
- * Schema based registry service.
+ * Schema based persist service.
  * 
  * @param <T> type of configuration
  */
-public interface SchemaBasedRegistryService<T> {
+public interface SchemaBasedPersistService<T> {
     
     /**
      * Persist configurations.

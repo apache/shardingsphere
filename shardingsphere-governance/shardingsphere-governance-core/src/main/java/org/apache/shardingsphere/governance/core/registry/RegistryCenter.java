@@ -21,12 +21,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.governance.core.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.lock.service.LockRegistryService;
 import org.apache.shardingsphere.governance.core.registry.cache.subscriber.ScalingRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourceRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourceRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRuleRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesRegistryService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.metadata.service.SchemaRegistryService;
 import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
@@ -53,16 +53,16 @@ public final class RegistryCenter {
     private final RegistryCenterRepository repository;
     
     @Getter
-    private final DataSourceRegistryService dataSourceService;
+    private final DataSourcePersistService dataSourceService;
     
     @Getter
-    private final SchemaRuleRegistryService schemaRuleService;
+    private final SchemaRulePersistService schemaRuleService;
     
     @Getter
-    private final GlobalRuleRegistryService globalRuleService;
+    private final GlobalRulePersistService globalRuleService;
     
     @Getter
-    private final PropertiesRegistryService propsService;
+    private final PropertiesPersistService propsService;
     
     @Getter
     private final SchemaRegistryService schemaService;
@@ -76,10 +76,10 @@ public final class RegistryCenter {
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         this.repository = repository;
-        dataSourceService = new DataSourceRegistryService(repository);
-        schemaRuleService = new SchemaRuleRegistryService(repository);
-        globalRuleService = new GlobalRuleRegistryService(repository);
-        propsService = new PropertiesRegistryService(repository);
+        dataSourceService = new DataSourcePersistService(repository);
+        schemaRuleService = new SchemaRulePersistService(repository);
+        globalRuleService = new GlobalRulePersistService(repository);
+        propsService = new PropertiesPersistService(repository);
         schemaService = new SchemaRegistryService(repository);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);

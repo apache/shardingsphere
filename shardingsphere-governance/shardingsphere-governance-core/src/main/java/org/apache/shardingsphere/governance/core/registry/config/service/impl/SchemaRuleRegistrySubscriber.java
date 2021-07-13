@@ -26,10 +26,10 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
  */
 public final class SchemaRuleRegistrySubscriber {
     
-    private final SchemaRuleRegistryService schemaRuleRegistryService;
+    private final SchemaRulePersistService persistService;
     
-    public SchemaRuleRegistrySubscriber(final SchemaRuleRegistryService schemaRuleRegistryService) {
-        this.schemaRuleRegistryService = schemaRuleRegistryService;
+    public SchemaRuleRegistrySubscriber(final SchemaRulePersistService persistService) {
+        this.persistService = persistService;
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -40,6 +40,6 @@ public final class SchemaRuleRegistrySubscriber {
      */
     @Subscribe
     public void update(final RuleConfigurationsAlteredSQLNotificationEvent event) {
-        schemaRuleRegistryService.persist(event.getSchemaName(), event.getRuleConfigurations());
+        persistService.persist(event.getSchemaName(), event.getRuleConfigurations());
     }
 }
