@@ -76,7 +76,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     }
     
     private boolean isLoadBalancerNotInUse(final ReadwriteSplittingRuleConfiguration currentRuleConfig, final String toBeDroppedLoadBalancerName) {
-        return !currentRuleConfig.getDataSources().stream().filter(each -> each.getLoadBalancerName().equals(toBeDroppedLoadBalancerName)).findAny().isPresent();
+        return !currentRuleConfig.getDataSources().stream().anyMatch(each -> each.getLoadBalancerName().equals(toBeDroppedLoadBalancerName));
     }
     
     @Override
