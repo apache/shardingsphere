@@ -27,11 +27,11 @@ import java.lang.reflect.Method;
 
 @Slf4j
 public final class DataSourceAdvice implements ClassStaticMethodAroundAdvice {
-
+    
     private static PrometheusMetricsTrackerFactory metricsTrackerFactory = new PrometheusMetricsTrackerFactory();
-
+    
     private static final String HIKARI_DATASOURCE_CLASS = "com.zaxxer.hikari.HikariDataSource";
-
+    
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
         if (result.getResult() != null && result.getResult() instanceof HikariDataSource) {

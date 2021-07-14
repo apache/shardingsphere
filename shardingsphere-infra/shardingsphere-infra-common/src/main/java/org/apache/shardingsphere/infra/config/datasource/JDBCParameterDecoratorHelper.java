@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.infra.config.datasource;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.util.Optional;
 
-public class JDBCParameterDecoratorHelper {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JDBCParameterDecoratorHelper {
     /**
      * Decorate data source.
      *

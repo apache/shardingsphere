@@ -31,15 +31,15 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataSourceAdviceTest {
-
+    
     @Mock
     private MethodInvocationResult result;
-
+    
     @Mock
     private Method decorate;
-
+    
     private final DataSourceAdvice dataSourceAdvice = new DataSourceAdvice();
-
+    
     @Test
     public void assertNotNull() {
         HikariDataSource hikariDataSource = new HikariDataSource();

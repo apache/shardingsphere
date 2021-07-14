@@ -45,25 +45,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 public final class DataSourceConfiguration {
-
+    
     private static final String GETTER_PREFIX = "get";
-
+    
     private static final String SETTER_PREFIX = "set";
-
+    
     private static final Collection<Class<?>> GENERAL_CLASS_TYPE;
-
+    
     private static final Collection<String> SKIPPED_PROPERTY_NAMES;
-
+    
     static {
         ShardingSphereServiceLoader.register(JDBCParameterDecorator.class);
         GENERAL_CLASS_TYPE = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class);
         SKIPPED_PROPERTY_NAMES = Sets.newHashSet("loginTimeout");
     }
-
+    
     private final String dataSourceClassName;
-
+    
     private final Map<String, Object> props = new LinkedHashMap<>();
-
+    
     /**
      * Get data source configuration.
      *
@@ -75,7 +75,7 @@ public final class DataSourceConfiguration {
         result.props.putAll(findAllGetterProperties(dataSource));
         return result;
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private static Map<String, Object> findAllGetterProperties(final Object target) {
         Collection<Method> allGetterMethods = findAllGetterMethods(target.getClass());
@@ -88,7 +88,7 @@ public final class DataSourceConfiguration {
         }
         return result;
     }
-
+    
     private static Collection<Method> findAllGetterMethods(final Class<?> clazz) {
         Method[] methods = clazz.getMethods();
         Collection<Method> result = new HashSet<>(methods.length);
@@ -99,7 +99,7 @@ public final class DataSourceConfiguration {
         }
         return result;
     }
-
+    
     /**
      * Create data source.
      *
@@ -125,7 +125,7 @@ public final class DataSourceConfiguration {
         }
         return JDBCParameterDecoratorHelper.decorate(result);
     }
-
+    
     private void setDataSourceField(final Method method, final DataSource target, final Object value) throws InvocationTargetException, IllegalAccessException {
         Class<?> paramType = method.getParameterTypes()[0];
         if (paramType == int.class) {
@@ -140,19 +140,19 @@ public final class DataSourceConfiguration {
             method.invoke(target, value);
         }
     }
-
+    
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
         String setterMethodName = Joiner.on("").join(SETTER_PREFIX, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property));
         return Arrays.stream(methods)
                 .filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length)
                 .findFirst();
     }
-
+    
     /**
      * Add property synonym to shared configuration.
      *
      * @param originalName original key for data source configuration property
-     * @param synonym      property synonym for configuration
+     * @param synonym property synonym for configuration
      */
     public void addPropertySynonym(final String originalName, final String synonym) {
         if (props.containsKey(originalName)) {
@@ -163,12 +163,12 @@ public final class DataSourceConfiguration {
             props.put(originalName, props.get(synonym));
         }
     }
-
+    
     @Override
     public boolean equals(final Object obj) {
         return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceConfiguration) obj);
     }
-
+    
     private boolean equalsByProperties(final DataSourceConfiguration dataSourceConfig) {
         if (!dataSourceClassName.equals(dataSourceConfig.dataSourceClassName)) {
             return false;
@@ -183,7 +183,7 @@ public final class DataSourceConfiguration {
         }
         return true;
     }
-
+    
     @Override
     public int hashCode() {
         StringBuilder stringBuilder = new StringBuilder();

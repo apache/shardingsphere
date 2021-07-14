@@ -37,13 +37,13 @@ import javax.sql.DataSource;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSourceFactory {
-
+    
     private static final JDBCRawBackendDataSourceFactory INSTANCE = new JDBCRawBackendDataSourceFactory();
-
+    
     static {
         ShardingSphereServiceLoader.register(JDBCParameterDecorator.class);
     }
-
+    
     /**
      * Get instance of {@code JDBCBackendDataSourceFactory}.
      *
@@ -52,7 +52,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
     public static JDBCBackendDataSourceFactory getInstance() {
         return INSTANCE;
     }
-
+    
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
@@ -81,7 +81,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         }
         return JDBCParameterDecoratorHelper.decorate(result);
     }
-
+    
     private void validateDriverClassName(final String driverClassName) {
         try {
             Class.forName(driverClassName);
