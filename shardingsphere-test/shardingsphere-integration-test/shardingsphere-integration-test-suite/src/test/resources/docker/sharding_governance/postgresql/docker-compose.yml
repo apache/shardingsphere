@@ -21,6 +21,7 @@ services:
   postgresql:
     image: "postgres:12.6"
     container_name: db-postgresql
+    command: [ '--max_connections=200' ]
     volumes:
       - ../../env/db/init-sql/postgresql:/docker-entrypoint-initdb.d/
     ports:
@@ -28,7 +29,6 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-      PG_SYSTEM_MAX_CONNECTIONS: 200
 
   zookeeper:
     image: "zookeeper:3.6.2"
