@@ -21,9 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.governance.core.GovernanceInstance;
 import org.apache.shardingsphere.governance.core.lock.service.LockRegistryService;
 import org.apache.shardingsphere.governance.core.registry.cache.subscriber.ScalingRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.DataSourceRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.GlobalRuleRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.SchemaRuleRegistrySubscriber;
@@ -31,7 +28,6 @@ import org.apache.shardingsphere.governance.core.registry.metadata.service.Schem
 import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.service.InstanceStatusRegistryService;
-import org.apache.shardingsphere.governance.core.registry.state.service.UserStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
@@ -61,15 +57,11 @@ public final class RegistryCenter {
     }
     
     private void createSubscribers(final RegistryCenterRepository repository) {
-        DataSourcePersistService dataSourcePersistService = new DataSourcePersistService(repository);
-        GlobalRulePersistService globalRulePersistService = new GlobalRulePersistService(repository);
-        SchemaRulePersistService schemaRulePersistService = new SchemaRulePersistService(repository);
-        UserStatusRegistryService userStatusRegistryService = new UserStatusRegistryService(repository);
-        new DataSourceRegistrySubscriber(dataSourcePersistService);
-        new GlobalRuleRegistrySubscriber(globalRulePersistService, userStatusRegistryService);
-        new SchemaRuleRegistrySubscriber(schemaRulePersistService);
+        new DataSourceRegistrySubscriber(repository);
+        new GlobalRuleRegistrySubscriber(repository);
+        new SchemaRuleRegistrySubscriber(repository);
         new DataSourceStatusRegistrySubscriber(repository);
-        new ScalingRegistrySubscriber(repository, schemaRulePersistService);
+        new ScalingRegistrySubscriber(repository);
         new ProcessRegistrySubscriber(repository);
     }
     

@@ -32,10 +32,10 @@ import java.lang.reflect.Field;
 public final class ScalingRegistrySubscriberTest {
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
+    private RegistryCenterRepository repository;
     
     @Mock
-    private SchemaRulePersistService schemaRulePersistService;
+    private SchemaRulePersistService persistService;
     
     @Mock
     private RegistryCacheManager registryCacheManager;
@@ -44,14 +44,17 @@ public final class ScalingRegistrySubscriberTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        scalingRegistrySubscriber = new ScalingRegistrySubscriber(registryCenterRepository, schemaRulePersistService);
+        scalingRegistrySubscriber = new ScalingRegistrySubscriber(repository);
+        Field persistServiceField = ScalingRegistrySubscriber.class.getDeclaredField("persistService");
+        persistServiceField.setAccessible(true);
+        persistServiceField.set(scalingRegistrySubscriber, persistService);
+        Field registryCacheManagerField = ScalingRegistrySubscriber.class.getDeclaredField("registryCacheManager");
+        registryCacheManagerField.setAccessible(true);
+        registryCacheManagerField.set(scalingRegistrySubscriber, registryCacheManager);
     }
     
     @Test
     public void assertSwitchRuleConfiguration() throws ReflectiveOperationException {
-        Field field = ScalingRegistrySubscriber.class.getDeclaredField("registryCacheManager");
-        field.setAccessible(true);
-        field.set(scalingRegistrySubscriber, registryCacheManager);
         // Move to scaling module
 //        when(registryCacheManager.loadCache(anyString(), eq("testCacheId"))).thenReturn(readYAML());
 //        SwitchRuleConfigurationEvent event = new SwitchRuleConfigurationEvent("sharding_db", "testCacheId");
