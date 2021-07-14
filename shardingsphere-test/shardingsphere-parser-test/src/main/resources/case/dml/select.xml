@@ -1669,7 +1669,7 @@
             <simple-table name="t_order_item" alias="length" start-index="36" stop-index="54" />
         </from>
         <projections start-index="7" stop-index="29">
-            <column-projection name="item_id" alias="password" start-index="7" stop-index="20">
+            <column-projection name="item_id" alias="password" start-index="7" stop-index="29">
                 <owner name="length" start-index="7" stop-index="12" />
             </column-projection>>
         </projections>
@@ -2502,7 +2502,7 @@
             <simple-table name="t_order" start-index="31" stop-index="37" />
         </from>
         <projections start-index="7" stop-index="24">
-            <column-projection alias="status" name="status" start-index="7" stop-index="12" />
+            <column-projection alias="status" name="status" start-index="7" stop-index="24" />
         </projections>
     </select>
 
@@ -2511,7 +2511,7 @@
             <simple-table name="t_order" start-index="31" stop-index="37" />
         </from>
         <projections start-index="7" stop-index="24">
-            <column-projection name="status" alias="status" start-index="7" stop-index="12" />
+            <column-projection name="status" alias="status" start-index="7" stop-index="24" />
         </projections>
     </select>
 
@@ -3027,7 +3027,7 @@
             </join-table>
         </from>
         <projections start-index="7" stop-index="107">
-            <column-projection name="department_id" alias="Department" start-index="7" stop-index="21">
+            <column-projection name="department_id" alias="Department" start-index="7" stop-index="34">
                 <owner name="a" start-index="7" stop-index="7" />
             </column-projection>
             <expression-projection text="a.num_emp/b.total_count" alias="%_Employees" start-index="37" stop-index="73" />
