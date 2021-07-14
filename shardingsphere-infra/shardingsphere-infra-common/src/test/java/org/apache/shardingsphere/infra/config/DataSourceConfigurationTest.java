@@ -69,6 +69,9 @@ public final class DataSourceConfigurationTest {
         props.put("username", "root");
         props.put("password", "root");
         props.put("loginTimeout", "5000");
+        props.put("maximumPoolSize", "50");
+        props.put("minimumIdle", "1");
+        props.put("maxLifetime", "60000");
         props.put("test", "test");
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProps().putAll(props);
@@ -77,6 +80,9 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
+        assertThat(actual.getMaximumPoolSize(), is(50));
+        assertThat(actual.getMinimumIdle(), is(1));
+        assertThat(actual.getMaxLifetime(), is(60000L));
     }
     
     @Test

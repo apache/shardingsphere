@@ -27,7 +27,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-    maintenanceIntervalMilliseconds: 30000
 
 rules:
 - !SHARDING
