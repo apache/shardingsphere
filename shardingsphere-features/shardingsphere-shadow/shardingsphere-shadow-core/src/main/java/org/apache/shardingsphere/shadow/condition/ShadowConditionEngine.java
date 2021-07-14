@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -47,88 +46,86 @@ public final class ShadowConditionEngine {
     private final ShadowRule shadowRule;
     
     /**
-     * Create shadow conditions.
+     * Create shadow condition.
      *
      * @param sqlStatementContext SQL statement context
      * @return shadow condition
      */
     public Optional<ShadowCondition> createShadowCondition(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof WhereAvailable)) {
-            return Optional.empty();
+        if (sqlStatementContext instanceof WhereAvailable) {
+            WhereAvailable whereAvailable = (WhereAvailable) sqlStatementContext;
+            return createShadowConditionInWhereAvailable(whereAvailable);
         }
-        Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
-        if (!whereSegment.isPresent()) {
-            return Optional.empty();
-        }
-        if (((WhereAvailable) sqlStatementContext).getWhere().isPresent()) {
-            ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
-            ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
-            Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
-            for (AndPredicate each : andPredicates) {
-                Optional<ShadowCondition> condition = createShadowCondition(each);
-                if (condition.isPresent()) {
-                    return condition;
-                }
-            }
-        }
-        // FIXME process subquery
-//        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
-//            for (AndPredicate andPredicate : each.getAndPredicates()) {
-//                Optional<ShadowCondition> condition = createShadowCondition(andPredicate);
-//                if (condition.isPresent()) {
-//                    return condition;
-//                }
-//            }
-//        }
         return Optional.empty();
     }
     
-    private Optional<ShadowCondition> createShadowCondition(final AndPredicate andPredicate) {
+    private Optional<ShadowCondition> createShadowConditionInWhereAvailable(final WhereAvailable whereAvailable) {
+        return whereAvailable.getWhere().flatMap(this::createShadowConditionWhereSegment);
+    }
+    
+    private Optional<ShadowCondition> createShadowConditionWhereSegment(final WhereSegment whereSegment) {
+        return createShadowConditionAndPredicates(createAndPredicates(whereSegment));
+    }
+    
+    private Collection<AndPredicate> createAndPredicates(final WhereSegment whereSegment) {
+        return new ExpressionBuilder(whereSegment.getExpr()).extractAndPredicates().getAndPredicates();
+    }
+    
+    private Optional<ShadowCondition> createShadowConditionAndPredicates(final Collection<AndPredicate> andPredicates) {
+        for (AndPredicate each : new LinkedList<>(andPredicates)) {
+            Optional<ShadowCondition> condition = createShadowConditionAndPredicate(each);
+            if (condition.isPresent()) {
+                return condition;
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<ShadowCondition> createShadowConditionAndPredicate(final AndPredicate andPredicate) {
         for (ExpressionSegment predicate : andPredicate.getPredicates()) {
             Optional<ColumnSegment> column = ColumnExtractor.extract(predicate);
-            if (!column.isPresent()) {
-                continue;
-            }
-            Collection<Integer> stopIndexes = new HashSet<>();
-            if (stopIndexes.add(predicate.getStopIndex())) {
-                Optional<ShadowCondition> condition = shadowRule.getColumn().equals(column.get().getIdentifier().getValue())
-                        ? createShadowCondition(predicate) : Optional.empty();
-                if (condition.isPresent()) {
-                    return condition;
+            if (column.isPresent()) {
+                Optional<ShadowCondition> shadowCondition = createShadowConditionColumnSegment(column.get(), predicate);
+                if (shadowCondition.isPresent()) {
+                    return shadowCondition;
                 }
             }
         }
         return Optional.empty();
     }
     
-    private Optional<ShadowCondition> createShadowCondition(final ExpressionSegment expression) {
-        if (expression instanceof BinaryOperationExpression) {
-            String operator = ((BinaryOperationExpression) expression).getOperator();
-            boolean logical = "and".equalsIgnoreCase(operator) || "&&".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator) || "||".equalsIgnoreCase(operator);
-            if (!logical) {
-                return isSupportedOperator(operator) ? createCompareShadowCondition((BinaryOperationExpression) expression) : Optional.empty();
-            }
-        }
+    private Optional<ShadowCondition> createShadowConditionColumnSegment(final ColumnSegment columnSegment, final ExpressionSegment expression) {
+        return compareColumnName(columnSegment) ? createShadowConditionExpressionSegment(expression) : Optional.empty();
+    }
+    
+    private boolean compareColumnName(final ColumnSegment columnSegment) {
+        return shadowRule.getColumn().equals(columnSegment.getIdentifier().getValue());
+    }
+    
+    private Optional<ShadowCondition> createShadowConditionExpressionSegment(final ExpressionSegment expression) {
         if (expression instanceof InExpression) {
             throw new ShardingSphereException("The SQL clause 'IN...' is unsupported in shadow rule.");
         }
         if (expression instanceof BetweenExpression) {
             throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in shadow rule.");
         }
-        return Optional.empty();
-    }
-    
-    private static Optional<ShadowCondition> createCompareShadowCondition(final BinaryOperationExpression expression) {
-        if (!(expression.getLeft() instanceof ColumnSegment)) {
-            return Optional.empty();
+        if (expression instanceof BinaryOperationExpression) {
+            BinaryOperationExpression binaryOperationExpression = (BinaryOperationExpression) expression;
+            return isSupportedOperator(binaryOperationExpression.getOperator()) ? createShadowConditionBinaryOperation((BinaryOperationExpression) expression)
+                    : Optional.empty();
         }
-        return expression.getRight() instanceof SimpleExpressionSegment
-                ? Optional.of(new ShadowCondition(((ColumnSegment) expression.getLeft()).getIdentifier().getValue(), expression.getRight().getStartIndex(),
-                expression.getStopIndex(), expression.getRight()))
-                : Optional.empty();
+        return Optional.empty();
     }
     
     private boolean isSupportedOperator(final String operator) {
         return "=".equals(operator);
+    }
+    
+    private Optional<ShadowCondition> createShadowConditionBinaryOperation(final BinaryOperationExpression binaryOperationExpression) {
+        ExpressionSegment left = binaryOperationExpression.getLeft();
+        ExpressionSegment right = binaryOperationExpression.getRight();
+        return left instanceof ColumnSegment && right instanceof SimpleExpressionSegment
+                ? Optional.of(new ShadowCondition(((ColumnSegment) left).getIdentifier().getValue(), right.getStartIndex(), binaryOperationExpression.getStopIndex(), right))
+                : Optional.empty();
     }
 }
