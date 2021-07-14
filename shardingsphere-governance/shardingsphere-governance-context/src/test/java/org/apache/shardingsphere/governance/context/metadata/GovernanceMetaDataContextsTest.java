@@ -97,7 +97,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Mock
     private ShardingSphereRuleMetaData globalRuleMetaData;
-
+    
     @Before
     public void setUp() {
         when(governanceFacade.getPersistCenter()).thenReturn(persistCenter);
@@ -217,7 +217,7 @@ public final class GovernanceMetaDataContextsTest {
         result.put("ds_2", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         return result;
     }
-
+    
     @Test
     public void assertGlobalRuleConfigurationsChanged() throws SQLException {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
