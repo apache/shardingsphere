@@ -37,6 +37,8 @@
     <properties>
         <entrypoint.class/>
         <metrics.target.directory>${project.basedir}/../target/plugins</metrics.target.directory>
+        <prometheus.version>0.6.0</prometheus.version>
+        <prometheus.jmx.version>0.10</prometheus.jmx.version>
     </properties>
     
     <dependencies>

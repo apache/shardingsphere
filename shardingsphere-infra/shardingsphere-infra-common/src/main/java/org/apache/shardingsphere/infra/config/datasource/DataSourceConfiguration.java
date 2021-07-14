@@ -66,7 +66,7 @@ public final class DataSourceConfiguration {
     
     /**
      * Get data source configuration.
-     * 
+     *
      * @param dataSource data source
      * @return data source configuration
      */
@@ -102,7 +102,7 @@ public final class DataSourceConfiguration {
     
     /**
      * Create data source.
-     * 
+     *
      * @return data source
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -123,8 +123,7 @@ public final class DataSourceConfiguration {
                 throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource, because %s", entry.getKey(), ex.getMessage());
             }
         }
-        Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
-        return decorator.isPresent() ? decorator.get().decorate(result) : result;
+        return JDBCParameterDecoratorHelper.decorate(result);
     }
     
     private void setDataSourceField(final Method method, final DataSource target, final Object value) throws InvocationTargetException, IllegalAccessException {
@@ -140,11 +139,6 @@ public final class DataSourceConfiguration {
         } else {
             method.invoke(target, value);
         }
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private Optional<JDBCParameterDecorator> findJDBCParameterDecorator(final DataSource dataSource) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
