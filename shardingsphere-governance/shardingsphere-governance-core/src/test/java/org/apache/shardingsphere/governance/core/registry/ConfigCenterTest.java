@@ -52,7 +52,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PersistCenterTest {
+public final class ConfigCenterTest {
     
     private static final String SCHEMA_RULE_YAML = "yaml/regcenter/data-schema-rule.yaml";
     
@@ -70,11 +70,11 @@ public final class PersistCenterTest {
     @Mock
     private PropertiesPersistService propsService;
     
-    private PersistCenter persistCenter;
+    private ConfigCenter configCenter;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        persistCenter = new PersistCenter(mock(RegistryCenterRepository.class));
+        configCenter = new ConfigCenter(mock(RegistryCenterRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("schemaRuleService", schemaRuleService);
         setField("globalRuleService", globalRuleService);
@@ -82,9 +82,9 @@ public final class PersistCenterTest {
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        Field field = persistCenter.getClass().getDeclaredField(name);
+        Field field = configCenter.getClass().getDeclaredField(name);
         field.setAccessible(true);
-        field.set(persistCenter, value);
+        field.set(configCenter, value);
     }
     
     @Test
@@ -93,7 +93,7 @@ public final class PersistCenterTest {
         Collection<RuleConfiguration> schemaRuleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
-        persistCenter.persistConfigurations(
+        configCenter.persistConfigurations(
                 Collections.singletonMap("foo_db", dataSourceConfigs), Collections.singletonMap("foo_db", schemaRuleConfigs), globalRuleConfigs, props, false);
         verify(dataSourceService).persist("foo_db", dataSourceConfigs, false);
         verify(schemaRuleService).persist("foo_db", schemaRuleConfigs, false);

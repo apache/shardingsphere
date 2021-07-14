@@ -344,18 +344,18 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private ShardingSphereMetaData buildMetaData(final SchemaAddedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
-        if (!governanceFacade.getPersistCenter().getDataSourceService().isExisted(schemaName)) {
-            governanceFacade.getPersistCenter().getDataSourceService().persist(schemaName, new LinkedHashMap<>());
+        if (!governanceFacade.getConfigCenter().getDataSourceService().isExisted(schemaName)) {
+            governanceFacade.getConfigCenter().getDataSourceService().persist(schemaName, new LinkedHashMap<>());
         }
-        if (!governanceFacade.getPersistCenter().getSchemaRuleService().isExisted(schemaName)) {
-            governanceFacade.getPersistCenter().getSchemaRuleService().persist(schemaName, new LinkedList<>());
+        if (!governanceFacade.getConfigCenter().getSchemaRuleService().isExisted(schemaName)) {
+            governanceFacade.getConfigCenter().getSchemaRuleService().persist(schemaName, new LinkedList<>());
         }
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName,
-                governanceFacade.getPersistCenter().getDataSourceService().load(schemaName)));
+                governanceFacade.getConfigCenter().getDataSourceService().load(schemaName)));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
-                Collections.singletonMap(schemaName, governanceFacade.getPersistCenter().getSchemaRuleService().load(schemaName)),
+                Collections.singletonMap(schemaName, governanceFacade.getConfigCenter().getSchemaRuleService().load(schemaName)),
                 // TODO load global schema from reg center
-                governanceFacade.getPersistCenter().getGlobalRuleService().load(), 
+                governanceFacade.getConfigCenter().getGlobalRuleService().load(), 
                 metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build().getMetaDataMap().get(schemaName);
     }

@@ -33,10 +33,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Persist center.
+ * Config center.
  */
 @Getter
-public final class PersistCenter {
+public final class ConfigCenter {
     
     private final DataSourcePersistService dataSourceService;
     
@@ -48,7 +48,7 @@ public final class PersistCenter {
     
     private final SchemaRegistryService schemaService;
     
-    public PersistCenter(final RegistryCenterRepository repository) {
+    public ConfigCenter(final RegistryCenterRepository repository) {
         dataSourceService = new DataSourcePersistService(repository);
         schemaRuleService = new SchemaRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
