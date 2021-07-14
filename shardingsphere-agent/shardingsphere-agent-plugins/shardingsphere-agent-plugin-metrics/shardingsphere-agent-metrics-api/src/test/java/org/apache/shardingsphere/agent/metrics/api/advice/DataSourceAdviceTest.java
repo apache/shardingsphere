@@ -30,7 +30,7 @@ import java.lang.reflect.Method;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DataSourceAdviceTest {
+public final class DataSourceAdviceTest {
     
     @Mock
     private MethodInvocationResult result;
@@ -44,7 +44,7 @@ public class DataSourceAdviceTest {
     public void assertNotNull() {
         HikariDataSource hikariDataSource = new HikariDataSource();
         when(result.getResult()).thenReturn(hikariDataSource);
-        dataSourceAdvice.afterMethod(null, decorate, new Object[]{}, result);
+        dataSourceAdvice.afterMethod(String.class, decorate, new Object[]{}, result);
         Assert.assertNotNull(hikariDataSource.getMetricsTrackerFactory());
     }
 }
