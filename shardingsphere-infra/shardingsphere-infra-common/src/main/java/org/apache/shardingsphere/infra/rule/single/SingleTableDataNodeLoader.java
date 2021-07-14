@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rule.single;
+package org.apache.shardingsphere.infra.rule.single;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,44 +31,40 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Single table rule loader.
+ * Single table data node loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SingleTableRuleLoader {
+public final class SingleTableDataNodeLoader {
     
     /**
-     * Load single table rules.
+     * Load single table data node.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
-     * @param excludedTables exclude table names
-     * @return single table rule map
+     * @return single table data node map
      */
     @SuppressWarnings("CollectionWithoutInitialCapacity")
-    public static Map<String, SingleTableRule> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
-        Map<String, SingleTableRule> result = new HashMap<>();
+    public static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        Map<String, SingleTableDataNode> result = new HashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            Map<String, SingleTableRule> singleTableRules = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
+            Map<String, SingleTableDataNode> singleTableDataNodes = load(databaseType, entry.getKey(), entry.getValue());
             // TODO recover check single table must be unique. Current situation cannot recognize replica query rule or databaseDiscovery rule for single table duplicate. 
-//            singleTableRules.keySet().forEach(each -> Preconditions.checkState(!result.containsKey(each), "Single table conflict, there are multiple tables `%s` existed.", each));
-            result.putAll(singleTableRules);
+//            singleTableDataNodes.keySet().forEach(each -> Preconditions.checkState(!result.containsKey(each), "Single table conflict, there are multiple tables `%s` existed.", each));
+            result.putAll(singleTableDataNodes);
         }
         return result;
     }
     
-    private static Map<String, SingleTableRule> load(final DatabaseType databaseType,
-                                                     final String dataSourceName, final DataSource dataSource, final Collection<String> excludedTables) {
+    private static Map<String, SingleTableDataNode> load(final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource) {
         Collection<String> tables;
         try {
             tables = SchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType);
         } catch (final SQLException ex) {
             throw new ShardingSphereConfigurationException("Can not load table: %s", ex.getMessage());
         }
-        Map<String, SingleTableRule> result = new HashMap<>(tables.size(), 1);
+        Map<String, SingleTableDataNode> result = new HashMap<>(tables.size(), 1);
         for (String each : tables) {
-            if (!excludedTables.contains(each)) {
-                result.put(each, new SingleTableRule(each, dataSourceName));
-            }
+            result.put(each, new SingleTableDataNode(each, dataSourceName));
         }
         return result;
     }

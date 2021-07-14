@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.event;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.Collections;
 
 /**
- * Rule configuration for YAML.
+ * Exclude table event.
  */
 @Getter
-@Setter
-public final class YamlProxyRuleConfiguration implements YamlConfiguration {
+public final class ExcludeTableEvent {
     
-    private String schemaName;
+    private final Collection<String> tableNames;
     
-    private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
-    
-    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    public ExcludeTableEvent(final Collection<String> tableNames) {
+        this.tableNames = null == tableNames ? Collections.emptyList() : tableNames;
+    }
 }

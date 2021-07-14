@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml;
+package org.apache.shardingsphere.infra.rule.single;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Rule configuration for YAML.
+ * Single table data node.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlProxyRuleConfiguration implements YamlConfiguration {
+@EqualsAndHashCode
+public final class SingleTableDataNode {
     
-    private String schemaName;
+    private final String tableName;
     
-    private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
-    
-    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    private final String dataSourceName;
 }

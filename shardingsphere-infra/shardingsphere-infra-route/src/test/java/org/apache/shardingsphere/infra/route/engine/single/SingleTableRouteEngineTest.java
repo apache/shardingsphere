@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.type.single;
+package org.apache.shardingsphere.infra.route.engine.single;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.single.SingleTableRule;
+import org.apache.shardingsphere.infra.rule.single.SingleTableDataNode;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.junit.Test;
 
@@ -40,17 +39,16 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class SingleTablesRoutingEngineTest {
+public final class SingleTableRouteEngineTest {
     
     @Test
     public void assertRouteInSameDataSource() {
-        SingleTablesRoutingEngine singleTablesRoutingEngine = new SingleTablesRoutingEngine(Arrays.asList("t_order", "t_order_item"), null);
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
-        shardingRule.getSingleTableRules().put("t_order", new SingleTableRule("t_order", "ds_0"));
-        shardingRule.getSingleTableRules().put("t_order_item", new SingleTableRule("t_order_item", "ds_0"));
+        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), null);
+        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap());
+        singleTableRule.getSingleTableDataNodes().put("t_order", new SingleTableDataNode("t_order", "ds_0"));
+        singleTableRule.getSingleTableDataNodes().put("t_order_item", new SingleTableDataNode("t_order_item", "ds_0"));
         RouteContext routeContext = new RouteContext();
-        singleTablesRoutingEngine.route(routeContext, shardingRule);
+        singleTableRouteEngine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -67,13 +65,12 @@ public final class SingleTablesRoutingEngineTest {
     
     @Test
     public void assertRouteInDifferentDataSource() {
-        SingleTablesRoutingEngine singleTablesRoutingEngine = new SingleTablesRoutingEngine(Arrays.asList("t_order", "t_order_item"), null);
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
-        shardingRule.getSingleTableRules().put("t_order", new SingleTableRule("t_order", "ds_0"));
-        shardingRule.getSingleTableRules().put("t_order_item", new SingleTableRule("t_order_item", "ds_1"));
+        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), null);
+        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap());
+        singleTableRule.getSingleTableDataNodes().put("t_order", new SingleTableDataNode("t_order", "ds_0"));
+        singleTableRule.getSingleTableDataNodes().put("t_order_item", new SingleTableDataNode("t_order_item", "ds_1"));
         RouteContext routeContext = new RouteContext();
-        singleTablesRoutingEngine.route(routeContext, shardingRule);
+        singleTableRouteEngine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -90,12 +87,11 @@ public final class SingleTablesRoutingEngineTest {
     }
     
     @Test
-    public void assertRouteWithoutShardingRule() {
-        SingleTablesRoutingEngine singleTablesRoutingEngine = new SingleTablesRoutingEngine(Arrays.asList("t_order", "t_order_item"), new MySQLCreateTableStatement());
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
+    public void assertRouteWithoutSingleTableRule() {
+        SingleTableRouteEngine singleTableRouteEngine = new SingleTableRouteEngine(Arrays.asList("t_order", "t_order_item"), new MySQLCreateTableStatement());
+        SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), createDataSourceMap());
         RouteContext routeContext = new RouteContext();
-        singleTablesRoutingEngine.route(routeContext, shardingRule);
+        singleTableRouteEngine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));

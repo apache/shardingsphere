@@ -72,4 +72,9 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
         return Optional.empty();
     }
+    
+    @Override
+    public boolean containsShardingBroadcastTables(final Collection<String> tables) {
+        return false;
+    }
 }

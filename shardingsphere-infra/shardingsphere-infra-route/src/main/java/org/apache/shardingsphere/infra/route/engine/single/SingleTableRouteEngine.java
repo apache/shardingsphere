@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.type.single;
+package org.apache.shardingsphere.infra.route.engine.single;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -24,8 +24,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -37,26 +36,31 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Single table engine.
+ * Single table route engine.
  */
 @RequiredArgsConstructor
-public final class SingleTablesRoutingEngine implements ShardingRouteEngine {
+public final class SingleTableRouteEngine {
     
-    private final Collection<String> logicTables;
+    private final Collection<String> singleTableNames;
     
     private final SQLStatement sqlStatement;
     
-    @Override
-    public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        if (isDDLTableStatement() || shardingRule.isAllTablesInSameDataSource(logicTables)) {
-            Set<String> existSingleTables = Sets.intersection(shardingRule.getSingleTableRules().keySet(), Sets.newHashSet(logicTables));
+    /**
+     * Route for single table.
+     * 
+     * @param routeContext route context
+     * @param singleTableRule single table rule
+     */
+    public void route(final RouteContext routeContext, final SingleTableRule singleTableRule) {
+        if (isDDLTableStatement() || singleTableRule.isSingleTableInSameDataSource(singleTableNames)) {
+            Set<String> existSingleTables = Sets.intersection(singleTableRule.getSingleTableDataNodes().keySet(), Sets.newHashSet(singleTableNames));
             if (!existSingleTables.isEmpty()) {
-                fillRouteContext(shardingRule, routeContext, existSingleTables);
+                fillRouteContext(singleTableRule, routeContext, existSingleTables);
             } else {
-                routeContext.getRouteUnits().add(getRandomRouteUnit(shardingRule));
+                routeContext.getRouteUnits().add(getRandomRouteUnit(singleTableRule));
             }
         } else {
-            fillRouteContext(shardingRule, routeContext, logicTables);
+            fillRouteContext(singleTableRule, routeContext, singleTableNames);
             if (1 < routeContext.getRouteUnits().size()) {
                 routeContext.setFederated(true);
             }
@@ -67,19 +71,19 @@ public final class SingleTablesRoutingEngine implements ShardingRouteEngine {
         return sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement;
     }
     
-    private RouteUnit getRandomRouteUnit(final ShardingRule shardingRule) {
-        Collection<String> dataSourceNames = shardingRule.getDataSourceNames();
+    private RouteUnit getRandomRouteUnit(final SingleTableRule singleTableRule) {
+        Collection<String> dataSourceNames = singleTableRule.getDataSourceNames();
         String dataSource = Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
-        String table = logicTables.iterator().next();
+        String table = singleTableNames.iterator().next();
         return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singleton(new RouteMapper(table, table)));
     }
     
-    private void fillRouteContext(final ShardingRule shardingRule, final RouteContext routeContext, final Collection<String> logicTables) {
+    private void fillRouteContext(final SingleTableRule singleTableRule, final RouteContext routeContext, final Collection<String> logicTables) {
         for (String each : logicTables) {
-            if (!shardingRule.getSingleTableRules().containsKey(each)) {
+            if (!singleTableRule.getSingleTableDataNodes().containsKey(each)) {
                 throw new ShardingSphereException("`%s` single table does not exist.", each);
             }
-            String dataSource = shardingRule.getSingleTableRules().get(each).getDataSourceName();
+            String dataSource = singleTableRule.getSingleTableDataNodes().get(each).getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), new RouteMapper(each, each));
         }
     }

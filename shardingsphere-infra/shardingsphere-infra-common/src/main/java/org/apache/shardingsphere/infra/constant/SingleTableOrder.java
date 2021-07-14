@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.config.yaml;
+package org.apache.shardingsphere.infra.constant;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Rule configuration for YAML.
+ * Single table order.
  */
-@Getter
-@Setter
-public final class YamlProxyRuleConfiguration implements YamlConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SingleTableOrder {
     
-    private String schemaName;
-    
-    private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
-    
-    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    /**
+     * Single table order.
+     */
+    public static final int ORDER = -10;
 }

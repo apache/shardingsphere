@@ -17,21 +17,26 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -51,7 +56,7 @@ public final class MetaDataContextsBuilderTest {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
         MetaDataContexts actual = new MetaDataContextsBuilder(
-                Collections.singletonMap("logic_db", Collections.emptyMap()), Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
+                Collections.singletonMap("logic_db", Collections.emptyMap()), Collections.singletonMap("logic_db", Lists.newArrayList(new FixtureRuleConfiguration())), props).build();
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));
@@ -63,7 +68,7 @@ public final class MetaDataContextsBuilderTest {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.singletonMap("logic_db", Collections.singletonMap("ds", new MockedDataSource())),
-                Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
+                Collections.singletonMap("logic_db", Lists.newArrayList(new FixtureRuleConfiguration())), props).build();
         assertRules(actual);
         assertDataSources(actual);
         assertThat(actual.getProps().getProps().size(), is(1));
@@ -79,7 +84,7 @@ public final class MetaDataContextsBuilderTest {
 
         MetaDataContexts actual = new MetaDataContextsBuilder(
                 Collections.singletonMap("logic_db", Collections.emptyMap()), Collections.singletonMap("logic_db",
-                Collections.singleton(new FixtureRuleConfiguration())), Collections.singleton(authorityRuleConfig), props).build();
+                Lists.newArrayList(new FixtureRuleConfiguration())), Collections.singleton(authorityRuleConfig), props).build();
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));
@@ -87,12 +92,15 @@ public final class MetaDataContextsBuilderTest {
     }
     
     private void assertRules(final MetaDataContexts actual) {
-        assertThat(actual.getMetaData("logic_db").getRuleMetaData().getRules().size(), is(1));
-        assertThat(actual.getMetaData("logic_db").getRuleMetaData().getRules().iterator().next(), CoreMatchers.instanceOf(FixtureRule.class));
+        Collection<ShardingSphereRule> rules = actual.getMetaData("logic_db").getRuleMetaData().getRules();
+        assertThat(rules.size(), is(2));
+        Iterator<ShardingSphereRule> iterator = rules.iterator();
+        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
+        assertThat(iterator.next(), instanceOf(FixtureRule.class));
     }
     
     private void assertDataSources(final MetaDataContexts actual) {
         assertThat(actual.getMetaData("logic_db").getResource().getDataSources().size(), is(1));
-        assertThat(actual.getMetaData("logic_db").getResource().getDataSources().get("ds"), CoreMatchers.instanceOf(MockedDataSource.class));
+        assertThat(actual.getMetaData("logic_db").getResource().getDataSources().get("ds"), instanceOf(MockedDataSource.class));
     }
 }

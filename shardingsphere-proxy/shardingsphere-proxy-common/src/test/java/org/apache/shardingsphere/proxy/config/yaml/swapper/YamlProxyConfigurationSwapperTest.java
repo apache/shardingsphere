@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlRegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlRegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -163,7 +163,6 @@ public final class YamlProxyConfigurationSwapperTest {
     
     private void prepareDataSources(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
         YamlDataSourceParameter yamlDataSourceParameter = mock(YamlDataSourceParameter.class);
-        when(yamlProxyRuleConfig.getDataSource()).thenReturn(yamlDataSourceParameter);
         when(yamlDataSourceParameter.getUrl()).thenReturn("url1");
         when(yamlDataSourceParameter.getUsername()).thenReturn("username1");
         when(yamlDataSourceParameter.getPassword()).thenReturn("password1");
@@ -181,7 +180,6 @@ public final class YamlProxyConfigurationSwapperTest {
     
     private void prepareDataSource(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
         YamlDataSourceParameter yamlDataSourceParameter = mock(YamlDataSourceParameter.class);
-        when(yamlProxyRuleConfig.getDataSource()).thenReturn(yamlDataSourceParameter);
         when(yamlDataSourceParameter.getUrl()).thenReturn("url");
         when(yamlDataSourceParameter.getUsername()).thenReturn("username");
         when(yamlDataSourceParameter.getPassword()).thenReturn("password");

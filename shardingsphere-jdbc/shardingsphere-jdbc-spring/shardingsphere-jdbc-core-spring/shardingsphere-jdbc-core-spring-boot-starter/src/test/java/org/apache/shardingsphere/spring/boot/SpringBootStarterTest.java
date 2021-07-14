@@ -73,7 +73,7 @@ public class SpringBootStarterTest {
     @Test
     public void assertRules() {
         Collection<ShardingSphereRule> rules = dataSource.getMetaDataContexts().getDefaultMetaData().getRuleMetaData().getRules();
-        assertThat(rules.size(), is(4));
+        assertThat(rules.size(), is(5));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
                 assertShardingRule((ShardingRule) each);
