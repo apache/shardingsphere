@@ -95,7 +95,7 @@ public abstract class ContainerCompose extends ExternalResource implements Close
                     throw new RuntimeException("Unknown storage type " + parameterizedArray.getDatabaseType());
             }
         };
-        return createContainer(supplier, "mysql.db.host");
+        return createContainer(supplier, parameterizedArray.getDatabaseType().getName().toLowerCase() + "." + parameterizedArray.getScenario() + ".host");
     }
     
     protected final <T extends ShardingSphereContainer> T createContainer(final Supplier<T> supplier, final String hostName) {

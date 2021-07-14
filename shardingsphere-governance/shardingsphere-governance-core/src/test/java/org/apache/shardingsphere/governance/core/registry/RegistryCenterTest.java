@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourceRegistryService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRuleRegistryService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesRegistryService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRulePersistService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,26 +59,22 @@ public final class RegistryCenterTest {
     private static final String GLOBAL_RULE_YAML = "yaml/regcenter/data-global-rule.yaml";
     
     @Mock
-    private RegistryCenterRepository registryCenterRepository;
+    private DataSourcePersistService dataSourceService;
     
     @Mock
-    private DataSourceRegistryService dataSourceService;
+    private SchemaRulePersistService schemaRuleService;
     
     @Mock
-    private SchemaRuleRegistryService schemaRuleService;
+    private GlobalRulePersistService globalRuleService;
     
     @Mock
-    private GlobalRuleRegistryService globalRuleService;
-    
-    @Mock
-    private PropertiesRegistryService propsService;
+    private PropertiesPersistService propsService;
     
     private RegistryCenter registryCenter;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        registryCenter = new RegistryCenter(registryCenterRepository);
-        setField("repository", registryCenterRepository);
+        registryCenter = new RegistryCenter(mock(RegistryCenterRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("schemaRuleService", schemaRuleService);
         setField("globalRuleService", globalRuleService);
@@ -146,13 +142,5 @@ public final class RegistryCenterTest {
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
                 .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-    }
-    
-    @Test
-    public void assertRegisterInstanceOnline() {
-        registryCenter.registerInstanceOnline();
-        verify(registryCenterRepository).persist("/states/datanodes", "");
-        verify(registryCenterRepository).persist("/states/primarynodes", "");
-        verify(registryCenterRepository).persistEphemeral(anyString(), anyString());
     }
 }

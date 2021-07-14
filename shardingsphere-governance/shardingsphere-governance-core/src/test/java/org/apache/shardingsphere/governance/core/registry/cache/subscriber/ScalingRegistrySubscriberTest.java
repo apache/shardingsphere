@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.cache.subscriber;
 
 import org.apache.shardingsphere.governance.core.registry.cache.RegistryCacheManager;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRuleRegistryService;
+import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public final class ScalingRegistrySubscriberTest {
     private RegistryCenterRepository registryCenterRepository;
     
     @Mock
-    private SchemaRuleRegistryService schemaRuleService;
+    private SchemaRulePersistService schemaRulePersistService;
     
     @Mock
     private RegistryCacheManager registryCacheManager;
@@ -44,7 +44,7 @@ public final class ScalingRegistrySubscriberTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        scalingRegistrySubscriber = new ScalingRegistrySubscriber(registryCenterRepository, schemaRuleService);
+        scalingRegistrySubscriber = new ScalingRegistrySubscriber(registryCenterRepository, schemaRulePersistService);
     }
     
     @Test

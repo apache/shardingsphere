@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.shadow.rewrite.context;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
@@ -27,20 +29,33 @@ import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewrite
 import org.apache.shardingsphere.shadow.rewrite.token.ShadowTokenGenerateBuilder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
+import java.util.List;
+
 /**
  * SQL rewrite context decorator for shadow.
  */
 public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShadowRule> {
     
-    @SuppressWarnings("unchecked")
     @Override
     public void decorate(final ShadowRule shadowRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
+        doShadowDecorate(shadowRule, sqlRewriteContext);
+    }
+    
+    private void doShadowDecorate(final ShadowRule shadowRule, final SQLRewriteContext sqlRewriteContext) {
+        doParameterRewriter(shadowRule, sqlRewriteContext);
+        sqlRewriteContext.addSQLTokenGenerators(new ShadowTokenGenerateBuilder(shadowRule).getSQLTokenGenerators());
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void doParameterRewriter(final ShadowRule shadowRule, final SQLRewriteContext sqlRewriteContext) {
+        List<Object> parameters = sqlRewriteContext.getParameters();
+        SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
         for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getSchema())) {
-            if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
-                each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
+            if (!parameters.isEmpty() && each.isNeedRewrite(sqlStatementContext)) {
+                ParameterBuilder parameterBuilder = sqlRewriteContext.getParameterBuilder();
+                each.rewrite(parameterBuilder, sqlStatementContext, parameters);
             }
         }
-        sqlRewriteContext.addSQLTokenGenerators(new ShadowTokenGenerateBuilder(shadowRule).getSQLTokenGenerators());
     }
     
     @Override
