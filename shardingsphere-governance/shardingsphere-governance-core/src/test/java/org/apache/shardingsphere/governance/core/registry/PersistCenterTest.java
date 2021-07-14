@@ -52,7 +52,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class RegistryCenterTest {
+public final class PersistCenterTest {
     
     private static final String SCHEMA_RULE_YAML = "yaml/regcenter/data-schema-rule.yaml";
     
@@ -70,11 +70,11 @@ public final class RegistryCenterTest {
     @Mock
     private PropertiesPersistService propsService;
     
-    private RegistryCenter registryCenter;
+    private PersistCenter persistCenter;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        registryCenter = new RegistryCenter(mock(RegistryCenterRepository.class));
+        persistCenter = new PersistCenter(mock(RegistryCenterRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("schemaRuleService", schemaRuleService);
         setField("globalRuleService", globalRuleService);
@@ -82,9 +82,9 @@ public final class RegistryCenterTest {
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        Field field = registryCenter.getClass().getDeclaredField(name);
+        Field field = persistCenter.getClass().getDeclaredField(name);
         field.setAccessible(true);
-        field.set(registryCenter, value);
+        field.set(persistCenter, value);
     }
     
     @Test
@@ -93,7 +93,7 @@ public final class RegistryCenterTest {
         Collection<RuleConfiguration> schemaRuleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
-        registryCenter.persistConfigurations(
+        persistCenter.persistConfigurations(
                 Collections.singletonMap("foo_db", dataSourceConfigs), Collections.singletonMap("foo_db", schemaRuleConfigs), globalRuleConfigs, props, false);
         verify(dataSourceService).persist("foo_db", dataSourceConfigs, false);
         verify(schemaRuleService).persist("foo_db", schemaRuleConfigs, false);
