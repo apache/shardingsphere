@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.config;
 
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.junit.Test;
 
@@ -52,7 +52,6 @@ public final class ProxyConfigurationLoaderTest {
     private void assertShardingRuleConfiguration(final YamlProxyRuleConfiguration actual) {
         assertThat(actual.getSchemaName(), is("sharding_db"));
         assertThat(actual.getDataSources().size(), is(2));
-        assertNull(actual.getDataSource());
         assertDataSourceParameter(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/ds_0");
         assertDataSourceParameter(actual.getDataSources().get("ds_1"), "jdbc:mysql://127.0.0.1:3306/ds_1");
         Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream().filter(
@@ -76,7 +75,6 @@ public final class ProxyConfigurationLoaderTest {
     private void assertReadwriteSplittingRuleConfiguration(final YamlProxyRuleConfiguration actual) {
         assertThat(actual.getSchemaName(), is("readwrite_splitting_db"));
         assertThat(actual.getDataSources().size(), is(3));
-        assertNull(actual.getDataSource());
         assertDataSourceParameter(actual.getDataSources().get("write_ds"), "jdbc:mysql://127.0.0.1:3306/write_ds");
         assertDataSourceParameter(actual.getDataSources().get("read_ds_0"), "jdbc:mysql://127.0.0.1:3306/read_ds_0");
         assertDataSourceParameter(actual.getDataSources().get("read_ds_1"), "jdbc:mysql://127.0.0.1:3306/read_ds_1");
@@ -103,8 +101,7 @@ public final class ProxyConfigurationLoaderTest {
     private void assertEncryptRuleConfiguration(final YamlProxyRuleConfiguration actual) {
         assertThat(actual.getSchemaName(), is("encrypt_db"));
         assertThat(actual.getDataSources().size(), is(1));
-        assertNotNull(actual.getDataSource());
-        assertDataSourceParameter(actual.getDataSources().get("dataSource"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
+        assertDataSourceParameter(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
         assertFalse(actual.getRules().stream().filter(
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
         Optional<YamlEncryptRuleConfiguration> encryptRuleConfig = actual.getRules().stream().filter(

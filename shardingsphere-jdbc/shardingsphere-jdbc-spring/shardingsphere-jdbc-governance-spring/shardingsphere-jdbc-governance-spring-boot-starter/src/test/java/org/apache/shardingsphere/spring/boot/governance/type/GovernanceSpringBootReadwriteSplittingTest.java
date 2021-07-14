@@ -21,8 +21,9 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.spring.boot.governance.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,7 +37,9 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Iterator;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -66,8 +69,10 @@ public class GovernanceSpringBootReadwriteSplittingTest {
             assertThat(((BasicDataSource) each).getUsername(), is("sa"));
         }
         Collection<ShardingSphereRule> rules = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules();
-        assertThat(rules.size(), is(1));
-        assertReadwriteSplittingRule((ReadwriteSplittingRule) rules.iterator().next());
+        assertThat(rules.size(), is(2));
+        Iterator<ShardingSphereRule> iterator = rules.iterator();
+        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
+        assertReadwriteSplittingRule((ReadwriteSplittingRule) iterator.next());
     }
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule rule) {
