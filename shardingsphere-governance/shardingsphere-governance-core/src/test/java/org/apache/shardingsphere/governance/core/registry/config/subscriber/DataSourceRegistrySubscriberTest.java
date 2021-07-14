@@ -20,14 +20,17 @@ package org.apache.shardingsphere.governance.core.registry.config.subscriber;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -35,20 +38,31 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceRegistrySubscriberTest {
     
+    private DataSourceRegistrySubscriber dataSourceRegistrySubscriber;
+    
     @Mock
     private DataSourcePersistService persistService;
+    
+    @Before
+    public void setUp() throws ReflectiveOperationException {
+        dataSourceRegistrySubscriber = new DataSourceRegistrySubscriber(mock(RegistryCenterRepository.class));
+        Field field = dataSourceRegistrySubscriber.getClass().getDeclaredField("persistService");
+        field.setAccessible(true);
+        field.set(dataSourceRegistrySubscriber, persistService);
+    }
     
     @Test
     public void assertUpdateWithDataSourceAddedEvent() {
         Map<String, DataSourceConfiguration> dataSourceConfigs = createDataSourceConfigurations();
         DataSourceAddedSQLNotificationEvent event = new DataSourceAddedSQLNotificationEvent("foo_db", dataSourceConfigs);
-        new DataSourceRegistrySubscriber(persistService).update(event);
+        dataSourceRegistrySubscriber.update(event);
         verify(persistService).persist("foo_db", dataSourceConfigs);
     }
     
@@ -57,7 +71,7 @@ public final class DataSourceRegistrySubscriberTest {
         DataSourceDroppedSQLNotificationEvent event = new DataSourceDroppedSQLNotificationEvent("foo_db", Collections.singletonList("ds_0"));
         Map<String, DataSourceConfiguration> dataSourceConfigs = createDataSourceConfigurations();
         when(persistService.load("foo_db")).thenReturn(dataSourceConfigs);
-        new DataSourceRegistrySubscriber(persistService).update(event);
+        dataSourceRegistrySubscriber.update(event);
         dataSourceConfigs.remove("ds_0");
         verify(persistService).persist("foo_db", dataSourceConfigs);
     }
