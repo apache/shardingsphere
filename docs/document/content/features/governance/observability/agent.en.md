@@ -15,7 +15,6 @@ There are currently Log, metrics, APM and other observability capabilities avail
 ```
  > cd  shardingsphere/shardingsphere-agent
  > mvn clean install
-
 ```
 
 ### Remote download（No release）
@@ -23,7 +22,6 @@ There are currently Log, metrics, APM and other observability capabilities avail
 ```
  > weget http://xxxxx/shardingsphere-agent.tar.gz
  > tar -zxvcf shardingsphere-agent.tar.gz
-
 ```
 
 Add startup arguments

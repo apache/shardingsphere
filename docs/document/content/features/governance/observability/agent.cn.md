@@ -16,7 +16,6 @@ ShardingSphere-Agent 是独立自主设计，基于`Bytebuddy`字节码增加的
 ```
  > cd shardingsphere/shardingsphere-agent
  > mvn clean install
-
 ```
 
 ### 远程下载(暂未发布)
@@ -24,7 +23,6 @@ ShardingSphere-Agent 是独立自主设计，基于`Bytebuddy`字节码增加的
 ```
  > weget http://xxxxx/shardingsphere-agent.tar.gz
  > tar -zxvcf shardingsphere-agent.tar.gz
-
 ```
 
 启动时添加参数
