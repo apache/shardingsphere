@@ -104,7 +104,9 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
      */
     @Subscribe
     public void updateExcludeTable(final ExcludeTableEvent event) {
-        excludeTableNames.clear();
-        excludeTableNames.addAll(event.getTableNames());
+        if (!event.getTableNames().isEmpty()) {
+            event.getTableNames().forEach(singleTableDataNodes::remove);
+            excludeTableNames.addAll(event.getTableNames());
+        }
     }
 }
