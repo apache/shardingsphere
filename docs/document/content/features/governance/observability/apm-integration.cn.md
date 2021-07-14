@@ -53,7 +53,7 @@ ShardingTracer.init(new SkywalkingTracer());
 
 ### 使用 OpenTelemetry
 
-在agent.yaml中填写好配置即可，例如将 Traces 数据导出到 Zipkin。
+在agent.yaml中填写好配置即可，例如将 Traces 数据导出到 Zipkin 。
 
 ```yaml
 OpenTelemetry:
