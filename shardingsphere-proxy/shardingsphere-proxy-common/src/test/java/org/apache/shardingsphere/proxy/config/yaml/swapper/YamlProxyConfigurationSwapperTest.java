@@ -82,7 +82,6 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(3L));
         assertThat(dataSourceParameter.getMaxPoolSize(), is(4));
         assertThat(dataSourceParameter.getMinPoolSize(), is(5));
-        assertThat(dataSourceParameter.getMaintenanceIntervalMilliseconds(), is(6L));
         assertTrue(dataSourceParameter.isReadOnly());
     }
     
@@ -171,7 +170,6 @@ public final class YamlProxyConfigurationSwapperTest {
         when(yamlDataSourceParameter.getMaxLifetimeMilliseconds()).thenReturn(3L);
         when(yamlDataSourceParameter.getMaxPoolSize()).thenReturn(4);
         when(yamlDataSourceParameter.getMinPoolSize()).thenReturn(5);
-        when(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds()).thenReturn(6L);
         when(yamlDataSourceParameter.isReadOnly()).thenReturn(true);
         Map<String, YamlDataSourceParameter> dataSources = new HashMap<>(1, 1);
         dataSources.put("ds1", yamlDataSourceParameter);
@@ -188,7 +186,6 @@ public final class YamlProxyConfigurationSwapperTest {
         when(yamlDataSourceParameter.getMaxLifetimeMilliseconds()).thenReturn(3L);
         when(yamlDataSourceParameter.getMaxPoolSize()).thenReturn(4);
         when(yamlDataSourceParameter.getMinPoolSize()).thenReturn(5);
-        when(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds()).thenReturn(6L);
         when(yamlDataSourceParameter.isReadOnly()).thenReturn(true);
     }
     

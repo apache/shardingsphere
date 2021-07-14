@@ -48,8 +48,6 @@ public final class YamlDataSourceParameter implements YamlConfiguration {
     
     private int minPoolSize;
     
-    private long maintenanceIntervalMilliseconds;
-    
     private boolean readOnly;
     
     private Properties customPoolProps;
