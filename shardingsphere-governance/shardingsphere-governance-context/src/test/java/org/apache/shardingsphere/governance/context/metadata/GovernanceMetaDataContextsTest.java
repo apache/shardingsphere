@@ -100,6 +100,7 @@ public final class GovernanceMetaDataContextsTest {
 
     @Before
     public void setUp() {
+        when(governanceFacade.getPersistCenter()).thenReturn(persistCenter);
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.getDataSourceStatusService().loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
