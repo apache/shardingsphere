@@ -265,10 +265,10 @@
             </join-table>
         </from>
         <projections start-index="7" stop-index="77">
-            <column-projection name="department_id" alias="d_dept_id" start-index="7" stop-index="21">
+            <column-projection name="department_id" alias="d_dept_id" start-index="7" stop-index="34">
                 <owner name="d" start-index="7" stop-index="7"/>
             </column-projection>
-            <column-projection name="department_id" alias="e_dept_id" start-index="37" stop-index="51">
+            <column-projection name="department_id" alias="e_dept_id" start-index="37" stop-index="64">
                 <owner name="e" start-index="37" stop-index="37"/>
             </column-projection>
             <column-projection name="last_name" start-index="67" stop-index="77">
@@ -298,7 +298,7 @@
             </join-table>
         </from>
         <projections start-index="7" stop-index="47">
-            <column-projection name="department_id" alias="d_e_dept_id" start-index="7" stop-index="19"/>
+            <column-projection name="department_id" alias="d_e_dept_id" start-index="7" stop-index="34"/>
             <column-projection name="last_name" start-index="37" stop-index="47">
                 <owner name="e" start-index="37" stop-index="37"/>
             </column-projection>

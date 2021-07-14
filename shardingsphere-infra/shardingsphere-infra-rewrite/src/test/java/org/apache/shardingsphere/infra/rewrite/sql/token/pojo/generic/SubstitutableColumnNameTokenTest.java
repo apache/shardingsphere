@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.junit.Test;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -26,6 +30,8 @@ public final class SubstitutableColumnNameTokenTest {
     
     @Test
     public void assertToString() {
-        assertThat(new SubstitutableColumnNameToken(0, 1, "id").toString(), is("id"));
+        Collection<ColumnProjection> projections = new LinkedList<>();
+        projections.add(new ColumnProjection(null, "id", null));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections).toString(), is("id"));
     }
 }

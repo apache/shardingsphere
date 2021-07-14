@@ -27,12 +27,11 @@
         <output sql="SELECT a.account_id, a.plain_password AS password, a.plain_amount AS a, a.status AS s FROM t_account_bak_1 AS a WHERE a.account_id = 1 AND a.plain_password = 'aaa' AND a.plain_amount = 1000 AND a.status = 'OK'" />
     </rewrite-assertion>
     
-    <!-- FIXME #9510 should rewrite owner table as sharding table -->
-<!--    <rewrite-assertion id="select_with_unqualified_shorthand">-->
-<!--        <input sql="SELECT * FROM t_account_bak" />-->
-<!--        <output sql="SELECT `t_account_bak_0`.`account_id`, `t_account_bak_0`.`plain_password` AS password, `t_account_bak_0`.`plain_amount` AS amount, `t_account_bak_0`.`status` FROM t_account_bak_0" />-->
-<!--        <output sql="SELECT `t_account_bak_1`.`account_id`, `t_account_bak_1`.`plain_password` AS password, `t_account_bak_1`.`plain_amount` AS amount, `t_account_bak_1`.`status` FROM t_account_bak_1" />-->
-<!--    </rewrite-assertion>-->
+    <rewrite-assertion id="select_with_unqualified_shorthand">
+        <input sql="SELECT * FROM t_account_bak" />
+        <output sql="SELECT `t_account_bak_0`.`account_id`, `t_account_bak_0`.`plain_password` AS password, `t_account_bak_0`.`plain_amount` AS amount, `t_account_bak_0`.`status` FROM t_account_bak_0" />
+        <output sql="SELECT `t_account_bak_1`.`account_id`, `t_account_bak_1`.`plain_password` AS password, `t_account_bak_1`.`plain_amount` AS amount, `t_account_bak_1`.`status` FROM t_account_bak_1" />
+    </rewrite-assertion>
     
     <rewrite-assertion id="select_with_qualified_shorthand">
         <input sql="SELECT a.* FROM t_account_bak a" />
