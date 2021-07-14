@@ -23,7 +23,6 @@ import org.apache.shardingsphere.governance.core.lock.service.LockRegistryServic
 import org.apache.shardingsphere.governance.core.registry.cache.subscriber.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesPersistService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.DataSourceRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.GlobalRuleRegistrySubscriber;
@@ -35,13 +34,6 @@ import org.apache.shardingsphere.governance.core.registry.state.service.Instance
 import org.apache.shardingsphere.governance.core.registry.state.service.UserStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Registry center.
@@ -50,14 +42,6 @@ import java.util.Properties;
 public final class RegistryCenter {
     
     private final String instanceId;
-    
-    private final DataSourcePersistService dataSourceService;
-    
-    private final SchemaRulePersistService schemaRuleService;
-    
-    private final GlobalRulePersistService globalRuleService;
-    
-    private final PropertiesPersistService propsService;
     
     private final SchemaRegistryService schemaService;
     
@@ -69,10 +53,6 @@ public final class RegistryCenter {
     
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
-        dataSourceService = new DataSourcePersistService(repository);
-        schemaRuleService = new SchemaRulePersistService(repository);
-        globalRuleService = new GlobalRulePersistService(repository);
-        propsService = new PropertiesPersistService(repository);
         schemaService = new SchemaRegistryService(repository);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);
@@ -81,32 +61,16 @@ public final class RegistryCenter {
     }
     
     private void createSubscribers(final RegistryCenterRepository repository) {
-        new DataSourceRegistrySubscriber(dataSourceService);
-        new GlobalRuleRegistrySubscriber(globalRuleService, new UserStatusRegistryService(repository));
-        new SchemaRuleRegistrySubscriber(schemaRuleService);
+        DataSourcePersistService dataSourcePersistService = new DataSourcePersistService(repository);
+        GlobalRulePersistService globalRulePersistService = new GlobalRulePersistService(repository);
+        SchemaRulePersistService schemaRulePersistService = new SchemaRulePersistService(repository);
+        UserStatusRegistryService userStatusRegistryService = new UserStatusRegistryService(repository);
+        new DataSourceRegistrySubscriber(dataSourcePersistService);
+        new GlobalRuleRegistrySubscriber(globalRulePersistService, userStatusRegistryService);
+        new SchemaRuleRegistrySubscriber(schemaRulePersistService);
         new DataSourceStatusRegistrySubscriber(repository);
-        new ScalingRegistrySubscriber(repository, schemaRuleService);
+        new ScalingRegistrySubscriber(repository, schemaRulePersistService);
         new ProcessRegistrySubscriber(repository);
-    }
-    
-    /**
-     * Persist configurations.
-     *
-     * @param dataSourceConfigs schema and data source configuration map
-     * @param schemaRuleConfigs schema and rule configuration map
-     * @param globalRuleConfigs global rule configurations
-     * @param props properties
-     * @param isOverwrite whether overwrite registry center's configuration if existed
-     */
-    public void persistConfigurations(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
-                                      final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
-        globalRuleService.persist(globalRuleConfigs, isOverwrite);
-        propsService.persist(props, isOverwrite);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigs.entrySet()) {
-            String schemaName = entry.getKey();
-            dataSourceService.persist(schemaName, dataSourceConfigs.get(schemaName), isOverwrite);
-            schemaRuleService.persist(schemaName, schemaRuleConfigs.get(schemaName), isOverwrite);
-        }
     }
     
     /**

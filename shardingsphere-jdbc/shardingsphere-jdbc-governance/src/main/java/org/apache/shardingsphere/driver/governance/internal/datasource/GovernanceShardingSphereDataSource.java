@@ -22,7 +22,6 @@ import org.apache.shardingsphere.driver.governance.internal.state.DriverStateCon
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.core.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -86,12 +85,12 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     }
     
     private StandardMetaDataContexts createMetaDataContexts(final GovernanceFacade governanceFacade) throws SQLException {
-        RegistryCenter registryCenter = governanceFacade.getRegistryCenter();
-        Map<String, DataSourceConfiguration> dataSourceConfigs = registryCenter.getDataSourceService().load(DefaultSchema.LOGIC_NAME);
-        Collection<RuleConfiguration> ruleConfigurations = registryCenter.getSchemaRuleService().load(DefaultSchema.LOGIC_NAME);
+        Map<String, DataSourceConfiguration> dataSourceConfigs = governanceFacade.getPersistCenter().getDataSourceService().load(DefaultSchema.LOGIC_NAME);
+        Collection<RuleConfiguration> ruleConfigurations = governanceFacade.getPersistCenter().getSchemaRuleService().load(DefaultSchema.LOGIC_NAME);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), registryCenter.getGlobalRuleService().load(), registryCenter.getPropsService().load());
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), 
+                governanceFacade.getPersistCenter().getGlobalRuleService().load(), governanceFacade.getPersistCenter().getPropsService().load());
         return metaDataContextsBuilder.build();
     }
     

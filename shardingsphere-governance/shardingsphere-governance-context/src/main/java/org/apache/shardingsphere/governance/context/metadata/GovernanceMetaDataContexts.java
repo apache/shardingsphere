@@ -111,7 +111,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private ShardingSphereLock createShardingSphereLock() {
         return metaDataContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.LOCK_ENABLED)
-                ? new ShardingSphereDistributeLock(governanceFacade.getRegistryCenterRepository(), metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS))
+                ? new ShardingSphereDistributeLock(governanceFacade.getRepository(), metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS))
                 : null;
     }
     
@@ -224,10 +224,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
      */
     @Subscribe
     public synchronized void renew(final AuthorityChangedEvent event) {
-        Optional<AuthorityRule> authorityRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).findAny().map(each -> (AuthorityRule) each);
-        if (authorityRule.isPresent()) {
-            authorityRule.get().refresh(metaDataContexts.getMetaDataMap(), event.getUsers());
-        }
+        Optional<AuthorityRule> rule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).findAny().map(each -> (AuthorityRule) each);
+        rule.ifPresent(optional -> optional.refresh(metaDataContexts.getMetaDataMap(), event.getUsers()));
     }
     
     /**
@@ -346,28 +344,20 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private ShardingSphereMetaData buildMetaData(final SchemaAddedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
-        if (!governanceFacade.getRegistryCenter().getDataSourceService().isExisted(schemaName)) {
-            governanceFacade.getRegistryCenter().getDataSourceService().persist(schemaName, new LinkedHashMap<>());
+        if (!governanceFacade.getPersistCenter().getDataSourceService().isExisted(schemaName)) {
+            governanceFacade.getPersistCenter().getDataSourceService().persist(schemaName, new LinkedHashMap<>());
         }
-        if (!governanceFacade.getRegistryCenter().getSchemaRuleService().isExisted(schemaName)) {
-            governanceFacade.getRegistryCenter().getSchemaRuleService().persist(schemaName, new LinkedList<>());
+        if (!governanceFacade.getPersistCenter().getSchemaRuleService().isExisted(schemaName)) {
+            governanceFacade.getPersistCenter().getSchemaRuleService().persist(schemaName, new LinkedList<>());
         }
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName,
-                governanceFacade.getRegistryCenter().getDataSourceService().load(schemaName)));
+                governanceFacade.getPersistCenter().getDataSourceService().load(schemaName)));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
-                Collections.singletonMap(schemaName, governanceFacade.getRegistryCenter().getSchemaRuleService().load(schemaName)),
+                Collections.singletonMap(schemaName, governanceFacade.getPersistCenter().getSchemaRuleService().load(schemaName)),
                 // TODO load global schema from reg center
-                governanceFacade.getRegistryCenter().getGlobalRuleService().load(), 
+                governanceFacade.getPersistCenter().getGlobalRuleService().load(), 
                 metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build().getMetaDataMap().get(schemaName);
-    }
-    
-    private Map<String, ShardingSphereMetaData> getChangedMataDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(metaDataContexts.getMetaDataMap().size());
-        for (Entry<String, ShardingSphereMetaData> entry : metaDataContexts.getMetaDataMap().entrySet()) {
-            result.put(entry.getKey(), entry.getValue());
-        }
-        return result;
     }
     
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final ShardingSphereSchema schema, final String schemaName) {
