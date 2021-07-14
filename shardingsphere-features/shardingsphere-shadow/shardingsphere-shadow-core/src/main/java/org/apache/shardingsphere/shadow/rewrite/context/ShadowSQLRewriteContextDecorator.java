@@ -42,12 +42,12 @@ public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContext
     }
     
     private void doShadowDecorate(final ShadowRule shadowRule, final SQLRewriteContext sqlRewriteContext) {
-        doParameterRewriter(shadowRule, sqlRewriteContext);
+        doParameterRewriterDecorate(shadowRule, sqlRewriteContext);
         sqlRewriteContext.addSQLTokenGenerators(new ShadowTokenGenerateBuilder(shadowRule).getSQLTokenGenerators());
     }
     
     @SuppressWarnings("unchecked")
-    private void doParameterRewriter(final ShadowRule shadowRule, final SQLRewriteContext sqlRewriteContext) {
+    private void doParameterRewriterDecorate(final ShadowRule shadowRule, final SQLRewriteContext sqlRewriteContext) {
         List<Object> parameters = sqlRewriteContext.getParameters();
         SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
         for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getSchema())) {
