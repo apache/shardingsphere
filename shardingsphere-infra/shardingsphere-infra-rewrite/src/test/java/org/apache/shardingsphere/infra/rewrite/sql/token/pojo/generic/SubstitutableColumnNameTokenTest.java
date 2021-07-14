@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class SubstitutableColumnNameTokenTest {
     
     @Test
     public void assertToString() {
-        Collection<ColumnProjection> projections = new LinkedList<>();
-        projections.add(new ColumnProjection(null, "id", null));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections).toString(), is("id"));
+        Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, "id", null));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections).toString(mock(RouteUnit.class)), is("id"));
     }
 }
