@@ -48,7 +48,8 @@ import java.util.Optional;
  * Projection token generator for encrypt.
  */
 @Setter
-public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext>, QueryWithCipherColumnAware, PreviousSQLTokensAware {
+public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator 
+        implements CollectionSQLTokenGenerator<SelectStatementContext>, QueryWithCipherColumnAware, PreviousSQLTokensAware {
     
     private boolean queryWithCipherColumn;
     
