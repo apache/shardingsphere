@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.governance.core.config;
 
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;

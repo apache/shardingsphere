@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesPersistService;
