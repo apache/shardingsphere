@@ -27,7 +27,7 @@ public final class RequiredAlgorithmMissedException extends RuleDefinitionViolat
     private static final long serialVersionUID = -1952698375135777585L;
     
     public RequiredAlgorithmMissedException(final String schemaName) {
-        super(1115, String.format("RequiredAlgorithmMissedExceptionSharding algorithm does not exist in schema `%s`.", schemaName));
+        super(1115, String.format("Sharding algorithm does not exist in schema `%s`.", schemaName));
     }
     
     public RequiredAlgorithmMissedException(final String schemaName, final Collection<String> algorithmNames) {

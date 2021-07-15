@@ -92,7 +92,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     }
     
     private void dropShardingAlgorithm(final ShardingRuleConfiguration currentRuleConfig, final String algorithmName) {
-        currentRuleConfig.getShardingAlgorithms().keySet().removeIf(key -> algorithmName.equalsIgnoreCase(key));
+        getCurrentShardingAlgorithms(currentRuleConfig).removeIf(key -> algorithmName.equalsIgnoreCase(key));
     }
     
     @Override
