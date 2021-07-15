@@ -53,7 +53,7 @@ public final class SchemaMetadataNode {
      * @return metadata node path
      */
     public static String getMetadataNodePath() {
-        return String.join("/", ROOT_NODE);
+        return String.join("/", "", ROOT_NODE);
     }
     
     /**
@@ -63,7 +63,7 @@ public final class SchemaMetadataNode {
      * @return schema name path
      */
     public static String getSchemaNamePath(final String schemaName) {
-        return String.join("/", ROOT_NODE, schemaName);
+        return String.join("/", "", ROOT_NODE, schemaName);
     }
     
     /**
