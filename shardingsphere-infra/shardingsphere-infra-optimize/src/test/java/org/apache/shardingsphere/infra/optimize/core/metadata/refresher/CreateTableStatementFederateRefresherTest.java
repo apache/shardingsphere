@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -90,11 +91,11 @@ public class CreateTableStatementFederateRefresherTest {
         FederateSchemaMetadata schema = buildSchema();
         federateRefresher.refresh(schema, Collections.singletonList("ds"), createTableStatement, materials);
         assertTrue(schema.getTables().containsKey("t_order"));
-        assertTrue(schema.getTables().get("t_order").getColumnNames().isEmpty());
+        assertFalse(schema.getTables().get("t_order").getColumnNames().contains("order_id"));
     }
 
     private void refreshTableWithoutRule(final CreateTableStatement createTableStatement) throws SQLException {
-        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
+        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
         DataSource dataSource = mock(DataSource.class);
@@ -110,7 +111,7 @@ public class CreateTableStatementFederateRefresherTest {
         FederateSchemaMetadata schema = buildSchema();
         federateRefresher.refresh(schema, Collections.singletonList("t_order_item"), createTableStatement, materials);
         assertTrue(schema.getTables().containsKey("t_order"));
-        assertTrue(schema.getTables().get("t_order").getColumnNames().isEmpty());
+        assertFalse(schema.getTables().get("t_order").getColumnNames().contains("order_id"));
     }
 
     private FederateSchemaMetadata buildSchema() {
