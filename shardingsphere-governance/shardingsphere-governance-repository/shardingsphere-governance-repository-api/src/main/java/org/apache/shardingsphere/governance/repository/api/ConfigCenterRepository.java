@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.governance.repository.api;
 
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+
 import java.util.List;
 
 /**
  * Config center repository.
  */
-public interface ConfigCenterRepository {
+public interface ConfigCenterRepository extends TypedSPI {
     
     /**
      * Path separator.

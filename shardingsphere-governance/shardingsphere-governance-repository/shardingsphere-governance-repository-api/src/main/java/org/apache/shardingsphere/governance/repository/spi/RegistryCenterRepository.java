@@ -20,14 +20,13 @@ package org.apache.shardingsphere.governance.repository.spi;
 import org.apache.shardingsphere.governance.repository.api.ConfigCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Registry center repository.
  */
-public interface RegistryCenterRepository extends ConfigCenterRepository, TypedSPI {
+public interface RegistryCenterRepository extends ConfigCenterRepository {
     
     /**
      * Initialize registry center.
