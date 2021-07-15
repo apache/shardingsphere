@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -46,9 +48,12 @@ import java.util.Optional;
  * Projection token generator for encrypt.
  */
 @Setter
-public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext>, QueryWithCipherColumnAware {
+public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator 
+        implements CollectionSQLTokenGenerator<SelectStatementContext>, QueryWithCipherColumnAware, PreviousSQLTokensAware {
     
     private boolean queryWithCipherColumn;
+    
+    private List<SQLToken> previousSQLTokens;
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
@@ -110,6 +115,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
                 projections.add(new ColumnProjection(null == each.getOwner() ? null : each.getOwner(), each.getName(), null));
             }
         }
+        previousSQLTokens.removeIf(each -> each.getStartIndex() == segment.getStartIndex());
         return new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), projections, databaseType.getQuoteCharacter());
     }
     
@@ -131,5 +137,10 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             }
         }
         throw new IllegalStateException(String.format("Can not find shorthand projection segment, owner is: `%s`", owner.orElse(null)));
+    }
+    
+    @Override
+    public void setPreviousSQLTokens(final List<SQLToken> previousSQLTokens) {
+        this.previousSQLTokens = previousSQLTokens;
     }
 }
