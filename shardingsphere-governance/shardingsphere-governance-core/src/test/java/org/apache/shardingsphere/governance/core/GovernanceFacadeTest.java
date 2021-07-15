@@ -69,7 +69,7 @@ public final class GovernanceFacadeTest {
         ConfigCenter configCenter = mock(ConfigCenter.class);
         RegistryCenter registryCenter = mock(RegistryCenter.class);
         GovernanceWatcherFactory listenerFactory = mock(GovernanceWatcherFactory.class);
-        setField(governanceFacade, "persistCenter", configCenter);
+        setField(governanceFacade, "configCenter", configCenter);
         setField(governanceFacade, "registryCenter", registryCenter);
         setField(governanceFacade, "listenerFactory", listenerFactory);
         Map<String, DataSourceConfiguration> dataSourceConfigs = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));

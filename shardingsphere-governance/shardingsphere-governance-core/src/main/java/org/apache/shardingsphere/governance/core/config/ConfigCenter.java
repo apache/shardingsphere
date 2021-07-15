@@ -22,7 +22,6 @@ import org.apache.shardingsphere.governance.core.registry.config.service.impl.Da
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesPersistService;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
-import org.apache.shardingsphere.governance.core.registry.metadata.service.SchemaRegistryService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -46,14 +45,11 @@ public final class ConfigCenter {
     
     private final PropertiesPersistService propsService;
     
-    private final SchemaRegistryService schemaService;
-    
     public ConfigCenter(final RegistryCenterRepository repository) {
         dataSourceService = new DataSourcePersistService(repository);
         schemaRuleService = new SchemaRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
-        schemaService = new SchemaRegistryService(repository);
     }
     
     /**
