@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.governance.core.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.governance.core.config.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.governance.core.config.service.impl.GlobalRulePersistService;
+import org.apache.shardingsphere.governance.core.config.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.governance.core.config.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;

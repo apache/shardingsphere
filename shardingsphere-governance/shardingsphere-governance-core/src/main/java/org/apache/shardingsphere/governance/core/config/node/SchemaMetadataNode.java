@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.node;
+package org.apache.shardingsphere.governance.core.config.node;
 
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;

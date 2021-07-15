@@ -15,37 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.node;
+package org.apache.shardingsphere.governance.core.config.node;
 
-import com.google.common.base.Joiner;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.Test;
 
-/**
- * Global node.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GlobalNode {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class GlobalNodeTest {
     
-    private static final String RULE_NODE = "rules";
-    
-    private static final String PROPS_NODE = "props";
-    
-    /**
-     * Get global rule node path.
-     *
-     * @return global rule node path
-     */
-    public static String getGlobalRuleNode() {
-        return Joiner.on("/").join("", RULE_NODE);
+    @Test
+    public void assertGetGlobalRuleNodePath() {
+        assertThat(GlobalNode.getGlobalRuleNode(), is("/rules"));
     }
     
-    /**
-     * Get properties path.
-     *
-     * @return properties path
-     */
-    public static String getPropsPath() {
-        return Joiner.on("/").join("", PROPS_NODE);
+    @Test
+    public void assertGetPropsPath() {
+        assertThat(GlobalNode.getPropsPath(), is("/props"));
     }
 }

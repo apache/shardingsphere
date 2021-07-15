@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service.impl;
+package org.apache.shardingsphere.governance.core.config.impl;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.core.config.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;

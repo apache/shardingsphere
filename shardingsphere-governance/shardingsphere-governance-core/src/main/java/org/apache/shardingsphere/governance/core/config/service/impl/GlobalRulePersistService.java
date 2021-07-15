@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service.impl;
+package org.apache.shardingsphere.governance.core.config.service.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
-import org.apache.shardingsphere.governance.core.registry.config.service.GlobalPersistService;
+import org.apache.shardingsphere.governance.core.config.node.GlobalNode;
+import org.apache.shardingsphere.governance.core.config.service.GlobalPersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
