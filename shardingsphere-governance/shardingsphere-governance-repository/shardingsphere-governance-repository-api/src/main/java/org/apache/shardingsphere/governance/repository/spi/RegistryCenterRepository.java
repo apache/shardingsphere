@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.repository.spi;
 
-import org.apache.shardingsphere.governance.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 

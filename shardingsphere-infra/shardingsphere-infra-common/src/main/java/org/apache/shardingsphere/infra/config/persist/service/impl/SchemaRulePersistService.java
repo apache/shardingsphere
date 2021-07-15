@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.config.service.impl;
+package org.apache.shardingsphere.infra.config.persist.service.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.config.node.SchemaMetadataNode;
-import org.apache.shardingsphere.governance.core.config.service.SchemaBasedPersistService;
-import org.apache.shardingsphere.governance.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.infra.config.persist.service.SchemaBasedPersistService;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;

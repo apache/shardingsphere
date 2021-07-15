@@ -15,57 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.repository.api;
-
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
-
-import java.util.List;
+package org.apache.shardingsphere.infra.config.persist.service;
 
 /**
- * Config center repository.
+ * Schema based persist service.
+ * 
+ * @param <T> type of configuration
  */
-public interface ConfigCenterRepository extends TypedSPI {
+public interface SchemaBasedPersistService<T> {
     
     /**
-     * Path separator.
-     */
-    String PATH_SEPARATOR = "/";
-    
-    /**
-     * Get data from registry center.
+     * Persist configurations.
      *
-     * <p>Maybe use cache if existed.</p>
-     *
-     * @param key key of data
-     * @return value of data
+     * @param schemaName schema name
+     * @param configs configurations
+     * @param isOverwrite is overwrite
      */
-    String get(String key);
+    void persist(String schemaName, T configs, boolean isOverwrite);
     
     /**
-     * Get names of sub-node.
+     * Persist configurations.
      *
-     * @param key key of data
-     * @return sub-node names
+     * @param schemaName schema name
+     * @param configs configurations
      */
-    List<String> getChildrenKeys(String key);
+    void persist(String schemaName, T configs);
     
     /**
-     * Persist data.
+     * Load configurations.
      *
-     * @param key key of data
-     * @param value value of data
+     * @param schemaName schema name
+     * @return configurations
      */
-    void persist(String key, String value);
+    T load(String schemaName);
     
     /**
-     * Delete node.
+     * Judge whether schema configuration existed.
      *
-     * @param key key of data
+     * @param schemaName schema name
+     * @return configuration existed or not
      */
-    void delete(String key);
-    
-    /**
-     * Close.
-     */
-    void close();
+    boolean isExisted(String schemaName);
 }

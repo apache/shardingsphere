@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.config;
+package org.apache.shardingsphere.infra.config.persist;
 
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.config.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.governance.core.config.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.governance.core.config.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.governance.core.config.service.impl.SchemaRulePersistService;
-import org.apache.shardingsphere.governance.repository.api.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.GlobalRulePersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
