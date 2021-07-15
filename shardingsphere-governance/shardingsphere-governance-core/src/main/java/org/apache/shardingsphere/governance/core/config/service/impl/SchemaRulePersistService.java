@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.config.node.SchemaMetadataNode;
 import org.apache.shardingsphere.governance.core.config.service.SchemaBasedPersistService;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.governance.repository.api.ConfigCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
@@ -37,7 +37,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class SchemaRulePersistService implements SchemaBasedPersistService<Collection<RuleConfiguration>> {
     
-    private final RegistryCenterRepository repository;
+    private final ConfigCenterRepository repository;
     
     @Override
     public void persist(final String schemaName, final Collection<RuleConfiguration> configs, final boolean isOverwrite) {
