@@ -1,7 +1,28 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.shardingsphere.infra.optimize.core.metadata.refresher;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.infra.database.type.dialect.*;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
@@ -38,36 +59,68 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CreateTableStatementFederateRefresherTest {
+public final class CreateTableStatementFederateRefresherTest {
 
     private final SchemaBuilderMaterials materials = mock(SchemaBuilderMaterials.class);
 
     @Test
-    public void refreshTableWithRule() throws SQLException {
+    public void refreshForMySQL() throws SQLException {
         when(materials.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         refreshTableWithRule(new MySQLCreateTableStatement());
+    }
+
+    @Test
+    public void refreshForOracle() throws SQLException {
         when(materials.getDatabaseType()).thenReturn(new OracleDatabaseType());
         refreshTableWithRule(new OracleCreateTableStatement());
+    }
+
+    @Test
+    public void refreshForPostgreSQL() throws SQLException {
         when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         refreshTableWithRule(new PostgreSQLCreateTableStatement());
-        when(materials.getDatabaseType()).thenReturn(new SQLServerDatabaseType());
-        refreshTableWithRule(new SQLServerCreateTableStatement());
+    }
+
+    @Test
+    public void refreshForSQL92() throws SQLException {
         when(materials.getDatabaseType()).thenReturn(new SQL92DatabaseType());
         refreshTableWithRule(new SQL92CreateTableStatement());
     }
 
     @Test
-    public void refreshTableWithoutRule() throws SQLException {
+    public void refreshForSQLServer() throws SQLException {
+        when(materials.getDatabaseType()).thenReturn(new SQLServerDatabaseType());
+        refreshTableWithRule(new SQLServerCreateTableStatement());
+    }
+
+    @Test
+    public void refreshWithoutRuleForMySQL() throws SQLException {
         when(materials.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         refreshTableWithoutRule(new MySQLCreateTableStatement());
+    }
+
+    @Test
+    public void refreshWithoutRuleForOracle() throws SQLException {
         when(materials.getDatabaseType()).thenReturn(new OracleDatabaseType());
         refreshTableWithoutRule(new OracleCreateTableStatement());
+    }
+
+    @Test
+    public void refreshWithoutRuleForPostgreSQL() throws SQLException {
         when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         refreshTableWithoutRule(new PostgreSQLCreateTableStatement());
-        when(materials.getDatabaseType()).thenReturn(new SQLServerDatabaseType());
-        refreshTableWithoutRule(new SQLServerCreateTableStatement());
+    }
+
+    @Test
+    public void refreshWithoutRuleForSQL92() throws SQLException {
         when(materials.getDatabaseType()).thenReturn(new SQL92DatabaseType());
         refreshTableWithoutRule(new SQL92CreateTableStatement());
+    }
+
+    @Test
+    public void refreshWithoutRuleForSQLServer() throws SQLException {
+        when(materials.getDatabaseType()).thenReturn(new SQLServerDatabaseType());
+        refreshTableWithoutRule(new SQLServerCreateTableStatement());
     }
 
     private void refreshTableWithRule(final CreateTableStatement createTableStatement) throws SQLException {
