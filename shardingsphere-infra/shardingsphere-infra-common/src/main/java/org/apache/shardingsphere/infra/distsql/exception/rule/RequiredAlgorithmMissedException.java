@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.distsql.exception.rule;
 import java.util.Collection;
 
 /**
- * Required rule missed exception.
+ * Required algorithm missed exception.
  */
 public final class RequiredAlgorithmMissedException extends RuleDefinitionViolationException {
     
