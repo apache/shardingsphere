@@ -1,4 +1,12 @@
-# Why should you get involved in an Open-Source community?
++++
+
+title = "Why should you get involved in an Open-Source community?"
+weight = 15
+chapter = true
+
++++
+
+
 
 You wouldn't imagine how close Open-Source projects are to you, as they have been integrated into every aspect of our lives - from the office to your home, from gyms to restaurants etc. 
 
