@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.infra.config.persist;
 
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
-import org.apache.shardingsphere.governance.core.registry.metadata.service.SchemaRegistryService;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.GlobalRulePersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
@@ -33,10 +32,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Persist center.
+ * Config center.
  */
 @Getter
-public final class PersistCenter {
+public final class ConfigCenter {
     
     private final DataSourcePersistService dataSourceService;
     
@@ -46,14 +45,11 @@ public final class PersistCenter {
     
     private final PropertiesPersistService propsService;
     
-    private final SchemaRegistryService schemaService;
-    
-    public PersistCenter(final RegistryCenterRepository repository) {
+    public ConfigCenter(final ConfigCenterRepository repository) {
         dataSourceService = new DataSourcePersistService(repository);
         schemaRuleService = new SchemaRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
-        schemaService = new SchemaRegistryService(repository);
     }
     
     /**

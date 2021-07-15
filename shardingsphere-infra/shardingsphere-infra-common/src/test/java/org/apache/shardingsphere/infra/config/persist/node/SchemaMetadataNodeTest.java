@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.node;
+package org.apache.shardingsphere.infra.config.persist.node;
 
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Test;

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.registry.PersistCenter;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
@@ -85,7 +85,7 @@ public final class GovernanceMetaDataContextsTest {
     private GovernanceFacade governanceFacade;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private PersistCenter persistCenter;
+    private ConfigCenter configCenter;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private RegistryCenter registryCenter;
@@ -100,7 +100,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Before
     public void setUp() {
-        when(governanceFacade.getPersistCenter()).thenReturn(persistCenter);
+        when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.getDataSourceStatusService().loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
@@ -141,8 +141,8 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertSchemaAdd() throws SQLException {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add");
-        when(persistCenter.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
-        when(persistCenter.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
+        when(configCenter.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(configCenter.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
         governanceMetaDataContexts.renew(event);
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add").getResource().getDataSources());

@@ -85,12 +85,12 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     }
     
     private StandardMetaDataContexts createMetaDataContexts(final GovernanceFacade governanceFacade) throws SQLException {
-        Map<String, DataSourceConfiguration> dataSourceConfigs = governanceFacade.getPersistCenter().getDataSourceService().load(DefaultSchema.LOGIC_NAME);
-        Collection<RuleConfiguration> ruleConfigurations = governanceFacade.getPersistCenter().getSchemaRuleService().load(DefaultSchema.LOGIC_NAME);
+        Map<String, DataSourceConfiguration> dataSourceConfigs = governanceFacade.getConfigCenter().getDataSourceService().load(DefaultSchema.LOGIC_NAME);
+        Collection<RuleConfiguration> ruleConfigurations = governanceFacade.getConfigCenter().getSchemaRuleService().load(DefaultSchema.LOGIC_NAME);
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), 
-                governanceFacade.getPersistCenter().getGlobalRuleService().load(), governanceFacade.getPersistCenter().getPropsService().load());
+                governanceFacade.getConfigCenter().getGlobalRuleService().load(), governanceFacade.getConfigCenter().getPropsService().load());
         return metaDataContextsBuilder.build();
     }
     

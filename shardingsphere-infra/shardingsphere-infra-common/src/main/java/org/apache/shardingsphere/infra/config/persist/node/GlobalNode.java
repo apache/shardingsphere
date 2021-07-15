@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.node;
+package org.apache.shardingsphere.infra.config.persist.node;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -37,7 +36,7 @@ public final class GlobalNode {
      * @return global rule node path
      */
     public static String getGlobalRuleNode() {
-        return Joiner.on("/").join("", RULE_NODE);
+        return String.join("/", "", RULE_NODE);
     }
     
     /**
@@ -46,6 +45,6 @@ public final class GlobalNode {
      * @return properties path
      */
     public static String getPropsPath() {
-        return Joiner.on("/").join("", PROPS_NODE);
+        return String.join("/", "", PROPS_NODE);
     }
 }

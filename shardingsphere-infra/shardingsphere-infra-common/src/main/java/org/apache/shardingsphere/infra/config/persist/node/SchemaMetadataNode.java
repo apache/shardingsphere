@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.node;
+package org.apache.shardingsphere.infra.config.persist.node;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -54,7 +53,7 @@ public final class SchemaMetadataNode {
      * @return metadata node path
      */
     public static String getMetadataNodePath() {
-        return Joiner.on("/").join("", ROOT_NODE);
+        return String.join("/", "", ROOT_NODE);
     }
     
     /**
@@ -64,7 +63,7 @@ public final class SchemaMetadataNode {
      * @return schema name path
      */
     public static String getSchemaNamePath(final String schemaName) {
-        return Joiner.on("/").join("", ROOT_NODE, schemaName);
+        return String.join("/", "", ROOT_NODE, schemaName);
     }
     
     /**
@@ -88,7 +87,7 @@ public final class SchemaMetadataNode {
     }
     
     private static String getFullMetadataPath(final String schemaName, final String node) {
-        return Joiner.on("/").join("", ROOT_NODE, schemaName, node);
+        return String.join("/", "", ROOT_NODE, schemaName, node);
     }
     
     /**

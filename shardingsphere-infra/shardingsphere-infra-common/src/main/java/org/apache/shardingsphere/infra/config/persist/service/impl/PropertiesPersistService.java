@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service.impl;
+package org.apache.shardingsphere.infra.config.persist.service.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.config.service.GlobalPersistService;
-import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.node.GlobalNode;
+import org.apache.shardingsphere.infra.config.persist.service.GlobalPersistService;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Properties;
@@ -32,7 +32,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public final class PropertiesPersistService implements GlobalPersistService<Properties> {
     
-    private final RegistryCenterRepository repository;
+    private final ConfigCenterRepository repository;
     
     @Override
     public void persist(final Properties props, final boolean isOverwrite) {

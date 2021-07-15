@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.governance.core.registry.PersistCenter;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
@@ -66,10 +66,10 @@ public final class GovernanceFacadeTest {
     
     @Test
     public void assertOnlineInstance() {
-        PersistCenter persistCenter = mock(PersistCenter.class);
+        ConfigCenter configCenter = mock(ConfigCenter.class);
         RegistryCenter registryCenter = mock(RegistryCenter.class);
         GovernanceWatcherFactory listenerFactory = mock(GovernanceWatcherFactory.class);
-        setField(governanceFacade, "persistCenter", persistCenter);
+        setField(governanceFacade, "configCenter", configCenter);
         setField(governanceFacade, "registryCenter", registryCenter);
         setField(governanceFacade, "listenerFactory", listenerFactory);
         Map<String, DataSourceConfiguration> dataSourceConfigs = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
@@ -77,7 +77,7 @@ public final class GovernanceFacadeTest {
         Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
         Properties props = new Properties();
         governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props);
-        verify(persistCenter).persistConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
+        verify(configCenter).persistConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
         verify(registryCenter).registerInstanceOnline();
         verify(listenerFactory).watchListeners();
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service;
+package org.apache.shardingsphere.infra.config.persist.service;
 
 /**
  * Global persist service.

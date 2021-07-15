@@ -15,33 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service.impl;
+package org.apache.shardingsphere.infra.config.persist.node;
 
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class PropertiesPersistServiceTest {
-    
-    private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
-    
-    @Mock
-    private RegistryCenterRepository repository;
+public final class GlobalNodeTest {
     
     @Test
-    public void assertLoad() {
-        when(repository.get("/props")).thenReturn(PROPS_YAML);
-        Properties actual = new PropertiesPersistService(repository).load();
-        assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));
+    public void assertGetGlobalRuleNodePath() {
+        assertThat(GlobalNode.getGlobalRuleNode(), is("/rules"));
+    }
+    
+    @Test
+    public void assertGetPropsPath() {
+        assertThat(GlobalNode.getPropsPath(), is("/props"));
     }
 }

@@ -15,45 +15,57 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service;
+package org.apache.shardingsphere.infra.config.persist.repository;
+
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+
+import java.util.List;
 
 /**
- * Schema based persist service.
- * 
- * @param <T> type of configuration
+ * Config center repository.
  */
-public interface SchemaBasedPersistService<T> {
+public interface ConfigCenterRepository extends TypedSPI {
     
     /**
-     * Persist configurations.
-     *
-     * @param schemaName schema name
-     * @param configs configurations
-     * @param isOverwrite is overwrite
+     * Path separator.
      */
-    void persist(String schemaName, T configs, boolean isOverwrite);
+    String PATH_SEPARATOR = "/";
     
     /**
-     * Persist configurations.
+     * Get data from registry center.
      *
-     * @param schemaName schema name
-     * @param configs configurations
+     * <p>Maybe use cache if existed.</p>
+     *
+     * @param key key of data
+     * @return value of data
      */
-    void persist(String schemaName, T configs);
+    String get(String key);
     
     /**
-     * Load configurations.
+     * Get names of sub-node.
      *
-     * @param schemaName schema name
-     * @return configurations
+     * @param key key of data
+     * @return sub-node names
      */
-    T load(String schemaName);
+    List<String> getChildrenKeys(String key);
     
     /**
-     * Judge whether schema configuration existed.
+     * Persist data.
      *
-     * @param schemaName schema name
-     * @return configuration existed or not
+     * @param key key of data
+     * @param value value of data
      */
-    boolean isExisted(String schemaName);
+    void persist(String key, String value);
+    
+    /**
+     * Delete node.
+     *
+     * @param key key of data
+     */
+    void delete(String key);
+    
+    /**
+     * Close.
+     */
+    void close();
 }

@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.infra.config.persist;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.GlobalRulePersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -52,11 +52,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PersistCenterTest {
+public final class ConfigCenterTest {
     
-    private static final String SCHEMA_RULE_YAML = "yaml/regcenter/data-schema-rule.yaml";
+    private static final String SCHEMA_RULE_YAML = "yaml/configcenter/data-schema-rule.yaml";
     
-    private static final String GLOBAL_RULE_YAML = "yaml/regcenter/data-global-rule.yaml";
+    private static final String GLOBAL_RULE_YAML = "yaml/configcenter/data-global-rule.yaml";
     
     @Mock
     private DataSourcePersistService dataSourceService;
@@ -70,11 +70,11 @@ public final class PersistCenterTest {
     @Mock
     private PropertiesPersistService propsService;
     
-    private PersistCenter persistCenter;
+    private ConfigCenter configCenter;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        persistCenter = new PersistCenter(mock(RegistryCenterRepository.class));
+        configCenter = new ConfigCenter(mock(ConfigCenterRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("schemaRuleService", schemaRuleService);
         setField("globalRuleService", globalRuleService);
@@ -82,9 +82,9 @@ public final class PersistCenterTest {
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        Field field = persistCenter.getClass().getDeclaredField(name);
+        Field field = configCenter.getClass().getDeclaredField(name);
         field.setAccessible(true);
-        field.set(persistCenter, value);
+        field.set(configCenter, value);
     }
     
     @Test
@@ -93,7 +93,7 @@ public final class PersistCenterTest {
         Collection<RuleConfiguration> schemaRuleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
-        persistCenter.persistConfigurations(
+        configCenter.persistConfigurations(
                 Collections.singletonMap("foo_db", dataSourceConfigs), Collections.singletonMap("foo_db", schemaRuleConfigs), globalRuleConfigs, props, false);
         verify(dataSourceService).persist("foo_db", dataSourceConfigs, false);
         verify(schemaRuleService).persist("foo_db", schemaRuleConfigs, false);
@@ -127,9 +127,8 @@ public final class PersistCenterTest {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SCHEMA_RULE_YAML), Collection.class));
     }
     
-    @SuppressWarnings("unchecked")
     private Collection<RuleConfiguration> createGlobalRuleConfigurations() {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(GLOBAL_RULE_YAML), Collection.class));
+        return Collections.emptyList();
     }
     
     private Properties createProperties() {

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service.impl;
+package org.apache.shardingsphere.infra.config.persist.service.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public final class SchemaRulePersistServiceTest {
     
     @Mock
-    private RegistryCenterRepository repository;
+    private ConfigCenterRepository repository;
     
     @Test
     public void assertLoadWithoutExistedNode() {
@@ -57,7 +57,7 @@ public final class SchemaRulePersistServiceTest {
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/regcenter/data-schema-rule.yaml").toURI()))
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/configcenter/data-schema-rule.yaml").toURI()))
                 .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

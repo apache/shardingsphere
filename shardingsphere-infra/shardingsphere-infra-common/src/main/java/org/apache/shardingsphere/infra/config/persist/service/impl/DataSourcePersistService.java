@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.service.impl;
+package org.apache.shardingsphere.infra.config.persist.service.impl;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
-import org.apache.shardingsphere.governance.core.registry.config.service.SchemaBasedPersistService;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.infra.config.persist.service.SchemaBasedPersistService;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class DataSourcePersistService implements SchemaBasedPersistService<Map<String, DataSourceConfiguration>> {
     
-    private final RegistryCenterRepository repository;
+    private final ConfigCenterRepository repository;
     
     @Override
     public void persist(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {
