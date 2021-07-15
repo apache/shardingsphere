@@ -116,7 +116,7 @@
             <shorthand-projection start-index="7" stop-index="9">
                 <owner start-index="7" stop-index="7" name="t"/>
             </shorthand-projection>
-            <column-projection start-index="11" stop-index="19" name="item_id" alias="item_id">
+            <column-projection start-index="11" stop-index="30" name="item_id" alias="item_id">
                 <owner start-index="11" stop-index="11" name="o"/>
             </column-projection>
             <expression-projection text="case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end" start-index="33" stop-index="124" alias="stateName"/>

@@ -19,25 +19,39 @@ package org.apache.shardingsphere.governance.core.registry.config.subscriber;
 
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaRuleRegistrySubscriberTest {
     
+    private SchemaRuleRegistrySubscriber schemaRuleRegistrySubscriber;
+    
     @Mock
     private SchemaRulePersistService persistService;
+    
+    @Before
+    public void setUp() throws ReflectiveOperationException {
+        schemaRuleRegistrySubscriber = new SchemaRuleRegistrySubscriber(mock(RegistryCenterRepository.class));
+        Field field = schemaRuleRegistrySubscriber.getClass().getDeclaredField("persistService");
+        field.setAccessible(true);
+        field.set(schemaRuleRegistrySubscriber, persistService);
+    }
     
     @Test
     public void assertUpdate() {
         RuleConfigurationsAlteredSQLNotificationEvent event = new RuleConfigurationsAlteredSQLNotificationEvent("foo_db", Collections.emptyList());
-        new SchemaRuleRegistrySubscriber(persistService).update(event);
+        schemaRuleRegistrySubscriber.update(event);
         verify(persistService).persist(event.getSchemaName(), event.getRuleConfigurations());
     }
 }

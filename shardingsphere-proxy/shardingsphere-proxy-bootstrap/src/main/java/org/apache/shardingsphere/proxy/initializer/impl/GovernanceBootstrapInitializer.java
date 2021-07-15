@@ -98,22 +98,22 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         Collection<String> schemaNames = governanceFacade.getRegistryCenter().getSchemaService().loadAllNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
-        Properties props = governanceFacade.getRegistryCenter().getPropsService().load();
+        Properties props = governanceFacade.getPersistCenter().getPropsService().load();
         // TODO load global rules from reg center
-        Collection<RuleConfiguration> globalRuleConfigs = governanceFacade.getRegistryCenter().getGlobalRuleService().load();
+        Collection<RuleConfiguration> globalRuleConfigs = governanceFacade.getPersistCenter().getGlobalRuleService().load();
         return new ProxyConfiguration(schemaDataSources, schemaRules, globalRuleConfigs, props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
         return schemaNames.stream()
             .collect(Collectors.toMap(each -> each, 
-                each -> DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getRegistryCenter().getDataSourceService().load(each)),
+                each -> DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getPersistCenter().getDataSourceService().load(each)),
                 (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
         return schemaNames.stream().collect(
-                Collectors.toMap(each -> each, each -> governanceFacade.getRegistryCenter().getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                Collectors.toMap(each -> each, each -> governanceFacade.getPersistCenter().getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

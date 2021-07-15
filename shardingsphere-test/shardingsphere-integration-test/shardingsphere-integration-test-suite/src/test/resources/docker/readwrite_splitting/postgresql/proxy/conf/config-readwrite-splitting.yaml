@@ -27,7 +27,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-    maintenanceIntervalMilliseconds: 30000
   read_0:
     url: jdbc:postgresql://postgresql.readwrite_splitting.host:5432/read_0?serverTimezone=UTC&useSSL=false
     username: root
@@ -37,7 +36,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-    maintenanceIntervalMilliseconds: 30000
   read_1:
     url: jdbc:postgresql://postgresql.readwrite_splitting.host:5432/read_1?serverTimezone=UTC&useSSL=false
     username: root
@@ -47,7 +45,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-    maintenanceIntervalMilliseconds: 30000
 
 rules:
 - !SHARDING

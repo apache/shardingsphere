@@ -20,6 +20,7 @@ package org.apache.shardingsphere.governance.core.registry.config.subscriber;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 /**
@@ -29,8 +30,8 @@ public final class SchemaRuleRegistrySubscriber {
     
     private final SchemaRulePersistService persistService;
     
-    public SchemaRuleRegistrySubscriber(final SchemaRulePersistService persistService) {
-        this.persistService = persistService;
+    public SchemaRuleRegistrySubscriber(final RegistryCenterRepository repository) {
+        persistService = new SchemaRulePersistService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     

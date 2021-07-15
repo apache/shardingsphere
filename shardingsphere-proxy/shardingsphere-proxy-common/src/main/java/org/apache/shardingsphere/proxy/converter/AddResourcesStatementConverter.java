@@ -53,7 +53,7 @@ public final class AddResourcesStatementConverter {
             dataSource.setMaxPoolSize(parameter.getMaxPoolSize());
             dataSource.setConnectionTimeoutMilliseconds(parameter.getConnectionTimeoutMilliseconds());
             dataSource.setIdleTimeoutMilliseconds(parameter.getIdleTimeoutMilliseconds());
-            dataSource.setMaintenanceIntervalMilliseconds(parameter.getMaintenanceIntervalMilliseconds());
+            dataSource.setMaxLifetimeMilliseconds(parameter.getMaxLifetimeMilliseconds());
             dataSource.setCustomPoolProps(each.getProperties());
             result.put(each.getName(), dataSource);
         }

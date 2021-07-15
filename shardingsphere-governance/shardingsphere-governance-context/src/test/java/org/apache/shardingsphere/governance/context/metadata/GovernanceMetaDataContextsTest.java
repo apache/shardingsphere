@@ -21,6 +21,7 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.registry.PersistCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
@@ -84,6 +85,9 @@ public final class GovernanceMetaDataContextsTest {
     private GovernanceFacade governanceFacade;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private PersistCenter persistCenter;
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private RegistryCenter registryCenter;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -93,9 +97,10 @@ public final class GovernanceMetaDataContextsTest {
     
     @Mock
     private ShardingSphereRuleMetaData globalRuleMetaData;
-
+    
     @Before
     public void setUp() {
+        when(governanceFacade.getPersistCenter()).thenReturn(persistCenter);
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.getDataSourceStatusService().loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
@@ -136,8 +141,8 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertSchemaAdd() throws SQLException {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add");
-        when(registryCenter.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
-        when(registryCenter.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
+        when(persistCenter.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(persistCenter.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
         governanceMetaDataContexts.renew(event);
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add").getResource().getDataSources());
@@ -212,7 +217,7 @@ public final class GovernanceMetaDataContextsTest {
         result.put("ds_2", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         return result;
     }
-
+    
     @Test
     public void assertGlobalRuleConfigurationsChanged() throws SQLException {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
@@ -239,6 +244,7 @@ public final class GovernanceMetaDataContextsTest {
         governanceMetaDataContexts.renew(event);
         Optional<AuthorityRule> authorityRule = governanceMetaDataContexts.getGlobalRuleMetaData().getRules()
                 .stream().filter(each -> each instanceof AuthorityRule).findAny().map(each -> (AuthorityRule) each);
+        assertTrue(authorityRule.isPresent());
         assertNotNull(authorityRule.get().findUser(new ShardingSphereUser("root", "root", "%").getGrantee()));
     }
     

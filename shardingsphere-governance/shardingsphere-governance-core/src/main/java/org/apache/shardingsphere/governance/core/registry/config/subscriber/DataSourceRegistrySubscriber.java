@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.config.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
@@ -33,8 +34,8 @@ public final class DataSourceRegistrySubscriber {
     
     private final DataSourcePersistService persistService;
     
-    public DataSourceRegistrySubscriber(final DataSourcePersistService persistService) {
-        this.persistService = persistService;
+    public DataSourceRegistrySubscriber(final RegistryCenterRepository repository) {
+        persistService = new DataSourcePersistService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     

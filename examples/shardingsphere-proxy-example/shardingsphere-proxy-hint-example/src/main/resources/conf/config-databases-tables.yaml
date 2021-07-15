@@ -27,7 +27,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
   ds_1:
     url: jdbc:mysql://localhost:3306/demo_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
@@ -37,7 +36,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
-    maintenanceIntervalMilliseconds: 30000
 
 rules:
 - !SHARDING
