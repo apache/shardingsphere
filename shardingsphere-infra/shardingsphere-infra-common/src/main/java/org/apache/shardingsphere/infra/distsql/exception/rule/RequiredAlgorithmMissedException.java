@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-grammar ShardingRuleStatement;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
-import Symbol, RDLStatement, RQLStatement;
+import java.util.Collection;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    ) SEMI?
-    ;
+/**
+ * Required algorithm missed exception.
+ */
+public final class RequiredAlgorithmMissedException extends RuleDefinitionViolationException {
+    
+    private static final long serialVersionUID = -1952698375135777585L;
+    
+    public RequiredAlgorithmMissedException(final String schemaName) {
+        super(1115, String.format("Sharding algorithm does not exist in schema `%s`.", schemaName));
+    }
+    
+    public RequiredAlgorithmMissedException(final String schemaName, final Collection<String> algorithmNames) {
+        super(1115, String.format("Sharding algorithms `%s` do not exist in schema `%s`.", algorithmNames, schemaName));
+    }
+}

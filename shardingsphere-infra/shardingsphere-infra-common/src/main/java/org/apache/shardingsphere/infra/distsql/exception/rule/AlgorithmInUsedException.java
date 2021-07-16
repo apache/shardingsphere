@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-grammar ShardingRuleStatement;
+package org.apache.shardingsphere.infra.distsql.exception.rule;
 
-import Symbol, RDLStatement, RQLStatement;
+import java.util.Collection;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    ) SEMI?
-    ;
+/**
+ * Algorithm in used exception.
+ */
+public final class AlgorithmInUsedException extends RuleDefinitionViolationException {
+    
+    private static final long serialVersionUID = -5748228542420285726L;
+    
+    public AlgorithmInUsedException(final String schemaName, final Collection<String> algorithmNames) {
+        super(1116, String.format("Sharding algorithms `%s` in schema `%s` are still in used.", algorithmNames, schemaName));
+    }
+}
