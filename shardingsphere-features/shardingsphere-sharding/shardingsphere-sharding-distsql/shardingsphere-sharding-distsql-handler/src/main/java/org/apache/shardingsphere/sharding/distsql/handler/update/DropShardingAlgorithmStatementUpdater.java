@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingA
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -35,10 +36,10 @@ import java.util.stream.Collectors;
 public final class DropShardingAlgorithmStatementUpdater implements RuleDefinitionDropUpdater<DropShardingAlgorithmStatement, ShardingRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final String schemaName, final DropShardingAlgorithmStatement sqlStatement, 
+    public void checkSQLStatement(final String schemaName, final DropShardingAlgorithmStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) throws RuleDefinitionViolationException {
         checkCurrentRuleConfiguration(schemaName, currentRuleConfig);
-        checkShardingAlgorithmsExisted(schemaName, sqlStatement, currentRuleConfig);
+        checkToBeDroppedShardingAlgorithms(schemaName, sqlStatement, currentRuleConfig);
         checkShardingAlgorithmsInUsed(schemaName, sqlStatement, currentRuleConfig);
     }
     
@@ -48,8 +49,8 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
         }
     }
     
-    private void checkShardingAlgorithmsExisted(final String schemaName, final DropShardingAlgorithmStatement sqlStatement,
-                                                final ShardingRuleConfiguration currentRuleConfig) throws RequiredAlgorithmMissedException {
+    private void checkToBeDroppedShardingAlgorithms(final String schemaName, final DropShardingAlgorithmStatement sqlStatement,
+                                                    final ShardingRuleConfiguration currentRuleConfig) throws RequiredAlgorithmMissedException {
         Collection<String> currentShardingAlgorithms = getCurrentShardingAlgorithms(currentRuleConfig);
         Collection<String> notExistedAlgorithms = sqlStatement.getAlgorithmNames().stream().filter(each -> !currentShardingAlgorithms.contains(each)).collect(Collectors.toList());
         if (!notExistedAlgorithms.isEmpty()) {
@@ -57,7 +58,7 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
         }
     }
     
-    private void checkShardingAlgorithmsInUsed(final String schemaName, final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) 
+    private void checkShardingAlgorithmsInUsed(final String schemaName, final DropShardingAlgorithmStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig)
             throws AlgorithmInUsedException {
         Collection<String> allInUsed = getAllOfAlgorithmsInUsed(currentRuleConfig);
         Collection<String> usedAlgorithms = sqlStatement.getAlgorithmNames().stream().filter(allInUsed::contains).collect(Collectors.toList());
@@ -69,13 +70,15 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     private Collection<String> getAllOfAlgorithmsInUsed(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
         shardingRuleConfig.getTables().stream().forEach(each -> {
-            if (null != each.getDatabaseShardingStrategy()) {
+            if (Objects.nonNull(each.getDatabaseShardingStrategy())) {
                 result.add(each.getDatabaseShardingStrategy().getShardingAlgorithmName());
             }
-            if (null != each.getTableShardingStrategy()) {
+            if (Objects.nonNull(each.getTableShardingStrategy())) {
                 result.add(each.getTableShardingStrategy().getShardingAlgorithmName());
             }
         });
+        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy()))
+                .forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
         return result;
     }
     
