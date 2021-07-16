@@ -63,7 +63,7 @@ public final class PostgreSQLPacketCodecEngineTest {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
         when(byteBuf.readInt()).thenReturn(50);
         List<Object> out = new LinkedList<>();
-        new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out, 54);
+        new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out);
         assertThat(out.size(), is(1));
     }
     
@@ -72,7 +72,7 @@ public final class PostgreSQLPacketCodecEngineTest {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
         when(byteBuf.readInt()).thenReturn(50);
         List<Object> out = new LinkedList<>();
-        new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out, 40);
+        new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out);
         assertTrue(out.isEmpty());
     }
     
