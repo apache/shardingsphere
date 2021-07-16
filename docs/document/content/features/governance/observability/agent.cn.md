@@ -16,7 +16,6 @@ ShardingSphere-Agent 是独立自主设计，基于`Bytebuddy`字节码增加的
 ```
  > cd shardingsphere/shardingsphere-agent
  > mvn clean install
-
 ```
 
 ### 远程下载(暂未发布)
@@ -24,13 +23,12 @@ ShardingSphere-Agent 是独立自主设计，基于`Bytebuddy`字节码增加的
 ```
  > weget http://xxxxx/shardingsphere-agent.tar.gz
  > tar -zxvcf shardingsphere-agent.tar.gz
-
 ```
 
 启动时添加参数
 
 ```
--javaagent: \absolute path\shardingsphere-agent.jar
+-javaagent:\absolute path\shardingsphere-agent.jar
 ```
 
 ## Agent配置
@@ -44,6 +42,7 @@ ignoredPluginNames: #忽略的插件集合，表示集合里面的插件不生�
   - Jaeger
   - Zipkin
   - Prometheus
+  - OpenTelemetry
   - Logging
 
 plugins:
@@ -67,10 +66,17 @@ plugins:
     props:
       SERVICE_NAME: "shardingsphere-agent"
       URL_VERSION: "/api/v2/spans" #zipkin服务的抓取span的uri
+  Opentracing:
+    props:
+      OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
+  OpenTelemetry:
+    props:
+      otel.resource.attributes: "service.name=shardingsphere-agent" #opentelemetry的Resource信息，多个配置可用','分隔
+      otel.traces.exporter: "zipkin" #traces数据的导出器
   Logging:
     props:
       LEVEL: "INFO" #打印的日志级别
 
-``
+```
 
 以上为agent的所有配置，注意：当配置 ignoredPluginNames时候，表示集合里面的插件会被忽略！
