@@ -61,6 +61,7 @@ public final class PostgreSQLPacketCodecEngineTest {
     @Test
     public void assertDecode() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
+        when(byteBuf.readableBytes()).thenReturn(51, 47, 0);
         when(byteBuf.readInt()).thenReturn(50);
         List<Object> out = new LinkedList<>();
         new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out);
@@ -69,8 +70,6 @@ public final class PostgreSQLPacketCodecEngineTest {
     
     @Test
     public void assertDecodeWithStickyPacket() {
-        when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
-        when(byteBuf.readInt()).thenReturn(50);
         List<Object> out = new LinkedList<>();
         new PostgreSQLPacketCodecEngine().decode(context, byteBuf, out);
         assertTrue(out.isEmpty());
