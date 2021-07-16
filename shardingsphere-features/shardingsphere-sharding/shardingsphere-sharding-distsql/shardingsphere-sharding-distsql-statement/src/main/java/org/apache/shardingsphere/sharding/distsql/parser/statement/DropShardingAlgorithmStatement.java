@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-grammar ShardingRuleStatement;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
-execute
-    : (createShardingTableRule
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
-    | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
-    | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
-    | dropShardingAlgorithm
-    | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Drop sharding algorithm statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DropShardingAlgorithmStatement extends DropRuleStatement {
+    
+    private final Collection<String> algorithmNames;
+}
