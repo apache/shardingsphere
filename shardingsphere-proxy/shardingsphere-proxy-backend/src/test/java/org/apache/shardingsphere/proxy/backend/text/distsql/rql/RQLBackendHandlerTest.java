@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.distsql.query.RQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -58,7 +58,7 @@ public final class RQLBackendHandlerTest {
     
     @Test
     public void assertExecute() {
-        RQLResultSet resultSet = mock(RQLResultSet.class);
+        DistSQLResultSet resultSet = mock(DistSQLResultSet.class);
         when(resultSet.getColumnNames()).thenReturn(Arrays.asList("foo", "bar"));
         RQLBackendHandler handler = new RQLBackendHandler(mock(RQLStatement.class), mock(BackendConnection.class), resultSet);
         ResponseHeader responseHeader = handler.execute("test", mock(RQLStatement.class));
@@ -84,7 +84,7 @@ public final class RQLBackendHandlerTest {
     
     @Test
     public void assertGetRowData() {
-        RQLResultSet resultSet = mock(RQLResultSet.class);
+        DistSQLResultSet resultSet = mock(DistSQLResultSet.class);
         when(resultSet.getRowData()).thenReturn(Arrays.asList("foo_value", "bar_value"));
         RQLBackendHandler handler = new RQLBackendHandler(mock(RQLStatement.class), mock(BackendConnection.class), resultSet);
         handler.execute("test", mock(RQLStatement.class));

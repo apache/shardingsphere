@@ -45,7 +45,12 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
     
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatementContext) sqlStatementContext).getInsertColumnNames().contains(getShadowRule().getColumn());
+        InsertStatementContext insertStatementContext;
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            insertStatementContext = (InsertStatementContext) sqlStatementContext;
+            return insertStatementContext.getInsertColumnNames().contains(getShadowColumn());
+        }
+        return false;
     }
     
     @Override

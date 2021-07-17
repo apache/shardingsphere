@@ -21,9 +21,9 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
-import org.apache.shardingsphere.infra.distsql.update.RDLDropUpdater;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
+import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Drop encrypt rule statement updater.
  */
-public final class DropEncryptRuleStatementUpdater implements RDLDropUpdater<DropEncryptRuleStatement, EncryptRuleConfiguration> {
+public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDropUpdater<DropEncryptRuleStatement, EncryptRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final String schemaName, final DropEncryptRuleStatement sqlStatement, 
@@ -69,7 +69,17 @@ public final class DropEncryptRuleStatementUpdater implements RDLDropUpdater<Dro
         Optional<EncryptTableRuleConfiguration> encryptTableRuleConfig = currentRuleConfig.getTables().stream().filter(tableRule -> tableRule.getName().equals(ruleName)).findAny();
         Preconditions.checkState(encryptTableRuleConfig.isPresent());
         currentRuleConfig.getTables().remove(encryptTableRuleConfig.get());
-        encryptTableRuleConfig.get().getColumns().forEach(column -> currentRuleConfig.getEncryptors().remove(column.getEncryptorName()));
+        encryptTableRuleConfig.get().getColumns().stream().filter(column -> !isEncryptorInUse(currentRuleConfig, column.getEncryptorName()))
+                .forEach(column -> currentRuleConfig.getEncryptors().remove(column.getEncryptorName()));
+    }
+    
+    private boolean isEncryptorInUse(final EncryptRuleConfiguration currentRuleConfig, final String toBeDroppedEncryptorName) {
+        for (EncryptTableRuleConfiguration each : currentRuleConfig.getTables()) {
+            if (each.getColumns().stream().filter(column -> column.getEncryptorName().equals(toBeDroppedEncryptorName)).findAny().isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override

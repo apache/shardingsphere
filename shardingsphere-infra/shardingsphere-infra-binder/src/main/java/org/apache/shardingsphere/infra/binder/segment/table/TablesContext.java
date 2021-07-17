@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.table;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -28,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -117,5 +119,17 @@ public final class TablesContext {
             }
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @return schema name
+     */
+    public Optional<String> getSchemaName() {
+        List<String> schemaNames = getTables().stream().filter(each -> each.getOwner().isPresent())
+                .map(each -> each.getOwner().get().getIdentifier().getValue()).distinct().collect(Collectors.toList());
+        Preconditions.checkState(schemaNames.size() <= 1, "Can not support multiple different schema.");
+        return schemaNames.stream().findFirst();
     }
 }

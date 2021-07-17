@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
@@ -33,7 +34,7 @@ public final class DropIndexStatementHandlerTest {
     @Test
     public void assertGetSimpleTableSegmentWithSimpleTableSegmentForMySQL() {
         MySQLDropIndexStatement dropIndexStatement = new MySQLDropIndexStatement();
-        dropIndexStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
         assertTrue(simpleTableSegment.isPresent());
     }
@@ -48,7 +49,7 @@ public final class DropIndexStatementHandlerTest {
     @Test
     public void assertGetSimpleTableSegmentWithSimpleTableSegmentForSQLServer() {
         SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement();
-        dropIndexStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("")));
+        dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
         assertTrue(simpleTableSegment.isPresent());
     }

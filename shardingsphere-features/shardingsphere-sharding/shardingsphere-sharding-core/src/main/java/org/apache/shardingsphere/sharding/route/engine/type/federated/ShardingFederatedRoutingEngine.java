@@ -37,15 +37,8 @@ public final class ShardingFederatedRoutingEngine implements ShardingRouteEngine
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        for (String each : logicTables) {
-            if (shardingRule.getSingleTableRules().containsKey(each)) {
-                String dataSourceName = shardingRule.getSingleTableRules().get(each).getDataSourceName();
-                RouteMapper dataSource = new RouteMapper(dataSourceName, dataSourceName);
-                RouteMapper table = new RouteMapper(each, each);
-                routeContext.putRouteUnit(dataSource, table);
-            } else {
-                fillRouteContext(routeContext, shardingRule, each);
-            }
+        for (String each : shardingRule.getShardingBroadcastTableNames(logicTables)) {
+            fillRouteContext(routeContext, shardingRule, each);
         }
         routeContext.setFederated(true);
     }

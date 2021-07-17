@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -77,7 +78,6 @@ public final class DataSourceParameterConverter {
         DataSourceParameter result = new DataSourceParameter();
         result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
         result.setIdleTimeoutMilliseconds(yamlDataSourceParameter.getIdleTimeoutMilliseconds());
-        result.setMaintenanceIntervalMilliseconds(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds());
         result.setMaxLifetimeMilliseconds(yamlDataSourceParameter.getMaxLifetimeMilliseconds());
         result.setMaxPoolSize(yamlDataSourceParameter.getMaxPoolSize());
         result.setMinPoolSize(yamlDataSourceParameter.getMinPoolSize());
@@ -85,6 +85,9 @@ public final class DataSourceParameterConverter {
         result.setPassword(yamlDataSourceParameter.getPassword());
         result.setReadOnly(yamlDataSourceParameter.isReadOnly());
         result.setUrl(yamlDataSourceParameter.getUrl());
+        if (null != yamlDataSourceParameter.getCustomPoolProps()) {
+            result.setCustomPoolProps(yamlDataSourceParameter.getCustomPoolProps());
+        }
         return result;
     }
     
@@ -94,6 +97,8 @@ public final class DataSourceParameterConverter {
         dataSourceConfig.addPropertySynonym("connectionTimeout", "connectionTimeoutMilliseconds");
         dataSourceConfig.addPropertySynonym("maxLifetime", "maxLifetimeMilliseconds");
         dataSourceConfig.addPropertySynonym("idleTimeout", "idleTimeoutMilliseconds");
+        dataSourceConfig.addPropertySynonym("maxPoolSize", "maximumPoolSize");
+        dataSourceConfig.addPropertySynonym("minPoolSize", "minimumIdle");
     }
     
     /**
@@ -115,10 +120,12 @@ public final class DataSourceParameterConverter {
         result.getProps().put("connectionTimeout", dataSourceParameter.getConnectionTimeoutMilliseconds());
         result.getProps().put("idleTimeout", dataSourceParameter.getIdleTimeoutMilliseconds());
         result.getProps().put("maxLifetime", dataSourceParameter.getMaxLifetimeMilliseconds());
-        result.getProps().put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
-        result.getProps().put("minPoolSize", dataSourceParameter.getMinPoolSize());
-        result.getProps().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
+        result.getProps().put("maximumPoolSize", dataSourceParameter.getMaxPoolSize());
+        result.getProps().put("minimumIdle", dataSourceParameter.getMinPoolSize());
         result.getProps().put("readOnly", dataSourceParameter.isReadOnly());
+        if (null != dataSourceParameter.getCustomPoolProps()) {
+            result.getProps().putAll(new HashMap(dataSourceParameter.getCustomPoolProps()));
+        }
         return result;
     }
 }

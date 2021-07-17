@@ -105,7 +105,7 @@ try (HintManager hintManager = HintManager.getInstance();
 
 #### 设置主库路由
 
-- 使用 `hintManager.setPrimaryRouteOnly` 设置主库路由。
+- 使用 `hintManager.setWriteRouteOnly` 设置主库路由。
 
 #### 清除分片键值
 
@@ -115,11 +115,10 @@ try (HintManager hintManager = HintManager.getInstance();
 
 ```java
 String sql = "SELECT * FROM t_order";
-try (
-        HintManager hintManager = HintManager.getInstance();
-        Connection conn = dataSource.getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    hintManager.setPrimaryRouteOnly();
+try (HintManager hintManager = HintManager.getInstance();
+     Connection conn = dataSource.getConnection();
+     PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+    hintManager.setWriteRouteOnly();
     try (ResultSet rs = preparedStatement.executeQuery()) {
         while (rs.next()) {
             // ...

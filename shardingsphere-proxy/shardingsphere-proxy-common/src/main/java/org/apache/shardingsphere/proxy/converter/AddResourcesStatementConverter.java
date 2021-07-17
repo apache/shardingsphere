@@ -53,13 +53,17 @@ public final class AddResourcesStatementConverter {
             dataSource.setMaxPoolSize(parameter.getMaxPoolSize());
             dataSource.setConnectionTimeoutMilliseconds(parameter.getConnectionTimeoutMilliseconds());
             dataSource.setIdleTimeoutMilliseconds(parameter.getIdleTimeoutMilliseconds());
-            dataSource.setMaintenanceIntervalMilliseconds(parameter.getMaintenanceIntervalMilliseconds());
+            dataSource.setMaxLifetimeMilliseconds(parameter.getMaxLifetimeMilliseconds());
+            dataSource.setCustomPoolProps(each.getProperties());
             result.put(each.getName(), dataSource);
         }
         return result;
     }
     
     private static String getURL(final DatabaseType databaseType, final DataSourceSegment dataSourceSegment) {
+        if (null != dataSourceSegment.getUrl()) {
+            return dataSourceSegment.getUrl();
+        }
         return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), dataSourceSegment.getHostName(), dataSourceSegment.getPort(), dataSourceSegment.getDb());
     }
 }

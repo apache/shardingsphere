@@ -27,12 +27,14 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.DropTableEvent;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -67,7 +69,14 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
             tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElse(new TableMetaData());
         }
         schema.put(tableName, tableMetaData);
-        ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), tableName, tableMetaData));
+        if (!containsShardingBroadcastTables(tableName, materials)) {
+            ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), tableName, tableMetaData));
+        }
+    }
+    
+    private boolean containsShardingBroadcastTables(final String tableName, final SchemaBuilderMaterials materials) {
+        return materials.getRules().stream().anyMatch(each -> each instanceof DataNodeContainedRule
+                && ((DataNodeContainedRule) each).containsShardingBroadcastTables(Collections.singletonList(tableName)));
     }
     
     private boolean containsInTableContainedRule(final String tableName, final SchemaBuilderMaterials materials) {

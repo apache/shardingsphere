@@ -65,12 +65,6 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
-    @Test
-    public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration(createSQLStatement("TEST"), createCurrentRuleConfiguration());
-        // TODO assert current rule configuration
-    }
-    
     private AlterDatabaseDiscoveryRuleStatement createSQLStatement(final String discoveryTypeName) {
         DatabaseDiscoveryRuleSegment ruleSegment = new DatabaseDiscoveryRuleSegment("ha_group", Arrays.asList("ds_0", "ds_1"), discoveryTypeName, new Properties());
         return new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(ruleSegment));

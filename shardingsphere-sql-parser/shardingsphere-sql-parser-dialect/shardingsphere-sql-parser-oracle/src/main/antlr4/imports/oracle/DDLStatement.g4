@@ -1842,3 +1842,41 @@ defaultCostClause
 defaultSelectivityClause
     : DEFAULT SELECTIVITY defaultSelectivity
     ;
+
+disassociateStatistics
+    : DISASSOCIATE STATISTICS FROM 
+    (COLUMNS tableName DOT_ columnName (COMMA_ tableName DOT_ columnName)*
+    | FUNCTIONS function (COMMA_ function)*
+    | PACKAGES packageName (COMMA_ packageName)*
+    | TYPES typeName (COMMA_ typeName)*
+    | INDEXES indexName (COMMA_ indexName)*
+    | INDEXTYPES indexTypeName (COMMA_ indexTypeName)*) FORCE?
+    ;
+
+audit
+    : AUDIT (auditPolicyClause | contextClause)
+    ;
+
+noAudit
+    : NOAUDIT (noAuditPolicyClause | contextClause)
+    ;
+
+auditPolicyClause
+    : POLICY policyName (byUsersWithRoles | (BY | EXCEPT) userName (COMMA_ userName)*)? (WHENEVER NOT? SUCCESSFUL)?
+    ;
+
+noAuditPolicyClause
+    : POLICY policyName (byUsersWithRoles | BY userName (COMMA_ userName)*)? (WHENEVER NOT? SUCCESSFUL)?
+    ;
+
+byUsersWithRoles
+    : BY USERS WITH GRANTED ROLES roleName (COMMA_ roleName)*
+    ;
+
+contextClause
+    : contextNamespaceAttributesClause (COMMA_ contextNamespaceAttributesClause)* (BY userName (COMMA_ userName)*)?
+    ;
+
+contextNamespaceAttributesClause
+    : CONTEXT NAMESPACE namespace ATTRIBUTES attributeName (COMMA_ attributeName)*
+    ;

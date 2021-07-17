@@ -17,47 +17,48 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary;
 
-import org.junit.Before;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+
 import org.junit.Test;
 
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class PostgreSQLBinaryStatementRegistryTest {
     
-    private final String sql = "SELECT * FROM tbl WHERE id=?";
-    
-    private final String statementId = "stat-id";
-    
-    @Before
-    public void init() {
+    @Test
+    public void assertRegister() {
+        String statementId = "stat-id";
+        String sql = "select * from t_order";
         PostgreSQLBinaryStatementRegistry.getInstance().register(1);
-        ConnectionScopeBinaryStatementRegistry statementRegistry = PostgreSQLBinaryStatementRegistry.getInstance().get(1);
-        statementRegistry.register(statementId, sql, 1, null);
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1, statementId, sql, mock(SQLStatement.class), Collections.emptyList());
+        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(1, statementId);
+        assertThat(binaryStatement.getSql(), is(sql));
+        assertThat(binaryStatement.getColumnTypes().size(), is(0));
     }
     
     @Test
-    public void assertRegisterIfAbsent() {
-        PostgreSQLBinaryStatementRegistry.getInstance().register(2);
-        ConnectionScopeBinaryStatementRegistry actual = PostgreSQLBinaryStatementRegistry.getInstance().get(2);
-        assertNull(actual.getBinaryStatement("stat-no-exist"));
-    }
+    public void assertGetNotExists() {
+        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(1, "stat-no-exists");
+        assertThat(binaryStatement.getSqlStatement(), instanceOf(EmptyStatement.class));
     
-    @Test
-    public void assertRegisterIfPresent() {
-        ConnectionScopeBinaryStatementRegistry statementRegistry = PostgreSQLBinaryStatementRegistry.getInstance().get(1);
-        PostgreSQLBinaryStatement statement = statementRegistry.getBinaryStatement(statementId);
-        assertThat(statement.getSql(), is(sql));
-        assertThat(statement.getParameterCount(), is(1));
-        PostgreSQLBinaryStatementRegistry.getInstance().register(1);
-        assertNull(PostgreSQLBinaryStatementRegistry.getInstance().get(1).getBinaryStatement(statementId));
     }
     
     @Test
     public void assertUnregister() {
-        PostgreSQLBinaryStatementRegistry.getInstance().unregister(1);
-        ConnectionScopeBinaryStatementRegistry actual = PostgreSQLBinaryStatementRegistry.getInstance().get(1);
-        assertNull(actual);
+        String statementId = "stat-id";
+        String sql = "select * from t_order";
+        PostgreSQLBinaryStatementRegistry.getInstance().register(1, statementId, sql, mock(SQLStatement.class), Collections.emptyList());
+        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(1, statementId);
+        assertNotNull(binaryStatement);
+        PostgreSQLBinaryStatementRegistry.getInstance().unregister(1, statementId);
+        binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(1, "stat-no-exists");
+        assertThat(binaryStatement.getSqlStatement(), instanceOf(EmptyStatement.class));
     }
 }

@@ -333,4 +333,22 @@
             <aggregation-projection type="COUNT" inner-expression="(`order_id`)" alias="orders_count" start-index="7" stop-index="23" />
         </projections>
     </select>
+
+    <select sql-case-id="select_count_with_sample_clause">
+        <from>
+            <simple-table name="orders" start-index="26" stop-index="31" />
+        </from>
+        <projections start-index="7" stop-index="19">
+            <expression-projection text="COUNT(*) * 10" start-index="7" stop-index="19" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_count_with_sample_seed_clause">
+        <from>
+            <simple-table name="orders" start-index="26" stop-index="31" />
+        </from>
+        <projections start-index="7" stop-index="19">
+            <expression-projection text="COUNT(*) * 10" start-index="7" stop-index="19" />
+        </projections>
+    </select>
 </sql-parser-test-cases>

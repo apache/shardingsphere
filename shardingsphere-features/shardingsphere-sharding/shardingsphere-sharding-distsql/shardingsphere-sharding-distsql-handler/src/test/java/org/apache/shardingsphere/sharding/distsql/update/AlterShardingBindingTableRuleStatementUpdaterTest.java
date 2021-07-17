@@ -47,12 +47,6 @@ public final class AlterShardingBindingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement("foo", createDuplicatedSQLStatement(), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
-    @Test
-    public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration(createDuplicatedSQLStatement(), createCurrentRuleConfiguration());
-        // TODO assert current rule configuration
-    }
-    
     private AlterShardingBindingTableRulesStatement createSQLStatement() {
         return new AlterShardingBindingTableRulesStatement(Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_1,t_2")));
     }

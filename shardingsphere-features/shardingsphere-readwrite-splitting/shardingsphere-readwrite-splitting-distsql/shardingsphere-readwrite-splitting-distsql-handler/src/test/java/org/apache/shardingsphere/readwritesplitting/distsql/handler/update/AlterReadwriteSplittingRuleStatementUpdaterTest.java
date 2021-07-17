@@ -64,12 +64,6 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
         updater.checkSQLStatement("foo", createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration(), mock(ShardingSphereResource.class));
     }
     
-    @Test
-    public void assertUpdateCurrentRuleConfiguration() {
-        updater.updateCurrentRuleConfiguration(createSQLStatement("TEST"), createCurrentRuleConfiguration());
-        // TODO assert current rule configuration
-    }
-    
     private AlterReadwriteSplittingRuleStatement createSQLStatement(final String loadBalancerTypeName) {
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("readwrite_ds", "write_ds", Arrays.asList("read_ds_0", "ds_read_ds_1"), loadBalancerTypeName, new Properties());
         return new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));

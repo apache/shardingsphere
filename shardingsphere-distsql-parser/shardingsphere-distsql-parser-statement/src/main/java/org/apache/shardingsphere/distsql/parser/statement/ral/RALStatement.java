@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 
 /**
  * RAL statement.
  */
-public abstract class RALStatement extends AbstractSQLStatement {
+public abstract class RALStatement extends DistSQLStatement {
 }
