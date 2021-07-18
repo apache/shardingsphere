@@ -18,33 +18,25 @@
 package org.apache.shardingsphere.governance.core.registry.metadata.service;
 
 import com.google.common.base.Strings;
-import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseCreatedSQLNotificationEvent;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseDroppedSQLNotificationEvent;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.yaml.schema.pojo.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.schema.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Schema registry service.
+ * Schema meta data registry service.
  */
-public final class SchemaRegistryService {
+@RequiredArgsConstructor
+public final class SchemaMetaDataPersistService {
     
     private final RegistryCenterRepository repository;
     
-    public SchemaRegistryService(final RegistryCenterRepository repository) {
-        this.repository = repository;
-        ShardingSphereEventBus.getInstance().register(this);
-    }
-
     /**
      * Persist schema.
      *
@@ -52,7 +44,8 @@ public final class SchemaRegistryService {
      * @param schema schema to be persisted
      */
     public void persist(final String schemaName, final ShardingSphereSchema schema) {
-        repository.persist(SchemaMetadataNode.getMetadataSchemaPath(schemaName), YamlEngine.marshal(new SchemaYamlSwapper().swapToYamlConfiguration(schema)));
+        String content = null == schema ? "" : YamlEngine.marshal(new SchemaYamlSwapper().swapToYamlConfiguration(schema));
+        repository.persist(SchemaMetadataNode.getMetadataSchemaPath(schemaName), content);
     }
     
     /**
@@ -82,35 +75,5 @@ public final class SchemaRegistryService {
      */
     public Collection<String> loadAllNames() {
         return repository.getChildrenKeys(SchemaMetadataNode.getMetadataNodePath());
-    }
-    
-    /**
-     * Update when database created.
-     *
-     * @param event database created SQL notification event
-     */
-    @Subscribe
-    public void update(final DatabaseCreatedSQLNotificationEvent event) {
-        repository.persist(SchemaMetadataNode.getSchemaNamePath(event.getDatabaseName()), "");
-    }
-    
-    /**
-     * Update when meta data altered.
-     *
-     * @param event schema altered event
-     */
-    @Subscribe
-    public void update(final SchemaAlteredEvent event) {
-        persist(event.getSchemaName(), event.getSchema());
-    }
-    
-    /**
-     * Update when database dropped.
-     *
-     * @param event database dropped SQL notification event
-     */
-    @Subscribe
-    public void update(final DatabaseDroppedSQLNotificationEvent event) {
-        repository.delete(SchemaMetadataNode.getSchemaNamePath(event.getDatabaseName()));
     }
 }
