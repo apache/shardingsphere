@@ -25,7 +25,7 @@ When developer need to use user-defined sharding algorithm, it can not configure
 
 1. Implement `ShardingAlgorithm` interface.
 1. Package Java file to jar.
-1. Copy jar to ShardingSphere-Proxy's `conf/lib-ext` folder.
+1. Copy jar to ShardingSphere-Proxy's `ext-lib/` folder.
 1. Configure user-defined Java class into YAML file. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for more details.
 
 ## Notices
