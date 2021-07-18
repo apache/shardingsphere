@@ -63,7 +63,7 @@ public final class GovernanceFacade implements AutoCloseable {
         configCenter = new ConfigCenter(repository);
         registryCenter = new RegistryCenter(repository);
         listenerFactory = new GovernanceWatcherFactory(repository, 
-                Stream.of(registryCenter.getSchemaService().loadAllNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
+                Stream.of(configCenter.getSchemaMetaDataService().loadAllNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
     }
     
     /**

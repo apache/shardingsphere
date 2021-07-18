@@ -30,7 +30,6 @@ import org.apache.shardingsphere.governance.core.registry.state.service.DataSour
 import org.apache.shardingsphere.governance.core.registry.state.service.InstanceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.persist.service.SchemaMetaDataPersistService;
 
 /**
  * Registry center.
@@ -40,8 +39,6 @@ public final class RegistryCenter {
     
     private final String instanceId;
     
-    private final SchemaMetaDataPersistService schemaService;
-    
     private final DataSourceStatusRegistryService dataSourceStatusService;
     
     private final InstanceStatusRegistryService instanceStatusService;
@@ -50,7 +47,6 @@ public final class RegistryCenter {
     
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
-        schemaService = new SchemaMetaDataPersistService(repository);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
