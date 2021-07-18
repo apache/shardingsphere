@@ -57,9 +57,9 @@ public final class ProxyConfigurationLoader {
     public static YamlProxyConfiguration load(final String path) throws IOException {
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(String.join("/", path, SERVER_CONFIG_FILE)));
         File configPath = getResourceFile(path);
-        Collection<YamlProxyRuleConfiguration> ruleConfigurations = loadRuleConfigurations(configPath);
-        Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getGovernance(), "Can not find any valid rule configurations file in path `%s`.", configPath.getPath());
-        return new YamlProxyConfiguration(serverConfig, ruleConfigurations.stream().collect(Collectors.toMap(
+        Collection<YamlProxyRuleConfiguration> ruleConfigs = loadRuleConfigurations(configPath);
+        Preconditions.checkState(!ruleConfigs.isEmpty() || null != serverConfig.getGovernance(), "Can not find any valid rule configurations file in path `%s`.", configPath.getPath());
+        return new YamlProxyConfiguration(serverConfig, ruleConfigs.stream().collect(Collectors.toMap(
                 YamlProxyRuleConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     

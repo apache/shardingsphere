@@ -19,13 +19,11 @@ package org.apache.shardingsphere.governance.core;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -37,8 +35,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -50,17 +46,10 @@ public final class GovernanceFacadeTest {
     
     @Test
     public void assertInit() {
-        GovernanceConfiguration config = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("TEST", "127.0.0.1", new Properties()), false);
-        governanceFacade.init(config, Arrays.asList("schema_0", "schema_1"));
+        governanceFacade.init(mock(RegistryCenterRepository.class), Arrays.asList("schema_0", "schema_1"));
         assertNotNull(governanceFacade.getRegistryCenter());
-        assertThat(getField(governanceFacade, "isOverwrite"), instanceOf(Boolean.class));
-        assertFalse((Boolean) getField(governanceFacade, "isOverwrite"));
-        assertThat(getField(governanceFacade, "repository"), instanceOf(RegistryCenterRepository.class));
-        RegistryCenterRepository repository = (RegistryCenterRepository) getField(governanceFacade, "repository");
-        assertEquals(repository.getType(), "TEST");
         assertThat(getField(governanceFacade, "listenerFactory"), instanceOf(GovernanceWatcherFactory.class));
         GovernanceWatcherFactory listenerFactory = (GovernanceWatcherFactory) getField(governanceFacade, "listenerFactory");
-        assertThat(getField(listenerFactory, "repository"), is(repository));
         assertThat(getField(listenerFactory, "schemaNames"), is(Arrays.asList("schema_0", "schema_1")));
     }
     
@@ -76,18 +65,10 @@ public final class GovernanceFacadeTest {
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
         Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
         Properties props = new Properties();
-        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props);
+        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
         verify(configCenter).persistConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
         verify(registryCenter).registerInstanceOnline();
         verify(listenerFactory).watchListeners();
-    }
-    
-    @Test
-    public void assertClose() {
-        RegistryCenterRepository repository = mock(RegistryCenterRepository.class);
-        setField(governanceFacade, "repository", repository);
-        governanceFacade.close();
-        verify(repository).close();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

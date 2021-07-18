@@ -19,13 +19,11 @@ package org.apache.shardingsphere.governance.core;
 
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 
 import java.util.Collection;
 import java.util.Map;
@@ -36,12 +34,7 @@ import java.util.stream.Stream;
 /**
  * Governance facade.
  */
-public final class GovernanceFacade implements AutoCloseable {
-    
-    private boolean isOverwrite;
-    
-    @Getter
-    private RegistryCenterRepository repository;
+public final class GovernanceFacade {
     
     @Getter
     private ConfigCenter configCenter;
@@ -54,12 +47,10 @@ public final class GovernanceFacade implements AutoCloseable {
     /**
      * Initialize governance facade.
      *
-     * @param config governance configuration
+     * @param repository registry center repository
      * @param schemaNames schema names
      */
-    public void init(final GovernanceConfiguration config, final Collection<String> schemaNames) {
-        isOverwrite = config.isOverwrite();
-        repository = RegistryCenterRepositoryFactory.newInstance(config);
+    public void init(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
         configCenter = new ConfigCenter(repository);
         registryCenter = new RegistryCenter(repository);
         listenerFactory = new GovernanceWatcherFactory(repository, 
@@ -73,9 +64,10 @@ public final class GovernanceFacade implements AutoCloseable {
      * @param schemaRuleConfigs schema and rule configuration map
      * @param globalRuleConfigs global rule configurations
      * @param props properties
+     * @param isOverwrite is overwrite
      */
-    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs,
-                               final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
+                               final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         configCenter.persistConfigurations(dataSourceConfigs, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         onlineInstance();
     }
@@ -86,10 +78,5 @@ public final class GovernanceFacade implements AutoCloseable {
     public void onlineInstance() {
         registryCenter.registerInstanceOnline();
         listenerFactory.watchListeners();
-    }
-    
-    @Override
-    public void close() {
-        repository.close();
     }
 }

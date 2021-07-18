@@ -34,6 +34,7 @@ import org.apache.shardingsphere.governance.core.registry.metadata.event.SchemaD
 import org.apache.shardingsphere.governance.core.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.state.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -76,19 +77,19 @@ import java.util.stream.Collectors;
  */
 public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
-    private final GovernanceFacade governanceFacade;
-    
     private volatile StandardMetaDataContexts metaDataContexts;
+    
+    private final GovernanceFacade governanceFacade;
     
     private final ShardingSphereLock lock;
     
-    public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, final GovernanceFacade governanceFacade) {
-        this.governanceFacade = governanceFacade;
+    public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, final GovernanceFacade governanceFacade, final RegistryCenterRepository repository) {
         this.metaDataContexts = metaDataContexts;
+        this.governanceFacade = governanceFacade;
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
-        lock = createShardingSphereLock();
+        lock = createShardingSphereLock(repository);
     }
     
     private void disableDataSources() {
@@ -109,10 +110,9 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         metaDataContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getConfigCenter().getSchemaMetaDataService().persist(key, value.getSchema()));
     }
     
-    private ShardingSphereLock createShardingSphereLock() {
+    private ShardingSphereLock createShardingSphereLock(final RegistryCenterRepository repository) {
         return metaDataContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.LOCK_ENABLED)
-                ? new ShardingSphereDistributeLock(governanceFacade.getRepository(), metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS))
-                : null;
+                ? new ShardingSphereDistributeLock(repository, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS)) : null;
     }
     
     @Override
@@ -168,7 +168,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public void close() {
         metaDataContexts.close();
-        governanceFacade.close();
     }
     
     /**
