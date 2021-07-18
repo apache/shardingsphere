@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.core.registry.cache.subscriber.Scali
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.DataSourceRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.GlobalRuleRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.SchemaRuleRegistrySubscriber;
-import org.apache.shardingsphere.infra.config.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.governance.core.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.service.InstanceStatusRegistryService;
@@ -39,8 +39,6 @@ public final class RegistryCenter {
     
     private final String instanceId;
     
-    private final SchemaMetaDataPersistService schemaService;
-    
     private final DataSourceStatusRegistryService dataSourceStatusService;
     
     private final InstanceStatusRegistryService instanceStatusService;
@@ -49,7 +47,6 @@ public final class RegistryCenter {
     
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
-        schemaService = new SchemaMetaDataPersistService(repository);
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
@@ -58,6 +55,7 @@ public final class RegistryCenter {
     
     private void createSubscribers(final RegistryCenterRepository repository) {
         new DataSourceRegistrySubscriber(repository);
+        new SchemaMetaDataRegistrySubscriber(repository);
         new GlobalRuleRegistrySubscriber(repository);
         new SchemaRuleRegistrySubscriber(repository);
         new DataSourceStatusRegistrySubscriber(repository);

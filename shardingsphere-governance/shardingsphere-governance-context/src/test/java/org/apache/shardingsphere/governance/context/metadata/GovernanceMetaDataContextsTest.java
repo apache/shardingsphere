@@ -21,8 +21,6 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.GovernanceFacade;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
@@ -35,6 +33,7 @@ import org.apache.shardingsphere.governance.core.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -72,7 +71,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -88,9 +86,6 @@ public final class GovernanceMetaDataContextsTest {
     private ConfigCenter configCenter;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private RegistryCenter registryCenter;
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
     
     private GovernanceMetaDataContexts governanceMetaDataContexts;
@@ -101,10 +96,8 @@ public final class GovernanceMetaDataContextsTest {
     @Before
     public void setUp() {
         when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
-        when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
-        when(registryCenter.getDataSourceStatusService().loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
-                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), governanceFacade);
+        governanceMetaDataContexts = new GovernanceMetaDataContexts(
+                new StandardMetaDataContexts(createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -118,9 +111,9 @@ public final class GovernanceMetaDataContextsTest {
     }
 
     private OptimizeContextFactory mockOptimizeContextFactory() {
-        OptimizeContextFactory optimizeContextFactory = mock(OptimizeContextFactory.class, RETURNS_DEEP_STUBS);
-        when(optimizeContextFactory.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(new HashMap<>()));
-        return optimizeContextFactory;
+        OptimizeContextFactory result = mock(OptimizeContextFactory.class);
+        when(result.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(new HashMap<>()));
+        return result;
     }
 
     @Test
@@ -219,7 +212,7 @@ public final class GovernanceMetaDataContextsTest {
     }
     
     @Test
-    public void assertGlobalRuleConfigurationsChanged() throws SQLException {
+    public void assertGlobalRuleConfigurationsChanged() {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
         governanceMetaDataContexts.renew(event);
         assertThat(governanceMetaDataContexts.getGlobalRuleMetaData(), not(globalRuleMetaData));
