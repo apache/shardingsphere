@@ -20,7 +20,6 @@ package org.apache.shardingsphere.governance.core;
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -37,8 +36,6 @@ import java.util.stream.Stream;
  */
 public final class GovernanceFacade {
     
-    private boolean isOverwrite;
-    
     @Getter
     private ConfigCenter configCenter;
     
@@ -51,11 +48,9 @@ public final class GovernanceFacade {
      * Initialize governance facade.
      *
      * @param repository registry center repository
-     * @param config governance configuration
      * @param schemaNames schema names
      */
-    public void init(final RegistryCenterRepository repository, final GovernanceConfiguration config, final Collection<String> schemaNames) {
-        isOverwrite = config.isOverwrite();
+    public void init(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
         configCenter = new ConfigCenter(repository);
         registryCenter = new RegistryCenter(repository);
         listenerFactory = new GovernanceWatcherFactory(repository, 
@@ -69,9 +64,10 @@ public final class GovernanceFacade {
      * @param schemaRuleConfigs schema and rule configuration map
      * @param globalRuleConfigs global rule configurations
      * @param props properties
+     * @param isOverwrite is overwrite
      */
-    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs,
-                               final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
+                               final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         configCenter.persistConfigurations(dataSourceConfigs, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
         onlineInstance();
     }

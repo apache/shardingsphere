@@ -62,7 +62,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
         GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
         repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
-        governanceFacade.init(repository, governanceConfig, yamlConfig.getRuleConfigurations().keySet());
+        governanceFacade.init(repository, yamlConfig.getRuleConfigurations().keySet());
         initConfigurations(yamlConfig);
         return loadProxyConfiguration();
     }
@@ -74,7 +74,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             governanceFacade.onlineInstance();
         } else {
             governanceFacade.onlineInstance(getDataSourceConfigurationMap(ruleConfigs), 
-                    getRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps());
+                    getRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps(), serverConfig.getGovernance().isOverwrite());
         }
     }
     
