@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.pojo;
+package org.apache.shardingsphere.governance.core.yaml.pojo.scaling;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * Governance configuration for YAML.
+ * Scaling configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlGovernanceConfiguration implements YamlConfiguration {
+public final class YamlScalingConfiguration implements YamlConfiguration {
     
-    private String name;
+    private int blockQueueSize;
     
-    private YamlRegistryCenterConfiguration registryCenter;
-    
-    private boolean overwrite;
+    private int workerThread;
 }

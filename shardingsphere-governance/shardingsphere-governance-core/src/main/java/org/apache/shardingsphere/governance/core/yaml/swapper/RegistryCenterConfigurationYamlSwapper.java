@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config.swapper;
+package org.apache.shardingsphere.governance.core.yaml.swapper;
 
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlRegistryCenterConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlRegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
