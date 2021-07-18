@@ -24,12 +24,13 @@ import org.apache.shardingsphere.governance.core.registry.cache.subscriber.Scali
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.DataSourceRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.GlobalRuleRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.SchemaRuleRegistrySubscriber;
-import org.apache.shardingsphere.infra.config.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.governance.core.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.service.InstanceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.service.SchemaMetaDataPersistService;
 
 /**
  * Registry center.
@@ -58,6 +59,7 @@ public final class RegistryCenter {
     
     private void createSubscribers(final RegistryCenterRepository repository) {
         new DataSourceRegistrySubscriber(repository);
+        new SchemaMetaDataRegistrySubscriber(repository);
         new GlobalRuleRegistrySubscriber(repository);
         new SchemaRuleRegistrySubscriber(repository);
         new DataSourceStatusRegistrySubscriber(repository);
