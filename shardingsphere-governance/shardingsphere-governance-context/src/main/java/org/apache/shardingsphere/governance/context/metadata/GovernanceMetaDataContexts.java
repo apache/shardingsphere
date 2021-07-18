@@ -168,7 +168,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public void close() {
         metaDataContexts.close();
-        governanceFacade.close();
     }
     
     /**

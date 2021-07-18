@@ -19,13 +19,12 @@ package org.apache.shardingsphere.governance.core;
 
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 
 import java.util.Collection;
 import java.util.Map;
@@ -36,12 +35,9 @@ import java.util.stream.Stream;
 /**
  * Governance facade.
  */
-public final class GovernanceFacade implements AutoCloseable {
+public final class GovernanceFacade {
     
     private boolean isOverwrite;
-    
-    @Getter
-    private RegistryCenterRepository repository;
     
     @Getter
     private ConfigCenter configCenter;
@@ -54,12 +50,12 @@ public final class GovernanceFacade implements AutoCloseable {
     /**
      * Initialize governance facade.
      *
+     * @param repository registry center repository
      * @param config governance configuration
      * @param schemaNames schema names
      */
-    public void init(final GovernanceConfiguration config, final Collection<String> schemaNames) {
+    public void init(final RegistryCenterRepository repository, final GovernanceConfiguration config, final Collection<String> schemaNames) {
         isOverwrite = config.isOverwrite();
-        repository = RegistryCenterRepositoryFactory.newInstance(config);
         configCenter = new ConfigCenter(repository);
         registryCenter = new RegistryCenter(repository);
         listenerFactory = new GovernanceWatcherFactory(repository, 
@@ -86,10 +82,5 @@ public final class GovernanceFacade implements AutoCloseable {
     public void onlineInstance() {
         registryCenter.registerInstanceOnline();
         listenerFactory.watchListeners();
-    }
-    
-    @Override
-    public void close() {
-        repository.close();
     }
 }

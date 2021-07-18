@@ -22,7 +22,9 @@ import org.apache.shardingsphere.driver.governance.internal.state.DriverStateCon
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.core.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -52,16 +54,20 @@ import java.util.stream.Collectors;
 /**
  * Governance ShardingSphere data source.
  */
-@Getter
 public final class GovernanceShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
+    private final RegistryCenterRepository repository;
+    
+    @Getter
     private final MetaDataContexts metaDataContexts;
     
+    @Getter
     private final TransactionContexts transactionContexts;
     
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
+        repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
-        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(governanceFacade), governanceFacade, governanceFacade.getRepository());
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(governanceFacade), governanceFacade, repository);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
@@ -69,8 +75,9 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     public GovernanceShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, 
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
+        repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
         GovernanceFacade governanceFacade = createGovernanceFacade(governanceConfig);
-        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(dataSourceMap, ruleConfigs, props), governanceFacade, governanceFacade.getRepository());
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(dataSourceMap, ruleConfigs, props), governanceFacade, repository);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
@@ -79,7 +86,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     private GovernanceFacade createGovernanceFacade(final GovernanceConfiguration config) {
         GovernanceFacade result = new GovernanceFacade();
-        result.init(config, Collections.singletonList(DefaultSchema.LOGIC_NAME));
+        result.init(repository, config, Collections.singletonList(DefaultSchema.LOGIC_NAME));
         result.onlineInstance();
         return result;
     }
@@ -128,6 +135,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public void close() throws Exception {
         getDataSourceMap().forEach((key, value) -> close(value));
         metaDataContexts.close();
+        repository.close();
     }
     
     private void close(final DataSource dataSource) {
