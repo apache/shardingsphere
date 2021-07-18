@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.swapper;
+package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.fixture.RuleConfigurationFixture;
-import org.apache.shardingsphere.infra.yaml.swapper.fixture.YamlRuleConfigurationFixture;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.RuleConfigurationFixture;
+import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.YamlRuleConfigurationFixture;
 import org.junit.Test;
 
 import java.util.Collection;

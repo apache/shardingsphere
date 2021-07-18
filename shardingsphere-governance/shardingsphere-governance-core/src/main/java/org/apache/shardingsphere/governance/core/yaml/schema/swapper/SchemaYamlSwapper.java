@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.Collections;

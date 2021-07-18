@@ -25,8 +25,8 @@ import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceR
 import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 
 import javax.sql.DataSource;
 import java.io.File;

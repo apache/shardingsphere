@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.swapper;
+package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.config.yaml;
 
 import org.apache.shardingsphere.governance.core.yaml.config.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 
 /**

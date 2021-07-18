@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.yaml.config.swapper;
 
 import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlRegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
  * Registry center configuration YAML swapper.

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.algorithm;
+package org.apache.shardingsphere.infra.yaml.config.pojo.algorithm;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 import java.util.Properties;
 

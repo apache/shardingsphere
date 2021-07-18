@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.swapper.fixture;
+package org.apache.shardingsphere.infra.yaml.config.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-@Getter
-@Setter
-public final class YamlRuleConfigurationFixture implements YamlRuleConfiguration {
+/**
+ * YAML rule configuration.
+ */
+public interface YamlRuleConfiguration extends YamlConfiguration {
     
-    private String name;
-    
-    @Override
-    public Class<RuleConfigurationFixture> getRuleConfigurationType() {
-        return RuleConfigurationFixture.class;
-    }
+    /**
+     * Get rule configuration type.
+     * 
+     * @return rule configuration type
+     */
+    Class<? extends RuleConfiguration> getRuleConfigurationType();
 }
