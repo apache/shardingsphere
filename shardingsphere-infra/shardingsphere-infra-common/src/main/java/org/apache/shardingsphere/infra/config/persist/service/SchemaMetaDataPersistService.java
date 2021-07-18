@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.metadata.service;
+package org.apache.shardingsphere.infra.config.persist.service;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -35,7 +35,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class SchemaMetaDataPersistService {
     
-    private final RegistryCenterRepository repository;
+    private final ConfigCenterRepository repository;
     
     /**
      * Persist schema.
