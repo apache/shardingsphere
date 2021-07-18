@@ -118,7 +118,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     @Override
     protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, governanceFacade);
+        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, governanceFacade, governanceFacade.getRepository());
     }
     
     @Override
