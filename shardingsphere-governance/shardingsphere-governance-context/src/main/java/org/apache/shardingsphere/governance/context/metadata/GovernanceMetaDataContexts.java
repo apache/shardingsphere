@@ -77,15 +77,15 @@ import java.util.stream.Collectors;
  */
 public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
-    private final GovernanceFacade governanceFacade;
-    
     private volatile StandardMetaDataContexts metaDataContexts;
+    
+    private final GovernanceFacade governanceFacade;
     
     private final ShardingSphereLock lock;
     
     public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, final GovernanceFacade governanceFacade, final RegistryCenterRepository repository) {
-        this.governanceFacade = governanceFacade;
         this.metaDataContexts = metaDataContexts;
+        this.governanceFacade = governanceFacade;
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
