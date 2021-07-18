@@ -35,7 +35,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -49,8 +48,6 @@ public final class GovernanceFacadeTest {
     public void assertInit() {
         governanceFacade.init(mock(RegistryCenterRepository.class), Arrays.asList("schema_0", "schema_1"));
         assertNotNull(governanceFacade.getRegistryCenter());
-        assertThat(getField(governanceFacade, "isOverwrite"), instanceOf(Boolean.class));
-        assertFalse((Boolean) getField(governanceFacade, "isOverwrite"));
         assertThat(getField(governanceFacade, "listenerFactory"), instanceOf(GovernanceWatcherFactory.class));
         GovernanceWatcherFactory listenerFactory = (GovernanceWatcherFactory) getField(governanceFacade, "listenerFactory");
         assertThat(getField(listenerFactory, "schemaNames"), is(Arrays.asList("schema_0", "schema_1")));
