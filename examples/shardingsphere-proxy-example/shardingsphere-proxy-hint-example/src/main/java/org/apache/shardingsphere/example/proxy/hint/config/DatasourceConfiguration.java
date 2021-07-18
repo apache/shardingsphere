@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.proxy.hint.config;
 
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 public final class DatasourceConfiguration implements YamlConfiguration {
     
