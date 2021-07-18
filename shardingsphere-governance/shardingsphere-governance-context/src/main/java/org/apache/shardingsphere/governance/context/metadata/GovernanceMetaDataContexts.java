@@ -79,20 +79,17 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private final GovernanceFacade governanceFacade;
     
-    private final RegistryCenterRepository repository;
-    
     private volatile StandardMetaDataContexts metaDataContexts;
     
     private final ShardingSphereLock lock;
     
     public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, final GovernanceFacade governanceFacade, final RegistryCenterRepository repository) {
         this.governanceFacade = governanceFacade;
-        this.repository = repository;
         this.metaDataContexts = metaDataContexts;
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
-        lock = createShardingSphereLock();
+        lock = createShardingSphereLock(repository);
     }
     
     private void disableDataSources() {
@@ -113,10 +110,9 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         metaDataContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getConfigCenter().getSchemaMetaDataService().persist(key, value.getSchema()));
     }
     
-    private ShardingSphereLock createShardingSphereLock() {
+    private ShardingSphereLock createShardingSphereLock(final RegistryCenterRepository repository) {
         return metaDataContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.LOCK_ENABLED)
-                ? new ShardingSphereDistributeLock(governanceFacade.getRepository(), metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS))
-                : null;
+                ? new ShardingSphereDistributeLock(repository, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS)) : null;
     }
     
     @Override
