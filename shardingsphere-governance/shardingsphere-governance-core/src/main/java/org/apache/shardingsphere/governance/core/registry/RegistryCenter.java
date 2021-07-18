@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.core.registry.cache.subscriber.Scali
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.DataSourceRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.GlobalRuleRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.config.subscriber.SchemaRuleRegistrySubscriber;
-import org.apache.shardingsphere.governance.core.registry.metadata.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.infra.config.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.governance.core.registry.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.governance.core.registry.state.service.DataSourceStatusRegistryService;
 import org.apache.shardingsphere.governance.core.registry.state.service.InstanceStatusRegistryService;

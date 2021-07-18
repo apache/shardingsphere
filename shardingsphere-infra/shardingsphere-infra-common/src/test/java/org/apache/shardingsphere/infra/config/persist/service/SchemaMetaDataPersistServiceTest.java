@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.metadata.service;
+package org.apache.shardingsphere.infra.config.persist.service;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.SchemaYamlSwapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 public final class SchemaMetaDataPersistServiceTest {
     
     @Mock
-    private RegistryCenterRepository repository;
+    private ConfigCenterRepository repository;
     
     @Test
     public void assertPersist() {
@@ -93,7 +93,6 @@ public final class SchemaMetaDataPersistServiceTest {
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/schema.yaml").toURI()))
-                .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/schema/schema.yaml").toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
