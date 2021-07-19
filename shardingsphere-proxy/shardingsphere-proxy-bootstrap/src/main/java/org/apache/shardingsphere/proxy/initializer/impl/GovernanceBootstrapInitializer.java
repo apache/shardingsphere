@@ -27,6 +27,7 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
@@ -47,7 +48,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Governance bootstrap initializer.
@@ -58,24 +61,30 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     private volatile RegistryCenterRepository repository;
     
+    private volatile ConfigCenter configCenter;
+    
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
         GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
         repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
-        governanceFacade.init(repository, yamlConfig.getRuleConfigurations().keySet());
+        configCenter = new ConfigCenter(repository);
+        governanceFacade.init(repository, getSchemaNames(yamlConfig));
         initConfigurations(yamlConfig);
         return loadProxyConfiguration();
+    }
+    
+    private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
+        return Stream.of(configCenter.getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }
     
     private void initConfigurations(final YamlProxyConfiguration yamlConfig) {
         YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
         Map<String, YamlProxyRuleConfiguration> ruleConfigs = yamlConfig.getRuleConfigurations();
-        if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
-            governanceFacade.onlineInstance();
-        } else {
-            governanceFacade.onlineInstance(getDataSourceConfigurationMap(ruleConfigs), 
+        if (!isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
+            configCenter.persistConfigurations(getDataSourceConfigurationMap(ruleConfigs),
                     getRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps(), serverConfig.getGovernance().isOverwrite());
         }
+        governanceFacade.onlineInstance();
     }
     
     private boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
@@ -102,30 +111,30 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     private ProxyConfiguration loadProxyConfiguration() {
-        Collection<String> schemaNames = governanceFacade.getConfigCenter().getSchemaMetaDataService().loadAllNames();
+        Collection<String> schemaNames = configCenter.getSchemaMetaDataService().loadAllNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
-        Properties props = governanceFacade.getConfigCenter().getPropsService().load();
+        Properties props = configCenter.getPropsService().load();
         // TODO load global rules from reg center
-        Collection<RuleConfiguration> globalRuleConfigs = governanceFacade.getConfigCenter().getGlobalRuleService().load();
+        Collection<RuleConfiguration> globalRuleConfigs = configCenter.getGlobalRuleService().load();
         return new ProxyConfiguration(schemaDataSources, schemaRules, globalRuleConfigs, props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
         return schemaNames.stream()
             .collect(Collectors.toMap(each -> each, 
-                each -> DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getConfigCenter().getDataSourceService().load(each)),
+                each -> DataSourceParameterConverter.getDataSourceParameterMap(configCenter.getDataSourceService().load(each)),
                 (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
         return schemaNames.stream().collect(
-                Collectors.toMap(each -> each, each -> governanceFacade.getConfigCenter().getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                Collectors.toMap(each -> each, each -> configCenter.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override
     protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, governanceFacade, repository);
+        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, configCenter, governanceFacade, repository);
     }
     
     @Override

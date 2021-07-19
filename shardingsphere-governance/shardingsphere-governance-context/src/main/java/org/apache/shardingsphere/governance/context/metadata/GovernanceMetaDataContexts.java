@@ -38,6 +38,7 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -79,12 +80,16 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private volatile StandardMetaDataContexts metaDataContexts;
     
+    private final ConfigCenter configCenter;
+    
     private final GovernanceFacade governanceFacade;
     
     private final ShardingSphereLock lock;
     
-    public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, final GovernanceFacade governanceFacade, final RegistryCenterRepository repository) {
+    public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, 
+                                      final ConfigCenter configCenter, final GovernanceFacade governanceFacade, final RegistryCenterRepository repository) {
         this.metaDataContexts = metaDataContexts;
+        this.configCenter = configCenter;
         this.governanceFacade = governanceFacade;
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
@@ -107,7 +112,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private void persistMetaData() {
-        metaDataContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getConfigCenter().getSchemaMetaDataService().persist(key, value.getSchema()));
+        metaDataContexts.getMetaDataMap().forEach((key, value) -> configCenter.getSchemaMetaDataService().persist(key, value.getSchema()));
     }
     
     private ShardingSphereLock createShardingSphereLock(final RegistryCenterRepository repository) {
@@ -184,7 +189,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().put(event.getSchemaName(), new FederateSchemaMetadata(event.getSchemaName(), metaData.getSchema().getTables()));
         metaDataContexts = new StandardMetaDataContexts(metaDataMap, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(),
                 metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
-        governanceFacade.getConfigCenter().getSchemaMetaDataService().persist(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
+        configCenter.getSchemaMetaDataService().persist(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), 
                 metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
     }
@@ -201,7 +206,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().remove(event.getSchemaName());
         metaDataContexts = new StandardMetaDataContexts(
                 metaDataMap, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(), metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
-        governanceFacade.getConfigCenter().getSchemaMetaDataService().delete(event.getSchemaName());
+        configCenter.getSchemaMetaDataService().delete(event.getSchemaName());
     }
     
     /**
@@ -264,7 +269,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         Map<String, ShardingSphereMetaData> newMetaDataMap = getNewMetaData(schemaName, metaData);
         metaDataContexts = new StandardMetaDataContexts(newMetaDataMap, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(),
                 metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
-        governanceFacade.getConfigCenter().getSchemaMetaDataService().persist(schemaName, newMetaDataMap.get(schemaName).getSchema());
+        configCenter.getSchemaMetaDataService().persist(schemaName, newMetaDataMap.get(schemaName).getSchema());
     }
     
     /**
@@ -343,18 +348,18 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private ShardingSphereMetaData buildMetaData(final SchemaAddedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
-        if (!governanceFacade.getConfigCenter().getDataSourceService().isExisted(schemaName)) {
-            governanceFacade.getConfigCenter().getDataSourceService().persist(schemaName, new LinkedHashMap<>());
+        if (!configCenter.getDataSourceService().isExisted(schemaName)) {
+            configCenter.getDataSourceService().persist(schemaName, new LinkedHashMap<>());
         }
-        if (!governanceFacade.getConfigCenter().getSchemaRuleService().isExisted(schemaName)) {
-            governanceFacade.getConfigCenter().getSchemaRuleService().persist(schemaName, new LinkedList<>());
+        if (!configCenter.getSchemaRuleService().isExisted(schemaName)) {
+            configCenter.getSchemaRuleService().persist(schemaName, new LinkedList<>());
         }
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName,
-                governanceFacade.getConfigCenter().getDataSourceService().load(schemaName)));
+                configCenter.getDataSourceService().load(schemaName)));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
-                Collections.singletonMap(schemaName, governanceFacade.getConfigCenter().getSchemaRuleService().load(schemaName)),
+                Collections.singletonMap(schemaName, configCenter.getSchemaRuleService().load(schemaName)),
                 // TODO load global schema from reg center
-                governanceFacade.getConfigCenter().getGlobalRuleService().load(), 
+                configCenter.getGlobalRuleService().load(), 
                 metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build().getMetaDataMap().get(schemaName);
     }
