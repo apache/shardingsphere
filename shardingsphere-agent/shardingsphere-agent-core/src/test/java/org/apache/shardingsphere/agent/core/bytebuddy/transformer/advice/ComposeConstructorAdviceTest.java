@@ -17,36 +17,12 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-import com.google.common.collect.Maps;
-import lombok.SneakyThrows;
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.agent.ByteBuddyAgent;
-import net.bytebuddy.agent.builder.AgentBuilder;
-import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
-import net.bytebuddy.dynamic.scaffold.TypeValidation;
-import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
-import org.apache.shardingsphere.agent.core.mock.advice.MockClassStaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundRepeatedAdvice;
-import org.apache.shardingsphere.agent.core.mock.material.Material;
-import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
-import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
-import org.mockito.internal.util.reflection.FieldSetter;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(ComposeConstructorAdvice.class)
@@ -56,7 +32,7 @@ public final class ComposeConstructorAdviceTest {
     
     @Test
     public void onConstructor(final AdviceTargetObject target, final Object[] args) {
-        assertThat(advices.forEach(each -> each.onConstructor(target, args)),is(true));
+        assertThat(advices.forEach(each -> each.onConstructor(target, args)), is(true));
     }
     
     @After
