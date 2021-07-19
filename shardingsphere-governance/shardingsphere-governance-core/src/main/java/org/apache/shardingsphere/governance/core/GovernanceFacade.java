@@ -33,9 +33,6 @@ import java.util.stream.Stream;
 public final class GovernanceFacade {
     
     @Getter
-    private ConfigCenter configCenter;
-    
-    @Getter
     private RegistryCenter registryCenter;
     
     private GovernanceWatcherFactory listenerFactory;
@@ -47,10 +44,9 @@ public final class GovernanceFacade {
      * @param schemaNames schema names
      */
     public void init(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
-        configCenter = new ConfigCenter(repository);
         registryCenter = new RegistryCenter(repository);
         listenerFactory = new GovernanceWatcherFactory(repository, 
-                Stream.of(configCenter.getSchemaMetaDataService().loadAllNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
+                Stream.of(new ConfigCenter(repository).getSchemaMetaDataService().loadAllNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
     }
     
     /**

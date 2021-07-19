@@ -96,9 +96,8 @@ public final class GovernanceMetaDataContextsTest {
     
     @Before
     public void setUp() {
-        when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
-                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), governanceFacade, mock(RegistryCenterRepository.class));
+                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), configCenter, governanceFacade, mock(RegistryCenterRepository.class));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
