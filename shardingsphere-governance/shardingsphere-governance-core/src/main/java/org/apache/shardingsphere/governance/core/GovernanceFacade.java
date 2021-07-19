@@ -21,11 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Governance facade.
@@ -45,8 +42,7 @@ public final class GovernanceFacade {
      */
     public void init(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
         registryCenter = new RegistryCenter(repository);
-        listenerFactory = new GovernanceWatcherFactory(repository, 
-                Stream.of(new ConfigCenter(repository).getSchemaMetaDataService().loadAllNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
+        listenerFactory = new GovernanceWatcherFactory(repository, schemaNames);
     }
     
     /**

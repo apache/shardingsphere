@@ -48,7 +48,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Governance bootstrap initializer.
@@ -66,9 +68,13 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
         repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
         configCenter = new ConfigCenter(repository);
-        governanceFacade.init(repository, yamlConfig.getRuleConfigurations().keySet());
+        governanceFacade.init(repository, getSchemaNames(yamlConfig));
         initConfigurations(yamlConfig);
         return loadProxyConfiguration();
+    }
+    
+    private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
+        return Stream.of(configCenter.getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }
     
     private void initConfigurations(final YamlProxyConfiguration yamlConfig) {
