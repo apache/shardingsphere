@@ -37,7 +37,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Create table token generator for encrypt.
+ * Alter table token generator for encrypt.
  */
 public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<AlterTableStatementContext> {
     
