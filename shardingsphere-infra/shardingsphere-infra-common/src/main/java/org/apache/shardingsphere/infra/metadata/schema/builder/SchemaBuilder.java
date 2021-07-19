@@ -39,7 +39,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -149,9 +148,10 @@ public final class SchemaBuilder {
     }
     
     private static void appendDialectRemainTables(final DialectTableMetaDataLoader dialectLoader, final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables) throws SQLException {
+        Collection<String> existedTableNames = getExistedTables(materials.getRules(), tables);
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         for (DataSource each : materials.getDataSourceMap().values()) {
-            futures.add(EXECUTOR_SERVICE.submit(() -> dialectLoader.load(each, Collections.emptyList())));
+            futures.add(EXECUTOR_SERVICE.submit(() -> dialectLoader.load(each, existedTableNames)));
         }
         for (Future<Map<String, TableMetaData>> each : futures) {
             try {
