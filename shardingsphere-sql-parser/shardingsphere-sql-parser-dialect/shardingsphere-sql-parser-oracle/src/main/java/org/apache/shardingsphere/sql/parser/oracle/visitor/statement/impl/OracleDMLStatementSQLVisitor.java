@@ -94,6 +94,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Update
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UsingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -792,16 +793,16 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         ASTNode expression = visit(ctx);
         if (expression instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) expression;
-            ColumnOrderByItemSegment result = new ColumnOrderByItemSegment(column);
+            ColumnOrderByItemSegment result = new ColumnOrderByItemSegment(column, OrderDirection.ASC);
             return result;
         }
         if (expression instanceof LiteralExpressionSegment) {
             LiteralExpressionSegment literalExpression = (LiteralExpressionSegment) expression;
             IndexOrderByItemSegment result = new IndexOrderByItemSegment(literalExpression.getStartIndex(), literalExpression.getStopIndex(),
-                    SQLUtil.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue());
+                    SQLUtil.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue(), OrderDirection.ASC);
             return result;
         }
-        ExpressionOrderByItemSegment result = new ExpressionOrderByItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        ExpressionOrderByItemSegment result = new ExpressionOrderByItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), OrderDirection.ASC);
         return result;
     }
     
