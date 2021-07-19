@@ -46,15 +46,17 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
         Preconditions.checkState(insertStatementContext.getGeneratedKeyContext().isPresent());
         ((GroupedParameterBuilder) parameterBuilder).setDerivedColumnName(insertStatementContext.getGeneratedKeyContext().get().getColumnName());
         Iterator<Comparable<?>> generatedValues = insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().iterator();
-        int count = 0;
-        int parameterCount = 0;
-        for (List<Object> each : insertStatementContext.getGroupedParameters()) {
-            parameterCount += insertStatementContext.getInsertValueContexts().get(count).getParameterCount();
-            Comparable<?> generatedValue = generatedValues.next();
-            if (!each.isEmpty()) {
-                ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parameterCount, Lists.newArrayList(generatedValue));
+        if (generatedValues.hasNext()) {
+            int count = 0;
+            int parameterCount = 0;
+            for (List<Object> each : insertStatementContext.getGroupedParameters()) {
+                parameterCount += insertStatementContext.getInsertValueContexts().get(count).getParameterCount();
+                Comparable<?> generatedValue = generatedValues.next();
+                if (!each.isEmpty()) {
+                    ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parameterCount, Lists.newArrayList(generatedValue));
+                }
+                count++;
             }
-            count++;
         }
     }
 }

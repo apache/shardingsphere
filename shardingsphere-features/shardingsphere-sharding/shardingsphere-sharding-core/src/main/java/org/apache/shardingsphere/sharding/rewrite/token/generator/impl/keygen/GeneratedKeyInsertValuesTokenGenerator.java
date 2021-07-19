@@ -54,16 +54,19 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
         Preconditions.checkState(generatedKey.isPresent());
         Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().iterator();
-        int count = 0;
-        List<List<Object>> parameters = insertStatementContext.getGroupedParameters();
-        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
-            InsertValue insertValueToken = result.get().getInsertValues().get(count);
-            DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression(parameters, count)
-                    ? new DerivedLiteralExpressionSegment(generatedValues.next()) : new DerivedParameterMarkerExpressionSegment(each.getParameterCount());
-            insertValueToken.getValues().add(expressionSegment);
-            count++;
+        if (generatedValues.hasNext()) {
+            int count = 0;
+            List<List<Object>> parameters = insertStatementContext.getGroupedParameters();
+            for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
+                InsertValue insertValueToken = result.get().getInsertValues().get(count);
+                DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression(parameters, count)
+                        ? new DerivedLiteralExpressionSegment(generatedValues.next()) : new DerivedParameterMarkerExpressionSegment(each.getParameterCount());
+                insertValueToken.getValues().add(expressionSegment);
+                count++;
+            }
+            return result.get();
         }
-        return result.get();
+        return null;
     }
     
     private Optional<InsertValuesToken> findPreviousSQLToken() {

@@ -42,6 +42,9 @@ public final class GeneratedKeyInsertColumnTokenGenerator extends BaseGeneratedK
         Preconditions.checkState(generatedKey.isPresent());
         Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(sqlSegment.isPresent());
-        return new GeneratedKeyInsertColumnToken(sqlSegment.get().getStopIndex(), generatedKey.get().getColumnName());
+        if (!generatedKey.get().getGeneratedValues().isEmpty()) {
+            return new GeneratedKeyInsertColumnToken(sqlSegment.get().getStopIndex(), generatedKey.get().getColumnName());
+        }
+        return null;
     }
 }

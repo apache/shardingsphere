@@ -75,7 +75,7 @@ public final class SQLTokenGenerators {
             }
             if (each instanceof OptionalSQLTokenGenerator) {
                 SQLToken sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
-                if (!result.contains(sqlToken)) {
+                if (null != sqlToken && !result.contains(sqlToken)) {
                     result.add(sqlToken);
                 }
             } else if (each instanceof CollectionSQLTokenGenerator) {
