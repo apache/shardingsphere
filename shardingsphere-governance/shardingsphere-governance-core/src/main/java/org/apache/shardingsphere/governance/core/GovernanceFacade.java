@@ -21,13 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,21 +51,6 @@ public final class GovernanceFacade {
         registryCenter = new RegistryCenter(repository);
         listenerFactory = new GovernanceWatcherFactory(repository, 
                 Stream.of(configCenter.getSchemaMetaDataService().loadAllNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
-    }
-    
-    /**
-     * Online instance.
-     *
-     * @param dataSourceConfigs schema and data source configuration map
-     * @param schemaRuleConfigs schema and rule configuration map
-     * @param globalRuleConfigs global rule configurations
-     * @param props properties
-     * @param isOverwrite is overwrite
-     */
-    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs, final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, 
-                               final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
-        configCenter.persistConfigurations(dataSourceConfigs, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
-        onlineInstance();
     }
     
     /**

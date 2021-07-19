@@ -21,17 +21,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -55,18 +48,11 @@ public final class GovernanceFacadeTest {
     
     @Test
     public void assertOnlineInstance() {
-        ConfigCenter configCenter = mock(ConfigCenter.class);
         RegistryCenter registryCenter = mock(RegistryCenter.class);
         GovernanceWatcherFactory listenerFactory = mock(GovernanceWatcherFactory.class);
-        setField(governanceFacade, "configCenter", configCenter);
         setField(governanceFacade, "registryCenter", registryCenter);
         setField(governanceFacade, "listenerFactory", listenerFactory);
-        Map<String, DataSourceConfiguration> dataSourceConfigs = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
-        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
-        Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
-        Properties props = new Properties();
-        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
-        verify(configCenter).persistConfigurations(Collections.singletonMap("sharding_db", dataSourceConfigs), schemaRuleConfigs, globalRuleConfigs, props, false);
+        governanceFacade.onlineInstance();
         verify(registryCenter).registerInstanceOnline();
         verify(listenerFactory).watchListeners();
     }

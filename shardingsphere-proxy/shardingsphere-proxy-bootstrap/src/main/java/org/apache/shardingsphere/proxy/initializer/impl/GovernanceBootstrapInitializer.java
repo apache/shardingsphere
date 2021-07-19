@@ -70,12 +70,11 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     private void initConfigurations(final YamlProxyConfiguration yamlConfig) {
         YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
         Map<String, YamlProxyRuleConfiguration> ruleConfigs = yamlConfig.getRuleConfigurations();
-        if (isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
-            governanceFacade.onlineInstance();
-        } else {
-            governanceFacade.onlineInstance(getDataSourceConfigurationMap(ruleConfigs), 
+        if (!isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
+            governanceFacade.getConfigCenter().persistConfigurations(getDataSourceConfigurationMap(ruleConfigs),
                     getRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps(), serverConfig.getGovernance().isOverwrite());
         }
+        governanceFacade.onlineInstance();
     }
     
     private boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
