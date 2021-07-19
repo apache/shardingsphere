@@ -26,7 +26,12 @@
         <input sql="ALTER TABLE t_account_bak MODIFY COLUMN password varchar(255) not null default ''" />
         <output sql="ALTER TABLE t_account_bak MODIFY COLUMN cipher_password varchar(255) not null default '' , MODIFY COLUMN assisted_query_password varchar(255) not null default '' , MODIFY COLUMN plain_password varchar(255) not null default ''" />
     </rewrite-assertion>
-    
+
+    <rewrite-assertion id="change_column_for_plain">
+        <input sql="ALTER TABLE t_account_bak CHANGE COLUMN password password_new varchar(255) not null default ''" />
+        <output sql="ALTER TABLE t_account_bak CHANGE COLUMN cipher_password cipher_password_new varchar(255) not null default '' , CHANGE COLUMN assisted_query_password assisted_query_password_new varchar(255) not null default '' , CHANGE COLUMN plain_password plain_password_new varchar(255) not null default ''" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="drop_column_for_plain">
         <input sql="ALTER TABLE t_account_bak DROP COLUMN password" />
         <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password  , DROP COLUMN assisted_query_password  , DROP COLUMN plain_password " />
@@ -41,4 +46,6 @@
         <input sql="ALTER TABLE t_account_bak DROP COLUMN password , DROP COLUMN id" />
         <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password  , DROP COLUMN assisted_query_password  , DROP COLUMN plain_password  , DROP COLUMN id" />
     </rewrite-assertion>
+
+
 </rewrite-assertions>

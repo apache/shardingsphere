@@ -92,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefiniti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnAfterPositionSegment;
@@ -258,6 +259,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
                 } else if (each instanceof ModifyColumnDefinitionSegment) {
                     result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
+                } else if (each instanceof ChangeColumnDefinitionSegment) {
+                    result.getChangeColumnDefinitions().add((ChangeColumnDefinitionSegment) each);
                 } else if (each instanceof DropColumnDefinitionSegment) {
                     result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
                 } else if (each instanceof AddConstraintDefinitionSegment) {
@@ -297,7 +300,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                 result.getValue().add((AlterDefinitionSegment) visit(each));
             }
             if (each instanceof ChangeColumnContext) {
-                result.getValue().add(generateModifyColumnDefinitionSegment((ChangeColumnContext) each));
+                result.getValue().add(generateChangeColumnDefinitionSegment((ChangeColumnContext) each));
             }
             if (each instanceof ModifyColumnContext) {
                 result.getValue().add(generateModifyColumnDefinitionSegment((ModifyColumnContext) each));
@@ -353,8 +356,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return modifyColumnDefinition;
     }
     
-    private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ChangeColumnContext ctx) {
-        ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(ctx.columnDefinition()));
+    private ChangeColumnDefinitionSegment generateChangeColumnDefinitionSegment(final ChangeColumnContext ctx) {
+        ChangeColumnDefinitionSegment result = new ChangeColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(ctx.columnDefinition()), ctx.columnInternalRef.getText());
         if (null != ctx.place()) {
             result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }
