@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -96,8 +95,8 @@ public final class MetaDataContextsBuilderTest {
         Collection<ShardingSphereRule> rules = actual.getMetaData("logic_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(2));
         Iterator<ShardingSphereRule> iterator = rules.iterator();
-        assertThat(iterator.next(), either(instanceOf(SingleTableRule.class)).or(instanceOf(FixtureRule.class)));
-        assertThat(iterator.next(), either(instanceOf(SingleTableRule.class)).or(instanceOf(FixtureRule.class)));
+        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
+        assertThat(iterator.next(), instanceOf(FixtureRule.class));
     }
     
     private void assertDataSources(final MetaDataContexts actual) {

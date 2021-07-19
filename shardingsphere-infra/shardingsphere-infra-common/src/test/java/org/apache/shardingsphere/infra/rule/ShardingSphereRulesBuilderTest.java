@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -43,7 +42,7 @@ public final class ShardingSphereRulesBuilderTest {
                 "schema_name", Lists.newArrayList(new TestRuleConfiguration()), mock(DatabaseType.class), Collections.emptyMap());
         assertThat(shardingSphereRules.size(), is(2));
         Iterator<ShardingSphereRule> iterator = shardingSphereRules.iterator();
-        assertThat(iterator.next(), either(instanceOf(SingleTableRule.class)).or(instanceOf(TestShardingSphereRule.class)));
-        assertThat(iterator.next(), either(instanceOf(SingleTableRule.class)).or(instanceOf(TestShardingSphereRule.class)));
+        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
+        assertThat(iterator.next(), instanceOf(TestShardingSphereRule.class));
     }
 }

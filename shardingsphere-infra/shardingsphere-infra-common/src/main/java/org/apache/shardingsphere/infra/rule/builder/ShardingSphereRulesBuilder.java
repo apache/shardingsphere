@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -66,9 +67,8 @@ public final class ShardingSphereRulesBuilder {
                                                                   final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Map<RuleConfiguration, SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(getAllSchemaRuleConfigurations(schemaRuleConfigurations), SchemaRuleBuilder.class);
         Map<RuleConfiguration, SchemaRuleBuilder> allBuilders = appendDefaultKernelSchemaRuleConfigurationBuilder(builders);
-        Collection<ShardingSphereRule> result = allBuilders.entrySet().stream().map(entry -> 
+        return allBuilders.entrySet().stream().map(entry -> 
                 entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey())).collect(Collectors.toList());
-        return result;
     }
     
     private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigurations) {
@@ -84,7 +84,7 @@ public final class ShardingSphereRulesBuilder {
     private static Map<RuleConfiguration, SchemaRuleBuilder> appendDefaultKernelSchemaRuleConfigurationBuilder(final Map<RuleConfiguration, SchemaRuleBuilder> builders) {
         Map<SchemaRuleBuilder, DefaultKernelRuleConfigurationBuilder> defaultBuilders = 
                 OrderedSPIRegistry.getRegisteredServices(getMissedKernelSchemaRuleBuilders(builders.values()), DefaultKernelRuleConfigurationBuilder.class);
-        Map<RuleConfiguration, SchemaRuleBuilder> result = new HashMap<>(builders.size() + defaultBuilders.size(), 1);
+        Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>(builders.size() + defaultBuilders.size(), 1);
         result.putAll(builders);
         for (Entry<SchemaRuleBuilder, DefaultKernelRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
             result.put(entry.getValue().build(), entry.getKey());
