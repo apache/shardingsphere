@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @Slf4j
 public final class MetricsPluginIT {

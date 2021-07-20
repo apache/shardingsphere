@@ -93,7 +93,7 @@ public final class PrometheusMetricsRegisterTest {
     }
     
     @Test
-    public void assertSetMetricFactory(){
+    public void assertSetMetricFactory() {
         HikariDataSource hikariDataSource = new HikariDataSource();
         prometheusMetricsRegister.addMetricsFactory(hikariDataSource);
         assertNotNull(hikariDataSource.getMetricsTrackerFactory());
