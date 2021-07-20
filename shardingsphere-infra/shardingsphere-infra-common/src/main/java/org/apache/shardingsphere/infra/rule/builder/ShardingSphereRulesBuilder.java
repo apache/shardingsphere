@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,8 +66,9 @@ public final class ShardingSphereRulesBuilder {
     public static Collection<ShardingSphereRule> buildSchemaRules(final String schemaName, final Collection<RuleConfiguration> schemaRuleConfigurations,
                                                                   final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Map<RuleConfiguration, SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(getAllSchemaRuleConfigurations(schemaRuleConfigurations), SchemaRuleBuilder.class);
-        appendDefaultKernelSchemaRuleConfigurationBuilder(builders);
-        return builders.entrySet().stream().map(entry -> entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey())).collect(Collectors.toList());
+        Map<RuleConfiguration, SchemaRuleBuilder> allBuilders = appendDefaultKernelSchemaRuleConfigurationBuilder(builders);
+        return allBuilders.entrySet().stream().map(entry -> 
+                entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey())).collect(Collectors.toList());
     }
     
     private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigurations) {
@@ -79,13 +81,15 @@ public final class ShardingSphereRulesBuilder {
     }
     
     @SuppressWarnings("rawtypes")
-    private static void appendDefaultKernelSchemaRuleConfigurationBuilder(final Map<RuleConfiguration, SchemaRuleBuilder> builders) {
+    private static Map<RuleConfiguration, SchemaRuleBuilder> appendDefaultKernelSchemaRuleConfigurationBuilder(final Map<RuleConfiguration, SchemaRuleBuilder> builders) {
         Map<SchemaRuleBuilder, DefaultKernelRuleConfigurationBuilder> defaultBuilders = 
                 OrderedSPIRegistry.getRegisteredServices(getMissedKernelSchemaRuleBuilders(builders.values()), DefaultKernelRuleConfigurationBuilder.class);
-        // TODO consider about order for new put items
+        Map<RuleConfiguration, SchemaRuleBuilder> result = new LinkedHashMap<>(builders.size() + defaultBuilders.size(), 1);
+        result.putAll(builders);
         for (Entry<SchemaRuleBuilder, DefaultKernelRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
-            builders.put(entry.getValue().build(), entry.getKey());
+            result.put(entry.getValue().build(), entry.getKey());
         }
+        return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
