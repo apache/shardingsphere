@@ -59,21 +59,12 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         if (shardingLogicTableNames.size() > 1 && shardingRule.isAllBindingTables(shardingLogicTableNames)) {
             routeContext.getRouteUnits().addAll(getBindingTableRouteUnits(shardingRule, shardingLogicTableNames));
         } else {
-            Collection<RouteContext> routeContexts = getRouteContexts(shardingRule, shardingRule.getShardingBroadcastTableNames(logicTableNames));
-            if (!routeContext.getRouteUnits().isEmpty()) {
-                routeContexts.add(routeContext);
-            }
+            Collection<RouteContext> routeContexts = getRouteContexts(shardingRule, logicTableNames);
             RouteContext newRouteContext = new RouteContext();
             new ShardingCartesianRoutingEngine(routeContexts).route(newRouteContext, shardingRule);
-            combineRouteContext(routeContext, newRouteContext);
+            routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
+            routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
         }
-    }
-    
-    private void combineRouteContext(final RouteContext routeContext, final RouteContext newRouteContext) {
-        routeContext.getOriginalDataNodes().clear();
-        routeContext.getRouteUnits().clear();
-        routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
-        routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
     }
     
     private Collection<RouteContext> getRouteContexts(final ShardingRule shardingRule, final Collection<String> logicTableNames) {
@@ -82,10 +73,12 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
             RouteContext routeContext = new RouteContext();
             if (shardingRule.getBroadcastTables().contains(each)) {
                 routeContext.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, each));
-            } else {
+            } else if (shardingRule.findTableRule(each).isPresent()) {
                 routeContext.getRouteUnits().addAll(getAllRouteUnits(shardingRule, each));
             }
-            result.add(routeContext);
+            if (!routeContext.getRouteUnits().isEmpty()) {
+                result.add(routeContext);
+            }
         }
         return result;
     }

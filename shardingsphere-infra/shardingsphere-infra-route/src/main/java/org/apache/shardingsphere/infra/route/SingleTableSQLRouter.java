@@ -40,13 +40,18 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereMetaData metaData, final SingleTableRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
+        route(logicSQL, rule, result);
+        return result;
+    }
+    
+    private void route(final LogicSQL logicSQL, final SingleTableRule rule, final RouteContext result) {
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         Collection<String> singleTableNames = getSingleTableNames(sqlStatementContext, rule);
-        if (!singleTableNames.isEmpty()) {
-            validateSingleTableDataSource(rule, sqlStatementContext, singleTableNames);
-            new SingleTableRouteEngine(singleTableNames, sqlStatementContext.getSqlStatement()).route(result, rule);
+        if (singleTableNames.isEmpty()) {
+            return;
         }
-        return result;
+        validateSameDataSource(rule, sqlStatementContext, singleTableNames);
+        new SingleTableRouteEngine(singleTableNames, sqlStatementContext.getSqlStatement()).route(result, rule);
     }
     
     private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule) {
@@ -56,7 +61,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         return rule.getSingleTableNames(tableNames);
     }
     
-    private void validateSingleTableDataSource(final SingleTableRule rule, final SQLStatementContext<?> sqlStatementContext, final Collection<String> singleTableNames) {
+    private void validateSameDataSource(final SingleTableRule rule, final SQLStatementContext<?> sqlStatementContext, final Collection<String> singleTableNames) {
         if (!(sqlStatementContext instanceof SelectStatementContext) && !rule.isSingleTableInSameDataSource(singleTableNames)) {
             throw new ShardingSphereException("Single tables must be in the same datasource.");
         }
@@ -65,7 +70,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final LogicSQL logicSQL, final ShardingSphereMetaData metaData,
                                      final SingleTableRule rule, final ConfigurationProperties props) {
-        // TODO
+        route(logicSQL, rule, routeContext);
     }
     
     @Override

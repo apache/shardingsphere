@@ -20,7 +20,6 @@ package org.apache.shardingsphere.spring.namespace.governance;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.namespace.governance.util.EmbedTestingServer;
 import org.apache.shardingsphere.spring.namespace.governance.util.FieldValueUtil;
@@ -33,7 +32,6 @@ import javax.sql.DataSource;
 import java.util.Iterator;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -70,7 +68,6 @@ public class GovernanceShardingReadwriteSplittingNamespaceTest extends AbstractJ
         GovernanceShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(shardingSphereDataSource, "metaDataContexts");
         Iterator<ShardingSphereRule> iterator = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator();
-        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
         return (ShardingRule) iterator.next();
     }
 }

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguratio
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.aware.PreviousRulesAware;
 import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
@@ -66,7 +67,19 @@ public final class ShardingSphereRulesBuilder {
                                                                   final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Map<RuleConfiguration, SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(getAllSchemaRuleConfigurations(schemaRuleConfigurations), SchemaRuleBuilder.class);
         appendDefaultKernelSchemaRuleConfigurationBuilder(builders);
-        return builders.entrySet().stream().map(entry -> entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey())).collect(Collectors.toList());
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        for (Map.Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
+            setUpSchemaRuleBuilder(entry.getValue(), result);
+            result.add(entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey()));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private static void setUpSchemaRuleBuilder(final SchemaRuleBuilder builder, final Collection<ShardingSphereRule> rules) {
+        if (builder instanceof PreviousRulesAware) {
+            ((PreviousRulesAware) builder).setPreviousRules(rules);
+        }
     }
     
     private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigurations) {

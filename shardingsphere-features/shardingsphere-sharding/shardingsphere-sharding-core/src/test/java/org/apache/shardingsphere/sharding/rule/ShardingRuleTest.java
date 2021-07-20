@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.rule;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm;
@@ -52,7 +51,7 @@ public final class ShardingRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewShardingRuleWithEmptyDataSourceNames() {
-        new ShardingRule(new ShardingRuleConfiguration(), mock(DatabaseType.class), Collections.emptyMap());
+        new ShardingRule(new ShardingRuleConfiguration(), Collections.emptyMap());
     }
     
     @Test
@@ -203,7 +202,7 @@ public final class ShardingRuleTest {
         shardingRuleConfig.getTables().add(createTableRuleConfigWithAllStrategies());
         shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("column", "STANDARD_TEST"));
         shardingRuleConfig.getShardingAlgorithms().put("standard", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST", new Properties()));
-        assertTrue(new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap()).isShardingColumn("column", "LOGIC_TABLE"));
+        assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceMap()).isShardingColumn("column", "LOGIC_TABLE"));
     }
     
     @Test
@@ -212,7 +211,7 @@ public final class ShardingRuleTest {
         shardingRuleConfig.getTables().add(createTableRuleConfigWithAllStrategies());
         shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("column", "STANDARD_TEST"));
         shardingRuleConfig.getShardingAlgorithms().put("standard", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST", new Properties()));
-        assertTrue(new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap()).isShardingColumn("column", "LOGIC_TABLE"));
+        assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceMap()).isShardingColumn("column", "LOGIC_TABLE"));
     }
     
     @Test
@@ -220,7 +219,7 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleConfigWithAllStrategies());
         shardingRuleConfig.getShardingAlgorithms().put("standard", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST", new Properties()));
-        assertTrue(new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap()).isShardingColumn("column", "logic_Table"));
+        assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceMap()).isShardingColumn("column", "logic_Table"));
     }
     
     @Test
@@ -228,14 +227,14 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleConfigWithTableStrategies());
         shardingRuleConfig.getShardingAlgorithms().put("standard", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST", new Properties()));
-        assertTrue(new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap()).isShardingColumn("column", "logic_Table"));
+        assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceMap()).isShardingColumn("column", "logic_Table"));
     }
     
     @Test
     public void assertIsNotShardingColumn() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleConfigWithAllStrategies());
-        assertFalse(new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap()).isShardingColumn("column", "other_Table"));
+        assertFalse(new ShardingRule(shardingRuleConfig, createDataSourceMap()).isShardingColumn("column", "other_Table"));
     }
     
     @Test
@@ -279,7 +278,7 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "pr_ds_${0..1}.table_${0..2}");
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), null);
+        new ShardingRule(shardingRuleConfig, Collections.emptyMap());
     }
     
     @Test
@@ -313,7 +312,7 @@ public final class ShardingRuleTest {
         Properties props = new Properties();
         props.put("sharding-count", 4);
         shardingRuleConfig.getShardingAlgorithms().put("hash_mod", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceMap());
         assertThat(shardingRule.getDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("ds_0", "ds_1", "resource0", "resource1"))));
     }
     
@@ -322,7 +321,7 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceMap());
         assertThat(shardingRule.getDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("ds_0", "ds_1"))));
     }
     
@@ -349,14 +348,14 @@ public final class ShardingRuleTest {
         shardingRuleConfig.getShardingAlgorithms().put("standard", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST", new Properties()));
         shardingRuleConfig.getKeyGenerators().put("increment", new ShardingSphereAlgorithmConfiguration("INCREMENT", new Properties()));
         shardingRuleConfig.getKeyGenerators().put("default", new ShardingSphereAlgorithmConfiguration("INCREMENT", new Properties()));
-        return new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
+        return new ShardingRule(shardingRuleConfig, createDataSourceMap());
     }
     
     private ShardingRule createMinimumShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
+        return new ShardingRule(shardingRuleConfig, createDataSourceMap());
     }
     
     private ShardingTableRuleConfiguration createTableRuleConfiguration(final String logicTableName, final String actualDataNodes) {
