@@ -33,6 +33,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementPar
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingBindingTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.DropShardingAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingRuleStatementParser.ShowShardingBindingTableRulesContext;
@@ -49,6 +50,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
@@ -127,6 +129,11 @@ public final class ShardingRuleSQLStatementVisitor extends ShardingRuleStatement
     @Override
     public ASTNode visitDropShardingBroadcastTableRules(final DropShardingBroadcastTableRulesContext ctx) {
         return new DropShardingBroadcastTableRulesStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropShardingAlgorithm(final DropShardingAlgorithmContext ctx) {
+        return new DropShardingAlgorithmStatement(ctx.algorithmName().stream().map(each -> each.getText()).collect(Collectors.toList()));
     }
     
     @Override

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.config.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.RuleConfigurationsAlteredSQLNotificationEvent;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 

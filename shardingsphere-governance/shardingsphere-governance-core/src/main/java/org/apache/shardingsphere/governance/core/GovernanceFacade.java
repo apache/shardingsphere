@@ -19,32 +19,15 @@ package org.apache.shardingsphere.governance.core;
 
 import lombok.Getter;
 import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
-import org.apache.shardingsphere.governance.core.registry.PersistCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Governance facade.
  */
-public final class GovernanceFacade implements AutoCloseable {
-    
-    private boolean isOverwrite;
-    
-    @Getter
-    private RegistryCenterRepository repository;
-    
-    @Getter
-    private PersistCenter persistCenter;
+public final class GovernanceFacade {
     
     @Getter
     private RegistryCenter registryCenter;
@@ -54,30 +37,12 @@ public final class GovernanceFacade implements AutoCloseable {
     /**
      * Initialize governance facade.
      *
-     * @param config governance configuration
+     * @param repository registry center repository
      * @param schemaNames schema names
      */
-    public void init(final GovernanceConfiguration config, final Collection<String> schemaNames) {
-        isOverwrite = config.isOverwrite();
-        repository = RegistryCenterRepositoryFactory.newInstance(config);
-        persistCenter = new PersistCenter(repository);
+    public void init(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
         registryCenter = new RegistryCenter(repository);
-        listenerFactory = new GovernanceWatcherFactory(repository, 
-                Stream.of(registryCenter.getSchemaService().loadAllNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
-    }
-    
-    /**
-     * Online instance.
-     *
-     * @param dataSourceConfigs schema and data source configuration map
-     * @param schemaRuleConfigs schema and rule configuration map
-     * @param globalRuleConfigs global rule configurations
-     * @param props properties
-     */
-    public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigs,
-                               final Map<String, Collection<RuleConfiguration>> schemaRuleConfigs, final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
-        persistCenter.persistConfigurations(dataSourceConfigs, schemaRuleConfigs, globalRuleConfigs, props, isOverwrite);
-        onlineInstance();
+        listenerFactory = new GovernanceWatcherFactory(repository, schemaNames);
     }
     
     /**
@@ -86,10 +51,5 @@ public final class GovernanceFacade implements AutoCloseable {
     public void onlineInstance() {
         registryCenter.registerInstanceOnline();
         listenerFactory.watchListeners();
-    }
-    
-    @Override
-    public void close() {
-        repository.close();
     }
 }

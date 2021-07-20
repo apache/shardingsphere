@@ -14,6 +14,8 @@ ALTER SHARDING TABLE RULE shardingTableRuleDefinition [, shardingTableRuleDefini
 
 DROP SHARDING TABLE RULE tableName [, tableName] ...
 
+DROP SHARDING ALGORITHM algorithmName [, algorithmName] ...
+
 shardingTableRuleDefinition:
     tableName(resources [, shardingColumn] [, shardingAlgorithm] [, keyGenerateStrategy])
 
@@ -42,6 +44,8 @@ algorithmProperty:
 - `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding/)
 - `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen/)
 - 重复的 `tableName` 将无法被创建
+- `shardingAlgorithm` 能够被不同的 `Sharding Table Rule` 复用，因此在执行 `DROP SHARDING TABLE RULE` 时，对应的 `shardingAlgorithm` 不会被移除
+- 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`
 
 ### Sharding Binding Table Rule
 
@@ -88,6 +92,8 @@ GENERATED_KEY(COLUMN=another_id,TYPE(NAME=snowflake,PROPERTIES("worker-id"=123))
 );
 
 DROP SHARDING TABLE RULE t_order, t_order_item;
+
+DROP SHARDING ALGORITHM t_order_hash_mod;
 ```
 
 ### Sharding Binding Table Rule

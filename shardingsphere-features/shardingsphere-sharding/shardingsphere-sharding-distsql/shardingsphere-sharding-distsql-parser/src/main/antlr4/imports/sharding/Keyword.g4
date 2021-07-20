@@ -102,3 +102,7 @@ RULES
 COLUMNS
     : C O L U M N S
     ;
+    
+ALGORITHM
+    : A L G O R I T H M
+    ;
