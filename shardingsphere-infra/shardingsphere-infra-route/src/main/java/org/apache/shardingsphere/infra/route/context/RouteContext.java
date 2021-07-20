@@ -143,7 +143,7 @@ public final class RouteContext {
      * @param tableMappers table mapper collection
      */
     public void putRouteUnit(final RouteMapper dataSourceMapper, final Collection<RouteMapper> tableMappers) {
-        Collection<RouteUnit> targets = this.routeUnits.stream().filter(unit -> unit.getDataSourceMapper().equals(dataSourceMapper)).collect(Collectors.toList());
+        Collection<RouteUnit> targets = routeUnits.stream().filter(unit -> unit.getDataSourceMapper().equals(dataSourceMapper)).collect(Collectors.toList());
         if (targets.isEmpty()) {
             RouteUnit unit = new RouteUnit(dataSourceMapper, new LinkedHashSet<>());
             unit.getTableMappers().addAll(tableMappers);
