@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Test;
@@ -26,9 +25,7 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -40,25 +37,14 @@ public final class GovernanceFacadeTest {
     public void assertInit() {
         governanceFacade.init(mock(RegistryCenterRepository.class));
         assertNotNull(governanceFacade.getRegistryCenter());
-        assertThat(getField(governanceFacade, "listenerFactory"), instanceOf(GovernanceWatcherFactory.class));
     }
     
     @Test
     public void assertOnlineInstance() {
         RegistryCenter registryCenter = mock(RegistryCenter.class);
-        GovernanceWatcherFactory listenerFactory = mock(GovernanceWatcherFactory.class);
         setField(governanceFacade, "registryCenter", registryCenter);
-        setField(governanceFacade, "listenerFactory", listenerFactory);
         governanceFacade.onlineInstance(Arrays.asList("schema_0", "schema_1"));
         verify(registryCenter).onlineInstance(Arrays.asList("schema_0", "schema_1"));
-        verify(listenerFactory).watchListeners(Arrays.asList("schema_0", "schema_1"));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static Object getField(final Object target, final String fieldName) {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return field.get(target);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
