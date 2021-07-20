@@ -61,7 +61,13 @@ public final class TableMetaData {
         columns = getColumns(columnMetaDataList);
         indexes = getIndexes(indexMetaDataList);
     }
-    
+
+    public TableMetaData(final String name, final Map<String, ColumnMetaData> columns, final Map<String, IndexMetaData> indexes) {
+        this.name = name;
+        this.columns = columns;
+        this.indexes = indexes;
+    }
+
     private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>(columnMetaDataList.size(), 1);
         for (ColumnMetaData each : columnMetaDataList) {
