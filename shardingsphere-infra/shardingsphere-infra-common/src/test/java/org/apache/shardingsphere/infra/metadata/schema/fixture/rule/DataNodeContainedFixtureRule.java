@@ -75,7 +75,7 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     }
     
     @Override
-    public Collection<String> getExcludedTables() {
+    public Collection<String> getAllTables() {
         return Collections.emptyList();
     }
 }

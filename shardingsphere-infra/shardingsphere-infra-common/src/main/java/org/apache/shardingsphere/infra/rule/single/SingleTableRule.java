@@ -99,6 +99,6 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
     }
     
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
-        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).flatMap(each -> ((DataNodeContainedRule) each).getExcludedTables().stream()).collect(Collectors.toList());
+        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).flatMap(each -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toList());
     }
 }
