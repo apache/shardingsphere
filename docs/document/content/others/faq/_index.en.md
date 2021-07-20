@@ -1,7 +1,7 @@
 +++
 pre = "<b>7.1. </b>"
 title = "FAQ"
-weight = 7
+weight = 1
 chapter = true
 +++
 
@@ -296,4 +296,4 @@ Answer:
 
 1. If you need to customize JDBC connection properties, please take the `urlSource` way to define `dataSource`.
 2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
-3. Please refer to [Related introduction](en/features/dist-sql/syntax/rdl/rdl-resource/) for above rules.
+3. Please refer to [Related introduction](https://shardingsphere.apache.org/document/current/en/features/dist-sql/syntax/rdl/rdl-resource/) for above rules.

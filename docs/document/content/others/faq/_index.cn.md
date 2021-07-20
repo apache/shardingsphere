@@ -1,7 +1,7 @@
 +++
 pre = "<b>7.1. </b>"
 title = "FAQ"
-weight = 7
+weight = 1
 chapter = true
 +++
 
@@ -299,4 +299,4 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 
 1. 如需自定义JDBC参数，请使用 `urlSource` 的方式定义 `dataSource`。
 2. ShardingSphere预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout`等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
-3. 以上规则请参考 [相关介绍](cn/features/dist-sql/syntax/rdl/rdl-resource/)
+3. 以上规则请参考 [相关介绍](https://shardingsphere.apache.org/document/current/cn/features/dist-sql/syntax/rdl/rdl-resource/)
