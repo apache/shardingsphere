@@ -20,21 +20,26 @@ package org.apache.shardingsphere.infra.rule.builder.single;
 import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.aware.PreviousRulesAware;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * Single table rule builder.
  */
-public final class SingleTableRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<SingleTableRuleConfiguration> {
+public final class SingleTableRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<SingleTableRuleConfiguration>, PreviousRulesAware {
+    
+    private Collection<ShardingSphereRule> previousRules;
     
     @Override
     public SingleTableRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final SingleTableRuleConfiguration config) {
-        return new SingleTableRule(databaseType, dataSourceMap);
+        return new SingleTableRule(databaseType, dataSourceMap, previousRules);
     }
     
     @Override
@@ -45,5 +50,10 @@ public final class SingleTableRuleBuilder implements FeatureRuleBuilder, SchemaR
     @Override
     public Class<SingleTableRuleConfiguration> getTypeClass() {
         return SingleTableRuleConfiguration.class;
+    }
+    
+    @Override
+    public void setPreviousRules(final Collection<ShardingSphereRule> previousRules) {
+        this.previousRules = previousRules;
     }
 }

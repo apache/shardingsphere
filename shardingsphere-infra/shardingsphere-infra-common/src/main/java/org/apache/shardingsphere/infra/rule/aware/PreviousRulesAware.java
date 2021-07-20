@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher.event;
+package org.apache.shardingsphere.infra.rule.aware;
 
-import lombok.Getter;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * Exclude table event.
+ * Previous rules aware.
  */
-@Getter
-public final class ExcludeTableEvent {
+public interface PreviousRulesAware {
     
-    private final Collection<String> tableNames;
-    
-    public ExcludeTableEvent(final Collection<String> tableNames) {
-        this.tableNames = null == tableNames ? Collections.emptyList() : tableNames;
-    }
+    /**
+     * Set previous rules.
+     * 
+     * @param previousRules previous rules
+     */
+    void setPreviousRules(Collection<ShardingSphereRule> previousRules);
 }

@@ -28,11 +28,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -77,11 +79,22 @@ public final class SingleTableDataNodeLoaderTest {
     
     @Test
     public void assertLoad() {
-        Collection<String> tableNames = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap).keySet();
+        Collection<String> tableNames = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList()).keySet();
         assertTrue(tableNames.contains("employee"));
         assertTrue(tableNames.contains("dept"));
         assertTrue(tableNames.contains("salary"));
         assertTrue(tableNames.contains("student"));
+        assertTrue(tableNames.contains("teacher"));
+        assertTrue(tableNames.contains("class"));
+    }
+    
+    @Test
+    public void assertLoadWithExcludeTables() {
+        Collection<String> tableNames = SingleTableDataNodeLoader.load(mock(DatabaseType.class), dataSourceMap, Arrays.asList("salary", "employee", "student")).keySet();
+        assertFalse(tableNames.contains("employee"));
+        assertFalse(tableNames.contains("salary"));
+        assertFalse(tableNames.contains("student"));
+        assertTrue(tableNames.contains("dept"));
         assertTrue(tableNames.contains("teacher"));
         assertTrue(tableNames.contains("class"));
     }

@@ -95,8 +95,8 @@ public final class MetaDataContextsBuilderTest {
         Collection<ShardingSphereRule> rules = actual.getMetaData("logic_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(2));
         Iterator<ShardingSphereRule> iterator = rules.iterator();
-        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
         assertThat(iterator.next(), instanceOf(FixtureRule.class));
+        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
     }
     
     private void assertDataSources(final MetaDataContexts actual) {
