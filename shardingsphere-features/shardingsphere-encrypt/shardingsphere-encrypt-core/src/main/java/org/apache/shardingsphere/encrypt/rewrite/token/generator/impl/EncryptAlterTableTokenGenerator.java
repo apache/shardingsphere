@@ -84,29 +84,6 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
 
-    private Collection<SQLToken> getChangeColumnTokens(final String tableName, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments) {
-        Collection<SQLToken> result = new LinkedList<>();
-        for (ModifyColumnDefinitionSegment each : columnDefinitionSegments) {
-            ColumnDefinitionSegment segment = each.getColumnDefinition();
-            String columnName = segment.getColumnName().getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
-            if (encryptor.isPresent()) {
-                result.addAll(getChangeColumnTokens(tableName, columnName, each, segment));
-            }
-        }
-        return result;
-    }
-
-    private Collection<SQLToken> getChangeColumnTokens(final String tableName, final String columnName,
-                                                       final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment, final ColumnDefinitionSegment columnDefinitionSegment) {
-        Collection<SQLToken> result = new LinkedList<>();
-        result.add(new RemoveToken(modifyColumnDefinitionSegment.getStartIndex() - 1, modifyColumnDefinitionSegment.getStopIndex()));
-        result.add(getCipherColumn(tableName, columnName, modifyColumnDefinitionSegment, columnDefinitionSegment));
-        getAssistedQueryColumn(tableName, columnName, modifyColumnDefinitionSegment, columnDefinitionSegment).ifPresent(result::add);
-        getPlainColumn(tableName, columnName, modifyColumnDefinitionSegment, columnDefinitionSegment).ifPresent(result::add);
-        return result;
-    }
-
     private Collection<SQLToken> getModifyColumnTokens(final String tableName, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ModifyColumnDefinitionSegment each : columnDefinitionSegments) {
