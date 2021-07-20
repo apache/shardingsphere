@@ -79,9 +79,6 @@ public final class OrderByItemAssert {
             if (each instanceof ExpressionOrderByItemSegment) {
                 assertOrderInfo(assertContext, each, expected.getExpressionItems().get(count), type);
                 assertExpressionOrderByItem(assertContext, (ExpressionOrderByItemSegment) each, expected.getExpressionItems().get(count), type);
-                if (null != ((ExpressionOrderByItemSegment) each).getExpr() && null != expected.getExpressionItems().get(count).getExpr()) {
-                    ExpressionAssert.assertExpression(assertContext, ((ExpressionOrderByItemSegment) each).getExpr(), expected.getExpressionItems().get(count).getExpr());
-                }
                 count++;
             }
         }
@@ -113,6 +110,9 @@ public final class OrderByItemAssert {
     private static void assertExpressionOrderByItem(final SQLCaseAssertContext assertContext,
                                                     final ExpressionOrderByItemSegment actual, final ExpectedExpressionOrderByItem expected, final String type) {
         assertThat(assertContext.getText(String.format("%s item expression assertion error: ", type)), actual.getExpression(), is(expected.getExpression()));
+        if (null != expected.getExpr()) {
+            ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
+        }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

@@ -1694,4 +1694,35 @@
             <column-item name="last_name" start-index="125" stop-index="133" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_projections_with_expr">
+        <projections start-index="7" stop-index="58">
+            <expression-projection start-index="7" stop-index="11" text="10+20">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="11">
+                        <left>
+                            <literal-expression value="10" start-index="7" stop-index="8"/>
+                        </left>
+                        <right>
+                            <literal-expression value="20" start-index="10" stop-index="11"/>
+                        </right>
+                        <operator>+</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="13" stop-index="56" text="CASE order_id WHEN 1 THEN '11' ELSE '00' END">
+                <expr>
+                    <common-expression literal-text="CASE order_id WHEN 1 THEN '11' ELSE '00' END" start-index="13" stop-index="56"/>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="58" stop-index="58" text="1">
+                <expr>
+                    <literal-expression value="1" start-index="58" stop-index="58"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="65" stop-index="71" />
+        </from>
+    </select>
 </sql-parser-test-cases>
