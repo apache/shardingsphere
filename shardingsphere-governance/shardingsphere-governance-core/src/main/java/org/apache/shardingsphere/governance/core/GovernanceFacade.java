@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core;
 
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
@@ -32,8 +31,6 @@ public final class GovernanceFacade {
     @Getter
     private RegistryCenter registryCenter;
     
-    private GovernanceWatcherFactory listenerFactory;
-    
     /**
      * Initialize governance facade.
      *
@@ -41,7 +38,6 @@ public final class GovernanceFacade {
      */
     public void init(final RegistryCenterRepository repository) {
         registryCenter = new RegistryCenter(repository);
-        listenerFactory = new GovernanceWatcherFactory(repository);
     }
     
     /**
@@ -50,7 +46,6 @@ public final class GovernanceFacade {
      * @param schemaNames schema names
      */
     public void onlineInstance(final Collection<String> schemaNames) {
-        registryCenter.registerInstanceOnline();
-        listenerFactory.watchListeners(schemaNames);
+        registryCenter.onlineInstance(schemaNames);
     }
 }

@@ -50,7 +50,7 @@ public final class GovernanceFacadeTest {
         setField(governanceFacade, "registryCenter", registryCenter);
         setField(governanceFacade, "listenerFactory", listenerFactory);
         governanceFacade.onlineInstance(Arrays.asList("schema_0", "schema_1"));
-        verify(registryCenter).registerInstanceOnline();
+        verify(registryCenter).onlineInstance(Arrays.asList("schema_0", "schema_1"));
         verify(listenerFactory).watchListeners(Arrays.asList("schema_0", "schema_1"));
     }
     
