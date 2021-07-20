@@ -39,9 +39,11 @@ public final class ModifyColumnDefinitionSegment implements AlterDefinitionSegme
     private final int stopIndex;
     
     private final ColumnDefinitionSegment columnDefinition;
+
+    private String previousColumnName = "";
     
     private ColumnPositionSegment columnPosition;
-    
+
     /**
      * Get column position.
      *
