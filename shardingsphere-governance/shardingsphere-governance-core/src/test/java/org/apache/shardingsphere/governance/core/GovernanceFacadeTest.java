@@ -27,7 +27,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -39,11 +38,9 @@ public final class GovernanceFacadeTest {
     
     @Test
     public void assertInit() {
-        governanceFacade.init(mock(RegistryCenterRepository.class), Arrays.asList("schema_0", "schema_1"));
+        governanceFacade.init(mock(RegistryCenterRepository.class));
         assertNotNull(governanceFacade.getRegistryCenter());
         assertThat(getField(governanceFacade, "listenerFactory"), instanceOf(GovernanceWatcherFactory.class));
-        GovernanceWatcherFactory listenerFactory = (GovernanceWatcherFactory) getField(governanceFacade, "listenerFactory");
-        assertThat(getField(listenerFactory, "schemaNames"), is(Arrays.asList("schema_0", "schema_1")));
     }
     
     @Test
@@ -52,9 +49,9 @@ public final class GovernanceFacadeTest {
         GovernanceWatcherFactory listenerFactory = mock(GovernanceWatcherFactory.class);
         setField(governanceFacade, "registryCenter", registryCenter);
         setField(governanceFacade, "listenerFactory", listenerFactory);
-        governanceFacade.onlineInstance();
+        governanceFacade.onlineInstance(Arrays.asList("schema_0", "schema_1"));
         verify(registryCenter).registerInstanceOnline();
-        verify(listenerFactory).watchListeners();
+        verify(listenerFactory).watchListeners(Arrays.asList("schema_0", "schema_1"));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

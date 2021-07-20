@@ -68,13 +68,9 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
         repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
         configCenter = new ConfigCenter(repository);
-        governanceFacade.init(repository, getSchemaNames(yamlConfig));
+        governanceFacade.init(repository);
         initConfigurations(yamlConfig);
         return loadProxyConfiguration();
-    }
-    
-    private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
-        return Stream.of(configCenter.getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }
     
     private void initConfigurations(final YamlProxyConfiguration yamlConfig) {
@@ -84,7 +80,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             configCenter.persistConfigurations(getDataSourceConfigurationMap(ruleConfigs),
                     getRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps(), serverConfig.getGovernance().isOverwrite());
         }
-        governanceFacade.onlineInstance();
+        governanceFacade.onlineInstance(getSchemaNames(yamlConfig));
     }
     
     private boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
@@ -108,6 +104,10 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     private Collection<RuleConfiguration> getGlobalRuleConfigurations(final Collection<YamlRuleConfiguration> globalRuleConfigs) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(globalRuleConfigs);
+    }
+    
+    private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
+        return Stream.of(configCenter.getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }
     
     private ProxyConfiguration loadProxyConfiguration() {
