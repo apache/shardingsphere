@@ -31,25 +31,32 @@ import org.apache.shardingsphere.governance.core.registry.state.service.Instance
 import org.apache.shardingsphere.governance.core.registry.state.subscriber.DataSourceStatusRegistrySubscriber;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 
+import java.util.Collection;
+
 /**
  * Registry center.
  */
-@Getter
 public final class RegistryCenter {
     
     private final String instanceId;
     
+    @Getter
     private final DataSourceStatusRegistryService dataSourceStatusService;
     
+    @Getter
     private final InstanceStatusRegistryService instanceStatusService;
     
+    @Getter
     private final LockRegistryService lockService;
+    
+    private final GovernanceWatcherFactory listenerFactory;
     
     public RegistryCenter(final RegistryCenterRepository repository) {
         instanceId = GovernanceInstance.getInstance().getId();
         dataSourceStatusService = new DataSourceStatusRegistryService(repository);
         instanceStatusService = new InstanceStatusRegistryService(repository);
         lockService = new LockRegistryService(repository);
+        listenerFactory = new GovernanceWatcherFactory(repository);
         createSubscribers(repository);
     }
     
@@ -64,9 +71,12 @@ public final class RegistryCenter {
     }
     
     /**
-     * Register instance online.
+     * Online instance.
+     * 
+     * @param schemaNames schema names
      */
-    public void registerInstanceOnline() {
+    public void onlineInstance(final Collection<String> schemaNames) {
         instanceStatusService.registerInstanceOnline(instanceId);
+        listenerFactory.watchListeners(schemaNames);
     }
 }

@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
-import org.apache.shardingsphere.governance.core.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -68,8 +68,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     public GovernanceShardingSphereDataSource(final GovernanceConfiguration governanceConfig) throws SQLException {
         repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
         ConfigCenter configCenter = new ConfigCenter(repository);
-        GovernanceFacade governanceFacade = createGovernanceFacade();
-        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(configCenter), configCenter, governanceFacade, repository);
+        RegistryCenter registryCenter = new RegistryCenter(repository);
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(configCenter), configCenter, registryCenter, repository);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
@@ -79,19 +79,12 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
                                               final Properties props, final GovernanceConfiguration governanceConfig) throws SQLException {
         repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
         ConfigCenter configCenter = new ConfigCenter(repository);
-        GovernanceFacade governanceFacade = createGovernanceFacade();
-        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(dataSourceMap, ruleConfigs, props), configCenter, governanceFacade, repository);
+        RegistryCenter registryCenter = new RegistryCenter(repository);
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(dataSourceMap, ruleConfigs, props), configCenter, registryCenter, repository);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
-        uploadLocalConfiguration(configCenter, governanceFacade, ruleConfigs, governanceConfig.isOverwrite());
-    }
-    
-    private GovernanceFacade createGovernanceFacade() {
-        GovernanceFacade result = new GovernanceFacade();
-        result.init(repository);
-        result.onlineInstance(Collections.singletonList(DefaultSchema.LOGIC_NAME));
-        return result;
+        uploadLocalConfiguration(configCenter, registryCenter, ruleConfigs, governanceConfig.isOverwrite());
     }
     
     private StandardMetaDataContexts createMetaDataContexts(final ConfigCenter configCenter) throws SQLException {
@@ -115,13 +108,13 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         return new StandardTransactionContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, engine));
     }
     
-    private void uploadLocalConfiguration(final ConfigCenter configCenter, final GovernanceFacade governanceFacade, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
+    private void uploadLocalConfiguration(final ConfigCenter configCenter, final RegistryCenter registryCenter, final Collection<RuleConfiguration> ruleConfigs, final boolean isOverwrite) {
         Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceConverter.getDataSourceConfigurationMap(metaDataContexts.getDefaultMetaData().getResource().getDataSources());
         Collection<RuleConfiguration> schemaRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof SchemaRuleConfiguration).collect(Collectors.toList());
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         configCenter.persistConfigurations(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs),
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, schemaRuleConfigs), globalRuleConfigs, metaDataContexts.getProps().getProps(), isOverwrite);
-        governanceFacade.onlineInstance(Collections.singletonList(DefaultSchema.LOGIC_NAME));
+        registryCenter.onlineInstance(Collections.singletonList(DefaultSchema.LOGIC_NAME));
     }
     
     @Override
