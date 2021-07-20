@@ -156,7 +156,7 @@ public final class SchemaBuilder {
                 for (Map.Entry<String, TableMetaData> one : tableMetaMap.entrySet()) {
                     String actualTableName = one.getKey();
                     String logicTableName = actualTable2LogicTableMap.get(actualTableName);
-                    if (null != logicTableName) {
+                    if (null != logicTableName && !logicTableName.equals(actualTableName)) {
                         if (!tables.containsKey(logicTableName)) {
                             TableMetaData toCopy = one.getValue();
                             tables.put(logicTableName, new TableMetaData(logicTableName, toCopy.getColumns(), toCopy.getIndexes()));
