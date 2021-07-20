@@ -89,8 +89,8 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
     
     private GovernanceFacade createGovernanceFacade() {
         GovernanceFacade result = new GovernanceFacade();
-        result.init(repository, Collections.singletonList(DefaultSchema.LOGIC_NAME));
-        result.onlineInstance();
+        result.init(repository);
+        result.onlineInstance(Collections.singletonList(DefaultSchema.LOGIC_NAME));
         return result;
     }
     
@@ -121,7 +121,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         configCenter.persistConfigurations(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceConfigs),
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, schemaRuleConfigs), globalRuleConfigs, metaDataContexts.getProps().getProps(), isOverwrite);
-        governanceFacade.onlineInstance();
+        governanceFacade.onlineInstance(Collections.singletonList(DefaultSchema.LOGIC_NAME));
     }
     
     @Override

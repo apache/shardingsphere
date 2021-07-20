@@ -38,18 +38,19 @@ public final class GovernanceFacade {
      * Initialize governance facade.
      *
      * @param repository registry center repository
-     * @param schemaNames schema names
      */
-    public void init(final RegistryCenterRepository repository, final Collection<String> schemaNames) {
+    public void init(final RegistryCenterRepository repository) {
         registryCenter = new RegistryCenter(repository);
-        listenerFactory = new GovernanceWatcherFactory(repository, schemaNames);
+        listenerFactory = new GovernanceWatcherFactory(repository);
     }
     
     /**
      * Online instance.
+     * 
+     * @param schemaNames schema names
      */
-    public void onlineInstance() {
+    public void onlineInstance(final Collection<String> schemaNames) {
         registryCenter.registerInstanceOnline();
-        listenerFactory.watchListeners();
+        listenerFactory.watchListeners(schemaNames);
     }
 }
