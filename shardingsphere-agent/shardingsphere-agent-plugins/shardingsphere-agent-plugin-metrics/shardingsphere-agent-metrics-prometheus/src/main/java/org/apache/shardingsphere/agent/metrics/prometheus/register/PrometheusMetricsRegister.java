@@ -133,7 +133,7 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     
     @Override
     public void addMetricsFactory(final Object obj) {
-        if (null != obj && obj instanceof HikariDataSource) {
+        if (obj instanceof HikariDataSource) {
             HikariDataSource dataSource = (HikariDataSource) obj;
             dataSource.setMetricsTrackerFactory(HikariMetricsTrackerFactory.getInstance(CollectorRegistry.defaultRegistry));
         }
