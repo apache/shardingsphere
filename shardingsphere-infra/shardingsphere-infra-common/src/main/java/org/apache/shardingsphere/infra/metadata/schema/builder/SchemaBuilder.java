@@ -93,15 +93,30 @@ public final class SchemaBuilder {
                 .filter(rule -> rule instanceof TableContainedRule)
                 .flatMap(rule -> ((TableContainedRule) rule).getTables().stream())
                 .collect(Collectors.toSet());
-        appendRemainTables(materials, result, ruleLogicTables);
 
-        // Append more tables in 'TableContainedRule' by multi-thread
-        Collection<String> toAppendLoadTables = ruleLogicTables.stream()
+        appendRemainTables(materials, result, ruleLogicTables);
+        appendRemainRuleLogicTables(materials, result, ruleLogicTables);
+        return result;
+    }
+
+    private static void appendRemainTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables,
+            final Collection<String> ruleLogicTables) throws SQLException {
+        Optional<DialectTableMetaDataLoader> dialectLoader = findDialectTableMetaDataLoader(materials);
+        if (dialectLoader.isPresent()) {
+            appendDialectRemainTables(dialectLoader.get(), materials, tables, ruleLogicTables);
+            return;
+        }
+        appendDefaultRemainTables(materials, tables);
+    }
+
+    private static void appendRemainRuleLogicTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> result,
+            final Collection<String> ruleLogicTables) throws SQLException {
+        Collection<String> toLoadTables = ruleLogicTables.stream()
                 .filter(table -> !result.containsKey(table))
                 .collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(toAppendLoadTables)) {
-            Collection<Future<Optional<TableMetaData>>> futures = new ArrayList<>(toAppendLoadTables.size());
-            for (String table : toAppendLoadTables) {
+        if (CollectionUtils.isNotEmpty(toLoadTables)) {
+            Collection<Future<Optional<TableMetaData>>> futures = new ArrayList<>(toLoadTables.size());
+            for (String table : toLoadTables) {
                 futures.add(EXECUTOR_SERVICE.submit(() -> TableMetaDataBuilder.load(table, materials)));
             }
             for (Future<Optional<TableMetaData>> each : futures) {
@@ -115,17 +130,6 @@ public final class SchemaBuilder {
                 }
             }
         }
-        return result;
-    }
-    
-    private static void appendRemainTables(final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables,
-            final Collection<String> ruleLogicTables) throws SQLException {
-        Optional<DialectTableMetaDataLoader> dialectLoader = findDialectTableMetaDataLoader(materials);
-        if (dialectLoader.isPresent()) {
-            appendDialectRemainTables(dialectLoader.get(), materials, tables, ruleLogicTables);
-            return;
-        }
-        appendDefaultRemainTables(materials, tables);
     }
     
     private static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final SchemaBuilderMaterials materials) {
