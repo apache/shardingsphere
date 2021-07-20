@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.context.metadata;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.core.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
@@ -80,11 +80,11 @@ public final class GovernanceMetaDataContextsTest {
     
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
-    @Mock
-    private GovernanceFacade governanceFacade;
-    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConfigCenter configCenter;
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private RegistryCenter registryCenter;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
@@ -97,7 +97,7 @@ public final class GovernanceMetaDataContextsTest {
     @Before
     public void setUp() {
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
-                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), configCenter, governanceFacade, mock(RegistryCenterRepository.class));
+                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), configCenter, registryCenter, mock(RegistryCenterRepository.class));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {

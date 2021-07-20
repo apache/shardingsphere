@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -57,18 +57,18 @@ import java.util.stream.Stream;
  */
 public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    private final GovernanceFacade governanceFacade = new GovernanceFacade();
-    
     private volatile RegistryCenterRepository repository;
     
     private volatile ConfigCenter configCenter;
+    
+    private volatile RegistryCenter registryCenter;
     
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
         GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
         repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
         configCenter = new ConfigCenter(repository);
-        governanceFacade.init(repository);
+        registryCenter = new RegistryCenter(repository);
         initConfigurations(yamlConfig);
         return loadProxyConfiguration();
     }
@@ -80,7 +80,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             configCenter.persistConfigurations(getDataSourceConfigurationMap(ruleConfigs),
                     getRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps(), serverConfig.getGovernance().isOverwrite());
         }
-        governanceFacade.onlineInstance(getSchemaNames(yamlConfig));
+        registryCenter.onlineInstance(getSchemaNames(yamlConfig));
     }
     
     private boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
@@ -134,7 +134,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     @Override
     protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, configCenter, governanceFacade, repository);
+        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, configCenter, registryCenter, repository);
     }
     
     @Override
