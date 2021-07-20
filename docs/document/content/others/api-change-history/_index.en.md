@@ -1,7 +1,7 @@
 +++
 pre = "<b>7.2. </b>"
 title = "API Change Histories"
-weight = 7
+weight = 2
 chapter = true
 +++
 
