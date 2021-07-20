@@ -48,6 +48,11 @@
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
+    <metadata data-nodes="write_ds_1.t_order_item_federate_sharding,read_ds_1.t_order_item_federate_sharding">
+        <column name="item_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="remarks" type="varchar" />
+    </metadata>
     <row data-node="write_ds_0.t_single_table" values="1, 1000, init" />
     <row data-node="write_ds_0.t_single_table" values="2, 1101, init" />
     <row data-node="write_ds_0.t_single_table" values="3, 1202, init" />
@@ -368,6 +373,7 @@
     <row data-node="write_ds_1.t_order_item_federate" values="100001, 1000, 10, init" />
     <row data-node="write_ds_1.t_order_item_federate" values="100100, 1001, 10, init" />
     <row data-node="write_ds_1.t_order_item_federate" values="100101, 1001, 10, init" />
+    <row data-node="write_ds_1.t_order_item_federate_sharding" values="1001, 10, t_order_item_federate_sharding" />
     <row data-node="read_ds_0.t_single_table" values="1, 1000, init_read" />
     <row data-node="read_ds_0.t_single_table" values="2, 1101, init_read" />
     <row data-node="read_ds_0.t_single_table" values="3, 1202, init_read" />
@@ -688,4 +694,5 @@
     <row data-node="read_ds_1.t_order_item_federate" values="100001, 1000, 10, init" />
     <row data-node="read_ds_1.t_order_item_federate" values="100100, 1001, 10, init" />
     <row data-node="read_ds_1.t_order_item_federate" values="100101, 1001, 10, init" />
+    <row data-node="read_ds_1.t_order_item_federate_sharding" values="1001, 10, t_order_item_federate_sharding" />
 </dataset>

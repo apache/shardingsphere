@@ -535,4 +535,12 @@
     <test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion parameters="1000:int, 100000:int" expected-data-file="select_across_single_tables_with_federate.xml" />
     </test-case>
+
+  <test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate_sharding i WHERE o.order_id = i.item_id AND i.remarks = 't_order_item_federate_sharding'" scenario-types="db,dbtbl_with_readwrite_splitting">
+        <assertion expected-data-file="select_across_single_and_sharding_tables_rewrite_with_federate.xml" />
+    </test-case>
+
+    <test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate_sharding i WHERE o.order_id = i.item_id AND i.remarks = 't_order_item_federate_sharding' AND i.user_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting">
+        <assertion parameters="10:int" expected-data-file="select_across_single_and_sharding_tables_rewrite_with_federate.xml" />
+    </test-case>
 </integration-test-cases>
