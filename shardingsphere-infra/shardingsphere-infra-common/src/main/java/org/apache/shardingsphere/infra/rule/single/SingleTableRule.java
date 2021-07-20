@@ -83,7 +83,7 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
      */
     @Subscribe
     public void createSingleTable(final CreateTableEvent event) {
-        if (!excludedTables.contains(event.getTableName())) {
+        if (dataSourceNames.contains(event.getDataSourceName()) && !excludedTables.contains(event.getTableName())) {
             singleTableDataNodes.put(event.getTableName(), new SingleTableDataNode(event.getTableName(), event.getDataSourceName()));
         }
     }
