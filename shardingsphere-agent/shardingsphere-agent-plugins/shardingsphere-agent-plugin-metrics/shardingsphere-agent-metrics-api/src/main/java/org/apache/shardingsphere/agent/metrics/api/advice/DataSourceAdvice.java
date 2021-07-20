@@ -17,26 +17,19 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
 
 import java.lang.reflect.Method;
 
 @Slf4j
 public final class DataSourceAdvice implements ClassStaticMethodAroundAdvice {
     
-    private static PrometheusMetricsTrackerFactory metricsTrackerFactory = new PrometheusMetricsTrackerFactory();
-    
-    private static final String HIKARI_DATASOURCE_CLASS = "com.zaxxer.hikari.HikariDataSource";
-    
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        if (result.getResult() != null && result.getResult() instanceof HikariDataSource) {
-            HikariDataSource dataSource = (HikariDataSource) result.getResult();
-            dataSource.setMetricsTrackerFactory(metricsTrackerFactory);
-        }
+        log.info("Set metrics factory to {}", result.getResult());
+        MetricsReporter.addMetricsFactory(result.getResult());
     }
 }
