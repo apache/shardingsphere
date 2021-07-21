@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.federate;
 
 import org.apache.calcite.rel.RelNode;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -43,6 +44,7 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
@@ -56,7 +58,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class FederateJDBCExecutorTest extends AbstractSQLFederationTest {
+public final class FederateJDBCExecutorTest {
     
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES =
         "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.information "
@@ -65,13 +67,17 @@ public final class FederateJDBCExecutorTest extends AbstractSQLFederationTest {
     
     private ShardingSphereOptimizer optimizer;
     
+    @Mock
+    private RuleConfiguration testRuleConfiguration;
+    
     @Before
     public void init() throws Exception {
         String schemaName = "federate_jdbc_0";
         Map<String, List<String>> columnMap = initializeColumnMap();
         Map<String, List<String>> tableMap = initializeTableMap();
-        OptimizeContextFactory optimizeContextFactory = intializeOptimizeContextFactory(schemaName, tableMap);
-        FederateLogicSchema calciteSchema = intializeCalciteSchema(schemaName, columnMap, tableMap);
+        Map<String, DataSource> actualDataSourceMap = initializeDataSourceMap(schemaName);
+        OptimizeContextFactory optimizeContextFactory = initializeOptimizeContextFactory(schemaName, tableMap, actualDataSourceMap);
+        FederateLogicSchema calciteSchema = initializeCalciteSchema(schemaName, columnMap, tableMap);
         OptimizeContext context = optimizeContextFactory.create(schemaName, calciteSchema);
         optimizer = new ShardingSphereOptimizer(context);
     }
@@ -97,7 +103,7 @@ public final class FederateJDBCExecutorTest extends AbstractSQLFederationTest {
         result.put("federate_jdbc_0", tableList);
         return result;
     }
-
+    
     private Map<String, List<String>> initializeColumnMap() {
         final Map<String, List<String>> result = new HashMap<>();
         List<String> columnList = new ArrayList<>();
@@ -112,7 +118,23 @@ public final class FederateJDBCExecutorTest extends AbstractSQLFederationTest {
         return result;
     }
     
-    private FederateLogicSchema intializeCalciteSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
+    private Map<String, DataSource> initializeDataSourceMap(final String schemaName) {
+        Map<String, DataSource> result = new HashMap<>();
+        result.put(schemaName, buildDataSource(schemaName));
+        return result;
+    }
+    
+    private static DataSource buildDataSource(final String dataSourceName) {
+        BasicDataSource result = new BasicDataSource();
+        result.setDriverClassName("org.h2.Driver");
+        result.setUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", dataSourceName));
+        result.setUsername("sa");
+        result.setPassword("");
+        result.setMaxTotal(50);
+        return result;
+    }
+    
+    private FederateLogicSchema initializeCalciteSchema(final String schemaName, final Map<String, List<String>> columnMap, final Map<String, List<String>> tableMap) {
         FederateSchemaMetadata federateSchemaMetadata = buildSchemaMetaData(schemaName, tableMap.get(schemaName), columnMap);
         return new FederateLogicSchema(federateSchemaMetadata, null);
     }
@@ -132,16 +154,17 @@ public final class FederateJDBCExecutorTest extends AbstractSQLFederationTest {
         return new FederateSchemaMetadata(schemaName, tableMetaDatas);
     }
     
-    private OptimizeContextFactory intializeOptimizeContextFactory(final String schemaName, final Map<String, List<String>> tableMap) throws SQLException {
-        DataSource dataSource = ACTUAL_DATA_SOURCES.get(schemaName);
+    private OptimizeContextFactory initializeOptimizeContextFactory(final String schemaName, final Map<String, List<String>> tableMap, 
+        final Map<String, DataSource> actualDataSourceMap) throws SQLException {
+        DataSource dataSource = actualDataSourceMap.get(schemaName);
         H2TableMetaDataLoader loader = new H2TableMetaDataLoader();
         Map<String, TableMetaData> tableMetaDatas = loader.load(dataSource, tableMap.get(schemaName));
-        Collection<RuleConfiguration> ruleConfigurations = Collections.singletonList(new TestRuleConfiguration());
+        Collection<RuleConfiguration> ruleConfigurations = Collections.singletonList(testRuleConfiguration);
         Map<String, String> accessConfiguration = initializeAccessConfiguration();
-        Map<String, ShardingSphereMetaData> shardingSphereMetaDataMap = createMetaDataMap(tableMetaDatas, ruleConfigurations, schemaName, accessConfiguration);
+        Map<String, ShardingSphereMetaData> shardingSphereMetaDataMap = createMetaDataMap(tableMetaDatas, ruleConfigurations, schemaName, accessConfiguration, actualDataSourceMap);
         return new OptimizeContextFactory(shardingSphereMetaDataMap);
     }
-
+    
     private Map<String, String> initializeAccessConfiguration() {
         Map<String, String> result = new HashMap<>();
         result.put("jdbcUrl", "jdbc:h2:mem:federate_jdbc_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
@@ -150,11 +173,11 @@ public final class FederateJDBCExecutorTest extends AbstractSQLFederationTest {
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap(final Map<String, TableMetaData> tableMetaDatas, final Collection<RuleConfiguration> ruleConfigurations, 
-        final String schemaName, final Map<String, String> accessConfiguration) {
+        final String schemaName, final Map<String, String> accessConfiguration, final Map<String, DataSource> actualDataSourceMap) {
         DataSourcesMetaData dataSourcesMetaData = getInstance(schemaName, accessConfiguration);
-        ShardingSphereResource resource = new ShardingSphereResource(ACTUAL_DATA_SOURCES, dataSourcesMetaData, null, new MySQLDatabaseType());
+        ShardingSphereResource resource = new ShardingSphereResource(actualDataSourceMap, dataSourcesMetaData, null, new MySQLDatabaseType());
         ShardingSphereSchema schema = new ShardingSphereSchema(tableMetaDatas);
-        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.buildSchemaRules(schemaName, ruleConfigurations, new MySQLDatabaseType(), ACTUAL_DATA_SOURCES);
+        Collection<ShardingSphereRule> shardingSphereRules = ShardingSphereRulesBuilder.buildSchemaRules(schemaName, ruleConfigurations, new MySQLDatabaseType(), actualDataSourceMap);
         ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(ruleConfigurations, shardingSphereRules);
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData(schemaName, resource, shardingSphereRuleMetaData, schema);
         return Collections.singletonMap("testSchema", shardingSphereMetaData);
