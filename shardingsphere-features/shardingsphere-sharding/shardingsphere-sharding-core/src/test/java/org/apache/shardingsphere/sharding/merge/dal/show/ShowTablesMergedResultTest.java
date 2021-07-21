@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -55,7 +56,7 @@ public final class ShowTablesMergedResultTest {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("table", "ds.table_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
+        return new ShardingRule(shardingRuleConfig, Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)), Sets.newHashSet());
     }
     
     private ShardingSphereSchema buildSchema() {
