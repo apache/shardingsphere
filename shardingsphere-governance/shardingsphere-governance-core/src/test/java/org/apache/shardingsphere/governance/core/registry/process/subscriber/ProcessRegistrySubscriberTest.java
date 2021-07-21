@@ -39,6 +39,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import org.mockito.MockitoAnnotations;
 
@@ -72,6 +73,7 @@ public final class ProcessRegistrySubscriberTest {
         Mockito.when(executeProcessContext.getExecutionID()).thenReturn("id");
         processRegistrySubscriber.reportExecuteProcessSummary(event);
         Mockito.verify(event, times(1)).getExecuteProcessContext();
+        Mockito.verify(repository, times(1)).persist(anyString(), any());
     }
 
     @Test(expected = NullPointerException.class)
