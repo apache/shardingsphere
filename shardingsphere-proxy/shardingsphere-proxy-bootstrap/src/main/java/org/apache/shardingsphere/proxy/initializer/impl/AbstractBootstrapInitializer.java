@@ -20,15 +20,17 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
+import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
@@ -81,13 +83,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private static Map<String, DataSource> createDataSources(final String schemaName, final Map<String, DataSourceParameter> dataSourceParameters) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            DataSource dataSource = JDBCRawBackendDataSourceFactory.getInstance().build(schemaName + "/" + entry.getKey(), entry.getValue());
-            if (null != dataSource) {
-                result.put(entry.getKey(), dataSource);
-            }
-        }
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(dataSourceParameters);
+        Map<String, DataSource> result = DataSourceConverter.getDataSourceMap(dataSourceConfigMap);
         return result;
     }
     
