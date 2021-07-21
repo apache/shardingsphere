@@ -39,8 +39,8 @@ public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      * @param dataSourceMap dataSource map
      * @param databaseType database type
      * @param config rule configuration
-     * @param tableNames table names
+     * @param occupiedTables occupied tables
      * @return built schema rule
      */
-    SchemaRule build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T config, Collection<String> tableNames);
+    SchemaRule build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T config, Collection<String> occupiedTables);
 }
