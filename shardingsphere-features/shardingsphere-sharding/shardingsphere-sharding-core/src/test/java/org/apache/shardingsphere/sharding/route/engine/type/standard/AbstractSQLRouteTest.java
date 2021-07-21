@@ -38,8 +38,10 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -56,8 +58,9 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     }
     
     protected final RouteContext assertRoute(final String sql, final List<Object> parameters, final int routeUnitSize) {
-        ShardingRule shardingRule = createAllShardingRule();
-        SingleTableRule singleTableRule = createAllSingleTableRule(Collections.singletonList(shardingRule));
+        Collection<String> occupiedTables = new HashSet<>();
+        ShardingRule shardingRule = createAllShardingRule(occupiedTables);
+        SingleTableRule singleTableRule = createAllSingleTableRule(occupiedTables);
         ShardingSphereSchema schema = buildSchema();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL");
