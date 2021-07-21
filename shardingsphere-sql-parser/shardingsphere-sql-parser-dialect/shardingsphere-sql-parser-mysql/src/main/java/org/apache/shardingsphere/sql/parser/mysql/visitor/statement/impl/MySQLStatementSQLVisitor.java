@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -122,6 +123,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowF
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.UnionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -163,6 +165,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeLengthSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
@@ -605,9 +608,36 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (1 == ctx.getChildCount() && ctx.getChild(0) instanceof QueryPrimaryContext) {
             return visit(ctx.queryPrimary());
         }
-        throw new IllegalStateException("union select is not supported yet.");
+        if (ctx.queryExpressionBody() != null) {
+            MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
+            ParserRuleContext ruleContext = ctx.queryPrimary() != null ? ctx.queryPrimary() : ctx.queryExpressionParens(0);
+            MySQLSelectStatement union = (MySQLSelectStatement) visit(ruleContext);
+            UnionSegment unionSegment = new UnionSegment(getUnionType(ctx), union, ctx.UNION().getSymbol().getStartIndex(), ruleContext.getStop().getStopIndex());
+            addUnionSegments(result, unionSegment);
+            return result;
+        }
+        MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionParens(0));
+        ParserRuleContext ruleContext = ctx.queryPrimary() != null ? ctx.queryPrimary() : ctx.queryExpressionParens(1);
+        MySQLSelectStatement union = (MySQLSelectStatement) visit(ruleContext);
+        UnionSegment unionSegment = new UnionSegment(getUnionType(ctx), union, ctx.UNION().getSymbol().getStartIndex(), ruleContext.getStop().getStopIndex());
+        addUnionSegments(result, unionSegment);
+        return result;
     }
-    
+
+    private void addUnionSegments(final MySQLSelectStatement result, final UnionSegment unionSegment) {
+        if (result.getUnionSegments().isPresent()) {
+            result.getUnionSegments().get().add(unionSegment);
+        } else {
+            List<UnionSegment> unionSegments = new LinkedList<>();
+            unionSegments.add(unionSegment);
+            result.setUnionSegments(unionSegments);
+        }
+    }
+
+    private String getUnionType(final QueryExpressionBodyContext ctx) {
+        return (ctx.unionOption() != null && ctx.unionOption().ALL() != null) ? UnionType.UNION_ALL.name() : UnionType.UNION_DISTINCT.name();
+    }
+
     @Override
     public ASTNode visitQuerySpecification(final QuerySpecificationContext ctx) {
         MySQLSelectStatement result = new MySQLSelectStatement();
