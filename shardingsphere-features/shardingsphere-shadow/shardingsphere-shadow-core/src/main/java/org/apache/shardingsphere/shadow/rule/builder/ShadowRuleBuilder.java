@@ -25,6 +25,7 @@ import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -33,7 +34,8 @@ import java.util.Map;
 public final class ShadowRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ShadowRuleConfiguration> {
     
     @Override
-    public ShadowRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ShadowRuleConfiguration config) {
+    public ShadowRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
+                            final ShadowRuleConfiguration config, final Collection<String> occupiedTables) {
         return new ShadowRule(config);
     }
     

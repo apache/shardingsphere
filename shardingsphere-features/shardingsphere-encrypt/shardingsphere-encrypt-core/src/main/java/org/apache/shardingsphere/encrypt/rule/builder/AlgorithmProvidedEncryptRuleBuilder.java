@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -33,7 +34,8 @@ import java.util.Map;
 public final class AlgorithmProvidedEncryptRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<AlgorithmProvidedEncryptRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final AlgorithmProvidedEncryptRuleConfiguration config) {
+    public EncryptRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
+                             final AlgorithmProvidedEncryptRuleConfiguration config, final Collection<String> occupiedTables) {
         return new EncryptRule(config);
     }
     

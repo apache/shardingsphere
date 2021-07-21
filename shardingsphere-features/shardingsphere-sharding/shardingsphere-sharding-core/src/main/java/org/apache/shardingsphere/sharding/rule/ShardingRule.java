@@ -89,7 +89,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
     
-    public ShardingRule(final ShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
+    public ShardingRule(final ShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<String> occupiedTables) {
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
         dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceMap.keySet());
         config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
@@ -102,9 +102,10 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+        occupiedTables.addAll(getAllTables());
     }
     
-    public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
+    public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<String> occupiedTables) {
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
         dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceMap.keySet());
         shardingAlgorithms.putAll(config.getShardingAlgorithms());
@@ -117,6 +118,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+        occupiedTables.addAll(getAllTables());
     }
     
     private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, 
