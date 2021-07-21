@@ -47,18 +47,18 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
     private void route(final LogicSQL logicSQL, final SingleTableRule rule, final RouteContext result) {
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
-        Collection<String> singleTableNames = getSingleTableNames(sqlStatementContext, rule);
-        if (!singleTableNames.isEmpty() || (result.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement)) {
+        Collection<String> singleTableNames = getSingleTableNames(sqlStatementContext, rule, result);
+        if (!singleTableNames.isEmpty()) {
             validateSameDataSource(rule, sqlStatementContext, singleTableNames);
             new SingleTableRouteEngine(singleTableNames, sqlStatementContext.getSqlStatement()).route(result, rule);
         }
     }
     
-    private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule) {
+    private Collection<String> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final SingleTableRule rule, final RouteContext result) {
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
                 : sqlStatementContext.getTablesContext().getTableNames();
-        return rule.getSingleTableNames(tableNames);
+        return result.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? tableNames : rule.getSingleTableNames(tableNames); 
     }
     
     private void validateSameDataSource(final SingleTableRule rule, final SQLStatementContext<?> sqlStatementContext, final Collection<String> singleTableNames) {

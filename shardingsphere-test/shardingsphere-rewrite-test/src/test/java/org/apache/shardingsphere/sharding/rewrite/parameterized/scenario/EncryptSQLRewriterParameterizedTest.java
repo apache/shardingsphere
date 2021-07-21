@@ -81,7 +81,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules("schema_name", new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
                 ruleConfigurations.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(ruleConfigurations.getDataSources()));
-        addSingleTableDataNode(rules);
+        mockEncryptRuleSingleTable(rules);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
         ShardingSphereSchema schema = mockSchema();
         ConfigurationProperties props = new ConfigurationProperties(ruleConfigurations.getProps());
@@ -98,10 +98,12 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
-    private void addSingleTableDataNode(final Collection<ShardingSphereRule> rules) {
+    private void mockEncryptRuleSingleTable(final Collection<ShardingSphereRule> rules) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
-        singleTableRule.ifPresent(rule -> rule.addSingleTableDataNode("t_account", "encrypt_ds"));
-        singleTableRule.ifPresent(rule -> rule.addSingleTableDataNode("t_account_bak", "encrypt_ds"));
+        if (singleTableRule.isPresent()) {
+            singleTableRule.get().addSingleTableDataNode("t_account", "encrypt_ds");
+            singleTableRule.get().addSingleTableDataNode("t_account_bak", "encrypt_ds");   
+        }
     }
     
     private YamlRootRuleConfigurations createRuleConfigurations() throws IOException {
