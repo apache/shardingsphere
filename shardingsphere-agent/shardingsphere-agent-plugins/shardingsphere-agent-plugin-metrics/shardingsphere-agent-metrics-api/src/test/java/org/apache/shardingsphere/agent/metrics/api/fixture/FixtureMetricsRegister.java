@@ -86,4 +86,8 @@ public final class FixtureMetricsRegister implements MetricsRegister {
             longAdder.add(duration);
         }
     }
+    
+    @Override
+    public void addMetricsFactory(final Object obj) {
+    }
 }

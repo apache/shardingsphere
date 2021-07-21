@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.register;
 
+import com.zaxxer.hikari.HikariDataSource;
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
 import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
+import org.apache.shardingsphere.agent.metrics.prometheus.hikari.HikariMetricsTrackerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -125,6 +128,14 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
             histogram.labels(labelValues).observe(duration);
         } else {
             histogram.observe(duration);
+        }
+    }
+    
+    @Override
+    public void addMetricsFactory(final Object obj) {
+        if (obj instanceof HikariDataSource) {
+            HikariDataSource dataSource = (HikariDataSource) obj;
+            dataSource.setMetricsTrackerFactory(HikariMetricsTrackerFactory.getInstance(CollectorRegistry.defaultRegistry));
         }
     }
     

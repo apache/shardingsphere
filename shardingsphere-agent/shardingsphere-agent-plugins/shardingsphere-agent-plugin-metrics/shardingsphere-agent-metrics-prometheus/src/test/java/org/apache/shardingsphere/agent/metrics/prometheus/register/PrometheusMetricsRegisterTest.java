@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.register;
 
+import com.zaxxer.hikari.HikariDataSource;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
@@ -26,6 +27,7 @@ import org.junit.Test;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class PrometheusMetricsRegisterTest {
@@ -88,5 +90,12 @@ public final class PrometheusMetricsRegisterTest {
         assertThat(histogramMap.size(), is(2));
         Histogram histogram = histogramMap.get(name);
         assertThat(histogram.labels(labelNames).get().sum, is(1000.0));
+    }
+    
+    @Test
+    public void assertSetMetricFactory() {
+        HikariDataSource hikariDataSource = new HikariDataSource();
+        prometheusMetricsRegister.addMetricsFactory(hikariDataSource);
+        assertNotNull(hikariDataSource.getMetricsTrackerFactory());
     }
 }
