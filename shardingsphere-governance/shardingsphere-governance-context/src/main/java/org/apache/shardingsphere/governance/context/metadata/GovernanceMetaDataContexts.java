@@ -21,8 +21,8 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.governance.context.authority.listener.event.AuthorityChangedEvent;
-import org.apache.shardingsphere.governance.core.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.lock.ShardingSphereDistributeLock;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.props.PropertiesChangedEvent;
@@ -82,15 +82,15 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private final ConfigCenter configCenter;
     
-    private final GovernanceFacade governanceFacade;
+    private final RegistryCenter registryCenter;
     
     private final ShardingSphereLock lock;
     
-    public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, 
-                                      final ConfigCenter configCenter, final GovernanceFacade governanceFacade, final RegistryCenterRepository repository) {
+    public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts,
+                                      final ConfigCenter configCenter, final RegistryCenter registryCenter, final RegistryCenterRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.configCenter = configCenter;
-        this.governanceFacade = governanceFacade;
+        this.registryCenter = registryCenter;
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
@@ -103,7 +103,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private void disableDataSources(final String schemaName, final StatusContainedRule rule) {
-        Collection<String> disabledDataSources = governanceFacade.getRegistryCenter().getDataSourceStatusService().loadDisabledDataSources(schemaName);
+        Collection<String> disabledDataSources = registryCenter.getDataSourceStatusService().loadDisabledDataSources(schemaName);
         disabledDataSources.stream().map(this::getDataSourceName).forEach(each -> rule.updateRuleStatus(new DataSourceNameDisabledEvent(each, true)));
     }
     

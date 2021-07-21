@@ -217,6 +217,15 @@ public final class MetricsReporter {
         recordTime(name, null, duration);
     }
     
+    /**
+     * Add metric factory to Object obj.
+     *
+     * @param obj object
+     */
+    public static void addMetricsFactory(final Object obj) {
+        metricsRegister.addMetricsFactory(obj);
+    }
+    
     private static String[] getLabelNames(final List<String> labels) {
         return labels.toArray(new String[0]);
     }
