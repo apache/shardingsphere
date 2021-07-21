@@ -30,7 +30,7 @@ public final class AgentServiceProviderNotFoundExceptionTest {
     private static final long serialVersionUID = -3730257541332863235L;
     
     @Test
-    public void AgentServiceProviderNotFoundException(final Class<?> clazz, final String type) {
+    public void agentServiceProviderNotFoundException(final Class<?> clazz, final String type) {
         assertArrayEquals(serialVersionUID, type);
     }
     
