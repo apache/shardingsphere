@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -110,6 +112,19 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     public static Optional<WithSegment> getWithSegment(final SelectStatement selectStatement) {
         if (selectStatement instanceof OracleStatement) {
             return selectStatement.getWithSegment();
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Get union segment.
+     *
+     * @param selectStatement select statement
+     * @return union segment list
+     */
+    public static Optional<List<UnionSegment>> getUnionSegments(final SelectStatement selectStatement) {
+        if (selectStatement instanceof MySQLStatement) {
+            return selectStatement.getUnionSegments();
         }
         return Optional.empty();
     }
