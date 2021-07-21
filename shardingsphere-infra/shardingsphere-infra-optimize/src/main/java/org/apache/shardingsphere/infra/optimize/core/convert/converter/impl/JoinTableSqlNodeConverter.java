@@ -48,8 +48,8 @@ public final class JoinTableSqlNodeConverter implements SqlNodeConverter<JoinTab
         SqlNode right = new TableSqlNodeConverter().convert(join.getRight()).get();
         ExpressionSegment expressionSegment = join.getCondition();
         Optional<SqlNode> condition = new ExpressionSqlNodeConverter().convert(expressionSegment);
-        SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.NONE.symbol(SqlParserPos.ZERO)
-                : JoinConditionType.ON.symbol(SqlParserPos.ZERO);
+        SqlLiteral conditionType = condition.isPresent() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO)
+                : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
         SqlLiteral joinTypeSqlNode = convertJoinType(join.getJoinType());
         SqlNode sqlNode = new SqlJoin(SqlParserPos.ZERO, left,
                 SqlLiteral.createBoolean(false, SqlParserPos.ZERO),
