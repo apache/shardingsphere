@@ -1,173 +1,213 @@
-#
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
-######################################################################################################
-# 
-# Here you can configure the rules for the proxy.
-# This example is configuration of sharding rule.
-# 
-######################################################################################################
-#
-#schemaName: sharding_db
-#
-#dataSources:
-#  ds_0:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0?serverTimezone=UTC&useSSL=false
-#    username: postgres
-#    password: postgres
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#    minPoolSize: 1
-#  ds_1:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1?serverTimezone=UTC&useSSL=false
-#    username: postgres
-#    password: postgres
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#    minPoolSize: 1
-#
-#rules:
-#- !SHARDING
-#  tables:
-#    t_order:
-#      actualDataNodes: ds_${0..1}.t_order_${0..1}
-#      tableStrategy:
-#        standard:
-#          shardingColumn: order_id
-#          shardingAlgorithmName: t_order_inline
-#      keyGenerateStrategy:
-#          column: order_id
-#          keyGeneratorName: snowflake
-#    t_order_item:
-#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-#      tableStrategy:
-#        standard:
-#          shardingColumn: order_id
-#          shardingAlgorithmName: t_order_item_inline
-#      keyGenerateStrategy:
-#        column: order_item_id
-#        keyGeneratorName: snowflake
-#  bindingTables:
-#    - t_order,t_order_item
-#  defaultDatabaseStrategy:
-#    standard:
-#      shardingColumn: user_id
-#      shardingAlgorithmName: database_inline
-#  defaultTableStrategy:
-#    none:
-#  
-#  shardingAlgorithms:
-#    database_inline:
-#      type: INLINE
-#      props:
-#        algorithm-expression: ds_${user_id % 2}
-#    t_order_inline:
-#      type: INLINE
-#      props:
-#        algorithm-expression: t_order_${order_id % 2}
-#    t_order_item_inline:
-#      type: INLINE
-#      props:
-#        algorithm-expression: t_order_item_${order_id % 2}
-#  
-#  keyGenerators:
-#    snowflake:
-#      type: SNOWFLAKE
-#      props:
-#        worker-id: 123
-
-######################################################################################################
-#
-# If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.
-#
-######################################################################################################
-
-#schemaName: sharding_db
-#
-#dataSources:
-#  ds_0:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#    minPoolSize: 1
-#  ds_1:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#    minPoolSize: 1
-#
-#rules:
-#- !SHARDING
-#  tables:
-#    t_order:
-#      actualDataNodes: ds_${0..1}.t_order_${0..1}
-#      tableStrategy:
-#        standard:
-#          shardingColumn: order_id
-#          shardingAlgorithmName: t_order_inline
-#      keyGenerateStrategy:
-#        column: order_id
-#        keyGeneratorName: snowflake
-#    t_order_item:
-#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-#      tableStrategy:
-#        standard:
-#          shardingColumn: order_id
-#          shardingAlgorithmName: t_order_item_inline
-#      keyGenerateStrategy:
-#        column: order_item_id
-#        keyGeneratorName: snowflake
-#  bindingTables:
-#    - t_order,t_order_item
-#  defaultDatabaseStrategy:
-#    standard:
-#      shardingColumn: user_id
-#      shardingAlgorithmName: database_inline
-#  defaultTableStrategy:
-#    none:
-#  
-#  shardingAlgorithms:
-#    database_inline:
-#      type: INLINE
-#      props:
-#        algorithm-expression: ds_${user_id % 2}
-#    t_order_inline:
-#      type: INLINE
-#      props:
-#        algorithm-expression: t_order_${order_id % 2}
-#    t_order_item_inline:
-#      type: INLINE
-#      props:
-#        algorithm-expression: t_order_item_${order_id % 2}
-#  
-#  keyGenerators:
-#    snowflake:
-#      type: SNOWFLAKE
-#      props:
-#        worker-id: 123
+dataSources:
+  ds_0:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 4096
+    minPoolSize: 10
+    password: hVsHb4O2LwO35UxDYJ5aAPDgCPkjQSyDzoXIZSLrtp0Us96MVrf3xly4qD54OA1o
+    url: jdbc:postgresql://192.168.0.34:40100/ds_0?serverTimezone=UTC&useSSL=false
+    username: test
+rules:
+- !SHARDING
+    bindingTables:
+      - bmsql_warehouse, bmsql_customer
+      - bmsql_stock, bmsql_district, bmsql_order_line
+    defaultDatabaseStrategy:
+      none: null
+    defaultTableStrategy:
+      none: null
+    keyGenerators:
+      snowflake:
+        props:
+          worker-id: 123
+        type: SNOWFLAKE
+    shardingAlgorithms:
+      database_inline:
+        props:
+          algorithm-expression: ds_${user_id % 2}
+        type: INLINE
+      ds_bmsql_config_inline:
+        props:
+          algorithm-expression: ds_${cfg_id % 1}
+        type: INLINE
+      ds_bmsql_customer_inline:
+        props:
+          algorithm-expression: ds_${c_w_id % 1}
+        type: INLINE
+      ds_bmsql_district_inline:
+        props:
+          algorithm-expression: ds_${d_w_id % 1}
+        type: INLINE
+      ds_bmsql_history_inline:
+        props:
+          algorithm-expression: ds_${h_w_id % 1}
+        type: INLINE
+      ds_bmsql_item_inline:
+        props:
+          algorithm-expression: ds_${i_id % 1}
+        type: INLINE
+      ds_bmsql_new_order_inline:
+        props:
+          algorithm-expression: ds_${no_w_id % 1}
+        type: INLINE
+      ds_bmsql_oorder_inline:
+        props:
+          algorithm-expression: ds_${o_w_id % 1}
+        type: INLINE
+      ds_bmsql_order_line_inline:
+        props:
+          algorithm-expression: ds_${ol_w_id % 1}
+        type: INLINE
+      ds_bmsql_stock_inline:
+        props:
+          algorithm-expression: ds_${s_w_id % 1}
+        type: INLINE
+      ds_bmsql_warehouse_inline:
+        props:
+          algorithm-expression: ds_${w_id % 1}
+        type: INLINE
+      tb_bmsql_config_inline:
+        props:
+          algorithm-expression: bmsql_config_${cfg_id % 1}
+        type: INLINE
+      tb_bmsql_customer_inline:
+        props:
+          algorithm-expression: bmsql_customer_${c_w_id % 1}
+        type: INLINE
+      tb_bmsql_district_inline:
+        props:
+          algorithm-expression: bmsql_district_${d_w_id % 1}
+        type: INLINE
+      tb_bmsql_history_inline:
+        props:
+          algorithm-expression: bmsql_history_${h_w_id % 1}
+        type: INLINE
+      tb_bmsql_item_inline:
+        props:
+          algorithm-expression: bmsql_item_${i_id % 1}
+        type: INLINE
+      tb_bmsql_new_order_inline:
+        props:
+          algorithm-expression: bmsql_new_order_${no_w_id % 1}
+        type: INLINE
+      tb_bmsql_oorder_inline:
+        props:
+          algorithm-expression: bmsql_oorder_${o_w_id % 1}
+        type: INLINE
+      tb_bmsql_order_line_inline:
+        props:
+          algorithm-expression: bmsql_order_line_${ol_w_id % 1}
+        type: INLINE
+      tb_bmsql_stock_inline:
+        props:
+          algorithm-expression: bmsql_stock_${s_w_id % 1}
+        type: INLINE
+      tb_bmsql_warehouse_inline:
+        props:
+          algorithm-expression: bmsql_warehouse_${w_id % 1}
+        type: INLINE
+    tables:
+      bmsql_config:
+        actualDataNodes: ds_${0..0}.bmsql_config_${0..0}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_bmsql_config_inline
+            shardingColumn: cfg_id
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: tb_bmsql_config_inline
+            shardingColumn: cfg_id
+      bmsql_customer:
+        actualDataNodes: ds_${0..0}.bmsql_customer_${0..0}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_bmsql_customer_inline
+            shardingColumn: c_w_id
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: tb_bmsql_customer_inline
+            shardingColumn: c_w_id
+      bmsql_district:
+        actualDataNodes: ds_${0..0}.bmsql_district_${0..0}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_bmsql_district_inline
+            shardingColumn: d_w_id
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: tb_bmsql_district_inline
+            shardingColumn: d_w_id
+      bmsql_history:
+        actualDataNodes: ds_${0..0}.bmsql_history_${0..0}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_bmsql_history_inline
+            shardingColumn: h_w_id
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: tb_bmsql_history_inline
+            shardingColumn: h_w_id
+      bmsql_item:
+        actualDataNodes: ds_${0..0}.bmsql_item_${0..0}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_bmsql_item_inline
+            shardingColumn: i_id
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: tb_bmsql_item_inline
+            shardingColumn: i_id
+      bmsql_new_order:
+        actualDataNodes: ds_${0..0}.bmsql_new_order_${0..0}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_bmsql_new_order_inline
+            shardingColumn: no_w_id
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: tb_bmsql_new_order_inline
+            shardingColumn: no_w_id
+      bmsql_oorder:
+        actualDataNodes: ds_${0..0}.bmsql_oorder_${0..0}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_bmsql_oorder_inline
+            shardingColumn: o_w_id
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: tb_bmsql_oorder_inline
+            shardingColumn: o_w_id
+      bmsql_order_line:
+        actualDataNodes: ds_${0..0}.bmsql_order_line_${0..0}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_bmsql_order_line_inline
+            shardingColumn: ol_w_id
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: tb_bmsql_order_line_inline
+            shardingColumn: ol_w_id
+      bmsql_stock:
+        actualDataNodes: ds_${0..0}.bmsql_stock_${0..0}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_bmsql_stock_inline
+            shardingColumn: s_w_id
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: tb_bmsql_stock_inline
+            shardingColumn: s_w_id
+      bmsql_warehouse:
+        actualDataNodes: ds_${0..0}.bmsql_warehouse_${0..0}
+        databaseStrategy:
+          standard:
+            shardingAlgorithmName: ds_bmsql_warehouse_inline
+            shardingColumn: w_id
+        tableStrategy:
+          standard:
+            shardingAlgorithmName: tb_bmsql_warehouse_inline
+            shardingColumn: w_id
+      test_order:
+        actualDataNodes: ds_0.test_order
+schemaName: sharding_db

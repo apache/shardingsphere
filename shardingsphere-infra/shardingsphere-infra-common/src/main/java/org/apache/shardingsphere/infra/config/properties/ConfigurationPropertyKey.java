@@ -132,8 +132,20 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
      * The default value is -1, which means set the minimum value for different JDBC drivers.
      */
-    PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", "-1", int.class);
-    
+    PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", "-1", int.class),
+
+    /**
+     * Proxy backend password encrypt/decrypt algorithm
+     * The default value is NONE, which means no algorithm will be run.
+     */
+    PROXY_BACKEND_ALGORITHM("proxy-backend-algorithm", "NONE", String.class),
+
+    /**
+     * Proxy frontend password encrypt/decrypt algorithm
+     * The default value is NONE, which means no algorithm will be run.
+     */
+    PROXY_FRONTEND_ALGORITHM("proxy-frontend-algorithm", "NONE", String.class);
+
     private final String key;
     
     private final String defaultValue;
