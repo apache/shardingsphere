@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.governance.api.yaml;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.driver.api.yaml.PasswordEncryptUtil;
 import org.apache.shardingsphere.driver.governance.internal.datasource.GovernanceShardingSphereDataSource;
 import org.apache.shardingsphere.driver.governance.internal.util.YamlGovernanceConfigurationSwapperUtil;
 import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceRootRuleConfigurations;
@@ -54,6 +55,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlGovernanceRootRuleConfigurations configs = unmarshal(yamlFile);
+        PasswordEncryptUtil.initPasswordEncrypt(configs);
         return createDataSource(configs.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(configs.getDataSources()), configs, configs.getProps(), configs.getGovernance());
     }
     
@@ -68,6 +70,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlGovernanceRootRuleConfigurations configs = unmarshal(yamlFile);
+        PasswordEncryptUtil.initPasswordEncrypt(configs);
         return createDataSource(configs.getSchemaName(), dataSourceMap, configs, configs.getProps(), configs.getGovernance());
     }
     
@@ -81,6 +84,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlGovernanceRootRuleConfigurations configs = unmarshal(yamlBytes);
+        PasswordEncryptUtil.initPasswordEncrypt(configs);
         return createDataSource(configs.getSchemaName(), new YamlDataSourceConfigurationSwapper().swapToDataSources(configs.getDataSources()), configs, configs.getProps(), configs.getGovernance());
     }
     
@@ -95,6 +99,7 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
         YamlGovernanceRootRuleConfigurations configs = unmarshal(yamlBytes);
+        PasswordEncryptUtil.initPasswordEncrypt(configs);
         return createDataSource(configs.getSchemaName(), dataSourceMap, configs, configs.getProps(), configs.getGovernance());
     }
     

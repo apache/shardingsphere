@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.authority.yaml.config.YamlPasswordEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
@@ -78,6 +79,18 @@ public final class ProxyConfigurationLoader {
         boolean containsGovernance = result.getRules().stream().anyMatch(each -> each instanceof YamlGovernanceConfiguration);
         YamlRuleConfiguration authorityRuleConfig = result.getRules().stream().filter(ruleConfig -> ruleConfig instanceof YamlAuthorityRuleConfiguration).findAny().orElse(null);
         Preconditions.checkState(containsGovernance || null != authorityRuleConfig, "Authority configuration is invalid.");
+        Optional<YamlRuleConfiguration> passwordEncrptRuleConfig = result.getRules()
+                .stream()
+                .filter(ruleConfig -> ruleConfig instanceof YamlPasswordEncryptRuleConfiguration)
+                .findAny();
+        if (passwordEncrptRuleConfig.isPresent()) {
+            YamlPasswordEncryptRuleConfiguration yamlRuleCfg = (YamlPasswordEncryptRuleConfiguration) passwordEncrptRuleConfig.get();
+            for (Object obj: yamlRuleCfg.getProps().values()) {
+                Preconditions.checkState(yamlRuleCfg.getEncryptors().containsKey(
+                        obj.toString()),
+                        "Password encryptor" + obj.toString() + " not exist");
+            }
+        }
         return result;
     }
     

@@ -60,7 +60,19 @@ rules:
     loadBalancers:
       roundRobin:
         type: ROUND_ROBIN
-
+  - !PASSWORD_ENCRYPT # Password encrypt config rules
+    props: # Which password need encrypt
+      backend-password-encrypt-type: aes-encryptor1 # The backend (for database) password
+      frontend-password-encrypt-type: none-encryptor2 # The frontend (for user login) password
+    encryptors:
+      aes-encryptor1:
+        type: AES
+        props:
+          aes-key-value: 123456abc
+      none-encryptor2:
+        type: NONE
+        props:
+          none: test
 props:
   sql-show: true
 ```

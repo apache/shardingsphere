@@ -19,11 +19,15 @@ package org.apache.shardingsphere.infra.metadata.user;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.security.PasswordEncrypt;
+import org.apache.shardingsphere.infra.security.PasswordEncryptFactory;
 
 /**
  * ShardingSphere user.
  */
 @Getter
+@Slf4j
 @EqualsAndHashCode(of = "grantee")
 public final class ShardingSphereUser {
     
@@ -34,5 +38,17 @@ public final class ShardingSphereUser {
     public ShardingSphereUser(final String username, final String password, final String hostname) {
         grantee = new Grantee(username, hostname);
         this.password = password;
+    }
+
+    /**
+     * Get decrypt password.
+     * @return String the decrypt password
+     */
+    public String getPassword() {
+        PasswordEncrypt encrypt = PasswordEncryptFactory.getInstance().getEncrypt();
+        if (encrypt == null) {
+            return password;
+        }
+        return encrypt.decryptFrontend(password);
     }
 }

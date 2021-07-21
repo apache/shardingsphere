@@ -133,7 +133,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * The default value is -1, which means set the minimum value for different JDBC drivers.
      */
     PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", "-1", int.class);
-    
+
     private final String key;
     
     private final String defaultValue;

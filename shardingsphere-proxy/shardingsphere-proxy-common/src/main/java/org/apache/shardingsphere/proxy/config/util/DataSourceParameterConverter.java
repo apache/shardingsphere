@@ -22,6 +22,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.security.PasswordEncrypt;
+import org.apache.shardingsphere.infra.security.PasswordEncryptFactory;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 
 import java.lang.reflect.Field;
@@ -133,7 +135,12 @@ public final class DataSourceParameterConverter {
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
         result.getProps().put("jdbcUrl", dataSourceParameter.getUrl());
         result.getProps().put("username", dataSourceParameter.getUsername());
-        result.getProps().put("password", dataSourceParameter.getPassword());
+        PasswordEncrypt pwdEncrypt = PasswordEncryptFactory.getInstance().getEncrypt();
+        String password = dataSourceParameter.getPassword();
+        if (pwdEncrypt != null) {
+            password = pwdEncrypt.decryptBackend(password);
+        }
+        result.getProps().put("password", password);
         result.getProps().put("connectionTimeout", dataSourceParameter.getConnectionTimeoutMilliseconds());
         result.getProps().put("idleTimeout", dataSourceParameter.getIdleTimeoutMilliseconds());
         result.getProps().put("maxLifetime", dataSourceParameter.getMaxLifetimeMilliseconds());

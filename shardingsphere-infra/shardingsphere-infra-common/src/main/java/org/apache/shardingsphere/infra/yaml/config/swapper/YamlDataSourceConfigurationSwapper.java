@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public final class YamlDataSourceConfigurationSwapper {
     
     private static final String DATA_SOURCE_CLASS_NAME_KEY = "dataSourceClassName";
-    
+
     /**
      * Swap to data sources from YAML data sources.
      *

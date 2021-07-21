@@ -98,7 +98,7 @@ ds_1:
 
 ### /metadata/${schemeName}/rules
 
-规则配置，可包括数据分片、读写分离、数据加密、影子库压测等配置。
+规则配置，可包括数据分片、读写分离、数据加密、影子库压测、密码加密等配置。
 
 ```yaml
 - !SHARDING
@@ -108,6 +108,8 @@ ds_1:
   xxx
   
 - !ENCRYPT
+  xxx
+- !PASSWORD_ENCRYPT
   xxx
 ```
 

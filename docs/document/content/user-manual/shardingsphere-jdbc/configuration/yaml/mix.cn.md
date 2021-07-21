@@ -59,6 +59,19 @@ rules:
     loadBalancers:
       roundRobin:
         type: ROUND_ROBIN
+  - !PASSWORD_ENCRYPT #密码安全配置规则
+    props: #配置哪些位置的密码需要加密
+      backend-password-encrypt-type: aes-encryptor1 #后端密码加密
+      frontend-password-encrypt-type: none-encryptor2 #前端密码加密
+    encryptors:
+      aes-encryptor1:
+        type: AES
+        props:
+          aes-key-value: 123456abc
+      none-encryptor2:
+        type: NONE
+        props:
+          none: test
 
 props:
   sql-show: true

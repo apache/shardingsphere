@@ -55,5 +55,10 @@
             <artifactId>shardingsphere-infra-merge</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-authority-api</artifactId>
+            <version>5.0.0-RC1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

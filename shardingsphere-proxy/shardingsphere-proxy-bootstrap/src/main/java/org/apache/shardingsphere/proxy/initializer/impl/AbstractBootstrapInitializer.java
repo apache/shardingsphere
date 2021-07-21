@@ -19,8 +19,10 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.authority.api.config.PasswordEncryptRuleConfiguration;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
+import org.apache.shardingsphere.encrypt.security.SimplePasswordEncrypt;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.condition.PreConditionRuleConfiguration;
@@ -33,6 +35,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.mode.ShardingSphereMode;
 import org.apache.shardingsphere.infra.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.security.PasswordEncryptFactory;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -79,6 +82,17 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig) throws SQLException {
         ProxyConfiguration proxyConfig = getProxyConfiguration(yamlConfig);
+        Optional<PasswordEncryptRuleConfiguration> pwdCfg = proxyConfig.getGlobalRules()
+                .stream()
+                .filter(rule -> rule instanceof PasswordEncryptRuleConfiguration)
+                .map(rule -> (PasswordEncryptRuleConfiguration) rule)
+                .findFirst();
+        if (pwdCfg.isPresent()) {
+            SimplePasswordEncrypt passwordEncrypt = new SimplePasswordEncrypt();
+            passwordEncrypt.init(pwdCfg.get());
+            PasswordEncryptFactory.getInstance().setEncrypt(passwordEncrypt);
+        }
+
         MetaDataContexts metaDataContexts = decorateMetaDataContexts(createMetaDataContexts(proxyConfig));
         TransactionContexts transactionContexts = decorateTransactionContexts(
                 createTransactionContexts(metaDataContexts), metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE));
@@ -115,7 +129,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(dataSourceParameters);
         return DataSourceConverter.getDataSourceMap(dataSourceConfigMap);
     }
-    
+
     private static Collection<RuleConfiguration> getPostConditionGlobalRuleConfigurations(final ProxyConfiguration proxyConfig) {
         return proxyConfig.getGlobalRules().stream().filter(each -> !(each instanceof PreConditionRuleConfiguration)).collect(Collectors.toList());
     }

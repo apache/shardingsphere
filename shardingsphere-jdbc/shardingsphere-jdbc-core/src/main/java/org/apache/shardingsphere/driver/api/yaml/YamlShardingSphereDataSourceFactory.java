@@ -54,6 +54,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlRootRuleConfigurations configs = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
+        PasswordEncryptUtil.initPasswordEncrypt(configs);
         return createDataSource(DATASOURCE_SWAPPER.swapToDataSources(configs.getDataSources()), configs);
     }
     
@@ -67,6 +68,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootRuleConfigurations configs = YamlEngine.unmarshal(yamlBytes, YamlRootRuleConfigurations.class);
+        PasswordEncryptUtil.initPasswordEncrypt(configs);
         return createDataSource(DATASOURCE_SWAPPER.swapToDataSources(configs.getDataSources()), configs);
     }
     

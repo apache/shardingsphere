@@ -98,7 +98,7 @@ ds_1:
 
 ### /metadata/${schemeName}/rules
 
-Rule configurations, including sharding, readwrite-splitting, data encryption, shadow DB configurations.
+Rule configurations, including sharding, readwrite-splitting, data encryption, shadow DB, passwrd encrypt configurations.
 
 ```yaml
 - !SHARDING
@@ -108,6 +108,8 @@ Rule configurations, including sharding, readwrite-splitting, data encryption, s
   xxx
   
 - !ENCRYPT
+  xxx
+- !PASSWORD_ENCRYPT
   xxx
 ```
 
