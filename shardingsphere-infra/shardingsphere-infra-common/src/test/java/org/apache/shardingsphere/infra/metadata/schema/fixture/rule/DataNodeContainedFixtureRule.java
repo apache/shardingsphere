@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,17 +31,26 @@ import java.util.Optional;
 public final class DataNodeContainedFixtureRule implements DataNodeContainedRule, TableContainedRule {
     
     private final Map<String, String> actualTableNameMaps = new HashMap<>(4);
-    
+
+    private final Map<String, Collection<DataNode>> nodeMap = new HashMap<>(2);
+
     public DataNodeContainedFixtureRule() {
         actualTableNameMaps.putIfAbsent("data_node_routed_table1_0", "data_node_routed_table1");
         actualTableNameMaps.putIfAbsent("data_node_routed_table1_1", "data_node_routed_table1");
         actualTableNameMaps.putIfAbsent("data_node_routed_table2_0", "data_node_routed_table2");
         actualTableNameMaps.putIfAbsent("data_node_routed_table2_1", "data_node_routed_table2");
+
+        nodeMap.putIfAbsent("data_node_routed_table1", Arrays.asList(
+                new DataNode("ds_1", "data_node_routed_table1_0"),
+                new DataNode("ds_1", "data_node_routed_table1_1")));
+        nodeMap.putIfAbsent("data_node_routed_table2", Arrays.asList(
+                new DataNode("ds_2", "data_node_routed_table2_0"),
+                new DataNode("ds_2", "data_node_routed_table2_1")));
     }
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        return null;
+        return nodeMap;
     }
     
     @Override

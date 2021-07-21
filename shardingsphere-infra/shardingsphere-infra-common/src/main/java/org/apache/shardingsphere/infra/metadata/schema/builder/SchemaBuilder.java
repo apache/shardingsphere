@@ -159,7 +159,7 @@ public final class SchemaBuilder {
                     if (null != logicTableName && !logicTableName.equals(actualTableName)) {
                         if (!tables.containsKey(logicTableName)) {
                             TableMetaData toCopy = one.getValue();
-                            tables.put(logicTableName, new TableMetaData(logicTableName, toCopy.getColumns(), toCopy.getIndexes()));
+                            tables.put(logicTableName, new TableMetaData(logicTableName, toCopy.getColumns().values(), toCopy.getIndexes().values()));
                         }
                     } else {
                         tables.put(actualTableName, one.getValue());
