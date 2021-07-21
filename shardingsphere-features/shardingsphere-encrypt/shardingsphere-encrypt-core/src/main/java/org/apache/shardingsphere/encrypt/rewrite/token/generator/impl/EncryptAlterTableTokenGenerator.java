@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
@@ -31,6 +32,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -50,8 +53,41 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         String tableName = alterTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(tableName, alterTableStatementContext.getSqlStatement().getAddColumnDefinitions()));
         result.addAll(getModifyColumnTokens(tableName, alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions()));
-        result.addAll(getDropColumnTokens(tableName, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions()));
+        Collection<SQLToken> dropCollection = getDropColumnTokens(tableName, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions());
+        String databaseName = alterTableStatementContext.getDatabaseType().getName();
+        if ("SQLServer".equals(databaseName)) {
+            result.addAll(mergeDropColumnStatement(dropCollection, "", ""));
+        } else if ("Oracle".equals(databaseName)) {
+            result.addAll(mergeDropColumnStatement(dropCollection, "(", ")"));
+        } else {
+            result.addAll(dropCollection);
+        }
         return result;
+    }
+
+    private Collection<SQLToken> mergeDropColumnStatement(final Collection<SQLToken> dropCollection, final String leftJoiner, final String rightJoiner) {
+        Collection<SQLToken> filteredDropCollection = new LinkedList<>();
+        ArrayList<String> dropColumnList = new ArrayList<>();
+        int lastStartIndex = -1;
+        for (int i = 0; i < dropCollection.size(); i++) {
+            SQLToken token = (SQLToken) ((List) dropCollection).get(i);
+            if (token instanceof RemoveToken) {
+                if (i != 0) {
+                    filteredDropCollection.add(new RemoveToken(lastStartIndex, ((RemoveToken) token).getStopIndex()));
+                } else {
+                    filteredDropCollection.add(token);
+                }
+            } else {
+                EncryptAlterTableToken encryptAlterTableToken = (EncryptAlterTableToken) token;
+                dropColumnList.add(encryptAlterTableToken.getColumnName());
+                if (i == dropCollection.size() - 1) {
+                    filteredDropCollection.add(new EncryptAlterTableToken(token.getStartIndex(), encryptAlterTableToken.getStopIndex(),
+                            leftJoiner + String.join(",", dropColumnList) + rightJoiner, "DROP COLUMN"));
+                }
+            }
+            lastStartIndex = ((Substitutable) token).getStartIndex();
+        }
+        return filteredDropCollection;
     }
 
     private Collection<SQLToken> getAddColumnTokens(final String tableName, final Collection<AddColumnDefinitionSegment> columnDefinitionSegments) {
@@ -124,6 +160,9 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
             Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getDropColumnTokens(tableName, columnName, each, dropColumnDefinitionSegment));
+            } else {
+                result.add(new RemoveToken(dropColumnDefinitionSegment.getStartIndex() - 1, each.getStopIndex()));
+                result.add(new EncryptAlterTableToken(each.getStopIndex() + 1, each.getStopIndex(), columnName, "DROP COLUMN"));
             }
         }
         return result;
