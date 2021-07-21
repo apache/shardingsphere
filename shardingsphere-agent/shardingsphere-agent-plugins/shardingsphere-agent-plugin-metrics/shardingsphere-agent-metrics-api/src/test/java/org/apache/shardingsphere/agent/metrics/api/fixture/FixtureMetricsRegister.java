@@ -89,6 +89,5 @@ public final class FixtureMetricsRegister implements MetricsRegister {
     
     @Override
     public void addMetricsFactory(final Object obj) {
-        
     }
 }

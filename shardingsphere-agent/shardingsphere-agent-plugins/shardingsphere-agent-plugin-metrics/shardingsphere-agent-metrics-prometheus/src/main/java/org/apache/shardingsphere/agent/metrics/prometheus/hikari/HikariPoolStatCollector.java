@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Hikari PoolStat Collector.
  */
-public class HikariPoolStatCollector extends Collector {
+public final class HikariPoolStatCollector extends Collector {
     
     private final Map<String, PoolStats> poolStatsMap = new ConcurrentHashMap<>();
     

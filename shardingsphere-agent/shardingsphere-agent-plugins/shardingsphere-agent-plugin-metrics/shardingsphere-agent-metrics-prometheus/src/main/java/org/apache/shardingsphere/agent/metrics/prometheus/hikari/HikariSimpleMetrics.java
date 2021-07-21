@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Hikari Metrics.
  */
-public class HikariSimpleMetrics {
+public final class HikariSimpleMetrics {
     
     private static final Counter CONNECTION_TIMEOUT_COUNTER = Counter.build()
             .name("hikaricp_connection_timeout_total")
@@ -43,15 +43,15 @@ public class HikariSimpleMetrics {
     private static final Summary ELAPSED_CREATION_SUMMARY =
             createSummary("hikaricp_connection_creation_millis", "Connection creation (ms)");
     
-    private Counter.Child connectionTimeoutCounterChild;
+    private final Counter.Child connectionTimeoutCounterChild;
     
-    private Summary.Child elapsedAcquiredSummaryChild;
+    private final Summary.Child elapsedAcquiredSummaryChild;
     
-    private Summary.Child elapsedUsageSummaryChild;
+    private final Summary.Child elapsedUsageSummaryChild;
     
-    private Summary.Child elapsedCreationSummaryChild;
+    private final Summary.Child elapsedCreationSummaryChild;
     
-    private String poolName;
+    private final String poolName;
     
     public enum MetricsType {
         CONNECTION_ACQUIRED_NANOS,
@@ -62,7 +62,10 @@ public class HikariSimpleMetrics {
     
     public HikariSimpleMetrics(final String poolName) {
         this.poolName = poolName;
-        createChild();
+        connectionTimeoutCounterChild = CONNECTION_TIMEOUT_COUNTER.labels(poolName);
+        elapsedAcquiredSummaryChild = ELAPSED_ACQUIRED_SUMMARY.labels(poolName);
+        elapsedUsageSummaryChild = ELAPSED_USAGE_SUMMARY.labels(poolName);
+        elapsedCreationSummaryChild = ELAPSED_CREATION_SUMMARY.labels(poolName);
     }
     
     private static Summary createSummary(final String name, final String help) {
@@ -76,13 +79,6 @@ public class HikariSimpleMetrics {
                 .maxAgeSeconds(TimeUnit.MINUTES.toSeconds(5))
                 .ageBuckets(5)
                 .create();
-    }
-    
-    private void createChild() {
-        this.connectionTimeoutCounterChild = CONNECTION_TIMEOUT_COUNTER.labels(poolName);
-        this.elapsedAcquiredSummaryChild = ELAPSED_ACQUIRED_SUMMARY.labels(poolName);
-        this.elapsedUsageSummaryChild = ELAPSED_USAGE_SUMMARY.labels(poolName);
-        this.elapsedCreationSummaryChild = ELAPSED_CREATION_SUMMARY.labels(poolName);
     }
     
     /**
