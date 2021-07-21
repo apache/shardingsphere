@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
 import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecoratorHelper;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.security.AlgorithmSecureFactory;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 
@@ -62,7 +63,17 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         config.setDriverClassName(driverClassName);
         config.setJdbcUrl(dataSourceParameter.getUrl());
         config.setUsername(dataSourceParameter.getUsername());
-        config.setPassword(dataSourceParameter.getPassword());
+        String decryptPasswd = null;
+        try {
+            decryptPasswd = AlgorithmSecureFactory.getInstance()
+                    .decryptBackend(dataSourceParameter.getPassword());
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("password decrypt failed:", ex);
+            return null;
+        }
+        config.setPassword(decryptPasswd);
         config.setConnectionTimeout(dataSourceParameter.getConnectionTimeoutMilliseconds());
         config.setIdleTimeout(dataSourceParameter.getIdleTimeoutMilliseconds());
         config.setMaxLifetime(dataSourceParameter.getMaxLifetimeMilliseconds());
