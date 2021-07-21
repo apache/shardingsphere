@@ -41,13 +41,12 @@ public interface DatabasePacketCodecEngine<T extends DatabasePacket<?>> {
     
     /**
      * Decode.
-     * 
+     *
      * @param context channel handler context
      * @param in input
      * @param out output
-     * @param readableBytes readable bytes
      */
-    void decode(ChannelHandlerContext context, ByteBuf in, List<Object> out, int readableBytes);
+    void decode(ChannelHandlerContext context, ByteBuf in, List<Object> out);
     
     /**
      * Encode.

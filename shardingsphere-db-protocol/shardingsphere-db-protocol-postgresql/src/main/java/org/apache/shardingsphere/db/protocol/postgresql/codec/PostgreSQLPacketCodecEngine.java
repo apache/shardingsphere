@@ -22,9 +22,9 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.List;
@@ -44,21 +44,22 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     }
     
     @Override
-    public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int readableBytes) {
-        int messageTypeLength = 0;
-        if ('\0' == in.markReaderIndex().readByte()) {
+    public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
+        while (isValidHeader(in.readableBytes())) {
+            int messageTypeLength = 0;
+            if ('\0' == in.markReaderIndex().readByte()) {
+                in.resetReaderIndex();
+            } else {
+                messageTypeLength = MESSAGE_TYPE_LENGTH;
+            }
+            int remainPayloadLength = in.readInt() - PAYLOAD_LENGTH;
+            if (in.readableBytes() < remainPayloadLength) {
+                in.resetReaderIndex();
+                return;
+            }
             in.resetReaderIndex();
-        } else {
-            messageTypeLength = MESSAGE_TYPE_LENGTH;
+            out.add(in.readRetainedSlice(messageTypeLength + PAYLOAD_LENGTH + remainPayloadLength));
         }
-        int payloadLength = in.readInt();
-        int realPacketLength = payloadLength + messageTypeLength;
-        if (readableBytes < realPacketLength) {
-            in.resetReaderIndex();
-            return;
-        }
-        in.resetReaderIndex();
-        out.add(in.readRetainedSlice(payloadLength + messageTypeLength));
     }
     
     @Override

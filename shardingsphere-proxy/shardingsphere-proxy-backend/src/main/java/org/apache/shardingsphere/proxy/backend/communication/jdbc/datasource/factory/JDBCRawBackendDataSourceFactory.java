@@ -22,14 +22,14 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
+import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecoratorHelper;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 
 import javax.sql.DataSource;
-import java.util.Optional;
 
 /**
  * Backend data source factory using {@code HikariDataSource} for JDBC raw.
@@ -69,6 +69,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         config.setMaximumPoolSize(dataSourceParameter.getMaxPoolSize());
         config.setMinimumIdle(dataSourceParameter.getMinPoolSize());
         config.setReadOnly(dataSourceParameter.isReadOnly());
+        config.setPoolName(dataSourceName);
         DataSource result;
         try {
             result = new HikariDataSource(config);
@@ -78,8 +79,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
             log.error("Exception occur: ", ex);
             return null;
         }
-        Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
-        return decorator.isPresent() ? decorator.get().decorate(result) : result;
+        return JDBCParameterDecoratorHelper.decorate(result);
     }
     
     private void validateDriverClassName(final String driverClassName) {
@@ -88,10 +88,5 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         } catch (final ClassNotFoundException ex) {
             throw new ShardingSphereException("Cannot load JDBC driver class `%s`, make sure it in ShardingSphere-Proxy's classpath.", driverClassName);
         }
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private Optional<JDBCParameterDecorator> findJDBCParameterDecorator(final DataSource dataSource) {
-        return ShardingSphereServiceLoader.getSingletonServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
     }
 }

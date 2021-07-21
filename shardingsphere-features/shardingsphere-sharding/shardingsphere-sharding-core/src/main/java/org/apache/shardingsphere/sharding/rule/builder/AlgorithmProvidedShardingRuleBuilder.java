@@ -34,7 +34,7 @@ public final class AlgorithmProvidedShardingRuleBuilder implements FeatureRuleBu
     
     @Override
     public ShardingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final AlgorithmProvidedShardingRuleConfiguration config) {
-        return new ShardingRule(config, databaseType, dataSourceMap);
+        return new ShardingRule(config, dataSourceMap);
     }
     
     @Override

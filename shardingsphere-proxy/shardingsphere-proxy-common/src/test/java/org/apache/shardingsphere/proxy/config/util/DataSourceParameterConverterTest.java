@@ -68,12 +68,11 @@ public final class DataSourceParameterConverterTest {
     
     private void assertParameter(final DataSourceConfiguration actual) {
         Map<String, Object> props = actual.getProps();
-        assertThat(props.get("maxPoolSize"), is(50));
-        assertThat(props.get("minPoolSize"), is(1));
+        assertThat(props.get("maximumPoolSize"), is(50));
+        assertThat(props.get("minimumIdle"), is(1));
         assertThat(props.get("connectionTimeout"), is(30 * 1000L));
         assertThat(props.get("idleTimeout"), is(60 * 1000L));
-        assertThat(props.get("maxLifetime"), is(0L));
-        assertThat(props.get("maintenanceIntervalMilliseconds"), is(30 * 1000L));
+        assertThat(props.get("maxLifetime"), is(30 * 60 * 1000L));
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(props.get("username"), is("root"));
         assertThat(props.get("password"), is("root"));
@@ -106,7 +105,6 @@ public final class DataSourceParameterConverterTest {
         yamlDataSourceParameter.setConnectionTimeoutMilliseconds(30 * 1000L);
         yamlDataSourceParameter.setIdleTimeoutMilliseconds(60 * 1000L);
         yamlDataSourceParameter.setMaxLifetimeMilliseconds(0L);
-        yamlDataSourceParameter.setMaintenanceIntervalMilliseconds(30 * 1000L);
         yamlDataSourceParameter.setUsername("root");
         yamlDataSourceParameter.setPassword("root");
     }
@@ -117,7 +115,6 @@ public final class DataSourceParameterConverterTest {
         assertThat(dataSourceParameter.getConnectionTimeoutMilliseconds(), is(30 * 1000L));
         assertThat(dataSourceParameter.getIdleTimeoutMilliseconds(), is(60 * 1000L));
         assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(0L));
-        assertThat(dataSourceParameter.getMaintenanceIntervalMilliseconds(), is(30 * 1000L));
         assertThat(dataSourceParameter.getUsername(), is("root"));
         assertThat(dataSourceParameter.getPassword(), is("root"));
         assertThat(dataSourceParameter.getCustomPoolProps().size(), is(2));

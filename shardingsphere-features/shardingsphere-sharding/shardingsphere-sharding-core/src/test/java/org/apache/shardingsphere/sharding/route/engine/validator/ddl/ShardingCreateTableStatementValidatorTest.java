@@ -177,25 +177,4 @@ public final class ShardingCreateTableStatementValidatorTest {
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), routeContext, schema);
     }
-    
-    @Test
-    public void assertPostValidateCreateTableWithSameRouteResultSingleTableForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_single"))));
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), routeContext, schema);
-    }
-    
-    @Test(expected = ShardingSphereException.class)
-    public void assertPostValidateCreateTableWithDifferentRouteResultSingleTableForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_single"))));
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule, new CreateTableStatementContext(sqlStatement), routeContext, schema);
-    }
 }

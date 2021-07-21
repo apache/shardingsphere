@@ -18,6 +18,7 @@
 org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableRuleStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableRuleStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTableRuleStatementUpdater
+org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAlgorithmStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingBindingTableRuleStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingBindingTableRuleStatementUpdater
 org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingBindingTableRuleStatementUpdater

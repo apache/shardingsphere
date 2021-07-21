@@ -45,7 +45,7 @@ public final class PacketCodec extends ByteToMessageCodec<DatabasePacket<?>> {
         if (log.isDebugEnabled()) {
             log.debug("Read from client {} : \n {}", context.channel().id().asShortText(), ByteBufUtil.prettyHexDump(in));
         }
-        databasePacketCodecEngine.decode(context, in, out, readableBytes);
+        databasePacketCodecEngine.decode(context, in, out);
     }
     
     @SuppressWarnings("unchecked")

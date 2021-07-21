@@ -44,9 +44,6 @@ public final class ShardingAlterTableStatementValidator extends ShardingDDLState
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
                 : sqlStatementContext.getTablesContext().getTableNames();
         Optional<SimpleTableSegment> renameTable = sqlStatementContext.getSqlStatement().getRenameTable();
-        if (!renameTable.isPresent() && !shardingRule.tableRuleExists(tableNames) && !shardingRule.isSingleTablesInSameDataSource(tableNames)) {
-            throw new ShardingSphereException("Single tables must be in the same datasource.");
-        }
         if (renameTable.isPresent() && containsShardingBroadcastTable(shardingRule, tableNames)) {
             throw new ShardingSphereException("ALTER TABLE ... RENAME TO ... statement can not support sharding tables and broadcast tables.");
         }

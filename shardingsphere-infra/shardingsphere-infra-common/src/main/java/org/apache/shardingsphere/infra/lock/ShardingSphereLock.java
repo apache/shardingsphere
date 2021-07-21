@@ -55,14 +55,6 @@ public interface ShardingSphereLock {
     boolean isLocked(String lockName);
     
     /**
-     * Check whether resource is released in all instances.
-     * 
-     * @param lockName lock name
-     * @return true if released, false if not
-     */
-    boolean isReleased(String lockName);
-    
-    /**
      * Get default lock time out milliseconds.
      * 
      * @return default lock time out milliseconds

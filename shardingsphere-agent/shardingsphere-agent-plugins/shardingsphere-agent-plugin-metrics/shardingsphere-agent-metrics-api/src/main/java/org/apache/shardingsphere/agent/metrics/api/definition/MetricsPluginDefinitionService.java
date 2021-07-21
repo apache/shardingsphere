@@ -42,6 +42,10 @@ public final class MetricsPluginDefinitionService extends AbstractPluginDefiniti
     
     private static final String TRANSACTION_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.api.advice.TransactionAdvice";
     
+    private static final String DATASOURCE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecoratorHelper";
+    
+    private static final String DATASOURCE_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.api.advice.DataSourceAdvice";
+    
     @Override
     public void defineInterceptors() {
         defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
@@ -60,6 +64,10 @@ public final class MetricsPluginDefinitionService extends AbstractPluginDefiniti
         defineInterceptor(TRANSACTION_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMIT).or(ElementMatchers.named(MethodNameConstant.ROLL_BACK)))
                 .implement(TRANSACTION_ADVICE_CLASS)
+                .build();
+        defineInterceptor(DATASOURCE_ENHANCE_CLASS)
+                .aroundClassStaticMethod(ElementMatchers.named(MethodNameConstant.DECORATE))
+                .implement(DATASOURCE_ADVICE_CLASS)
                 .build();
     }
     

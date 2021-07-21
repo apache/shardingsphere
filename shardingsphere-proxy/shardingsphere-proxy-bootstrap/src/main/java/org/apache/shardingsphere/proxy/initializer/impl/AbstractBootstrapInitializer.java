@@ -74,13 +74,16 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        return schemaDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> createDataSources(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return schemaDataSources
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSources(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
+    private static Map<String, DataSource> createDataSources(final String schemaName, final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            DataSource dataSource = JDBCRawBackendDataSourceFactory.getInstance().build(entry.getKey(), entry.getValue());
+            DataSource dataSource = JDBCRawBackendDataSourceFactory.getInstance().build(schemaName + "/" + entry.getKey(), entry.getValue());
             if (null != dataSource) {
                 result.put(entry.getKey(), dataSource);
             }
