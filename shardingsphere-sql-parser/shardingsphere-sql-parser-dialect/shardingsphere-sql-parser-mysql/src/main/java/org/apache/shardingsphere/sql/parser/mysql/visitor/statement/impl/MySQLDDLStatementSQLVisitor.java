@@ -360,8 +360,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                 columnDefinition.getColumnName().getStopIndex(),
                 new IdentifierValue(ctx.columnInternalRef.getText())
         ));
-        ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
-        result.setNewColumnDefinition((ColumnDefinitionSegment) visit(ctx.columnDefinition()));
+        ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(ctx.columnDefinition()));
+        result.setPreviousColumnDefinition(columnDefinition);
         if (null != ctx.place()) {
             result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }
