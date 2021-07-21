@@ -38,7 +38,7 @@ class HikariMetricsTracker implements IMetricsTracker {
     private final HikariSimpleMetrics hikariSimpleMetrics;
     
     HikariMetricsTracker(final String poolName, final PoolStats poolStats, final CollectorRegistry collectorRegistry) {
-        this.hikariSimpleMetrics = new HikariSimpleMetrics(poolName);
+        hikariSimpleMetrics = new HikariSimpleMetrics(poolName);
         this.poolName = poolName;
         HIKARI_POOL_STAT_COLLECTOR.addPoolStats(poolName, poolStats);
         registerMetrics(collectorRegistry);
