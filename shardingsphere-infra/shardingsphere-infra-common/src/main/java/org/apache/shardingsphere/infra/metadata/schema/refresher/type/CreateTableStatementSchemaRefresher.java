@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.builder.TableMetaDataBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
@@ -51,7 +51,14 @@ public final class CreateTableStatementSchemaRefresher implements SchemaRefreshe
             tableMetaData = loadTableMetaData(tableName, routeDataSourceNames, materials);
         }
         schema.put(tableName, tableMetaData);
-        ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), tableName, tableMetaData));
+        if (isSingleTable(tableName, materials)) {
+            materials.getRules().stream().filter(each -> each instanceof SingleTableRule).map(each 
+                -> (SingleTableRule) each).findFirst().ifPresent(rule -> rule.addSingleTableDataNode(tableName, routeDataSourceNames.iterator().next()));
+        }
+    }
+    
+    private boolean isSingleTable(final String tableName, final SchemaBuilderMaterials materials) {
+        return materials.getRules().stream().noneMatch(each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).getAllTables().contains(tableName));
     }
     
     private boolean containsInTableContainedRule(final String tableName, final SchemaBuilderMaterials materials) {

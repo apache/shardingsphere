@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.rule.single.SingleTableDataNode;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -53,14 +54,14 @@ public final class SingleTableRouteEngine {
      * Route for single table.
      *
      * @param routeContext route context
-     * @param singleTableRule single table rule
+     * @param rule single table rule
      */
-    public void route(final RouteContext routeContext, final SingleTableRule singleTableRule) {
+    public void route(final RouteContext routeContext, final SingleTableRule rule) {
         if (routeContext.getRouteUnits().isEmpty() || sqlStatement instanceof SelectStatement) {
-            route0(routeContext, singleTableRule);
+            route0(routeContext, rule);
         } else {
             RouteContext newRouteContext = new RouteContext();
-            route0(newRouteContext, singleTableRule);
+            route0(newRouteContext, rule);
             combineRouteContext(routeContext, newRouteContext);
         }
     }
@@ -77,16 +78,16 @@ public final class SingleTableRouteEngine {
         return newRouteContext.getRouteUnits().stream().collect(Collectors.toMap(each -> each.getDataSourceMapper().getLogicName(), Function.identity(), (oldValue, currentValue) -> oldValue));
     }
     
-    private void route0(final RouteContext routeContext, final SingleTableRule singleTableRule) {
-        if (isDDLTableStatement() || singleTableRule.isSingleTableInSameDataSource(singleTableNames)) {
-            Set<String> existSingleTables = Sets.intersection(singleTableRule.getSingleTableDataNodes().keySet(), Sets.newHashSet(singleTableNames));
+    private void route0(final RouteContext routeContext, final SingleTableRule rule) {
+        if (isDDLTableStatement() || isAllTablesInSameDataSource(routeContext, rule)) {
+            Set<String> existSingleTables = Sets.intersection(rule.getSingleTableDataNodes().keySet(), Sets.newHashSet(singleTableNames));
             if (!existSingleTables.isEmpty()) {
-                fillRouteContext(singleTableRule, routeContext, existSingleTables);
+                fillRouteContext(rule, routeContext, existSingleTables);
             } else {
-                routeContext.getRouteUnits().add(getRandomRouteUnit(singleTableRule));
+                routeContext.getRouteUnits().add(getRandomRouteUnit(rule));
             }
         } else {
-            fillRouteContext(singleTableRule, routeContext, singleTableNames);
+            fillRouteContext(rule, routeContext, singleTableNames);
             if (1 < routeContext.getRouteUnits().size()) {
                 routeContext.setFederated(true);
             }
@@ -95,6 +96,19 @@ public final class SingleTableRouteEngine {
     
     private boolean isDDLTableStatement() {
         return sqlStatement instanceof CreateTableStatement || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement;
+    }
+    
+    private boolean isAllTablesInSameDataSource(final RouteContext routeContext, final SingleTableRule rule) {
+        if (!rule.isSingleTableInSameDataSource(singleTableNames)) {
+            return false;
+        }
+        SingleTableDataNode dataNode = rule.getSingleTableDataNodes().get(singleTableNames.iterator().next());
+        for (RouteUnit each : routeContext.getRouteUnits()) {
+            if (!each.getDataSourceMapper().getLogicName().equals(dataNode.getDataSourceName())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private RouteUnit getRandomRouteUnit(final SingleTableRule singleTableRule) {

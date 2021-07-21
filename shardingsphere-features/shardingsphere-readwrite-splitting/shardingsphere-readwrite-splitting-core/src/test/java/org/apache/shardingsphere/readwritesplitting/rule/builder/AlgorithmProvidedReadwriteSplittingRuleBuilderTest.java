@@ -47,6 +47,6 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilderTest {
                 "name", "pr_ds", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(algorithmProvidedRuleConfig), SchemaRuleBuilder.class).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), algorithmProvidedRuleConfig), instanceOf(ReadwriteSplittingRule.class));
+        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), algorithmProvidedRuleConfig, Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
     }
 }

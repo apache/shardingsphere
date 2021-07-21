@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.rule.builder;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
@@ -46,6 +47,6 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "discoveryTypeName");
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(algorithmProvidedRuleConfig), SchemaRuleBuilder.class).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), algorithmProvidedRuleConfig), instanceOf(DatabaseDiscoveryRule.class));
+        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), algorithmProvidedRuleConfig, Sets.newHashSet()), instanceOf(DatabaseDiscoveryRule.class));
     }
 }

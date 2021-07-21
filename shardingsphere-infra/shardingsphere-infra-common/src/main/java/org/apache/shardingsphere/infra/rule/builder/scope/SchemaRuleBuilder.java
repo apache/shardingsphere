@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -38,7 +39,8 @@ public interface SchemaRuleBuilder<T extends RuleConfiguration> extends RuleBuil
      * @param dataSourceMap dataSource map
      * @param databaseType database type
      * @param config rule configuration
+     * @param occupiedTables occupied tables
      * @return built schema rule
      */
-    SchemaRule build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T config);
+    SchemaRule build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T config, Collection<String> occupiedTables);
 }

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 
 import java.util.Collection;
@@ -37,6 +37,13 @@ public final class CreateViewStatementSchemaRefresher implements SchemaRefresher
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData = new TableMetaData();
         schema.put(viewName, tableMetaData);
-        ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), viewName, tableMetaData));
+        if (isSingleTable(viewName, materials)) {
+            materials.getRules().stream().filter(each -> each instanceof SingleTableRule).map(each 
+                -> (SingleTableRule) each).findFirst().ifPresent(rule -> rule.addSingleTableDataNode(viewName, routeDataSourceNames.iterator().next()));
+        }
+    }
+    
+    private boolean isSingleTable(final String tableName, final SchemaBuilderMaterials materials) {
+        return materials.getRules().stream().noneMatch(each -> each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).getAllTables().contains(tableName));
     }
 }

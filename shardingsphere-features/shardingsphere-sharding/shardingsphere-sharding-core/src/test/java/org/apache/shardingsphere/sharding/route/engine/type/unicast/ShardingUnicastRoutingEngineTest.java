@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -47,7 +48,7 @@ public final class ShardingUnicastRoutingEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..2}"));
         shardingRuleConfig.getBroadcastTables().add("t_config");
-        shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceMap());
+        shardingRule = new ShardingRule(shardingRuleConfig, createDataSourceMap(), Sets.newHashSet());
     }
     
     @Test

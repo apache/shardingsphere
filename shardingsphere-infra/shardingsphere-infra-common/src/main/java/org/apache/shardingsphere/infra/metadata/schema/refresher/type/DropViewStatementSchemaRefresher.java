@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.DropTableEvent;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * ShardingSphere schema refresher for drop view statement.
@@ -35,8 +35,9 @@ public final class DropViewStatementSchemaRefresher implements SchemaRefresher<D
     @Override
     public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, final DropViewStatement sqlStatement, final SchemaBuilderMaterials materials) {
         sqlStatement.getViews().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
+        Optional<SingleTableRule> singleTableRule = materials.getRules().stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
         for (SimpleTableSegment each : sqlStatement.getViews()) {
-            ShardingSphereEventBus.getInstance().post(new DropTableEvent(each.getTableName().getIdentifier().getValue()));
+            singleTableRule.ifPresent(rule -> rule.dropSingleTableDataNode(each.getTableName().getIdentifier().getValue()));
         }
     }
 }

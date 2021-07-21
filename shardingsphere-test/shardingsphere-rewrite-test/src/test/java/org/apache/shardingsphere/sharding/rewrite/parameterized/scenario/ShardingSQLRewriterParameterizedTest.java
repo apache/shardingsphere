@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
@@ -43,10 +41,11 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
+import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
@@ -62,6 +61,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -95,7 +95,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, getTestParameters().getInputParameters(), 
                 sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false), DefaultSchema.LOGIC_NAME);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
-        mockShardingSphereRuleSingleTable();
+        mockShardingSphereRuleSingleTable(rules);
         ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
         RouteContext routeContext = new SQLRouteEngine(rules, props).route(logicSQL, metaData);
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
@@ -104,9 +104,12 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
         
-    private void mockShardingSphereRuleSingleTable() {
-        ShardingSphereEventBus.getInstance().post(new CreateTableEvent("db", "t_single", mock(TableMetaData.class)));
-        ShardingSphereEventBus.getInstance().post(new CreateTableEvent("db", "t_single_extend", mock(TableMetaData.class)));
+    private void mockShardingSphereRuleSingleTable(final Collection<ShardingSphereRule> rules) {
+        Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
+        if (singleTableRule.isPresent()) {
+            singleTableRule.get().addSingleTableDataNode("t_single", "db");
+            singleTableRule.get().addSingleTableDataNode("t_single_extend", "db");
+        }
     }
     
     private YamlRootRuleConfigurations createYamlRootRuleConfigurations() throws IOException {

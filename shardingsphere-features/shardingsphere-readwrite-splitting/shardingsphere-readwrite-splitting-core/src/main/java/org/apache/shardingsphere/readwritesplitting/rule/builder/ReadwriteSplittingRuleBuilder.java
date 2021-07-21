@@ -25,6 +25,7 @@ import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingO
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -33,7 +34,8 @@ import java.util.Map;
 public final class ReadwriteSplittingRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<ReadwriteSplittingRuleConfiguration> {
     
     @Override
-    public ReadwriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final ReadwriteSplittingRuleConfiguration config) {
+    public ReadwriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
+                                        final ReadwriteSplittingRuleConfiguration config, final Collection<String> occupiedTables) {
         return new ReadwriteSplittingRule(config);
     }
     
