@@ -90,8 +90,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
             ColumnDefinitionSegment segment = each.getColumnDefinition();
             String columnName = segment.getColumnName().getIdentifier().getValue();
             Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
-            Optional<EncryptAlgorithm> encryptorPrevious = getEncryptRule().findEncryptor(tableName, each.getPreviousColumnName());
-            if (encryptor.isPresent() || encryptorPrevious.isPresent()) {
+            if (encryptor.isPresent()) {
                 result.addAll(getModifyColumnTokens(tableName, columnName, each, segment));
             }
         }
@@ -145,10 +144,11 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
 
     private EncryptAlterTableToken getCipherColumn(final String tableName, final String columnName,
                                                    final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment, final ColumnDefinitionSegment columnDefinitionSegment) {
-        String cipherColumnPrevious = (!modifyColumnDefinitionSegment.getPreviousColumnName().isEmpty())
-                ? getEncryptRule().getCipherColumn(tableName, modifyColumnDefinitionSegment.getPreviousColumnName()) : "";
+        String newColumnName = Optional.ofNullable(modifyColumnDefinitionSegment.getNewColumnDefinition()).map(segment -> segment.getColumnName().getIdentifier().getValue()).orElse("");
+        String cipherColumnPrevious = (!newColumnName.isEmpty())
+                ? getEncryptRule().getCipherColumn(tableName, columnName) : "";
         String encryptColumnName = cipherColumnPrevious.isEmpty()
-                ? getEncryptRule().getCipherColumn(tableName, columnName) : columnDefinitionSegment.getColumnName().getQualifiedName() + "_cipher";
+                ? getEncryptRule().getCipherColumn(tableName, columnName) : newColumnName + "_cipher";
         String encryptCommand = cipherColumnPrevious.isEmpty() ? "MODIFY COLUMN" : "CHANGE COLUMN " + cipherColumnPrevious;
         return new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getDataType().getStartIndex() - 1, encryptColumnName, encryptCommand);
     }
@@ -166,10 +166,11 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
 
     private Optional<EncryptAlterTableToken> getAssistedQueryColumn(final String tableName, final String columnName,
                                                                     final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment, final ColumnDefinitionSegment columnDefinitionSegment) {
-        Optional<String> assistedQueryColumnPrevious = (!modifyColumnDefinitionSegment.getPreviousColumnName().isEmpty())
-                ? getEncryptRule().findAssistedQueryColumn(tableName, modifyColumnDefinitionSegment.getPreviousColumnName()) : Optional.of("");
+        String newColumnName = Optional.ofNullable(modifyColumnDefinitionSegment.getNewColumnDefinition()).map(segment -> segment.getColumnName().getIdentifier().getValue()).orElse("");
+        Optional<String> assistedQueryColumnPrevious = (!newColumnName.isEmpty())
+                ? getEncryptRule().findAssistedQueryColumn(tableName, columnName) : Optional.of("");
         String encryptColumnName = assistedQueryColumnPrevious.orElse("").isEmpty()
-                ? getEncryptRule().findAssistedQueryColumn(tableName, columnName).orElse("") : columnDefinitionSegment.getColumnName().getQualifiedName() + "_assisted";
+                ? getEncryptRule().findAssistedQueryColumn(tableName, columnName).orElse("") : newColumnName + "_assisted";
         String encryptCommand = assistedQueryColumnPrevious.orElse("").isEmpty() ? ", MODIFY COLUMN" : ", CHANGE COLUMN " + assistedQueryColumnPrevious.get();
         return Optional.of(new EncryptAlterTableToken(
                 modifyColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getDataType().getStartIndex() - 1, encryptColumnName, encryptCommand));
@@ -188,10 +189,11 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
 
     private Optional<EncryptAlterTableToken> getPlainColumn(final String tableName, final String columnName,
                                                             final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment, final ColumnDefinitionSegment columnDefinitionSegment) {
-        Optional<String> plainColumnPrevious = (!modifyColumnDefinitionSegment.getPreviousColumnName().isEmpty())
-                ? getEncryptRule().findPlainColumn(tableName, modifyColumnDefinitionSegment.getPreviousColumnName()) : Optional.of("");
+        String newColumnName = Optional.ofNullable(modifyColumnDefinitionSegment.getNewColumnDefinition()).map(segment -> segment.getColumnName().getIdentifier().getValue()).orElse("");
+        Optional<String> plainColumnPrevious = (!newColumnName.isEmpty())
+                ? getEncryptRule().findPlainColumn(tableName, columnName) : Optional.of("");
         String encryptColumnName = plainColumnPrevious.orElse("").isEmpty()
-                ? getEncryptRule().findPlainColumn(tableName, columnName).orElse("") : columnDefinitionSegment.getColumnName().getQualifiedName() + "_plain";
+                ? getEncryptRule().findPlainColumn(tableName, columnName).orElse("") : newColumnName + "_plain";
         String encryptCommand = plainColumnPrevious.orElse("").isEmpty() ? ", MODIFY COLUMN" : ", CHANGE COLUMN " + plainColumnPrevious.get();
         return Optional.of(new EncryptAlterTableToken(
                 modifyColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getDataType().getStartIndex() - 1, encryptColumnName, encryptCommand));

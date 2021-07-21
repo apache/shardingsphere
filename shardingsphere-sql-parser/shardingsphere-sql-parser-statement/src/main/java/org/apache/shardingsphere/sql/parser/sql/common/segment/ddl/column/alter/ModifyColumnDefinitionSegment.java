@@ -40,7 +40,7 @@ public final class ModifyColumnDefinitionSegment implements AlterDefinitionSegme
     
     private final ColumnDefinitionSegment columnDefinition;
 
-    private String previousColumnName = "";
+    private ColumnDefinitionSegment newColumnDefinition;
     
     private ColumnPositionSegment columnPosition;
 

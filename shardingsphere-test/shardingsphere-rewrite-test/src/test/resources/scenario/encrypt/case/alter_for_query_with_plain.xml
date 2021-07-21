@@ -47,5 +47,4 @@
         <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password  , DROP COLUMN assisted_query_password  , DROP COLUMN plain_password  , DROP COLUMN id" />
     </rewrite-assertion>
 
-
 </rewrite-assertions>
