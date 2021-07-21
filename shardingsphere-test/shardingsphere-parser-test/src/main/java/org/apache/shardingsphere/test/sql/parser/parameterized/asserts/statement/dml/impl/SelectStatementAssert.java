@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -38,11 +39,14 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.w
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Select statement assert.
@@ -68,8 +72,9 @@ public final class SelectStatementAssert {
         assertTable(assertContext, actual, expected);
         assertLockClause(assertContext, actual, expected);
         assertWithClause(assertContext, actual, expected);
+        assertUnions(assertContext, actual, expected);
     }
-    
+
     private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(actual);
         if (null != expected.getWindowClause()) {
@@ -160,6 +165,21 @@ public final class SelectStatementAssert {
             WithClauseAssert.assertIs(assertContext, withSegment.get(), expected.getWithClause());
         } else {
             assertFalse(assertContext.getText("Actual with segment should not exist."), withSegment.isPresent());
+        }
+    }
+
+    private static void assertUnions(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        if (expected.getUnions().isEmpty()) {
+            return;
+        }
+        Optional<List<UnionSegment>> unionSegments = SelectStatementHandler.getUnionSegments(actual);
+        assertTrue(assertContext.getText("Actual union segment should exist."), unionSegments.isPresent());
+        assertThat(assertContext.getText("Union size assertion error: "), unionSegments.get().size(), is(expected.getUnions().size()));
+        int count = 0;
+        for (UnionSegment each : unionSegments.get()) {
+            assertThat(assertContext.getText("Union type assertion error: "), each.getUnionType(), is(expected.getUnions().get(count).getUnionType()));
+            assertIs(assertContext, each.getSelectStatement(), expected.getUnions().get(count).getSelectClause());
+            count++;
         }
     }
 }
