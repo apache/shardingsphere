@@ -62,7 +62,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     }
     
     private void validateSameDataSource(final SingleTableRule rule, final SQLStatementContext<?> sqlStatementContext, final Collection<String> singleTableNames) {
-        if (!(sqlStatementContext instanceof SelectStatementContext) && !rule.isSingleTableInSameDataSource(singleTableNames)) {
+        if (!(sqlStatementContext instanceof SelectStatementContext || rule.isSingleTableInSameDataSource(singleTableNames))) {
             throw new ShardingSphereException("Single tables must be in the same datasource.");
         }
     }

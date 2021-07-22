@@ -155,7 +155,7 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         dataSourceMap.put("ds0", mock(DataSource.class, RETURNS_DEEP_STUBS));
         dataSourceMap.put("ds1", mock(DataSource.class, RETURNS_DEEP_STUBS));
         
-        return new ShardingRule(shardingRuleConfiguration, dataSourceMap, Sets.newHashSet());
+        return new ShardingRule(shardingRuleConfiguration, dataSourceMap);
     }
 
     private SQLStatementContext<?> createSQLStatementContext(final List<String> tableNames) {

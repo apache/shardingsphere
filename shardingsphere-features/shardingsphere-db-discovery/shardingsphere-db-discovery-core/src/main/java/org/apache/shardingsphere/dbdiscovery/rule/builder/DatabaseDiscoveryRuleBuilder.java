@@ -22,6 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 
@@ -37,7 +38,7 @@ public final class DatabaseDiscoveryRuleBuilder implements FeatureRuleBuilder, S
     
     @Override
     public DatabaseDiscoveryRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
-                                       final DatabaseDiscoveryRuleConfiguration ruleConfig, final Collection<String> occupiedTables) {
+                                       final DatabaseDiscoveryRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> realDataSourceMap = new HashMap<>();
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             for (String datasourceName : each.getDataSourceNames()) {
