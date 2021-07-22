@@ -144,32 +144,36 @@ public final class SchemaBuilder {
     private static void appendDialectRemainTables(final DialectTableMetaDataLoader dialectLoader,
             final SchemaBuilderMaterials materials, final Map<String, TableMetaData> tables, final Collection<String> ruleLogicTables) throws SQLException {
 
-        Map<String, String> actualTable2LogicTableMap = getActualTable2LogicTableMap(materials, ruleLogicTables);
+        Map<String, String> ruleActualTable2LogicTableMap = getActualTable2LogicTableMap(materials, ruleLogicTables);
 
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         for (DataSource each : materials.getDataSourceMap().values()) {
-            futures.add(EXECUTOR_SERVICE.submit(() -> dialectLoader.load(each, Collections.emptyList())));
+            futures.add(EXECUTOR_SERVICE.submit(() -> dialectLoader.load(each)));
         }
         for (Future<Map<String, TableMetaData>> each : futures) {
             try {
-                Map<String, TableMetaData> tableMetaMap = each.get();
-                for (Map.Entry<String, TableMetaData> one : tableMetaMap.entrySet()) {
-                    String actualTableName = one.getKey();
-                    String logicTableName = actualTable2LogicTableMap.get(actualTableName);
-                    if (null != logicTableName && !logicTableName.equals(actualTableName)) {
-                        if (!tables.containsKey(logicTableName)) {
-                            TableMetaData toCopy = one.getValue();
-                            tables.put(logicTableName, new TableMetaData(logicTableName, toCopy.getColumns().values(), toCopy.getIndexes().values()));
-                        }
-                    } else {
-                        tables.put(actualTableName, one.getValue());
-                    }
-                }
+                putTables4Futures(each.get(), ruleActualTable2LogicTableMap, tables);
             } catch (final InterruptedException | ExecutionException ex) {
                 if (ex.getCause() instanceof SQLException) {
                     throw (SQLException) ex.getCause();
                 }
                 throw new ShardingSphereException(ex);
+            }
+        }
+    }
+
+    private static void putTables4Futures(final Map<String, TableMetaData> tableMetaMap, final Map<String, String> ruleActualTable2LogicTableMap,
+            final Map<String, TableMetaData> tables) {
+        for (Map.Entry<String, TableMetaData> entry : tableMetaMap.entrySet()) {
+            String actualTableName = entry.getKey();
+            String logicTableName = ruleActualTable2LogicTableMap.get(actualTableName);
+            if (null != logicTableName && !logicTableName.equals(actualTableName)) {
+                if (!tables.containsKey(logicTableName)) {
+                    TableMetaData toCopy = entry.getValue();
+                    tables.put(logicTableName, new TableMetaData(logicTableName, toCopy.getColumns().values(), toCopy.getIndexes().values()));
+                }
+            } else {
+                tables.put(actualTableName, entry.getValue());
             }
         }
     }
@@ -184,9 +188,7 @@ public final class SchemaBuilder {
         }
 
         int size = dataNodeContainedRuleList.stream()
-                .mapToInt(each -> each.getAllDataNodes().entrySet().stream()
-                        .mapToInt(entry -> entry.getValue().size())
-                        .sum())
+                .mapToInt(each -> each.getAllDataNodes().entrySet().stream().mapToInt(entry -> entry.getValue().size()).sum())
                 .sum();
         Map<String, String> actualTable2LogicTableMap = new HashMap<>(size);
         for (DataNodeContainedRule each : dataNodeContainedRuleList) {

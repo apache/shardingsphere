@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -60,7 +60,12 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private static final int COLLATION_START_MINOR_VERSION = 2;
     
     private static final int IDENTITY_COLUMN_START_MINOR_VERSION = 1;
-    
+
+    @Override
+    public Map<String, TableMetaData> load(final DataSource dataSource) throws SQLException {
+        return loadTableMetaDataMap(dataSource, Collections.emptyList());
+    }
+
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         return loadTableMetaDataMap(dataSource, existedTables);
