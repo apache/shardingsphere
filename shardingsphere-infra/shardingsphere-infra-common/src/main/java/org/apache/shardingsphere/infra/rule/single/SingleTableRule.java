@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rule.single;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -51,7 +50,7 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
     }
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        Map<String, DataSource> result = Maps.newHashMap(dataSourceMap);
+        Map<String, DataSource> result = new HashMap<>(dataSourceMap);
         for (ShardingSphereRule each : rules) {
             if (each instanceof DataSourceContainedRule) {
                 result = getAggregateDataSourceMap(result, (DataSourceContainedRule) each);
@@ -66,11 +65,11 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
             Collection<String> actualDataSources = entry.getValue();
             for (String actualDataSource : actualDataSources) {
                 if (dataSourceMap.containsKey(actualDataSource)) {
-                    result.put(entry.getKey(), dataSourceMap.get(actualDataSource));
-                    break;
+                    result.put(entry.getKey(), dataSourceMap.remove(actualDataSource));
                 }
             }
         }
+        result.putAll(dataSourceMap);
         return result;
     }
     
