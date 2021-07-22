@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -105,7 +104,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, DATA_SOURCE_NAME + "." + TABLE_NAME);
         ruleConfig.setTables(Collections.singletonList(shardingTableRuleConfig));
-        return new ShardingRule(ruleConfig, Collections.singletonMap(DATA_SOURCE_NAME, mock(DataSource.class, RETURNS_DEEP_STUBS)), Sets.newHashSet());
+        return new ShardingRule(ruleConfig, Collections.singletonMap(DATA_SOURCE_NAME, mock(DataSource.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test

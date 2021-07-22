@@ -21,8 +21,6 @@ import org.apache.shardingsphere.driver.governance.internal.datasource.Governanc
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.readwritesplitting.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
@@ -36,10 +34,8 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
-import java.util.Iterator;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -60,8 +56,9 @@ public class GovernanceReadwriteSplittingNamespaceTest extends AbstractJUnit4Spr
     
     @Test
     public void assertReadwriteSplittingDataSource() {
-        ReadwriteSplittingRule rule = getReadwriteSplittingRule("defaultGovernanceDataSource");
-        Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.findDataSourceRule("default_dbtbl_0");
+        Optional<ReadwriteSplittingRule> rule = getReadwriteSplittingRule("defaultGovernanceDataSource");
+        assertTrue(rule.isPresent());
+        Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.get().findDataSourceRule("default_dbtbl_0");
         assertTrue(dataSourceRule.isPresent());
         assertThat(dataSourceRule.get().getWriteDataSourceName(), is("dbtbl_write_0"));
         assertTrue(dataSourceRule.get().getReadDataSourceNames().contains("dbtbl_0_read_0"));
@@ -70,12 +67,14 @@ public class GovernanceReadwriteSplittingNamespaceTest extends AbstractJUnit4Spr
     
     @Test
     public void assertTypeReadwriteSplittingDataSource() {
-        ReadwriteSplittingRule randomRule = getReadwriteSplittingRule("randomGovernanceDataSource");
-        Optional<ReadwriteSplittingDataSourceRule> randomDataSourceRule = randomRule.findDataSourceRule("random_dbtbl_0");
+        Optional<ReadwriteSplittingRule> randomRule = getReadwriteSplittingRule("randomGovernanceDataSource");
+        assertTrue(randomRule.isPresent());
+        Optional<ReadwriteSplittingDataSourceRule> randomDataSourceRule = randomRule.get().findDataSourceRule("random_dbtbl_0");
         assertTrue(randomDataSourceRule.isPresent());
         assertTrue(randomDataSourceRule.get().getLoadBalancer() instanceof RandomReplicaLoadBalanceAlgorithm);
-        ReadwriteSplittingRule roundRobinRule = getReadwriteSplittingRule("roundRobinGovernanceDataSource");
-        Optional<ReadwriteSplittingDataSourceRule> roundRobinDataSourceRule = roundRobinRule.findDataSourceRule("roundRobin_dbtbl_0");
+        Optional<ReadwriteSplittingRule> roundRobinRule = getReadwriteSplittingRule("roundRobinGovernanceDataSource");
+        assertTrue(roundRobinRule.isPresent());
+        Optional<ReadwriteSplittingDataSourceRule> roundRobinDataSourceRule = roundRobinRule.get().findDataSourceRule("roundRobin_dbtbl_0");
         assertTrue(roundRobinDataSourceRule.isPresent());
         assertTrue(roundRobinDataSourceRule.get().getLoadBalancer() instanceof RoundRobinReplicaLoadBalanceAlgorithm);
     }
@@ -85,18 +84,18 @@ public class GovernanceReadwriteSplittingNamespaceTest extends AbstractJUnit4Spr
     // TODO load balance algorithm have been construct twice for SpringDatasource extends ReplicaQueryDatasource.
     public void assertRefReadwriteSplittingDataSource() {
         ReplicaLoadBalanceAlgorithm randomLoadBalanceAlgorithm = applicationContext.getBean("randomLoadBalanceAlgorithm", ReplicaLoadBalanceAlgorithm.class);
-        ReadwriteSplittingRule rule = getReadwriteSplittingRule("refGovernanceDataSource");
-        Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.findDataSourceRule("randomLoadBalanceAlgorithm");
+        Optional<ReadwriteSplittingRule> rule = getReadwriteSplittingRule("refGovernanceDataSource");
+        assertTrue(rule.isPresent());
+        Optional<ReadwriteSplittingDataSourceRule> dataSourceRule = rule.get().findDataSourceRule("randomLoadBalanceAlgorithm");
         assertTrue(dataSourceRule.isPresent());
         assertThat(dataSourceRule.get().getLoadBalancer(), is(randomLoadBalanceAlgorithm));
     }
     
-    private ReadwriteSplittingRule getReadwriteSplittingRule(final String dataSourceName) {
+    private Optional<ReadwriteSplittingRule> getReadwriteSplittingRule(final String dataSourceName) {
         GovernanceShardingSphereDataSource dataSource = applicationContext.getBean(dataSourceName, GovernanceShardingSphereDataSource.class);
         MetaDataContexts metaDataContexts = (MetaDataContexts) FieldValueUtil.getFieldValue(dataSource, "metaDataContexts");
-        Iterator<ShardingSphereRule> iterator = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator();
-        assertThat(iterator.next(), instanceOf(SingleTableRule.class));
-        return (ReadwriteSplittingRule) iterator.next();
+        return metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().filter(each 
+            -> each instanceof ReadwriteSplittingRule).map(each -> (ReadwriteSplittingRule) each).findFirst();
     }
     
     @Test

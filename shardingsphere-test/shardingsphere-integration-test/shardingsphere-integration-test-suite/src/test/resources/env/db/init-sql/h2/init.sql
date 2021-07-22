@@ -17,11 +17,9 @@
 
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
-DROP TABLE IF EXISTS t_single_table;
 DROP TABLE IF EXISTS t_broadcast_table;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE INDEX order_index_t_order ON t_order (order_id);
