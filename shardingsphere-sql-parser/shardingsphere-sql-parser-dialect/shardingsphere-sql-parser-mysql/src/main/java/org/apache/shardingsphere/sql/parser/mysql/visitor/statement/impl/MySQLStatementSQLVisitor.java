@@ -619,13 +619,13 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         setUnionSegments(result, ruleContext, ctx);
         return result;
     }
-
+    
     private void setUnionSegments(final MySQLSelectStatement result, final ParserRuleContext ruleContext, final QueryExpressionBodyContext ctx) {
         MySQLSelectStatement union = (MySQLSelectStatement) visit(ruleContext);
         UnionSegment unionSegment = new UnionSegment(getUnionType(ctx), union, ctx.UNION().getSymbol().getStartIndex(), ruleContext.getStop().getStopIndex());
         result.getUnionSegments().add(unionSegment);
     }
-
+    
     private String getUnionType(final QueryExpressionBodyContext ctx) {
         return (ctx.unionOption() != null && ctx.unionOption().ALL() != null) ? UnionType.UNION_ALL.name() : UnionType.UNION_DISTINCT.name();
     }

@@ -31,10 +31,10 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExpectedUnion extends AbstractExpectedSQLSegment {
-
+    
     @XmlElement(name = "select")
     private SelectStatementTestCase selectClause;
-
+    
     @XmlAttribute(name = "union-type")
     private String unionType;
 }

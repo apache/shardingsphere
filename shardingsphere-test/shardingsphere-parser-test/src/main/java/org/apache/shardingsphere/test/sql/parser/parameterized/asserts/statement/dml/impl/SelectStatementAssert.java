@@ -167,7 +167,7 @@ public final class SelectStatementAssert {
             assertFalse(assertContext.getText("Actual with segment should not exist."), withSegment.isPresent());
         }
     }
-
+    
     private static void assertUnions(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         if (expected.getUnions().isEmpty()) {
             return;

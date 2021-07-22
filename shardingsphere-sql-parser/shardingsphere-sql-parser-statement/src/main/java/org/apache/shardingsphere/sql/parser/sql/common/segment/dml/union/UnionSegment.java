@@ -25,15 +25,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 
 @Getter
 public class UnionSegment implements SQLSegment {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
-
+    
     private final String unionType;
-
+    
     private final SelectStatement selectStatement;
-
+    
     public UnionSegment(final String unionType, final SelectStatement selectStatement, final int startIndex, final int stopIndex) {
         this.unionType = unionType;
         this.selectStatement = selectStatement;
