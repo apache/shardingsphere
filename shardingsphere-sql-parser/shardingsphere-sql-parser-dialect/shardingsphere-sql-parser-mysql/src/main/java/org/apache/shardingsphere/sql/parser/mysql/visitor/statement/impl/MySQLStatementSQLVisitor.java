@@ -629,7 +629,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     private String getUnionType(final QueryExpressionBodyContext ctx) {
         return (ctx.unionOption() != null && ctx.unionOption().ALL() != null) ? UnionType.UNION_ALL.name() : UnionType.UNION_DISTINCT.name();
     }
-
+    
     @Override
     public ASTNode visitQuerySpecification(final QuerySpecificationContext ctx) {
         MySQLSelectStatement result = new MySQLSelectStatement();
