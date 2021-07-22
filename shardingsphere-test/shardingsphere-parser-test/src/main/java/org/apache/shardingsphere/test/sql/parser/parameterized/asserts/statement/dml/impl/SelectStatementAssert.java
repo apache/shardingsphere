@@ -73,7 +73,9 @@ public final class SelectStatementAssert {
         assertLockClause(assertContext, actual, expected);
         assertWithClause(assertContext, actual, expected);
         assertUnions(assertContext, actual, expected);
-    }private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+    }
+
+    private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(actual);
         if (null != expected.getWindowClause()) {
             assertTrue(assertContext.getText("Actual window segment should exist."), windowSegment.isPresent());
