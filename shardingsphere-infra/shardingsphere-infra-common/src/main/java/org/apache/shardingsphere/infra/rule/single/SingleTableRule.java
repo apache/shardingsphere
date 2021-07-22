@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rule.single;
 
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -29,8 +28,10 @@ import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -80,8 +81,9 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
      * @return whether single table is in same data source or not
      */
     public boolean isSingleTableInSameDataSource(final Collection<String> logicTableNames) {
-        long dataSourceCount = singleTableDataNodes.values().stream().filter(each -> Sets.newHashSet(
-                getSingleTableNames(logicTableNames)).contains(each.getTableName())).map(SingleTableDataNode::getDataSourceName).distinct().count();
+        Set<String> singleTableNames = new HashSet<>(getSingleTableNames(logicTableNames));
+        long dataSourceCount = singleTableDataNodes.keySet().stream().filter(singleTableNames::contains).map(each -> singleTableDataNodes.get(each).getDataSourceName())
+                .collect(Collectors.toSet()).size();
         return dataSourceCount <= 1;
     }
     
