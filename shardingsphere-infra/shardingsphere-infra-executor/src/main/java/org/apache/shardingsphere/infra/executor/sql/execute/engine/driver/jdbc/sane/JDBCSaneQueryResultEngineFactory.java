@@ -42,6 +42,6 @@ public final class JDBCSaneQueryResultEngineFactory {
      * @return new instance of JDBC sane query result engine
      */
     public static SaneQueryResultEngine newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getName(), new Properties()).orElse(new DefaultSaneQueryResultEngine());
+        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getName(), new Properties()).orElseGet(DefaultSaneQueryResultEngine::new);
     }
 }

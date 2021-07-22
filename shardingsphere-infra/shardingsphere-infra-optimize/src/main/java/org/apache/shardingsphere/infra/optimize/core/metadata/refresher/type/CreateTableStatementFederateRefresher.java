@@ -44,7 +44,7 @@ public final class CreateTableStatementFederateRefresher implements FederateRefr
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData;
         if (containsInTableContainedRule(tableName, materials)) {
-            tableMetaData = TableMetaDataBuilder.load(tableName, materials).orElse(new TableMetaData());
+            tableMetaData = TableMetaDataBuilder.load(tableName, materials).orElseGet(TableMetaData::new);
         } else {
             tableMetaData = loadTableMetaData(tableName, routeDataSourceNames, materials);
         }
