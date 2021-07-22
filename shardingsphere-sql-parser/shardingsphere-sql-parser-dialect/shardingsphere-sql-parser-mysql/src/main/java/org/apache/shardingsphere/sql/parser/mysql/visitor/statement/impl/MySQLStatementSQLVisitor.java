@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -87,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Project
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionBodyContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClausContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionParensContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryPrimaryContext;
@@ -610,24 +610,19 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         if (null != ctx.queryExpressionBody()) {
             MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
-            ParserRuleContext ruleContext = null != ctx.queryPrimary() ? ctx.queryPrimary() : ctx.queryExpressionParens(0);
-            setUnionSegments(result, ruleContext, ctx);
+            result.getUnionSegments().add((UnionSegment) visitUnionClaus(ctx.unionClaus()));
             return result;
         }
-        MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionParens(0));
-        ParserRuleContext ruleContext = null != ctx.queryPrimary() ? ctx.queryPrimary() : ctx.queryExpressionParens(1);
-        setUnionSegments(result, ruleContext, ctx);
+        MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
+        result.getUnionSegments().add((UnionSegment) visitUnionClaus(ctx.unionClaus()));
         return result;
     }
     
-    private void setUnionSegments(final MySQLSelectStatement result, final ParserRuleContext ruleContext, final QueryExpressionBodyContext ctx) {
-        MySQLSelectStatement union = (MySQLSelectStatement) visit(ruleContext);
-        UnionSegment unionSegment = new UnionSegment(getUnionType(ctx), union, ctx.UNION().getSymbol().getStartIndex(), ruleContext.getStop().getStopIndex());
-        result.getUnionSegments().add(unionSegment);
-    }
-    
-    private String getUnionType(final QueryExpressionBodyContext ctx) {
-        return (ctx.unionOption() != null && ctx.unionOption().ALL() != null) ? UnionType.UNION_ALL.name() : UnionType.UNION_DISTINCT.name();
+    @Override
+    public ASTNode visitUnionClaus(final UnionClausContext ctx) {
+        return new UnionSegment((null != ctx.unionOption() && null != ctx.unionOption().ALL()) ? UnionType.UNION_ALL : UnionType.UNION_DISTINCT,
+                null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens()),
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
     
     @Override
