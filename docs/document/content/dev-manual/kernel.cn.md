@@ -37,15 +37,17 @@ chapter = true
 
 ## SQLRouter
 
-| *SPI 名称*                   | *详细说明*                 |
-| ---------------------------- | ------------------------- |
-| SQLRouter                    | 用于处理路由结果            |
+| *SPI 名称*                           | *详细说明*                 |
+| ----------------------------------- | ------------------------- |
+| SQLRouter                           | 用于处理路由结果             |
 
-| *已知实现类*                   | *详细说明*                |
-| ----------------------------- | ------------------------ |
-| ShardingSQLRouter             | 用于处理分片路由结果       |
-| ReplicaQuerySQLRouter         | 用于处理读写分离路由结果    |
-| ShadowSQLRouter               | 用于处理影子库路由结果      |
+| *已知实现类*                          | *详细说明*                  |
+| ----------------------------------- | ------------------------- |
+| ReadwriteSplittingSQLRouter         | 用于处理读写分离路由结果       |
+| DatabaseDiscoverySQLRouter          | 用于处理数据库发现路由结果      |
+| SingleTableSQLRouter                | 用于处理单表路由结果           |
+| ShardingSQLRouter                   | 用于处理分片路由结果          |
+| ShadowSQLRouter                     | 用于处理影子库路由结果         |
 
 ## SQLRewriteContextDecorator
 
@@ -68,7 +70,6 @@ chapter = true
 | *已知实现类*                   | *详细说明*                         |
 | ----------------------------- | --------------------------------- |
 | TransactionalSQLExecutionHook | 基于事务的SQL执行过程监听器          |
-| OpenTracingSQLExecutionHook   | 基于 OpenTracing 的SQL执行过程监听器 |
 
 ## ResultProcessEngine
 
@@ -81,14 +82,15 @@ chapter = true
 | ShardingResultMergerEngine   | 用于处理分片结果集归并 |
 | EncryptResultDecoratorEngine | 用于处理加密结果集改写 |
 
-## StoragePrivilegeLoader
+## StoragePrivilegeHandler
 
-| *SPI 名称*                 | *详细说明*                     |
-| ------------------------- | ----------------------------- |
-| StoragePrivilegeLoader    | 用于使用数据库方言加载权限信息    |
+| *SPI 名称*                  | *详细说明*                      |
+| -------------------------- | ------------------------------ |
+| StoragePrivilegeHandler    | 使用数据库方言处理权限信息          |
 
-| *已知实现类*                | *详细说明*                     |
-| ------------------------- | ----------------------------- |
-| MySQLPrivilegeLoader      | 使用 MySQL 方言加载权限信息      |
-| OraclePrivilegeLoader     | 使用 Oracle 方言加载权限信息     |
-| PostgreSQLPrivilegeLoader | 使用 PostgreSQL 方言加载权限信息 |
+| *已知实现类*                 | *详细说明*                      |
+| -------------------------- | ------------------------------ |
+| PostgreSQLPrivilegeHandler | 使用 PostgreSQL 方言处理权限信息   |
+| SQLServerPrivilegeHandler  | 使用 SQLServer 方言处理权限信息    |
+| OraclePrivilegeHandler     | 使用 Oracle 方言处理权限信息       |
+| MySQLPrivilegeHandler      | 使用 MySQL 方言处理权限信息        |
