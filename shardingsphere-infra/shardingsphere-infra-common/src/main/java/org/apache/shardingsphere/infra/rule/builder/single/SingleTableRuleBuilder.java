@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.rule.builder.single;
 import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
@@ -35,13 +36,13 @@ public final class SingleTableRuleBuilder implements FeatureRuleBuilder, SchemaR
     
     @Override
     public SingleTableRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
-                                 final SingleTableRuleConfiguration config, final Collection<String> occupiedTables) {
-        return new SingleTableRule(databaseType, dataSourceMap, occupiedTables);
+                                 final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+        return new SingleTableRule(databaseType, dataSourceMap, rules);
     }
     
     @Override
     public int getOrder() {
-        return SingleTableOrder.ORDER;
+        return SingleTableOrder.RULE_BUILDER_ORDER;
     }
     
     @Override

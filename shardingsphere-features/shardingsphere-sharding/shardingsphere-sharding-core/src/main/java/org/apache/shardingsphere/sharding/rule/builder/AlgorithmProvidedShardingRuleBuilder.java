@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rule.builder;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
@@ -35,8 +36,8 @@ public final class AlgorithmProvidedShardingRuleBuilder implements FeatureRuleBu
     
     @Override
     public ShardingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
-                              final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> occupiedTables) {
-        return new ShardingRule(config, dataSourceMap, occupiedTables);
+                              final AlgorithmProvidedShardingRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+        return new ShardingRule(config, dataSourceMap);
     }
     
     @Override

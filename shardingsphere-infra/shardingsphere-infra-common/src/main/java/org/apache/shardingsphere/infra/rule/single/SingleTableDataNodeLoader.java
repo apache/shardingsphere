@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.single;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
@@ -49,8 +50,7 @@ public final class SingleTableDataNodeLoader {
         Map<String, SingleTableDataNode> result = new HashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Map<String, SingleTableDataNode> singleTableDataNodes = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
-            // TODO recover check single table must be unique. Current situation cannot recognize replica query rule or databaseDiscovery rule for single table duplicate. 
-//            singleTableDataNodes.keySet().forEach(each -> Preconditions.checkState(!result.containsKey(each), "Single table conflict, there are multiple tables `%s` existed.", each));
+            singleTableDataNodes.keySet().forEach(each -> Preconditions.checkState(!result.containsKey(each), "Single table conflict, there are multiple tables `%s` existed.", each));
             result.putAll(singleTableDataNodes);
         }
         return result;

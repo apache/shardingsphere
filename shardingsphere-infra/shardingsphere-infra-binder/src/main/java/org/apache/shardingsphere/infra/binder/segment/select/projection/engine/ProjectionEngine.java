@@ -132,9 +132,9 @@ public final class ProjectionEngine {
     private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<SimpleTableSegment> tables) {
         Collection<ColumnProjection> result = new LinkedHashSet<>();
         for (SimpleTableSegment each : tables) {
-            String owner = each.getAlias().orElse(each.getTableName().getIdentifier().getValue());
-            result.addAll(schema.getAllColumnNames(
-                    each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList()));
+            String tableName = each.getTableName().getIdentifier().getValue();
+            String owner = each.getAlias().orElse(tableName);
+            schema.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).forEach(result::add);
         }
         return result;
     }
@@ -151,7 +151,7 @@ public final class ProjectionEngine {
     
     private boolean isMatch(final ShorthandProjectionSegment projectionSegment, final SimpleTableSegment tableSegment) {
         return !projectionSegment.getOwner().isPresent()
-                || tableSegment.getAlias().orElse(tableSegment.getTableName().getIdentifier().getValue()).equals(projectionSegment.getOwner().get().getIdentifier().getValue());
+                || tableSegment.getAlias().orElseGet(() -> tableSegment.getTableName().getIdentifier().getValue()).equals(projectionSegment.getOwner().get().getIdentifier().getValue());
     }
     
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {

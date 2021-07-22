@@ -64,7 +64,7 @@ public final class AlterTableStatementSchemaRefresher implements SchemaRefresher
         if (!containsInTableContainedRule(tableName, materials)) {
             tableMetaData = loadTableMetaData(tableName, routeDataSourceNames, materials);
         } else {
-            tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElse(new TableMetaData());
+            tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElseGet(TableMetaData::new);
         }
         schema.put(tableName, tableMetaData);
         if (isSingleTable(tableName, materials)) {

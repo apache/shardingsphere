@@ -21,6 +21,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 
@@ -35,7 +36,7 @@ public final class EncryptRuleBuilder implements FeatureRuleBuilder, SchemaRuleB
     
     @Override
     public EncryptRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
-                             final EncryptRuleConfiguration config, final Collection<String> occupiedTables) {
+                             final EncryptRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return new EncryptRule(config);
     }
     

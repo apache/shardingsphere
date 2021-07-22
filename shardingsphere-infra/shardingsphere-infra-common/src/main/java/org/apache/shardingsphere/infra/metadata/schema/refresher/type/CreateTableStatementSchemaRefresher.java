@@ -46,7 +46,7 @@ public final class CreateTableStatementSchemaRefresher implements SchemaRefreshe
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData;
         if (containsInTableContainedRule(tableName, materials)) {
-            tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElse(new TableMetaData());
+            tableMetaData = TableMetaDataBuilder.build(tableName, materials).orElseGet(TableMetaData::new);
         } else {
             tableMetaData = loadTableMetaData(tableName, routeDataSourceNames, materials);
         }

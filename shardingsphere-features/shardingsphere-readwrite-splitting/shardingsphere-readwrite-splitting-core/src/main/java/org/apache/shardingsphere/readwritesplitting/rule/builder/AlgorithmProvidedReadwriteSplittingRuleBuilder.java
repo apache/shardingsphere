@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
@@ -35,7 +36,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements Fea
     
     @Override
     public ReadwriteSplittingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
-                                        final AlgorithmProvidedReadwriteSplittingRuleConfiguration config, final Collection<String> occupiedTables) {
+                                        final AlgorithmProvidedReadwriteSplittingRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
         return new ReadwriteSplittingRule(config);
     }
     

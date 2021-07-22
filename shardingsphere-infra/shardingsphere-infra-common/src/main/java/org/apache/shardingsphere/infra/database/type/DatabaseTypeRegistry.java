@@ -79,7 +79,7 @@ public final class DatabaseTypeRegistry {
      * @return database type
      */
     public static DatabaseType getDatabaseTypeByURL(final String url) {
-        return DATABASE_TYPES.values().stream().filter(each -> matchURLs(url, each)).findAny().orElse(DATABASE_TYPES.get("SQL92"));
+        return DATABASE_TYPES.values().stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> DATABASE_TYPES.get("SQL92"));
     }
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
