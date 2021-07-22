@@ -39,7 +39,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.w
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
@@ -172,12 +172,13 @@ public final class SelectStatementAssert {
         if (expected.getUnions().isEmpty()) {
             return;
         }
-        Optional<List<UnionSegment>> unionSegments = SelectStatementHandler.getUnionSegments(actual);
-        assertTrue(assertContext.getText("Actual union segment should exist."), unionSegments.isPresent());
-        assertThat(assertContext.getText("Union size assertion error: "), unionSegments.get().size(), is(expected.getUnions().size()));
+        Collection<UnionSegment> unionSegments = actual.getUnionSegments();
+        assertFalse(assertContext.getText("Actual union segment should exist."), unionSegments.isEmpty());
+        assertThat(assertContext.getText("Union size assertion error: "), unionSegments.size(), is(expected.getUnions().size()));
         int count = 0;
-        for (UnionSegment each : unionSegments.get()) {
+        for (UnionSegment each : unionSegments) {
             assertThat(assertContext.getText("Union type assertion error: "), each.getUnionType(), is(expected.getUnions().get(count).getUnionType()));
+            SQLSegmentAssert.assertIs(assertContext, each, expected.getUnions().get(count));
             assertIs(assertContext, each.getSelectStatement(), expected.getUnions().get(count).getSelectClause());
             count++;
         }

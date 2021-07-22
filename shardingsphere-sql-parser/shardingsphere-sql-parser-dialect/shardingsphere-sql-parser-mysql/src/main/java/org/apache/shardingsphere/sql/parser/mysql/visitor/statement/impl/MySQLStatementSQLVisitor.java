@@ -608,30 +608,22 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (1 == ctx.getChildCount() && ctx.getChild(0) instanceof QueryPrimaryContext) {
             return visit(ctx.queryPrimary());
         }
-        if (ctx.queryExpressionBody() != null) {
+        if (null != ctx.queryExpressionBody()) {
             MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
-            ParserRuleContext ruleContext = ctx.queryPrimary() != null ? ctx.queryPrimary() : ctx.queryExpressionParens(0);
-            MySQLSelectStatement union = (MySQLSelectStatement) visit(ruleContext);
-            UnionSegment unionSegment = new UnionSegment(getUnionType(ctx), union, ctx.UNION().getSymbol().getStartIndex(), ruleContext.getStop().getStopIndex());
-            addUnionSegments(result, unionSegment);
+            ParserRuleContext ruleContext = null != ctx.queryPrimary() ? ctx.queryPrimary() : ctx.queryExpressionParens(0);
+            setUnionSegments(result, ruleContext, ctx);
             return result;
         }
         MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionParens(0));
-        ParserRuleContext ruleContext = ctx.queryPrimary() != null ? ctx.queryPrimary() : ctx.queryExpressionParens(1);
-        MySQLSelectStatement union = (MySQLSelectStatement) visit(ruleContext);
-        UnionSegment unionSegment = new UnionSegment(getUnionType(ctx), union, ctx.UNION().getSymbol().getStartIndex(), ruleContext.getStop().getStopIndex());
-        addUnionSegments(result, unionSegment);
+        ParserRuleContext ruleContext = null != ctx.queryPrimary() ? ctx.queryPrimary() : ctx.queryExpressionParens(1);
+        setUnionSegments(result, ruleContext, ctx);
         return result;
     }
 
-    private void addUnionSegments(final MySQLSelectStatement result, final UnionSegment unionSegment) {
-        if (result.getUnionSegments().isPresent()) {
-            result.getUnionSegments().get().add(unionSegment);
-        } else {
-            List<UnionSegment> unionSegments = new LinkedList<>();
-            unionSegments.add(unionSegment);
-            result.setUnionSegments(unionSegments);
-        }
+    private void setUnionSegments(final MySQLSelectStatement result, final ParserRuleContext ruleContext, final QueryExpressionBodyContext ctx) {
+        MySQLSelectStatement union = (MySQLSelectStatement) visit(ruleContext);
+        UnionSegment unionSegment = new UnionSegment(getUnionType(ctx), union, ctx.UNION().getSymbol().getStartIndex(), ruleContext.getStop().getStopIndex());
+        result.getUnionSegments().add(unionSegment);
     }
 
     private String getUnionType(final QueryExpressionBodyContext ctx) {
