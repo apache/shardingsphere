@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -91,6 +92,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     public void assertRenewRules() throws SQLException {
         metaDataContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getReadwriteSplittingRuleConfiguration())));
         Iterator<ShardingSphereRule> iterator = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator();
+        assertThat(iterator.next(), instanceOf(ReadwriteSplittingRule.class));
         assertThat(((ShardingRule) iterator.next()).getTableRules().size(), is(1));
     }
     
