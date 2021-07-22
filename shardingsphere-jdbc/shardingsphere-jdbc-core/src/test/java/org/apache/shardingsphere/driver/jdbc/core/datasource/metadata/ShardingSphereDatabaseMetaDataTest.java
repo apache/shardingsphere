@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;

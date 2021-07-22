@@ -42,7 +42,7 @@ public final class SingleTableRuleBuilder implements FeatureRuleBuilder, SchemaR
     
     @Override
     public int getOrder() {
-        return SingleTableOrder.ORDER;
+        return SingleTableOrder.RULE_BUILDER_ORDER;
     }
     
     @Override
