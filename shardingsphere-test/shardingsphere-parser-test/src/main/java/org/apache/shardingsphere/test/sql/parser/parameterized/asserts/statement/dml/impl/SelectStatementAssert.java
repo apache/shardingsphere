@@ -74,7 +74,7 @@ public final class SelectStatementAssert {
         assertWithClause(assertContext, actual, expected);
         assertUnions(assertContext, actual, expected);
     }
-    
+
     private static void assertWindowClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(actual);
         if (null != expected.getWindowClause()) {
