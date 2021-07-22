@@ -410,11 +410,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey(executionContext);
-        if (statementOption.isReturnGeneratedKeys() && generatedKey.isPresent()) {
+        if (statementOption.isReturnGeneratedKeys() && generatedKey.isPresent() && generatedKey.get().isGenerated()) {
             return new GeneratedKeysResultSet(generatedKey.get().getColumnName(), generatedValues.iterator(), this);
         }
-        if (1 == statements.size()) {
-            return statements.iterator().next().getGeneratedKeys();
+        for (PreparedStatement statement : statements) {
+            if (statement.getGeneratedKeys().next()) {
+                return statement.getGeneratedKeys();
+            }
         }
         return new GeneratedKeysResultSet();
     }
