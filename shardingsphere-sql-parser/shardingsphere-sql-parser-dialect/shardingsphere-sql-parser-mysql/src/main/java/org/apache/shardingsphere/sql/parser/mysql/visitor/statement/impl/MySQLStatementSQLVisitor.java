@@ -86,7 +86,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Project
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionBodyContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClausContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionParensContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryPrimaryContext;
@@ -610,19 +610,19 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         if (null != ctx.queryExpressionBody()) {
             MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
-            result.getUnionSegments().add((UnionSegment) visitUnionClaus(ctx.unionClaus()));
+            result.getUnionSegments().add((UnionSegment) visitUnionClause(ctx.unionClause()));
             return result;
         }
         MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
-        result.getUnionSegments().add((UnionSegment) visitUnionClaus(ctx.unionClaus()));
+        result.getUnionSegments().add((UnionSegment) visitUnionClause(ctx.unionClause()));
         return result;
     }
     
     @Override
-    public ASTNode visitUnionClaus(final UnionClausContext ctx) {
-        return new UnionSegment((null != ctx.unionOption() && null != ctx.unionOption().ALL()) ? UnionType.UNION_ALL : UnionType.UNION_DISTINCT,
-                null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens()),
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    public ASTNode visitUnionClause(final UnionClauseContext ctx) {
+        UnionType unionType = (null != ctx.unionOption() && null != ctx.unionOption().ALL()) ? UnionType.UNION_ALL : UnionType.UNION_DISTINCT;
+        MySQLSelectStatement statement = null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens());
+        return new UnionSegment(unionType, statement, ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
     
     @Override

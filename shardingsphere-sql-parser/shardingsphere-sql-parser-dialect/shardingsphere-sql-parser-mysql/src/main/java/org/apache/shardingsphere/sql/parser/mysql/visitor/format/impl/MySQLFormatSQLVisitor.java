@@ -51,7 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Precisi
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionBodyContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClausContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QueryExpressionParensContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QuerySpecificationContext;
@@ -174,16 +174,16 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             visit(ctx.queryPrimary());
         } else if (null != ctx.queryExpressionParens()) {
             visit(ctx.queryExpressionParens());
-            visit(ctx.unionClaus());
+            visit(ctx.unionClause());
         } else {
             visit(ctx.queryExpressionBody());
-            visit(ctx.unionClaus());
+            visit(ctx.unionClause());
         }
         return result.toString();
     }
     
     @Override
-    public String visitUnionClaus(final UnionClausContext ctx) {
+    public String visitUnionClause(final UnionClauseContext ctx) {
         result.append("\nUNION\n");
         if (null != ctx.unionOption()) {
             visit(ctx.unionOption());
