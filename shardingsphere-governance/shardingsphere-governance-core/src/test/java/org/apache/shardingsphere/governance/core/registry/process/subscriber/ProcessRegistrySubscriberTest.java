@@ -24,6 +24,7 @@ import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteP
 import org.apache.shardingsphere.governance.core.registry.process.event.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.governance.core.registry.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
@@ -75,12 +76,15 @@ public final class ProcessRegistrySubscriberTest {
         Mockito.verify(repository, times(1)).persist(anyString(), any());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testReportExecuteProcessSummaryThrowsException() {
-        ExecuteProcessSummaryReportEvent event = mock(ExecuteProcessSummaryReportEvent.class);
-        Mockito.when(event.getExecuteProcessContext()).thenThrow(NullPointerException.class);
-        processRegistrySubscriber.reportExecuteProcessSummary(event);
-        Mockito.verify(event, times(0)).getExecuteProcessContext();
+    @Test
+    public void testReportExecuteProcessSummaryWithId() {
+        ExecutionGroupContext executionGroupContext = mock(ExecutionGroupContext.class);
+        Mockito.when(executionGroupContext.getExecutionID()).thenReturn("id");
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("sql1", executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
+        ExecuteProcessSummaryReportEvent event = new ExecuteProcessSummaryReportEvent(executeProcessContext);
+        ProcessRegistrySubscriber subscriber = new ProcessRegistrySubscriber(repository);
+        subscriber.reportExecuteProcessSummary(event);
+        Mockito.verify(repository).persist("/executionnodes/id", YamlEngine.marshal(new YamlExecuteProcessContext(executeProcessContext)));
     }
 
     @Test
@@ -93,16 +97,6 @@ public final class ProcessRegistrySubscriberTest {
         Mockito.verify(repository, times(1)).persist(any(), any());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testReportExecuteProcessUnitException() {
-        ExecuteProcessUnitReportEvent event = mock(ExecuteProcessUnitReportEvent.class);
-        Mockito.when(event.getExecutionID()).thenReturn("id");
-        Mockito.when(repository.get(anyString())).thenReturn(null);
-        Mockito.when(event.getExecuteProcessUnit()).thenReturn(mockExecuteProcessUnit());
-        processRegistrySubscriber.reportExecuteProcessUnit(event);
-        Mockito.verify(repository, times(0)).persist(any(), any());
-    }
-
     @Test
     public void testReportExecuteProcess() {
         ExecuteProcessReportEvent event = mock(ExecuteProcessReportEvent.class);
@@ -110,15 +104,6 @@ public final class ProcessRegistrySubscriberTest {
         Mockito.when(repository.get(anyString())).thenReturn(mockYamlExecuteProcessContext());
         processRegistrySubscriber.reportExecuteProcess(event);
         Mockito.verify(repository, times(1)).delete(any());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testReportExecuteProcessException() {
-        ExecuteProcessReportEvent event = mock(ExecuteProcessReportEvent.class);
-        Mockito.when(event.getExecutionID()).thenReturn("id");
-        Mockito.when(repository.get(anyString())).thenReturn(null);
-        processRegistrySubscriber.reportExecuteProcess(event);
-        Mockito.verify(repository, times(0)).delete(any());
     }
 
     private String mockYamlExecuteProcessContext() {
