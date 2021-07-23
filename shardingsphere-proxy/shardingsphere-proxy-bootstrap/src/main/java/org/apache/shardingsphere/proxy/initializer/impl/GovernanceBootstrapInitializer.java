@@ -21,6 +21,7 @@ import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataC
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
@@ -78,7 +79,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         Map<String, YamlProxyRuleConfiguration> ruleConfigs = yamlConfig.getRuleConfigurations();
         if (!isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
             configCenter.persistConfigurations(getDataSourceConfigurationMap(ruleConfigs),
-                    getRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps(), serverConfig.getGovernance().isOverwrite());
+                    getSchemaRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps(), serverConfig.getGovernance().isOverwrite());
         }
         registryCenter.onlineInstance(getSchemaNames(yamlConfig));
     }
@@ -96,7 +97,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         return result;
     }
     
-    private Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigs) {
+    private Map<String, Collection<RuleConfiguration>> getSchemaRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> yamlRuleConfigs) {
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
         return yamlRuleConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
             entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
@@ -113,11 +114,11 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     private ProxyConfiguration loadProxyConfiguration() {
         Collection<String> schemaNames = configCenter.getSchemaMetaDataService().loadAllNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
-        Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = loadSchemaRules(schemaNames);
         Properties props = configCenter.getPropsService().load();
         // TODO load global rules from reg center
         Collection<RuleConfiguration> globalRuleConfigs = configCenter.getGlobalRuleService().load();
-        return new ProxyConfiguration(schemaDataSources, schemaRules, globalRuleConfigs, props);
+        return new ProxyConfiguration(schemaDataSources, schemaRuleConfigs, globalRuleConfigs, props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
@@ -144,12 +145,13 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     @Override
     protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
-        Optional<ServerConfiguration> scalingConfigurationOptional = getScalingConfiguration(yamlConfig);
-        if (scalingConfigurationOptional.isPresent()) {
-            ServerConfiguration serverConfiguration = scalingConfigurationOptional.get();
-            serverConfiguration.setGovernanceConfig(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
-            ScalingContext.getInstance().init(serverConfiguration);
-            ScalingWorker.init();
-        }
+        Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
+        scalingConfig.ifPresent(optional -> initScaling(yamlConfig.getServerConfiguration().getGovernance(), optional));
+    }
+    
+    private void initScaling(final YamlGovernanceConfiguration governanceConfig, final ServerConfiguration scalingConfig) {
+        scalingConfig.setGovernanceConfig(new GovernanceConfigurationYamlSwapper().swapToObject(governanceConfig));
+        ScalingContext.getInstance().init(scalingConfig);
+        ScalingWorker.init();
     }
 }
