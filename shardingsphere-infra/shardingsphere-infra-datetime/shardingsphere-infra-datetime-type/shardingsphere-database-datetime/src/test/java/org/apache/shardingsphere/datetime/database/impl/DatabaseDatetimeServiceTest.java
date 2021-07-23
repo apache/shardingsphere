@@ -23,8 +23,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,33 +40,33 @@ public final class DatabaseDatetimeServiceTest {
 
     private static ResultSet resultSet;
 
-    private static String sql ="SELECT NOW()";
+    private static String sql = "SELECT NOW()";
 
     @BeforeClass
     public static void init() {
-        dataSource =mock(DataSource.class);
+        dataSource = mock(DataSource.class);
         preparedStatement = mock(PreparedStatement.class);
         resultSet = mock(ResultSet.class);
     }
 
     @Test
-    public void assertMySQLDateTime() throws SQLException{
+    public void assertMySQLDateTime() throws SQLException {
         Connection connection = mock(Connection.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when((Date)resultSet.getObject(1)).thenReturn(new Date());
-        DatetimeService datetimeService = new DatabaseDatetimeService(dataSource,sql);
+        when((Date) resultSet.getObject(1)).thenReturn(new Date());
+        DatetimeService datetimeService = new DatabaseDatetimeService(dataSource, sql);
         Assert.assertFalse(datetimeService.isDefault());
         Assert.assertNotNull(datetimeService.getDatetime());
     }
 
     @Test
-    public void assertNoExceptionInDateTimeService() throws SQLException{
+    public void assertNoExceptionInDateTimeService() throws SQLException {
         Connection connection = mock(Connection.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(sql)).thenThrow(new SQLException());
-        DatetimeService datetimeService = new DatabaseDatetimeService(dataSource,sql);
+        DatetimeService datetimeService = new DatabaseDatetimeService(dataSource, sql);
         Assert.assertFalse(datetimeService.isDefault());
         Assert.assertNotNull(datetimeService.getDatetime());
     }

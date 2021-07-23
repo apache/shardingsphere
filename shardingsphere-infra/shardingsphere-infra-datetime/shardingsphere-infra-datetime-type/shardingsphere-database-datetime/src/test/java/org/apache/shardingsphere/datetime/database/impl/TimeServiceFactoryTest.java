@@ -25,9 +25,9 @@ import org.junit.Test;
 public final class TimeServiceFactoryTest {
 
     @Test
-    public void assertCreateDateTimeService(){
+    public void assertCreateDateTimeService() {
         PropertiesUtils.createProperties("com.mysql.jdbc.Driver", null);
-        DatetimeService datetimeService  =  TimeServiceFactory.createTimeService();
+        DatetimeService datetimeService = TimeServiceFactory.createTimeService();
         Assert.assertFalse(datetimeService.isDefault());
         Assert.assertTrue(PropertiesUtils.remove());
     }
