@@ -25,6 +25,7 @@ import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBac
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
 
@@ -69,5 +70,14 @@ public final class DatabaseBackendHandlerFactoryTest {
         when(context.getSqlStatement()).thenReturn(mock(SQLStatement.class));
         DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(context, sql, mock(BackendConnection.class));
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
+    }
+    
+    @Test
+    public void assertNewInstanceWithDCLStatement() {
+        String sql = "CREATE USER test IDENTIFIED BY '123456'";
+        SQLStatementContext<DCLStatement> context = mock(SQLStatementContext.class);
+        when(context.getSqlStatement()).thenReturn(mock(DCLStatement.class));
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(context, sql, mock(BackendConnection.class));
+        assertThat(actual, instanceOf(BroadcastDatabaseBackendHandler.class));
     }
 }
