@@ -126,14 +126,14 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         return Optional.empty();
     }
     
-    protected Optional<ServerConfiguration> getScalingConfiguration(final YamlProxyConfiguration yamlConfig) {
-        if (null != yamlConfig.getServerConfiguration().getScaling()) {
-            ServerConfiguration result = new ServerConfiguration();
-            result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
-            result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());
-            return Optional.of(result);
+    protected final Optional<ServerConfiguration> getScalingConfiguration(final YamlProxyConfiguration yamlConfig) {
+        if (null == yamlConfig.getServerConfiguration().getScaling()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        ServerConfiguration result = new ServerConfiguration();
+        result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
+        result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());
+        return Optional.of(result);
     }
     
     protected abstract ProxyConfiguration getProxyConfiguration(YamlProxyConfiguration yamlConfig);
