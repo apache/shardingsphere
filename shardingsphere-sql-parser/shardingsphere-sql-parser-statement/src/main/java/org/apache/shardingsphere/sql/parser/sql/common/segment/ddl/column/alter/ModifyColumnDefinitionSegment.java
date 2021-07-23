@@ -39,11 +39,11 @@ public final class ModifyColumnDefinitionSegment implements AlterDefinitionSegme
     private final int stopIndex;
     
     private final ColumnDefinitionSegment columnDefinition;
-
+    
     private ColumnDefinitionSegment previousColumnDefinition;
     
     private ColumnPositionSegment columnPosition;
-
+    
     /**
      * Get column position.
      *

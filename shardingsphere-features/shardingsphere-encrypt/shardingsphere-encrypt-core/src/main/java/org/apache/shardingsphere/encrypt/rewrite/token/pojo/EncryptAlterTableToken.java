@@ -33,7 +33,7 @@ public final class EncryptAlterTableToken extends SQLToken implements Substituta
     private final String columnName;
     
     private final String operationType;
-
+    
     public EncryptAlterTableToken(final int startIndex, final int stopIndex, final String columnName, final String operationType) {
         super(startIndex);
         this.stopIndex = stopIndex;

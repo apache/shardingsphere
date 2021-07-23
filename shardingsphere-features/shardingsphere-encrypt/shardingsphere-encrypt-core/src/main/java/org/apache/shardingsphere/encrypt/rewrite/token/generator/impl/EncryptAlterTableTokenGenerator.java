@@ -42,7 +42,7 @@ import java.util.Optional;
  * Alter table token generator for encrypt.
  */
 public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<AlterTableStatementContext> {
-
+    
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof AlterTableStatementContext;
@@ -64,7 +64,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         }
         return result;
     }
-
+    
     private Collection<SQLToken> mergeDropColumnStatement(final Collection<SQLToken> dropCollection, final String leftJoiner, final String rightJoiner) {
         Collection<SQLToken> filteredDropCollection = new LinkedList<>();
         ArrayList<String> dropColumnList = new ArrayList<>();
@@ -89,7 +89,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         }
         return filteredDropCollection;
     }
-
+    
     private Collection<SQLToken> getAddColumnTokens(final String tableName, final Collection<AddColumnDefinitionSegment> columnDefinitionSegments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (AddColumnDefinitionSegment each : columnDefinitionSegments) {
@@ -119,7 +119,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         getPlainColumn(tableName, columnName, columnDefinitionSegment).ifPresent(result::add);
         return result;
     }
-
+    
     private Collection<SQLToken> getModifyColumnTokens(final String tableName, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ModifyColumnDefinitionSegment each : columnDefinitionSegments) {
@@ -182,7 +182,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         String cipherColumn = getEncryptRule().getCipherColumn(tableName, columnName);
         return new EncryptAlterTableToken(columnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getStartIndex() + columnName.length(), cipherColumn, "ADD COLUMN");
     }
-
+    
     private EncryptAlterTableToken getCipherColumn(final String tableName, final String columnName,
                                                    final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment, final ColumnDefinitionSegment columnDefinitionSegment) {
         String previousColumnName = Optional.ofNullable(modifyColumnDefinitionSegment.getPreviousColumnDefinition()).map(segment -> segment.getColumnName().getIdentifier().getValue()).orElse("");
@@ -204,7 +204,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         return assistedQueryColumn.map(optional -> new EncryptAlterTableToken(
                 columnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getStartIndex() + columnName.length(), optional, ", ADD COLUMN"));
     }
-
+    
     private Optional<EncryptAlterTableToken> getAssistedQueryColumn(final String tableName, final String columnName,
                                                                     final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment, final ColumnDefinitionSegment columnDefinitionSegment) {
         String previousColumnName = Optional.ofNullable(modifyColumnDefinitionSegment.getPreviousColumnDefinition()).map(segment -> segment.getColumnName().getIdentifier().getValue()).orElse("");
@@ -227,7 +227,7 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         return plainColumn.map(optional -> new EncryptAlterTableToken(
                 columnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getStartIndex() + columnName.length(), optional, ", ADD COLUMN"));
     }
-
+    
     private Optional<EncryptAlterTableToken> getPlainColumn(final String tableName, final String columnName,
                                                             final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment, final ColumnDefinitionSegment columnDefinitionSegment) {
         String previousColumnName = Optional.ofNullable(modifyColumnDefinitionSegment.getPreviousColumnDefinition()).map(segment -> segment.getColumnName().getIdentifier().getValue()).orElse("");

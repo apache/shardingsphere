@@ -165,7 +165,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public MySQLDDLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         MySQLCreateViewStatement result = new MySQLCreateViewStatement();
@@ -173,7 +173,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setSelect((MySQLSelectStatement) visit(ctx.select()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         MySQLAlterViewStatement result = new MySQLAlterViewStatement();
@@ -181,7 +181,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setSelect((MySQLSelectStatement) visit(ctx.select()));
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
@@ -189,26 +189,26 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
         result.setDatabaseName(ctx.schemaName().getText());
         return result;
     }
-
+    
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
         return new MySQLAlterDatabaseStatement();
     }
-
+    
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
         result.setDatabaseName(ctx.schemaName().getText());
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
@@ -227,7 +227,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
@@ -241,12 +241,12 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitCreateLikeClause(final CreateLikeClauseContext ctx) {
         return visit(ctx.tableName());
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
@@ -271,18 +271,18 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     private ColumnDefinitionSegment generateColumnDefinitionSegment(final ColumnSegment column, final FieldDefinitionContext ctx) {
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = isPrimaryKey(ctx);
         return new ColumnDefinitionSegment(column.getStartIndex(), dataTypeSegment.getStopIndex(), column, dataTypeSegment, isPrimaryKey);
     }
-
+    
     @Override
     public ASTNode visitAlterConstraint(final AlterConstraintContext ctx) {
         return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintName()));
     }
-
+    
     @Override
     public ASTNode visitAlterList(final AlterListContext ctx) {
         CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
@@ -319,30 +319,30 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitAddTableConstraint(final AddTableConstraintContext ctx) {
         return new AddConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintDefinitionSegment) visit(ctx.tableConstraintDef()));
     }
-
+    
     @Override
     public ASTNode visitAlterCheck(final AlterCheckContext ctx) {
         return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintName()));
     }
-
+    
     @Override
     public ASTNode visitAlterRenameTable(final AlterRenameTableContext ctx) {
         RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         result.setRenameTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
-
+    
     private DropColumnDefinitionSegment generateDropColumnDefinitionSegment(final AlterTableDropContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.columnInternalRef.stop.getStopIndex(),
                 (IdentifierValue) visit(ctx.columnInternalRef));
         return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(column));
     }
-
+    
     private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ModifyColumnContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.columnInternalRef.stop.getStopIndex(), (IdentifierValue) visit(ctx.columnInternalRef));
         ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
@@ -352,7 +352,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return modifyColumnDefinition;
     }
-
+    
     private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ChangeColumnContext ctx) {
         ColumnDefinitionSegment columnDefinition = (ColumnDefinitionSegment) visit(ctx.columnDefinition());
         columnDefinition.setColumnName(new ColumnSegment(
@@ -367,7 +367,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitAddColumn(final AddColumnContext ctx) {
         Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
@@ -388,7 +388,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.column_name.start.getStartIndex(), ctx.column_name.stop.getStopIndex(), (IdentifierValue) visit(ctx.column_name));
@@ -399,7 +399,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getReferencedTables().addAll(getReferencedTables(ctx));
         return result;
     }
-
+    
     private Collection<SimpleTableSegment> getReferencedTables(final ColumnDefinitionContext ctx) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         if (null != ctx.referenceDefinition()) {
@@ -407,7 +407,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     private boolean isPrimaryKey(final FieldDefinitionContext ctx) {
         for (MySQLStatementParser.ColumnAttributeContext each : ctx.columnAttribute()) {
             if (null != each.KEY() && null == each.UNIQUE()) {
@@ -416,7 +416,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return false;
     }
-
+    
     @Override
     public ASTNode visitTableConstraintDef(final TableConstraintDefContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -450,7 +450,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     private Collection<ColumnSegment> getKeyColumnsFromKeyListWithExpression(final KeyListWithExpressionContext ctx) {
         Collection<ColumnSegment> result = new LinkedList<>();
         for (MySQLStatementParser.KeyPartWithExpressionContext each : ctx.keyPartWithExpression()) {
@@ -460,12 +460,12 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitReferenceDefinition(final ReferenceDefinitionContext ctx) {
         return visit(ctx.tableName());
     }
-
+    
     @Override
     public ASTNode visitPlace(final PlaceContext ctx) {
         ColumnSegment columnName = null;
@@ -475,7 +475,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         return null == ctx.columnName() ? new ColumnFirstPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName)
                 : new ColumnAfterPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName);
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
@@ -484,14 +484,14 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
-
+    
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         MySQLTruncateStatement result = new MySQLTruncateStatement();
         result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         MySQLCreateIndexStatement result = new MySQLCreateIndexStatement();
@@ -499,7 +499,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText())));
         return result;
     }
-
+    
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         MySQLDropIndexStatement result = new MySQLDropIndexStatement();
@@ -507,7 +507,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText())));
         return result;
     }
-
+    
     @Override
     public ASTNode visitKeyParts(final KeyPartsContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
@@ -519,31 +519,31 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
         MySQLCreateProcedureStatement result = new MySQLCreateProcedureStatement();
         result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
         return new MySQLAlterProcedureStatement();
     }
-
+    
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
         return new MySQLDropProcedureStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
         MySQLCreateFunctionStatement result = new MySQLCreateFunctionStatement();
         result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitRoutineBody(final RoutineBodyContext ctx) {
@@ -557,17 +557,17 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.getValidStatements().addAll(validStatements.getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitSimpleStatement(final SimpleStatementContext ctx) {
         return visit(ctx.validStatement());
     }
-
+    
     @Override
     public ASTNode visitCompoundStatement(final CompoundStatementContext ctx) {
         return visit(ctx.beginStatement());
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitBeginStatement(final BeginStatementContext ctx) {
@@ -577,7 +577,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitValidStatement(final ValidStatementContext ctx) {
@@ -594,7 +594,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     private ValidStatementSegment createValidStatementSegment(final ValidStatementContext ctx) {
         ValidStatementSegment result = new ValidStatementSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         SQLStatement sqlStatement = null;
@@ -620,7 +620,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setSqlStatement(sqlStatement);
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitFlowControlStatement(final FlowControlStatementContext ctx) {
@@ -642,7 +642,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCaseStatement(final CaseStatementContext ctx) {
@@ -652,7 +652,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitIfStatement(final IfStatementContext ctx) {
@@ -662,7 +662,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitLoopStatement(final LoopStatementContext ctx) {
@@ -672,7 +672,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitRepeatStatement(final RepeatStatementContext ctx) {
@@ -682,7 +682,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitWhileStatement(final WhileStatementContext ctx) {
@@ -692,87 +692,87 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
         return new MySQLAlterFunctionStatement();
     }
-
+    
     @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
         return new MySQLDropFunctionStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateEvent(final CreateEventContext ctx) {
         return new MySQLCreateEventStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterEvent(final AlterEventContext ctx) {
         return new MySQLAlterEventStatement();
     }
-
+    
     @Override
     public ASTNode visitDropEvent(final DropEventContext ctx) {
         return new MySQLDropEventStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterInstance(final AlterInstanceContext ctx) {
         return new MySQLAlterInstanceStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateLogfileGroup(final CreateLogfileGroupContext ctx) {
         return new MySQLCreateLogfileGroupStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterLogfileGroup(final AlterLogfileGroupContext ctx) {
         return new MySQLAlterLogfileGroupStatement();
     }
-
+    
     @Override
     public ASTNode visitDropLogfileGroup(final DropLogfileGroupContext ctx) {
         return new MySQLDropLogfileGroupStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateServer(final CreateServerContext ctx) {
         return new MySQLCreateServerStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterServer(final AlterServerContext ctx) {
         return new MySQLAlterServerStatement();
     }
-
+    
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
         return new MySQLDropServerStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
         return new MySQLCreateTriggerStatement();
     }
-
+    
     @Override
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
         return new MySQLDropTriggerStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
         return new MySQLCreateTablespaceStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
         return new MySQLAlterTablespaceStatement();
     }
-
+    
     @Override
     public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
         return new MySQLDropTablespaceStatement();
