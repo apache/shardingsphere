@@ -1,6 +1,6 @@
 +++
-title = "变更历史"
-weight = 7
+title = "YAML 配置"
+weight = 2
 +++
 
 ## 5.0.0-alpha
