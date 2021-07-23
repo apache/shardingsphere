@@ -49,7 +49,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     private static final String INSERT_ON_DUPLICATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = ?";
 
-    private static final String INSERT_WITH_NO_GENERATED_VALUES_GENERATE_KEYS = "INSERT INTO t_sys_param (param_key, param_value) VALUES (?, ?)";
+    private static final String INSERT_WITH_NO_GENERATED_VALUES_GENERATE_KEYS = "INSERT INTO t_sys (param_key, param_value) VALUES (?, ?)";
     
     private static final String SELECT_SQL_WITHOUT_PARAMETER_MARKER = "SELECT item_id FROM t_order_item WHERE user_id = %d AND order_id= %s AND status = 'BATCH'";
     
