@@ -22,6 +22,7 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -84,21 +84,12 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        return schemaDataSources
-                .entrySet()
-                .stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSources(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return schemaDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> createDataSources(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static Map<String, DataSource> createDataSources(final String schemaName, final Map<String, DataSourceParameter> dataSourceParameters) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            DataSource dataSource = JDBCRawBackendDataSourceFactory.getInstance().build(schemaName + "/" + entry.getKey(), entry.getValue());
-            if (null != dataSource) {
-                result.put(entry.getKey(), dataSource);
-            }
-        }
-        return result;
+    private static Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(dataSourceParameters);
+        return DataSourceConverter.getDataSourceMap(dataSourceConfigMap);
     }
     
     private TransactionContexts createTransactionContexts(final MetaDataContexts metaDataContexts) {
@@ -190,21 +181,17 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         Collection<String> schemaNames = configCenter.getSchemaMetaDataService().loadAllNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(configCenter, schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = loadSchemaRules(configCenter, schemaNames);
-        Properties props = configCenter.getPropsService().load();
-        // TODO load global rules from config center
         Collection<RuleConfiguration> globalRuleConfigs = configCenter.getGlobalRuleService().load();
+        Properties props = configCenter.getPropsService().load();
         return new ProxyConfiguration(schemaDataSources, schemaRuleConfigs, globalRuleConfigs, props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final ConfigCenter configCenter, final Collection<String> schemaNames) {
-        return schemaNames.stream()
-            .collect(Collectors.toMap(each -> each,
-                each -> DataSourceParameterConverter.getDataSourceParameterMap(configCenter.getDataSourceService().load(each)),
-                (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return schemaNames.stream().collect(Collectors.toMap(each -> each, 
+            each -> DataSourceParameterConverter.getDataSourceParameterMap(configCenter.getDataSourceService().load(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final ConfigCenter configCenter, final Collection<String> schemaNames) {
-        return schemaNames.stream().collect(
-                Collectors.toMap(each -> each, each -> configCenter.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return schemaNames.stream().collect(Collectors.toMap(each -> each, each -> configCenter.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }
