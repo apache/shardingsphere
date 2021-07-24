@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
-import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -46,7 +45,6 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,10 +66,10 @@ public final class AddResourceBackendHandlerTest {
     private TransactionContexts transactionContexts;
     
     @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereMetaData metaData;
     
     @Mock
-    private ShardingSphereResource shardingSphereResource;
+    private ShardingSphereResource resource;
     
     private AddResourceBackendHandler addResourceBackendHandler;
     
@@ -87,12 +85,9 @@ public final class AddResourceBackendHandlerTest {
     public void assertExecute() throws DistSQLException {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
-        when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
-        DataSourcePersistService persistService = mock(DataSourcePersistService.class);
-        when(persistService.load("test")).thenReturn(new HashMap<>());
-        when(metaDataContexts.getConfigCenter().getDataSourceService()).thenReturn(persistService);
-        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        when(shardingSphereResource.getDataSources()).thenReturn(new HashMap<>());
+        when(metaDataContexts.getMetaData("test")).thenReturn(metaData);
+        when(metaData.getResource()).thenReturn(resource);
+        when(resource.getDataSources()).thenReturn(new HashMap<>());
         when(dataSourceValidator.validate(any(DataSourceConfiguration.class))).thenReturn(true);
         ResponseHeader responseHeader = addResourceBackendHandler.execute("test", createAddResourceStatement());
         assertTrue(responseHeader instanceof UpdateResponseHeader);

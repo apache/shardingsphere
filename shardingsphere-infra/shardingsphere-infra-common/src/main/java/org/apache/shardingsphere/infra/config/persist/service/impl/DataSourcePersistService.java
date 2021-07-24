@@ -76,4 +76,16 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     public boolean isExisted(final String schemaName) {
         return !Strings.isNullOrEmpty(repository.get(SchemaMetadataNode.getMetadataDataSourcePath(schemaName)));
     }
+    
+    /**
+     * Append data source configurations.
+     * 
+     * @param schemaName schema name
+     * @param toBeAppendedDataSourceConfigs data source configurations to be appended
+     */
+    public void append(final String schemaName, final Map<String, DataSourceConfiguration> toBeAppendedDataSourceConfigs) {
+        Map<String, DataSourceConfiguration> dataSourceConfigs = load(schemaName);
+        dataSourceConfigs.putAll(toBeAppendedDataSourceConfigs);
+        persist(schemaName, dataSourceConfigs);
+    }
 }
