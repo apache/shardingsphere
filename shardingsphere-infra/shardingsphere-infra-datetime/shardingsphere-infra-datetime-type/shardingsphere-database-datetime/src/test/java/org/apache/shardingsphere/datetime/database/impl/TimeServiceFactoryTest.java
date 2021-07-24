@@ -19,16 +19,18 @@ package org.apache.shardingsphere.datetime.database.impl;
 
 import org.apache.shardingsphere.datetime.database.PropertiesUtils;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
-import org.junit.Assert;
 import org.junit.Test;
 
-public final class TimeServiceFactoryTest {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+public final class TimeServiceFactoryTest {
+    
     @Test
     public void assertCreateDateTimeService() {
         PropertiesUtils.createProperties("com.mysql.jdbc.Driver", null);
         DatetimeService datetimeService = TimeServiceFactory.createTimeService();
-        Assert.assertFalse(datetimeService.isDefault());
-        Assert.assertTrue(PropertiesUtils.remove());
+        assertFalse(datetimeService.isDefault());
+        assertTrue(PropertiesUtils.remove());
     }
 }
