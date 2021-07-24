@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
+import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -44,7 +46,7 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,7 +61,7 @@ public final class AddResourceBackendHandlerTest {
     @Mock
     private BackendConnection backendConnection;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;
     
     @Mock
@@ -85,7 +87,10 @@ public final class AddResourceBackendHandlerTest {
     public void assertExecute() throws DistSQLException {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
-        when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
+        when(metaDataContexts.getMetaData("test")).thenReturn(shardingSphereMetaData);
+        DataSourcePersistService persistService = mock(DataSourcePersistService.class);
+        when(persistService.load("test")).thenReturn(new HashMap<>());
+        when(metaDataContexts.getConfigCenter().getDataSourceService()).thenReturn(persistService);
         when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
         when(shardingSphereResource.getDataSources()).thenReturn(new HashMap<>());
         when(dataSourceValidator.validate(any(DataSourceConfiguration.class))).thenReturn(true);
