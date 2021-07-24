@@ -727,7 +727,11 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new MySQLDropUserStatement();
+        MySQLDropUserStatement result = new MySQLDropUserStatement();
+        for (UserNameContext each : ctx.userName()) {
+            result.getUsers().add(each.getText());
+        }
+        return result;
     }
     
     @Override
