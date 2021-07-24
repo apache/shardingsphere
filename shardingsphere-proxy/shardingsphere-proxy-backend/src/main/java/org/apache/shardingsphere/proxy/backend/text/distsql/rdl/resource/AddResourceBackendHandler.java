@@ -19,11 +19,10 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
+import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourceException;
@@ -69,7 +68,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         if (!invalidDataSourceNames.isEmpty()) {
             throw new InvalidResourceException(invalidDataSourceNames);
         }
-        post(schemaName, dataSourceConfigMap);
+        update(schemaName, dataSourceConfigMap);
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -87,8 +86,10 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         }
     }
     
-    private void post(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
-        // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DataSourceAddedSQLNotificationEvent(schemaName, dataSources));
+    private void update(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
+        DataSourcePersistService persistService = ProxyContext.getInstance().getMetaDataContexts().getConfigCenter().getDataSourceService();
+        Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.load(schemaName);
+        dataSourceConfigs.putAll(dataSources);
+        persistService.persist(schemaName, dataSourceConfigs);
     }
 }

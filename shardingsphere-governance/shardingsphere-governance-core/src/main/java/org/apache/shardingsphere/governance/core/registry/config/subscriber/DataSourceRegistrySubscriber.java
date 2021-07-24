@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.governance.core.registry.config.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
-import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Map;
@@ -37,18 +36,6 @@ public final class DataSourceRegistrySubscriber {
     public DataSourceRegistrySubscriber(final RegistryCenterRepository repository) {
         persistService = new DataSourcePersistService(repository);
         ShardingSphereEventBus.getInstance().register(this);
-    }
-    
-    /**
-     * Update data source configurations for add.
-     *
-     * @param event data source added event
-     */
-    @Subscribe
-    public void update(final DataSourceAddedSQLNotificationEvent event) {
-        Map<String, DataSourceConfiguration> dataSourceConfigs = persistService.load(event.getSchemaName());
-        dataSourceConfigs.putAll(event.getDataSourceConfigurations());
-        persistService.persist(event.getSchemaName(), dataSourceConfigs);
     }
     
     /**
