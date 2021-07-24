@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -156,7 +155,7 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         dataSourceMap.put("ds0", mock(DataSource.class, RETURNS_DEEP_STUBS));
         dataSourceMap.put("ds1", mock(DataSource.class, RETURNS_DEEP_STUBS));
         
-        return new ShardingRule(shardingRuleConfiguration, mock(DatabaseType.class), dataSourceMap);
+        return new ShardingRule(shardingRuleConfiguration, dataSourceMap);
     }
 
     private SQLStatementContext<?> createSQLStatementContext(final List<String> tableNames) {

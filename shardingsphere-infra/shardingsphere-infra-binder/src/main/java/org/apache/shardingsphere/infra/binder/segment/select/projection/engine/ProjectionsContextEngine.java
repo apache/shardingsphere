@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
@@ -101,15 +102,14 @@ public final class ProjectionsContextEngine {
     }
     
     private boolean containsProjection(final Collection<Projection> projections, final OrderByItemSegment orderByItemSegment, final Collection<SimpleTableSegment> tables) {
-        return orderByItemSegment instanceof IndexOrderByItemSegment
-                || containsItemInShorthandProjection(projections, orderByItemSegment, tables) || containsProjection(projections, orderByItemSegment);
+        return containsItemInShorthandProjection(projections, orderByItemSegment, tables) || containsProjection(projections, orderByItemSegment);
     }
     
     private boolean containsProjection(final Collection<Projection> projections, final OrderByItemSegment orderItem) {
+        if (orderItem instanceof IndexOrderByItemSegment) {
+            return true;
+        }
         for (Projection each : projections) {
-            if (orderItem instanceof IndexOrderByItemSegment) {
-                return true;
-            }
             if (isSameAlias(each, (TextOrderByItemSegment) orderItem) || isSameQualifiedName(each, (TextOrderByItemSegment) orderItem)) {
                 return true;
             }
@@ -118,12 +118,12 @@ public final class ProjectionsContextEngine {
     }
     
     private boolean containsItemInShorthandProjection(final Collection<Projection> projections, final OrderByItemSegment orderByItemSegment, final Collection<SimpleTableSegment> tables) {
-        return isUnqualifiedShorthandProjection(projections) || containsItemWithOwnerInShorthandProjections(projections, orderByItemSegment, tables)
+        return isUnqualifiedShorthandProjection(projections, orderByItemSegment) || containsItemWithOwnerInShorthandProjections(projections, orderByItemSegment, tables)
                 || containsItemWithoutOwnerInShorthandProjections(projections, orderByItemSegment, tables);
     }
     
-    private boolean isUnqualifiedShorthandProjection(final Collection<Projection> projections) {
-        if (1 != projections.size()) {
+    private boolean isUnqualifiedShorthandProjection(final Collection<Projection> projections, final OrderByItemSegment orderByItemSegment) {
+        if (1 != projections.size() || orderByItemSegment instanceof ExpressionOrderByItemSegment) {
             return false;
         }
         Projection projection = projections.iterator().next();

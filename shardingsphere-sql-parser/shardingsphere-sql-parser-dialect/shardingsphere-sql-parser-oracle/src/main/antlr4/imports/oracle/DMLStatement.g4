@@ -114,23 +114,12 @@ assignmentValue
     ;
 
 delete
-    : DELETE deleteSpecification? (singleTableClause | multipleTablesClause) whereClause?
+    : DELETE hint? FROM? deleteSpecification alias? whereClause? returningClause? errorLoggingClause?
     ;
 
 deleteSpecification
-    : ONLY
-    ;
-
-singleTableClause
-    : FROM? LP_? tableName RP_? (AS? alias)?
-    ;
-
-multipleTablesClause
-    : multipleTableNames FROM tableReferences | FROM multipleTableNames USING tableReferences
-    ;
-
-multipleTableNames
-    : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
+    : dmlTableExprClause
+    | ONLY LP_ dmlTableExprClause RP_
     ;
 
 select
@@ -154,7 +143,7 @@ unionClause
     ;
 
 queryBlock
-    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? groupByClause? havingClause?
+    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? hierarchicalQueryClause? groupByClause?
     ;
 
 withClause
@@ -622,8 +611,33 @@ whereClause
     : WHERE expr
     ;
 
+hierarchicalQueryClause
+    : CONNECT BY NOCYCLE? expr (START WITH expr)?
+    | START WITH expr CONNECT BY NOCYCLE? expr
+    ;
+
 groupByClause
-    : GROUP BY orderByItem (COMMA_ orderByItem)*
+    : GROUP BY groupByItem (COMMA_ groupByItem)* havingClause?
+    ;
+
+groupByItem
+    : rollupCubeClause | groupingSetsClause | expr
+    ;
+
+rollupCubeClause
+    : (ROLLUP | CUBE) LP_ groupingExprList RP_
+    ;
+
+groupingSetsClause
+    : GROUPING SETS LP_ (rollupCubeClause | groupingExprList) (COMMA_ (rollupCubeClause | groupingExprList))* RP_
+    ;
+
+groupingExprList
+    : expressionList (COMMA_ expressionList)*
+    ;
+
+expressionList
+    : exprs | LP_ expr? (COMMA_ expr?)* RP_
     ;
 
 havingClause

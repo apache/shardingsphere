@@ -36,16 +36,21 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Condit
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ContainersClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CrossOuterApplyClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlSubqueryClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DmlTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExpressionListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForUpdateClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ForUpdateClauseListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FromClauseListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FromClauseOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupingExprListContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupingSetsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertIntoClauseContext;
@@ -60,14 +65,12 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeSetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeUpdateClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiTableElementContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTableNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTablesClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParenthesisSelectSubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryBlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryTableExprClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryTableExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollupCubeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectFromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectJoinOptionContext;
@@ -80,7 +83,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Select
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectUnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ShardsClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryFactoringClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableCollectionExprContext;
@@ -90,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Update
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UsingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
@@ -111,6 +114,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Shorthan
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
@@ -119,11 +125,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
@@ -344,10 +350,9 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         OracleDeleteStatement result = new OracleDeleteStatement();
-        if (null != ctx.multipleTablesClause()) {
-            result.setTableSegment((TableSegment) visit(ctx.multipleTablesClause()));
-        } else {
-            result.setTableSegment((TableSegment) visit(ctx.singleTableClause()));
+        result.setTableSegment((TableSegment) visit(ctx.deleteSpecification()));
+        if (null != ctx.alias()) {
+            result.getTableSegment().setAlias((AliasSegment) visit(ctx.alias()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -357,27 +362,18 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     }
     
     @Override
-    public ASTNode visitSingleTableClause(final SingleTableClauseContext ctx) {
-        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
-        if (null != ctx.alias()) {
-            result.setAlias((AliasSegment) visit(ctx.alias()));
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
-        DeleteMultiTableSegment result = new DeleteMultiTableSegment();
-        TableSegment relateTableSource = (TableSegment) visit(ctx.tableReferences());
-        result.setRelationTable(relateTableSource);
-        result.setActualDeleteTables(generateTablesFromTableMultipleTableNames(ctx.multipleTableNames()));
-        return result;
-    }
-    
-    private List<SimpleTableSegment> generateTablesFromTableMultipleTableNames(final MultipleTableNamesContext ctx) {
-        List<SimpleTableSegment> result = new LinkedList<>();
-        for (TableNameContext each : ctx.tableName()) {
-            result.add((SimpleTableSegment) visit(each));
+    public ASTNode visitDeleteSpecification(final DeleteSpecificationContext ctx) {
+        TableSegment result;
+        if (null != ctx.dmlTableExprClause().dmlTableClause()) {
+            result = (TableSegment) visit(ctx.dmlTableExprClause().dmlTableClause());
+        } else if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
+            SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.dmlTableExprClause().dmlSubqueryClause());
+            SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(subquerySegment);
+            result = (TableSegment) subqueryTableSegment;
+        } else {
+            SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.dmlTableExprClause().tableCollectionExpr());
+            SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(subquerySegment);
+            result = (TableSegment) subqueryTableSegment;
         }
         return result;
     }
@@ -434,9 +430,9 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         }
         if (null != ctx.groupByClause()) {
             result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
-        }
-        if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            if (null != ctx.groupByClause().havingClause()) {
+                result.setHaving((HavingSegment) visit(ctx.groupByClause().havingClause()));
+            }
         }
         return result;
     }
@@ -760,10 +756,85 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitGroupByClause(final GroupByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (OrderByItemContext each : ctx.orderByItem()) {
-            items.add((OrderByItemSegment) visit(each));
+        for (GroupByItemContext each : ctx.groupByItem()) {
+            items.addAll(generateOrderByItemsFromGroupByItem(each));
         }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        GroupBySegment result = new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return result;
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemsFromGroupByItem(final GroupByItemContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        if (null != ctx.expr()) {
+            OrderByItemSegment item = (OrderByItemSegment) extractValueFromGroupByItemExpression(ctx.expr());
+            result.add(item);
+        } else if (null != ctx.rollupCubeClause()) {
+            result.addAll(generateOrderByItemSegmentsFromRollupCubeClause(ctx.rollupCubeClause()));
+        } else {
+            result.addAll(generateOrderByItemSegmentsFromGroupingSetsClause(ctx.groupingSetsClause()));
+        }
+        return result;
+    }
+    
+    private ASTNode extractValueFromGroupByItemExpression(final ExprContext ctx) {
+        ASTNode expression = visit(ctx);
+        if (expression instanceof ColumnSegment) {
+            ColumnSegment column = (ColumnSegment) expression;
+            ColumnOrderByItemSegment result = new ColumnOrderByItemSegment(column, OrderDirection.ASC);
+            return result;
+        }
+        if (expression instanceof LiteralExpressionSegment) {
+            LiteralExpressionSegment literalExpression = (LiteralExpressionSegment) expression;
+            IndexOrderByItemSegment result = new IndexOrderByItemSegment(literalExpression.getStartIndex(), literalExpression.getStopIndex(),
+                    SQLUtil.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue(), OrderDirection.ASC);
+            return result;
+        }
+        ExpressionOrderByItemSegment result = new ExpressionOrderByItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), OrderDirection.ASC);
+        return result;
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromRollupCubeClause(final RollupCubeClauseContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        result.addAll(generateOrderByItemSegmentsFromGroupingExprList(ctx.groupingExprList()));
+        return result;
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromGroupingSetsClause(final GroupingSetsClauseContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        if (null != ctx.rollupCubeClause()) {
+            for (RollupCubeClauseContext each : ctx.rollupCubeClause()) {
+                result.addAll(generateOrderByItemSegmentsFromRollupCubeClause(each));
+            }  
+        }
+        if (null != ctx.groupingExprList()) {
+            for (GroupingExprListContext each : ctx.groupingExprList()) {
+                result.addAll(generateOrderByItemSegmentsFromGroupingExprList(each));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromGroupingExprList(final GroupingExprListContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        for (ExpressionListContext each : ctx.expressionList()) {
+            result.addAll(generateOrderByItemSegmentsFromExpressionList(each));
+        }
+        return result;
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromExpressionList(final ExpressionListContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.add((OrderByItemSegment) extractValueFromGroupByItemExpression(each));
+            }
+        }
+        if (null != ctx.exprs()) {
+            for (ExprContext each : ctx.exprs().expr()) {
+                result.add((OrderByItemSegment) extractValueFromGroupByItemExpression(each));
+            }
+        }
+        return result;
     }
     
     @Override

@@ -19,9 +19,6 @@ package org.apache.shardingsphere.infra.context.metadata.refresher;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.lock.LockNameUtil;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.MetadataRefresher;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
@@ -35,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -49,13 +45,10 @@ public final class MetadataRefreshEngine {
     
     private final SchemaBuilderMaterials materials;
     
-    private final ShardingSphereLock shardingSphereLock;
-    
     public MetadataRefreshEngine(final ShardingSphereMetaData schemaMetadata, 
-                                 final FederateSchemaMetadata federateMetadata, final ConfigurationProperties properties, final ShardingSphereLock shardingSphereLock) {
+                                 final FederateSchemaMetadata federateMetadata, final ConfigurationProperties properties) {
         this.schemaMetadata = schemaMetadata;
         this.federateMetadata = federateMetadata;
-        this.shardingSphereLock = shardingSphereLock;
         materials = new SchemaBuilderMaterials(schemaMetadata.getResource().getDatabaseType(), schemaMetadata.getResource().getDataSources(), schemaMetadata.getRuleMetaData().getRules(), properties);
     }
     
@@ -78,30 +71,8 @@ public final class MetadataRefreshEngine {
         }
     }
     
-    private void refresh(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final Collection<MetadataRefresher> refreshers) throws SQLException {
-        if (Objects.nonNull(shardingSphereLock)) {
-            refreshWithLock(sqlStatement, routeDataSourceNames, refreshers);
-        } else {
-            refreshWithoutLock(sqlStatement, routeDataSourceNames, refreshers);
-        }
-    }
-    
-    private void refreshWithLock(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final Collection<MetadataRefresher> refreshers) throws SQLException {
-        try {
-            if (!shardingSphereLock.tryLock(LockNameUtil.getMetadataRefreshLockName())) {
-                throw new ShardingSphereException("Metadata refresh failed.");
-            }
-            refreshWithoutLock(sqlStatement, routeDataSourceNames, refreshers);
-            if (!shardingSphereLock.isReleased(LockNameUtil.getMetadataRefreshLockName())) {
-                throw new ShardingSphereException("Metadata refresh failed.");
-            }
-        } finally {
-            shardingSphereLock.releaseLock(LockNameUtil.getMetadataRefreshLockName());
-        }
-    }
-    
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void refreshWithoutLock(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final Collection<MetadataRefresher> refreshers) throws SQLException {
+    private void refresh(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final Collection<MetadataRefresher> refreshers) throws SQLException {
         for (MetadataRefresher each : refreshers) {
             if (each instanceof SchemaRefresher) {
                 ((SchemaRefresher) each).refresh(schemaMetadata.getSchema(), routeDataSourceNames, sqlStatement, materials);

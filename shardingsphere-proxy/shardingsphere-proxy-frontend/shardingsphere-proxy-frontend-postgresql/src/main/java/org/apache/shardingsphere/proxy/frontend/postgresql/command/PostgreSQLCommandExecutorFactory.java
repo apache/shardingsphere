@@ -66,7 +66,7 @@ public final class PostgreSQLCommandExecutorFactory {
             case SIMPLE_QUERY:
                 return new PostgreSQLComQueryExecutor(connectionContext, (PostgreSQLComQueryPacket) commandPacket, backendConnection);
             case PARSE_COMMAND:
-                return new PostgreSQLComParseExecutor(connectionContext, (PostgreSQLComParsePacket) commandPacket, backendConnection);
+                return new PostgreSQLComParseExecutor((PostgreSQLComParsePacket) commandPacket, backendConnection);
             case BIND_COMMAND:
                 connectionContext.getPendingExecutors().add(new PostgreSQLComBindExecutor(connectionContext, (PostgreSQLComBindPacket) commandPacket, backendConnection));
                 break;

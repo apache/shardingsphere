@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shadow.condition;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.Test;
 
@@ -24,7 +26,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class ShadowConditionEngineTest {
     
@@ -33,5 +37,10 @@ public final class ShadowConditionEngineTest {
         List<Object> actual = new ShadowCondition("col", 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(1));
+    }
+
+    @Test
+    public void assertCreateShadowCondition() {
+        assertFalse(new ShadowConditionEngine(mock(ShadowRule.class)).createShadowCondition(mock(SQLStatementContext.class)).isPresent());
     }
 }

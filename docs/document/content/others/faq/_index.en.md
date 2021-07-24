@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.1 </b>"
+pre = "<b>7.1. </b>"
 title = "FAQ"
-weight = 7
+weight = 1
 chapter = true
 +++
 
@@ -215,7 +215,7 @@ Answer:
 
 In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](https://shardingsphere.apache.org/document/current/en/features/pluggable-architecture/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
 
-## 16. Why does my custom distributed primary key do not work after implementing `ShardingKeyGenerator` interface and configuring `type` property?
+## 16. Why does my custom distributed primary key do not work after implementing `KeyGenerateAlgorithm` interface and configuring `type` property?
 
 Answer:
 
@@ -296,4 +296,4 @@ Answer:
 
 1. If you need to customize JDBC connection properties, please take the `urlSource` way to define `dataSource`.
 2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
-3. Please refer to [Related introduction](en/features/dist-sql/syntax/rdl/rdl-resource/) for above rules.
+3. Please refer to [Related introduction](https://shardingsphere.apache.org/document/current/en/features/dist-sql/syntax/rdl/rdl-resource/) for above rules.

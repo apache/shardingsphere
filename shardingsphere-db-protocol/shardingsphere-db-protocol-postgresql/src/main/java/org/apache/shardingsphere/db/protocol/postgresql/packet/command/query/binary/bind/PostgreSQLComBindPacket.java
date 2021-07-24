@@ -63,7 +63,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         for (int i = 0; i < parameterFormatCount; i++) {
             parameterFormats.add(payload.readInt2());
         }
-        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().getBinaryStatement(connectionId, statementId);
+        PostgreSQLBinaryStatement binaryStatement = PostgreSQLBinaryStatementRegistry.getInstance().get(connectionId, statementId);
         parameters = binaryStatement.getSql().isEmpty() ? Collections.emptyList() : getParameters(payload, parameterFormats, binaryStatement.getColumnTypes());
         int resultFormatsLength = payload.readInt2();
         resultFormats = new ArrayList<>(resultFormatsLength);

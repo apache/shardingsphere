@@ -20,15 +20,15 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlRegistryCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlRegistryCenterConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
@@ -82,7 +82,6 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(dataSourceParameter.getMaxLifetimeMilliseconds(), is(3L));
         assertThat(dataSourceParameter.getMaxPoolSize(), is(4));
         assertThat(dataSourceParameter.getMinPoolSize(), is(5));
-        assertThat(dataSourceParameter.getMaintenanceIntervalMilliseconds(), is(6L));
         assertTrue(dataSourceParameter.isReadOnly());
     }
     
@@ -163,7 +162,6 @@ public final class YamlProxyConfigurationSwapperTest {
     
     private void prepareDataSources(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
         YamlDataSourceParameter yamlDataSourceParameter = mock(YamlDataSourceParameter.class);
-        when(yamlProxyRuleConfig.getDataSource()).thenReturn(yamlDataSourceParameter);
         when(yamlDataSourceParameter.getUrl()).thenReturn("url1");
         when(yamlDataSourceParameter.getUsername()).thenReturn("username1");
         when(yamlDataSourceParameter.getPassword()).thenReturn("password1");
@@ -172,7 +170,6 @@ public final class YamlProxyConfigurationSwapperTest {
         when(yamlDataSourceParameter.getMaxLifetimeMilliseconds()).thenReturn(3L);
         when(yamlDataSourceParameter.getMaxPoolSize()).thenReturn(4);
         when(yamlDataSourceParameter.getMinPoolSize()).thenReturn(5);
-        when(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds()).thenReturn(6L);
         when(yamlDataSourceParameter.isReadOnly()).thenReturn(true);
         Map<String, YamlDataSourceParameter> dataSources = new HashMap<>(1, 1);
         dataSources.put("ds1", yamlDataSourceParameter);
@@ -181,7 +178,6 @@ public final class YamlProxyConfigurationSwapperTest {
     
     private void prepareDataSource(final YamlProxyRuleConfiguration yamlProxyRuleConfig) {
         YamlDataSourceParameter yamlDataSourceParameter = mock(YamlDataSourceParameter.class);
-        when(yamlProxyRuleConfig.getDataSource()).thenReturn(yamlDataSourceParameter);
         when(yamlDataSourceParameter.getUrl()).thenReturn("url");
         when(yamlDataSourceParameter.getUsername()).thenReturn("username");
         when(yamlDataSourceParameter.getPassword()).thenReturn("password");
@@ -190,7 +186,6 @@ public final class YamlProxyConfigurationSwapperTest {
         when(yamlDataSourceParameter.getMaxLifetimeMilliseconds()).thenReturn(3L);
         when(yamlDataSourceParameter.getMaxPoolSize()).thenReturn(4);
         when(yamlDataSourceParameter.getMinPoolSize()).thenReturn(5);
-        when(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds()).thenReturn(6L);
         when(yamlDataSourceParameter.isReadOnly()).thenReturn(true);
     }
     

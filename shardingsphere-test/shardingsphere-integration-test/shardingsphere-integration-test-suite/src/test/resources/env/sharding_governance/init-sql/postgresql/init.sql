@@ -17,7 +17,7 @@
 
 CREATE DATABASE governance_db;
 
-GRANT ALL PRIVILEGES ON DATABASE governance_db TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE governance_db TO root;
 
 \c governance_db
 

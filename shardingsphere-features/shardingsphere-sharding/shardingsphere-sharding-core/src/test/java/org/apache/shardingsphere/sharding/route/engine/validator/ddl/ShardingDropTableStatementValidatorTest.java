@@ -156,25 +156,4 @@ public final class ShardingDropTableStatementValidatorTest {
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), routeContext, mock(ShardingSphereSchema.class));
     }
-    
-    @Test
-    public void assertPostValidateDropTableWithSameRouteResultSingleTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
-        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_single"))));
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), routeContext, mock(ShardingSphereSchema.class));
-    }
-    
-    @Test(expected = ShardingSphereException.class)
-    public void assertPostValidateDropTableWithDifferentRouteResultSingleTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
-        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_single"))));
-        Collection<RouteUnit> routeUnits = new LinkedList<>();
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
-        routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_single", "t_single"))));
-        when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingDropTableStatementValidator().postValidate(shardingRule, new DropTableStatementContext(sqlStatement), routeContext, mock(ShardingSphereSchema.class));
-    }
 }

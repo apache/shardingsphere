@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.rule.builder;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
@@ -51,6 +52,6 @@ public final class DatabaseDiscoveryRuleBuilderTest {
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), SchemaRuleBuilder.class).get(ruleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("primaryDataSourceName", mock(DataSource.class));
-        assertThat(builder.build("test_schema", dataSourceMap, mock(DatabaseType.class), ruleConfig), instanceOf(DatabaseDiscoveryRule.class));
+        assertThat(builder.build("test_schema", dataSourceMap, mock(DatabaseType.class), ruleConfig, Sets.newHashSet()), instanceOf(DatabaseDiscoveryRule.class));
     }
 }

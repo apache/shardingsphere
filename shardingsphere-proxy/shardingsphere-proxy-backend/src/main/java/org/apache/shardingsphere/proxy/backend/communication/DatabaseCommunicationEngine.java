@@ -89,7 +89,7 @@ public final class DatabaseCommunicationEngine {
         kernelProcessor = new KernelProcessor();
         proxyLockEngine = new ProxyLockEngine(proxySQLExecutor, new MetadataRefreshEngine(metaData,
                 ProxyContext.getInstance().getMetaDataContexts().getOptimizeContextFactory().getSchemaMetadatas().getSchemas().get(backendConnection.getSchemaName()),
-                ProxyContext.getInstance().getMetaDataContexts().getProps(), ProxyContext.getInstance().getLock().orElse(null)), backendConnection.getSchemaName());
+                ProxyContext.getInstance().getMetaDataContexts().getProps()), backendConnection.getSchemaName());
     }
     
     /**
