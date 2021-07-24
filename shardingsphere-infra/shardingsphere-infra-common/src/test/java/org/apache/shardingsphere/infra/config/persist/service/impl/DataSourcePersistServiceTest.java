@@ -32,12 +32,14 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -84,5 +86,12 @@ public final class DataSourcePersistServiceTest {
         result.setPassword("root");
         result.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
         return result;
+    }
+    
+    @Test
+    public void assertAppend() {
+        when(repository.get("/metadata/foo_db/dataSources")).thenReturn("");
+        new DataSourcePersistService(repository).append("foo_db", Collections.emptyMap());
+        verify(repository).persist("/metadata/foo_db/dataSources", "{}\n");
     }
 }
