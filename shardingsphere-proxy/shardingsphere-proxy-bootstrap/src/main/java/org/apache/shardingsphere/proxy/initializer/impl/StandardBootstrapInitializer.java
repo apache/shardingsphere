@@ -17,21 +17,38 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
+import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.LocalConfigCenterRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.swapper.YamlProxyConfigurationSwapper;
+import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
+
+import java.util.Optional;
 
 /**
  * Standard bootstrap initializer.
  */
 public final class StandardBootstrapInitializer extends AbstractBootstrapInitializer {
     
+    private volatile ConfigCenter configCenter;
+    
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        return new YamlProxyConfigurationSwapper().swap(yamlConfig);
+        // TODO load from SPI
+        ConfigCenterRepository repository = new LocalConfigCenterRepository();
+        configCenter = new ConfigCenter(repository);
+        persistConfigurations(configCenter, yamlConfig, false);
+        ProxyConfiguration result = loadProxyConfiguration(configCenter);
+        return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
     }
     
     @Override
@@ -41,11 +58,18 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     
     @Override
     protected TransactionContexts decorateTransactionContexts(final TransactionContexts transactionContexts, final String xaTransactionMangerType) {
-        return transactionContexts;
+        return new GovernanceTransactionContexts(transactionContexts, xaTransactionMangerType);
     }
     
     @Override
     protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
-        getScalingConfiguration(yamlConfig).ifPresent(optional -> ScalingContext.getInstance().init(optional));
+        Optional<ServerConfiguration> scalingConfig = getScalingConfiguration(yamlConfig);
+        scalingConfig.ifPresent(optional -> initScaling(yamlConfig.getServerConfiguration().getGovernance(), optional));
+    }
+    
+    private void initScaling(final YamlGovernanceConfiguration governanceConfig, final ServerConfiguration scalingConfig) {
+        scalingConfig.setGovernanceConfig(new GovernanceConfigurationYamlSwapper().swapToObject(governanceConfig));
+        ScalingContext.getInstance().init(scalingConfig);
+        ScalingWorker.init();
     }
 }
