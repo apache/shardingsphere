@@ -19,15 +19,15 @@ package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlColumnMetaData;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlIndexMetaData;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlColumnMetaData;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlIndexMetaData;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +53,7 @@ public final class SchemaYamlSwapper implements YamlConfigurationSwapper<YamlSch
     
     @Override
     public ShardingSphereSchema swapToObject(final YamlSchema yamlConfig) {
-        return Optional.ofNullable(yamlConfig).map(this::swapSchema).orElse(new ShardingSphereSchema());
+        return Optional.ofNullable(yamlConfig).map(this::swapSchema).orElseGet(ShardingSphereSchema::new);
     }
     
     private ShardingSphereSchema swapSchema(final YamlSchema schema) {

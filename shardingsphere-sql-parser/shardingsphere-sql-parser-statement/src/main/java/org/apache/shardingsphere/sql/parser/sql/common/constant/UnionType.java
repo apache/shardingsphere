@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.aware;
-
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import java.util.Collection;
+package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 /**
- * Previous rules aware.
+ * Union type enum.
  */
-public interface PreviousRulesAware {
-    
-    /**
-     * Set previous rules.
-     * 
-     * @param previousRules previous rules
-     */
-    void setPreviousRules(Collection<ShardingSphereRule> previousRules);
+public enum UnionType {
+    UNION_ALL,
+    UNION_DISTINCT;
 }

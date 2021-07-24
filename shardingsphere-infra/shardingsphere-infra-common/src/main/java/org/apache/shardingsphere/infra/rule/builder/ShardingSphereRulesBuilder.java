@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguratio
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.aware.PreviousRulesAware;
 import org.apache.shardingsphere.infra.rule.builder.level.DefaultKernelRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.rule.builder.level.KernelRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.GlobalRuleBuilder;
@@ -35,6 +34,7 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -65,21 +65,14 @@ public final class ShardingSphereRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildSchemaRules(final String schemaName, final Collection<RuleConfiguration> schemaRuleConfigurations,
                                                                   final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        Map<RuleConfiguration, SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(getAllSchemaRuleConfigurations(schemaRuleConfigurations), SchemaRuleBuilder.class);
+        Map<RuleConfiguration, SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(
+                getAllSchemaRuleConfigurations(schemaRuleConfigurations), SchemaRuleBuilder.class, Comparator.reverseOrder());
         appendDefaultKernelSchemaRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Map.Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
-            setUpSchemaRuleBuilder(entry.getValue(), result);
-            result.add(entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey()));
+            result.add(entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey(), result));
         }
         return result;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private static void setUpSchemaRuleBuilder(final SchemaRuleBuilder builder, final Collection<ShardingSphereRule> rules) {
-        if (builder instanceof PreviousRulesAware) {
-            ((PreviousRulesAware) builder).setPreviousRules(rules);
-        }
     }
     
     private static Collection<RuleConfiguration> getAllSchemaRuleConfigurations(final Collection<RuleConfiguration> schemaRuleConfigurations) {

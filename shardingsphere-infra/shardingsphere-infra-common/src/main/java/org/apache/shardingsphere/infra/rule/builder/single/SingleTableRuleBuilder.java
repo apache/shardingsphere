@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.single.SingleTableRuleConfiguratio
 import org.apache.shardingsphere.infra.constant.SingleTableOrder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.aware.PreviousRulesAware;
 import org.apache.shardingsphere.infra.rule.builder.level.FeatureRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
@@ -33,27 +32,21 @@ import java.util.Map;
 /**
  * Single table rule builder.
  */
-public final class SingleTableRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<SingleTableRuleConfiguration>, PreviousRulesAware {
-    
-    private Collection<ShardingSphereRule> previousRules;
+public final class SingleTableRuleBuilder implements FeatureRuleBuilder, SchemaRuleBuilder<SingleTableRuleConfiguration> {
     
     @Override
-    public SingleTableRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final SingleTableRuleConfiguration config) {
-        return new SingleTableRule(databaseType, dataSourceMap, previousRules);
+    public SingleTableRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
+                                 final SingleTableRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
+        return new SingleTableRule(databaseType, dataSourceMap, rules);
     }
     
     @Override
     public int getOrder() {
-        return SingleTableOrder.ORDER;
+        return SingleTableOrder.RULE_BUILDER_ORDER;
     }
     
     @Override
     public Class<SingleTableRuleConfiguration> getTypeClass() {
         return SingleTableRuleConfiguration.class;
-    }
-    
-    @Override
-    public void setPreviousRules(final Collection<ShardingSphereRule> previousRules) {
-        this.previousRules = previousRules;
     }
 }

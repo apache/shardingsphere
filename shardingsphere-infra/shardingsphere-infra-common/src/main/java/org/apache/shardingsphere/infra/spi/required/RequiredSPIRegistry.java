@@ -45,6 +45,6 @@ public final class RequiredSPIRegistry {
         if (1 == services.size()) {
             return services.iterator().next();
         }
-        return services.stream().filter(each -> !each.isDefault()).findFirst().orElse(services.iterator().next());
+        return services.stream().filter(each -> !each.isDefault()).findFirst().orElseGet(() -> services.iterator().next());
     }
 }

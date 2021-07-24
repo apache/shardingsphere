@@ -19,9 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.fixture;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.single.SingleTableRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -246,7 +243,7 @@ public abstract class AbstractRoutingEngineTest {
     protected SingleTableRule createAllSingleTableRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMapWithMain();
         SingleTableRule singleTableRule = new SingleTableRule(mock(DatabaseType.class), dataSourceMap, rules);
-        ShardingSphereEventBus.getInstance().post(new CreateTableEvent(dataSourceMap.keySet().iterator().next(), "t_category", mock(TableMetaData.class)));
+        singleTableRule.addSingleTableDataNode("t_category", dataSourceMap.keySet().iterator().next());
         return singleTableRule;
     }
 }

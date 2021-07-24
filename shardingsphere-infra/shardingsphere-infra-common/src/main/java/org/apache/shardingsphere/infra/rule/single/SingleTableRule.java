@@ -17,22 +17,21 @@
 
 package org.apache.shardingsphere.infra.rule.single;
 
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.event.DropTableEvent;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.level.FeatureRule;
 import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -45,13 +44,34 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
     
     private final Map<String, SingleTableDataNode> singleTableDataNodes;
     
-    private final Collection<String> excludedTables;
-    
     public SingleTableRule(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        dataSourceNames = dataSourceMap.keySet();
-        excludedTables = getExcludedTables(rules);
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, dataSourceMap, excludedTables);
-        ShardingSphereEventBus.getInstance().register(this);
+        Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, rules);
+        dataSourceNames = aggregateDataSourceMap.keySet();
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseType, aggregateDataSourceMap, getExcludedTables(rules));
+    }
+    
+    private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
+        Map<String, DataSource> result = new HashMap<>(dataSourceMap);
+        for (ShardingSphereRule each : rules) {
+            if (each instanceof DataSourceContainedRule) {
+                result = getAggregateDataSourceMap(result, (DataSourceContainedRule) each);
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceContainedRule each) {
+        Map<String, DataSource> result = new HashMap<>();
+        for (Map.Entry<String, Collection<String>> entry : each.getDataSourceMapper().entrySet()) {
+            Collection<String> actualDataSources = entry.getValue();
+            for (String actualDataSource : actualDataSources) {
+                if (dataSourceMap.containsKey(actualDataSource)) {
+                    result.put(entry.getKey(), dataSourceMap.remove(actualDataSource));
+                }
+            }
+        }
+        result.putAll(dataSourceMap);
+        return result;
     }
     
     /**
@@ -61,8 +81,9 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
      * @return whether single table is in same data source or not
      */
     public boolean isSingleTableInSameDataSource(final Collection<String> logicTableNames) {
-        long dataSourceCount = singleTableDataNodes.values().stream().filter(each -> Sets.newHashSet(
-                getSingleTableNames(logicTableNames)).contains(each.getTableName())).map(SingleTableDataNode::getDataSourceName).distinct().count();
+        Set<String> singleTableNames = new HashSet<>(getSingleTableNames(logicTableNames));
+        long dataSourceCount = singleTableDataNodes.keySet().stream().filter(singleTableNames::contains).map(each -> singleTableDataNodes.get(each).getDataSourceName())
+                .collect(Collectors.toSet()).size();
         return dataSourceCount <= 1;
     }
     
@@ -73,29 +94,28 @@ public final class SingleTableRule implements FeatureRule, SchemaRule {
      * @return sharding logic table names
      */
     public Collection<String> getSingleTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(each -> !excludedTables.contains(each)).collect(Collectors.toCollection(LinkedList::new));
+        return logicTableNames.stream().filter(singleTableDataNodes::containsKey).collect(Collectors.toCollection(LinkedList::new));
     }
     
     /**
-     * Add single table.
+     * Add single table data node.
      * 
-     * @param event create table event
+     * @param tableName table name
+     * @param dataSourceName data source name
      */
-    @Subscribe
-    public void createSingleTable(final CreateTableEvent event) {
-        if (dataSourceNames.contains(event.getDataSourceName()) && !excludedTables.contains(event.getTableName())) {
-            singleTableDataNodes.put(event.getTableName(), new SingleTableDataNode(event.getTableName(), event.getDataSourceName()));
+    public void addSingleTableDataNode(final String tableName, final String dataSourceName) {
+        if (dataSourceNames.contains(dataSourceName) && !singleTableDataNodes.containsKey(tableName)) {
+            singleTableDataNodes.put(tableName, new SingleTableDataNode(tableName, dataSourceName));
         }
     }
     
     /**
-     * Drop single table.
+     * Drop single table data node.
      *
-     * @param event drop table event
+     * @param tableName table name
      */
-    @Subscribe
-    public void dropSingleTable(final DropTableEvent event) {
-        singleTableDataNodes.remove(event.getTableName());
+    public void dropSingleTableDataNode(final String tableName) {
+        singleTableDataNodes.remove(tableName);
     }
     
     private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {

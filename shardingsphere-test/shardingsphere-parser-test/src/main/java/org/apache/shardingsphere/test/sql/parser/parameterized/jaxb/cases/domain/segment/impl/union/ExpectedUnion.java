@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.union;
 
-import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 
-import javax.sql.DataSource;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Backend data source factory for JDBC.
+ * Expected union clause.
  */
-public interface JDBCBackendDataSourceFactory {
+@Getter
+@Setter
+public final class ExpectedUnion extends AbstractExpectedSQLSegment {
     
-    /**
-     * Build data source for connect backend databases.
-     *
-     * @param dataSourceName data source name
-     * @param dataSourceParameter data source connection parameter
-     * @return data source for connect backend databases
-     */
-    DataSource build(String dataSourceName, DataSourceParameter dataSourceParameter);
+    @XmlElement(name = "select")
+    private SelectStatementTestCase selectClause;
+    
+    @XmlAttribute(name = "union-type")
+    private String unionType;
 }

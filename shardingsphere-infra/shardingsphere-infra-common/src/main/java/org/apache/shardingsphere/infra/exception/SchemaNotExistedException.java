@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher.event;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+package org.apache.shardingsphere.infra.exception;
 
 /**
- * Create table event.
+ * Schema does not exist exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateTableEvent {
+public final class SchemaNotExistedException extends ShardingSphereException {
     
-    private final String dataSourceName;
+    private static final long serialVersionUID = -1818822065202117480L;
     
-    private final String tableName;
-    
-    private final TableMetaData tableMetaData;
+    public SchemaNotExistedException(final String schemaName) {
+        super(String.format("Schema '%s' doesn't exist.", schemaName));
+    }
 }

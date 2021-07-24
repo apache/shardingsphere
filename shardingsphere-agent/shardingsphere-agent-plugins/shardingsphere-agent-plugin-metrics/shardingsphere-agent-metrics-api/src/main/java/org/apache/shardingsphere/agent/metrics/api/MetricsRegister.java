@@ -90,4 +90,11 @@ public interface MetricsRegister {
      * @param duration duration
      */
     void recordTime(String name, String[] labelValues, long duration);
+    
+    /**
+     * Add metric factory to Object obj.
+     *
+     * @param obj object
+     */
+    void addMetricsFactory(Object obj);
 }
