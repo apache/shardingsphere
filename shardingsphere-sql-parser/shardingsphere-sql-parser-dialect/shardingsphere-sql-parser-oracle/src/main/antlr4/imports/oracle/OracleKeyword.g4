@@ -2386,3 +2386,15 @@ SETS
 DECODE
     : D E C O D E
     ;
+
+RESTORE
+    : R E S T O R E
+    ;
+
+POINT
+    : P O I N T
+    ;
+
+BEFORE
+    : B E F O R E
+    ;
