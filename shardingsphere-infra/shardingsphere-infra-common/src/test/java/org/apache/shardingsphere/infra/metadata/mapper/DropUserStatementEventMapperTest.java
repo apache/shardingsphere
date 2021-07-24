@@ -44,5 +44,4 @@ public final class DropUserStatementEventMapperTest {
         result.getUsers().add("test");
         return result;
     }
-    
 }

@@ -48,5 +48,4 @@ public final class CreateUserStatementEventMapperTest {
         result.getUsers().add(userSegment);
         return result;
     }
-    
 }
