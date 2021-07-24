@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.governance.internal.state;
 
 import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.state.StateEvent;
@@ -38,7 +39,7 @@ import static org.mockito.Mockito.mock;
 
 public final class DriverStateContextTest {
     
-    private MetaDataContexts metaDataContexts = new StandardMetaDataContexts();
+    private MetaDataContexts metaDataContexts = new StandardMetaDataContexts(mock(ConfigCenter.class));
     
     @Test
     public void assertGetConnectionWithOkState() {

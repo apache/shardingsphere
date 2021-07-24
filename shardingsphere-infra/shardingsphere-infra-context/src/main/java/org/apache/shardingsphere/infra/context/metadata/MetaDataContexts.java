@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
@@ -34,6 +35,13 @@ import java.util.Optional;
  * Meta data contexts.
  */
 public interface MetaDataContexts extends Closeable {
+    
+    /**
+     * Get config center.
+     * 
+     * @return config center
+     */
+    ConfigCenter getConfigCenter();
     
     /**
      * Get all schema names.

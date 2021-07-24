@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -63,7 +64,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), 
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(ConfigCenter.class), getMetaDataMap(), 
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
     }
     
@@ -162,7 +163,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
             when(mockedMetaDataContexts.getMetaData("schema")).thenReturn(metaData);
             metaDataContexts.set(ProxyContext.getInstance(), mockedMetaDataContexts);
         } else {
-            metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts());
+            metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(ConfigCenter.class)));
         }
     }
     

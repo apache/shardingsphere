@@ -80,7 +80,7 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
         ConfigCenter configCenter = new ConfigCenter(repository);
         RegistryCenter registryCenter = new RegistryCenter(repository);
-        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(dataSourceMap, ruleConfigs, props), configCenter, registryCenter, repository);
+        metaDataContexts = new GovernanceMetaDataContexts(createMetaDataContexts(configCenter, dataSourceMap, ruleConfigs, props), configCenter, registryCenter, repository);
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         transactionContexts = createTransactionContexts(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 metaDataContexts.getDefaultMetaData().getResource().getDataSources(), xaTransactionMangerType);
@@ -93,13 +93,14 @@ public final class GovernanceShardingSphereDataSource extends AbstractUnsupporte
         Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(dataSourceConfigs);
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigurations), configCenter.getGlobalRuleService().load(), configCenter.getPropsService().load());
-        return metaDataContextsBuilder.build();
+        return metaDataContextsBuilder.build(configCenter);
     }
     
-    private StandardMetaDataContexts createMetaDataContexts(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
+    private StandardMetaDataContexts createMetaDataContexts(final ConfigCenter configCenter, 
+                                                            final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, ruleConfigs), props);
-        return metaDataContextsBuilder.build();
+        return metaDataContextsBuilder.build(configCenter);
     }
     
     private TransactionContexts createTransactionContexts(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String xaTransactionMangerType) {
