@@ -89,7 +89,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(
                 dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps());
-        return metaDataContextsBuilder.build();
+        return metaDataContextsBuilder.build(configCenter);
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {

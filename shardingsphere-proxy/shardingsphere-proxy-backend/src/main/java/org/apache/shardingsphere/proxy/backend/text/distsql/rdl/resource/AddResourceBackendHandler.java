@@ -19,11 +19,9 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourceException;
@@ -62,14 +60,14 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     @Override
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) throws DistSQLException {
         check(schemaName, sqlStatement);
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = DataSourceParameterConverter.getDataSourceConfigurationMap(
+        Map<String, DataSourceConfiguration> dataSourceConfigs = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
-        Collection<String> invalidDataSourceNames = dataSourceConfigMap.entrySet()
+        Collection<String> invalidDataSourceNames = dataSourceConfigs.entrySet()
                 .stream().filter(entry -> !dataSourceValidator.validate(entry.getValue())).map(Entry::getKey).collect(Collectors.toList());
         if (!invalidDataSourceNames.isEmpty()) {
             throw new InvalidResourceException(invalidDataSourceNames);
         }
-        post(schemaName, dataSourceConfigMap);
+        ProxyContext.getInstance().getMetaDataContexts().getConfigCenter().getDataSourceService().append(schemaName, dataSourceConfigs);
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -85,10 +83,5 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         if (!duplicateDataSourceNames.isEmpty()) {
             throw new DuplicateResourceException(duplicateDataSourceNames);
         }
-    }
-    
-    private void post(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
-        // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DataSourceAddedSQLNotificationEvent(schemaName, dataSources));
     }
 }

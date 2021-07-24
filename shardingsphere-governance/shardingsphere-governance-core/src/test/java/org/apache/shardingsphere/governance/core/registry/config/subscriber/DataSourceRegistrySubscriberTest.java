@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.governance.core.registry.config.subscriber;
 
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceAddedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
-import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,14 +55,6 @@ public final class DataSourceRegistrySubscriberTest {
         Field field = dataSourceRegistrySubscriber.getClass().getDeclaredField("persistService");
         field.setAccessible(true);
         field.set(dataSourceRegistrySubscriber, persistService);
-    }
-    
-    @Test
-    public void assertUpdateWithDataSourceAddedEvent() {
-        Map<String, DataSourceConfiguration> dataSourceConfigs = createDataSourceConfigurations();
-        DataSourceAddedSQLNotificationEvent event = new DataSourceAddedSQLNotificationEvent("foo_db", dataSourceConfigs);
-        dataSourceRegistrySubscriber.update(event);
-        verify(persistService).persist("foo_db", dataSourceConfigs);
     }
     
     @Test

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.metadata.impl;
 
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -49,7 +50,7 @@ public final class StandardMetaDataContextsTest {
     @Test
     public void assertGetDefaultMetaData() {
         ShardingSphereMetaData metaData = getShardingSphereMetaData();
-        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
+        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(mock(ConfigCenter.class), Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
                 mock(ShardingSphereRuleMetaData.class), null, new ConfigurationProperties(new Properties()), optimizeContextFactory);
         assertThat(standardMetaDataContexts.getDefaultMetaData(), is(metaData));
     }
@@ -58,7 +59,7 @@ public final class StandardMetaDataContextsTest {
     public void assertClose() {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ShardingSphereMetaData metaData = getShardingSphereMetaData();
-        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(Collections.singletonMap("logic_db", metaData), 
+        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(mock(ConfigCenter.class), Collections.singletonMap("logic_db", metaData), 
                 mock(ShardingSphereRuleMetaData.class), executorEngine, new ConfigurationProperties(new Properties()), optimizeContextFactory);
         standardMetaDataContexts.close();
         verify(executorEngine).close();
