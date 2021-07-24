@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -491,7 +490,7 @@ public final class ShardingRule implements FeatureRule, SchemaRule, DataNodeCont
     
     @Override
     public Collection<String> getTables() {
-        return tableRules.stream().map((Function<TableRule, String>) TableRule::getLogicTable).collect(Collectors.toList());
+        return tableRules.stream().map(TableRule::getLogicTable).collect(Collectors.toList());
     }
     
     @Override
