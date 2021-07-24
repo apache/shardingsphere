@@ -20,42 +20,29 @@ package org.apache.shardingsphere.datetime.database.impl;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DatabaseDatetimeServiceTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
-    
-    @Mock
-    private PreparedStatement preparedStatement;
-    
-    @Mock
-    private ResultSet resultSet;
     
     private final String sql = "SELECT NOW()";
     
     @Test
     public void assertMySQLDateTime() throws SQLException {
-        Connection connection = mock(Connection.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when((Date) resultSet.getObject(1)).thenReturn(new Date());
+        when(dataSource.getConnection().prepareStatement(sql).executeQuery().getObject(1)).thenReturn(new Date());
         DatetimeService datetimeService = new DatabaseDatetimeService(dataSource, sql);
         assertFalse(datetimeService.isDefault());
         assertNotNull(datetimeService.getDatetime());
@@ -63,9 +50,7 @@ public final class DatabaseDatetimeServiceTest {
     
     @Test
     public void assertNoExceptionInDateTimeService() throws SQLException {
-        Connection connection = mock(Connection.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.prepareStatement(sql)).thenThrow(new SQLException());
+        when(dataSource.getConnection().prepareStatement(sql)).thenThrow(new SQLException());
         DatetimeService datetimeService = new DatabaseDatetimeService(dataSource, sql);
         assertFalse(datetimeService.isDefault());
         assertNotNull(datetimeService.getDatetime());
