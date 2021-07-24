@@ -20,9 +20,7 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
-import org.apache.shardingsphere.infra.config.persist.repository.LocalConfigCenterRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -39,15 +37,14 @@ import java.util.Optional;
  */
 public final class StandardBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    private volatile ConfigCenter configCenter;
+    public StandardBootstrapInitializer(final ConfigCenterRepository repository) {
+        super(repository);
+    }
     
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        // TODO load from SPI
-        ConfigCenterRepository repository = new LocalConfigCenterRepository();
-        configCenter = new ConfigCenter(repository);
-        persistConfigurations(configCenter, yamlConfig, false);
-        ProxyConfiguration result = loadProxyConfiguration(configCenter);
+        persistConfigurations(yamlConfig, false);
+        ProxyConfiguration result = loadProxyConfiguration();
         return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
     }
     

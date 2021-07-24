@@ -20,12 +20,9 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
 import org.apache.shardingsphere.governance.core.yaml.pojo.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -46,30 +43,30 @@ import java.util.stream.Stream;
  */
 public final class GovernanceBootstrapInitializer extends AbstractBootstrapInitializer {
     
-    private volatile RegistryCenterRepository repository;
+    private final RegistryCenterRepository repository;
     
-    private volatile ConfigCenter configCenter;
+    private final RegistryCenter registryCenter;
     
-    private volatile RegistryCenter registryCenter;
+    public GovernanceBootstrapInitializer(final RegistryCenterRepository repository) {
+        super(repository);
+        this.repository = repository;
+        registryCenter = new RegistryCenter(repository);
+    }
     
     @Override
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
-        GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
-        repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
-        configCenter = new ConfigCenter(repository);
-        registryCenter = new RegistryCenter(repository);
-        persistConfigurations(configCenter, yamlConfig, yamlConfig.getServerConfiguration().getGovernance().isOverwrite());
+        persistConfigurations(yamlConfig, yamlConfig.getServerConfiguration().getGovernance().isOverwrite());
         registryCenter.onlineInstance(getSchemaNames(yamlConfig));
-        return loadProxyConfiguration(configCenter);
+        return loadProxyConfiguration();
     }
     
     private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
-        return Stream.of(configCenter.getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
+        return Stream.of(getConfigCenter().getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
     }
     
     @Override
     protected MetaDataContexts decorateMetaDataContexts(final MetaDataContexts metaDataContexts) {
-        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, configCenter, registryCenter, repository);
+        return new GovernanceMetaDataContexts((StandardMetaDataContexts) metaDataContexts, getConfigCenter(), registryCenter, repository);
     }
     
     @Override

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
@@ -63,6 +65,13 @@ import java.util.stream.Collectors;
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
     private final ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
+    
+    @Getter
+    private final ConfigCenter configCenter;
+    
+    public AbstractBootstrapInitializer(final ConfigCenterRepository repository) {
+        configCenter = new ConfigCenter(repository);
+    }
     
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
@@ -145,7 +154,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     
     protected abstract void initScalingWorker(YamlProxyConfiguration yamlConfig);
     
-    protected final void persistConfigurations(final ConfigCenter configCenter, final YamlProxyConfiguration yamlConfig, final boolean overwrite) {
+    protected final void persistConfigurations(final YamlProxyConfiguration yamlConfig, final boolean overwrite) {
         YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
         Map<String, YamlProxyRuleConfiguration> ruleConfigs = yamlConfig.getRuleConfigurations();
         if (!isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
@@ -177,21 +186,21 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(globalRuleConfigs);
     }
     
-    protected final ProxyConfiguration loadProxyConfiguration(final ConfigCenter configCenter) {
+    protected final ProxyConfiguration loadProxyConfiguration() {
         Collection<String> schemaNames = configCenter.getSchemaMetaDataService().loadAllNames();
-        Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(configCenter, schemaNames);
-        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = loadSchemaRules(configCenter, schemaNames);
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
+        Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = loadSchemaRules(schemaNames);
         Collection<RuleConfiguration> globalRuleConfigs = configCenter.getGlobalRuleService().load();
         Properties props = configCenter.getPropsService().load();
         return new ProxyConfiguration(schemaDataSources, schemaRuleConfigs, globalRuleConfigs, props);
     }
     
-    private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final ConfigCenter configCenter, final Collection<String> schemaNames) {
+    private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
         return schemaNames.stream().collect(Collectors.toMap(each -> each, 
             each -> DataSourceParameterConverter.getDataSourceParameterMap(configCenter.getDataSourceService().load(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final ConfigCenter configCenter, final Collection<String> schemaNames) {
+    private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
         return schemaNames.stream().collect(Collectors.toMap(each -> each, each -> configCenter.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

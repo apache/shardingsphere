@@ -207,6 +207,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @Override
     protected void prepareSpecifiedInitializer() {
-        setInitializer(new GovernanceBootstrapInitializer());
+        setInitializer(new GovernanceBootstrapInitializer(registryCenterRepository));
     }
 }
