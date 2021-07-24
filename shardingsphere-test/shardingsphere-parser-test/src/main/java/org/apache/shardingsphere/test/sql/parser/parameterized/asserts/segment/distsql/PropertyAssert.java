@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedProperty;
-import org.hamcrest.CoreMatchers;
 
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -47,7 +47,7 @@ public final class PropertyAssert {
             assertNull(assertContext.getText("Actual should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual should exist."), actual);
-            assertThat(assertContext.getText("properties assertion error: "), actual.getProperty(expected.getKey()), CoreMatchers.is(expected.getValue()));
+            assertThat(assertContext.getText("properties assertion error: "), actual.getProperty(expected.getKey()), is(expected.getValue()));
         }
     }
 }
