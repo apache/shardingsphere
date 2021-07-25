@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.governance.core.registry.metadata.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseCreatedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseDroppedSQLNotificationEvent;
-import org.apache.shardingsphere.infra.config.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 
@@ -35,16 +34,6 @@ public final class SchemaMetaDataRegistrySubscriber {
     public SchemaMetaDataRegistrySubscriber(final RegistryCenterRepository repository) {
         persistService = new SchemaMetaDataPersistService(repository);
         ShardingSphereEventBus.getInstance().register(this);
-    }
-    
-    /**
-     * Update when database created.
-     *
-     * @param event database created SQL notification event
-     */
-    @Subscribe
-    public void update(final DatabaseCreatedSQLNotificationEvent event) {
-        persistService.persist(event.getDatabaseName(), null);
     }
     
     /**
