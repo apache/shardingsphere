@@ -37,10 +37,10 @@ public final class RegistryCenterRepositoryFactory {
     }
     
     /**
-     * Create new instance of Registry center repository.
+     * Create new instance of registry center repository.
      * 
      * @param config governance configuration
-     * @return new instance of Registry center repository
+     * @return new instance of registry center repository
      */
     public static RegistryCenterRepository newInstance(final GovernanceConfiguration config) {
         RegistryCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
