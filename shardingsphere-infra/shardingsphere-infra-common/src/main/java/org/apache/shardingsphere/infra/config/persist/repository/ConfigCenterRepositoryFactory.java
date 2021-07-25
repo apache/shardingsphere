@@ -34,7 +34,7 @@ public final class ConfigCenterRepositoryFactory {
      * @return new instance of config center repository
      */
     public static ConfigCenterRepository newInstance() {
-        // TODO load from SPI
+        // TODO load from SPI and make LocalConfigCenterRepository as default one. We can add more ConfigCenterRepository type such as: Database, Ceph etc...
         return new LocalConfigCenterRepository();
     }
 }
