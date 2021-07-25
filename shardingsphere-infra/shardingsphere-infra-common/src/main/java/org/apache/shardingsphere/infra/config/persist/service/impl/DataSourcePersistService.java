@@ -91,14 +91,14 @@ public final class DataSourcePersistService implements SchemaBasedPersistService
     }
     
     /**
-     * Remove data sources.
+     * Drop data sources.
      * 
      * @param schemaName schema name
-     * @param toBeRemovedDataSourceNames data sources to be removed
+     * @param toBeDroppedDataSourceNames data sources to be dropped
      */
-    public void remove(final String schemaName, final Collection<String> toBeRemovedDataSourceNames) {
+    public void drop(final String schemaName, final Collection<String> toBeDroppedDataSourceNames) {
         Map<String, DataSourceConfiguration> dataSourceConfigs = load(schemaName);
-        for (String each : toBeRemovedDataSourceNames) {
+        for (String each : toBeDroppedDataSourceNames) {
             dataSourceConfigs.remove(each);
         }
         persist(schemaName, dataSourceConfigs);

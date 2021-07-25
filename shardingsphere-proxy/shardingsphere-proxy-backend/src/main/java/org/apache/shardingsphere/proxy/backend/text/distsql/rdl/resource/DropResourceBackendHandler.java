@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.governance.core.registry.config.event.datasource.DataSourceDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceDefinitionViolationException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
@@ -55,7 +53,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
         check(schemaName, toBeDroppedResourceNames);
         drop(schemaName, toBeDroppedResourceNames);
-        post(schemaName, toBeDroppedResourceNames);
+        ProxyContext.getInstance().getMetaDataContexts().getConfigCenter().getDataSourceService().drop(schemaName, toBeDroppedResourceNames);
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -112,9 +110,5 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         for (String each : toBeDroppedResourceNames) {
             ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources().remove(each);
         }
-    }
-    
-    private void post(final String schemaName, final Collection<String> toBeDroppedResourceNames) {
-        ShardingSphereEventBus.getInstance().post(new DataSourceDroppedSQLNotificationEvent(schemaName, toBeDroppedResourceNames));
     }
 }
