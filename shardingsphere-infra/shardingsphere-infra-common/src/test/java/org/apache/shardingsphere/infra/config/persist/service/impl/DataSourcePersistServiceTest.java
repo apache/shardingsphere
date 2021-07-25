@@ -91,7 +91,22 @@ public final class DataSourcePersistServiceTest {
     @Test
     public void assertAppend() {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn("");
-        new DataSourcePersistService(repository).append("foo_db", Collections.emptyMap());
+        new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourceConfiguration.getDataSourceConfiguration(createDataSource("foo_ds"))));
+        // TODO load from YAML
+        String expected = "foo_ds:\n" + "  driverClassName: com.mysql.jdbc.Driver\n" + "  password: root\n"
+                + "  dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource\n" + "  connectionInitSqls:\n" + "  - set names utf8mb4;\n"
+                + "  - set names utf8;\n" + "  url: jdbc:mysql://localhost:3306/foo_ds\n" + "  username: root\n";
+        verify(repository).persist("/metadata/foo_db/dataSources", expected);
+    }
+    
+    @Test
+    public void assertRemove() {
+        // TODO load from YAML
+        String actual = "foo_ds:\n" + "  driverClassName: com.mysql.jdbc.Driver\n" + "  password: root\n"
+                + "  dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource\n" + "  connectionInitSqls:\n" + "  - set names utf8mb4;\n"
+                + "  - set names utf8;\n" + "  url: jdbc:mysql://localhost:3306/foo_ds\n" + "  username: root\n";
+        when(repository.get("/metadata/foo_db/dataSources")).thenReturn(actual);
+        new DataSourcePersistService(repository).remove("foo_db", Collections.singleton("foo_ds"));
         verify(repository).persist("/metadata/foo_db/dataSources", "{}\n");
     }
 }
