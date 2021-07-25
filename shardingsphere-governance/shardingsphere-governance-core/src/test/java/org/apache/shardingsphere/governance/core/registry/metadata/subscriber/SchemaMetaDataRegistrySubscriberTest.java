@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.metadata.subscriber;
 
-import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -54,12 +53,5 @@ public final class SchemaMetaDataRegistrySubscriberTest {
         SchemaAlteredEvent event = new SchemaAlteredEvent("foo_db", mock(ShardingSphereSchema.class));
         schemaMetaDataRegistrySubscriber.update(event);
         verify(persistService).persist("foo_db", event.getSchema());
-    }
-    
-    @Test
-    public void assertUpdateWithDatabaseDroppedSQLNotificationEvent() {
-        DatabaseDroppedSQLNotificationEvent event = new DatabaseDroppedSQLNotificationEvent("foo_db");
-        schemaMetaDataRegistrySubscriber.update(event);
-        verify(persistService).delete("foo_db");
     }
 }

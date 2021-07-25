@@ -19,8 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.database;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseDroppedSQLNotificationEvent;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
@@ -45,7 +43,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             backendConnection.setCurrentSchema(null);
         }
-        post(sqlStatement);
+        ProxyContext.getInstance().getMetaDataContexts().getConfigCenter().getSchemaMetaDataService().delete(sqlStatement.getDatabaseName());
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -57,10 +55,5 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     
     private boolean isDropCurrentDatabase(final String databaseName) {
         return !Strings.isNullOrEmpty(backendConnection.getSchemaName()) && backendConnection.getSchemaName().equals(databaseName);
-    }
-    
-    private void post(final DropDatabaseStatement sqlStatement) {
-        // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DatabaseDroppedSQLNotificationEvent(sqlStatement.getDatabaseName()));
     }
 }
