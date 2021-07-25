@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropDatabaseStatement;
+import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,8 +64,9 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(ConfigCenter.class), getMetaDataMap(), 
-                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
+        ProxyContext.getInstance().init(new StandardMetaDataContexts(mock(ConfigCenter.class), 
+                getMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)), 
+                mock(TransactionContexts.class));
     }
     
     @Test
@@ -77,7 +78,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     public void assertExecutePostgreSQLCreateDatabaseContext() throws SQLException {
         assertExecuteCreateDatabaseContext(new PostgreSQLCreateDatabaseStatement());
     }
-
+    
     private void assertExecuteCreateDatabaseContext(final CreateDatabaseStatement sqlStatement) throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
@@ -149,22 +150,17 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         return Collections.singletonMap("schema", metaData);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
-        metaDataContexts.setAccessible(true);
-        if (isGovernance) {
-            MetaDataContexts mockedMetaDataContexts = mock(MetaDataContexts.class);
-            when(mockedMetaDataContexts.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
-            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-            when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            when(metaData.getResource().getDataSources()).thenReturn(Collections.emptyMap());
-            when(metaData.getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
-            when(mockedMetaDataContexts.getMetaData("schema")).thenReturn(metaData);
-            metaDataContexts.set(ProxyContext.getInstance(), mockedMetaDataContexts);
-        } else {
-            metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(ConfigCenter.class)));
-        }
+        ProxyContext.getInstance().init(isGovernance ? mockMetaDataContexts() : new StandardMetaDataContexts(mock(ConfigCenter.class)), mock(TransactionContexts.class));
+    }
+    
+    private MetaDataContexts mockMetaDataContexts() {
+        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(result.getAllSchemaNames()).thenReturn(Collections.singletonList("schema"));
+        when(result.getMetaData("schema").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getMetaData("schema").getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(result.getMetaData("schema").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        return result;
     }
     
     @After
