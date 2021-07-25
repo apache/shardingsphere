@@ -96,7 +96,7 @@ unreservedWord
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST | RANK
+    | COLLATION | REAL | TYPE | FIRST | RANK | ANY
     ;
 
 schemaName
@@ -416,6 +416,7 @@ simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
+    | (owner DOT_)? name LBT_ expr (COMMA_ expr)* RBT_ simpleExpr?
     | caseExpression
     | privateExprOfDb
     ;
@@ -425,15 +426,24 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr) | ASTERISK_) RP_ (OVER LP_ analyticClause RP_)?
     ;
 
 aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG | GROUPING
     ;
 
-distinct
-    : DISTINCT
+analyticClause
+    : queryPartitionClause? (orderByClause windowingClause?)?
+    ;
+
+queryPartitionClause
+    : PARTITION BY (exprs | exprList)
+    ;
+
+windowingClause
+    : (ROWS | RANGE) ((BETWEEN (UNBOUNDED PRECEDING | CURRENT ROW | expr (PRECEDING | FOLLOWING)) AND (UNBOUNDED FOLLOWING | CURRENT ROW | expr (PRECEDING | FOLLOWING)))
+    | (UNBOUNDED PRECEDING | CURRENT ROW | expr PRECEDING))
     ;
 
 specialFunction
@@ -814,4 +824,24 @@ seedValue
 
 namespace
     : identifier
+    ;
+
+referenceModelName
+    : identifier
+    ;
+
+mainModelName
+    : identifier
+    ;
+
+measureColumn
+    : columnName
+    ;
+
+dimensionColumn
+    : columnName
+    ;
+
+pattern
+    : stringLiterals
     ;

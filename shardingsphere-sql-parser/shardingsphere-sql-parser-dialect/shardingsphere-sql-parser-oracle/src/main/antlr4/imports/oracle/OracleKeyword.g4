@@ -2386,3 +2386,43 @@ SETS
 DECODE
     : D E C O D E
     ;
+
+IGNORE
+    : I G N O R E
+    ;
+
+NAV
+    : N A V
+    ;
+
+SINGLE
+    : S I N G L E
+    ;
+
+UPDATED
+    : U P D A T E D
+    ;
+
+MAIN
+    : M A I N
+    ;
+
+RULES
+    : R U L E S
+    ;
+
+UPSERT
+    : U P S E R T
+    ;
+
+SEQUENTIAL
+    : S E Q U E N T I A L
+    ;
+
+ITERATE
+    : I T E R A T E
+    ;
+
+DECREMENT
+    : D E C R E M E N T
+    ;
