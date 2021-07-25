@@ -1897,7 +1897,7 @@ flashbackDatabase
     ;
 
 scnTimestampClause
-    : (SCN | TIMESTAMP) scnValue
+    : (SCN | TIMESTAMP) scnTimestampExpr
     ;
 
 restorePointClause

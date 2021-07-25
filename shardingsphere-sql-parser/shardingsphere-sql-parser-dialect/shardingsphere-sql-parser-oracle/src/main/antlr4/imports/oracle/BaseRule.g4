@@ -816,14 +816,14 @@ namespace
     : identifier
     ;
 
-scnTimestampExpr
-    : identifier
-    ;
-
 restorePoint
     : identifier
     ;
 
 scnValue
-    : literals | identifier
+    : literals
+    ;
+
+scnTimestampExpr
+    : scnValue | identifier
     ;
