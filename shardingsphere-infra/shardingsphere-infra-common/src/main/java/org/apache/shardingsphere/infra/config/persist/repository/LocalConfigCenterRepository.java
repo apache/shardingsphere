@@ -15,23 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.event.rule;
+package org.apache.shardingsphere.infra.config.persist.repository;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Rule configurations altered SQL notification event.
+ * Local config center repository.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RuleConfigurationsAlteredSQLNotificationEvent implements SQLNotificationEvent {
+// TODO finished me
+public final class LocalConfigCenterRepository implements ConfigCenterRepository {
     
-    private final String schemaName;
+    @Override
+    public String get(final String key) {
+        return "";
+    }
     
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    @Override
+    public List<String> getChildrenKeys(final String key) {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public void persist(final String key, final String value) {
+    }
+    
+    @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
+    public void close() {
+    }
+    
+    @Override
+    public String getType() {
+        return "Local";
+    }
 }

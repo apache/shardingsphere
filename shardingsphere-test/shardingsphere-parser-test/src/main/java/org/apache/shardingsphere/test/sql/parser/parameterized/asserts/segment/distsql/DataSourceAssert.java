@@ -60,6 +60,7 @@ public final class DataSourceAssert {
                     actual.getClass().getSimpleName())), actual.getUser(), CoreMatchers.is(expected.getUser()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getPassword(), CoreMatchers.is(expected.getPassword()));
+            PropertiesAssert.assertIs(assertContext, actual.getProperties(), expected.getProps());
         }
     }
 }

@@ -15,10 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry;
+package org.apache.shardingsphere.infra.exception;
 
 /**
- * SQL notification event.
+ * Schema does not exist exception.
  */
-public interface SQLNotificationEvent {
+public final class SchemaNotExistedException extends ShardingSphereException {
+    
+    private static final long serialVersionUID = -1818822065202117480L;
+    
+    public SchemaNotExistedException(final String schemaName) {
+        super(String.format("Schema '%s' doesn't exist.", schemaName));
+    }
 }

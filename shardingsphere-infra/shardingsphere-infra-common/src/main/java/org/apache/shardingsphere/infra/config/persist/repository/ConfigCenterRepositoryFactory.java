@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.event.datasource;
+package org.apache.shardingsphere.infra.config.persist.repository;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-
-import java.util.Map;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 /**
- * Data source added SQL notification event.
+ * Config center repository factory.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DataSourceAddedSQLNotificationEvent implements SQLNotificationEvent {
+public final class ConfigCenterRepositoryFactory {
     
-    private final String schemaName;
+    static {
+        ShardingSphereServiceLoader.register(ConfigCenterRepository.class);
+    }
     
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
+    /**
+     * Create new instance of config center repository.
+     *
+     * @return new instance of config center repository
+     */
+    public static ConfigCenterRepository newInstance() {
+        // TODO load from SPI and make LocalConfigCenterRepository as default one. We can add more ConfigCenterRepository type such as: Database, Ceph etc...
+        return new LocalConfigCenterRepository();
+    }
 }

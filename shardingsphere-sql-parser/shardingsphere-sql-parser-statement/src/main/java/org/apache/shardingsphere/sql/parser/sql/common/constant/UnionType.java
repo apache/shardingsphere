@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.metadata.event;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
+package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 /**
- * Database dropped SQL notificationEvent event.
+ * Union type enum.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DatabaseDroppedSQLNotificationEvent implements SQLNotificationEvent {
-    
-    private final String databaseName;
+public enum UnionType {
+    UNION_ALL,
+    UNION_DISTINCT;
 }

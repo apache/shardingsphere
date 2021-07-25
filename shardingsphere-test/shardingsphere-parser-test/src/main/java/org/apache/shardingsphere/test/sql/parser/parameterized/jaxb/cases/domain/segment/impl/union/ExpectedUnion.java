@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.registry.config.event.datasource;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.union;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.SQLNotificationEvent;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Data source dropped SQL notification event.
+ * Expected union clause.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DataSourceDroppedSQLNotificationEvent implements SQLNotificationEvent {
+@Setter
+public final class ExpectedUnion extends AbstractExpectedSQLSegment {
     
-    private final String schemaName;
+    @XmlElement(name = "select")
+    private SelectStatementTestCase selectClause;
     
-    private final Collection<String> dataSourceNames;
+    @XmlAttribute(name = "union-type")
+    private String unionType;
 }

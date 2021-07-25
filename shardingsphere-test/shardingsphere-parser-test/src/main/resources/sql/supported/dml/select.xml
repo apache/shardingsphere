@@ -91,6 +91,7 @@
     <sql-case id="select_with_lateral_clause" value="SELECT * FROM employees e, LATERAL(SELECT * FROM departments d WHERE e.department_id = d.department_id)" db-types="Oracle" />
     <sql-case id="select_with_containers" value="SELECT * FROM CONTAINERS(employees)" db-types="Oracle" />
     <sql-case id="select_with_hierarchical_connect_by" value="SELECT last_name, employee_id, manager_id FROM employees CONNECT BY employee_id = manager_id ORDER BY last_name" db-types="Oracle" />
+    <sql-case id="select_union" value="SELECT order_id FROM t_order UNION SELECT order_id FROM t_order_item" db-types="MySQL" />
     <sql-case id="select_with_model_partition_dimension" value="SELECT country, prod, year, s FROM sales_view_ref MODEL PARTITION BY (country) DIMENSION BY (prod, year) MEASURES (sale s) IGNORE NAV UNIQUE DIMENSION RULES UPSERT SEQUENTIAL ORDER (s[prod='Mouse Pad', year=2001] = s['Mouse Pad', 1999] + s['Mouse Pad', 2000], 
     s['Standard Mouse', 2002] = s['Standard Mouse', 2001]) ORDER BY country, prod, year" db-types="Oracle" />
     <sql-case id="select_with_model_dimension" value="SELECT country, year, sale, csum FROM (SELECT country, year, SUM(sale) sale FROM sales_view_ref GROUP BY country, year) MODEL DIMENSION BY (country, year) MEASURES (sale, 0 csum) RULES (csum[any, any] = SUM(sale) OVER (PARTITION BY country ORDER BY year ROWS UNBOUNDED PRECEDING)) ORDER BY country, year" db-types="Oracle" />

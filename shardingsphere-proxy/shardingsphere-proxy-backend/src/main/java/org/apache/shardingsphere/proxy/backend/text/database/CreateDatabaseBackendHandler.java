@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.database;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseCreatedSQLNotificationEvent;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -38,7 +36,7 @@ public final class CreateDatabaseBackendHandler implements TextProtocolBackendHa
     @Override
     public ResponseHeader execute() {
         check(sqlStatement);
-        post(sqlStatement);
+        ProxyContext.getInstance().getMetaDataContexts().getConfigCenter().getSchemaMetaDataService().persist(sqlStatement.getDatabaseName(), null);
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -46,10 +44,5 @@ public final class CreateDatabaseBackendHandler implements TextProtocolBackendHa
         if (ProxyContext.getInstance().getAllSchemaNames().contains(sqlStatement.getDatabaseName())) {
             throw new DBCreateExistsException(sqlStatement.getDatabaseName());
         }
-    }
-    
-    private void post(final CreateDatabaseStatement sqlStatement) {
-        // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DatabaseCreatedSQLNotificationEvent(sqlStatement.getDatabaseName()));
     }
 }

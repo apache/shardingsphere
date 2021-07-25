@@ -96,7 +96,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Before
     public void setUp() {
-        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
+        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(mock(ConfigCenter.class), 
                 createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), configCenter, registryCenter, mock(RegistryCenterRepository.class));
     }
     

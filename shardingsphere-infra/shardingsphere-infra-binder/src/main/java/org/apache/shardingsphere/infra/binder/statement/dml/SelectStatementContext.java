@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.exception.SchemaNotExistedException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -113,7 +114,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereMetaData> metaDataMap, final String defaultSchemaName) {
         String schemaName = tablesContext.getSchemaName().orElse(defaultSchemaName);
         ShardingSphereMetaData metaData = metaDataMap.get(schemaName);
-        Preconditions.checkState(null != metaData, "Can not get meta data by schema mame `%s`.", schemaName);
+        if (null == metaData) {
+            throw new SchemaNotExistedException(schemaName);
+        }
         return metaData.getSchema();
     }
     
