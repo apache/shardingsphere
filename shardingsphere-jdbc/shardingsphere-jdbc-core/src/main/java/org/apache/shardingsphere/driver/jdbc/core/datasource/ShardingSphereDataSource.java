@@ -24,7 +24,7 @@ import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOper
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
-import org.apache.shardingsphere.infra.config.persist.repository.LocalConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepositoryFactory;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
@@ -54,8 +54,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     private final TransactionContexts transactionContexts;
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
-        // TODO load from SPI
-        ConfigCenterRepository repository = new LocalConfigCenterRepository();
+        ConfigCenterRepository repository = ConfigCenterRepositoryFactory.newInstance();
         metaDataContexts = new MetaDataContextsBuilder(
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build(new ConfigCenter(repository));
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);

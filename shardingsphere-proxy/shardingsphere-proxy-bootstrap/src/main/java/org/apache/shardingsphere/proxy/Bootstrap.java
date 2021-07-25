@@ -22,9 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterRepositoryFactory;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
-import org.apache.shardingsphere.infra.config.persist.repository.LocalConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepositoryFactory;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -56,12 +54,9 @@ public final class Bootstrap {
     
     private static BootstrapInitializer createBootstrapInitializer(final YamlProxyConfiguration yamlConfig) {
         if (null == yamlConfig.getServerConfiguration().getGovernance()) {
-            // TODO load from SPI
-            ConfigCenterRepository repository = new LocalConfigCenterRepository();
-            return new StandardBootstrapInitializer(repository);
+            return new StandardBootstrapInitializer(ConfigCenterRepositoryFactory.newInstance());
         }
         GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance());
-        RegistryCenterRepository repository = RegistryCenterRepositoryFactory.newInstance(governanceConfig);
-        return new GovernanceBootstrapInitializer(repository);
+        return new GovernanceBootstrapInitializer(RegistryCenterRepositoryFactory.newInstance(governanceConfig));
     }
 }

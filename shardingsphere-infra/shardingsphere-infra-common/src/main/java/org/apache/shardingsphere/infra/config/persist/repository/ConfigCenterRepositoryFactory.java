@@ -17,39 +17,24 @@
 
 package org.apache.shardingsphere.infra.config.persist.repository;
 
-import java.util.Collections;
-import java.util.List;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 /**
- * Local config center repository.
+ * Config center repository factory.
  */
-// TODO finished me
-public final class LocalConfigCenterRepository implements ConfigCenterRepository {
+public final class ConfigCenterRepositoryFactory {
     
-    @Override
-    public String get(final String key) {
-        return "";
+    static {
+        ShardingSphereServiceLoader.register(ConfigCenterRepository.class);
     }
     
-    @Override
-    public List<String> getChildrenKeys(final String key) {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public void persist(final String key, final String value) {
-    }
-    
-    @Override
-    public void delete(final String key) {
-    }
-    
-    @Override
-    public void close() {
-    }
-    
-    @Override
-    public String getType() {
-        return "Local";
+    /**
+     * Create new instance of config center repository.
+     *
+     * @return new instance of config center repository
+     */
+    public static ConfigCenterRepository newInstance() {
+        // TODO load from SPI and make LocalConfigCenterRepository as default one. We can add more ConfigCenterRepository type such as: Database, Ceph etc...
+        return new LocalConfigCenterRepository();
     }
 }
