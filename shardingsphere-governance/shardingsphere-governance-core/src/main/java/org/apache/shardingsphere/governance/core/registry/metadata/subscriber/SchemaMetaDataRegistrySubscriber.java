@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry.metadata.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.registry.metadata.event.DatabaseDroppedSQLNotificationEvent;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.apache.shardingsphere.infra.config.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -44,15 +43,5 @@ public final class SchemaMetaDataRegistrySubscriber {
     @Subscribe
     public void update(final SchemaAlteredEvent event) {
         persistService.persist(event.getSchemaName(), event.getSchema());
-    }
-    
-    /**
-     * Update when database dropped.
-     *
-     * @param event database dropped SQL notification event
-     */
-    @Subscribe
-    public void update(final DatabaseDroppedSQLNotificationEvent event) {
-        persistService.delete(event.getDatabaseName());
     }
 }
