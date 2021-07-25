@@ -82,7 +82,7 @@ public final class DataSourcePersistServiceTest {
     public void assertAppend() {
         when(repository.get("/metadata/foo_db/dataSources")).thenReturn("");
         new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourceConfiguration.getDataSourceConfiguration(createDataSource("foo_ds"))));
-        // TODO load from YAML
+        // TODO load from YAML file
         String expected = "foo_ds:\n" + "  driverClassName: com.mysql.jdbc.Driver\n" + "  password: root\n"
                 + "  dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource\n" + "  connectionInitSqls:\n" + "  - set names utf8mb4;\n"
                 + "  - set names utf8;\n" + "  url: jdbc:mysql://localhost:3306/foo_ds\n" + "  username: root\n";
@@ -91,7 +91,7 @@ public final class DataSourcePersistServiceTest {
     
     @Test
     public void assertDrop() {
-        // TODO load from YAML
+        // TODO load from YAML file
         String actual = "foo_ds:\n" + "  driverClassName: com.mysql.jdbc.Driver\n" + "  password: root\n"
                 + "  dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource\n" + "  connectionInitSqls:\n" + "  - set names utf8mb4;\n"
                 + "  - set names utf8;\n" + "  url: jdbc:mysql://localhost:3306/foo_ds\n" + "  username: root\n";
