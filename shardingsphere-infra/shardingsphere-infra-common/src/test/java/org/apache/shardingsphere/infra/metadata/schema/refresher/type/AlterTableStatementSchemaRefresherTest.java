@@ -36,6 +36,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterTableStatement;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -50,9 +53,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class AlterTableStatementSchemaRefresherTest {
     
-    private final SchemaBuilderMaterials materials = mock(SchemaBuilderMaterials.class);
+    @Mock
+    private SchemaBuilderMaterials materials;
     
     @Test
     public void refreshForMySQL() throws SQLException {
@@ -86,31 +91,26 @@ public final class AlterTableStatementSchemaRefresherTest {
     
     @Test
     public void refreshWithTableRuleForMySQL() throws SQLException {
-        when(materials.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         refreshWithTableRule(new MySQLAlterTableStatement());
     }
     
     @Test
     public void refreshWithTableRuleForOracle() throws SQLException {
-        when(materials.getDatabaseType()).thenReturn(new OracleDatabaseType());
         refreshWithTableRule(new OracleAlterTableStatement());
     }
     
     @Test
     public void refreshWithTableRuleForPostgreSQL() throws SQLException {
-        when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         refreshWithTableRule(new PostgreSQLAlterTableStatement());
     }
     
     @Test
     public void refreshWithTableRuleForSQL92() throws SQLException {
-        when(materials.getDatabaseType()).thenReturn(new SQL92DatabaseType());
         refreshWithTableRule(new SQL92AlterTableStatement());
     }
     
     @Test
     public void refreshWithTableRuleForSQLServer() throws SQLException {
-        when(materials.getDatabaseType()).thenReturn(new SQLServerDatabaseType());
         refreshWithTableRule(new SQLServerAlterTableStatement());
     }
     
@@ -122,7 +122,6 @@ public final class AlterTableStatementSchemaRefresherTest {
     
     @Test
     public void refreshWithRenameTableWithTableRuleForPostgreSQL() throws SQLException {
-        when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         refreshWithRenameTableWithTableRule(new PostgreSQLAlterTableStatement());
     }
     
@@ -142,9 +141,6 @@ public final class AlterTableStatementSchemaRefresherTest {
         TableContainedRule rule = mock(TableContainedRule.class);
         when(rule.getTables()).thenReturn(Collections.singletonList("t_order"));
         when(materials.getRules()).thenReturn(Collections.singletonList(rule));
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
-        when(materials.getDataSourceMap()).thenReturn(Collections.singletonMap("ds", dataSource));
         SchemaRefresher<AlterTableStatement> schemaRefresher = new AlterTableStatementSchemaRefresher();
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         schemaRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
@@ -170,9 +166,6 @@ public final class AlterTableStatementSchemaRefresherTest {
         TableContainedRule rule = mock(TableContainedRule.class);
         when(rule.getTables()).thenReturn(Arrays.asList("t_order", "t_order_new"));
         when(materials.getRules()).thenReturn(Collections.singletonList(rule));
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
-        when(materials.getDataSourceMap()).thenReturn(Collections.singletonMap("ds", dataSource));
         SchemaRefresher<AlterTableStatement> schemaRefresher = new AlterTableStatementSchemaRefresher();
         ShardingSphereSchema schema = ShardingSphereSchemaBuildUtil.buildSchema();
         schemaRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
