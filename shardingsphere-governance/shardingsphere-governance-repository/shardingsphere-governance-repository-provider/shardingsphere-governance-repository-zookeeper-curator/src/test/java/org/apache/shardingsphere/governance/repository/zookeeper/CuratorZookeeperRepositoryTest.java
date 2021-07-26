@@ -139,7 +139,7 @@ public final class CuratorZookeeperRepositoryTest {
         mockField();
         mockBuilder();
         RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
-        REPOSITORY.init("governance", config);
+        REPOSITORY.init(config);
     }
     
     @SneakyThrows
@@ -298,7 +298,7 @@ public final class CuratorZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
         RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.setProps(props);
-        REPOSITORY.init("governance", config);
+        REPOSITORY.init(config);
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
@@ -311,7 +311,7 @@ public final class CuratorZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
         RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.setProps(props);
-        REPOSITORY.init("governance", config);
+        REPOSITORY.init(config);
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
     }
     
@@ -321,7 +321,7 @@ public final class CuratorZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
         RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.setProps(props);
-        REPOSITORY.init("governance", config);
+        REPOSITORY.init(config);
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
     }
     
@@ -331,7 +331,7 @@ public final class CuratorZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
         RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.setProps(props);
-        REPOSITORY.init("governance", config);
+        REPOSITORY.init(config);
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
         verify(builder).aclProvider(any(ACLProvider.class));
     }

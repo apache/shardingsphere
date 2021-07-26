@@ -149,7 +149,7 @@ public final class ScalingAPIFactory {
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             RegistryCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
             RegistryCenterRepository registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-            registryCenterRepository.init(governanceConfig.getRegistryCenterConfiguration().getNamespace(), registryCenterConfig);
+            registryCenterRepository.init(registryCenterConfig);
             return new GovernanceRepositoryAPIImpl(registryCenterRepository);
         }
     }
