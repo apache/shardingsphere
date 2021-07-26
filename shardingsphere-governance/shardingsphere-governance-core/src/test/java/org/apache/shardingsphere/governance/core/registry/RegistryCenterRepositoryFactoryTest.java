@@ -32,7 +32,7 @@ public final class RegistryCenterRepositoryFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        GovernanceConfiguration config = new GovernanceConfiguration("test_name", new RegistryCenterConfiguration("TEST", "127.0.0.1", new Properties()), false);
+        GovernanceConfiguration config = new GovernanceConfiguration(new RegistryCenterConfiguration("TEST", "test_name", "127.0.0.1", new Properties()), false);
         RegistryCenterRepository registryCenterRepository = RegistryCenterRepositoryFactory.newInstance(config);
         assertNotNull(registryCenterRepository);
         assertThat(registryCenterRepository.getType(), is("TEST"));

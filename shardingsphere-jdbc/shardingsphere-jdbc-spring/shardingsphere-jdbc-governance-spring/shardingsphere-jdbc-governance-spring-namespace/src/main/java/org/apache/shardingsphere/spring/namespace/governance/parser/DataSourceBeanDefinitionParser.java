@@ -86,7 +86,6 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     
     private BeanDefinition getGovernanceConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(GovernanceConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(DataSourceBeanDefinitionTag.ID_ATTRIBUTE));
         factory.addConstructorArgReference(element.getAttribute(DataSourceBeanDefinitionTag.REG_CENTER_REF_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(DataSourceBeanDefinitionTag.OVERWRITE_ATTRIBUTE));
         return factory.getBeanDefinition();
