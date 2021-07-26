@@ -55,8 +55,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -169,9 +167,7 @@ public final class SelectStatementContextTest {
     private void assertSetIndexForItemsByColumnOrderByWithAlias(final SelectStatement selectStatement) {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createProjectionsContext(), null);
-        Map<String, Integer> columnLabelIndexMap = new HashMap<>();
-        columnLabelIndexMap.put("n", 2);
-        selectStatementContext.setIndexes(columnLabelIndexMap);
+        selectStatementContext.setIndexes(Collections.singletonMap("n", 2));
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(2));
     }
     
@@ -203,9 +199,7 @@ public final class SelectStatementContextTest {
     private void assertSetIndexForItemsByColumnOrderByWithoutAlias(final SelectStatement selectStatement) {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createProjectionsContext(), null);
-        Map<String, Integer> columnLabelIndexMap = new HashMap<>();
-        columnLabelIndexMap.put("id", 3);
-        selectStatementContext.setIndexes(columnLabelIndexMap);
+        selectStatementContext.setIndexes(Collections.singletonMap("id", 3));
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
     }
     
@@ -243,10 +237,7 @@ public final class SelectStatementContextTest {
     }
     
     private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
-        return new SelectStatementContext(metaDataMap, Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
+        return new SelectStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, mock(ShardingSphereMetaData.class)), Collections.emptyList(), selectStatement, DefaultSchema.LOGIC_NAME);
     }
     
     @Test
@@ -344,9 +335,7 @@ public final class SelectStatementContextTest {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singletonList(aggregationProjection));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 selectStatement, new GroupByContext(Collections.emptyList()), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), projectionsContext, null);
-        Map<String, Integer> columnLabelIndexMap = new HashMap<>();
-        columnLabelIndexMap.put("id", 3);
-        selectStatementContext.setIndexes(columnLabelIndexMap);
+        selectStatementContext.setIndexes(Collections.singletonMap("id", 3));
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
     }
     

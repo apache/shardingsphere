@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.common.sqlbuilder;
 
-import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -41,6 +41,6 @@ public final class ScalingSQLBuilderFactory {
     @SneakyThrows(ReflectiveOperationException.class)
     public static ScalingSQLBuilder newInstance(final String databaseType) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
-        return scalingEntry.getSQLBuilderClass().getConstructor(Map.class).newInstance(Maps.newHashMap());
+        return scalingEntry.getSQLBuilderClass().getConstructor(Map.class).newInstance(new HashMap<>());
     }
 }

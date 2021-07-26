@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
@@ -36,6 +35,7 @@ import org.mockito.internal.util.reflection.FieldReader;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -71,8 +71,7 @@ public final class JDBCExecutorCallbackAdviceTest {
     @Test
     public void assertMethod() {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        Map<String, Object> extraMap = Maps.newHashMap();
-        extraMap.put("_root_span_", null);
+        Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
         when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Lists.newArrayList())));
         ADVICE.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
@@ -92,8 +91,7 @@ public final class JDBCExecutorCallbackAdviceTest {
     @Test
     public void assertExceptionHandle() {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        Map<String, Object> extraMap = Maps.newHashMap();
-        extraMap.put("_root_span_", null);
+        Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
         when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Lists.newArrayList())));
         ADVICE.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());

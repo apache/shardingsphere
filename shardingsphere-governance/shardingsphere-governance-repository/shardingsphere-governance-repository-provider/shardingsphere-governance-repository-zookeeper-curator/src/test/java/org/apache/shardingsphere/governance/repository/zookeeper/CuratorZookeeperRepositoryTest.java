@@ -61,7 +61,7 @@ import org.mockito.stubbing.VoidAnswer1;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -171,9 +171,7 @@ public final class CuratorZookeeperRepositoryTest {
     private void mockField() {
         Field locksFiled = CuratorZookeeperRepository.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        Map<String, InterProcessLock> locks = new HashMap<>();
-        locks.put("/locks/glock", interProcessLock);
-        locksFiled.set(REPOSITORY, locks);
+        locksFiled.set(REPOSITORY, Collections.singletonMap("/locks/glock", interProcessLock));
     }
     
     private void mockBuilder() {

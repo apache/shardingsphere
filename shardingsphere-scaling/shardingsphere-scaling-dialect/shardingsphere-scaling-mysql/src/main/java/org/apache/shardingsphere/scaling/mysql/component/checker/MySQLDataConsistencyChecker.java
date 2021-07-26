@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
@@ -30,6 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -85,7 +85,7 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
     }
     
     private long sumCrc32(final DataSource dataSource, final String tableName, final String column) {
-        String sql = getSqlBuilder().buildSumCrc32SQL(tableName, column);
+        String sql = getSQLBuilder().buildSumCrc32SQL(tableName, column);
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -97,7 +97,7 @@ public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyCh
     }
     
     @Override
-    protected MySQLScalingSQLBuilder getSqlBuilder() {
-        return new MySQLScalingSQLBuilder(Maps.newHashMap());
+    protected MySQLScalingSQLBuilder getSQLBuilder() {
+        return new MySQLScalingSQLBuilder(new HashMap<>());
     }
 }

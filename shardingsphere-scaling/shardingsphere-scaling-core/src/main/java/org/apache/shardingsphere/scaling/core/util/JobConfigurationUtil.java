@@ -120,7 +120,7 @@ public final class JobConfigurationUtil {
     private static Map<String, String> getShouldScalingActualDataNodes(final Set<String> modifiedDataSources,
                                                                        final Map<String, ShardingTableRuleConfiguration> oldShardingRuleConfigMap,
                                                                        final Map<String, ShardingTableRuleConfiguration> newShardingRuleConfigMap) {
-        Map<String, String> result = Maps.newHashMap();
+        Map<String, String> result = new HashMap<>();
         newShardingRuleConfigMap.keySet().forEach(each -> {
             if (!oldShardingRuleConfigMap.containsKey(each)) {
                 return;
