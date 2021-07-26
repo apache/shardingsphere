@@ -360,7 +360,6 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
                 configCenter.getDataSourceService().load(schemaName)));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
                 Collections.singletonMap(schemaName, configCenter.getSchemaRuleService().load(schemaName)),
-                // TODO load global schema from reg center
                 configCenter.getGlobalRuleService().load(), 
                 metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build(configCenter).getMetaDataMap().get(schemaName);
@@ -372,9 +371,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        // TODO load global schema from reg center
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.singletonMap(oldMetaData.getName(), oldMetaData.getResource().getDataSources()),
-                Collections.singletonMap(oldMetaData.getName(), ruleConfigs), new LinkedList<>(), metaDataContexts.getProps().getProps());
+                Collections.singletonMap(oldMetaData.getName(), ruleConfigs), configCenter.getGlobalRuleService().load(), metaDataContexts.getProps().getProps());
         return builder.build(configCenter).getMetaDataMap().values().iterator().next();
     }
     
@@ -385,8 +383,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         oldMetaData.getResource().close(modifiedDataSources.keySet());
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldMetaData.getName(), 
                 getNewDataSources(oldMetaData.getResource().getDataSources(), getAddedDataSources(oldMetaData, newDataSourceConfigs), modifiedDataSources, deletedDataSources));
-        // TODO load global schema from reg center
-        return new MetaDataContextsBuilder(dataSourcesMap, Collections.singletonMap(oldMetaData.getName(), oldMetaData.getRuleMetaData().getConfigurations()), new LinkedList<>(),
+        return new MetaDataContextsBuilder(dataSourcesMap, Collections.singletonMap(oldMetaData.getName(), 
+                oldMetaData.getRuleMetaData().getConfigurations()), configCenter.getGlobalRuleService().load(),
                 metaDataContexts.getProps().getProps()).build(configCenter).getMetaDataMap().get(oldMetaData.getName());
     }
     
