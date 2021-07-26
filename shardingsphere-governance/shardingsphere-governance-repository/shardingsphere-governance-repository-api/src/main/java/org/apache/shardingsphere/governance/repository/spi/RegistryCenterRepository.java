@@ -31,10 +31,9 @@ public interface RegistryCenterRepository extends DistMetaDataPersistRepository 
     /**
      * Initialize registry center.
      *
-     * @param name registry center name
      * @param config registry center configuration
      */
-    void init(String name, RegistryCenterConfiguration config);
+    void init(RegistryCenterConfiguration config);
     
     /**
      * Persist ephemeral data.

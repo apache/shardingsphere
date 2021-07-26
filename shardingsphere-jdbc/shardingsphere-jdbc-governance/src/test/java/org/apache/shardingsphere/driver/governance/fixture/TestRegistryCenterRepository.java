@@ -32,7 +32,7 @@ public final class TestRegistryCenterRepository implements RegistryCenterReposit
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
-    public void init(final String name, final RegistryCenterConfiguration config) {
+    public void init(final RegistryCenterConfiguration config) {
     }
     
     @Override
