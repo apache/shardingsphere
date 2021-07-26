@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -208,6 +208,6 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     protected void prepareSpecifiedInitializer() {
-        setInitializer(new StandardBootstrapInitializer(mock(ConfigCenterRepository.class)));
+        setInitializer(new StandardBootstrapInitializer(mock(DistMetaDataPersistRepository.class)));
     }
 }

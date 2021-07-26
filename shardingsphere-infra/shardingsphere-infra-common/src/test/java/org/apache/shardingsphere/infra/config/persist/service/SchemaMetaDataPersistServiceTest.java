@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.config.persist.service;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 public final class SchemaMetaDataPersistServiceTest {
     
     @Mock
-    private ConfigCenterRepository repository;
+    private DistMetaDataPersistRepository repository;
     
     @Test
     public void assertPersist() {

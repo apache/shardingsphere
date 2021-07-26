@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.context.metadata;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.context.fixture.FixtureRuleConfiguration;
@@ -48,7 +48,7 @@ public final class MetaDataContextsBuilderTest {
     
     @Test
     public void assertBuildWithoutConfiguration() throws SQLException {
-        MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyMap(), null).build(mock(ConfigCenter.class));
+        MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyMap(), null).build(mock(DistMetaDataPersistService.class));
         assertTrue(actual.getAllSchemaNames().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
     }
@@ -58,7 +58,7 @@ public final class MetaDataContextsBuilderTest {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.singletonMap("logic_db", Collections.emptyMap()), 
-                Collections.singletonMap("logic_db", Lists.newArrayList(new FixtureRuleConfiguration())), props).build(mock(ConfigCenter.class));
+                Collections.singletonMap("logic_db", Lists.newArrayList(new FixtureRuleConfiguration())), props).build(mock(DistMetaDataPersistService.class));
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));
@@ -70,7 +70,7 @@ public final class MetaDataContextsBuilderTest {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "1");
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.singletonMap("logic_db", Collections.singletonMap("ds", new MockedDataSource())),
-                Collections.singletonMap("logic_db", Lists.newArrayList(new FixtureRuleConfiguration())), props).build(mock(ConfigCenter.class));
+                Collections.singletonMap("logic_db", Lists.newArrayList(new FixtureRuleConfiguration())), props).build(mock(DistMetaDataPersistService.class));
         assertRules(actual);
         assertDataSources(actual);
         assertThat(actual.getProps().getProps().size(), is(1));
@@ -86,7 +86,7 @@ public final class MetaDataContextsBuilderTest {
 
         MetaDataContexts actual = new MetaDataContextsBuilder(
                 Collections.singletonMap("logic_db", Collections.emptyMap()), Collections.singletonMap("logic_db",
-                Lists.newArrayList(new FixtureRuleConfiguration())), Collections.singleton(authorityRuleConfig), props).build(mock(ConfigCenter.class));
+                Lists.newArrayList(new FixtureRuleConfiguration())), Collections.singleton(authorityRuleConfig), props).build(mock(DistMetaDataPersistService.class));
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.context;
 
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -39,7 +39,7 @@ public final class BackendExecutorContextTest {
     
     @Before
     public void setUp() {
-        MetaDataContexts metaDataContexts = new StandardMetaDataContexts(mock(ConfigCenter.class), Collections.emptyMap(), mock(ShardingSphereRuleMetaData.class), 
+        MetaDataContexts metaDataContexts = new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), Collections.emptyMap(), mock(ShardingSphereRuleMetaData.class), 
                 mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
         ProxyContext.getInstance().init(metaDataContexts, new StandardTransactionContexts());
     }

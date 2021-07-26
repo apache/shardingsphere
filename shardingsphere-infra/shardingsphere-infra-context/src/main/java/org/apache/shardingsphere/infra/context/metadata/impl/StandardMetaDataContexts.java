@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.context.metadata.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -44,7 +44,7 @@ import java.util.Properties;
 public final class StandardMetaDataContexts implements MetaDataContexts {
     
     @Getter
-    private final ConfigCenter configCenter;
+    private final DistMetaDataPersistService distMetaDataPersistService;
     
     private final Map<String, ShardingSphereMetaData> metaDataMap;
     
@@ -58,14 +58,14 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final StateContext stateContext;
     
-    public StandardMetaDataContexts(final ConfigCenter configCenter) {
-        this(configCenter, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
+    public StandardMetaDataContexts(final DistMetaDataPersistService persistService) {
+        this(persistService, new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()),
                 null, new ConfigurationProperties(new Properties()), new OptimizeContextFactory(new HashMap<>()));
     }
     
-    public StandardMetaDataContexts(final ConfigCenter configCenter, final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
+    public StandardMetaDataContexts(final DistMetaDataPersistService persistService, final Map<String, ShardingSphereMetaData> metaDataMap, final ShardingSphereRuleMetaData globalRuleMetaData,
                                     final ExecutorEngine executorEngine, final ConfigurationProperties props, final OptimizeContextFactory optimizeContextFactory) {
-        this.configCenter = configCenter;
+        this.distMetaDataPersistService = persistService;
         this.metaDataMap = new LinkedHashMap<>(metaDataMap);
         this.globalRuleMetaData = globalRuleMetaData;
         this.executorEngine = executorEngine;

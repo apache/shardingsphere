@@ -43,8 +43,8 @@ weight = 4
          <prop key="operation-timeout-milliseconds">3000</prop>
      </util:properties>
      <governance:reg-center id="regCenter" type="Zookeeper" server-lists="localhost:2181" />
-     <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" reg-center-ref="regCenter" config-center-ref="configCenter" rule-refs="shardingRule" overwrite="true" />
-     <governance:data-source id="encryptDataSource" data-source-names="demo_ds" reg-center-ref="regCenter" config-center-ref="configCenter" rule-refs="encryptRule" overwrite="true" />
+     <governance:data-source id="shardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" reg-center-ref="regCenter" config-center-ref="distMetaDataPersistService" rule-refs="shardingRule" overwrite="true" />
+     <governance:data-source id="encryptDataSource" data-source-names="demo_ds" reg-center-ref="regCenter" config-center-ref="distMetaDataPersistService" rule-refs="encryptRule" overwrite="true" />
 </beans>
 ```
 

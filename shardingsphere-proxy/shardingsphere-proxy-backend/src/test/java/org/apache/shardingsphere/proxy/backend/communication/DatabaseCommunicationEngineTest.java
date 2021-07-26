@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -91,7 +91,7 @@ public final class DatabaseCommunicationEngineTest {
     @Before
     public void setUp() {
         when(backendConnection.getSchemaName()).thenReturn("schema");
-        MetaDataContexts metaDataContexts = new StandardMetaDataContexts(mock(ConfigCenter.class), mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
+        MetaDataContexts metaDataContexts = new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), mockMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
                 new ConfigurationProperties(new Properties()), mockOptimizeContextFactory());
         ProxyContext.getInstance().init(metaDataContexts, new StandardTransactionContexts());
     }

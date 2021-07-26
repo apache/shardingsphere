@@ -108,7 +108,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     }
     
     private void persistRuleConfigurationChange(final String schemaName) {
-        ProxyContext.getInstance().getMetaDataContexts().getConfigCenter().getSchemaRuleService().persist(
+        ProxyContext.getInstance().getMetaDataContexts().getDistMetaDataPersistService().getSchemaRuleService().persist(
                 schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations());
     }
 }
