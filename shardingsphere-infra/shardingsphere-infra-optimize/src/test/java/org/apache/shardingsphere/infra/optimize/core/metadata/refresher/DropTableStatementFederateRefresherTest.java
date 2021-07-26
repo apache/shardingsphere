@@ -43,32 +43,32 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
 public final class DropTableStatementFederateRefresherTest {
-
+    
     @Test
     public void refreshForMySQL() throws SQLException {
         refresh(new MySQLDropTableStatement());
     }
-
+    
     @Test
     public void refreshForOracle() throws SQLException {
         refresh(new OracleDropTableStatement());
     }
-
+    
     @Test
     public void refreshForPostgreSQL() throws SQLException {
         refresh(new PostgreSQLDropTableStatement());
     }
-
+    
     @Test
     public void refreshForSQL92() throws SQLException {
         refresh(new SQL92DropTableStatement());
     }
-
+    
     @Test
     public void refreshForSQLServer() throws SQLException {
         refresh(new SQLServerDropTableStatement());
     }
-
+    
     private void refresh(final DropTableStatement dropTableStatement) throws SQLException {
         FederateSchemaMetadata schema = buildSchema();
         FederateRefresher<DropTableStatement> schemaRefresher = new DropTableStatementFederateRefresher();
@@ -76,39 +76,39 @@ public final class DropTableStatementFederateRefresherTest {
         schemaRefresher.refresh(schema, Collections.emptyList(), dropTableStatement, mock(SchemaBuilderMaterials.class));
         assertFalse(schema.getTables().containsKey("t_order"));
     }
-
+    
     @Test
     public void refreshWithUnConfiguredForMySQL() throws SQLException {
         refreshWithUnConfigured(new MySQLDropTableStatement());
     }
-
+    
     @Test
     public void refreshWithUnConfiguredForOracle() throws SQLException {
         refreshWithUnConfigured(new OracleDropTableStatement());
     }
-
+    
     @Test
     public void refreshWithUnConfiguredForPostgreSQL() throws SQLException {
         refreshWithUnConfigured(new PostgreSQLDropTableStatement());
     }
-
+    
     @Test
     public void refreshWithUnConfiguredForSQL92() throws SQLException {
         refreshWithUnConfigured(new SQL92DropTableStatement());
     }
-
+    
     @Test
     public void refreshWithUnConfiguredForSQLServer() throws SQLException {
         refreshWithUnConfigured(new SQLServerDropTableStatement());
     }
-
+    
     private void refreshWithUnConfigured(final DropTableStatement dropTableStatement) throws SQLException {
         FederateSchemaMetadata schema = buildSchema();
         FederateRefresher<DropTableStatement> schemaRefresher = new DropTableStatementFederateRefresher();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_item"))));
         schemaRefresher.refresh(schema, Collections.singletonList("t_order_item"), dropTableStatement, mock(SchemaBuilderMaterials.class));
     }
-
+    
     private FederateSchemaMetadata buildSchema() {
         Map<String, TableMetaData> metaData = ImmutableMap.of("t_order", new TableMetaData("t_order", Collections.singletonList(new ColumnMetaData("order_id", 1, false, false, false)),
                 Collections.singletonList(new IndexMetaData("index"))));
