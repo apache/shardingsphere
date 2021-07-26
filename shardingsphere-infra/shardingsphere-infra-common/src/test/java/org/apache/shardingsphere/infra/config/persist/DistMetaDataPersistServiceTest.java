@@ -52,7 +52,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ConfigCenterTest {
+public final class DistMetaDataPersistServiceTest {
     
     private static final String SCHEMA_RULE_YAML = "yaml/configcenter/data-schema-rule.yaml";
     
@@ -68,11 +68,11 @@ public final class ConfigCenterTest {
     @Mock
     private PropertiesPersistService propsService;
     
-    private ConfigCenter configCenter;
+    private DistMetaDataPersistService distMetaDataPersistService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        configCenter = new ConfigCenter(mock(ConfigCenterRepository.class));
+        distMetaDataPersistService = new DistMetaDataPersistService(mock(ConfigCenterRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("schemaRuleService", schemaRuleService);
         setField("globalRuleService", globalRuleService);
@@ -80,9 +80,9 @@ public final class ConfigCenterTest {
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        Field field = configCenter.getClass().getDeclaredField(name);
+        Field field = distMetaDataPersistService.getClass().getDeclaredField(name);
         field.setAccessible(true);
-        field.set(configCenter, value);
+        field.set(distMetaDataPersistService, value);
     }
     
     @Test
@@ -91,7 +91,7 @@ public final class ConfigCenterTest {
         Collection<RuleConfiguration> schemaRuleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
-        configCenter.persistConfigurations(
+        distMetaDataPersistService.persistConfigurations(
                 Collections.singletonMap("foo_db", dataSourceConfigs), Collections.singletonMap("foo_db", schemaRuleConfigs), globalRuleConfigs, props, false);
         verify(dataSourceService).persist("foo_db", dataSourceConfigs, false);
         verify(schemaRuleService).persist("foo_db", schemaRuleConfigs, false);

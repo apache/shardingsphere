@@ -33,10 +33,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Config center.
+ * Dist meta data persist service.
  */
 @Getter
-public final class ConfigCenter {
+public final class DistMetaDataPersistService {
     
     private final DataSourcePersistService dataSourceService;
     
@@ -48,7 +48,7 @@ public final class ConfigCenter {
     
     private final PropertiesPersistService propsService;
     
-    public ConfigCenter(final ConfigCenterRepository repository) {
+    public DistMetaDataPersistService(final ConfigCenterRepository repository) {
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);
         schemaRuleService = new SchemaRulePersistService(repository);
