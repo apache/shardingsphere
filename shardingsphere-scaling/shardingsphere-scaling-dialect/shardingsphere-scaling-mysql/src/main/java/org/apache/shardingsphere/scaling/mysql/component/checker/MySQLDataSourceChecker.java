@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.mysql.component.checker;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.job.check.source.AbstractDataSourceChecker;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
@@ -42,7 +41,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}};
     
-    private static final String SHOW_VARIABLES_SQL = "SHOW VARIABLES LIKE '%s'";
+    private static final String SHOW_VARIABLES_SQL = "SHOW VARIABLES LIKE ?";
     
     private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1);
     
@@ -89,26 +88,28 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     private void checkVariable(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             for (Entry<String, String> entry : REQUIRED_VARIABLES.entrySet()) {
-                checkVariable(connection, entry);
+                checkVariable(connection, entry.getKey(), entry.getValue());
             }
         } catch (final SQLException ex) {
             throw new PrepareFailedException("Source data source check variables failed.", ex);
         }
     }
     
-    private void checkVariable(final Connection connection, final Entry<String, String> entry) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format(SHOW_VARIABLES_SQL, entry.getKey()));
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-            resultSet.next();
-            String value = resultSet.getString(2);
-            if (!entry.getValue().equalsIgnoreCase(value)) {
-                throw new PrepareFailedException(String.format("Source data source required %s = %s, now is %s", entry.getKey(), entry.getValue(), value));
+    private void checkVariable(final Connection connection, final String key, final String toBeCheckedValue) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SHOW_VARIABLES_SQL)) {
+            preparedStatement.setString(1, "%" + key);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                String actualValue = resultSet.getString(2);
+                if (!toBeCheckedValue.equalsIgnoreCase(actualValue)) {
+                    throw new PrepareFailedException(String.format("Source data source required `%s = %s`, now is `%s`", key, toBeCheckedValue, actualValue));
+                }
             }
         }
     }
     
     @Override
-    protected MySQLScalingSQLBuilder getSqlBuilder() {
-        return new MySQLScalingSQLBuilder(Maps.newHashMap());
+    protected MySQLScalingSQLBuilder getSQLBuilder() {
+        return new MySQLScalingSQLBuilder(new HashMap<>());
     }
 }
