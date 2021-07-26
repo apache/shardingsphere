@@ -58,7 +58,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -112,7 +111,7 @@ public final class GovernanceMetaDataContextsTest {
 
     private OptimizeContextFactory mockOptimizeContextFactory() {
         OptimizeContextFactory result = mock(OptimizeContextFactory.class);
-        when(result.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(new HashMap<>()));
+        when(result.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(Collections.emptyMap()));
         return result;
     }
 

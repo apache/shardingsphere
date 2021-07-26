@@ -45,7 +45,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -78,11 +77,11 @@ public final class MySQLComStmtExecuteExecutorTest {
         when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
-
+    
     private OptimizeContextFactory mockOptimizeContextFactory() {
-        OptimizeContextFactory optimizeContextFactory = mock(OptimizeContextFactory.class, RETURNS_DEEP_STUBS);
-        when(optimizeContextFactory.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(new HashMap<>()));
-        return optimizeContextFactory;
+        OptimizeContextFactory result = mock(OptimizeContextFactory.class);
+        when(result.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(Collections.emptyMap()));
+        return result;
     }
     
     @Test

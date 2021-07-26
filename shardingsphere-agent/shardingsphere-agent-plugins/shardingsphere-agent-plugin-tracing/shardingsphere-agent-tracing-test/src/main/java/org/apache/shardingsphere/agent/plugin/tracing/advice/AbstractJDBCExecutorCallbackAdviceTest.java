@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
@@ -35,6 +34,7 @@ import org.mockito.internal.util.reflection.FieldReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -54,11 +54,11 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
     @Getter
     private Map<String, Object> extraMap;
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @SneakyThrows
-    @SuppressWarnings("all")
     @Override
     public void prepare() {
-        extraMap = Maps.newHashMap();
+        extraMap = new HashMap<>();
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);

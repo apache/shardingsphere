@@ -40,7 +40,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
@@ -87,7 +86,7 @@ public final class AddResourceBackendHandlerTest {
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
         when(metaDataContexts.getMetaData("test")).thenReturn(metaData);
         when(metaData.getResource()).thenReturn(resource);
-        when(resource.getDataSources()).thenReturn(new HashMap<>());
+        when(resource.getDataSources()).thenReturn(Collections.emptyMap());
         when(dataSourceValidator.validate(any(DataSourceConfiguration.class))).thenReturn(true);
         ResponseHeader responseHeader = addResourceBackendHandler.execute("test", createAddResourceStatement());
         assertTrue(responseHeader instanceof UpdateResponseHeader);

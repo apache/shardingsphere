@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.authority.merge;
 
-import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeMerger;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeMerger;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.TablePrivileges;
@@ -28,12 +28,12 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,19 +44,17 @@ public final class PrivilegeMergeTest {
     public void assertPrivilegeMergeResult() {
         NativePrivileges privileges = buildPrivilege();
         ShardingSphereUser user = new ShardingSphereUser("test", "test", "%");
-        Map<ShardingSphereUser, Collection<NativePrivileges>> privilegeMap = new HashMap();
-        privilegeMap.put(user, Collections.singletonList(privileges));
-        DataNodeContainedRule rule = buildShardingSphereRule();
-        Map<ShardingSphereUser, NativePrivileges> result = StoragePrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(rule));
-        assertEquals(1, result.size());
+        Map<ShardingSphereUser, Collection<NativePrivileges>> privilegeMap = Collections.singletonMap(user, Collections.singletonList(privileges));
+        Map<ShardingSphereUser, NativePrivileges> result = StoragePrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(buildShardingSphereRule()));
+        assertThat(result.size(), is(1));
         assertTrue(result.containsKey(user));
         assertTrue(result.get(user).getAdministrativePrivileges().getPrivileges().isEmpty());
         assertTrue(result.get(user).getDatabasePrivileges().getGlobalPrivileges().isEmpty());
-        assertEquals(1, result.get(user).getDatabasePrivileges().getSpecificPrivileges().size());
+        assertThat(result.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(1));
         assertTrue(result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getGlobalPrivileges().isEmpty());
-        assertEquals(1, result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().size());
-        assertEquals("TableName assert error.", "test", result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getTableName());
-        assertEquals(1, result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().size());
+        assertThat(result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().size(), is(1));
+        assertThat("TableName assert error.", result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getTableName(), is("test"));
+        assertThat(result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().size(), is(1));
         assertTrue(result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().contains(PrivilegeType.SELECT));
     }
     

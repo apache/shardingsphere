@@ -30,12 +30,9 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.context.OptimizeContextFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
@@ -46,7 +43,6 @@ import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -92,7 +88,6 @@ public final class MySQLAuthenticationEngineTest {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         Channel channel = mock(Channel.class);
-        when(payload.readStringEOFByBytes()).thenReturn(authResponse);
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         when(channelHandlerContext.channel()).thenReturn(channel);
@@ -108,7 +103,6 @@ public final class MySQLAuthenticationEngineTest {
         Channel channel = mock(Channel.class);
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         when(payload.readStringEOFByBytes()).thenReturn(authResponse);
-        when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         when(channelHandlerContext.channel()).thenReturn(channel);
         setAuthenticationResult();
@@ -156,18 +150,8 @@ public final class MySQLAuthenticationEngineTest {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), 
-                Collections.singletonMap("sharding_db", mockShardingSphereMetaData()), mock(ShardingSphereRuleMetaData.class),
+                Collections.singletonMap("sharding_db", mock(ShardingSphereMetaData.class)), mock(ShardingSphereRuleMetaData.class),
                 mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
-    }
-    
-    private ShardingSphereMetaData mockShardingSphereMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(result.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
-        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
-        when(result.getSchema()).thenReturn(schema);
-        when(schema.getTables()).thenReturn(new HashMap<>());
-        return result;
     }
     
     private MySQLPacketPayload getPayload(final String username, final String database, final byte[] authResponse) {
