@@ -66,28 +66,28 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private Collection<SQLToken> mergeDropColumnStatement(final Collection<SQLToken> dropCollection, final String leftJoiner, final String rightJoiner) {
-        Collection<SQLToken> filteredDropCollection = new LinkedList<>();
+        Collection<SQLToken> result = new LinkedList<>();
         ArrayList<String> dropColumnList = new ArrayList<>();
         int lastStartIndex = -1;
         for (int i = 0; i < dropCollection.size(); i++) {
             SQLToken token = (SQLToken) ((List) dropCollection).get(i);
             if (token instanceof RemoveToken) {
                 if (i != 0) {
-                    filteredDropCollection.add(new RemoveToken(lastStartIndex, ((RemoveToken) token).getStopIndex()));
+                    result.add(new RemoveToken(lastStartIndex, ((RemoveToken) token).getStopIndex()));
                 } else {
-                    filteredDropCollection.add(token);
+                    result.add(token);
                 }
             } else {
                 EncryptAlterTableToken encryptAlterTableToken = (EncryptAlterTableToken) token;
                 dropColumnList.add(encryptAlterTableToken.getColumnName());
                 if (i == dropCollection.size() - 1) {
-                    filteredDropCollection.add(new EncryptAlterTableToken(token.getStartIndex(), encryptAlterTableToken.getStopIndex(),
+                    result.add(new EncryptAlterTableToken(token.getStartIndex(), encryptAlterTableToken.getStopIndex(),
                             leftJoiner + String.join(",", dropColumnList) + rightJoiner, "DROP COLUMN"));
                 }
             }
             lastStartIndex = ((Substitutable) token).getStartIndex();
         }
-        return filteredDropCollection;
+        return result;
     }
     
     private Collection<SQLToken> getAddColumnTokens(final String tableName, final Collection<AddColumnDefinitionSegment> columnDefinitionSegments) {
