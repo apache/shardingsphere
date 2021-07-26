@@ -111,9 +111,9 @@ public final class SchemaBuilderTest {
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
         String[] mockReturnTables = {singleTableNames[1], "data_node_routed_table1_0", "data_node_routed_table1_1", "data_node_routed_table2_0", "data_node_routed_table2_1"};
         when(resultSet.getString(TABLE_NAME)).thenReturn(singleTableNames[0], mockReturnTables);
-        Map<TableMetaData, TableMetaData> tableMetaDatas = SchemaBuilder.build(schemaBuilderMaterials);
-        assertThat(tableMetaDatas.keySet().size(), is(4));
-        assertActualOfShardingTablesAndSingleTables(tableMetaDatas.keySet());
+        Map<TableMetaData, TableMetaData> tableMetaData = SchemaBuilder.build(schemaBuilderMaterials);
+        assertThat(tableMetaData.keySet().size(), is(4));
+        assertActualOfShardingTablesAndSingleTables(tableMetaData.keySet());
     }
     
     private void assertActualOfShardingTablesAndSingleTables(final Collection<TableMetaData> actual) {
