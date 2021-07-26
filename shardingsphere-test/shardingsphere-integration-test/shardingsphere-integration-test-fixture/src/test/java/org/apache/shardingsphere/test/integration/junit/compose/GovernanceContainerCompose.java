@@ -64,7 +64,7 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2);
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("adapterForWriter", adapterContainer.getDataSource());
         result.put("adapterForReader", adapterContainerForReader.getDataSource());
         return result;
