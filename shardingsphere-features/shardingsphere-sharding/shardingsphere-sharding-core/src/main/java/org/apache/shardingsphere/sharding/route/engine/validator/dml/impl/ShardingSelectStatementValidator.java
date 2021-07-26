@@ -40,6 +40,22 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
         if (isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
             needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
+        if (isUnionStatement(sqlStatementContext.getSqlStatement())) {
+            Preconditions.checkState(isNoNeedRouteTable(shardingRule, sqlStatementContext), "Union statement for sharding data nodes or tables is not support yet.");
+        }
+    
+    }
+    
+    private boolean isUnionStatement(final SelectStatement sqlStatement) {
+        return !sqlStatement.getUnionSegments().isEmpty();
+    }
+    
+    private boolean isNoNeedRouteTable(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext) {
+        return isSingleDataNode(shardingRule) && (!shardingRule.tableRuleExists(sqlStatementContext.getTablesContext().getTableNames()));
+    }
+    
+    private boolean isSingleDataNode(final ShardingRule shardingRule) {
+        return null != shardingRule.getDataSourceNames() && shardingRule.getDataSourceNames().size() == 1;
     }
     
     @Override
