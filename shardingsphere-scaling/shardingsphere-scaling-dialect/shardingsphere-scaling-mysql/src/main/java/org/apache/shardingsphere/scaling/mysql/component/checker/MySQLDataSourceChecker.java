@@ -44,7 +44,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private static final String SHOW_VARIABLES_SQL = "SHOW VARIABLES LIKE '%s'";
     
-    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(2);
+    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3);
     
     static {
         REQUIRED_VARIABLES.put("LOG_BIN", "ON");
