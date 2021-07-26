@@ -38,7 +38,7 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     protected ProxyConfiguration getProxyConfiguration(final YamlProxyConfiguration yamlConfig) {
         persistConfigurations(yamlConfig, false);
         ProxyConfiguration result = loadProxyConfiguration();
-        // TODO remove isEmpty judge after LocalConfigCenterRepository finished
+        // TODO remove isEmpty judge after LocalDistMetaDataPersistRepository finished
         return (result.getSchemaDataSources().isEmpty()) ? new YamlProxyConfigurationSwapper().swap(yamlConfig) : result;
     }
     

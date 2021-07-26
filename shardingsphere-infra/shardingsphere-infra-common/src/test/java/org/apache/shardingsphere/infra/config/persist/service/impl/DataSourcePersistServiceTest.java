@@ -59,7 +59,7 @@ public final class DataSourcePersistServiceTest {
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readDataSourceYaml() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/configcenter/data-source.yaml").toURI()))
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/persist/data-source.yaml").toURI()))
                 .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     

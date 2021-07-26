@@ -57,7 +57,7 @@ public final class SchemaRulePersistServiceTest {
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML() {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/configcenter/data-schema-rule.yaml").toURI()))
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/persist/data-schema-rule.yaml").toURI()))
                 .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

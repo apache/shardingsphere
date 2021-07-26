@@ -54,7 +54,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class DistMetaDataPersistServiceTest {
     
-    private static final String SCHEMA_RULE_YAML = "yaml/configcenter/data-schema-rule.yaml";
+    private static final String SCHEMA_RULE_YAML = "yaml/persist/data-schema-rule.yaml";
     
     @Mock
     private DataSourcePersistService dataSourceService;
