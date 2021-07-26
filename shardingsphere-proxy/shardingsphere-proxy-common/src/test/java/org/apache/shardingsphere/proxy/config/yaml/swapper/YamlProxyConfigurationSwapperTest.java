@@ -124,8 +124,8 @@ public final class YamlProxyConfigurationSwapperTest {
         YamlProxyConfiguration result = mock(YamlProxyConfiguration.class);
         YamlProxyServerConfiguration yamlProxyServerConfig = getYamlProxyServerConfiguration(result);
         prepareAuthentication(yamlProxyServerConfig);
-        YamlGovernanceConfiguration yamlGovernanceConfig = prepareGovernance(yamlProxyServerConfig);
-        prepareRegistryCenter(yamlGovernanceConfig);
+        YamlGovernanceConfiguration yamlGovernanceConfig = createGovernance(yamlProxyServerConfig);
+        createRegistryCenter(yamlGovernanceConfig);
         prepareProps(yamlProxyServerConfig);
         YamlProxyRuleConfiguration yamlProxyRuleConfig = prepareRuleConfigurations(result);
         when(yamlProxyRuleConfig.getSchemaName()).thenReturn("ruleConfigSchema1");
@@ -135,15 +135,14 @@ public final class YamlProxyConfigurationSwapperTest {
         return result;
     }
     
-    private void prepareRegistryCenter(final YamlGovernanceConfiguration yamlGovernanceConfig) {
-        YamlRegistryCenterConfiguration registryCenterConfig = mock(YamlRegistryCenterConfiguration.class);
-        when(yamlGovernanceConfig.getRegistryCenter()).thenReturn(registryCenterConfig);
-        when(registryCenterConfig.getType()).thenReturn("typeOne");
-        when(registryCenterConfig.getServerLists()).thenReturn("serverLists1");
+    private void createRegistryCenter(final YamlGovernanceConfiguration yamlGovernanceConfig) {
+        YamlRegistryCenterConfiguration registryCenterConfig = new YamlRegistryCenterConfiguration();
+        registryCenterConfig.setType("typeOne");
+        registryCenterConfig.setServerLists("serverLists1");
         Properties props = new Properties();
         props.setProperty("key1", "value1");
-        when(registryCenterConfig.getProps()).thenReturn(props);
-        when(yamlGovernanceConfig.getRegistryCenter()).thenReturn(registryCenterConfig);
+        registryCenterConfig.setProps(props);
+        yamlGovernanceConfig.setRegistryCenter(registryCenterConfig);
     }
 
     private void prepareProps(final YamlProxyServerConfiguration yamlProxyServerConfig) {
@@ -196,10 +195,11 @@ public final class YamlProxyConfigurationSwapperTest {
         when(yamlProxyRuleConfig.getRules()).thenReturn(rules);
     }
     
-    private YamlGovernanceConfiguration prepareGovernance(final YamlProxyServerConfiguration yamlProxyServerConfig) {
-        YamlGovernanceConfiguration result = mock(YamlGovernanceConfiguration.class);
-        when(yamlProxyServerConfig.getGovernance()).thenReturn(result);
-        when(result.getName()).thenReturn("test1");
+    private YamlGovernanceConfiguration createGovernance(final YamlProxyServerConfiguration yamlProxyServerConfig) {
+        YamlRegistryCenterConfiguration registryCenterConfig = new YamlRegistryCenterConfiguration();
+        registryCenterConfig.setNamespace("test1");
+        YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
+        result.setRegistryCenter(registryCenterConfig);
         return result;
     }
     

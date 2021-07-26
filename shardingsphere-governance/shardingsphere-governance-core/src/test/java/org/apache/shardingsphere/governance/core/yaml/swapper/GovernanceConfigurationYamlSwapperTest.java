@@ -34,22 +34,22 @@ public final class GovernanceConfigurationYamlSwapperTest {
     public void assertSwapToYamlGovernanceConfiguration() {
         GovernanceConfiguration expected = createGovernanceConfiguration();
         YamlGovernanceConfiguration actual = new GovernanceConfigurationYamlSwapper().swapToYamlConfiguration(expected);
-        assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
         assertThat(actual.getRegistryCenter().getType(), is(expected.getRegistryCenterConfiguration().getType()));
+        assertThat(actual.getRegistryCenter().getNamespace(), is(expected.getRegistryCenterConfiguration().getNamespace()));
         assertThat(actual.getRegistryCenter().getServerLists(), is(expected.getRegistryCenterConfiguration().getServerLists()));
         assertThat(actual.getRegistryCenter().getProps(), is(expected.getRegistryCenterConfiguration().getProps()));
     }
     
     private GovernanceConfiguration createGovernanceConfiguration() {
-        return new GovernanceConfiguration("logic_schema", new RegistryCenterConfiguration("TEST", "127.0.0.1:2181", new Properties()), false);
+        return new GovernanceConfiguration(new RegistryCenterConfiguration("TEST", "logic_schema", "127.0.0.1:2181", new Properties()), false);
     }
     
     @Test
     public void assertSwapToGovernanceConfiguration() {
         YamlGovernanceConfiguration expected = createYamlGovernanceConfiguration();
         GovernanceConfiguration actual = new GovernanceConfigurationYamlSwapper().swapToObject(expected);
-        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getRegistryCenterConfiguration().getNamespace(), is(expected.getRegistryCenter().getNamespace()));
         assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
         assertThat(actual.getRegistryCenterConfiguration().getType(), is(expected.getRegistryCenter().getType()));
         assertThat(actual.getRegistryCenterConfiguration().getServerLists(), is(expected.getRegistryCenter().getServerLists()));
@@ -58,7 +58,6 @@ public final class GovernanceConfigurationYamlSwapperTest {
     
     private YamlGovernanceConfiguration createYamlGovernanceConfiguration() {
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
-        result.setName("logic_schema");
         result.setRegistryCenter(createYamlRegistryCenterConfiguration());
         return result;
     }
@@ -66,8 +65,9 @@ public final class GovernanceConfigurationYamlSwapperTest {
     private YamlRegistryCenterConfiguration createYamlRegistryCenterConfiguration() {
         YamlRegistryCenterConfiguration result = new YamlRegistryCenterConfiguration();
         result.setType("TEST");
-        result.setProps(new Properties());
+        result.setNamespace("logic_schema");
         result.setServerLists("127.0.0.1:2181");
+        result.setProps(new Properties());
         return result;
     }
 }

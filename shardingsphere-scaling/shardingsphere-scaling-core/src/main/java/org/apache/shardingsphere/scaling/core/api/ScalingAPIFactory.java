@@ -149,7 +149,7 @@ public final class ScalingAPIFactory {
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             RegistryCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
             RegistryCenterRepository registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-            registryCenterRepository.init(governanceConfig.getName(), registryCenterConfig);
+            registryCenterRepository.init(governanceConfig.getRegistryCenterConfiguration().getNamespace(), registryCenterConfig);
             return new GovernanceRepositoryAPIImpl(registryCenterRepository);
         }
     }
@@ -168,7 +168,7 @@ public final class ScalingAPIFactory {
         private ElasticJobAPIHolder() {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-            String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT;
+            String namespace = governanceConfig.getRegistryCenterConfiguration().getNamespace() + ScalingConstant.SCALING_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
             jobOperateAPI = JobAPIFactory.createJobOperateAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
@@ -211,7 +211,7 @@ public final class ScalingAPIFactory {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
-                    governanceConfig.getName() + ScalingConstant.SCALING_ROOT);
+                    governanceConfig.getRegistryCenterConfiguration().getNamespace() + ScalingConstant.SCALING_ROOT);
             Properties props = governanceConfig.getRegistryCenterConfiguration().getProps();
             result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
             result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));

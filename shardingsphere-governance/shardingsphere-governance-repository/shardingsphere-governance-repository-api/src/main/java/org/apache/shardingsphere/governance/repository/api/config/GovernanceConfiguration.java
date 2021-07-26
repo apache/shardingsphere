@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 @Getter
 public final class GovernanceConfiguration implements GlobalRuleConfiguration {
     
-    private final String name;
-    
     private final RegistryCenterConfiguration registryCenterConfiguration;
     
     private final boolean overwrite;

@@ -46,7 +46,7 @@ public final class RegistryCenterRepositoryFactory {
         RegistryCenterConfiguration registryCenterConfig = config.getRegistryCenterConfiguration();
         Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
         RegistryCenterRepository result = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-        result.init(config.getName(), registryCenterConfig);
+        result.init(registryCenterConfig.getNamespace(), registryCenterConfig);
         return result;
     }
 }

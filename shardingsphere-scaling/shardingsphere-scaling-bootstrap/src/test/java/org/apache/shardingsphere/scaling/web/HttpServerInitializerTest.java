@@ -62,7 +62,7 @@ public final class HttpServerInitializerTest {
     
     private ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setGovernanceConfig(new GovernanceConfiguration("test", new RegistryCenterConfiguration("Zookeeper", "localhost:2181", null), false));
+        result.setGovernanceConfig(new GovernanceConfiguration(new RegistryCenterConfiguration("Zookeeper", "test", "localhost:2181", null), false));
         return result;
     }
 }

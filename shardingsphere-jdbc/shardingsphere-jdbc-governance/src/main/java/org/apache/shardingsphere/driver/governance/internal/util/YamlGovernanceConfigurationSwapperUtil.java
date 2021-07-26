@@ -38,6 +38,6 @@ public final class YamlGovernanceConfigurationSwapperUtil {
      * @return governance configuration
      */
     public static GovernanceConfiguration marshal(final YamlGovernanceConfiguration governance) {
-        return new GovernanceConfiguration(governance.getName(), SWAPPER.swapToObject(governance.getRegistryCenter()), governance.isOverwrite());
+        return new GovernanceConfiguration(SWAPPER.swapToObject(governance.getRegistryCenter()), governance.isOverwrite());
     }
 }

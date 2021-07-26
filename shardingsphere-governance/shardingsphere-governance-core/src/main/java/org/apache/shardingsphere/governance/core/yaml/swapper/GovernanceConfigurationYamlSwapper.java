@@ -32,14 +32,13 @@ public final class GovernanceConfigurationYamlSwapper implements YamlConfigurati
     @Override
     public YamlGovernanceConfiguration swapToYamlConfiguration(final GovernanceConfiguration data) {
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
-        result.setName(data.getName());
         result.setRegistryCenter(registryCenterConfigurationYamlSwapper.swapToYamlConfiguration(data.getRegistryCenterConfiguration()));
         return result;
     }
     
     @Override
     public GovernanceConfiguration swapToObject(final YamlGovernanceConfiguration yamlConfig) {
-        RegistryCenterConfiguration registryCenterConfiguration = registryCenterConfigurationYamlSwapper.swapToObject(yamlConfig.getRegistryCenter());
-        return new GovernanceConfiguration(yamlConfig.getName(), registryCenterConfiguration, yamlConfig.isOverwrite());
+        RegistryCenterConfiguration registryCenterConfig = registryCenterConfigurationYamlSwapper.swapToObject(yamlConfig.getRegistryCenter());
+        return new GovernanceConfiguration(registryCenterConfig, yamlConfig.isOverwrite());
     }
 }

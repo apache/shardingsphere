@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 @Setter
 public final class YamlGovernanceConfiguration implements YamlConfiguration {
     
-    private String name;
-    
     private YamlRegistryCenterConfiguration registryCenter;
     
     private boolean overwrite;

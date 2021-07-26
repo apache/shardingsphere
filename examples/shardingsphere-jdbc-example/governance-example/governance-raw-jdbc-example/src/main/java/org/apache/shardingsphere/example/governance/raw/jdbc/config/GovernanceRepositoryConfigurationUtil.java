@@ -28,16 +28,20 @@ public final class GovernanceRepositoryConfigurationUtil {
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
     public static GovernanceConfiguration getZooKeeperConfiguration(final boolean overwrite, final ShardingType shardingType) {
-        RegistryCenterConfiguration registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, new Properties());
+        RegistryCenterConfiguration registryCenterConfig;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                return new GovernanceConfiguration("governance-sharding-data-source", registryCenterConfig, overwrite);
+                registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-sharding-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
+                return new GovernanceConfiguration(registryCenterConfig, overwrite);
             case READWRITE_SPLITTING:
-                return new GovernanceConfiguration("governance-readwrite-splitting-data-source", registryCenterConfig, overwrite);
+                registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-readwrite-splitting-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
+                return new GovernanceConfiguration(registryCenterConfig, overwrite);
             case ENCRYPT:
-                return new GovernanceConfiguration("governance-encrypt-data-source", registryCenterConfig, overwrite);
+                registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-encrypt-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
+                return new GovernanceConfiguration(registryCenterConfig, overwrite);
             case SHADOW:
-                return new GovernanceConfiguration("governance-shadow-data-source", registryCenterConfig, overwrite);
+                registryCenterConfig = new RegistryCenterConfiguration("ZooKeeper", "governance-shadow-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
+                return new GovernanceConfiguration(registryCenterConfig, overwrite);
             default:
                 throw new UnsupportedOperationException(shardingType.toString());
         }

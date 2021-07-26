@@ -30,6 +30,7 @@ public final class RegistryCenterConfigurationYamlSwapper implements YamlConfigu
     public YamlRegistryCenterConfiguration swapToYamlConfiguration(final RegistryCenterConfiguration config) {
         YamlRegistryCenterConfiguration result = new YamlRegistryCenterConfiguration();
         result.setType(config.getType());
+        result.setNamespace(config.getNamespace());
         result.setServerLists(config.getServerLists());
         result.setProps(config.getProps());
         return result;
@@ -37,6 +38,6 @@ public final class RegistryCenterConfigurationYamlSwapper implements YamlConfigu
     
     @Override
     public RegistryCenterConfiguration swapToObject(final YamlRegistryCenterConfiguration yamlConfig) {
-        return new RegistryCenterConfiguration(yamlConfig.getType(), yamlConfig.getServerLists(), yamlConfig.getProps());
+        return new RegistryCenterConfiguration(yamlConfig.getType(), yamlConfig.getNamespace(), yamlConfig.getServerLists(), yamlConfig.getProps());
     }
 }
