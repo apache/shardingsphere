@@ -15,19 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
+package org.apache.shardingsphere.infra.config.persist.repository;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Drop user statement.
+ * Local dist meta data persist repository.
  */
-@Getter
-public abstract class DropUserStatement extends AbstractSQLStatement implements DCLStatement {
+// TODO finish me
+public final class LocalDistMetaDataPersistRepository implements DistMetaDataPersistRepository {
     
-    private final Collection<String> users = new LinkedList<>();
+    @Override
+    public String get(final String key) {
+        return "";
+    }
+    
+    @Override
+    public List<String> getChildrenKeys(final String key) {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public void persist(final String key, final String value) {
+    }
+    
+    @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
+    public void close() {
+    }
+    
+    @Override
+    public String getType() {
+        return "Local";
+    }
 }

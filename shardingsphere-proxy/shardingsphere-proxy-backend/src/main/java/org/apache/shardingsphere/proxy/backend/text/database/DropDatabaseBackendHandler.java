@@ -43,7 +43,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             backendConnection.setCurrentSchema(null);
         }
-        ProxyContext.getInstance().getMetaDataContexts().getConfigCenter().getSchemaMetaDataService().delete(sqlStatement.getDatabaseName());
+        ProxyContext.getInstance().getMetaDataContexts().getDistMetaDataPersistService().getSchemaMetaDataService().delete(sqlStatement.getDatabaseName());
         return new UpdateResponseHeader(sqlStatement);
     }
     

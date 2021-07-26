@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.persist;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.config.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.infra.config.persist.service.impl.GlobalRulePersistService;
@@ -33,10 +33,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Config center.
+ * Dist meta data persist service.
  */
 @Getter
-public final class ConfigCenter {
+public final class DistMetaDataPersistService {
     
     private final DataSourcePersistService dataSourceService;
     
@@ -48,7 +48,7 @@ public final class ConfigCenter {
     
     private final PropertiesPersistService propsService;
     
-    public ConfigCenter(final ConfigCenterRepository repository) {
+    public DistMetaDataPersistService(final DistMetaDataPersistRepository repository) {
         dataSourceService = new DataSourcePersistService(repository);
         schemaMetaDataService = new SchemaMetaDataPersistService(repository);
         schemaRuleService = new SchemaRulePersistService(repository);

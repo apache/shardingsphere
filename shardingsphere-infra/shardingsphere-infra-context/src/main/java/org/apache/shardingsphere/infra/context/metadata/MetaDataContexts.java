@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
@@ -37,11 +37,11 @@ import java.util.Optional;
 public interface MetaDataContexts extends Closeable {
     
     /**
-     * Get config center.
+     * Get dist meta data persist service.
      * 
-     * @return config center
+     * @return dist meta data persist service
      */
-    ConfigCenter getConfigCenter();
+    DistMetaDataPersistService getDistMetaDataPersistService();
     
     /**
      * Get all schema names.

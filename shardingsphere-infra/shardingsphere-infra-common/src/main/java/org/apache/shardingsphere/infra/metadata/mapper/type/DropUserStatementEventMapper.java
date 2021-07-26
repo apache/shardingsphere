@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
+package org.apache.shardingsphere.infra.metadata.mapper.type;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.DropUserStatementEvent;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Drop user statement.
+ * Drop user statement event mapper.
  */
-@Getter
-public abstract class DropUserStatement extends AbstractSQLStatement implements DCLStatement {
+public final class DropUserStatementEventMapper implements SQLStatementEventMapper {
     
-    private final Collection<String> users = new LinkedList<>();
+    @Override
+    public DropUserStatementEvent map(final SQLStatement sqlStatement) {
+        return new DropUserStatementEvent(getUsers((DropUserStatement) sqlStatement));
+    }
+    
+    private Collection<String> getUsers(final DropUserStatement sqlStatement) {
+        return sqlStatement.getUsers();
+    }
 }

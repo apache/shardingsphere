@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.persist.repository;
+package org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.DCLStatementEvent;
+
+import java.util.Collection;
 
 /**
- * Config center repository factory.
+ * Drop user statement event.
  */
-public final class ConfigCenterRepositoryFactory {
+@RequiredArgsConstructor
+@Getter
+public final class DropUserStatementEvent implements DCLStatementEvent {
     
-    static {
-        ShardingSphereServiceLoader.register(ConfigCenterRepository.class);
-    }
-    
-    /**
-     * Create new instance of config center repository.
-     *
-     * @return new instance of config center repository
-     */
-    public static ConfigCenterRepository newInstance() {
-        // TODO load from SPI and make LocalConfigCenterRepository as default one. We can add more ConfigCenterRepository type such as: Database, Ceph etc...
-        return new LocalConfigCenterRepository();
-    }
+    private final Collection<String> users;
 }

@@ -31,8 +31,8 @@ import static org.junit.Assert.assertThat;
 public final class GovernanceConfigurationYamlSwapperTest {
     
     @Test
-    public void assertSwapToYamlGovernanceConfigurationWithoutAdditionalConfigCenterConfiguration() {
-        GovernanceConfiguration expected = createGovernanceConfigurationWithoutAdditionalConfigCenterConfiguration();
+    public void assertSwapToYamlGovernanceConfiguration() {
+        GovernanceConfiguration expected = createGovernanceConfiguration();
         YamlGovernanceConfiguration actual = new GovernanceConfigurationYamlSwapper().swapToYamlConfiguration(expected);
         assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
@@ -41,29 +41,13 @@ public final class GovernanceConfigurationYamlSwapperTest {
         assertThat(actual.getRegistryCenter().getProps(), is(expected.getRegistryCenterConfiguration().getProps()));
     }
     
-    private GovernanceConfiguration createGovernanceConfigurationWithoutAdditionalConfigCenterConfiguration() {
+    private GovernanceConfiguration createGovernanceConfiguration() {
         return new GovernanceConfiguration("logic_schema", new RegistryCenterConfiguration("TEST", "127.0.0.1:2181", new Properties()), false);
     }
     
     @Test
-    public void assertSwapToYamlGovernanceConfigurationWithAdditionalConfigCenterConfiguration() {
-        GovernanceConfiguration expected = createGovernanceConfigurationWithAdditionalConfigCenterConfiguration();
-        YamlGovernanceConfiguration actual = new GovernanceConfigurationYamlSwapper().swapToYamlConfiguration(expected);
-        assertThat(actual.getName(), is(expected.getName()));
-        assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
-        assertThat(actual.getRegistryCenter().getType(), is(expected.getRegistryCenterConfiguration().getType()));
-        assertThat(actual.getRegistryCenter().getServerLists(), is(expected.getRegistryCenterConfiguration().getServerLists()));
-        assertThat(actual.getRegistryCenter().getProps(), is(expected.getRegistryCenterConfiguration().getProps()));
-    }
-    
-    private GovernanceConfiguration createGovernanceConfigurationWithAdditionalConfigCenterConfiguration() {
-        return new GovernanceConfiguration("logic_schema", 
-                new RegistryCenterConfiguration("TEST", "127.0.0.1:2181", new Properties()), false);
-    }
-    
-    @Test
-    public void assertSwapToGovernanceConfigurationWithoutAdditionalConfigCenterConfiguration() {
-        YamlGovernanceConfiguration expected = createYamlGovernanceConfigurationWithoutAdditionalConfigCenterConfiguration();
+    public void assertSwapToGovernanceConfiguration() {
+        YamlGovernanceConfiguration expected = createYamlGovernanceConfiguration();
         GovernanceConfiguration actual = new GovernanceConfigurationYamlSwapper().swapToObject(expected);
         assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
@@ -72,25 +56,7 @@ public final class GovernanceConfigurationYamlSwapperTest {
         assertThat(actual.getRegistryCenterConfiguration().getProps(), is(expected.getRegistryCenter().getProps()));
     }
     
-    private YamlGovernanceConfiguration createYamlGovernanceConfigurationWithoutAdditionalConfigCenterConfiguration() {
-        YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
-        result.setName("logic_schema");
-        result.setRegistryCenter(createYamlRegistryCenterConfiguration());
-        return result;
-    }
-    
-    @Test
-    public void assertSwapToGovernanceConfigurationWithAdditionalConfigCenterConfiguration() {
-        YamlGovernanceConfiguration expected = createYamlGovernanceConfigurationWithAdditionalConfigCenterConfiguration();
-        GovernanceConfiguration actual = new GovernanceConfigurationYamlSwapper().swapToObject(expected);
-        assertThat(actual.getName(), is(expected.getName()));
-        assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
-        assertThat(actual.getRegistryCenterConfiguration().getType(), is(expected.getRegistryCenter().getType()));
-        assertThat(actual.getRegistryCenterConfiguration().getServerLists(), is(expected.getRegistryCenter().getServerLists()));
-        assertThat(actual.getRegistryCenterConfiguration().getProps(), is(expected.getRegistryCenter().getProps()));
-    }
-    
-    private YamlGovernanceConfiguration createYamlGovernanceConfigurationWithAdditionalConfigCenterConfiguration() {
+    private YamlGovernanceConfiguration createYamlGovernanceConfiguration() {
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
         result.setName("logic_schema");
         result.setRegistryCenter(createYamlRegistryCenterConfiguration());
