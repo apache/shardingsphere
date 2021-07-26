@@ -40,6 +40,7 @@ public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
         ShardingSphereServiceLoader.register(RuleConfigurationChecker.class);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertCheckPass() {
         ShardingStrategyConfiguration strategyConfiguration = mock(ShardingStrategyConfiguration.class);
@@ -55,12 +56,12 @@ public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
         checker.check("test", ruleConfig);
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test(expected = IllegalStateException.class)
     public void assertCheckNoPass() {
         AlgorithmProvidedShardingRuleConfiguration ruleConfig = mock(AlgorithmProvidedShardingRuleConfiguration.class);
         when(ruleConfig.getTables()).thenReturn(Collections.emptyList());
         when(ruleConfig.getAutoTables()).thenReturn(Collections.emptyList());
-        when(ruleConfig.getDefaultTableShardingStrategy()).thenReturn(null);
         RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(ruleConfig), RuleConfigurationChecker.class).get(ruleConfig);
         assertNotNull(checker);
         assertThat(checker, instanceOf(AlgorithmProvidedShardingRuleConfigurationChecker.class));
