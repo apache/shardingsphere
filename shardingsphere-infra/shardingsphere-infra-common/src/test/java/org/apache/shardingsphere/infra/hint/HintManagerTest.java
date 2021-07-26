@@ -147,7 +147,7 @@ public final class HintManagerTest {
     }
     
     @Test
-    public void assertSetPrimaryRouteOnly() {
+    public void assertSetWriteRouteOnly() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setWriteRouteOnly();
             assertTrue(HintManager.isWriteRouteOnly());
@@ -155,7 +155,7 @@ public final class HintManagerTest {
     }
     
     @Test
-    public void assertIsPrimaryRouteOnly() {
+    public void assertIsWriteRouteOnly() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setWriteRouteOnly();
             assertTrue(HintManager.isWriteRouteOnly());
@@ -163,7 +163,7 @@ public final class HintManagerTest {
     }
     
     @Test
-    public void assertIsPrimaryRouteOnlyWithoutSet() {
+    public void assertIsWriteRouteOnlyWithoutSet() {
         HintManager hintManager = HintManager.getInstance();
         hintManager.close();
         assertFalse(HintManager.isWriteRouteOnly());

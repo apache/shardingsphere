@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
-import com.google.common.collect.Sets;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.PrepareStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -27,12 +25,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingPrepareStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -56,35 +49,6 @@ public final class ShardingPrepareStatementValidatorTest {
     
     @Mock
     private RouteContext routeContext;
-    
-    @Test
-    public void assertPreValidatePrepareWithSameDatasourceSingleTablesForPostgreSQL() {
-        SQLStatementContext<PostgreSQLPrepareStatement> sqlStatementContext = new PrepareStatementContext(createPostgreSQLPrepareStatement());
-        Collection<String> tableNames = Sets.newHashSet("t_order", "t_order_item");
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(false);
-        when(shardingRule.isSingleTablesInSameDataSource(tableNames)).thenReturn(true);
-        new ShardingPrepareStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
-    }
-    
-    @Test(expected = ShardingSphereException.class)
-    public void assertPreValidatePrepareWithDifferentDatasourceSingleTablesForPostgreSQL() {
-        SQLStatementContext<PostgreSQLPrepareStatement> sqlStatementContext = new PrepareStatementContext(createPostgreSQLPrepareStatement());
-        Collection<String> tableNames = Sets.newHashSet("t_order", "t_order_item");
-        when(shardingRule.tableRuleExists(tableNames)).thenReturn(false);
-        when(shardingRule.isSingleTablesInSameDataSource(tableNames)).thenReturn(false);
-        new ShardingPrepareStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), schema);
-    }
-    
-    private PostgreSQLPrepareStatement createPostgreSQLPrepareStatement() {
-        PostgreSQLSelectStatement select = new PostgreSQLSelectStatement();
-        JoinTableSegment joinTable = new JoinTableSegment();
-        joinTable.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        joinTable.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
-        select.setFrom(joinTable);
-        PostgreSQLPrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
-        sqlStatement.setSelect(select);
-        return sqlStatement;
-    }
     
     @Test(expected = ShardingSphereException.class)
     public void assertPostValidatePrepareWithEmptyRouteResultForPostgreSQL() {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.yaml.engine.representer;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.engine.representer.processor.DefaultYamlTupleProcessor;
 import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;

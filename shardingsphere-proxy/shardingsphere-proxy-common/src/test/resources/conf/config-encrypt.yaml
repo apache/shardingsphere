@@ -17,16 +17,16 @@
 
 schemaName: encrypt_db
 
-dataSource:
-  url: jdbc:mysql://127.0.0.1:3306/encrypt_ds
-  username: root
-  password:
-  connectionTimeoutMilliseconds: 30000
-  idleTimeoutMilliseconds: 60000
-  maxLifetimeMilliseconds: 1800000
-  maxPoolSize: 50
-  minPoolSize: 1
-  maintenanceIntervalMilliseconds: 30000
+dataSources:
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/encrypt_ds
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
 
 rules:
 - !ENCRYPT

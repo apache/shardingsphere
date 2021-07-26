@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.rule.builder;
 
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.scope.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -42,6 +43,6 @@ public final class ShadowRuleBuilderTest {
     public void assertBuild() {
         ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
         SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), SchemaRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig), instanceOf(ShadowRule.class));
+        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig, Sets.newHashSet()), instanceOf(ShadowRule.class));
     }
 }

@@ -151,6 +151,14 @@ indexTypeName
     : (owner DOT_)? name
     ;
 
+modelName
+    : (owner DOT_)? name
+    ;
+
+operatorName
+    : (owner DOT_)? name
+    ;
+
 constraintName
     : identifier
     ;
@@ -421,7 +429,7 @@ aggregationFunction
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG
+    : MAX | MIN | SUM | COUNT | AVG | GROUPING
     ;
 
 distinct
@@ -445,7 +453,7 @@ regularFunction
     ;
 
 regularFunctionName
-    : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL | DECODE
     ;
 
 caseExpression

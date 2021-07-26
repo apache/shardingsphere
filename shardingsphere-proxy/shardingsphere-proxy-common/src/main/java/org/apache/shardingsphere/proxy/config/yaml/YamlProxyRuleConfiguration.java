@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,8 +37,6 @@ public final class YamlProxyRuleConfiguration implements YamlConfiguration {
     private String schemaName;
     
     private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
-    
-    private YamlDataSourceParameter dataSource;
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
 }

@@ -52,7 +52,7 @@ public final class ProxyContext {
     
     private ProxyContext() {
         backendDataSource = new JDBCBackendDataSource();
-        metaDataContexts = new StandardMetaDataContexts();
+        metaDataContexts = new StandardMetaDataContexts(null);
         transactionContexts = new StandardTransactionContexts();
     }
     

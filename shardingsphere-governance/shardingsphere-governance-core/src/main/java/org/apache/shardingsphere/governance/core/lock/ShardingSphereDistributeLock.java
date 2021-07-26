@@ -51,28 +51,22 @@ public final class ShardingSphereDistributeLock implements ShardingSphereLock {
     
     @Override
     public boolean tryLock(final String lockName) {
-        return lockService.tryLock(lockName, lockTimeoutMilliseconds) && lockService.checkLockAck(lockName);
+        return lockService.tryLock(lockName, lockTimeoutMilliseconds) && lockService.checkLockAck(lockName, lockTimeoutMilliseconds);
     }
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
-        return lockService.tryLock(lockName, timeoutMilliseconds) && lockService.checkLockAck(lockName);
+        return lockService.tryLock(lockName, timeoutMilliseconds) && lockService.checkLockAck(lockName, timeoutMilliseconds);
     }
     
     @Override
     public void releaseLock(final String lockName) {
         lockService.releaseLock(lockName);
-        lockService.checkUnlockAck(lockName);
     }
     
     @Override
     public boolean isLocked(final String lockName) {
         return lockedResources.contains(lockName);
-    }
-    
-    @Override
-    public boolean isReleased(final String lockName) {
-        return lockService.checkUnlockAck(lockName);
     }
     
     @Override
@@ -87,8 +81,7 @@ public final class ShardingSphereDistributeLock implements ShardingSphereLock {
      */
     @Subscribe
     public void renew(final PropertiesChangedEvent event) {
-        ConfigurationProperties props = new ConfigurationProperties(event.getProps());
-        lockTimeoutMilliseconds = props.<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
+        lockTimeoutMilliseconds = new ConfigurationProperties(event.getProps()).<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
     }
     
     /**

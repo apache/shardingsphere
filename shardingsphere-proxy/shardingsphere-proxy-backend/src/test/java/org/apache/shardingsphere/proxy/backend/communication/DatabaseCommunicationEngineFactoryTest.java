@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -50,7 +51,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), mock(ShardingSphereRuleMetaData.class), 
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(ConfigCenter.class), getMetaDataMap(), mock(ShardingSphereRuleMetaData.class), 
                 mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), getOptimizeContextFactory()));
         BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getSchemaName()).thenReturn("schema");

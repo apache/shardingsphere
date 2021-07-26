@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.context.metadata;
 
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -85,10 +86,11 @@ public final class MetaDataContextsBuilder {
     /**
      * Build meta data contexts.
      * 
+     * @param configCenter config center
      * @exception SQLException SQL exception
      * @return meta data contexts
      */
-    public StandardMetaDataContexts build() throws SQLException {
+    public StandardMetaDataContexts build(final ConfigCenter configCenter) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
         Map<String, ShardingSphereMetaData> actualMetaDataMap = new HashMap<>(schemaRuleConfigs.size(), 1);
         for (String each : schemaRuleConfigs.keySet()) {
@@ -104,7 +106,7 @@ public final class MetaDataContextsBuilder {
             metaDataMap.put(each, new ShardingSphereMetaData(each, resource, ruleMetaData, buildSchema(tableMetaDatas)));
         }
         OptimizeContextFactory optimizeContextFactory = new OptimizeContextFactory(actualMetaDataMap);
-        return new StandardMetaDataContexts(metaDataMap, buildGlobalSchemaMetaData(metaDataMap), executorEngine, props, optimizeContextFactory);
+        return new StandardMetaDataContexts(configCenter, metaDataMap, buildGlobalSchemaMetaData(metaDataMap), executorEngine, props, optimizeContextFactory);
     }
     
     private ShardingSphereSchema buildSchema(final Map<TableMetaData, TableMetaData> tableMetaDatas) {

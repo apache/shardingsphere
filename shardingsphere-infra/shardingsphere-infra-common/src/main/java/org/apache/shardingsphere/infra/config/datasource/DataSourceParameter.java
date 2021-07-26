@@ -41,13 +41,11 @@ public final class DataSourceParameter {
     
     private long idleTimeoutMilliseconds = 60 * 1000L;
     
-    private long maxLifetimeMilliseconds;
+    private long maxLifetimeMilliseconds = 30 * 60 * 1000L;
     
     private int maxPoolSize = 50;
     
     private int minPoolSize = 1;
-    
-    private long maintenanceIntervalMilliseconds = 30 * 1000L;
     
     private boolean readOnly;
     

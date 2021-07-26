@@ -38,7 +38,6 @@ public final class PostgreSQLBinaryStatementRegistry {
     
     private final ConcurrentMap<Integer, PostgreSQLConnectionBinaryStatementRegistry> connectionBinaryStatements = new ConcurrentHashMap<>(65535, 1);
     
-    
     /**
      * Get prepared statement registry instance.
      *
@@ -49,7 +48,16 @@ public final class PostgreSQLBinaryStatementRegistry {
     }
     
     /**
-     * Register SQL.
+     * Register.
+     *
+     * @param connectionId connection ID
+     */
+    public void register(final int connectionId) {
+        connectionBinaryStatements.put(connectionId, new PostgreSQLConnectionBinaryStatementRegistry());
+    }
+    
+    /**
+     * Register.
      *
      * @param connectionId connection ID
      * @param statementId statement ID
@@ -58,25 +66,31 @@ public final class PostgreSQLBinaryStatementRegistry {
      * @param binaryColumnTypes binary statement column types
      */
     public void register(final int connectionId, final String statementId, final String sql, final SQLStatement sqlStatement, final List<PostgreSQLBinaryColumnType> binaryColumnTypes) {
-        if (!connectionBinaryStatements.containsKey(connectionId)) {
-            connectionBinaryStatements.put(connectionId, new PostgreSQLConnectionBinaryStatementRegistry());
-        }
         connectionBinaryStatements.get(connectionId).getBinaryStatements().put(statementId, new PostgreSQLBinaryStatement(sql, sqlStatement, binaryColumnTypes));
     }
     
     /**
-     * Get binary prepared statement.
+     * Get binary statement.
      *
      * @param connectionId connection ID
      * @param statementId statement ID
      * @return binary prepared statement
      */
-    public PostgreSQLBinaryStatement getBinaryStatement(final int connectionId, final String statementId) {
+    public PostgreSQLBinaryStatement get(final int connectionId, final String statementId) {
         return connectionBinaryStatements.get(connectionId).binaryStatements.getOrDefault(statementId, new PostgreSQLBinaryStatement("", new EmptyStatement(), Collections.emptyList()));
     }
     
     /**
-     * Remove prepared statement.
+     * Unregister.
+     *
+     * @param connectionId connection ID
+     */
+    public void unregister(final int connectionId) {
+        connectionBinaryStatements.remove(connectionId);
+    }
+    
+    /**
+     * Unregister.
      *
      * @param connectionId connection ID
      * @param statementId statement ID

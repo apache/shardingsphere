@@ -34,6 +34,7 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -44,7 +45,6 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,17 +59,17 @@ public final class AddResourceBackendHandlerTest {
     @Mock
     private BackendConnection backendConnection;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;
     
     @Mock
     private TransactionContexts transactionContexts;
     
     @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    private ShardingSphereMetaData metaData;
     
     @Mock
-    private ShardingSphereResource shardingSphereResource;
+    private ShardingSphereResource resource;
     
     private AddResourceBackendHandler addResourceBackendHandler;
     
@@ -85,9 +85,9 @@ public final class AddResourceBackendHandlerTest {
     public void assertExecute() throws DistSQLException {
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         when(metaDataContexts.getAllSchemaNames()).thenReturn(Collections.singleton("test"));
-        when(metaDataContexts.getMetaData(eq("test"))).thenReturn(shardingSphereMetaData);
-        when(shardingSphereMetaData.getResource()).thenReturn(shardingSphereResource);
-        when(shardingSphereResource.getDataSources()).thenReturn(new HashMap<>());
+        when(metaDataContexts.getMetaData("test")).thenReturn(metaData);
+        when(metaData.getResource()).thenReturn(resource);
+        when(resource.getDataSources()).thenReturn(new HashMap<>());
         when(dataSourceValidator.validate(any(DataSourceConfiguration.class))).thenReturn(true);
         ResponseHeader responseHeader = addResourceBackendHandler.execute("test", createAddResourceStatement());
         assertTrue(responseHeader instanceof UpdateResponseHeader);

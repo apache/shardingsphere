@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.registry.config.node.GlobalNode;
-import org.apache.shardingsphere.governance.core.registry.config.node.SchemaMetadataNode;
+import org.apache.shardingsphere.infra.config.persist.node.GlobalNode;
+import org.apache.shardingsphere.infra.config.persist.node.SchemaMetadataNode;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -207,6 +207,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @Override
     protected void prepareSpecifiedInitializer() {
-        setInitializer(new GovernanceBootstrapInitializer());
+        setInitializer(new GovernanceBootstrapInitializer(registryCenterRepository));
     }
 }

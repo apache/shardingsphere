@@ -36,20 +36,20 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.HashMap;
-import java.util.Optional;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.Future;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
