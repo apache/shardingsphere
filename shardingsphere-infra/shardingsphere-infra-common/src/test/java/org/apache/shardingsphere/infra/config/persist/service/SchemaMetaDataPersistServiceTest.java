@@ -75,7 +75,6 @@ public final class SchemaMetaDataPersistServiceTest {
         Optional<ShardingSphereSchema> empty = schemaMetaDataPersistService.load("test");
         assertThat(empty, is(Optional.empty()));
         ShardingSphereSchema schema = schemaOptional.get();
-        verify(repository).get(eq("/metadata/foo_db/schema"));
         assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
         assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(schema.getAllColumnNames("t_order").size(), is(1));
