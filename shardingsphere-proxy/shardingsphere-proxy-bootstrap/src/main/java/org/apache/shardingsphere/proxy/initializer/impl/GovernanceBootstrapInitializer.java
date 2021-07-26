@@ -61,7 +61,8 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     private Set<String> getSchemaNames(final YamlProxyConfiguration yamlConfig) {
-        return Stream.of(getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream).collect(Collectors.toSet());
+        return Stream.of(getDistMetaDataPersistService().getSchemaMetaDataService().loadAllNames(), yamlConfig.getRuleConfigurations().keySet()).flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
     
     @Override

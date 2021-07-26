@@ -199,6 +199,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
-        return schemaNames.stream().collect(Collectors.toMap(each -> each, each -> distMetaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return schemaNames.stream()
+                .collect(Collectors.toMap(each -> each, each -> distMetaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }
