@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
@@ -69,7 +69,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     @Getter
     private final DistMetaDataPersistService distMetaDataPersistService;
     
-    public AbstractBootstrapInitializer(final ConfigCenterRepository repository) {
+    public AbstractBootstrapInitializer(final DistMetaDataPersistRepository repository) {
         distMetaDataPersistService = new DistMetaDataPersistService(repository);
     }
     

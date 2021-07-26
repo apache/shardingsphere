@@ -17,55 +17,24 @@
 
 package org.apache.shardingsphere.infra.config.persist.repository;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
-
-import java.util.List;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 /**
- * Config center repository.
+ * Dist meta data persist repository factory.
  */
-public interface ConfigCenterRepository extends TypedSPI {
+public final class DistMetaDataPersistRepositoryFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(DistMetaDataPersistRepository.class);
+    }
     
     /**
-     * Path separator.
-     */
-    String PATH_SEPARATOR = "/";
-    
-    /**
-     * Get data from registry center.
+     * Create new instance of config center repository.
      *
-     * <p>Maybe use cache if existed.</p>
-     *
-     * @param key key of data
-     * @return value of data
+     * @return new instance of config center repository
      */
-    String get(String key);
-    
-    /**
-     * Get names of sub-node.
-     *
-     * @param key key of data
-     * @return sub-node names
-     */
-    List<String> getChildrenKeys(String key);
-    
-    /**
-     * Persist data.
-     *
-     * @param key key of data
-     * @param value value of data
-     */
-    void persist(String key, String value);
-    
-    /**
-     * Delete node.
-     *
-     * @param key key of data
-     */
-    void delete(String key);
-    
-    /**
-     * Close.
-     */
-    void close();
+    public static DistMetaDataPersistRepository newInstance() {
+        // TODO load from SPI and make LocalDistMetaDataPersistRepository as default one. We can add more DistMetaDataPersistRepository type such as: Database, Ceph etc...
+        return new LocalDistMetaDataPersistRepository();
+    }
 }

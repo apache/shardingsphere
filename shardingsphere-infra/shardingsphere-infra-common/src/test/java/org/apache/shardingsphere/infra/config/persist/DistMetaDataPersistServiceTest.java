@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.persist;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.infra.config.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.infra.config.persist.service.impl.PropertiesPersistService;
@@ -72,7 +72,7 @@ public final class DistMetaDataPersistServiceTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        distMetaDataPersistService = new DistMetaDataPersistService(mock(ConfigCenterRepository.class));
+        distMetaDataPersistService = new DistMetaDataPersistService(mock(DistMetaDataPersistRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("schemaRuleService", schemaRuleService);
         setField("globalRuleService", globalRuleService);

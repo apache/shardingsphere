@@ -17,39 +17,55 @@
 
 package org.apache.shardingsphere.infra.config.persist.repository;
 
-import java.util.Collections;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+
 import java.util.List;
 
 /**
- * Local config center repository.
+ * Dist meta data persist repository.
  */
-// TODO finished me
-public final class LocalConfigCenterRepository implements ConfigCenterRepository {
+public interface DistMetaDataPersistRepository extends TypedSPI {
     
-    @Override
-    public String get(final String key) {
-        return "";
-    }
+    /**
+     * Path separator.
+     */
+    String PATH_SEPARATOR = "/";
     
-    @Override
-    public List<String> getChildrenKeys(final String key) {
-        return Collections.emptyList();
-    }
+    /**
+     * Get data from registry center.
+     *
+     * <p>Maybe use cache if existed.</p>
+     *
+     * @param key key of data
+     * @return value of data
+     */
+    String get(String key);
     
-    @Override
-    public void persist(final String key, final String value) {
-    }
+    /**
+     * Get names of sub-node.
+     *
+     * @param key key of data
+     * @return sub-node names
+     */
+    List<String> getChildrenKeys(String key);
     
-    @Override
-    public void delete(final String key) {
-    }
+    /**
+     * Persist data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    void persist(String key, String value);
     
-    @Override
-    public void close() {
-    }
+    /**
+     * Delete node.
+     *
+     * @param key key of data
+     */
+    void delete(String key);
     
-    @Override
-    public String getType() {
-        return "Local";
-    }
+    /**
+     * Close.
+     */
+    void close();
 }
