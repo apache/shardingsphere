@@ -117,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
 
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * DCL Statement SQL visitor for MySQL.
@@ -728,9 +729,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
         MySQLDropUserStatement result = new MySQLDropUserStatement();
-        for (UserNameContext each : ctx.userName()) {
-            result.getUsers().add(each.getText());
-        }
+        result.getUsers().addAll(ctx.userName().stream().map(UserNameContext::getText).collect(Collectors.toList()));
         return result;
     }
     
