@@ -74,7 +74,7 @@ public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAwa
     @Bean
     public GovernanceConfiguration governanceConfiguration() {
         Preconditions.checkState(Objects.nonNull(root.getGovernance()), "The governance configuration is invalid, please configure governance");
-        return new GovernanceConfiguration(root.getGovernance().getName(), swapper.swapToObject(root.getGovernance().getRegistryCenter()), root.getGovernance().isOverwrite());
+        return new GovernanceConfiguration(swapper.swapToObject(root.getGovernance().getRegistryCenter()), root.getGovernance().isOverwrite());
     }
     
     /**

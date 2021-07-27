@@ -50,8 +50,17 @@ public final class TablesContext {
     public TablesContext(final Collection<SimpleTableSegment> tableSegments) {
         Collection<SimpleTableSegment> actualTables = new LinkedList<>(tableSegments);
         Set<String> tableSets = new HashSet<>(actualTables.size(), 1);
-        actualTables.removeIf(each -> !tableSets.add(each.getTableName().getIdentifier().getValue()));
+        actualTables.removeIf(each -> !tableSets.add(getTableNameWithOwner(each)));
         tables = actualTables;
+    }
+    
+    private String getTableNameWithOwner(final SimpleTableSegment tableSegment) {
+        StringBuilder builder = new StringBuilder();
+        if (tableSegment.getOwner().isPresent()) {
+            builder.append(tableSegment.getOwner().get()).append(".");
+        }
+        builder.append(tableSegment.getTableName().getIdentifier().getValue());
+        return builder.toString();
     }
     
     /**

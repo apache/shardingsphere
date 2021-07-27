@@ -16,9 +16,9 @@
 #
 
 governance:
-  name: test_name_1
   registryCenter:
     type: ZooKeeper
+    namespace: test_name_1
     serverLists: localhost:2181
   overwrite: false
 

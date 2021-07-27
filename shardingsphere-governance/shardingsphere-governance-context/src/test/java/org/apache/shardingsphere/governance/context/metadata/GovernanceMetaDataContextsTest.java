@@ -34,7 +34,7 @@ import org.apache.shardingsphere.governance.repository.spi.RegistryCenterReposit
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -58,7 +58,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -81,7 +80,7 @@ public final class GovernanceMetaDataContextsTest {
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ConfigCenter configCenter;
+    private DistMetaDataPersistService distMetaDataPersistService;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private RegistryCenter registryCenter;
@@ -96,8 +95,8 @@ public final class GovernanceMetaDataContextsTest {
     
     @Before
     public void setUp() {
-        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(mock(ConfigCenter.class), 
-                createMetaDataMap(), globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), configCenter, registryCenter, mock(RegistryCenterRepository.class));
+        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(),
+                globalRuleMetaData, mock(ExecutorEngine.class), props, mockOptimizeContextFactory()), distMetaDataPersistService, registryCenter, mock(RegistryCenterRepository.class));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -112,7 +111,7 @@ public final class GovernanceMetaDataContextsTest {
 
     private OptimizeContextFactory mockOptimizeContextFactory() {
         OptimizeContextFactory result = mock(OptimizeContextFactory.class);
-        when(result.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(new HashMap<>()));
+        when(result.getSchemaMetadatas()).thenReturn(new FederateSchemaMetadatas(Collections.emptyMap()));
         return result;
     }
 
@@ -134,8 +133,8 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertSchemaAdd() throws SQLException {
         SchemaAddedEvent event = new SchemaAddedEvent("schema_add");
-        when(configCenter.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
-        when(configCenter.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
+        when(distMetaDataPersistService.getDataSourceService().load("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(distMetaDataPersistService.getSchemaRuleService().load("schema_add")).thenReturn(Collections.emptyList());
         governanceMetaDataContexts.renew(event);
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add").getResource().getDataSources());

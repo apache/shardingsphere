@@ -63,9 +63,10 @@ public final class EtcdRepository implements RegistryCenterRepository {
     private EtcdProperties etcdProperties;
     
     @Override
-    public void init(final String name, final RegistryCenterConfiguration config) {
+    public void init(final RegistryCenterConfiguration config) {
         etcdProperties = new EtcdProperties(props);
-        client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).namespace(ByteSequence.from(name, StandardCharsets.UTF_8)).build();
+        client = Client.builder().endpoints(
+                Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8)).build();
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})

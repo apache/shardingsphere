@@ -88,7 +88,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlRootRuleConfigs.getDataSources()));
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
         ShardingSphereSchema schema = mockSchema();
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
+        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(2, 1);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
         metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
         metaDataMap.put("sharding_db", metaData);

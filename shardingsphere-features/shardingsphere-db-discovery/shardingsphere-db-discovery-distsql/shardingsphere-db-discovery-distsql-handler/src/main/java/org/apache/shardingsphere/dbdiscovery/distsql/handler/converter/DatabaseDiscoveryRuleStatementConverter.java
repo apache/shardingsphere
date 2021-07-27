@@ -43,7 +43,7 @@ public final class DatabaseDiscoveryRuleStatementConverter {
      */
     public static DatabaseDiscoveryRuleConfiguration convert(final Collection<DatabaseDiscoveryRuleSegment> ruleSegments) {
         Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>();
+        Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes = new HashMap<>(ruleSegments.size(), 1);
         for (DatabaseDiscoveryRuleSegment each : ruleSegments) {
             String type = getDatabaseDiscoveryType(each.getName(), each.getDiscoveryTypeName());
             dataSources.add(new DatabaseDiscoveryDataSourceRuleConfiguration(each.getName(), new LinkedList<>(each.getDataSources()), type));

@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import java.util.List;
 
 /**
- * Config center repository.
+ * Dist meta data persist repository.
  */
-public interface ConfigCenterRepository extends TypedSPI {
+public interface DistMetaDataPersistRepository extends TypedSPI {
     
     /**
      * Path separator.

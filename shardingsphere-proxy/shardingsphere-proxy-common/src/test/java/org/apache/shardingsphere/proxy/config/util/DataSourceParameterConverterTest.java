@@ -88,15 +88,15 @@ public final class DataSourceParameterConverterTest {
         yamlDataSourceParameter1.setUrl("jdbc:mysql://localhost:3306/t_order_item");
         yamlDataSourceParameter1.setCustomPoolProps(getCustomPoolProps());
         setYamlDataSourceParameterPropertyWithoutUrl(yamlDataSourceParameter1);
-        Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>();
+        Map<String, YamlDataSourceParameter> yamlDataSourceParameterMap = new HashMap<>(2, 1);
         yamlDataSourceParameterMap.put("ds_0", yamlDataSourceParameter0);
         yamlDataSourceParameterMap.put("ds_1", yamlDataSourceParameter1);
-        Map<String, DataSourceParameter> actualDataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(yamlDataSourceParameterMap);
-        assertThat(actualDataSourceParameterMap.size(), is(2));
-        assertThat(actualDataSourceParameterMap.get("ds_0").getUrl(), is("jdbc:mysql://localhost:3306/t_order"));
-        assertThat(actualDataSourceParameterMap.get("ds_1").getUrl(), is("jdbc:mysql://localhost:3306/t_order_item"));
-        assertDataSourceParameter(actualDataSourceParameterMap.get("ds_0"));
-        assertDataSourceParameter(actualDataSourceParameterMap.get("ds_1"));
+        Map<String, DataSourceParameter> actualDataSourceParameters = DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(yamlDataSourceParameterMap);
+        assertThat(actualDataSourceParameters.size(), is(2));
+        assertThat(actualDataSourceParameters.get("ds_0").getUrl(), is("jdbc:mysql://localhost:3306/t_order"));
+        assertThat(actualDataSourceParameters.get("ds_1").getUrl(), is("jdbc:mysql://localhost:3306/t_order_item"));
+        assertDataSourceParameter(actualDataSourceParameters.get("ds_0"));
+        assertDataSourceParameter(actualDataSourceParameters.get("ds_1"));
     }
     
     private void setYamlDataSourceParameterPropertyWithoutUrl(final YamlDataSourceParameter yamlDataSourceParameter) {

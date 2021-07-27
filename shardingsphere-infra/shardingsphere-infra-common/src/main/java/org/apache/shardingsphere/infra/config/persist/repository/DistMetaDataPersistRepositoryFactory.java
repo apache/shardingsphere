@@ -20,12 +20,12 @@ package org.apache.shardingsphere.infra.config.persist.repository;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 /**
- * Config center repository factory.
+ * Dist meta data persist repository factory.
  */
-public final class ConfigCenterRepositoryFactory {
+public final class DistMetaDataPersistRepositoryFactory {
     
     static {
-        ShardingSphereServiceLoader.register(ConfigCenterRepository.class);
+        ShardingSphereServiceLoader.register(DistMetaDataPersistRepository.class);
     }
     
     /**
@@ -33,8 +33,8 @@ public final class ConfigCenterRepositoryFactory {
      *
      * @return new instance of config center repository
      */
-    public static ConfigCenterRepository newInstance() {
-        // TODO load from SPI and make LocalConfigCenterRepository as default one. We can add more ConfigCenterRepository type such as: Database, Ceph etc...
-        return new LocalConfigCenterRepository();
+    public static DistMetaDataPersistRepository newInstance() {
+        // TODO load from SPI and make LocalDistMetaDataPersistRepository as default one. We can add more DistMetaDataPersistRepository type such as: Database, Ceph etc...
+        return new LocalDistMetaDataPersistRepository();
     }
 }

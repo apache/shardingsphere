@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.persist.node.GlobalNode;
 import org.apache.shardingsphere.infra.config.persist.service.GlobalPersistService;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Properties;
@@ -32,7 +32,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public final class PropertiesPersistService implements GlobalPersistService<Properties> {
     
-    private final ConfigCenterRepository repository;
+    private final DistMetaDataPersistRepository repository;
     
     @Override
     public void persist(final Properties props, final boolean isOverwrite) {

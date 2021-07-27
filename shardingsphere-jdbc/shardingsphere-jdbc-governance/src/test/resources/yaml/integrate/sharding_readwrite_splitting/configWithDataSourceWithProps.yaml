@@ -123,9 +123,9 @@ rules:
       type: ROUND_ROBIN
 
 governance:
-  name: test_sharding_ms_registry_name
   registryCenter:
     type: GOV_TEST
+    namespace: test_sharding_ms_registry_name
     serverLists: localhost:3181
     props:
       retryIntervalMilliseconds: 10

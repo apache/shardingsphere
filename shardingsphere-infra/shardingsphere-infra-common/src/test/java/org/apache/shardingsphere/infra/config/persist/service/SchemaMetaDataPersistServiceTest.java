@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.config.persist.service;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlSchema;
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 public final class SchemaMetaDataPersistServiceTest {
     
     @Mock
-    private ConfigCenterRepository repository;
+    private DistMetaDataPersistRepository repository;
     
     @Test
     public void assertPersist() {
@@ -75,7 +75,6 @@ public final class SchemaMetaDataPersistServiceTest {
         Optional<ShardingSphereSchema> empty = schemaMetaDataPersistService.load("test");
         assertThat(empty, is(Optional.empty()));
         ShardingSphereSchema schema = schemaOptional.get();
-        verify(repository).get(eq("/metadata/foo_db/schema"));
         assertThat(schema.getAllTableNames(), is(Collections.singleton("t_order")));
         assertThat(schema.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(schema.getAllColumnNames("t_order").size(), is(1));

@@ -61,7 +61,7 @@ public final class AbstractDataSourceCheckerTest {
             }
             
             @Override
-            protected ScalingSQLBuilder getSqlBuilder() {
+            protected ScalingSQLBuilder getSQLBuilder() {
                 return null;
             }
         };

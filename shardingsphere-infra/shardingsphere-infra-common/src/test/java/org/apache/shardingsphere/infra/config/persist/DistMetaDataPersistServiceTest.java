@@ -20,14 +20,14 @@ package org.apache.shardingsphere.infra.config.persist;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.config.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.infra.config.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.infra.config.persist.service.impl.PropertiesPersistService;
 import org.apache.shardingsphere.infra.config.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -52,9 +53,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ConfigCenterTest {
+public final class DistMetaDataPersistServiceTest {
     
-    private static final String SCHEMA_RULE_YAML = "yaml/configcenter/data-schema-rule.yaml";
+    private static final String SCHEMA_RULE_YAML = "yaml/persist/data-schema-rule.yaml";
     
     @Mock
     private DataSourcePersistService dataSourceService;
@@ -68,11 +69,11 @@ public final class ConfigCenterTest {
     @Mock
     private PropertiesPersistService propsService;
     
-    private ConfigCenter configCenter;
+    private DistMetaDataPersistService distMetaDataPersistService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        configCenter = new ConfigCenter(mock(ConfigCenterRepository.class));
+        distMetaDataPersistService = new DistMetaDataPersistService(mock(DistMetaDataPersistRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("schemaRuleService", schemaRuleService);
         setField("globalRuleService", globalRuleService);
@@ -80,9 +81,9 @@ public final class ConfigCenterTest {
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
-        Field field = configCenter.getClass().getDeclaredField(name);
+        Field field = distMetaDataPersistService.getClass().getDeclaredField(name);
         field.setAccessible(true);
-        field.set(configCenter, value);
+        field.set(distMetaDataPersistService, value);
     }
     
     @Test
@@ -91,7 +92,7 @@ public final class ConfigCenterTest {
         Collection<RuleConfiguration> schemaRuleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
-        configCenter.persistConfigurations(
+        distMetaDataPersistService.persistConfigurations(
                 Collections.singletonMap("foo_db", dataSourceConfigs), Collections.singletonMap("foo_db", schemaRuleConfigs), globalRuleConfigs, props, false);
         verify(dataSourceService).persist("foo_db", dataSourceConfigs, false);
         verify(schemaRuleService).persist("foo_db", schemaRuleConfigs, false);
@@ -100,7 +101,7 @@ public final class ConfigCenterTest {
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
-        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> 
+        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> 
                 DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     

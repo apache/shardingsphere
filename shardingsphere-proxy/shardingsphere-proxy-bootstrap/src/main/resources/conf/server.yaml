@@ -22,9 +22,9 @@
 ######################################################################################################
 
 #governance:
-#  name: governance_ds
 #  registryCenter:
 #    type: ZooKeeper
+#    namespace: governance_ds
 #    serverLists: localhost:2181
 #    props:
 #      retryIntervalMilliseconds: 500
@@ -32,11 +32,11 @@
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
-
+#
 #scaling:
 #  blockQueueSize: 10000
 #  workerThread: 40
-
+#
 #rules:
 #  - !AUTHORITY
 #    users:
@@ -44,7 +44,7 @@
 #      - sharding@:sharding
 #    provider:
 #      type: NATIVE
-
+#
 #props:
 #  max-connections-size-per-query: 1
 #  executor-size: 16  # Infinite by default.

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.config.persist.ConfigCenter;
-import org.apache.shardingsphere.infra.config.persist.repository.ConfigCenterRepository;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
@@ -67,10 +67,10 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     private final ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
     
     @Getter
-    private final ConfigCenter configCenter;
+    private final DistMetaDataPersistService distMetaDataPersistService;
     
-    public AbstractBootstrapInitializer(final ConfigCenterRepository repository) {
-        configCenter = new ConfigCenter(repository);
+    public AbstractBootstrapInitializer(final DistMetaDataPersistRepository repository) {
+        distMetaDataPersistService = new DistMetaDataPersistService(repository);
     }
     
     @Override
@@ -87,7 +87,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
-        return new MetaDataContextsBuilder(dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps()).build(configCenter);
+        return new MetaDataContextsBuilder(dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getGlobalRules(), proxyConfig.getProps()).build(distMetaDataPersistService);
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
@@ -156,7 +156,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         YamlProxyServerConfiguration serverConfig = yamlConfig.getServerConfiguration();
         Map<String, YamlProxyRuleConfiguration> ruleConfigs = yamlConfig.getRuleConfigurations();
         if (!isEmptyLocalConfiguration(serverConfig, ruleConfigs)) {
-            configCenter.persistConfigurations(getDataSourceConfigurationMap(ruleConfigs),
+            distMetaDataPersistService.persistConfigurations(getDataSourceConfigurationMap(ruleConfigs),
                     getSchemaRuleConfigurations(ruleConfigs), getGlobalRuleConfigurations(serverConfig.getRules()), serverConfig.getProps(), overwrite);
         }
     }
@@ -185,20 +185,21 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     protected final ProxyConfiguration loadProxyConfiguration() {
-        Collection<String> schemaNames = configCenter.getSchemaMetaDataService().loadAllNames();
+        Collection<String> schemaNames = distMetaDataPersistService.getSchemaMetaDataService().loadAllNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRuleConfigs = loadSchemaRules(schemaNames);
-        Collection<RuleConfiguration> globalRuleConfigs = configCenter.getGlobalRuleService().load();
-        Properties props = configCenter.getPropsService().load();
+        Collection<RuleConfiguration> globalRuleConfigs = distMetaDataPersistService.getGlobalRuleService().load();
+        Properties props = distMetaDataPersistService.getPropsService().load();
         return new ProxyConfiguration(schemaDataSources, schemaRuleConfigs, globalRuleConfigs, props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
         return schemaNames.stream().collect(Collectors.toMap(each -> each, 
-            each -> DataSourceParameterConverter.getDataSourceParameterMap(configCenter.getDataSourceService().load(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            each -> DataSourceParameterConverter.getDataSourceParameterMap(distMetaDataPersistService.getDataSourceService().load(each)), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
-        return schemaNames.stream().collect(Collectors.toMap(each -> each, each -> configCenter.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return schemaNames.stream()
+                .collect(Collectors.toMap(each -> each, each -> distMetaDataPersistService.getSchemaRuleService().load(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

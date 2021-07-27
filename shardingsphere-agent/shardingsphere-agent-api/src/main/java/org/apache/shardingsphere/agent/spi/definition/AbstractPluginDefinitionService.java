@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.agent.spi.definition;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractPluginDefinitionService implements PluginDefinitionService {
     
-    private final Map<String, PluginInterceptorPoint.Builder> interceptorPointMap = Maps.newHashMap();
+    private final Map<String, PluginInterceptorPoint.Builder> interceptorPointMap = new HashMap<>();
     
     /**
      * Define interceptors to collection of plugin interceptor point.

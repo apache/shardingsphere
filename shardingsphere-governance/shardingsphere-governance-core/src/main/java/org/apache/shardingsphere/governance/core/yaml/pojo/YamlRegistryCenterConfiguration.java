@@ -32,6 +32,8 @@ public final class YamlRegistryCenterConfiguration implements YamlConfiguration 
     
     private String type;
     
+    private String namespace;
+    
     private String serverLists;
     
     private Properties props = new Properties();

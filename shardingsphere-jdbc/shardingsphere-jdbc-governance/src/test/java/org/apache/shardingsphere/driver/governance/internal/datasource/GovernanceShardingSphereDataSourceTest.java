@@ -73,13 +73,13 @@ public final class GovernanceShardingSphereDataSourceTest {
     }
     
     private static GovernanceConfiguration getGovernanceConfiguration() {
-        return new GovernanceConfiguration("test_name", getRegistryCenterConfiguration(), true);
+        return new GovernanceConfiguration(getRegistryCenterConfiguration(), true);
     }
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        return new RegistryCenterConfiguration("GOV_TEST", "localhost:3181", properties);
+        return new RegistryCenterConfiguration("GOV_TEST", "test_name", "localhost:3181", properties);
     }
     
     @Test
