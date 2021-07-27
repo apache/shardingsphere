@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -57,8 +56,8 @@ public final class ProxyContextTest {
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         ProxyContext proxyContext = ProxyContext.getInstance();
         proxyContext.init(metaDataContexts, transactionContexts);
-        assertEquals(metaDataContexts, proxyContext.getMetaDataContexts());
-        assertEquals(transactionContexts, proxyContext.getTransactionContexts());
+        assertThat(proxyContext.getMetaDataContexts(), is(metaDataContexts));
+        assertThat(proxyContext.getTransactionContexts(), is(transactionContexts));
     }
     
     @Test

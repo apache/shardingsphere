@@ -41,12 +41,12 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public final class PostgreSQLPrivilegeHandlerTest {
     
@@ -89,16 +89,15 @@ public final class PostgreSQLPrivilegeHandlerTest {
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
         assertThat(actual.size(), is(1));
         ShardingSphereUser user = new ShardingSphereUser("postgres", "", "");
-        assertThat(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
+        assertTrue(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().isEmpty());
         assertThat(actual.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(1));
-        Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE,
-                PrivilegeType.DELETE));
+        Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE, PrivilegeType.DELETE));
         SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("db0");
         assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
         assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges().size(), is(4));
-        Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet(
+        Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet<>(
                 Arrays.asList(PrivilegeType.SUPER, PrivilegeType.CREATE_ROLE, PrivilegeType.CREATE_DATABASE, PrivilegeType.CAN_LOGIN));
-        assertEquals(actual.get(user).getAdministrativePrivileges().getPrivileges(), expectedAdminPrivileges);
+        assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges(), is(expectedAdminPrivileges));
     }
     
     private void assertDiffUsers(final Collection<ShardingSphereUser> users) {
@@ -119,7 +118,7 @@ public final class PostgreSQLPrivilegeHandlerTest {
     }
     
     private Collection<ShardingSphereUser> createUsers() {
-        LinkedList<ShardingSphereUser> result = new LinkedList<>();
+        Collection<ShardingSphereUser> result = new LinkedList<>();
         result.add(new ShardingSphereUser("postgres", "", ""));
         return result;
     }
