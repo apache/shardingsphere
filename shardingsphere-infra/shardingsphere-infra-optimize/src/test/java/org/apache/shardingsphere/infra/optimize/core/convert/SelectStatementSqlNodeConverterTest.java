@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -43,15 +43,14 @@ import static org.junit.Assert.assertThat;
  * </p>
  */
 public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConverterTest {
-
+    
     private ShardingSphereSQLParserEngine sqlStatementParserEngine;
-
+    
     @Before
     public void init() {
-        sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
-                new MySQLDatabaseType()));
+        sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(new MySQLDatabaseType()));
     }
-
+    
     @Test
     public void testConvertSimpleSelect() {
         String sql = "select order_id, user_id from t_order";
@@ -59,16 +58,15 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) sqlNode;
-        assertEquals(2, sqlSelect.getSelectList().size());
+        assertThat(sqlSelect.getSelectList().size(), is(2));
         assertNull(sqlSelect.getWhere());
         assertNull(sqlSelect.getOffset());
         assertNull(sqlSelect.getFetch());
-        // compare ast from calcite parser
         SqlNode calciteSqlNode = parseByCalciteParser(sql);
         assertNotNull(calciteSqlNode);
-        assertEquals(sqlNode.toString(), calciteSqlNode.toString());
+        assertThat(sqlNode.toString(), is(calciteSqlNode.toString()));
     }
-
+    
     @Test
     public void testConvertSimpleSelectLimit() {
         String sql = "select order_id, user_id from t_order limit 1, 2";
@@ -76,15 +74,15 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) sqlNode;
-        assertEquals(2, sqlSelect.getSelectList().size());
+        assertThat(sqlSelect.getSelectList().size(), is(2));
         assertNull(sqlSelect.getWhere());
         assertNotNull(sqlSelect.getOffset());
         assertNotNull(sqlSelect.getFetch());
         SqlNode calciteSqlNode = parseByCalciteParser(sql, new MySQLDatabaseType());
         assertNotNull(calciteSqlNode);
-        assertEquals(sqlNode.toString(), calciteSqlNode.toString());
+        assertThat(sqlNode.toString(), is(calciteSqlNode.toString()));
     }
-
+    
     @Test
     public void testConvertSimpleSelectRowCount() {
         String sql = "select order_id, user_id from t_order limit 2";
@@ -92,15 +90,15 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) sqlNode;
-        assertEquals(2, sqlSelect.getSelectList().size());
+        assertThat(sqlSelect.getSelectList().size(), is(2));
         assertNull(sqlSelect.getWhere());
         assertNull(sqlSelect.getOffset());
         assertNotNull(sqlSelect.getFetch());
         SqlNode calciteSqlNode = parseByCalciteParser(sql, new MySQLDatabaseType());
         assertNotNull(calciteSqlNode);
-        assertEquals(sqlNode.toString(), calciteSqlNode.toString());
+        assertThat(sqlNode.toString(), is(calciteSqlNode.toString()));
     }
-
+    
     @Test
     public void testConvertSimpleSelectFilter() {
         String sql = "select order_id, user_id from t_order where order_id = 10";
@@ -108,13 +106,13 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) sqlNode;
-        assertEquals(2, sqlSelect.getSelectList().size());
+        assertThat(sqlSelect.getSelectList().size(), is(2));
         assertNotNull(sqlSelect.getWhere());
         SqlNode calciteSqlNode = parseByCalciteParser(sql, new MySQLDatabaseType());
         assertNotNull(calciteSqlNode);
-        assertEquals(sqlNode.toString(), calciteSqlNode.toString());
+        assertThat(sqlNode.toString(), is(calciteSqlNode.toString()));
     }
-
+    
     @Test
     public void testConvertSimpleSelectFilterGroupBy() {
         String sql = "select order_id, user_id from t_order where order_id = 10 group by order_id";
@@ -122,14 +120,14 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) sqlNode;
-        assertEquals(2, sqlSelect.getSelectList().size());
+        assertThat(sqlSelect.getSelectList().size(), is(2));
         assertNotNull(sqlSelect.getWhere());
-        assertEquals(1, sqlSelect.getGroup().size());
+        assertThat(sqlSelect.getGroup().size(), is(1));
         SqlNode calciteSqlNode = parseByCalciteParser(sql, new MySQLDatabaseType());
         assertNotNull(calciteSqlNode);
-        assertEquals(sqlNode.toString(), calciteSqlNode.toString());
+        assertThat(sqlNode.toString(), is(calciteSqlNode.toString()));
     }
-
+    
     @Test
     public void testConvertSimpleSelectFilterOrderBy() {
         String sql = "select order_id, user_id from t_order where user_id = 10 order by order_id desc";
@@ -137,28 +135,28 @@ public final class SelectStatementSqlNodeConverterTest extends BaseSqlNodeConver
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) sqlNode;
-        assertEquals(2, sqlSelect.getSelectList().size());
+        assertThat(sqlSelect.getSelectList().size(), is(2));
         assertNotNull(sqlSelect.getWhere());
-        assertEquals(1, sqlSelect.getOrderList().size());
+        assertThat(sqlSelect.getOrderList().size(), is(1));
         SqlNode calciteSqlNode = parseByCalciteParser(sql, new MySQLDatabaseType());
         assertNotNull(calciteSqlNode);
-        assertEquals(sqlNode.toString(), calciteSqlNode.toString());
+        assertThat(sqlNode.toString(), is(calciteSqlNode.toString()));
     }
-
+    
     @Test
     public void testConvertInnerJoin() {
         String sql = "select 10 + 30, o1.order_id + 10, o1.order_id, o1.user_id, o2.status from t_order o1 join t_order_item o2 on "
                 + "o1.order_id = o2.order_id where o1.status='FINISHED' and o2.order_item_id > 1024 and 1=1 order by "
                 + "o1.order_id desc";
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
-        assertEquals("INNER", ((JoinTableSegment) ((MySQLSelectStatement) sqlStatement).getFrom()).getJoinType());
+        assertThat(((JoinTableSegment) ((MySQLSelectStatement) sqlStatement).getFrom()).getJoinType(), is("INNER"));
         SqlNode sqlNode = SqlNodeConvertEngine.convert(sqlStatement);
         assertThat(sqlNode, instanceOf(SqlSelect.class));
         SqlSelect sqlSelect = (SqlSelect) sqlNode;
         assertThat(sqlSelect.getFrom(), instanceOf(SqlJoin.class));
-        assertEquals(1, sqlSelect.getOrderList().size());
+        assertThat(sqlSelect.getOrderList().size(), is(1));
     }
-
+    
     @Test
     public void testConvertLeftOuterJoin() {
         String sql = "select 10 + 30, o1.order_id + 10, o1.order_id, o1.user_id, o2.status from t_order o1 left outer join t_order_item o2 on "
