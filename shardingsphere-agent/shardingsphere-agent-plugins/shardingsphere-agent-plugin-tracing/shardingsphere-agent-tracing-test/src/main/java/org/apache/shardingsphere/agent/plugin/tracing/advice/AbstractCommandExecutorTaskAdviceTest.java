@@ -31,9 +31,9 @@ public abstract class AbstractCommandExecutorTaskAdviceTest implements AdviceTes
     @Getter
     private AdviceTargetObject targetObject;
     
+    @SuppressWarnings("ConstantConditions")
     @Override
-    @SuppressWarnings("all")
-    public void prepare() {
+    public final void prepare() {
         Object executorTask = new CommandExecutorTask(null, new BackendConnection(TransactionType.BASE), null, null);
         targetObject = (AdviceTargetObject) executorTask;
     }
