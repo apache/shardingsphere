@@ -180,20 +180,17 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     /**
      * Renew to persist meta data.
      *
-     * @param event schma added event
+     * @param event schema added event
      * @throws SQLException SQL exception
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent event) throws SQLException {
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
-        ShardingSphereMetaData metaData = buildMetaData(event);
-        metaDataMap.put(event.getSchemaName(), metaData);
+        persistSchema(event.getSchemaName());
+        ShardingSphereMetaData metaData = buildMetaData(event.getSchemaName());
         metaDataContexts.getOptimizeContextFactory().getSchemaMetadatas().getSchemas().put(event.getSchemaName(), new FederateSchemaMetadata(event.getSchemaName(), metaData.getSchema().getTables()));
-        metaDataContexts = new StandardMetaDataContexts(distMetaDataPersistService, metaDataMap, metaDataContexts.getGlobalRuleMetaData(), metaDataContexts.getExecutorEngine(),
-                metaDataContexts.getProps(), metaDataContexts.getOptimizeContextFactory());
-        distMetaDataPersistService.getSchemaMetaDataService().persist(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
+        metaDataContexts.getMetaDataMap().put(event.getSchemaName(), metaData);
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), 
-                metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
+                metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaData.getResource().getDataSources()));
     }
     
     /**
@@ -348,21 +345,19 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         return newMetaDataMap;
     }
     
-    private ShardingSphereMetaData buildMetaData(final SchemaAddedEvent event) throws SQLException {
-        String schemaName = event.getSchemaName();
-        if (!distMetaDataPersistService.getDataSourceService().isExisted(schemaName)) {
-            distMetaDataPersistService.getDataSourceService().persist(schemaName, new LinkedHashMap<>());
-        }
-        if (!distMetaDataPersistService.getSchemaRuleService().isExisted(schemaName)) {
-            distMetaDataPersistService.getSchemaRuleService().persist(schemaName, new LinkedList<>());
-        }
+    private void persistSchema(final String schemaName) {
+        distMetaDataPersistService.getDataSourceService().persist(schemaName, new LinkedHashMap<>());
+        distMetaDataPersistService.getSchemaRuleService().persist(schemaName, new LinkedList<>());
+        distMetaDataPersistService.getSchemaMetaDataService().persist(schemaName, new ShardingSphereSchema());
+    }
+    
+    private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName,
                 distMetaDataPersistService.getDataSourceService().load(schemaName)));
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
+        return new MetaDataContextsBuilder(dataSourcesMap,
                 Collections.singletonMap(schemaName, distMetaDataPersistService.getSchemaRuleService().load(schemaName)),
                 distMetaDataPersistService.getGlobalRuleService().load(), 
-                metaDataContexts.getProps().getProps());
-        return metaDataContextsBuilder.build(distMetaDataPersistService).getMetaDataMap().get(schemaName);
+                metaDataContexts.getProps().getProps()).build(distMetaDataPersistService).getMetaData(schemaName);
     }
     
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final ShardingSphereSchema schema, final String schemaName) {
@@ -421,10 +416,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceConfiguration>> dataSourcesConfigs) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>(dataSourcesConfigs.size(), 1);
-        for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourcesConfigs.entrySet()) {
-            result.put(entry.getKey(), DataSourceConverter.getDataSourceMap(entry.getValue()));
-        }
-        return result;
+        return dataSourcesConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
+            entry -> DataSourceConverter.getDataSourceMap(entry.getValue())));
     }
 }
