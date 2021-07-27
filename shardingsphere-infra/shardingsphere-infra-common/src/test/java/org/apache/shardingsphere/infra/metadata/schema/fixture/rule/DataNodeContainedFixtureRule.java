@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,7 +32,7 @@ import java.util.Optional;
 
 @Setter
 public final class DataNodeContainedFixtureRule implements DataNodeContainedRule, TableContainedRule {
-    
+
     private Map<String, String> actualTableNameMaps = new LinkedHashMap<>(4);
 
     private Map<String, Collection<DataNode>> nodeMap = new LinkedHashMap<>(2);
@@ -86,7 +87,7 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     }
     
     @Override
-    public boolean containsShardingBroadcastTables(final Collection<String> tables) {
-        return false;
+    public Collection<String> getAllTables() {
+        return Collections.emptyList();
     }
 }

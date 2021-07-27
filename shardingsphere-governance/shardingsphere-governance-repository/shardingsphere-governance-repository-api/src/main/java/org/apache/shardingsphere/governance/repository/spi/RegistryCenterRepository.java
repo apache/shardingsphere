@@ -17,56 +17,23 @@
 
 package org.apache.shardingsphere.governance.repository.spi;
 
+import org.apache.shardingsphere.infra.config.persist.repository.DistMetaDataPersistRepository;
 import org.apache.shardingsphere.governance.repository.api.config.RegistryCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Registry center repository.
  */
-public interface RegistryCenterRepository extends TypedSPI {
-    
-    /**
-     * Path separator.
-     */
-    String PATH_SEPARATOR = "/";
+public interface RegistryCenterRepository extends DistMetaDataPersistRepository {
     
     /**
      * Initialize registry center.
      *
-     * @param name registry center name
      * @param config registry center configuration
      */
-    void init(String name, RegistryCenterConfiguration config);
-    
-    /**
-     * Get data from registry center.
-     *
-     * <p>Maybe use cache if existed.</p>
-     *
-     * @param key key of data
-     * @return value of data
-     */
-    String get(String key);
-    
-    /**
-     * Get names of sub-node.
-     *
-     * @param key key of data
-     * @return sub-node names
-     */
-    List<String> getChildrenKeys(String key);
-    
-    /**
-     * Persist data.
-     *
-     * @param key key of data
-     * @param value value of data
-     */
-    void persist(String key, String value);
+    void init(RegistryCenterConfiguration config);
     
     /**
      * Persist ephemeral data.
@@ -75,13 +42,6 @@ public interface RegistryCenterRepository extends TypedSPI {
      * @param value value of data
      */
     void persistEphemeral(String key, String value);
-    
-    /**
-     * Delete node.
-     *
-     * @param key key of data
-     */
-    void delete(String key);
     
     /**
      * Watch key or path of governance server.
@@ -107,9 +67,4 @@ public interface RegistryCenterRepository extends TypedSPI {
      * @param key lock key
      */
     void releaseLock(String key);
-    
-    /**
-     * Close.
-     */
-    void close();
 }

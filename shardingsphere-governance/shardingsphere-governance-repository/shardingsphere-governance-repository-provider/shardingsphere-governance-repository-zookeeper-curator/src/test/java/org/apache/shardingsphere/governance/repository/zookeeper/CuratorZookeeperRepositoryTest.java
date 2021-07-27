@@ -61,7 +61,7 @@ import org.mockito.stubbing.VoidAnswer1;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -138,8 +138,8 @@ public final class CuratorZookeeperRepositoryTest {
         mockClient();
         mockField();
         mockBuilder();
-        RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), SERVER_LISTS, new Properties());
-        REPOSITORY.init("governance", config);
+        RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
+        REPOSITORY.init(config);
     }
     
     @SneakyThrows
@@ -171,9 +171,7 @@ public final class CuratorZookeeperRepositoryTest {
     private void mockField() {
         Field locksFiled = CuratorZookeeperRepository.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        Map<String, InterProcessLock> locks = new HashMap<>();
-        locks.put("/locks/glock", interProcessLock);
-        locksFiled.set(REPOSITORY, locks);
+        locksFiled.set(REPOSITORY, Collections.singletonMap("/locks/glock", interProcessLock));
     }
     
     private void mockBuilder() {
@@ -189,37 +187,35 @@ public final class CuratorZookeeperRepositoryTest {
     @Test
     @SneakyThrows
     public void assertPersist() {
-        when(existsBuilder.forPath(eq("/test"))).thenReturn(null);
-        when(protect.withMode(eq(CreateMode.PERSISTENT))).thenReturn(protect);
+        when(protect.withMode(CreateMode.PERSISTENT)).thenReturn(protect);
         REPOSITORY.persist("/test", "value1");
-        verify(protect).forPath(eq("/test"), eq("value1".getBytes(StandardCharsets.UTF_8)));
+        verify(protect).forPath("/test", "value1".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
     @SneakyThrows
     public void assertUpdate() {
-        when(existsBuilder.forPath(eq("/test"))).thenReturn(new Stat());
+        when(existsBuilder.forPath("/test")).thenReturn(new Stat());
         REPOSITORY.persist("/test", "value2");
-        verify(setDataBuilder).forPath(eq("/test"), eq("value2".getBytes(StandardCharsets.UTF_8)));
+        verify(setDataBuilder).forPath("/test", "value2".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
     @SneakyThrows
     public void assertPersistEphemeralNotExist() {
-        when(existsBuilder.forPath(eq("/test/ephemeral"))).thenReturn(null);
-        when(protect.withMode(eq(CreateMode.EPHEMERAL))).thenReturn(protect);
+        when(protect.withMode(CreateMode.EPHEMERAL)).thenReturn(protect);
         REPOSITORY.persistEphemeral("/test/ephemeral", "value3");
-        verify(protect).forPath(eq("/test/ephemeral"), eq("value3".getBytes(StandardCharsets.UTF_8)));
+        verify(protect).forPath("/test/ephemeral", "value3".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
     @SneakyThrows
     public void assertPersistEphemeralExist() {
-        when(existsBuilder.forPath(eq("/test/ephemeral"))).thenReturn(new Stat());
-        when(protect.withMode(eq(CreateMode.EPHEMERAL))).thenReturn(protect);
+        when(existsBuilder.forPath("/test/ephemeral")).thenReturn(new Stat());
+        when(protect.withMode(CreateMode.EPHEMERAL)).thenReturn(protect);
         REPOSITORY.persistEphemeral("/test/ephemeral", "value4");
-        verify(backgroundVersionable).forPath(eq("/test/ephemeral"));
-        verify(protect).forPath(eq("/test/ephemeral"), eq("value4".getBytes(StandardCharsets.UTF_8)));
+        verify(backgroundVersionable).forPath("/test/ephemeral");
+        verify(protect).forPath("/test/ephemeral", "value4".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
@@ -296,9 +292,9 @@ public final class CuratorZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
-        RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), SERVER_LISTS, new Properties());
+        RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.setProps(props);
-        REPOSITORY.init("governance", config);
+        REPOSITORY.init(config);
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
@@ -309,9 +305,9 @@ public final class CuratorZookeeperRepositoryTest {
     public void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
-        RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), SERVER_LISTS, new Properties());
+        RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.setProps(props);
-        REPOSITORY.init("governance", config);
+        REPOSITORY.init(config);
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
     }
     
@@ -319,9 +315,9 @@ public final class CuratorZookeeperRepositoryTest {
     public void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
-        RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), SERVER_LISTS, new Properties());
+        RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.setProps(props);
-        REPOSITORY.init("governance", config);
+        REPOSITORY.init(config);
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
     }
     
@@ -329,9 +325,9 @@ public final class CuratorZookeeperRepositoryTest {
     public void assertBuildCuratorClientWithDigest() {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
-        RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), SERVER_LISTS, new Properties());
+        RegistryCenterConfiguration config = new RegistryCenterConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.setProps(props);
-        REPOSITORY.init("governance", config);
+        REPOSITORY.init(config);
         assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
         verify(builder).aclProvider(any(ACLProvider.class));
     }
@@ -339,7 +335,6 @@ public final class CuratorZookeeperRepositoryTest {
     @Test
     @SneakyThrows
     public void assertDeleteNotExistKey() {
-        when(existsBuilder.forPath(eq("/test/children/1"))).thenReturn(null);
         REPOSITORY.delete("/test/children/1");
         verify(client, times(0)).delete();
     }
@@ -347,7 +342,7 @@ public final class CuratorZookeeperRepositoryTest {
     @Test
     @SneakyThrows
     public void assertDeleteExistKey() {
-        when(existsBuilder.forPath(eq("/test/children/1"))).thenReturn(new Stat());
+        when(existsBuilder.forPath("/test/children/1")).thenReturn(new Stat());
         when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
         REPOSITORY.delete("/test/children/1");
         verify(backgroundVersionable).forPath("/test/children/1");
@@ -356,14 +351,14 @@ public final class CuratorZookeeperRepositoryTest {
     @Test
     @SneakyThrows
     public void assertTryLock() {
-        when(interProcessLock.acquire(eq(5L), eq(TimeUnit.SECONDS))).thenReturn(true);
+        when(interProcessLock.acquire(5L, TimeUnit.SECONDS)).thenReturn(true);
         assertThat(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS), is(true));
     }
     
     @Test
     @SneakyThrows
     public void assertTryLockFailed() {
-        when(interProcessLock.acquire(eq(5L), eq(TimeUnit.SECONDS))).thenReturn(false);
+        when(interProcessLock.acquire(5L, TimeUnit.SECONDS)).thenReturn(false);
         assertThat(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS), is(false));
     }
 }

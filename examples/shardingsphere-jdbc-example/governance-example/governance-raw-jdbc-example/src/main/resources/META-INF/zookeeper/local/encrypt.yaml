@@ -16,9 +16,9 @@
 #
 
 governance:
-  name: demo_yaml_ds_encrypt
   registryCenter:
     type: ZooKeeper
+    namespace: demo_yaml_ds_encrypt
     serverLists: localhost:2181
   overwrite: true
 

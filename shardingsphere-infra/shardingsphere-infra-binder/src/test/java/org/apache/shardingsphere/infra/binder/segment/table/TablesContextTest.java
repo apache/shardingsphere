@@ -111,4 +111,44 @@ public final class TablesContextTest {
     private ColumnSegment createColumnSegment() {
         return new ColumnSegment(0, 0, new IdentifierValue("col"));
     }
+    
+    @Test
+    public void assertGetSchemaNameWithSameSchemaAndSameTable() {
+        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
+        SimpleTableSegment tableSegment2 = createTableSegment("table_1", "tbl_1");
+        tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
+        TablesContext tablesContext = new TablesContext(Arrays.asList(tableSegment1, tableSegment2));
+        assertTrue(tablesContext.getSchemaName().isPresent());
+        assertThat(tablesContext.getSchemaName().get(), is("sharding_db_1"));
+    }
+    
+    @Test
+    public void assertGetSchemaNameWithSameSchemaAndDifferentTable() {
+        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
+        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
+        TablesContext tablesContext = new TablesContext(Arrays.asList(tableSegment1, tableSegment2));
+        assertTrue(tablesContext.getSchemaName().isPresent());
+        assertThat(tablesContext.getSchemaName().get(), is("sharding_db_1"));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertGetSchemaNameWithDifferentSchemaAndSameTable() {
+        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
+        SimpleTableSegment tableSegment2 = createTableSegment("table_1", "tbl_1");
+        tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_2")));
+        new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).getSchemaName();
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertGetSchemaNameWithDifferentSchemaAndDifferentTable() {
+        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        tableSegment1.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_1")));
+        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        tableSegment2.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db_2")));
+        new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).getSchemaName();
+    }
 }

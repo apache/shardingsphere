@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -101,7 +102,7 @@ public final class BackendConnectionTest {
     private void setMetaDataContexts() throws ReflectiveOperationException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), new StandardMetaDataContexts(createMetaDataMap(), 
+        field.set(ProxyContext.getInstance(), new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), createMetaDataMap(), 
                 mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class)));
     }
     
@@ -320,22 +321,22 @@ public final class BackendConnectionTest {
     @Test
     public void assertGetConnectionsWithoutTransactions() throws SQLException {
         backendConnection.getTransactionStatus().setInTransaction(false);
-        List<Connection> connectionList = MockConnectionUtil.mockNewConnections(1);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(connectionList);
+        List<Connection> connections = MockConnectionUtil.mockNewConnections(1);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(connections);
         List<Connection> fetchedConnections = backendConnection.getConnections("ds1", 1, null);
         assertThat(fetchedConnections.size(), is(1));
-        assertTrue(fetchedConnections.contains(connectionList.get(0)));
-        assertConnectionsCached("ds1", connectionList);
+        assertTrue(fetchedConnections.contains(connections.get(0)));
+        assertConnectionsCached("ds1", connections);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private void assertConnectionsCached(final String dataSourceName, final Collection<Connection> collectionList) {
+    private void assertConnectionsCached(final String dataSourceName, final Collection<Connection> connections) {
         Field field = backendConnection.getClass().getDeclaredField("cachedConnections");
         field.setAccessible(true);
         Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) field.get(backendConnection);
         assertTrue(cachedConnections.containsKey(dataSourceName));
-        assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), collectionList.toArray());
+        assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), connections.toArray());
     }
     
     @SuppressWarnings("unchecked")

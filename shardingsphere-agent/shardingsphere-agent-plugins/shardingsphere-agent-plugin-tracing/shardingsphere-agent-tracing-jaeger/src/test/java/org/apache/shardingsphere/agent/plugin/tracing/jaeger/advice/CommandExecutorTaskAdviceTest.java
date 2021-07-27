@@ -22,14 +22,15 @@ import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.collector.JaegerCollector;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     
     private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
     
-    private static final Map<String, Object> EXPECTED = Maps.newHashMap();
+    private static final Map<String, Object> EXPECTED = new HashMap<>(2, 1);
     
     @BeforeClass
     public static void setup() {

@@ -38,31 +38,31 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
                 each.getConnection().close();
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Data sources can't connected!", ex);
+            throw new PrepareFailedException("Data sources can not connect.", ex);
         }
     }
     
     @Override
-    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final Collection<String> tableNames) {
+    public final void checkTargetTable(final Collection<? extends DataSource> dataSources, final Collection<String> tableNames) {
         try {
             for (DataSource each : dataSources) {
                 checkEmpty(each, tableNames);
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Check target table failed!", ex);
+            throw new PrepareFailedException("Check target table failed.", ex);
         }
     }
     
     private void checkEmpty(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
         for (String each : tableNames) {
-            try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(getSqlBuilder().buildCheckEmptySQL(each));
+            try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(getSQLBuilder().buildCheckEmptySQL(each));
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    throw new PrepareFailedException(String.format("Target table [%s] is not empty!", each));
+                    throw new PrepareFailedException(String.format("Target table `%s` is not empty.", each));
                 }
             }
         }
     }
     
-    protected abstract ScalingSQLBuilder getSqlBuilder();
+    protected abstract ScalingSQLBuilder getSQLBuilder();
 }

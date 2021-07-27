@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry.cache.subscriber;
 
 import org.apache.shardingsphere.governance.core.registry.cache.RegistryCacheManager;
-import org.apache.shardingsphere.governance.core.registry.config.service.impl.SchemaRulePersistService;
+import org.apache.shardingsphere.infra.config.persist.service.impl.SchemaRulePersistService;
 import org.apache.shardingsphere.governance.repository.spi.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,6 +70,6 @@ public final class ScalingRegistrySubscriberTest {
 //    @SneakyThrows({IOException.class, URISyntaxException.class})
 //    private String readYAML() {
 //        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/regcenter/data-schema-rule.yaml").toURI()))
-//                .stream().filter(each -> !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+//                .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
 //    }
 }
