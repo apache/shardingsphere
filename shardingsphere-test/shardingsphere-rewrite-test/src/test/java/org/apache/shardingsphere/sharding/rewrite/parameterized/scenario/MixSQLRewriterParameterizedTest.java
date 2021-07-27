@@ -42,14 +42,13 @@ import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.junit.runners.Parameterized.Parameters;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,6 +60,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterParameterizedTest {
     
@@ -85,7 +87,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
         ShardingSphereSchema schema = mockSchema();
         ConfigurationProperties props = new ConfigurationProperties(ruleConfigurations.getProps());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", Mockito.mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", mock(ShardingSphereResource.class), new ShardingSphereRuleMetaData(Collections.emptyList(), rules), schema);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), getTestParameters().getInputParameters(), 
                 sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false), DefaultSchema.LOGIC_NAME);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
@@ -103,31 +105,31 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     }
     
     private ShardingSphereSchema mockSchema() {
-        ShardingSphereSchema result = Mockito.mock(ShardingSphereSchema.class);
-        Mockito.when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
-        TableMetaData accountTableMetaData = Mockito.mock(TableMetaData.class);
-        Mockito.when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
+        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
+        when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
+        TableMetaData accountTableMetaData = mock(TableMetaData.class);
+        when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
         Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
         indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
-        Mockito.when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
-        Mockito.when(result.containsTable("t_account")).thenReturn(true);
-        Mockito.when(result.get("t_account")).thenReturn(accountTableMetaData);
-        TableMetaData accountBakTableMetaData = Mockito.mock(TableMetaData.class);
-        Mockito.when(accountBakTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
-        Mockito.when(result.containsTable("t_account_bak")).thenReturn(true);
-        Mockito.when(result.get("t_account_bak")).thenReturn(accountBakTableMetaData);
-        Mockito.when(result.get("t_account_detail")).thenReturn(Mockito.mock(TableMetaData.class));
-        Mockito.when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
-        Mockito.when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
+        when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
+        when(result.containsTable("t_account")).thenReturn(true);
+        when(result.get("t_account")).thenReturn(accountTableMetaData);
+        TableMetaData accountBakTableMetaData = mock(TableMetaData.class);
+        when(accountBakTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
+        when(result.containsTable("t_account_bak")).thenReturn(true);
+        when(result.get("t_account_bak")).thenReturn(accountBakTableMetaData);
+        when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
+        when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
+        when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         return result;
     }
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>(4, 1);
         result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, true, true, false));
-        result.put("password", Mockito.mock(ColumnMetaData.class));
-        result.put("amount", Mockito.mock(ColumnMetaData.class));
-        result.put("status", Mockito.mock(ColumnMetaData.class));
+        result.put("password", mock(ColumnMetaData.class));
+        result.put("amount", mock(ColumnMetaData.class));
+        result.put("status", mock(ColumnMetaData.class));
         return result;
     }
 }
