@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
@@ -30,7 +29,6 @@ import java.lang.reflect.Method;
 /**
  * Command executor task advice.
  */
-@Slf4j
 public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
     
     private static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
@@ -46,7 +44,6 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         if (MethodNameConstant.COMMAND_EXECUTOR_RUN.equals(method.getName())) {
             ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
-            log.info("run....1");
         }
     }
 
@@ -58,11 +55,9 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
                 MetricsReporter.recordTime(PROXY_EXECUTE_LATENCY_MILLIS, elapsedTime);
             } finally {
                 ElapsedTimeThreadLocal.INSTANCE.remove();
-                log.info("run....2");
             }
         } else if (MethodNameConstant.COMMAND_EXECUTOR_EXCEPTION.equals(method.getName())) {
             MetricsReporter.counterIncrement(PROXY_EXECUTE_ERROR_TOTAL);
-            log.info("exception....2");
         }
     }
 }

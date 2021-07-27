@@ -66,7 +66,7 @@ public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         commandExecutorTaskAdvice.afterMethod(targetObject, processException, new Object[]{}, new MethodInvocationResult());
         Map<String, DoubleAdder> adderMap = (Map<String, DoubleAdder>) ReflectiveUtil.getFieldValue(getFixturemetricsregister(), "COUNTER_MAP");
-        assertThat(adderMap.size(), org.hamcrest.Matchers.greaterThan(1));
+        assertThat(adderMap.size(), org.hamcrest.Matchers.greaterThan(0));
         DoubleAdder doubleAdder = adderMap.get("proxy_execute_error_total");
         assertNotNull(doubleAdder);
     }
