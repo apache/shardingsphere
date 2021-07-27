@@ -62,11 +62,6 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private static final int IDENTITY_COLUMN_START_MINOR_VERSION = 1;
 
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource) throws SQLException {
-        return loadTableMetaDataMap(dataSource, Collections.emptyList());
-    }
-
-    @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         return loadTableMetaDataMap(dataSource, existedTables);
     }

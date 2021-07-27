@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder;
 
-
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -127,7 +126,7 @@ public final class SchemaBuilderH2Test {
         resultSet1 = mockPrimaryKeysMetaDataResultSet1();
         when(connection1.prepareStatement(primarySql1).executeQuery()).thenReturn(resultSet1);
         resultSet1 = mockGeneratedInfoResultSet1();
-        when(connection1.prepareStatement(generatedInfoSql).executeQuery()).thenReturn(resultSet1);
+        when(connection1.prepareStatement(contains(generatedInfoSql)).executeQuery()).thenReturn(resultSet1);
 
         Connection connection2 = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(dataSource2.getConnection()).thenReturn(connection2);
@@ -142,7 +141,7 @@ public final class SchemaBuilderH2Test {
         resultSet2 = mockPrimaryKeysMetaDataResultSet2();
         when(connection2.prepareStatement(primarySql2).executeQuery()).thenReturn(resultSet2);
         resultSet2 = mockGeneratedInfoResultSet2();
-        when(connection2.prepareStatement(generatedInfoSql).executeQuery()).thenReturn(resultSet2);
+        when(connection2.prepareStatement(contains(generatedInfoSql)).executeQuery()).thenReturn(resultSet2);
 
         Map<TableMetaData, TableMetaData> tableMetaDatas = SchemaBuilder.build(schemaBuilderMaterials);
         assertThat(tableMetaDatas.keySet().size(), is(3));

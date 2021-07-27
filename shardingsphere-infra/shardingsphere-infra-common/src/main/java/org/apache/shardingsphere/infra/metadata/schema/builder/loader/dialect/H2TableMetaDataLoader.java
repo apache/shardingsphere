@@ -59,11 +59,6 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
     private static final String GENERATED_INFO_SQL_WITH_EXISTED_TABLES = GENERATED_INFO_SQL + " AND TABLE_NAME NOT IN (%s)";
 
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource) throws SQLException {
-        return loadTableMetaDataMap(dataSource, Collections.emptyList());
-    }
-
-    @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         return loadTableMetaDataMap(dataSource, existedTables);
     }

@@ -55,11 +55,6 @@ public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataL
             + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
 
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource) throws SQLException {
-        return loadTableMetaDataMap(dataSource, Collections.emptyList());
-    }
-
-    @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         return loadTableMetaDataMap(dataSource, existedTables);
     }

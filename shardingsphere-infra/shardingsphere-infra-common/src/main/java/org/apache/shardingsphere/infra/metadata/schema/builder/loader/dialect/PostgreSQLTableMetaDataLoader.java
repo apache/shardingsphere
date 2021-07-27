@@ -57,11 +57,6 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname FROM pg_indexes WHERE schemaname = ?";
 
     @Override
-    public Map<String, TableMetaData> load(final DataSource dataSource) throws SQLException {
-        return load(dataSource, Collections.emptyList());
-    }
-
-    @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaDataMap(dataSource);
