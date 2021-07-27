@@ -122,13 +122,11 @@ public final class ScalingUtil {
      */
     public Map<String, Tuple2<Boolean, Boolean>> getJobCheckResult(final String jobId) throws IOException {
         JsonElement response = getInstance().get(scalingUrl + "/scaling/job/check/" + jobId);
-        return response.getAsJsonObject().getAsJsonObject("model").getAsJsonObject().entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, this::createTaskResult));
+        return response.getAsJsonObject().getAsJsonObject("model").getAsJsonObject().entrySet().stream().collect(Collectors.toMap(Entry::getKey, this::createTaskResult));
     }
     
     private Tuple2<Boolean, Boolean> createTaskResult(final Entry<String, JsonElement> entry) {
-        return new Tuple2<>(entry.getValue().getAsJsonObject().get("countValid").getAsBoolean(),
-                entry.getValue().getAsJsonObject().get("dataValid").getAsBoolean());
+        return new Tuple2<>(entry.getValue().getAsJsonObject().get("countValid").getAsBoolean(), entry.getValue().getAsJsonObject().get("dataValid").getAsBoolean());
     }
     
     /**
