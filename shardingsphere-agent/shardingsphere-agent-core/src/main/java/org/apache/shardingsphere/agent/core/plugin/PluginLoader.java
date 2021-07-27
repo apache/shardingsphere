@@ -112,7 +112,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
                 outputStream.reset();
                 JarFile jar = new JarFile(each, true);
                 jars.add(new PluginJar(jar, each));
-                log.info("Loaded jar {}.", each.getName());
+                log.info("Loaded jar {}", each.getName());
             }
         }
         loadPluginDefinitionServices(ignoredPluginNames, pointMap);
@@ -205,11 +205,11 @@ public final class PluginLoader extends ClassLoader implements Closeable {
                     byte[] data = ByteStreams.toByteArray(each.jarFile.getInputStream(entry));
                     return defineClass(name, data, 0, data.length);
                 } catch (final IOException ex) {
-                    log.error("Failed to load class {}.", name, ex);
+                    log.error("Failed to load class {}", name, ex);
                 }
             }
         }
-        throw new ClassNotFoundException(String.format("Class name is %s not found.", name));
+        throw new ClassNotFoundException(String.format("Class name is %s not found", name));
     }
     
     @Override

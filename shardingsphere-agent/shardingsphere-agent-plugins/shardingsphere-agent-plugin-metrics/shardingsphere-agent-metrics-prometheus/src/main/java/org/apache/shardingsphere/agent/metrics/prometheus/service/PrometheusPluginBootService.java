@@ -77,7 +77,7 @@ public final class PrometheusPluginBootService implements PluginBootService {
         }
         try {
             httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
-            log.info("Prometheus metrics HTTP server `{}:{}` start success.", inetSocketAddress.getHostString(), inetSocketAddress.getPort());
+            log.info("Prometheus metrics HTTP server `{}:{}` start success", inetSocketAddress.getHostString(), inetSocketAddress.getPort());
         } catch (final IOException ex) {
             log.error("Prometheus metrics HTTP server start fail", ex);
         }
