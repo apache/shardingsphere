@@ -7,7 +7,7 @@ weight = 3
 ## Pull Official Docker Image
 
 ```bash
-docker pull apache/shardingsphere-proxy
+docker pull apache/sharding-proxy
 ```
 
 ## Build Docker Image Manually (Optional)
