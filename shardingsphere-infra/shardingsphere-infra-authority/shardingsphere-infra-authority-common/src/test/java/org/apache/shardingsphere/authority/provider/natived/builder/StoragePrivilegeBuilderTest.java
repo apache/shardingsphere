@@ -35,12 +35,13 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class StoragePrivilegeBuilderTest {
-
+    
     @Test
     public void testBuildInCache() {
         Collection<ShardingSphereMetaData> metaDataList = new LinkedList<>();
@@ -49,9 +50,9 @@ public final class StoragePrivilegeBuilderTest {
         users.add(root);
         Map<ShardingSphereUser, NativePrivileges> result = StoragePrivilegeBuilder.build(metaDataList, users);
         assertThat(result.size(), is(1));
-        assertThat(result.get(root).hasPrivileges(Collections.singletonList(PrivilegeType.SUPER)), is(true));
+        assertTrue(result.get(root).hasPrivileges(Collections.singletonList(PrivilegeType.SUPER)));
     }
-
+    
     @Test
     public void testBuildPrivilegesInStorage() throws SQLException {
         Collection<ShardingSphereUser> users = new LinkedList<>();
@@ -67,19 +68,19 @@ public final class StoragePrivilegeBuilderTest {
         expected.add(PrivilegeType.UPDATE);
         expected.add(PrivilegeType.RELOAD);
         expected.add(PrivilegeType.SHUTDOWN);
-        assertThat(result.get(root).hasPrivileges(expected), is(true));
+        assertTrue(result.get(root).hasPrivileges(expected));
     }
-
+    
     private ShardingSphereMetaData mockShardingSphereMetaData(final Collection<ShardingSphereUser> users) throws SQLException {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         DataSource dataSource = mockDataSourceForPrivileges(users);
         Collection<DataSource> dataSourceList = Collections.singletonList(dataSource);
-        when(metaData.getResource().getAllInstanceDataSources()).thenReturn(dataSourceList);
+        when(result.getResource().getAllInstanceDataSources()).thenReturn(dataSourceList);
         Collection<ShardingSphereRule> empty = Collections.emptyList();
-        when(metaData.getRuleMetaData().getRules()).thenReturn(empty);
-        return metaData;
+        when(result.getRuleMetaData().getRules()).thenReturn(empty);
+        return result;
     }
-
+    
     private DataSource mockDataSourceForPrivileges(final Collection<ShardingSphereUser> users) throws SQLException {
         ResultSet globalPrivilegeResultSet = mockGlobalPrivilegeResultSet();
         ResultSet schemaPrivilegeResultSet = mockSchemaPrivilegeResultSet();
@@ -95,7 +96,7 @@ public final class StoragePrivilegeBuilderTest {
         when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         return result;
     }
-
+    
     private ResultSet mockGlobalPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false, true, true, false);
@@ -132,7 +133,7 @@ public final class StoragePrivilegeBuilderTest {
         when(result.getString("host")).thenReturn("localhost");
         return result;
     }
-
+    
     private ResultSet mockSchemaPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
@@ -160,7 +161,7 @@ public final class StoragePrivilegeBuilderTest {
         when(result.getString("host")).thenReturn("localhost");
         return result;
     }
-
+    
     private ResultSet mockTablePrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, false);

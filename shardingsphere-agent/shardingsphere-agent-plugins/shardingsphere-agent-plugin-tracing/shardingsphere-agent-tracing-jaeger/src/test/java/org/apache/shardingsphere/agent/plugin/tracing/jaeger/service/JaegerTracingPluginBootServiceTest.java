@@ -19,15 +19,17 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 
 import io.opentracing.noop.NoopTracerFactory;
 import io.opentracing.util.GlobalTracer;
-import java.lang.reflect.Field;
-import java.util.Properties;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class JaegerTracingPluginBootServiceTest {
     
@@ -42,7 +44,7 @@ public final class JaegerTracingPluginBootServiceTest {
         props.setProperty("JAEGER_REPORTER_FLUSH_INTERVAL", "1");
         PluginConfiguration configuration = new PluginConfiguration("localhost", 5775, "", props);
         jaegerTracingPluginBootService.start(configuration);
-        assertThat(GlobalTracer.isRegistered(), is(true));
+        assertTrue(GlobalTracer.isRegistered());
     }
     
     @Test

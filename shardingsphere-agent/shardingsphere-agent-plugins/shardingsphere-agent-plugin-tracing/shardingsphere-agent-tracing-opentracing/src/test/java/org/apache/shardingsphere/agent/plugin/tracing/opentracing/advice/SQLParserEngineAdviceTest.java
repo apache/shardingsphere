@@ -20,21 +20,22 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.FieldReader;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class SQLParserEngineAdviceTest {
     
@@ -79,7 +80,7 @@ public final class SQLParserEngineAdviceTest {
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
-        assertThat(span.tags().get("error"), is(true));
+        assertTrue((boolean) span.tags().get("error"));
         List<MockSpan.LogEntry> entries = span.logEntries();
         assertThat(entries.size(), is(1));
         Map<String, ?> fields = entries.get(0).fields();

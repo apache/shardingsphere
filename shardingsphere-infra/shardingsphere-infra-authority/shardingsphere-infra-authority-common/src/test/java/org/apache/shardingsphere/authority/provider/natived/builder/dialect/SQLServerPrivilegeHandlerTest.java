@@ -29,10 +29,10 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.DatabaseMetaData;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,10 +43,11 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public final class SQLServerPrivilegeHandlerTest {
     
@@ -92,12 +93,9 @@ public final class SQLServerPrivilegeHandlerTest {
         assertThat(actual.get(dbo).getAdministrativePrivileges().getPrivileges().size(), is(2));
         Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.CONNECT, PrivilegeType.SHUTDOWN));
         assertThat(actual.get(dbo).getAdministrativePrivileges().getPrivileges(), is(expectedAdminPrivileges));
-
-        Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE,
-                PrivilegeType.DELETE));
+        Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE, PrivilegeType.DELETE));
         SchemaPrivileges schemaPrivileges = actual.get(dbo).getDatabasePrivileges().getSpecificPrivileges().get("db0");
-        assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
-        
+        assertTrue(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege));
         ShardingSphereUser testUser = new ShardingSphereUser("testUser", "", "");
         assertThat(actual.get(testUser).getAdministrativePrivileges().getPrivileges().size(), is(0));
         assertThat(actual.get(testUser).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
@@ -105,7 +103,7 @@ public final class SQLServerPrivilegeHandlerTest {
     }
     
     private Collection<ShardingSphereUser> createUsers() {
-        LinkedList<ShardingSphereUser> result = new LinkedList<>();
+        Collection<ShardingSphereUser> result = new LinkedList<>();
         result.add(new ShardingSphereUser("dbo", "password", ""));
         result.add(new ShardingSphereUser("testUser", "password", ""));
         return result;
@@ -194,12 +192,12 @@ public final class SQLServerPrivilegeHandlerTest {
     
     private void assertCreateUsers(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
         for (ShardingSphereUser each : users) {
-            StringBuilder result = new StringBuilder();
-            result.append(String.format("CREATE LOGIN %s WITH PASSWORD = '%s';", each.getGrantee().getUsername(), each.getPassword())).append("\n");
-            result.append("GO").append("\n");
-            result.append(String.format("CREATE USER %s FOR LOGIN %s;\n", each.getGrantee().getUsername(), each.getGrantee().getUsername()));
-            result.append("GO");
-            verify(statement).execute(result.toString());
+            StringBuilder sql = new StringBuilder();
+            sql.append(String.format("CREATE LOGIN %s WITH PASSWORD = '%s';", each.getGrantee().getUsername(), each.getPassword())).append("\n");
+            sql.append("GO").append("\n");
+            sql.append(String.format("CREATE USER %s FOR LOGIN %s;\n", each.getGrantee().getUsername(), each.getGrantee().getUsername()));
+            sql.append("GO");
+            verify(statement).execute(sql.toString());
         }
     }
     
@@ -211,9 +209,6 @@ public final class SQLServerPrivilegeHandlerTest {
     }
     
     private String getDatabaseName(final String url) {
-        if (url.contains("?")) {
-            return url.substring(url.indexOf("DatabaseName=") + 1, url.indexOf("?"));
-        }
-        return url.substring(url.indexOf("DatabaseName=") + 1);
+        return url.contains("?") ? url.substring(url.indexOf("DatabaseName=") + 1, url.indexOf("?")) : url.substring(url.indexOf("DatabaseName=") + 1);
     }
 }
