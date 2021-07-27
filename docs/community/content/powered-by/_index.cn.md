@@ -13,7 +13,12 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 168 家公司。
+共计 169 家公司。
+
+### 基础设施
+<ul>
+    <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
+</ul>
 
 ### 金融行业
 <ul>

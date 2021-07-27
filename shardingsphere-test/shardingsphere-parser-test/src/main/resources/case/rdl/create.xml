@@ -42,6 +42,26 @@
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456"/>
         <data-source name="ds_1" url="jdbc:mysql://127.0.0.1:3306/test1" user="ROOT" password="123456"/>
     </add-resource>
+
+    <add-resource sql-case-id="add-resource-single-with-properties">
+        <data-source name="ds_0" host-name="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
+            <properties>
+                <property key="maxPoolSize" value="30"/>
+            </properties>
+        </data-source>
+    </add-resource>
+
+    <add-resource sql-case-id="add-resource-url-single-with-empty-properties">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password=""/>
+    </add-resource>
+
+    <add-resource sql-case-id="add-resource-url-single-with-properties">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456">
+            <properties>
+                <property key="maxPoolSize" value="30"/>
+            </properties>
+        </data-source>
+    </add-resource>
     
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">

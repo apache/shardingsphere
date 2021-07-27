@@ -50,11 +50,13 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class GovernanceShardingSphereDataSourceTest {
     
@@ -71,13 +73,13 @@ public final class GovernanceShardingSphereDataSourceTest {
     }
     
     private static GovernanceConfiguration getGovernanceConfiguration() {
-        return new GovernanceConfiguration("test_name", getRegistryCenterConfiguration(), true);
+        return new GovernanceConfiguration(getRegistryCenterConfiguration(), true);
     }
     
     private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("overwrite", "true");
-        return new RegistryCenterConfiguration("GOV_TEST", "localhost:3181", properties);
+        return new RegistryCenterConfiguration("GOV_TEST", "test_name", "localhost:3181", properties);
     }
     
     @Test
@@ -88,7 +90,10 @@ public final class GovernanceShardingSphereDataSourceTest {
     @Test
     public void assertRenewRules() throws SQLException {
         metaDataContexts.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getReadwriteSplittingRuleConfiguration())));
-        assertThat(((ShardingRule) metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().iterator().next()).getTableRules().size(), is(1));
+        Optional<ShardingRule> rule = metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream()
+                .filter(each -> each instanceof ShardingRule).map(each -> (ShardingRule) each).findFirst();
+        assertTrue(rule.isPresent());
+        assertThat(rule.get().getTableRules().size(), is(1));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {

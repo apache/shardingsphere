@@ -45,7 +45,7 @@ public final class GovernanceContainerCompose extends ContainerCompose {
         super(clusterName, parameterizedArray);
         this.storageContainer = createStorageContainer();
         this.adapterContainer = createAdapterContainer();
-        this.storageContainer.setNetworkAliases(Collections.singletonList("mysql.sharding-governance.host"));
+        this.storageContainer.setNetworkAliases(Collections.singletonList(parameterizedArray.getDatabaseType().getName().toLowerCase() + ".sharding_governance.host"));
         // TODO support other types of governance
         ZookeeperContainer zookeeperContainer = createZookeeperContainer();
         if ("proxy".equals(parameterizedArray.getAdapter())) {
@@ -64,7 +64,7 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     
     @Override
     public Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2);
+        Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("adapterForWriter", adapterContainer.getDataSource());
         result.put("adapterForReader", adapterContainerForReader.getDataSource());
         return result;

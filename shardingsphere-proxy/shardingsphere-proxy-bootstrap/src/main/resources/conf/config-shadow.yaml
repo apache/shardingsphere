@@ -34,7 +34,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #  shadow_ds:
 #    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1?serverTimezone=UTC&useSSL=false
 #    username: postgres
@@ -44,8 +43,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
-#
 #
 #rules:
 #- !SHADOW
@@ -74,7 +71,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #  shadow_ds:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
 #    username: root
@@ -84,7 +80,6 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #    minPoolSize: 1
-#    maintenanceIntervalMilliseconds: 30000
 #
 #rules:
 #- !SHADOW

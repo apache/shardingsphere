@@ -16,8 +16,8 @@
 #
 
 governance:
-  name: demo_yaml_ds_sharding
   registryCenter:
     type: ZooKeeper
+    namespace: demo_yaml_ds_sharding
     serverLists: localhost:2181
   overwrite: false

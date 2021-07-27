@@ -150,7 +150,7 @@ public final class DataNodesTest {
     }
     
     private DataNodes getRoutedRuleDataNodes() {
-        Map<String, Collection<DataNode>> nodeMap = new HashMap<>();
+        Map<String, Collection<DataNode>> nodeMap = new HashMap<>(2, 1);
         nodeMap.put(logicTableName1, getExpectedDataNodes(dataSourceNames1, logicTableName1));
         nodeMap.put(logicTableName2, getExpectedDataNodes(dataSourceNames2, logicTableName2));
         DataNodeContainedRule rule1 = mock(DataNodeContainedRule.class);

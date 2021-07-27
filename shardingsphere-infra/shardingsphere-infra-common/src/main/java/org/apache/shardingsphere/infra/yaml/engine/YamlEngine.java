@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.yaml.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;

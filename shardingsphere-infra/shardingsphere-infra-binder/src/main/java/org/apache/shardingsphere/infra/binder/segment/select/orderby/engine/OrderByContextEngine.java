@@ -61,7 +61,7 @@ public final class OrderByContextEngine {
                 return null != result ? result : getDefaultOrderByContextWithoutOrderBy(groupByContext);
             } else if (selectStatement instanceof MySQLSelectStatement) {
                 Optional<OrderByContext> result = createOrderByContextForMySQLSelectWithoutOrderBy(schema, selectStatement, groupByContext);
-                return result.orElse(getDefaultOrderByContextWithoutOrderBy(groupByContext));
+                return result.orElseGet(() -> getDefaultOrderByContextWithoutOrderBy(groupByContext));
             }
             return getDefaultOrderByContextWithoutOrderBy(groupByContext);
         }

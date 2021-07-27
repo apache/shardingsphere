@@ -46,14 +46,17 @@ public final class BroadcastDatabaseBackendHandler implements DatabaseBackendHan
     @Override
     public ResponseHeader execute() throws SQLException {
         String originalSchema = backendConnection.getSchemaName();
-        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-            backendConnection.setCurrentSchema(each);
-            if (!ProxyContext.getInstance().getMetaData(each).isComplete()) {
-                throw new RuleNotExistedException();
+        try {
+            for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
+                backendConnection.setCurrentSchema(each);
+                if (!ProxyContext.getInstance().getMetaData(each).isComplete()) {
+                    throw new RuleNotExistedException();
+                }
+                databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection).execute();
             }
-            databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, backendConnection).execute();
+        } finally {
+            backendConnection.setCurrentSchema(originalSchema);
         }
-        backendConnection.setCurrentSchema(originalSchema);
         return new UpdateResponseHeader(sqlStatementContext.getSqlStatement());
     }
 }

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.optimize.core.metadata.FederateSchemaMetadata;
 import org.apache.shardingsphere.infra.optimize.core.metadata.refresher.type.AlterTableStatementFederateRefresher;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -41,60 +40,44 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterTableStatement;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class AlterTableStatementFederateRefresherTest {
-
-    private final SchemaBuilderMaterials materials = mock(SchemaBuilderMaterials.class);
-
+    
+    @Mock
+    private SchemaBuilderMaterials materials;
+    
     @Test
     public void refreshTableWithRule() throws SQLException {
-        when(materials.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         refreshTableWithRule(new MySQLAlterTableStatement());
-        when(materials.getDatabaseType()).thenReturn(new OracleDatabaseType());
         refreshTableWithRule(new OracleAlterTableStatement());
-        when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         refreshTableWithRule(new PostgreSQLAlterTableStatement());
-        when(materials.getDatabaseType()).thenReturn(new SQLServerDatabaseType());
         refreshTableWithRule(new SQLServerAlterTableStatement());
-        when(materials.getDatabaseType()).thenReturn(new SQL92DatabaseType());
         refreshTableWithRule(new SQL92AlterTableStatement());
     }
     
     private void refreshTableWithRule(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         TableContainedRule rule = mock(TableContainedRule.class);
-        Collection<ShardingSphereRule> rules = Collections.singletonList(rule);
-        when(materials.getRules()).thenReturn(rules);
         when(rule.getTables()).thenReturn(Collections.singletonList("t_order"));
-        when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSourceMap.get(eq("ds"))).thenReturn(dataSource);
-        Connection connection = mock(Connection.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(connection.getMetaData()).thenReturn(metaData);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(metaData.getTables(any(), any(), any(), any())).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(false);
+        when(materials.getRules()).thenReturn(Collections.singletonList(rule));
         FederateRefresher<AlterTableStatement> federateRefresher = new AlterTableStatementFederateRefresher();
         FederateSchemaMetadata schema = buildSchema();
         federateRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
@@ -118,17 +101,9 @@ public final class AlterTableStatementFederateRefresherTest {
     private void refreshTableWithoutRule(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(
                 new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
-        Map<String, DataSource> dataSourceMap = mock(HashMap.class);
-        when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSourceMap.get(eq("ds"))).thenReturn(dataSource);
-        Connection connection = mock(Connection.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(connection.getMetaData()).thenReturn(metaData);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(metaData.getTables(any(), any(), any(), any())).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(false);
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
+        when(materials.getDataSourceMap()).thenReturn(Collections.singletonMap("ds", dataSource));
         FederateRefresher<AlterTableStatement> federateRefresher = new AlterTableStatementFederateRefresher();
         FederateSchemaMetadata schema = buildSchema();
         federateRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
@@ -137,36 +112,19 @@ public final class AlterTableStatementFederateRefresherTest {
     
     @Test
     public void renameTableWithRule() throws SQLException {
-        when(materials.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         renameTableWithRule(new MySQLAlterTableStatement());
-        when(materials.getDatabaseType()).thenReturn(new OracleDatabaseType());
         renameTableWithRule(new OracleAlterTableStatement());
-        when(materials.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         renameTableWithRule(new PostgreSQLAlterTableStatement());
-        when(materials.getDatabaseType()).thenReturn(new SQLServerDatabaseType());
         renameTableWithRule(new SQLServerAlterTableStatement());
-        when(materials.getDatabaseType()).thenReturn(new SQL92DatabaseType());
         renameTableWithRule(new SQL92AlterTableStatement());
     }
     
     private void renameTableWithRule(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         alterTableStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
-        Map<String, DataSource> dataSourceMap = mock(HashMap.class);
         TableContainedRule rule = mock(TableContainedRule.class);
-        Collection<ShardingSphereRule> rules = Collections.singletonList(rule);
-        when(materials.getRules()).thenReturn(rules);
         when(rule.getTables()).thenReturn(Arrays.asList("t_order", "t_order_new"));
-        when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSourceMap.get(eq("ds"))).thenReturn(dataSource);
-        Connection connection = mock(Connection.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(connection.getMetaData()).thenReturn(metaData);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(metaData.getTables(any(), any(), any(), any())).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(false);
+        when(materials.getRules()).thenReturn(Collections.singletonList(rule));
         FederateRefresher<AlterTableStatement> federateRefresher = new AlterTableStatementFederateRefresher();
         FederateSchemaMetadata schema = buildSchema();
         federateRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
@@ -191,17 +149,9 @@ public final class AlterTableStatementFederateRefresherTest {
     private void renameTableWithoutRule(final AlterTableStatement alterTableStatement) throws SQLException {
         alterTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         alterTableStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_new"))));
-        Map<String, DataSource> dataSourceMap = mock(HashMap.class);
-        when(materials.getDataSourceMap()).thenReturn(dataSourceMap);
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSourceMap.get(eq("ds"))).thenReturn(dataSource);
-        Connection connection = mock(Connection.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(connection.getMetaData()).thenReturn(metaData);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(metaData.getTables(any(), any(), any(), any())).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(false);
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        when(dataSource.getConnection().getMetaData().getTables(any(), any(), any(), any())).thenReturn(mock(ResultSet.class));
+        when(materials.getDataSourceMap()).thenReturn(Collections.singletonMap("ds", dataSource));
         FederateRefresher<AlterTableStatement> federateRefresher = new AlterTableStatementFederateRefresher();
         FederateSchemaMetadata schema = buildSchema();
         federateRefresher.refresh(schema, Collections.singletonList("ds"), alterTableStatement, materials);
@@ -215,4 +165,3 @@ public final class AlterTableStatementFederateRefresherTest {
         return new FederateSchemaMetadata("t_order", metaData);
     }
 }
-

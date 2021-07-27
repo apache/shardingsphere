@@ -20,9 +20,11 @@ package org.apache.shardingsphere.infra.metadata.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.mapper.type.CreateUserStatementEventMapper;
+import org.apache.shardingsphere.infra.metadata.mapper.type.DropUserStatementEventMapper;
 import org.apache.shardingsphere.infra.metadata.mapper.type.GrantStatementEventMapper;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 
 import java.util.HashMap;
@@ -41,6 +43,7 @@ public final class SQLStatementEventMapperFactory {
     static {
         REGISTRY.put(GrantStatement.class, new GrantStatementEventMapper());
         REGISTRY.put(CreateUserStatement.class, new CreateUserStatementEventMapper());
+        REGISTRY.put(DropUserStatement.class, new DropUserStatementEventMapper());
     }
     
     /**

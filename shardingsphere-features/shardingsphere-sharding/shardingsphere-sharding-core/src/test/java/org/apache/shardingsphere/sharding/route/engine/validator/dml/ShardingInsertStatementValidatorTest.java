@@ -48,10 +48,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
@@ -73,11 +71,9 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     private InsertStatementContext createInsertStatementContext(final List<Object> parameters, final InsertStatement insertStatement) {
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
-        metaDataMap.put(DefaultSchema.LOGIC_NAME, metaData);
-        return new InsertStatementContext(metaDataMap, parameters, insertStatement, DefaultSchema.LOGIC_NAME);
+        return new InsertStatementContext(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), parameters, insertStatement, DefaultSchema.LOGIC_NAME);
     }
     
     @Test

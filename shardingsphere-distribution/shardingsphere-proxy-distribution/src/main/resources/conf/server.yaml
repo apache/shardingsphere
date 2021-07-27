@@ -22,9 +22,9 @@
 ######################################################################################################
 
 #governance:
-#  name: governance_ds
 #  registryCenter:
 #    type: ZooKeeper
+#    namespace: governance_ds
 #    serverLists: localhost:2181
 #    props:
 #      retryIntervalMilliseconds: 500

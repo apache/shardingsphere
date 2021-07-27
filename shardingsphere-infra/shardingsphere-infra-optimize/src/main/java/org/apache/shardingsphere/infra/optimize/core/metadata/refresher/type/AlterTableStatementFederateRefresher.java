@@ -27,11 +27,11 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
-import javax.sql.DataSource;
 
 /**
  * ShardingSphere federate refresher for alter table statement.
@@ -58,7 +58,7 @@ public final class AlterTableStatementFederateRefresher implements FederateRefre
         if (!containsInTableContainedRule(tableName, materials)) {
             return loadTableMetaData(tableName, routeDataSourceNames, materials);
         } else {
-            return TableMetaDataBuilder.build(tableName, materials).orElse(new TableMetaData());
+            return TableMetaDataBuilder.build(tableName, materials).orElseGet(TableMetaData::new);
         }
     }
 

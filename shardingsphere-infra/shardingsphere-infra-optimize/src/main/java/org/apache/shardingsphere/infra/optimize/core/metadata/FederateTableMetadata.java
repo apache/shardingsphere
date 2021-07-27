@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Federate table metadata.
@@ -53,7 +53,7 @@ public final class FederateTableMetadata {
     
     private RelProtoDataType createRelDataType(final TableMetaData tableMetaData) {
         RelDataTypeFactory.Builder fieldInfo = TYPE_FACTORY.builder();
-        for (Map.Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
+        for (Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
             SqlTypeName sqlTypeName = SqlTypeName.getNameForJdbcType(entry.getValue().getDataType());
             fieldInfo.add(entry.getKey(), null == sqlTypeName ? TYPE_FACTORY.createUnknownType() : TYPE_FACTORY.createTypeWithNullability(TYPE_FACTORY.createSqlType(sqlTypeName), true));
         }

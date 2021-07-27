@@ -29,6 +29,7 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationMD5PasswordPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.persist.DistMetaDataPersistService;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -51,6 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -72,7 +74,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         byteBuf.writeInt(80877103);
         PacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
         AuthenticationResult actual = new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
-        assertThat(actual.isFinished(), is(false));
+        assertFalse(actual.isFinished());
     }
     
     @Test(expected = InvalidAuthorizationSpecificationException.class)
@@ -120,7 +122,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         PostgreSQLAuthenticationEngine engine = new PostgreSQLAuthenticationEngine();
         AuthenticationResult actual = engine.authenticate(channelHandlerContext, payload);
-        assertThat(actual.isFinished(), is(false));
+        assertFalse(actual.isFinished());
         assertThat(actual.getUsername(), is(username));
         ArgumentCaptor<PostgreSQLAuthenticationMD5PasswordPacket> argumentCaptor = ArgumentCaptor.forClass(PostgreSQLAuthenticationMD5PasswordPacket.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
@@ -136,17 +138,16 @@ public final class PostgreSQLAuthenticationEngineTest {
         actual = engine.authenticate(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
     }
-
+    
     private StandardMetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return new StandardMetaDataContexts(new LinkedHashMap<>(),
+        return new StandardMetaDataContexts(mock(DistMetaDataPersistService.class), new LinkedHashMap<>(),
                 buildGlobalRuleMetaData(user), mock(ExecutorEngine.class), new ConfigurationProperties(new Properties()), mock(OptimizeContextFactory.class));
     }
-
+    
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
         AuthorityRuleConfiguration authorityRuleConfiguration = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRuleBuilder().build(authorityRuleConfiguration, Collections.emptyMap());
-        ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.singletonList(authorityRuleConfiguration), Collections.singletonList(rule));
-        return metaData;
+        return new ShardingSphereRuleMetaData(Collections.singletonList(authorityRuleConfiguration), Collections.singletonList(rule));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

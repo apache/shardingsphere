@@ -29,8 +29,6 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -61,8 +59,6 @@ public final class EncryptRuleQueryResultSetTest {
         EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, "user_plain", "test");
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(encryptColumnRuleConfig));
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("md5", new Properties());
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptors = new HashMap<>();
-        encryptors.put("test", shardingSphereAlgorithmConfig);
-        return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptors);
+        return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), Collections.singletonMap("test", shardingSphereAlgorithmConfig));
     }
 }

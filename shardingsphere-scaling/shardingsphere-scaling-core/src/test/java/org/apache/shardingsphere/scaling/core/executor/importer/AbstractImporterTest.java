@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.executor.importer;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
@@ -42,6 +41,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -189,9 +189,7 @@ public final class AbstractImporterTest {
     private ImporterConfiguration mockImporterConfiguration() {
         ImporterConfiguration result = new ImporterConfiguration();
         result.setDataSourceConfig(dataSourceConfig);
-        Map<String, Set<String>> shardingColumnsMap = Maps.newHashMap();
-        shardingColumnsMap.put("test_table", Sets.newHashSet("user"));
-        result.setShardingColumnsMap(shardingColumnsMap);
+        result.setShardingColumnsMap(Collections.singletonMap("test_table", Sets.newHashSet("user")));
         return result;
     }
 }

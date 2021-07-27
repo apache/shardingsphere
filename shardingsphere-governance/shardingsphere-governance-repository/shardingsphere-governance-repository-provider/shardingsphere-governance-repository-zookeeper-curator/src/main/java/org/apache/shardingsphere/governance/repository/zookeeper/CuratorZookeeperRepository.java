@@ -75,20 +75,20 @@ public final class CuratorZookeeperRepository implements RegistryCenterRepositor
     private Properties props = new Properties();
     
     @Override
-    public void init(final String name, final RegistryCenterConfiguration config) {
+    public void init(final RegistryCenterConfiguration config) {
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(props);
-        client = buildCuratorClient(name, config, zookeeperProps);
+        client = buildCuratorClient(config, zookeeperProps);
         initCuratorClient(zookeeperProps);
     }
     
-    private CuratorFramework buildCuratorClient(final String namespace, final RegistryCenterConfiguration config, final ZookeeperProperties zookeeperProps) {
+    private CuratorFramework buildCuratorClient(final RegistryCenterConfiguration config, final ZookeeperProperties zookeeperProps) {
         int retryIntervalMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
         int maxRetries = zookeeperProps.getValue(ZookeeperPropertyKey.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProps.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
         int operationTimeoutMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
         builder.connectString(config.getServerLists())
             .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
-            .namespace(namespace);
+            .namespace(config.getNamespace());
         if (0 != timeToLiveSeconds) {
             builder.sessionTimeoutMs(timeToLiveSeconds * 1000);
         }

@@ -141,7 +141,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     
     @Test
     public void assertSubqueryForAggregation() {
-        String sql = "select count(*) from t_order where c.user_id = (select user_id from t_order where user_id =?) ";
+        String sql = "select count(*) from t_order where user_id = (select user_id from t_order where user_id =?) ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         assertRoute(sql, parameters);

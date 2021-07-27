@@ -2370,3 +2370,31 @@ ROLES
 NAMESPACE
     : N A M E S P A C E
     ;
+
+ROLLUP
+    : R O L L U P
+    ;
+
+GROUPING
+    : G R O U P I N G
+    ;
+
+SETS
+    : S E T S
+    ;
+
+DECODE
+    : D E C O D E
+    ;
+
+RESTORE
+    : R E S T O R E
+    ;
+
+POINT
+    : P O I N T
+    ;
+
+BEFORE
+    : B E F O R E
+    ;
