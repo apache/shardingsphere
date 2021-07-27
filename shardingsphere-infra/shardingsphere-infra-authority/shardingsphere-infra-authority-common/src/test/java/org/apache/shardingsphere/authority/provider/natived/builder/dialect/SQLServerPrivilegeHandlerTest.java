@@ -97,9 +97,9 @@ public final class SQLServerPrivilegeHandlerTest {
         SchemaPrivileges schemaPrivileges = actual.get(dbo).getDatabasePrivileges().getSpecificPrivileges().get("db0");
         assertTrue(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege));
         ShardingSphereUser testUser = new ShardingSphereUser("testUser", "", "");
-        assertThat(actual.get(testUser).getAdministrativePrivileges().getPrivileges().size(), is(0));
-        assertThat(actual.get(testUser).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
-        assertThat(actual.get(testUser).getDatabasePrivileges().getSpecificPrivileges().size(), is(0));
+        assertTrue(actual.get(testUser).getAdministrativePrivileges().getPrivileges().isEmpty());
+        assertTrue(actual.get(testUser).getDatabasePrivileges().getGlobalPrivileges().isEmpty());
+        assertTrue(actual.get(testUser).getDatabasePrivileges().getSpecificPrivileges().isEmpty());
     }
     
     private Collection<ShardingSphereUser> createUsers() {

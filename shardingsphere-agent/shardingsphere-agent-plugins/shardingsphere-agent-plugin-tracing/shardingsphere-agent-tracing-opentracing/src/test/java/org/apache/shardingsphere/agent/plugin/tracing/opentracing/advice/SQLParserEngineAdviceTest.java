@@ -67,7 +67,7 @@ public final class SQLParserEngineAdviceTest {
         ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
-        assertThat(spans.get(0).logEntries().size(), is(0));
+        assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/parseSQL/"));
     }
     

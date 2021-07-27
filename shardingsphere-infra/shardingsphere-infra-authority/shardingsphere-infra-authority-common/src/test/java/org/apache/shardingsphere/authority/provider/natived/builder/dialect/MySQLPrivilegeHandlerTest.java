@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -232,8 +233,8 @@ public final class MySQLPrivilegeHandlerTest {
         assertThat(actual.get(root).getDatabasePrivileges().getGlobalPrivileges().size(), is(6));
         assertThat(actual.get(root).getDatabasePrivileges().getGlobalPrivileges(), is(expectedDatabasePrivileges));
         ShardingSphereUser sys = new ShardingSphereUser("mysql.sys", "", "localhost");
-        assertThat(actual.get(sys).getAdministrativePrivileges().getPrivileges().size(), is(0));
-        assertThat(actual.get(sys).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
+        assertTrue(actual.get(sys).getAdministrativePrivileges().getPrivileges().isEmpty());
+        assertTrue(actual.get(sys).getDatabasePrivileges().getGlobalPrivileges().isEmpty());
         assertThat(actual.get(sys).getDatabasePrivileges().getSpecificPrivileges().size(), is(1));
     }
 }
