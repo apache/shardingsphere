@@ -22,7 +22,6 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -46,23 +45,26 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public final class AuthorityCheckerTest {
-
+    
     static {
         ShardingSphereServiceLoader.register(SQLChecker.class);
     }
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
-
+    
+    @SuppressWarnings("unchecked")
     @Test
     public void testCheckSchemaByAllPrivilegesPermitted() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
@@ -72,10 +74,10 @@ public final class AuthorityCheckerTest {
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap(), users);
         SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
         assertThat(sqlChecker, notNullValue());
-        // any schema
-        assertThat(sqlChecker.check("db0", new Grantee("root", "localhost"), rule), is(true));
+        assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
     }
-
+    
+    @SuppressWarnings("unchecked")
     @Test
     public void testCheckSchemaByNative() throws SQLException {
         Collection<ShardingSphereUser> users = new LinkedList<>();
@@ -85,11 +87,12 @@ public final class AuthorityCheckerTest {
         AuthorityRule rule = new AuthorityRule(ruleConfig, createMetaDataMap(users), users);
         SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
         assertThat(sqlChecker, notNullValue());
-        assertThat(sqlChecker.check("db0", new Grantee("root", "localhost"), rule), is(true));
-        assertThat(sqlChecker.check("db1", new Grantee("root", "localhost"), rule), is(false));
-        assertThat(sqlChecker.check("db0", new Grantee("other", "localhost"), rule), is(false));
+        assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
+        assertFalse(sqlChecker.check("db1", new Grantee("root", "localhost"), rule));
+        assertFalse(sqlChecker.check("db0", new Grantee("other", "localhost"), rule));
     }
-
+    
+    @SuppressWarnings("unchecked")
     @Test
     public void testCheckUser() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
@@ -98,12 +101,13 @@ public final class AuthorityCheckerTest {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap(), users);
         SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
-        assertThat(sqlChecker, notNullValue());
-        assertThat(sqlChecker.check(new Grantee("root", "localhost"), rule), is(true));
-        assertThat(sqlChecker.check(new Grantee("root", "192.168.0.1"), rule), is(false));
-        assertThat(sqlChecker.check(new Grantee("admin", "localhost"), rule), is(false));
+        assertNotNull(sqlChecker);
+        assertTrue(sqlChecker.check(new Grantee("root", "localhost"), rule));
+        assertFalse(sqlChecker.check(new Grantee("root", "192.168.0.1"), rule));
+        assertFalse(sqlChecker.check(new Grantee("admin", "localhost"), rule));
     }
-
+    
+    @SuppressWarnings("unchecked")
     @Test
     public void testCheckSqlStatement() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
@@ -112,24 +116,23 @@ public final class AuthorityCheckerTest {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap(), users);
         SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
-        assertThat(sqlChecker, notNullValue());
+        assertNotNull(sqlChecker);
         SelectStatement selectStatement = mock(SelectStatement.class);
         CreateTableStatement createTableStatement = mock(CreateTableStatement.class);
         InsertStatement insertStatement = mock(InsertStatement.class);
-        assertThat(sqlChecker.check(selectStatement, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed(), is(true));
-        assertThat(sqlChecker.check(insertStatement, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed(), is(true));
-        assertThat(sqlChecker.check(createTableStatement, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed(), is(true));
+        assertTrue(sqlChecker.check(selectStatement, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
+        assertTrue(sqlChecker.check(insertStatement, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
+        assertTrue(sqlChecker.check(createTableStatement, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
     }
-
+    
     private Map<String, ShardingSphereMetaData> createMetaDataMap(final Collection<ShardingSphereUser> users) throws SQLException {
         when(metaData.getName()).thenReturn("db0");
         DataSource dataSource = mockDataSourceForPrivileges(users);
         when(metaData.getResource().getAllInstanceDataSources()).thenReturn(Collections.singletonList(dataSource));
-        when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("db0", metaData);
     }
-
+    
     private DataSource mockDataSourceForPrivileges(final Collection<ShardingSphereUser> users) throws SQLException {
         ResultSet globalPrivilegeResultSet = mockGlobalPrivilegeResultSet();
         ResultSet schemaPrivilegeResultSet = mockSchemaPrivilegeResultSet();
@@ -145,44 +148,15 @@ public final class AuthorityCheckerTest {
         when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         return result;
     }
-
+    
     private ResultSet mockGlobalPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
-        when(result.getBoolean("Super_priv")).thenReturn(false);
-        when(result.getBoolean("Reload_priv")).thenReturn(false);
-        when(result.getBoolean("Shutdown_priv")).thenReturn(false);
-        when(result.getBoolean("Process_priv")).thenReturn(false);
-        when(result.getBoolean("File_priv")).thenReturn(false);
-        when(result.getBoolean("Show_db_priv")).thenReturn(false);
-        when(result.getBoolean("Repl_slave_priv")).thenReturn(false);
-        when(result.getBoolean("Repl_client_priv")).thenReturn(false);
-        when(result.getBoolean("Create_user_priv")).thenReturn(false);
-        when(result.getBoolean("Create_tablespace_priv")).thenReturn(false);
-        when(result.getBoolean("Select_priv")).thenReturn(false);
-        when(result.getBoolean("Insert_priv")).thenReturn(false);
-        when(result.getBoolean("Update_priv")).thenReturn(false);
-        when(result.getBoolean("Delete_priv")).thenReturn(false);
-        when(result.getBoolean("Create_priv")).thenReturn(false);
-        when(result.getBoolean("Alter_priv")).thenReturn(false);
-        when(result.getBoolean("Drop_priv")).thenReturn(false);
-        when(result.getBoolean("Grant_priv")).thenReturn(false);
-        when(result.getBoolean("Index_priv")).thenReturn(false);
-        when(result.getBoolean("References_priv")).thenReturn(false);
-        when(result.getBoolean("Create_tmp_table_priv")).thenReturn(false);
-        when(result.getBoolean("Lock_tables_priv")).thenReturn(false);
-        when(result.getBoolean("Execute_priv")).thenReturn(false);
-        when(result.getBoolean("Create_view_priv")).thenReturn(false);
-        when(result.getBoolean("Show_view_priv")).thenReturn(false);
-        when(result.getBoolean("Create_routine_priv")).thenReturn(false);
-        when(result.getBoolean("Alter_routine_priv")).thenReturn(false);
-        when(result.getBoolean("Event_priv")).thenReturn(false);
-        when(result.getBoolean("Trigger_priv")).thenReturn(false);
         when(result.getString("user")).thenReturn("root");
         when(result.getString("host")).thenReturn("localhost");
         return result;
     }
-
+    
     private ResultSet mockSchemaPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
@@ -191,26 +165,11 @@ public final class AuthorityCheckerTest {
         when(result.getBoolean("Insert_priv")).thenReturn(true);
         when(result.getBoolean("Update_priv")).thenReturn(true);
         when(result.getBoolean("Delete_priv")).thenReturn(true);
-        when(result.getBoolean("Create_priv")).thenReturn(false);
-        when(result.getBoolean("Alter_priv")).thenReturn(false);
-        when(result.getBoolean("Drop_priv")).thenReturn(false);
-        when(result.getBoolean("Grant_priv")).thenReturn(false);
-        when(result.getBoolean("Index_priv")).thenReturn(false);
-        when(result.getBoolean("References_priv")).thenReturn(false);
-        when(result.getBoolean("Create_tmp_table_priv")).thenReturn(false);
-        when(result.getBoolean("Lock_tables_priv")).thenReturn(false);
-        when(result.getBoolean("Execute_priv")).thenReturn(false);
-        when(result.getBoolean("Create_view_priv")).thenReturn(false);
-        when(result.getBoolean("Show_view_priv")).thenReturn(false);
-        when(result.getBoolean("Create_routine_priv")).thenReturn(false);
-        when(result.getBoolean("Alter_routine_priv")).thenReturn(false);
-        when(result.getBoolean("Event_priv")).thenReturn(false);
-        when(result.getBoolean("Trigger_priv")).thenReturn(false);
         when(result.getString("user")).thenReturn("root");
         when(result.getString("host")).thenReturn("localhost");
         return result;
     }
-
+    
     private ResultSet mockTablePrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, false);

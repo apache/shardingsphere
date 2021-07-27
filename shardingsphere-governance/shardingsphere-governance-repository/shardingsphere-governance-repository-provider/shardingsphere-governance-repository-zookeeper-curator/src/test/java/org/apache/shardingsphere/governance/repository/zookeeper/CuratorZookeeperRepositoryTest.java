@@ -68,8 +68,10 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -281,8 +283,8 @@ public final class CuratorZookeeperRepositoryTest {
         when(curatorCache.listenable()).thenReturn(listenable);
     }
     
-    private VoidAnswer1 getListenerAnswer(final CuratorCacheListener.Type type, final ChildData oldData, final ChildData data) {
-        return (VoidAnswer1<CuratorCacheListener>) listener -> listener.event(type, oldData, data);
+    private VoidAnswer1<CuratorCacheListener> getListenerAnswer(final CuratorCacheListener.Type type, final ChildData oldData, final ChildData data) {
+        return listener -> listener.event(type, oldData, data);
     }
     
     @Test
@@ -352,13 +354,13 @@ public final class CuratorZookeeperRepositoryTest {
     @SneakyThrows
     public void assertTryLock() {
         when(interProcessLock.acquire(5L, TimeUnit.SECONDS)).thenReturn(true);
-        assertThat(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS), is(true));
+        assertTrue(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS));
     }
     
     @Test
     @SneakyThrows
     public void assertTryLockFailed() {
         when(interProcessLock.acquire(5L, TimeUnit.SECONDS)).thenReturn(false);
-        assertThat(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS), is(false));
+        assertFalse(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS));
     }
 }
