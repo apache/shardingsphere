@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
@@ -40,22 +41,6 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
         if (isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
             needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);
         }
-        if (isUnionStatement(sqlStatementContext.getSqlStatement())) {
-            Preconditions.checkState(isNoNeedRouteTable(shardingRule, sqlStatementContext), "Union statement for sharding data nodes or tables is not support yet.");
-        }
-    
-    }
-    
-    private boolean isUnionStatement(final SelectStatement sqlStatement) {
-        return !sqlStatement.getUnionSegments().isEmpty();
-    }
-    
-    private boolean isNoNeedRouteTable(final ShardingRule shardingRule, final SQLStatementContext<SelectStatement> sqlStatementContext) {
-        return isSingleDataNode(shardingRule) && (!shardingRule.tableRuleExists(sqlStatementContext.getTablesContext().getTableNames()));
-    }
-    
-    private boolean isSingleDataNode(final ShardingRule shardingRule) {
-        return null != shardingRule.getDataSourceNames() && shardingRule.getDataSourceNames().size() == 1;
     }
     
     @Override
@@ -63,6 +48,9 @@ public final class ShardingSelectStatementValidator extends ShardingDMLStatement
                              final RouteContext routeContext, final ShardingSphereSchema schema) {
         if (!routeContext.isFederated() && needCheckDatabaseInstance) {
             Preconditions.checkState(routeContext.isSingleRouting(), "Sharding value must same with subquery.");
+        }
+        if (!sqlStatementContext.getSqlStatement().getUnionSegments().isEmpty() && routeContext.getRouteUnits().size() > 1) {
+            throw new ShardingSphereException("UNION can not support sharding route to multiple data nodes.");
         }
     }
 }

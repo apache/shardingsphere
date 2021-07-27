@@ -477,4 +477,9 @@
         <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id and t_account.account_id in ( ? )" parameters="1"/>
         <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id in ( ? )" parameters="1"/>
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_union_table_one_data_node" db-type="MySQL">
+        <input sql="select order_id from t_order where order_id = 1 union select order_id from t_order_item where order_id = 1"/>
+        <output sql="select order_id from t_order_0 where order_id = 1 union select order_id from t_order_item_0 where order_id = 1"/>
+    </rewrite-assertion>
 </rewrite-assertions>

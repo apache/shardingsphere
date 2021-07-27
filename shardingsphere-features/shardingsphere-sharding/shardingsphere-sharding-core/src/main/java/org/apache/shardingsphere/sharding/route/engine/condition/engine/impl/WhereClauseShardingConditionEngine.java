@@ -86,6 +86,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                 result.addAll(subqueryShardingConditions);
             }
         }
+        // TODO Add union conditions.
         return result;
     }
     
