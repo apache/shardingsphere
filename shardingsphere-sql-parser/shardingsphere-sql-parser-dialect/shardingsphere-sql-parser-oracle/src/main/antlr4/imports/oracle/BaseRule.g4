@@ -96,7 +96,7 @@ unreservedWord
     | BECOME | CHANGE | NOTIFICATION | PRIVILEGE | PURGE | RESUMABLE
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
-    | COLLATION | REAL | TYPE | FIRST | RANK
+    | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE
     ;
 
 schemaName
@@ -814,4 +814,16 @@ seedValue
 
 namespace
     : identifier
+    ;
+
+restorePoint
+    : identifier
+    ;
+
+scnValue
+    : literals
+    ;
+
+scnTimestampExpr
+    : scnValue | identifier
     ;
