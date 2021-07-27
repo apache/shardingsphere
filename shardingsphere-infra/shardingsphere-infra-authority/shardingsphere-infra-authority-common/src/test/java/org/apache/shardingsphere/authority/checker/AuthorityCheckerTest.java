@@ -45,10 +45,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -73,7 +71,7 @@ public final class AuthorityCheckerTest {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("ALL_PRIVILEGES_PERMITTED", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, Collections.emptyMap(), users);
         SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
-        assertThat(sqlChecker, notNullValue());
+        assertNotNull(sqlChecker);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
     }
     
@@ -86,7 +84,7 @@ public final class AuthorityCheckerTest {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRule(ruleConfig, createMetaDataMap(users), users);
         SQLChecker<AuthorityRule> sqlChecker = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLChecker.class).get(rule);
-        assertThat(sqlChecker, notNullValue());
+        assertNotNull(sqlChecker);
         assertTrue(sqlChecker.check("db0", new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check("db1", new Grantee("root", "localhost"), rule));
         assertFalse(sqlChecker.check("db0", new Grantee("other", "localhost"), rule));
