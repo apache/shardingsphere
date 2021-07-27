@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder;
 
+
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.CommonFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -40,6 +42,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -57,9 +60,13 @@ public final class SchemaBuilderH2Test {
 
     private final String tableMetaDataSql = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
 
+    private final String tableMetaDataSqlWithExistedTables = tableMetaDataSql + " AND TABLE_NAME NOT IN (%s)";
+
     private final String indexMetaDataSql = "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_NAME IN ";
 
     private final String primaryKeysMetaDataSql = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE";
+
+    private final String primaryKeysMetaDataWithExistedTables = primaryKeysMetaDataSql + " AND TABLE_NAME NOT IN (%s)";
 
     private final String generatedInfoSql = "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(S.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
             + " RIGHT JOIN INFORMATION_SCHEMA.SEQUENCES S ON C.SEQUENCE_NAME=S.SEQUENCE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?";
@@ -69,6 +76,8 @@ public final class SchemaBuilderH2Test {
     private final String[] singleTableNames = {"single_table1"};
 
     private final DatabaseType databaseType = new H2DatabaseType();
+
+    private final DataNodeContainedFixtureRule dataNodeContainedFixtureRule = new DataNodeContainedFixtureRule();
 
     private SchemaBuilderMaterials schemaBuilderMaterials;
 
@@ -87,9 +96,17 @@ public final class SchemaBuilderH2Test {
         dataSourceMap.put("ds_1", dataSource1);
         dataSourceMap.put("ds_2", dataSource2);
 
+        Map<String, Collection<DataNode>> nodeMap = new LinkedHashMap<>(2);
+        nodeMap.putIfAbsent("data_node_routed_table1", Arrays.asList(
+                new DataNode("ds_1", "data_node_routed_table1_0"),
+                new DataNode("ds_2", "data_node_routed_table1_1")));
+        nodeMap.putIfAbsent("data_node_routed_table2", Arrays.asList(
+                new DataNode("ds_2", "data_node_routed_table2_1"),
+                new DataNode("ds_1", "data_node_routed_table2_0")));
+        dataNodeContainedFixtureRule.setNodeMap(nodeMap);
         schemaBuilderMaterials = new SchemaBuilderMaterials(
                 databaseType, dataSourceMap, Arrays
-                .asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props);
+                .asList(new CommonFixtureRule(), dataNodeContainedFixtureRule), props);
     }
 
     @Test
@@ -100,12 +117,15 @@ public final class SchemaBuilderH2Test {
         when(dataSource1.getConnection()).thenReturn(connection1);
         ResultSet resultSet1 = mockTypeInfoResultSet();
         when(connection1.getMetaData().getTypeInfo()).thenReturn(resultSet1);
+
+        String sql1 = String.format(tableMetaDataSqlWithExistedTables, "'data_node_routed_table2_0'");
         resultSet1 = mockTableMetaDataResultSet1();
-        when(connection1.prepareStatement(tableMetaDataSql).executeQuery()).thenReturn(resultSet1);
+        when(connection1.prepareStatement(sql1).executeQuery()).thenReturn(resultSet1);
         resultSet1 = mockIndexMetaDataResultSet1();
         when(connection1.prepareStatement(contains(indexMetaDataSql)).executeQuery()).thenReturn(resultSet1);
+        String primarySql1 = String.format(primaryKeysMetaDataWithExistedTables, "'data_node_routed_table2_0'");
         resultSet1 = mockPrimaryKeysMetaDataResultSet1();
-        when(connection1.prepareStatement(primaryKeysMetaDataSql).executeQuery()).thenReturn(resultSet1);
+        when(connection1.prepareStatement(primarySql1).executeQuery()).thenReturn(resultSet1);
         resultSet1 = mockGeneratedInfoResultSet1();
         when(connection1.prepareStatement(generatedInfoSql).executeQuery()).thenReturn(resultSet1);
 
@@ -113,12 +133,14 @@ public final class SchemaBuilderH2Test {
         when(dataSource2.getConnection()).thenReturn(connection2);
         ResultSet resultSet2 = mockTypeInfoResultSet();
         when(connection2.getMetaData().getTypeInfo()).thenReturn(resultSet2);
+        String sql2 = String.format(tableMetaDataSqlWithExistedTables, "'data_node_routed_table1_1'");
         resultSet2 = mockTableMetaDataResultSet2();
-        when(connection2.prepareStatement(tableMetaDataSql).executeQuery()).thenReturn(resultSet2);
+        when(connection2.prepareStatement(sql2).executeQuery()).thenReturn(resultSet2);
         resultSet2 = mockIndexMetaDataResultSet2();
         when(connection2.prepareStatement(contains(indexMetaDataSql)).executeQuery()).thenReturn(resultSet2);
+        String primarySql2 = String.format(primaryKeysMetaDataWithExistedTables, "'data_node_routed_table1_1'");
         resultSet2 = mockPrimaryKeysMetaDataResultSet2();
-        when(connection2.prepareStatement(primaryKeysMetaDataSql).executeQuery()).thenReturn(resultSet2);
+        when(connection2.prepareStatement(primarySql2).executeQuery()).thenReturn(resultSet2);
         resultSet2 = mockGeneratedInfoResultSet2();
         when(connection2.prepareStatement(generatedInfoSql).executeQuery()).thenReturn(resultSet2);
 
@@ -137,70 +159,69 @@ public final class SchemaBuilderH2Test {
 
     private ResultSet mockTableMetaDataResultSet1() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, true, true, false);
-        String[] tableNameArray = {shardTableNames[0] + "_0", shardTableNames[1] + "_0", shardTableNames[1] + "_0", singleTableNames[0], singleTableNames[0]};
-        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_0", tableNameArray);
-        when(result.getString("COLUMN_NAME")).thenReturn("id1", "name1", "id2", "name2", "id_s", "name_s");
-        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar", "int", "varchar", "int", "varchar");
+        when(result.next()).thenReturn(true, true, true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_0", shardTableNames[0] + "_0", singleTableNames[0], singleTableNames[0]);
+        when(result.getString("COLUMN_NAME")).thenReturn("id1", "name1", "id_s", "name_s");
+        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar", "int", "varchar");
         return result;
     }
 
     private ResultSet mockIndexMetaDataResultSet1() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString("INDEX_NAME")).thenReturn("id1", "id2", "id_s");
-        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_0", shardTableNames[1] + "_0", singleTableNames[0]);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("id1", "id_s");
+        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_0", singleTableNames[0]);
         return result;
     }
 
     private ResultSet mockPrimaryKeysMetaDataResultSet1() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_0", shardTableNames[1] + "_0", singleTableNames[0]);
-        when(result.getString("COLUMN_NAME")).thenReturn("id1", "id2", "id_s");
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_0", singleTableNames[0]);
+        when(result.getString("COLUMN_NAME")).thenReturn("id1", "id_s");
         return result;
     }
 
     private ResultSet mockGeneratedInfoResultSet1() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_0", shardTableNames[1] + "_0", singleTableNames[0]);
-        when(result.getString("COLUMN_NAME")).thenReturn("id1", "id2", "id_s");
-        when(result.getBoolean("IS_GENERATED")).thenReturn(false, false, false);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_0", singleTableNames[0]);
+        when(result.getString("COLUMN_NAME")).thenReturn("id1", "id_s");
+        when(result.getBoolean("IS_GENERATED")).thenReturn(false, false);
         return result;
     }
 
     private ResultSet mockTableMetaDataResultSet2() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_1", shardTableNames[0] + "_1", shardTableNames[1] + "_1", shardTableNames[1] + "_1");
-        when(result.getString("COLUMN_NAME")).thenReturn("id1", "name1", "id2", "name2");
-        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar", "int", "varchar");
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[1] + "_1", shardTableNames[1] + "_1");
+        when(result.getString("COLUMN_NAME")).thenReturn("id2", "name2");
+        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
         return result;
     }
 
     private ResultSet mockIndexMetaDataResultSet2() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("INDEX_NAME")).thenReturn("id1", "id2");
-        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_1", shardTableNames[1] + "_1");
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("id2");
+        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[1] + "_1");
         return result;
     }
 
     private ResultSet mockPrimaryKeysMetaDataResultSet2() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_1", shardTableNames[1] + "_1");
-        when(result.getString("COLUMN_NAME")).thenReturn("id1", "id2");
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[1] + "_1");
+        when(result.getString("COLUMN_NAME")).thenReturn("id2");
         return result;
     }
 
     private ResultSet mockGeneratedInfoResultSet2() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[0] + "_1", shardTableNames[1] + "_1");
-        when(result.getString("COLUMN_NAME")).thenReturn("id1", "id2");
-        when(result.getBoolean("IS_GENERATED")).thenReturn(false, false);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_NAME")).thenReturn(shardTableNames[1] + "_1");
+        when(result.getString("COLUMN_NAME")).thenReturn("id2");
+        when(result.getBoolean("IS_GENERATED")).thenReturn(false);
         return result;
     }
 
