@@ -46,7 +46,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
-        assertThat(spans.get(0).logEntries().size(), is(0));
+        assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/parseSQL/"));
     }
     

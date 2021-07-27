@@ -59,7 +59,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
-        assertThat(spans.get(0).logEntries().size(), is(0));
+        assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/rootInvoke/"));
         assertThat(spans.get(0).tags(), is(EXPECTED));
     }

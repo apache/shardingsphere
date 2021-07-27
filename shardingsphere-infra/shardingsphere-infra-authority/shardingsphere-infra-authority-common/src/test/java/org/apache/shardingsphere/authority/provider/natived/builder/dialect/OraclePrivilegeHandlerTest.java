@@ -107,7 +107,7 @@ public final class OraclePrivilegeHandlerTest {
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
         assertThat(actual.size(), is(1));
         ShardingSphereUser user = new ShardingSphereUser("admin", "", "");
-        assertThat(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
+        assertTrue(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().isEmpty());
         assertThat(actual.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(1));
         Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE));
         SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("sys");
@@ -118,7 +118,7 @@ public final class OraclePrivilegeHandlerTest {
     }
     
     private Collection<ShardingSphereUser> createUsers() {
-        LinkedList<ShardingSphereUser> result = new LinkedList<>();
+        Collection<ShardingSphereUser> result = new LinkedList<>();
         result.add(new ShardingSphereUser("admin", "", ""));
         return result;
     }
