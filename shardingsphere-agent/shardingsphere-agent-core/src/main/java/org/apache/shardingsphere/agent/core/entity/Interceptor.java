@@ -27,7 +27,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public class Interceptor {
+public final class Interceptor {
     
     private String target;
     

@@ -25,7 +25,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TargetPoint {
+public final class TargetPoint {
     
     private String type;
     

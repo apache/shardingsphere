@@ -27,7 +27,7 @@ import java.util.LinkedList;
  */
 @Setter
 @Getter
-public class Interceptors {
+public final class Interceptors {
     
     private LinkedList<Interceptor> interceptors;
 }

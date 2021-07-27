@@ -23,7 +23,7 @@ import org.yaml.snakeyaml.Yaml;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class InterceptorConvertTest {
+public final class InterceptorConvertTest {
     
     @Test
     public void assertConvertOK() {
