@@ -27,6 +27,7 @@ import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -43,7 +44,7 @@ public final class PluginBootServiceManager {
      */
     public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap) {
         Set<String> ignoredPluginNames = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class).getIgnoredPluginNames();
-        for (Map.Entry<String, PluginConfiguration> entry: pluginConfigurationMap.entrySet()) {
+        for (Entry<String, PluginConfiguration> entry: pluginConfigurationMap.entrySet()) {
             AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(pluginBootService -> {
                 try {
                     if (!ignoredPluginNames.isEmpty() && ignoredPluginNames.contains(pluginBootService.getType())) {

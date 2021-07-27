@@ -126,7 +126,7 @@ public final class ScalingUtil {
                 Collectors.toMap(Entry::getKey, this::createTaskResult));
     }
     
-    private Tuple2<Boolean, Boolean> createTaskResult(final Map.Entry<String, JsonElement> entry) {
+    private Tuple2<Boolean, Boolean> createTaskResult(final Entry<String, JsonElement> entry) {
         return new Tuple2<>(entry.getValue().getAsJsonObject().get("countValid").getAsBoolean(),
                 entry.getValue().getAsJsonObject().get("dataValid").getAsBoolean());
     }

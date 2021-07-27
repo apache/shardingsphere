@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -69,7 +70,7 @@ public final class SingleTableRouteEngine {
     private void combineRouteContext(final RouteContext routeContext, final RouteContext newRouteContext) {
         Map<String, RouteUnit> dataSourceRouteUnits = getDataSourceRouteUnits(newRouteContext);
         routeContext.getRouteUnits().removeIf(each -> !dataSourceRouteUnits.containsKey(each.getDataSourceMapper().getLogicName()));
-        for (Map.Entry<String, RouteUnit> entry : dataSourceRouteUnits.entrySet()) {
+        for (Entry<String, RouteUnit> entry : dataSourceRouteUnits.entrySet()) {
             routeContext.putRouteUnit(entry.getValue().getDataSourceMapper(), entry.getValue().getTableMappers());
         }
     }

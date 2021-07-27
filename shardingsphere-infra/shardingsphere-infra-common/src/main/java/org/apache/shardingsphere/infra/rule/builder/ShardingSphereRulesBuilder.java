@@ -69,7 +69,7 @@ public final class ShardingSphereRulesBuilder {
                 getAllSchemaRuleConfigurations(schemaRuleConfigurations), SchemaRuleBuilder.class, Comparator.reverseOrder());
         appendDefaultKernelSchemaRuleConfigurationBuilder(builders);
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Map.Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
+        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
             result.add(entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey(), result));
         }
         return result;
