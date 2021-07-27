@@ -35,9 +35,9 @@ import org.mockito.internal.util.reflection.FieldSetter;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @Category(PluginLoaderTest.class)
 public final class PluginLoaderTest {
@@ -75,14 +75,14 @@ public final class PluginLoaderTest {
     
     @Test
     public void assertTypeMatcher() {
-        assertThat(PLUGIN_LOADER.typeMatcher().matches(MATERIAL), is(true));
-        assertThat(PLUGIN_LOADER.typeMatcher().matches(FAKE), is(false));
+        assertTrue(PLUGIN_LOADER.typeMatcher().matches(MATERIAL));
+        assertFalse(PLUGIN_LOADER.typeMatcher().matches(FAKE));
     }
     
     @Test
     public void assertContainsType() {
-        assertThat(PLUGIN_LOADER.containsType(MATERIAL), is(true));
-        assertThat(PLUGIN_LOADER.containsType(FAKE), is(false));
+        assertTrue(PLUGIN_LOADER.containsType(MATERIAL));
+        assertFalse(PLUGIN_LOADER.containsType(FAKE));
     }
     
     @Test

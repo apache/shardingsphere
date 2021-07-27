@@ -65,8 +65,7 @@ public final class ComplexInlineShardingAlgorithmTest {
         Map<String, Collection<Comparable<?>>> sharingValueMap = new HashMap<>(2, 1);
         sharingValueMap.put("type", Collections.singletonList(2));
         sharingValueMap.put("order_id", Collections.singletonList(2));
-        Map<String, Range<Comparable<?>>> rangeShardingValueMap = Collections.emptyMap();
-        ComplexKeysShardingValue<Comparable<?>> shardingValue = new ComplexKeysShardingValue<>("t_order", sharingValueMap, rangeShardingValueMap);
+        ComplexKeysShardingValue<Comparable<?>> shardingValue = new ComplexKeysShardingValue<>("t_order", sharingValueMap, Collections.emptyMap());
         Collection<String> actual = complexInlineShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
         assertTrue(actual.size() == 1 && actual.contains("t_order_0_0"));
     }

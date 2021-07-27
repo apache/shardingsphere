@@ -69,8 +69,8 @@ public final class ManualBitSetTest {
         assertNotNull(bitSets);
         assertThat(bitSets.size(), is(1));
         bitSet.clear(1025);
-        assertThat(bitSets.size(), is(0));
+        assertTrue(bitSets.isEmpty());
         bitSet.clear(2049);
-        assertThat(bitSets.size(), is(0));
+        assertTrue(bitSets.isEmpty());
     }
 }

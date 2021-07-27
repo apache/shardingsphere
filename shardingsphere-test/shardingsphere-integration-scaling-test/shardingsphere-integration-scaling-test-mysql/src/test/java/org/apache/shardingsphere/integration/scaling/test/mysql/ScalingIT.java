@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.junit.Assert.assertTrue;
 
@@ -74,7 +75,7 @@ public final class ScalingIT {
     @SneakyThrows(IOException.class)
     private void assertJobCheck(final String jobId) {
         Map<String, Tuple2<Boolean, Boolean>> checkResult = ScalingUtil.getInstance().getJobCheckResult(jobId);
-        for (Map.Entry<String, Tuple2<Boolean, Boolean>> entry : checkResult.entrySet()) {
+        for (Entry<String, Tuple2<Boolean, Boolean>> entry : checkResult.entrySet()) {
             assertTrue(entry.getValue().getFirst());
             assertTrue(entry.getValue().getSecond());
         }

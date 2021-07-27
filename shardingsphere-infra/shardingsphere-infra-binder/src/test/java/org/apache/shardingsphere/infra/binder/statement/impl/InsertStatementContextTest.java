@@ -122,7 +122,7 @@ public final class InsertStatementContextTest {
         InsertStatementContext actual = createInsertStatementContext(Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertThat(actual.getGroupedParameters().size(), is(2));
         assertNull(actual.getOnDuplicateKeyUpdateValueContext());
-        assertThat(actual.getOnDuplicateKeyUpdateParameters().size(), is(0));
+        assertTrue(actual.getOnDuplicateKeyUpdateParameters().isEmpty());
     }
     
     @Test

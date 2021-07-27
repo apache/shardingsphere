@@ -85,7 +85,7 @@ public final class JobSchedulerCenter {
         
         @Override
         public void run() {
-            for (Map.Entry<String, JobScheduler> entry : JOB_SCHEDULER_MAP.entrySet()) {
+            for (Entry<String, JobScheduler> entry : JOB_SCHEDULER_MAP.entrySet()) {
                 try {
                     REGISTRY_REPOSITORY_API.persistJobProgress(entry.getValue().getJobContext());
                     // CHECKSTYLE:OFF
