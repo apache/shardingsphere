@@ -100,13 +100,13 @@ public class SchemaBuilderWithDialectLoader {
                         LinkedHashSet::new))));
     }
 
-    private static void putTables4Futures(final Map<String, TableMetaData> tableMetaMap, final Map<String, DataNode> logicTable2ChoiceDataNodeMap,
+    private static void putTables4Futures(final Map<String, TableMetaData> tableMetaMap, final Map<String, DataNode> logicTable2FirstDataNodeMap,
             final Map<String, TableMetaData> tables) {
-        Map<String, String> choiceActual2LogicTableMap = logicTable2ChoiceDataNodeMap.entrySet().stream()
+        Map<String, String> firstActual2LogicTableMap = logicTable2FirstDataNodeMap.entrySet().stream()
                 .collect(Collectors.toMap(entry -> entry.getValue().getTableName(), Map.Entry::getKey));
         for (Map.Entry<String, TableMetaData> entry : tableMetaMap.entrySet()) {
             String actualTableName = entry.getKey();
-            String logicTableName = choiceActual2LogicTableMap.get(actualTableName);
+            String logicTableName = firstActual2LogicTableMap.get(actualTableName);
             if (null != logicTableName && !logicTableName.equals(actualTableName)) {
                 if (!tables.containsKey(logicTableName)) {
                     TableMetaData toCopy = entry.getValue();
