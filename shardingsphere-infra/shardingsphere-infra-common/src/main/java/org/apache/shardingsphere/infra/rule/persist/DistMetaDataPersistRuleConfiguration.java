@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
 import java.util.Properties;
 
 /**
- *  Dist meta data persist rule configuration.
+ * Dist meta data persist rule configuration.
  */
 @RequiredArgsConstructor
 @Getter

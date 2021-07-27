@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.persist.YamlDistMetaData
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 
 /**
- *  Dist meta data persist rule configuration YAML swapper.
+ * Dist meta data persist rule configuration YAML swapper.
  */
 // TODO add unit test for me
 public final class DistMetaDataPersistRuleConfigurationYamlSwapper implements 

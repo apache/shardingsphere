@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import java.util.Properties;
 
 /**
- *  Yaml dist meta data persist rule configuration.
+ * Yaml dist meta data persist rule configuration.
  */
 @Getter
 @Setter
