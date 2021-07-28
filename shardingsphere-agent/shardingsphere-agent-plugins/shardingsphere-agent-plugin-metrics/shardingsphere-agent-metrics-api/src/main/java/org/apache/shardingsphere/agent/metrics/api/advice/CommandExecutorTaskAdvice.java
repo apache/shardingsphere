@@ -17,36 +17,47 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import java.lang.reflect.Method;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
 import org.apache.shardingsphere.agent.metrics.api.threadlocal.ElapsedTimeThreadLocal;
+
+import java.lang.reflect.Method;
 
 /**
  * Command executor task advice.
  */
 public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
     
-    private static final String METRICS_NAME = "proxy_execute_latency_millis";
+    private static final String PROXY_EXECUTE_LATENCY_MILLIS = "proxy_execute_latency_millis";
+    
+    private static final String PROXY_EXECUTE_ERROR_TOTAL = "proxy_execute_error_total";
     
     static {
-        MetricsReporter.registerHistogram(METRICS_NAME, "the shardingsphere proxy executor latency millis");
+        MetricsReporter.registerHistogram(PROXY_EXECUTE_LATENCY_MILLIS, "the shardingsphere proxy executor latency millis");
+        MetricsReporter.registerCounter(PROXY_EXECUTE_ERROR_TOTAL, "the shardingsphere proxy executor error");
     }
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
+        if (MethodNameConstant.COMMAND_EXECUTOR_RUN.equals(method.getName())) {
+            ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
+        }
     }
 
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        try {
-            long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
-            MetricsReporter.recordTime(METRICS_NAME, elapsedTime);
-        } finally {
-            ElapsedTimeThreadLocal.INSTANCE.remove();
+        if (MethodNameConstant.COMMAND_EXECUTOR_RUN.equals(method.getName())) {
+            try {
+                long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
+                MetricsReporter.recordTime(PROXY_EXECUTE_LATENCY_MILLIS, elapsedTime);
+            } finally {
+                ElapsedTimeThreadLocal.INSTANCE.remove();
+            }
+        } else if (MethodNameConstant.COMMAND_EXECUTOR_EXCEPTION.equals(method.getName())) {
+            MetricsReporter.counterIncrement(PROXY_EXECUTE_ERROR_TOTAL);
         }
     }
 }

@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.constant;
+package org.apache.shardingsphere.agent.core.entity;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.LinkedList;
 
 /**
- * Method name constant.
+ * Interceptor.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MethodNameConstant {
+@Getter
+@Setter
+public final class Interceptor {
     
-    public static final String COMMAND_EXECUTOR_RUN = "run";
+    private String target;
     
-    public static final String COMMAND_EXECUTOR_EXCEPTION = "processException";
+    private String instanceAdvice;
     
-    public static final String SQL_ROUTER = "route";
+    private String staticAdvice;
     
-    public static final String CHANNEL_ACTIVE = "channelActive";
-    
-    public static final String CHANNEL_READ = "channelRead";
-    
-    public static final String CHANNEL_INACTIVE = "channelInactive";
-    
-    public static final String COMMIT = "commit";
-    
-    public static final String ROLL_BACK = "rollback";
-
-    public static final String DECORATE = "decorate";
+    private LinkedList<TargetPoint> points;
 }

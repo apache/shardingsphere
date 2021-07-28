@@ -18,29 +18,56 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
 import org.apache.shardingsphere.agent.metrics.api.util.ReflectiveUtil;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.atomic.DoubleAdder;
 import java.util.concurrent.atomic.LongAdder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     
     private final CommandExecutorTaskAdvice commandExecutorTaskAdvice = new CommandExecutorTaskAdvice();
     
+    @Mock
+    private Method run;
+    
+    @Mock
+    private Method processException;
+    
     @Test
     @SuppressWarnings("unchecked")
-    public void assertMethod() {
+    public void assertExecuteLatency() {
+        when(run.getName()).thenReturn(MethodNameConstant.COMMAND_EXECUTOR_RUN);
         MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        commandExecutorTaskAdvice.beforeMethod(targetObject, null, new Object[]{}, new MethodInvocationResult());
-        commandExecutorTaskAdvice.afterMethod(targetObject, null, new Object[]{}, new MethodInvocationResult());
+        commandExecutorTaskAdvice.beforeMethod(targetObject, run, new Object[]{}, new MethodInvocationResult());
+        commandExecutorTaskAdvice.afterMethod(targetObject, run, new Object[]{}, new MethodInvocationResult());
         Map<String, LongAdder> longAdderMap = (Map<String, LongAdder>) ReflectiveUtil.getFieldValue(getFixturemetricsregister(), "HISTOGRAM_MAP");
         assertThat(longAdderMap.size(), is(1));
         LongAdder longAdder = longAdderMap.get("proxy_execute_latency_millis");
         assertNotNull(longAdder);
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void assertExecutorErrorTotal() {
+        when(processException.getName()).thenReturn(MethodNameConstant.COMMAND_EXECUTOR_EXCEPTION);
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        commandExecutorTaskAdvice.afterMethod(targetObject, processException, new Object[]{}, new MethodInvocationResult());
+        Map<String, DoubleAdder> adderMap = (Map<String, DoubleAdder>) ReflectiveUtil.getFieldValue(getFixturemetricsregister(), "COUNTER_MAP");
+        assertThat(adderMap.size(), org.hamcrest.Matchers.greaterThan(0));
+        DoubleAdder doubleAdder = adderMap.get("proxy_execute_error_total");
+        assertNotNull(doubleAdder);
     }
 }
