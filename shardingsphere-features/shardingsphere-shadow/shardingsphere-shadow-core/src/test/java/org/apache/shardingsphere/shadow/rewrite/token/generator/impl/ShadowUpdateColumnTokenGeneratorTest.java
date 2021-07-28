@@ -88,5 +88,4 @@ public final class ShadowUpdateColumnTokenGeneratorTest {
     public void assertGenerateSQLTokens() {
         assertThat(shadowUpdateColumnTokenGenerator.generateSQLTokens(updateStatementContext).iterator().next().toString(), is(""));
     }
-    
 }
