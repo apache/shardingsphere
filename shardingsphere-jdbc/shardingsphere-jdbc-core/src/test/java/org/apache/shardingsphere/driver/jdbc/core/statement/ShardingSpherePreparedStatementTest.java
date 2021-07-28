@@ -353,14 +353,14 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     @Test
     public void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
-        try (Connection connection = getShardingSphereDataSource().getConnection();
+        try (Connection connection = getShardingSphereDataSource().getDataSourceMap().get("jdbc_1").getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_NO_GENERATED_VALUES_GENERATE_KEYS, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, "show");
             preparedStatement.setString(2, "yes");
             preparedStatement.execute();
             ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
             assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getInt(1), is(2));
+            assertThat(generateKeyResultSet.getInt(1), is(1));
         }
     }
     
