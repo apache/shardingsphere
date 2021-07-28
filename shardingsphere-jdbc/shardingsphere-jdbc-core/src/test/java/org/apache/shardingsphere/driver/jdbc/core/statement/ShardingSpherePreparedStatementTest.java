@@ -360,7 +360,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
             preparedStatement.execute();
             ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
             assertTrue(generateKeyResultSet.next());
-            assertThat(generateKeyResultSet.getInt(1), is(1));
+            assertThat(generateKeyResultSet.getInt(1), is(2));
         }
     }
     
